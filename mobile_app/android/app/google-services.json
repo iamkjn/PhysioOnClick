@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "119591358761",
+    "project_id": "physioonclick",
+    "storage_bucket": "physioonclick.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:119591358761:android:fd98d96c7a5770d6baa738",
+        "android_client_info": {
+          "package_name": "com.physioonclick.mobile_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "119591358761-skume5923au9v8laf519q9ime6gjvmi7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.physioonclick.mobile_app",
+            "certificate_hash": "979c071d54a31ea5951b1bd56aa382c047aa438e"
+          }
+        },
+        {
+          "client_id": "119591358761-4ojpfo2n6gpjkuoh0ljis9d52ob35o3d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdmEnOoVjsuvZ2gRhZK8HUei-7fitv-OQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "119591358761-4ojpfo2n6gpjkuoh0ljis9d52ob35o3d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "119591358761-ciu39himbif9psiklkb2dibir6vjivut.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.physioonclick.mobileApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
