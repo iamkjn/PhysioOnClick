@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 import { auth } from "@/lib/firebase";
 import { saveSymptomCheck } from "@/lib/firestore-helpers";
@@ -209,9 +210,9 @@ export function SymptomChecker() {
           </button>
         ) : (
           <div className="button-row">
-            <a className="button primary" href="/pricing#book">
+            <Link href="/book" className="button primary">
               Book Assessment
-            </a>
+            </Link>
             <button
               className="button secondary"
               onClick={() => {

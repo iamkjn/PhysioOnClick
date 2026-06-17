@@ -57,7 +57,7 @@ export default function ServicesPage() {
                   ))}
                 </div>
               </div>
-              <Link className="button primary" href="/pricing#book">
+              <Link className="button primary" href="/book">
                 Book Assessment
               </Link>
             </div>
