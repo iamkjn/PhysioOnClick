@@ -1,3 +1,4 @@
+import { cancelCalBooking } from "@/app/admin/actions";
 import { getAdminDb } from "@/lib/firebase-admin";
 
 type BookingRecord = {
@@ -9,6 +10,7 @@ type BookingRecord = {
   appointmentLabel: string;
   status: string;
   notes: string;
+  calBookingUid: string;
 };
 
 async function getBookings(): Promise<BookingRecord[]> {
@@ -31,10 +33,13 @@ async function getBookings(): Promise<BookingRecord[]> {
       service: String(data.service || ""),
       appointmentLabel: String(
         data.appointmentLabel ||
-          (data.appointmentDate && data.appointmentTime ? `${data.appointmentDate} ${data.appointmentTime}` : "TBC")
+          (data.appointmentDate && data.appointmentTime
+            ? `${data.appointmentDate} ${data.appointmentTime}`
+            : "TBC")
       ),
       status: String(data.status || "pending"),
-      notes: String(data.notes || "")
+      notes: String(data.notes || ""),
+      calBookingUid: String(data.calBookingUid || ""),
     };
   });
 }
@@ -65,6 +70,7 @@ export async function AdminBookingsTable() {
                   <th>Phone</th>
                   <th>Notes</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -77,7 +83,34 @@ export async function AdminBookingsTable() {
                     <td>{item.phone}</td>
                     <td className="dashboard-message-cell">{item.notes || "No notes provided."}</td>
                     <td>
-                      <span className="dashboard-status-pill">{item.status}</span>
+                      <span className={`dashboard-status-pill status-${item.status}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td>
+                      {item.calBookingUid ? (
+                        <div className="booking-actions">
+                          <form action={cancelCalBooking.bind(null, item.calBookingUid)}>
+                            <button
+                              className="button small danger"
+                              disabled={item.status === "cancelled"}
+                              type="submit"
+                            >
+                              Cancel
+                            </button>
+                          </form>
+                          <a
+                            className="button small secondary"
+                            href={`https://cal.com/reschedule/${item.calBookingUid}`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            Reschedule
+                          </a>
+                        </div>
+                      ) : (
+                        <span className="muted">—</span>
+                      )}
                     </td>
                   </tr>
                 ))}

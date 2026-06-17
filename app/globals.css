@@ -2100,3 +2100,9 @@ textarea:focus {
     flex-direction: column;
   }
 }
+
+/* Cal.com booking status badges */
+.dashboard-status-pill.status-confirmed { background: #d1fae5; color: #065f46; }
+.dashboard-status-pill.status-pending   { background: #fef3c7; color: #92400e; }
+.dashboard-status-pill.status-cancelled { background: #fee2e2; color: #991b1b; }
+.booking-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
