@@ -62,7 +62,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  const body = JSON.parse(rawBody) as CalWebhookBody;
+  let body: CalWebhookBody;
+  try {
+    body = JSON.parse(rawBody) as CalWebhookBody;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
   const { triggerEvent, payload: booking } = body;
 
   const db = getAdminDb();
