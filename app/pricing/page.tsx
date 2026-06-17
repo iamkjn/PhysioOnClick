@@ -44,7 +44,7 @@ export default function PricingPage() {
                 <p className="muted">{item.duration}</p>
                 <strong>{formatCurrency(item.price)}</strong>
                 <p>{item.description}</p>
-                <a className="button primary" href="#book">Book Now</a>
+                <Link className="button primary" href="/book">Book Now</Link>
               </article>
             ))}
           </div>
@@ -59,7 +59,7 @@ export default function PricingPage() {
                 <p className="muted">{item.duration}</p>
                 <strong>{formatCurrency(item.price)}</strong>
                 <p>{item.description}</p>
-                <a className="button primary" href="#book">Book Now</a>
+                <Link className="button primary" href="/book">Book Now</Link>
               </article>
             ))}
           </div>
@@ -74,7 +74,7 @@ export default function PricingPage() {
                 <h3>{item.title}</h3>
                 <strong>{formatCurrency(item.price)}</strong>
                 <p>{item.description}</p>
-                <a className="button primary" href="#book">Get Started</a>
+                <Link className="button primary" href="/book">Get Started</Link>
               </article>
             ))}
           </div>
