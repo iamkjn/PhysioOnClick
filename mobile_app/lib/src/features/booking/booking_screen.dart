@@ -15,12 +15,19 @@ class BookingScreen extends StatefulWidget {
 
 class _BookingScreenState extends State<BookingScreen> {
   late final WebViewController _controller;
+  bool _webLoading = true;
 
   @override
   void initState() {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (_) => setState(() => _webLoading = true),
+          onPageFinished: (_) => setState(() => _webLoading = false),
+        ),
+      )
       ..loadRequest(Uri.parse('https://cal.com/krunal-nayak-0nbytj'));
   }
 
@@ -63,7 +70,13 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
               Expanded(
                 flex: 3,
-                child: WebViewWidget(controller: _controller),
+                child: Stack(
+                  children: [
+                    WebViewWidget(controller: _controller),
+                    if (_webLoading)
+                      const Center(child: CircularProgressIndicator()),
+                  ],
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -75,6 +88,8 @@ class _BookingScreenState extends State<BookingScreen> {
                   stream: FirebaseFirestore.instance
                       .collection('bookings')
                       .where('email', isEqualTo: user.email)
+                      .orderBy('createdAt', descending: true)
+                      .limit(10)
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
