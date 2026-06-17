@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
-import { BookingPanel } from "@/components/booking-panel";
 import { getPublicPricing } from "@/lib/public-content";
 import { formatCurrency } from "@/lib/utils";
 
@@ -91,7 +91,16 @@ export default function PricingPage() {
       </section>
 
       <section className="page-section" id="book">
-        <BookingPanel pricingItems={pricing} />
+        <div className="panel stack">
+          <span className="eyebrow">Ready to book?</span>
+          <h3>Schedule your appointment online</h3>
+          <p>Pick a time that suits you. Confirmation is sent to your email instantly once the slot is confirmed.</p>
+          <div className="button-row">
+            <Link className="button primary" href="/book">
+              Book now
+            </Link>
+          </div>
+        </div>
       </section>
     </div>
   );

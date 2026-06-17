@@ -8,8 +8,7 @@ const navItems = [
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/symptom-checker", label: "Symptom Checker" },
-  { href: "/blog", label: "Blog" },
+  { href: "/book", label: "Book" },
   { href: "/contact", label: "Contact" }
 ];
 
@@ -17,10 +16,7 @@ export function SiteHeader() {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
-    }
-
+    if (href === "/") return pathname === "/";
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
@@ -45,7 +41,7 @@ export function SiteHeader() {
             <Link className="call-link" href="/contact">
               Call Us
             </Link>
-            <Link className="button primary small" href="/pricing#book">
+            <Link className="button primary small" href="/book">
               Book Now
             </Link>
           </div>

@@ -23,36 +23,22 @@ export default async function HomePage() {
             online consultations across the UK.
           </p>
           <div className="button-row">
-            <Link className="button primary" href="/pricing#book" prefetch>
+            <Link className="button primary" href="/book" prefetch>
               Book Your Session
             </Link>
-            <Link className="button secondary inverted" href="/symptom-checker" prefetch>
-              AI Symptom Checker
+            <Link className="button secondary inverted" href="/services" prefetch>
+              Explore Services
             </Link>
-          </div>
-          <div className="hero-proof-grid">
-            <div className="hero-proof-card">
-              <strong>HCPC Registered</strong>
-              <span>Safe, evidence-based assessment and rehabilitation planning.</span>
-            </div>
-            <div className="hero-proof-card">
-              <strong>In-Person & Online</strong>
-              <span>Glasgow appointments and UK-wide digital consultations.</span>
-            </div>
-            <div className="hero-proof-card">
-              <strong>Tailored Rehab</strong>
-              <span>Structured programmes for pain relief, recovery and confidence.</span>
-            </div>
           </div>
         </div>
       </section>
 
       <section className="trust-bar-section">
         <div className="site-shell trust-bar">
-          <span>HCPC Registered</span>
-          <span>CSP Member</span>
-          <span>Online & In-Person</span>
-          <span>Glasgow, UK</span>
+          <span>HCPC PH155757</span>
+          <span>CSP 128230</span>
+          <span>Home visits in Glasgow</span>
+          <span>Online appointments across the UK</span>
         </div>
       </section>
 
