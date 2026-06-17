@@ -47,6 +47,7 @@ type CalBookingPayload = {
   attendees: CalAttendee[];
   eventType: { title: string };
   responses?: { notes?: { value?: string } };
+  rescheduledFromUid?: string;
 };
 type CalWebhookBody = {
   triggerEvent: string;
@@ -103,13 +104,19 @@ export async function POST(request: NextRequest) {
     }
   } else if (triggerEvent === "BOOKING_RESCHEDULED" && booking) {
     const { appointmentDate, appointmentTime, appointmentLabel } = toLondonParts(booking.startTime);
+    const originalUid = booking.rescheduledFromUid ?? booking.uid;
     const snapshot = await db
       .collection("bookings")
-      .where("calBookingUid", "==", booking.uid)
+      .where("calBookingUid", "==", originalUid)
       .limit(1)
       .get();
     if (!snapshot.empty) {
-      await snapshot.docs[0].ref.update({ appointmentDate, appointmentTime, appointmentLabel });
+      await snapshot.docs[0].ref.update({
+        appointmentDate,
+        appointmentTime,
+        appointmentLabel,
+        calBookingUid: booking.uid,
+      });
     }
   }
 

@@ -50,6 +50,8 @@ The 108 blog articles are generated and live in `lib/blog.ts`. Cover images are 
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe client |
 | `NEXT_PUBLIC_CAL_USERNAME` | Cal.com username for scheduling embed |
 | `STRIPE_SECRET_KEY` | Stripe server |
+| `CAL_WEBHOOK_SECRET` | HMAC secret to verify Cal.com webhook signatures |
+| `CAL_API_KEY` | Server-only Cal.com API key for admin cancel action |
 | `NEXT_PUBLIC_USE_LIVE_CONTENT` | `"true"` to read content from Firestore instead of static files |
 | `NEXT_PUBLIC_SITE_URL` | Canonical URL used in metadata and sitemap |
 | `GOOGLE_APPLICATION_CREDENTIALS` or `FIREBASE_SERVICE_ACCOUNT_JSON` | Admin SDK auth for seed script |
