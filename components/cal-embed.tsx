@@ -10,10 +10,15 @@ declare global {
 
 export function CalEmbed() {
   function onLoad() {
+    const calLink = process.env.NEXT_PUBLIC_CAL_USERNAME;
+    if (!calLink) {
+      console.warn("NEXT_PUBLIC_CAL_USERNAME is not set");
+      return;
+    }
     window.Cal?.("init", { origin: "https://cal.com" });
     window.Cal?.("inline", {
       elementOrSelector: "#cal-embed",
-      calLink: process.env.NEXT_PUBLIC_CAL_USERNAME,
+      calLink,
     });
   }
 
