@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../blog/blog_screen.dart';
 import '../booking/booking_screen.dart';
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
@@ -20,7 +19,6 @@ class _RootShellState extends State<RootShell> {
   final screens = const [
     HomeScreen(),
     ServicesScreen(),
-    BlogScreen(),
     SymptomCheckerScreen(),
     BookingScreen(),
     ProfileScreen(),
@@ -39,7 +37,6 @@ class _RootShellState extends State<RootShell> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.healing_rounded), label: 'Services'),
-          BottomNavigationBarItem(icon: Icon(Icons.article_rounded), label: 'Blog'),
           BottomNavigationBarItem(icon: Icon(Icons.monitor_heart_rounded), label: 'Symptoms'),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Booking'),
           BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
