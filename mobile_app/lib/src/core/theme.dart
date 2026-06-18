@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 
 ThemeData buildPhysioTheme() {
-  const primary = Color(0xFF2380C8);
-  const ink = Color(0xFF10233A);
-  const muted = Color(0xFF62758F);
-  const border = Color(0xFFD7E2ED);
+  const primary = Color(0xFF0891B2);
+  const primaryDark = Color(0xFF0E7490);
+  const ink = Color(0xFF0F2D3A);
+  const muted = Color(0xFF5E7A84);
+  const border = Color(0xFFC8E8F0);
 
   final base = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
       seedColor: primary,
       primary: primary,
+      secondary: primaryDark,
       surface: Colors.white,
     ),
   );
 
   return base.copyWith(
-    scaffoldBackgroundColor: const Color(0xFFF6F9FC),
+    scaffoldBackgroundColor: const Color(0xFFF0FDFA),
     textTheme: base.textTheme.copyWith(
       headlineLarge: const TextStyle(
         color: ink,
