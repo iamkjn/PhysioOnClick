@@ -79,7 +79,8 @@ export async function POST(request: NextRequest) {
   if (triggerEvent === "BOOKING_CREATED" && booking) {
     const { appointmentDate, appointmentTime, appointmentLabel } = toLondonParts(booking.startTime);
     const attendee = booking.attendees[0] ?? { name: "", email: "" };
-    await db.collection("bookings").add({
+
+    const bookingRef = await db.collection("bookings").add({
       fullName: attendee.name,
       email: attendee.email,
       phone: attendee.phoneNumber ?? "",
@@ -87,12 +88,45 @@ export async function POST(request: NextRequest) {
       appointmentDate,
       appointmentTime,
       appointmentLabel,
+      sessionDate: new Date(booking.startTime),
       notes: booking.responses?.notes?.value ?? "",
-      status: "confirmed",
+      status: "upcoming",
       source: "cal-com",
       calBookingUid: booking.uid,
       createdAt: FieldValue.serverTimestamp(),
     });
+
+    // Link booking to Firebase user and merge dependent selection if present
+    const usersSnap = await db
+      .collection("users")
+      .where("email", "==", attendee.email)
+      .limit(1)
+      .get();
+
+    if (!usersSnap.empty) {
+      const userId = usersSnap.docs[0].id;
+      const selectionSnap = await db.doc(`pendingSelections/${userId}`).get();
+
+      if (selectionSnap.exists) {
+        const sel = selectionSnap.data()!;
+        await bookingRef.update({
+          bookedBy: userId,
+          patientType: sel.patientType,
+          patientId: sel.patientId,
+          patientName: sel.patientName,
+          patientAvatarUrl: sel.patientAvatarUrl ?? "",
+        });
+        await db.doc(`pendingSelections/${userId}`).delete();
+      } else {
+        await bookingRef.update({
+          bookedBy: userId,
+          patientType: "self",
+          patientId: userId,
+          patientName: attendee.name,
+          patientAvatarUrl: "",
+        });
+      }
+    }
   } else if (triggerEvent === "BOOKING_CANCELLED" && booking) {
     const snapshot = await db
       .collection("bookings")
