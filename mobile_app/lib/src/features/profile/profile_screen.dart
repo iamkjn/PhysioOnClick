@@ -6,7 +6,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../appointments/appointments_screen.dart';
 import '../auth/auth_sheet.dart';
+import '../people/people_screen.dart';
 import 'exercise_video.dart';
 import 'rehab_program.dart';
 
@@ -72,6 +74,26 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              _QuickLinkTile(
+                icon: Icons.people_rounded,
+                label: 'My People',
+                subtitle: 'Manage family & friends',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PeopleScreen()),
+                ),
+              ),
+              const SizedBox(height: 10),
+              _QuickLinkTile(
+                icon: Icons.calendar_month_rounded,
+                label: 'My Appointments',
+                subtitle: 'View history & session summaries',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AppointmentsScreen()),
                 ),
               ),
               const SizedBox(height: 18),
@@ -563,6 +585,70 @@ class _ExerciseLibrarySection extends StatelessWidget {
           }).toList(),
         );
       },
+    );
+  }
+}
+
+class _QuickLinkTile extends StatelessWidget {
+  const _QuickLinkTile({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFFD8F3F9),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: const Color(0xFF0891B2), size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 12, color: Color(0xFF5E7A84)),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: Color(0xFF9ADCEE)),
+          ],
+        ),
+      ),
     );
   }
 }
