@@ -1,5 +1,6 @@
 import { cancelCalBooking } from "@/app/admin/actions";
 import { getAdminDb } from "@/lib/firebase-admin";
+import { SummaryForm } from "@/components/summary-form";
 
 type BookingRecord = {
   id: string;
@@ -11,6 +12,10 @@ type BookingRecord = {
   status: string;
   notes: string;
   calBookingUid: string;
+  patientName: string;
+  patientId: string;
+  patientType: string;
+  summaryId?: string;
 };
 
 async function getBookings(): Promise<BookingRecord[]> {
@@ -40,6 +45,10 @@ async function getBookings(): Promise<BookingRecord[]> {
       status: String(data.status || "pending"),
       notes: String(data.notes || ""),
       calBookingUid: String(data.calBookingUid || ""),
+      patientName: String(data.patientName || data.fullName || data.name || "Patient"),
+      patientId: String(data.patientId || data.bookedBy || ""),
+      patientType: String(data.patientType || "self"),
+      summaryId: data.summaryId as string | undefined,
     };
   });
 }
@@ -88,29 +97,47 @@ export async function AdminBookingsTable() {
                       </span>
                     </td>
                     <td>
-                      {item.calBookingUid ? (
-                        <div className="booking-actions">
-                          <form action={cancelCalBooking.bind(null, item.calBookingUid)}>
-                            <button
-                              className="button small danger"
-                              disabled={item.status === "cancelled"}
-                              type="submit"
+                      <div className="booking-actions">
+                        {item.calBookingUid ? (
+                          <>
+                            <form action={cancelCalBooking.bind(null, item.calBookingUid)}>
+                              <button
+                                className="button small danger"
+                                disabled={item.status === "cancelled"}
+                                type="submit"
+                              >
+                                Cancel
+                              </button>
+                            </form>
+                            <a
+                              className="button small secondary"
+                              href={`https://cal.com/reschedule/${item.calBookingUid}`}
+                              rel="noopener noreferrer"
+                              target="_blank"
                             >
-                              Cancel
-                            </button>
-                          </form>
-                          <a
-                            className="button small secondary"
-                            href={`https://cal.com/reschedule/${item.calBookingUid}`}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            Reschedule
-                          </a>
-                        </div>
-                      ) : (
-                        <span className="muted">—</span>
-                      )}
+                              Reschedule
+                            </a>
+                          </>
+                        ) : (
+                          <span className="muted">—</span>
+                        )}
+                        {item.status === "completed" && !item.summaryId && item.patientId && (
+                          <SummaryForm
+                            booking={{
+                              id: item.id,
+                              patientId: item.patientId,
+                              patientType: item.patientType,
+                              patientName: item.patientName,
+                              service: item.service,
+                            }}
+                          />
+                        )}
+                        {item.summaryId && (
+                          <span style={{ fontSize: 12, color: "#16A34A", fontWeight: 600 }}>
+                            ✓ Summary published
+                          </span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
