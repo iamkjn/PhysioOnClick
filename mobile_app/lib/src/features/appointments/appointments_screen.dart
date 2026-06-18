@@ -1,0 +1,195 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../../core/widgets/avatar_widget.dart';
+import 'appointment_detail_screen.dart';
+import 'appointments_repository.dart';
+import 'booking_model.dart';
+
+class AppointmentsScreen extends StatelessWidget {
+  const AppointmentsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return const Scaffold(body: Center(child: Text('Sign in to view appointments')));
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Appointments'),
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF0C2A38),
+        elevation: 0,
+      ),
+      backgroundColor: const Color(0xFFF0FDFA),
+      body: StreamBuilder<List<BookingRecord>>(
+        stream: AppointmentsRepository().watchBookings(user.uid),
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final all = snap.data ?? [];
+          final upcoming = all.where((b) => b.isUpcoming).toList();
+          final past = all.where((b) => !b.isUpcoming).toList();
+
+          if (all.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.calendar_today_rounded,
+                    size: 48,
+                    color: Color(0xFF9ADCEE),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'No appointments yet',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Book a session to get started',
+                    style: TextStyle(color: Color(0xFF5E7A84)),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            children: [
+              if (upcoming.isNotEmpty) ...[
+                const _SectionHeader('Upcoming'),
+                ...upcoming.map((b) => _AppointmentTile(booking: b)),
+                const SizedBox(height: 8),
+              ],
+              if (past.isNotEmpty) ...[
+                const _SectionHeader('Past'),
+                ...past.map((b) => _AppointmentTile(booking: b)),
+              ],
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10, left: 4),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.w800,
+          fontSize: 16,
+          color: Color(0xFF0C2A38),
+        ),
+      ),
+    );
+  }
+}
+
+class _AppointmentTile extends StatelessWidget {
+  const _AppointmentTile({required this.booking});
+
+  final BookingRecord booking;
+
+  @override
+  Widget build(BuildContext context) {
+    final fmt = DateFormat('d MMM yyyy');
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => AppointmentDetailScreen(bookingId: booking.id),
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            AvatarWidget(
+              name: booking.patientName,
+              imageUrl: booking.patientAvatarUrl,
+              size: 44,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    booking.patientName,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    booking.service,
+                    style: const TextStyle(color: Color(0xFF5E7A84), fontSize: 13),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    fmt.format(booking.sessionDate),
+                    style: const TextStyle(
+                      color: Color(0xFF9ADCEE),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (!booking.isUpcoming)
+              booking.hasSummary
+                  ? const Icon(Icons.article_rounded, color: Color(0xFF0891B2), size: 22)
+                  : const Icon(
+                      Icons.hourglass_top_rounded,
+                      color: Color(0xFF9ADCEE),
+                      size: 22,
+                    )
+            else
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD8F3F9),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  'Upcoming',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF0E7490),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}

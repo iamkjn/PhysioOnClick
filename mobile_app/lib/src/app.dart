@@ -1,8 +1,11 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
 
 import 'core/theme.dart';
+import 'features/appointments/appointment_detail_screen.dart';
 import 'features/blog/blog_detail_screen.dart';
+import 'features/onboarding/onboarding_screen.dart';
 import 'features/root/root_shell.dart';
 
 class PhysioOnClickMobileApp extends StatefulWidget {
@@ -15,12 +18,44 @@ class PhysioOnClickMobileApp extends StatefulWidget {
 class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
   final navigatorKey = GlobalKey<NavigatorState>();
   AppLinks? _appLinks;
+  Widget? _home;
 
   @override
   void initState() {
     super.initState();
     _appLinks = AppLinks();
     _initLinks();
+    _initFcmListeners();
+    _resolveHome();
+  }
+
+  Future<void> _resolveHome() async {
+    bool done = false;
+    try {
+      done = await OnboardingScreen.isCompleted().timeout(const Duration(seconds: 3));
+    } catch (_) {
+      done = false;
+    }
+    if (mounted) {
+      setState(() => _home = done ? const RootShell() : const OnboardingScreen());
+    }
+  }
+
+  void _initFcmListeners() {
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) _handleNotificationTap(message);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
+  }
+
+  void _handleNotificationTap(RemoteMessage message) {
+    final bookingId = message.data['bookingId'] as String?;
+    if (bookingId == null) return;
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (_) => AppointmentDetailScreen(bookingId: bookingId),
+      ),
+    );
   }
 
   Future<void> _initLinks() async {
@@ -63,7 +98,9 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
 
         return null;
       },
-      home: const RootShell(),
+      home: _home ?? const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
     );
   }
 }
