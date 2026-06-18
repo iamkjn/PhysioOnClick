@@ -59,8 +59,33 @@ service cloud.firestore {
 
     match /bookings/{bookingId} {
       allow create: if true;
-      allow read: if isAdmin() || ownsEmailResource();
+      allow read: if isAdmin() || ownsEmailResource() ||
+        (isSignedIn() && resource.data.bookedBy == request.auth.uid);
       allow update, delete: if isAdmin();
+    }
+
+    match /dependents/{dependentId} {
+      allow read, update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow read, write: if isAdmin();
+    }
+
+    match /sessionSummaries/{summaryId} {
+      allow read: if isSignedIn() && (
+        isAdmin() ||
+        get(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.bookedBy == request.auth.uid
+      );
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /pendingSelections/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read, update: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if isAdmin();
     }
 
     match /payments/{paymentId} {
