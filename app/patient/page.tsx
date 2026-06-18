@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { AuthPanel } from "@/components/auth-panel";
 import { ExerciseLibrary } from "@/components/exercise-library";
@@ -34,6 +35,43 @@ export default function PatientPage() {
             <span>Secure uploads</span>
           </div>
         </div>
+      </section>
+
+      <section className="page-section" style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <Link
+          href="/patient/appointments"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            background: "#D8F3F9",
+            color: "#0E7490",
+            padding: "0.6rem 1.25rem",
+            borderRadius: 999,
+            textDecoration: "none",
+            fontWeight: 700,
+            fontSize: 14,
+          }}
+        >
+          📋 My Appointments
+        </Link>
+        <Link
+          href="/patient/people"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            background: "#D8F3F9",
+            color: "#0E7490",
+            padding: "0.6rem 1.25rem",
+            borderRadius: 999,
+            textDecoration: "none",
+            fontWeight: 700,
+            fontSize: 14,
+          }}
+        >
+          👨‍👩‍👧 My People
+        </Link>
       </section>
 
       <section className="page-section dashboard-grid">
