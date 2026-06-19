@@ -29,7 +29,17 @@ export function RehabProgramsSection({ email }: { email: string }) {
     getDocs(q)
       .then((snap) => {
         setPrograms(
-          snap.docs.map((d) => ({ id: d.id, ...d.data() } as RehabProgram))
+          snap.docs.map((d) => {
+            const data = d.data();
+            return {
+              id: d.id,
+              title: data.title ?? "",
+              stage: data.stage ?? "",
+              notes: data.notes ?? "",
+              goals: (data.goals ?? []) as string[],
+              exerciseIds: (data.exerciseIds ?? []) as string[],
+            } as RehabProgram;
+          })
         );
       })
       .finally(() => setLoading(false));

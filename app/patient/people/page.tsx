@@ -14,6 +14,7 @@ import {
 
 function calcAge(dob: string): number {
   const d = new Date(dob);
+  if (isNaN(d.getTime())) return 0;
   const now = new Date();
   let age = now.getFullYear() - d.getFullYear();
   if (
