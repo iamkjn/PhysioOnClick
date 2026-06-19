@@ -72,6 +72,23 @@ export default function PatientPage() {
         >
           👨‍👩‍👧 My People
         </Link>
+        <Link
+          href="/patient/account"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            background: "#D8F3F9",
+            color: "#0E7490",
+            padding: "0.6rem 1.25rem",
+            borderRadius: 999,
+            textDecoration: "none",
+            fontWeight: 700,
+            fontSize: 14,
+          }}
+        >
+          👤 My Account
+        </Link>
       </section>
 
       <section className="page-section dashboard-grid">
