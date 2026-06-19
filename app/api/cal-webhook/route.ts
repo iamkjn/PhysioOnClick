@@ -149,6 +149,7 @@ export async function POST(request: NextRequest) {
         appointmentDate,
         appointmentTime,
         appointmentLabel,
+        sessionDate: new Date(booking.startTime),
         calBookingUid: booking.uid,
       });
     }
