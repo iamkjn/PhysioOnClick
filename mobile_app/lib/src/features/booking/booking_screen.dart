@@ -87,8 +87,8 @@ class _BookingScreenState extends State<BookingScreen> {
                 child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                   stream: FirebaseFirestore.instance
                       .collection('bookings')
-                      .where('email', isEqualTo: user.email)
-                      .orderBy('createdAt', descending: true)
+                      .where('bookedBy', isEqualTo: user.uid)
+                      .orderBy('sessionDate', descending: true)
                       .limit(10)
                       .snapshots(),
                   builder: (context, snapshot) {

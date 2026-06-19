@@ -96,15 +96,29 @@ export async function POST(request: NextRequest) {
       createdAt: FieldValue.serverTimestamp(),
     });
 
-    // Link booking to Firebase user and merge dependent selection if present
+    // Link booking to Firebase user and merge dependent selection if present.
+    // Mobile-only users are in the `patients` collection; web users are in `users`.
+    // Check both so bookings link correctly regardless of which platform the patient used to sign up.
     const usersSnap = await db
       .collection("users")
       .where("email", "==", attendee.email)
       .limit(1)
       .get();
 
+    let resolvedUserId: string | null = null;
     if (!usersSnap.empty) {
-      const userId = usersSnap.docs[0].id;
+      resolvedUserId = usersSnap.docs[0].id;
+    } else {
+      const patientsSnap = await db
+        .collection("patients")
+        .where("email", "==", attendee.email)
+        .limit(1)
+        .get();
+      if (!patientsSnap.empty) resolvedUserId = patientsSnap.docs[0].id;
+    }
+
+    if (resolvedUserId !== null) {
+      const userId = resolvedUserId;
       const selectionSnap = await db.doc(`pendingSelections/${userId}`).get();
 
       if (selectionSnap.exists) {
