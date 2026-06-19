@@ -1,35 +1,21 @@
 "use client";
 
-import Script from "next/script";
-
-declare global {
-  interface Window {
-    Cal?: (...args: unknown[]) => void;
-  }
-}
-
 export function CalEmbed() {
-  function onLoad() {
-    const calLink = process.env.NEXT_PUBLIC_CAL_USERNAME;
-    if (!calLink) {
-      console.warn("NEXT_PUBLIC_CAL_USERNAME is not set");
-      return;
-    }
-    window.Cal?.("init", { origin: "https://cal.com" });
-    window.Cal?.("inline", {
-      elementOrSelector: "#cal-embed",
-      calLink,
-    });
+  const username = process.env.NEXT_PUBLIC_CAL_USERNAME;
+
+  if (!username) {
+    return (
+      <p style={{ color: "#5E7A84", padding: "2rem 0" }}>
+        Booking calendar is not configured. Please contact us to book an appointment.
+      </p>
+    );
   }
 
   return (
-    <>
-      <Script
-        src="https://app.cal.com/embed/embed.js"
-        strategy="lazyOnload"
-        onLoad={onLoad}
-      />
-      <div id="cal-embed" style={{ minHeight: "700px", width: "100%" }} />
-    </>
+    <iframe
+      src={`https://cal.com/${username}`}
+      style={{ width: "100%", height: "700px", border: "none", borderRadius: 12 }}
+      title="Book an appointment"
+    />
   );
 }
