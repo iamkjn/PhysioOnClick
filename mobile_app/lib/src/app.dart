@@ -7,6 +7,7 @@ import 'features/appointments/appointment_detail_screen.dart';
 import 'features/blog/blog_detail_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/root/root_shell.dart';
+import 'features/splash/splash_screen.dart';
 
 class PhysioOnClickMobileApp extends StatefulWidget {
   const PhysioOnClickMobileApp({super.key});
@@ -98,9 +99,7 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
 
         return null;
       },
-      home: _home ?? const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      home: _home ?? const SplashScreen(),
     );
   }
 }
