@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,45 +38,52 @@ class ChatService {
     String message,
     List<ChatMessage> history,
   ) async {
-    final user = FirebaseAuth.instance.currentUser;
-    String? token;
-    if (user != null) {
-      token = await user.getIdToken();
-    }
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      String? token;
+      if (user != null) {
+        token = await user.getIdToken();
+      }
 
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      };
 
-    final body = jsonEncode({
-      'message': message,
-      if (_sessionId != null) 'sessionId': _sessionId,
-      'history': history.map((m) => m.toJson()).toList(),
-    });
+      final body = jsonEncode({
+        'message': message,
+        if (_sessionId != null) 'sessionId': _sessionId,
+        'history': history.map((m) => m.toJson()).toList(),
+      });
 
-    final uri = Uri.parse('$_baseUrl/api/chat');
-    final response = await http.post(uri, headers: headers, body: body);
+      final uri = Uri.parse('$_baseUrl/api/chat');
+      final response = await http.post(uri, headers: headers, body: body);
 
-    if (response.statusCode != 200) {
+      if (response.statusCode != 200) {
+        return const ChatMessage(
+          role: 'model',
+          text: "Sorry, I'm having trouble right now. Please try again later.",
+        );
+      }
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      _sessionId = data['sessionId'] as String?;
+
+      ChatAction? action;
+      if (data['action'] != null) {
+        action = ChatAction.fromJson(data['action'] as Map<String, dynamic>);
+      }
+
+      return ChatMessage(
+        role: 'model',
+        text: data['reply'] as String,
+        action: action,
+      );
+    } catch (_) {
       return const ChatMessage(
         role: 'model',
-        text: "Sorry, I'm having trouble right now. Please try again later.",
+        text: "Sorry, I'm having trouble right now. Please check your connection and try again.",
       );
     }
-
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
-    _sessionId = data['sessionId'] as String?;
-
-    ChatAction? action;
-    if (data['action'] != null) {
-      action = ChatAction.fromJson(data['action'] as Map<String, dynamic>);
-    }
-
-    return ChatMessage(
-      role: 'model',
-      text: data['reply'] as String,
-      action: action,
-    );
   }
 }

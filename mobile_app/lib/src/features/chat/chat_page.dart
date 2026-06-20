@@ -238,11 +238,10 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600))
-      ..repeat(reverse: true);
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
     _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
     Future.delayed(widget.delay, () {
-      if (mounted) _ctrl.forward();
+      if (mounted) _ctrl.repeat(reverse: true);
     });
   }
 
