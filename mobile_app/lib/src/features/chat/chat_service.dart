@@ -57,7 +57,9 @@ class ChatService {
       });
 
       final uri = Uri.parse('$_baseUrl/api/chat');
-      final response = await http.post(uri, headers: headers, body: body);
+      final response = await http
+          .post(uri, headers: headers, body: body)
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode != 200) {
         return const ChatMessage(
