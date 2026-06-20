@@ -28,7 +28,7 @@ class _BookingScreenState extends State<BookingScreen> {
           onPageFinished: (_) => setState(() => _webLoading = false),
         ),
       )
-      ..loadRequest(Uri.parse('https://cal.com/krunal-nayak-0nbytj'));
+      ..loadRequest(Uri.parse('https://cal.com/physioonclick'));
   }
 
   @override
