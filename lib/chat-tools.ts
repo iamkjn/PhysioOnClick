@@ -78,13 +78,36 @@ export async function executeFunction(
       .limit(10)
       .get();
 
-    const appts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const appts = snap.docs.map(d => {
+      const data = d.data();
+      return {
+        id: d.id,
+        calBookingUid: data.calBookingUid ?? "",
+        service: data.service ?? "",
+        appointmentLabel: data.appointmentLabel ?? data.appointmentDate ?? "",
+        appointmentDate: data.appointmentDate ?? "",
+        status: data.status ?? "",
+      };
+    });
     return JSON.stringify(appts);
   }
 
   if (name === "cancel_appointment") {
     const { calBookingUid } = args;
     if (!calBookingUid) return JSON.stringify({ error: "calBookingUid required" });
+    if (!uid) return JSON.stringify({ error: "Authentication required" });
+
+    // Verify the booking belongs to this patient
+    const ownerCheck = await db
+      .collection("bookings")
+      .where("calBookingUid", "==", calBookingUid)
+      .where("patientId", "==", uid)
+      .limit(1)
+      .get();
+
+    if (ownerCheck.empty) {
+      return JSON.stringify({ error: "Booking not found or does not belong to this patient" });
+    }
 
     const calApiKey = process.env.CAL_API_KEY;
     if (!calApiKey) return JSON.stringify({ error: "Cal.com API not configured" });
@@ -103,11 +126,7 @@ export async function executeFunction(
       return JSON.stringify({ error: `Cancel failed: ${res.status}` });
     }
 
-    const snap = await db
-      .collection("bookings")
-      .where("calBookingUid", "==", calBookingUid)
-      .get();
-    await Promise.all(snap.docs.map(d => d.ref.update({ status: "cancelled" })));
+    await Promise.all(ownerCheck.docs.map(d => d.ref.update({ status: "cancelled" })));
 
     return JSON.stringify({ ok: true, cancelled: calBookingUid });
   }
