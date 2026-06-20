@@ -8,20 +8,22 @@ export const metadata: Metadata = {
     "Book your physiotherapy appointment online. Choose from initial assessments, follow-ups, and online consultations with a Glasgow HCPC-registered physiotherapist."
 };
 
-export default function BookPage() {
+export default async function BookPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ service?: string }>;
+}) {
+  const { service } = await searchParams;
+
   return (
     <div className="site-shell">
-      <section className="page-hero">
-        <div className="stack">
-          <span className="eyebrow">Book online</span>
-          <h1>Book your appointment</h1>
-          <p className="lead">
-            Choose a service and a time that works for you. Your confirmation is sent instantly by email.
-          </p>
-        </div>
+      <section className="simple-page-hero">
+        <span>Book online</span>
+        <h1>Book your <span>appointment</span></h1>
+        <p>Choose a service and a time that works for you. We&apos;ll confirm by email within a few hours.</p>
       </section>
       <section className="page-section">
-        <BookingForm />
+        <BookingForm initialService={service ?? ""} />
       </section>
     </div>
   );

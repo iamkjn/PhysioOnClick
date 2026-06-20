@@ -57,7 +57,7 @@ export default function ServicesPage() {
                   ))}
                 </div>
               </div>
-              <Link className="button primary" href="/book">
+              <Link className="button primary" href={`/book?service=${encodeURIComponent(service.title)}`}>
                 Book Assessment
               </Link>
             </div>
