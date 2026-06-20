@@ -415,9 +415,9 @@ p {
 .simple-page-hero {
   background: #dfeaf4;
   text-align: center;
-  padding: 4rem 1rem 5rem;
+  padding: 3.5rem 1rem 3rem;
   margin: 0 calc((100vw - min(calc(100% - 2rem), var(--shell))) / -2);
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .simple-page-hero > span:first-child {

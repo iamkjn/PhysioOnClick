@@ -22,7 +22,7 @@ export default async function BookPage({
         <h1>Book your <span>appointment</span></h1>
         <p>Choose a service and a time that works for you. We&apos;ll confirm by email within a few hours.</p>
       </section>
-      <section className="page-section">
+      <section className="page-section" style={{ paddingTop: "1rem" }}>
         <BookingForm initialService={service ?? ""} />
       </section>
     </div>
