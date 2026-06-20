@@ -168,6 +168,8 @@ export function ChatWidget() {
                   <div style={{ display: "flex", marginTop: 6 }}>
                     <a
                       href={m.action.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{
                         display: "inline-block",
                         padding: "8px 16px",
