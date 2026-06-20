@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { CalEmbed } from "@/components/cal-embed";
+import { BookingForm } from "@/components/booking-form";
 
 export const metadata: Metadata = {
   title: "Book an Appointment | PhysioOnClick",
@@ -21,7 +21,7 @@ export default function BookPage() {
         </div>
       </section>
       <section className="page-section">
-        <CalEmbed />
+        <BookingForm />
       </section>
     </div>
   );
