@@ -1,23 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../appointments/appointments_screen.dart';
 import '../booking/booking_screen.dart';
-import 'chat_service.dart';
+
+// ─── Theme constants ────────────────────────────────────────────────────────
 
 const _primary = Color(0xFF0891B2);
 const _primaryDark = Color(0xFF0E7490);
 const _bgColor = Color(0xFFECFEFF);
-const _botBubble = Colors.white;
 const _textDark = Color(0xFF164E63);
-const _textMuted = Color(0xFF6B8FA0);
+const _email = 'hello@physioonclick.co.uk';
 
-const _suggestions = [
-  ('🏃', 'What services do you offer?'),
-  ('💰', 'What are your prices?'),
-  ('📅', 'Book an appointment'),
-  ('📍', 'Where are you located?'),
-  ('❌', 'Cancellation policy'),
+// ─── Site content (hardcoded from site-data) ────────────────────────────────
+
+const _services = [
+  (
+    emoji: '💪',
+    label: 'Musculoskeletal Physio',
+    text: 'We treat back & neck pain, shoulder impingement, tendon pain, persistent sports injuries and work-related strain.\n\n'
+        'Our approach includes a detailed functional assessment, manual therapy where appropriate, graduated exercise prescription and pain education.',
+  ),
+  (
+    emoji: '🦿',
+    label: 'Post-Surgical Rehab',
+    text: 'Structured rehab after knee/hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery.\n\n'
+        'We guide you through post-operative milestones, strength & range-of-motion progression and return-to-function coaching.',
+  ),
+  (
+    emoji: '🧠',
+    label: 'Neurological Rehab',
+    text: 'Goal-led rehab for stroke, Parkinson\'s, balance difficulties and neurological deconditioning.\n\n'
+        'We focus on task-specific mobility practice, balance & gait training, and carer education.',
+  ),
+  (
+    emoji: '👶',
+    label: 'Paediatric Physio',
+    text: 'Child-centred physiotherapy for developmental delay, coordination challenges, mobility support and post-operative rehab.\n\n'
+        'Sessions use play-based strategies with full parent coaching. Parent attendance is encouraged.',
+  ),
+  (
+    emoji: '🚶',
+    label: 'Gait & Mobility',
+    text: 'Walking assessment and movement analysis for falls risk, balance confidence, mobility aid review and reduced walking tolerance.\n\n'
+        'We provide functional walking assessment, strength & balance prescription and outcome tracking.',
+  ),
+  (
+    emoji: '💻',
+    label: 'Online Rehab',
+    text: 'UK-wide digital physiotherapy via secure video call with tailored exercise plans, progress tracking and weekly review calls.\n\n'
+        'Online patients receive the same structured rehabilitation planning as in-person sessions.',
+  ),
 ];
+
+const _pricingText =
+    'In-person sessions (Glasgow):\n'
+    '• Initial Assessment (45 min) — £65\n'
+    '• Follow-Up Session (30 min) — £50\n'
+    '• Extended Session (60 min) — £80\n\n'
+    'Online sessions (UK-wide):\n'
+    '• Initial Online Assessment (45 min) — £55\n'
+    '• Online Follow-Up (30 min) — £45\n\n'
+    'Packages:\n'
+    '• 4-Session Bundle — £180\n'
+    '• 8-Session Bundle — £340\n\n'
+    'No GP referral required — you can self-refer.';
+
+// ─── Chat page ──────────────────────────────────────────────────────────────
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -27,58 +76,161 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final _service = ChatService();
-  final _messages = <ChatMessage>[];
-  final _controller = TextEditingController();
-  final _scrollController = ScrollController();
-  bool _loading = false;
-  bool _userHasSent = false;
+  final _messages = <_Msg>[];
+  final _scroll = ScrollController();
+  List<_ChipDef> _chips = [];
 
   @override
   void initState() {
     super.initState();
-    _messages.add(const ChatMessage(
-      role: 'model',
-      text: 'Hi! I\'m your PhysioOnClick assistant 👋\n\nI can help you with services, pricing, appointments and more. What can I help you with today?',
+    _messages.add(const _Msg(
+      isBot: true,
+      text: 'Hi! I\'m your PhysioOnClick assistant 👋\n\nHow can I help you today?',
     ));
+    _chips = _homeChips();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
-    _scrollController.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
-  Future<void> _send([String? quickText]) async {
-    final text = (quickText ?? _controller.text).trim();
-    if (text.isEmpty || _loading) return;
+  // ── Chip sets ─────────────────────────────────────────────────────────────
 
-    _controller.clear();
+  List<_ChipDef> _homeChips() => [
+        _ChipDef('🏃', 'Our services', _tapServices),
+        _ChipDef('💰', 'Pricing', _tapPricing),
+        _ChipDef('📅', 'Book appointment', _tapBook),
+        _ChipDef('📍', 'Location', _tapLocation),
+        _ChipDef('📞', 'Contact us', _tapContact),
+        _ChipDef('❌', 'Cancellation policy', _tapCancellation),
+      ];
+
+  List<_ChipDef> _backChips() => [
+        _ChipDef('📅', 'Book appointment', _tapBook),
+        _ChipDef('🏠', 'Main menu', _tapHome),
+      ];
+
+  // ── Tap handlers ──────────────────────────────────────────────────────────
+
+  void _tapHome(BuildContext _) {
     setState(() {
-      _messages.add(ChatMessage(role: 'user', text: text));
-      _loading = true;
-      _userHasSent = true;
+      _messages.clear();
+      _messages.add(const _Msg(
+        isBot: true,
+        text: 'Hi! I\'m your PhysioOnClick assistant 👋\n\nHow can I help you today?',
+      ));
+      _chips = _homeChips();
+    });
+  }
+
+  void _tapServices(BuildContext _) {
+    _botReply(
+      'We offer 6 specialised physiotherapy services. Which one would you like to know more about?',
+      chips: [
+        for (final s in _services)
+          _ChipDef(s.emoji, s.label, (c) => _tapServiceDetail(c, s.label, s.text)),
+        _ChipDef('↩', 'Main menu', _tapHome),
+      ],
+    );
+  }
+
+  void _tapServiceDetail(BuildContext _, String label, String text) {
+    _botReply(
+      text,
+      chips: [
+        _ChipDef('📅', 'Book this service', _tapBook),
+        _ChipDef('💰', 'See pricing', _tapPricing),
+        _ChipDef('↩', 'Back to services', _tapServices),
+        _ChipDef('🏠', 'Main menu', _tapHome),
+      ],
+    );
+  }
+
+  void _tapPricing(BuildContext _) {
+    _botReply(_pricingText, chips: _backChips());
+  }
+
+  void _tapBook(BuildContext ctx) {
+    _addUser('Book appointment');
+    Navigator.of(ctx).push(
+      MaterialPageRoute(builder: (_) => const BookingScreen()),
+    );
+  }
+
+  void _tapLocation(BuildContext _) {
+    _botReply(
+      'We\'re based in Glasgow, UK and also offer online physiotherapy across the whole UK via secure video call.\n\n'
+          'Appointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.',
+      chips: _backChips(),
+    );
+  }
+
+  void _tapContact(BuildContext _) {
+    _botReply(
+      'You can reach us at:\n\n📧  $_email\n\nOr book directly through the app and we\'ll be in touch to confirm your session.',
+      chips: [
+        _ChipDef('📋', 'Copy email', (ctx) {
+          Clipboard.setData(const ClipboardData(text: _email));
+          ScaffoldMessenger.of(ctx).showSnackBar(
+            const SnackBar(
+              content: Text('Email copied to clipboard'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }),
+        _ChipDef('📅', 'Book appointment', _tapBook),
+        _ChipDef('🏠', 'Main menu', _tapHome),
+      ],
+    );
+  }
+
+  void _tapCancellation(BuildContext _) {
+    _botReply(
+      'Please cancel at least 24 hours in advance to avoid a cancellation fee.\n\n'
+          'You can manage your bookings through the Appointments screen in this app, or contact us at $_email.',
+      chips: [
+        _ChipDef('📋', 'My appointments', (ctx) {
+          _addUser('My appointments');
+          Navigator.of(ctx).push(
+            MaterialPageRoute(builder: (_) => const AppointmentsScreen()),
+          );
+        }),
+        _ChipDef('🏠', 'Main menu', _tapHome),
+      ],
+    );
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+
+  void _botReply(String text, {required List<_ChipDef> chips}) {
+    setState(() {
+      _messages.add(_Msg(isBot: true, text: text));
+      _chips = chips;
     });
     _scrollToBottom();
+  }
 
-    final history = _messages.sublist(0, _messages.length - 1);
-    final reply = await _service.sendMessage(text, history);
+  void _addUser(String text) {
+    setState(() => _messages.add(_Msg(isBot: false, text: text)));
+    _scrollToBottom();
+  }
 
-    if (mounted) {
-      setState(() {
-        _messages.add(reply);
-        _loading = false;
-      });
-      _scrollToBottom();
-    }
+  void _onChipTap(BuildContext ctx, _ChipDef chip) {
+    // Don't echo utility actions as user messages
+    final isUtility = chip.label == 'Copy email' ||
+        chip.label == 'Main menu' ||
+        chip.label == 'Back to services';
+    if (!isUtility) _addUser(chip.label);
+    chip.onTap(ctx);
   }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+      if (_scroll.hasClients) {
+        _scroll.animateTo(
+          _scroll.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -86,20 +238,7 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _handleAction(ChatAction action) {
-    final url = action.url;
-    if (url == '/book' || url.startsWith('/book')) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const BookingScreen()),
-      );
-    } else if (url.startsWith('/patient/appointments') || url == '/appointments') {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AppointmentsScreen()),
-      );
-    } else {
-      Navigator.of(context).pop();
-    }
-  }
+  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -110,38 +249,38 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
+              controller: _scroll,
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-              itemCount: _messages.length + (_loading ? 1 : 0) + (!_userHasSent ? 1 : 0),
-              itemBuilder: (context, i) {
-                // Suggestion chips appear after the first (greeting) message
-                if (!_userHasSent && i == 1) {
-                  return _SuggestionChips(onTap: _send);
-                }
-                // Offset index when chips are shown
-                final msgIndex = !_userHasSent && i > 1 ? i - 1 : i;
-
-                if (_loading && msgIndex == _messages.length) {
-                  return const _TypingIndicator();
-                }
-                if (msgIndex >= _messages.length) return const SizedBox.shrink();
-
-                final m = _messages[msgIndex];
-                return _MessageBubble(
-                  message: m,
-                  onAction: m.action != null ? () => _handleAction(m.action!) : null,
-                );
-              },
+              itemCount: _messages.length,
+              itemBuilder: (_, i) => _BubbleWidget(msg: _messages[i]),
             ),
           ),
-          _InputBar(controller: _controller, loading: _loading, onSend: _send),
+          _ChipsBar(
+            chips: _chips,
+            onTap: (chip) => _onChipTap(context, chip),
+          ),
         ],
       ),
     );
   }
 }
 
-// ─── App Bar ───────────────────────────────────────────────────────────────
+// ─── Data types ──────────────────────────────────────────────────────────────
+
+class _Msg {
+  final bool isBot;
+  final String text;
+  const _Msg({required this.isBot, required this.text});
+}
+
+class _ChipDef {
+  final String emoji;
+  final String label;
+  final void Function(BuildContext) onTap;
+  const _ChipDef(this.emoji, this.label, this.onTap);
+}
+
+// ─── App Bar ─────────────────────────────────────────────────────────────────
 
 class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -167,7 +306,11 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               Container(
@@ -177,7 +320,11 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                   color: Colors.white.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 22),
+                child: const Icon(
+                  Icons.health_and_safety_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 10),
               const Expanded(
@@ -187,14 +334,18 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                   children: [
                     Text(
                       'PhysioOnClick Assistant',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                      ),
                     ),
                     Row(
                       children: [
                         Icon(Icons.circle, color: Color(0xFF4ADE80), size: 8),
                         SizedBox(width: 4),
                         Text(
-                          'Online · AI powered',
+                          'Online · Ask me anything',
                           style: TextStyle(color: Color(0xCCFFFFFF), fontSize: 11),
                         ),
                       ],
@@ -210,112 +361,22 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-// ─── Suggestion Chips ──────────────────────────────────────────────────────
+// ─── Message bubble ───────────────────────────────────────────────────────────
 
-class _SuggestionChips extends StatelessWidget {
-  const _SuggestionChips({required this.onTap});
-  final void Function(String) onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16, top: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 4, bottom: 8),
-            child: Text(
-              'Quick questions',
-              style: TextStyle(color: _textMuted, fontSize: 12, fontWeight: FontWeight.w500),
-            ),
-          ),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _suggestions.map((s) {
-              return _SuggestionChip(emoji: s.$1, label: s.$2, onTap: () => onTap(s.$2));
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SuggestionChip extends StatefulWidget {
-  const _SuggestionChip({required this.emoji, required this.label, required this.onTap});
-  final String emoji;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  State<_SuggestionChip> createState() => _SuggestionChipState();
-}
-
-class _SuggestionChipState extends State<_SuggestionChip> {
-  bool _pressed = false;
+class _BubbleWidget extends StatelessWidget {
+  const _BubbleWidget({required this.msg});
+  final _Msg msg;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) { setState(() => _pressed = false); widget.onTap(); },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: _pressed ? _primary : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: _pressed ? _primary : const Color(0xFFA5F3FC), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF0891B2).withValues(alpha: _pressed ? 0.2 : 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(widget.emoji, style: const TextStyle(fontSize: 13)),
-            const SizedBox(width: 6),
-            Text(
-              widget.label,
-              style: TextStyle(
-                color: _pressed ? Colors.white : _textDark,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Message Bubble ────────────────────────────────────────────────────────
-
-class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message, this.onAction});
-
-  final ChatMessage message;
-  final VoidCallback? onAction;
-
-  @override
-  Widget build(BuildContext context) {
-    final isUser = message.role == 'user';
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            msg.isBot ? MainAxisAlignment.start : MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!isUser) ...[
+          if (msg.isBot) ...[
             Container(
               width: 30,
               height: 30,
@@ -324,163 +385,51 @@ class _MessageBubble extends StatelessWidget {
                 gradient: LinearGradient(colors: [_primary, _primaryDark]),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 16),
+              child: const Icon(
+                Icons.health_and_safety_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
             ),
           ],
           Flexible(
-            child: Column(
-              crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.72,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-                  decoration: BoxDecoration(
-                    color: isUser ? null : _botBubble,
-                    gradient: isUser
-                        ? const LinearGradient(
-                            colors: [_primary, _primaryDark],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          )
-                        : null,
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(18),
-                      topRight: const Radius.circular(18),
-                      bottomLeft: Radius.circular(isUser ? 18 : 4),
-                      bottomRight: Radius.circular(isUser ? 4 : 18),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: isUser
-                            ? const Color(0xFF0891B2).withValues(alpha: 0.25)
-                            : Colors.black.withValues(alpha: 0.06),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.72,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: msg.isBot ? Colors.white : null,
+                gradient: msg.isBot
+                    ? null
+                    : const LinearGradient(
+                        colors: [_primary, _primaryDark],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    ],
-                  ),
-                  child: Text(
-                    message.text,
-                    style: TextStyle(
-                      color: isUser ? Colors.white : _textDark,
-                      fontSize: 14,
-                      height: 1.55,
-                    ),
-                  ),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(18),
+                  topRight: const Radius.circular(18),
+                  bottomLeft: Radius.circular(msg.isBot ? 4 : 18),
+                  bottomRight: Radius.circular(msg.isBot ? 18 : 4),
                 ),
-                if (message.action != null && onAction != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: _ActionButton(label: message.action!.label, onTap: onAction!),
+                boxShadow: [
+                  BoxShadow(
+                    color: msg.isBot
+                        ? Colors.black.withValues(alpha: 0.06)
+                        : const Color(0xFF0891B2).withValues(alpha: 0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatefulWidget {
-  const _ActionButton({required this.label, required this.onTap});
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  State<_ActionButton> createState() => _ActionButtonState();
-}
-
-class _ActionButtonState extends State<_ActionButton> {
-  bool _pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) { setState(() => _pressed = false); widget.onTap(); },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: _pressed
-                ? [_primaryDark, const Color(0xFF155E75)]
-                : [_primary, _primaryDark],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF0891B2).withValues(alpha: _pressed ? 0.15 : 0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              widget.label,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13),
-            ),
-            const SizedBox(width: 4),
-            const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 14),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Typing Indicator ──────────────────────────────────────────────────────
-
-class _TypingIndicator extends StatelessWidget {
-  const _TypingIndicator();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Container(
-            width: 30,
-            height: 30,
-            margin: const EdgeInsets.only(right: 8, bottom: 2),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(colors: [_primary, _primaryDark]),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 16),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: _botBubble,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18),
-                topRight: Radius.circular(18),
-                bottomRight: Radius.circular(18),
-                bottomLeft: Radius.circular(4),
+                ],
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+              child: Text(
+                msg.text,
+                style: TextStyle(
+                  color: msg.isBot ? _textDark : Colors.white,
+                  fontSize: 14,
+                  height: 1.6,
                 ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(
-                3,
-                (i) => _Dot(delay: Duration(milliseconds: i * 180)),
               ),
             ),
           ),
@@ -490,66 +439,20 @@ class _TypingIndicator extends StatelessWidget {
   }
 }
 
-class _Dot extends StatefulWidget {
-  const _Dot({required this.delay});
-  final Duration delay;
+// ─── Chips bar ────────────────────────────────────────────────────────────────
 
-  @override
-  State<_Dot> createState() => _DotState();
-}
-
-class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
-    _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
-    Future.delayed(widget.delay, () {
-      if (mounted) _ctrl.repeat(reverse: true);
-    });
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _anim,
-      builder: (_, __) => Container(
-        width: 8,
-        height: 8,
-        margin: const EdgeInsets.symmetric(horizontal: 3),
-        decoration: BoxDecoration(
-          color: Color.lerp(const Color(0xFFA5F3FC), _primary, _anim.value),
-          shape: BoxShape.circle,
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Input Bar ─────────────────────────────────────────────────────────────
-
-class _InputBar extends StatelessWidget {
-  const _InputBar({required this.controller, required this.loading, required this.onSend});
-
-  final TextEditingController controller;
-  final bool loading;
-  final void Function([String?]) onSend;
+class _ChipsBar extends StatelessWidget {
+  const _ChipsBar({required this.chips, required this.onTap});
+  final List<_ChipDef> chips;
+  final void Function(_ChipDef) onTap;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
         decoration: BoxDecoration(
           color: Colors.white,
           border: const Border(top: BorderSide(color: Color(0xFFE0F7FA), width: 1)),
@@ -561,61 +464,68 @@ class _InputBar extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: _bgColor,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFFA5F3FC), width: 1.5),
-                ),
-                child: TextField(
-                  controller: controller,
-                  onSubmitted: (_) => onSend(),
-                  textInputAction: TextInputAction.send,
-                  style: const TextStyle(color: _textDark, fontSize: 14),
-                  decoration: const InputDecoration(
-                    hintText: 'Ask me anything…',
-                    hintStyle: TextStyle(color: _textMuted, fontSize: 14),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-                  ),
-                ),
-              ),
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: chips
+              .map((c) => _ChipWidget(chip: c, onTap: () => onTap(c)))
+              .toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChipWidget extends StatefulWidget {
+  const _ChipWidget({required this.chip, required this.onTap});
+  final _ChipDef chip;
+  final VoidCallback onTap;
+
+  @override
+  State<_ChipWidget> createState() => _ChipWidgetState();
+}
+
+class _ChipWidgetState extends State<_ChipWidget> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 120),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: _pressed ? _primary : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: _pressed ? _primary : const Color(0xFFA5F3FC),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0891B2).withValues(alpha: _pressed ? 0.2 : 0.07),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
-            const SizedBox(width: 10),
-            GestureDetector(
-              onTap: loading ? null : () => onSend(),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  gradient: loading
-                      ? null
-                      : const LinearGradient(
-                          colors: [_primary, _primaryDark],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                  color: loading ? const Color(0xFFCCEEF6) : null,
-                  shape: BoxShape.circle,
-                  boxShadow: loading
-                      ? null
-                      : [
-                          const BoxShadow(
-                            color: Color(0x440891B2),
-                            blurRadius: 10,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                ),
-                child: Icon(
-                  loading ? Icons.hourglass_empty_rounded : Icons.arrow_upward_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(widget.chip.emoji, style: const TextStyle(fontSize: 13)),
+            const SizedBox(width: 5),
+            Text(
+              widget.chip.label,
+              style: TextStyle(
+                color: _pressed ? Colors.white : _textDark,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
