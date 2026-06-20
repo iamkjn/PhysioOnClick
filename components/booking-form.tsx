@@ -49,6 +49,7 @@ export function BookingForm({ initialService = "" }: { initialService?: string }
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [confirmedLabel, setConfirmedLabel] = useState("");
+  const [meetLink, setMeetLink] = useState("");
 
   const set = (field: string, value: string) =>
     setForm(f => ({ ...f, [field]: value }));
@@ -66,6 +67,7 @@ export function BookingForm({ initialService = "" }: { initialService?: string }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong.");
       setConfirmedLabel(data.appointmentLabel || `${form.appointmentDate} at ${form.appointmentTime}`);
+      setMeetLink(data.meetLink || "");
       setStatus("success");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Unable to submit. Please try again.");
@@ -92,12 +94,30 @@ export function BookingForm({ initialService = "" }: { initialService?: string }
         <p style={{ color: "#164E63", lineHeight: 1.7, margin: "0 0 28px" }}>
           Requested slot: <strong>{confirmedLabel}</strong>
         </p>
-        <div style={{
-          background: "#F0FDFF", borderRadius: 12, padding: "14px 20px",
-          marginBottom: 28, color: "#6B8FA0", fontSize: 14, lineHeight: 1.6,
-        }}>
-          We&apos;ll confirm availability and send a calendar invite to <strong>{form.email}</strong> within a few hours.
-        </div>
+        {meetLink ? (
+          <div style={{
+            background: "#ECFEFF", border: "1.5px solid #A5F3FC", borderRadius: 12,
+            padding: "16px 20px", marginBottom: 28,
+          }}>
+            <p style={{ margin: "0 0 8px", fontWeight: 700, color: "#0E7490", fontSize: 14 }}>
+              📹 Your Google Meet link
+            </p>
+            <a href={meetLink} target="_blank" rel="noopener noreferrer"
+              style={{ color: "#0891B2", fontSize: 14, wordBreak: "break-all" }}>
+              {meetLink}
+            </a>
+            <p style={{ margin: "8px 0 0", fontSize: 12.5, color: "#6B8FA0" }}>
+              This link has also been sent to <strong>{form.email}</strong>
+            </p>
+          </div>
+        ) : (
+          <div style={{
+            background: "#F0FDFF", borderRadius: 12, padding: "14px 20px",
+            marginBottom: 28, color: "#6B8FA0", fontSize: 14, lineHeight: 1.6,
+          }}>
+            We&apos;ll confirm availability and send a calendar invite to <strong>{form.email}</strong> within a few hours.
+          </div>
+        )}
         <button
           onClick={() => { setForm({ fullName: "", email: "", phone: "", service: "", appointmentDate: "", appointmentTime: "", notes: "" }); setStatus("idle"); }}
           style={{
