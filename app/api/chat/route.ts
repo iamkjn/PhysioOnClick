@@ -86,8 +86,14 @@ export async function POST(req: NextRequest) {
   const patientContext = uid ? await fetchPatientContext(uid) : undefined;
   const db = getAdminDb();
 
-  const history: HistoryMessage[] = (rawHistory as HistoryMessage[])
-    .filter(m => m.role === "user" || m.role === "model")
+  const history: HistoryMessage[] = rawHistory
+    .filter(
+      (m): m is HistoryMessage =>
+        typeof m === "object" &&
+        m !== null &&
+        ((m as HistoryMessage).role === "user" || (m as HistoryMessage).role === "model") &&
+        typeof (m as HistoryMessage).text === "string"
+    )
     .slice(-20);
 
   const systemPrompt = buildSystemPrompt(patientContext);
@@ -159,9 +165,23 @@ export async function POST(req: NextRequest) {
         .collection("chatSessions")
         .doc(sessionId);
 
-      await sessionRef.set(
-        {
+      const sessionSnap = await sessionRef.get();
+      if (!sessionSnap.exists) {
+        await sessionRef.set({
           createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+          messages: [
+            { role: "user", text: message, timestamp: new Date().toISOString() },
+            {
+              role: "model",
+              text: reply,
+              timestamp: new Date().toISOString(),
+              ...(actionForClient ? { action: actionForClient } : {}),
+            },
+          ],
+        });
+      } else {
+        await sessionRef.update({
           updatedAt: FieldValue.serverTimestamp(),
           messages: FieldValue.arrayUnion(
             { role: "user", text: message, timestamp: new Date().toISOString() },
@@ -172,9 +192,8 @@ export async function POST(req: NextRequest) {
               ...(actionForClient ? { action: actionForClient } : {}),
             }
           ),
-        },
-        { merge: true }
-      );
+        });
+      }
     }
 
     return NextResponse.json({ reply, sessionId, ...(actionForClient ? { action: actionForClient } : {}) });

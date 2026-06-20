@@ -103,13 +103,11 @@ export async function executeFunction(
       return JSON.stringify({ error: `Cancel failed: ${res.status}` });
     }
 
-    await db
+    const snap = await db
       .collection("bookings")
       .where("calBookingUid", "==", calBookingUid)
-      .get()
-      .then(snap => {
-        snap.docs.forEach(d => d.ref.update({ status: "cancelled" }));
-      });
+      .get();
+    await Promise.all(snap.docs.map(d => d.ref.update({ status: "cancelled" })));
 
     return JSON.stringify({ ok: true, cancelled: calBookingUid });
   }
