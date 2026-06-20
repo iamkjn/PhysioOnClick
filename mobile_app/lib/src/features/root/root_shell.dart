@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../booking/booking_screen.dart';
+import '../chat/chat_page.dart';
 import '../booking/who_is_this_for_screen.dart';
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
@@ -32,6 +33,17 @@ class _RootShellState extends State<RootShell> {
       body: IndexedStack(
         index: currentIndex,
         children: screens,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const ChatPage()),
+          );
+        },
+        backgroundColor: const Color(0xFF0891B2),
+        foregroundColor: Colors.white,
+        tooltip: 'Ask the assistant',
+        child: const Icon(Icons.chat_bubble_rounded),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
