@@ -1,14 +1,47 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import '../../core/api_client.dart';
 import '../../core/widgets/avatar_widget.dart';
 import 'appointment_detail_screen.dart';
 import 'appointments_repository.dart';
 import 'booking_model.dart';
 
-class AppointmentsScreen extends StatelessWidget {
+class AppointmentsScreen extends StatefulWidget {
   const AppointmentsScreen({super.key});
+
+  @override
+  State<AppointmentsScreen> createState() => _AppointmentsScreenState();
+}
+
+class _AppointmentsScreenState extends State<AppointmentsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _syncCalBookings();
+  }
+
+  Future<void> _syncCalBookings() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || user.email == null) return;
+    try {
+      await http
+          .get(
+            Uri.parse(
+              '$kApiBase/api/appointments/sync'
+              '?email=${Uri.encodeComponent(user.email!)}'
+              '&userId=${user.uid}',
+            ),
+          )
+          .timeout(const Duration(seconds: 15));
+    } catch (_) {
+      // Sync is best-effort; Firestore still shows any previously synced bookings
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -13,10 +13,20 @@ export default function AppointmentsPage() {
 
   useEffect(() => {
     const auth = getAuth();
-    return onAuthStateChanged(auth, (u) => {
+    return onAuthStateChanged(auth, async (u) => {
       if (!u) {
         router.push("/patient");
         return;
+      }
+      // Sync Cal.com bookings into Firestore first, then load
+      try {
+        if (u.email) {
+          await fetch(
+            `/api/appointments/sync?email=${encodeURIComponent(u.email)}&userId=${u.uid}`
+          );
+        }
+      } catch {
+        // sync is best-effort
       }
       getPatientBookings(u.uid)
         .then(setBookings)
