@@ -48,6 +48,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: 'Track your\nrecovery',
       subtitle: 'Access your personalised rehab programme, exercise library and progress updates — all in one place.',
     ),
+    _OnboardingPage(
+      gradient: [Color(0xFF78350F), Color(0xFFB45309)],
+      icon: Icons.group_rounded,
+      iconBg: Color(0xFF92400E),
+      title: 'Book for your\nwhole family',
+      subtitle: 'Add family members, partners, or relatives. Book their appointments just like your own — all from one account.',
+    ),
   ];
 
   void _finish() {
