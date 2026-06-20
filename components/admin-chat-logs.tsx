@@ -38,34 +38,37 @@ export function AdminChatLogs() {
 
     async function load() {
       if (!db) return;
-      const q = query(collectionGroup(db, "chatSessions"), orderBy("updatedAt", "desc"));
-      const snap = await getDocs(q);
+      try {
+        const q = query(collectionGroup(db, "chatSessions"), orderBy("updatedAt", "desc"));
+        const snap = await getDocs(q);
 
-      const results: ChatSession[] = [];
+        const results: ChatSession[] = [];
 
-      for (const sessionDoc of snap.docs) {
-        const patientId = sessionDoc.ref.parent.parent?.id ?? "";
-        const data = sessionDoc.data();
+        for (const sessionDoc of snap.docs) {
+          const patientId = sessionDoc.ref.parent.parent?.id ?? "";
+          const data = sessionDoc.data();
 
-        let patientName = patientId;
-        try {
-          const patientSnap = await getDoc(doc(db, "patients", patientId));
-          if (patientSnap.exists()) patientName = patientSnap.data().displayName ?? patientId;
-        } catch {
-          // non-fatal
+          let patientName = patientId;
+          try {
+            const patientSnap = await getDoc(doc(db, "patients", patientId));
+            if (patientSnap.exists()) patientName = patientSnap.data().displayName ?? patientId;
+          } catch {
+            // non-fatal
+          }
+
+          results.push({
+            sessionId: sessionDoc.id,
+            patientId,
+            patientName,
+            updatedAt: data.updatedAt,
+            messages: data.messages ?? [],
+          });
         }
 
-        results.push({
-          sessionId: sessionDoc.id,
-          patientId,
-          patientName,
-          updatedAt: data.updatedAt,
-          messages: data.messages ?? [],
-        });
+        setSessions(results);
+      } finally {
+        setLoading(false);
       }
-
-      setSessions(results);
-      setLoading(false);
     }
 
     load();
@@ -81,7 +84,6 @@ export function AdminChatLogs() {
   });
 
   if (loading) return <p>Loading chat logs…</p>;
-  if (filtered.length === 0) return <p>No chat sessions found.</p>;
 
   return (
     <div>
@@ -100,8 +102,11 @@ export function AdminChatLogs() {
         }}
       />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {filtered.map(s => {
+      {filtered.length === 0 ? (
+        <p>No chat sessions found.</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {filtered.map(s => {
           const date = s.updatedAt
             ? new Date(s.updatedAt.seconds * 1000).toLocaleDateString("en-GB", {
                 day: "numeric",
@@ -203,7 +208,8 @@ export function AdminChatLogs() {
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
