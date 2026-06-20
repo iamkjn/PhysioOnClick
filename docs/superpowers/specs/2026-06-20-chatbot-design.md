@@ -110,7 +110,7 @@ patients/{uid}/
 
 Guest sessions are not persisted — state lives in component memory only and is discarded on close.
 
-A Firestore composite index on `(uid, updatedAt desc)` supports the admin chat log query.
+A Firestore **collection group index** on `chatSessions` ordered by `updatedAt desc` supports the admin chat log query across all patients.
 
 ---
 
