@@ -62,6 +62,8 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
         <p className="muted">Pain score trend over the last 56 days.</p>
         {loading ? (
           <p className="muted">Loading chart…</p>
+        ) : error ? (
+          <p className="muted">{error}</p>
         ) : data.length === 0 ? (
           <p className="muted">No data yet — log your first pain check-in above.</p>
         ) : (

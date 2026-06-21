@@ -19,7 +19,8 @@ export function ContactForm() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const payload = {
       name: String(formData.get("name") || "").trim(),
       email: String(formData.get("email") || "").trim(),
@@ -87,13 +88,29 @@ export function ContactForm() {
           body: JSON.stringify(enquiryPayload)
         });
 
-        const result = (await response.json()) as { error?: string; emailSent?: boolean };
+        const result = (await response.json()) as {
+          error?: string;
+          saved?: boolean;
+          saveReason?: string;
+          emailSent?: boolean;
+          emailReason?: string;
+        };
 
         if (!response.ok) {
           throw new Error(result.error || "Unable to send enquiry.");
         }
 
         emailSent = Boolean(result.emailSent);
+
+        if (result.saved === false) {
+          try {
+            await saveEnquiry(enquiryPayload);
+          } catch (error) {
+            if (!emailSent) {
+              throw error;
+            }
+          }
+        }
       } catch {
         await saveEnquiry(enquiryPayload);
       }
@@ -101,11 +118,11 @@ export function ContactForm() {
       setStatus(
         emailSent
           ? "Enquiry sent successfully. A notification has also been emailed and we will be in touch soon."
-          : "Enquiry saved successfully. We will be in touch soon."
+          : "Enquiry saved successfully, but the email notification is not configured. Please email hello@physioonclick.co.uk if this is urgent."
       );
       setStatusTone("success");
       setErrors({});
-      event.currentTarget.reset();
+      form.reset();
     } catch {
       setStatus("We could not save your enquiry right now. Please try again in a moment or email hello@physioonclick.co.uk.");
       setStatusTone("error");

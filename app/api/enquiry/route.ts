@@ -79,32 +79,39 @@ export async function POST(request: Request) {
 
   const db = getAdminDb();
 
-  if (!db) {
-    return NextResponse.json(
-      { error: "Server-side Firebase is not configured. Add admin credentials before using live enquiries." },
-      { status: 500 }
-    );
-  }
-
   try {
-    const docRef = await db.collection("enquiries").add({
-      ...payload,
-      emailLower: payload.email.toLowerCase(),
-      status: "new",
-      source: "website-contact-form",
-      createdAt: FieldValue.serverTimestamp()
-    });
+    let saved = false;
+    let id = "";
+    let saveReason = "";
+
+    if (db) {
+      const docRef = await db.collection("enquiries").add({
+        ...payload,
+        emailLower: payload.email.toLowerCase(),
+        status: "new",
+        source: "website-contact-form",
+        createdAt: FieldValue.serverTimestamp()
+      });
+      saved = true;
+      id = docRef.id;
+    } else {
+      saveReason = "missing-admin-db";
+    }
 
     let emailSent = false;
+    let emailReason = "";
 
     try {
       const result = await sendNotificationEmail(payload);
       emailSent = result.sent;
-    } catch {
+      emailReason = result.sent ? "" : result.reason ?? "unknown";
+    } catch (error) {
+      emailReason = "provider-error";
+      console.error("Enquiry notification email failed", error);
       emailSent = false;
     }
 
-    return NextResponse.json({ ok: true, id: docRef.id, emailSent });
+    return NextResponse.json({ ok: true, id, saved, saveReason, emailSent, emailReason });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to save enquiry.";
     return NextResponse.json({ error: message }, { status: 500 });

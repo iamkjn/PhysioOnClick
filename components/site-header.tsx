@@ -39,7 +39,7 @@ export function SiteHeader() {
           </nav>
           <div className="nav-actions simple-nav-actions">
             <Link className="call-link" href="/contact">
-              Call Us
+              Contact Us
             </Link>
             <Link className="button primary small" href="/book">
               Book Now

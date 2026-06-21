@@ -10,7 +10,13 @@ export default async function HomePage() {
   return (
     <>
       <section className="home-hero">
-        <img className="home-hero-image" src="/home-hero-premium.svg" alt="Illustrated physiotherapy consultation banner" />
+        <Image
+          className="home-hero-image"
+          src="/home-hero-premium.svg"
+          alt="Illustrated physiotherapy consultation banner"
+          fill
+          priority
+        />
         <div className="home-hero-overlay" />
         <div className="site-shell home-hero-content">
           <span className="location-pill">Glasgow & Online Across the UK</span>
