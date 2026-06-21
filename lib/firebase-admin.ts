@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 
 import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
 function ensureAdminApp() {
@@ -40,6 +41,15 @@ export function getAdminDb() {
   try {
     ensureAdminApp();
     return getFirestore();
+  } catch {
+    return null;
+  }
+}
+
+export function getAdminAuth() {
+  try {
+    ensureAdminApp();
+    return getAuth();
   } catch {
     return null;
   }
