@@ -21,15 +21,11 @@ export function SiteSearchStrip() {
       return { placeholder: "Search pricing and rehab packages", scope: "pricing" };
     }
 
-    if (pathname.startsWith("/symptom-checker")) {
-      return { placeholder: "Search symptoms, areas of pain or rehab help", scope: "symptom" };
-    }
-
     if (pathname.startsWith("/contact")) {
       return { placeholder: "Search booking, contact or clinic help", scope: "general" };
     }
 
-    return { placeholder: "Search services, pricing, blog articles or symptoms", scope: "general" };
+    return { placeholder: "Search services, pricing or blog articles", scope: "general" };
   }, [pathname]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Next.js (web)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "Flutter (mobile)",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd /Users/iamkjn/Documents/Playground/mobile_app && flutter build web 2>&1 && python3 -m http.server 8080 --directory build/web --bind 0.0.0.0"],
+      "port": 8080
+    }
+  ]
+}

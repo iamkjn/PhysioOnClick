@@ -15,7 +15,7 @@ export default function MedicalDisclaimerPage() {
         <article className="panel stack soft-panel">
           <h2>General information only</h2>
           <p>
-            Content on PhysioOnClick, including blog articles and the AI symptom checker, is for general educational
+            Content on PhysioOnClick, including blog articles, is for general educational
             information only and does not replace individual medical advice, diagnosis or emergency care.
           </p>
         </article>

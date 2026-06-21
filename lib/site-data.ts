@@ -371,16 +371,3 @@ export const stats = [
   { label: "Guided blog resources available", value: "100+" },
   { label: "Response time for enquiries", value: "24h" }
 ];
-
-export const symptomAreas = [
-  "Back",
-  "Neck",
-  "Shoulder",
-  "Elbow",
-  "Hand or wrist",
-  "Hip",
-  "Knee",
-  "Ankle or foot",
-  "Balance or walking",
-  "General rehabilitation"
-];
