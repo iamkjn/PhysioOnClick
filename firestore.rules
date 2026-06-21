@@ -110,6 +110,11 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    match /patients/{userId}/people/{personId}/clinicalAssessments/{date} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow write: if isAdmin();
+    }
+
     match /patients/{userId}/{document=**} {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
