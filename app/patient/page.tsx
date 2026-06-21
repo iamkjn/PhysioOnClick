@@ -5,7 +5,6 @@ import { AuthPanel } from "@/components/auth-panel";
 import { ExerciseLibrary } from "@/components/exercise-library";
 import { PatientLiveOverview } from "@/components/patient-live-overview";
 import { PatientProfileEditor } from "@/components/patient-profile-editor";
-import { ProgressChart } from "@/components/progress-chart";
 import { UploadPanel } from "@/components/upload-panel";
 
 export const metadata: Metadata = {
@@ -89,6 +88,23 @@ export default function PatientPage() {
         >
           👤 My Account
         </Link>
+        <Link
+          href="/patient/recovery"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            background: "#D8F3F9",
+            color: "#0E7490",
+            padding: "0.6rem 1.25rem",
+            borderRadius: 999,
+            textDecoration: "none",
+            fontWeight: 700,
+            fontSize: 14,
+          }}
+        >
+          📈 My Recovery
+        </Link>
       </section>
 
       <section className="page-section dashboard-grid">
@@ -98,7 +114,6 @@ export default function PatientPage() {
 
       <section className="page-section dashboard-grid">
         <PatientProfileEditor />
-        <ProgressChart />
       </section>
 
       <section className="page-section dashboard-grid">
