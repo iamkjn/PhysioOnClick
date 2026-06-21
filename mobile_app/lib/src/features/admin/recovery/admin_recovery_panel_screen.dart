@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'recovery_service.dart';
 
@@ -52,6 +53,18 @@ class _AdminRecoveryPanelScreenState extends State<AdminRecoveryPanelScreen> {
   Future<void> _remove(String exerciseId) async {
     await RecoveryService.removeExercise(
         widget.patientUid, widget.personId, exerciseId);
+  }
+
+  Future<List<Map<String, dynamic>>> _getAvailableExercises() async {
+    final snap = await FirebaseFirestore.instance.collection('exerciseVideos').get();
+    return snap.docs.map((d) => {'id': d.id, ...d.data()}).toList();
+  }
+
+  Future<void> _assign(String exerciseId) async {
+    final physio = FirebaseAuth.instance.currentUser;
+    if (physio == null) return;
+    await RecoveryService.assignExercise(
+        widget.patientUid, widget.personId, exerciseId, physio.uid);
   }
 
   @override
@@ -197,6 +210,52 @@ class _AdminRecoveryPanelScreenState extends State<AdminRecoveryPanelScreen> {
                           ),
                         ))
                     .toList(),
+              );
+            },
+          ),
+          const Divider(height: 32),
+          const Text('Add exercise',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: _getAvailableExercises(),
+            builder: (_, snap) {
+              if (!snap.hasData) return const LinearProgressIndicator();
+              return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: RecoveryService.watchAssignedExercises(
+                    widget.patientUid, widget.personId),
+                builder: (_, assignedSnap) {
+                  final assignedIds = assignedSnap.data?.docs
+                          .map((d) => d.id)
+                          .toSet() ??
+                      <String>{};
+                  final unassigned = snap.data!
+                      .where((e) => !assignedIds.contains(e['id'] as String))
+                      .toList();
+                  if (unassigned.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text('All exercises assigned.',
+                          style: TextStyle(color: Colors.grey)),
+                    );
+                  }
+                  return Column(
+                    children: unassigned
+                        .map((ex) => ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                  (ex['title'] as String?) ?? ex['id'] as String),
+                              subtitle:
+                                  Text((ex['bodyPart'] as String?) ?? ''),
+                              trailing: TextButton(
+                                onPressed: () => _assign(ex['id'] as String),
+                                child: const Text('Assign',
+                                    style:
+                                        TextStyle(color: Color(0xFF0891B2))),
+                              ),
+                            ))
+                        .toList(),
+                  );
+                },
               );
             },
           ),
