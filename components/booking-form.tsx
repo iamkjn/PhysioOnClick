@@ -45,13 +45,14 @@ export function BookingForm({ initialService = "" }: { initialService?: string }
     fullName: "", email: "", phone: "",
     service: initialService,
     appointmentDate: "", appointmentTime: "", notes: "",
+    consent: false,
   });
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [confirmedLabel, setConfirmedLabel] = useState("");
   const [meetLink, setMeetLink] = useState("");
 
-  const set = (field: string, value: string) =>
+  const set = (field: string, value: string | boolean) =>
     setForm(f => ({ ...f, [field]: value }));
 
   async function submit(e: React.FormEvent) {
@@ -119,7 +120,7 @@ export function BookingForm({ initialService = "" }: { initialService?: string }
           </div>
         )}
         <button
-          onClick={() => { setForm({ fullName: "", email: "", phone: "", service: "", appointmentDate: "", appointmentTime: "", notes: "" }); setStatus("idle"); }}
+          onClick={() => { setForm({ fullName: "", email: "", phone: "", service: "", appointmentDate: "", appointmentTime: "", notes: "", consent: false }); setStatus("idle"); }}
           style={{
             padding: "12px 32px", borderRadius: 30,
             background: "linear-gradient(135deg, #0891B2, #0E7490)",
@@ -246,6 +247,21 @@ export function BookingForm({ initialService = "" }: { initialService?: string }
                 ⚠️ {errorMsg}
               </div>
             )}
+
+            {/* Consent */}
+            <label style={{ display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer", fontSize: 13.5, color: "#164E63", lineHeight: 1.5 }}>
+              <input
+                type="checkbox"
+                required
+                checked={form.consent}
+                onChange={e => set("consent", e.target.checked)}
+                style={{ marginTop: 2, flexShrink: 0, accentColor: "#0891B2", width: 16, height: 16 }}
+              />
+              <span>
+                I consent to online consultation and the storage of my personal and clinical data as described in the{" "}
+                <a href="/privacy-policy" style={{ color: "#0891B2", textDecoration: "underline" }}>Privacy Policy</a>.
+              </span>
+            </label>
 
             {/* Submit */}
             <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
