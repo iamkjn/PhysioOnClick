@@ -36,7 +36,7 @@ function VerifyPage() {
     }
     const emailFromUrl = searchParams.get("email");
     if (emailFromUrl) {
-      void completeSignIn(decodeURIComponent(emailFromUrl), href);
+      void completeSignIn(emailFromUrl, href);
     } else {
       setStage("needs-email");
     }
@@ -81,7 +81,7 @@ function VerifyPage() {
   }
 
   async function requestNewLink() {
-    const email = emailInput.trim() || decodeURIComponent(searchParams.get("email") || "");
+    const email = emailInput.trim() || searchParams.get("email") || "";
     if (!email) return;
     setIsSubmitting(true);
     setLinkSent(false);
