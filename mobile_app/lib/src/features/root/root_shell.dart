@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../admin/recovery/admin_patient_list_screen.dart';
 import '../booking/booking_screen.dart';
-import '../chat/chat_page.dart';
 import '../booking/who_is_this_for_screen.dart';
+import '../chat/chat_page.dart';
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
 import '../services/services_screen.dart';
@@ -17,21 +19,46 @@ class RootShell extends StatefulWidget {
 
 class _RootShellState extends State<RootShell> {
   int currentIndex = 0;
+  bool isAdmin = false;
 
-  final screens = const [
-    HomeScreen(),
-    ServicesScreen(),
-    BookingScreen(),
-    ProfileScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _checkAdminRole();
+  }
+
+  Future<void> _checkAdminRole() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final snap = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    final role = snap.data()?['role'] as String?;
+    if (role == 'admin' && mounted) {
+      setState(() => isAdmin = true);
+    }
+  }
+
+  List<Widget> get _screens => [
+        const HomeScreen(),
+        const ServicesScreen(),
+        const BookingScreen(),
+        const ProfileScreen(),
+        if (isAdmin) const AdminPatientListScreen(),
+      ];
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screens = _screens;
+
+    // clamp index in case admin tab disappears on sign-out
+    final safeIndex = currentIndex.clamp(0, screens.length - 1);
 
     return Scaffold(
       body: IndexedStack(
-        index: currentIndex,
+        index: safeIndex,
         children: screens,
       ),
       floatingActionButton: FloatingActionButton(
@@ -69,21 +96,21 @@ class _RootShellState extends State<RootShell> {
                 _NavItem(
                   icon: Icons.home_rounded,
                   label: 'Home',
-                  selected: currentIndex == 0,
+                  selected: safeIndex == 0,
                   onTap: () => setState(() => currentIndex = 0),
                   primaryColor: theme.colorScheme.primary,
                 ),
                 _NavItem(
                   icon: Icons.healing_rounded,
                   label: 'Services',
-                  selected: currentIndex == 1,
+                  selected: safeIndex == 1,
                   onTap: () => setState(() => currentIndex = 1),
                   primaryColor: theme.colorScheme.primary,
                 ),
                 _NavItem(
                   icon: Icons.calendar_month_rounded,
                   label: 'Booking',
-                  selected: currentIndex == 2,
+                  selected: safeIndex == 2,
                   onTap: () {
                     final user = FirebaseAuth.instance.currentUser;
                     if (user != null) {
@@ -103,10 +130,18 @@ class _RootShellState extends State<RootShell> {
                 _NavItem(
                   icon: Icons.person_rounded,
                   label: 'Profile',
-                  selected: currentIndex == 3,
+                  selected: safeIndex == 3,
                   onTap: () => setState(() => currentIndex = 3),
                   primaryColor: theme.colorScheme.primary,
                 ),
+                if (isAdmin)
+                  _NavItem(
+                    icon: Icons.admin_panel_settings_rounded,
+                    label: 'Manage',
+                    selected: safeIndex == 4,
+                    onTap: () => setState(() => currentIndex = 4),
+                    primaryColor: theme.colorScheme.primary,
+                  ),
               ],
             ),
           ),
@@ -180,7 +215,9 @@ class _NavItem extends StatelessWidget {
               width: 56,
               height: 36,
               decoration: BoxDecoration(
-                color: selected ? primaryColor.withValues(alpha: 0.12) : Colors.transparent,
+                color: selected
+                    ? primaryColor.withValues(alpha: 0.12)
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Icon(
@@ -194,8 +231,10 @@ class _NavItem extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 11,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected ? primaryColor : const Color(0xFF5E7A84),
+                fontWeight:
+                    selected ? FontWeight.w700 : FontWeight.w500,
+                color:
+                    selected ? primaryColor : const Color(0xFF5E7A84),
               ),
             ),
           ],
