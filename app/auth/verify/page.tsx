@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FirebaseError } from "firebase/app";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
@@ -18,6 +18,14 @@ function VerifyPage() {
   const [emailInput, setEmailInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!auth) return;
@@ -44,7 +52,7 @@ function VerifyPage() {
       await ensurePatientRecord(credential.user, credential.user.displayName || "");
       await linkBookingsToUser(email, credential.user.uid);
       setStage("success");
-      setTimeout(() => router.push("/patient"), 1500);
+      redirectTimerRef.current = setTimeout(() => router.push("/patient"), 1500);
     } catch (error) {
       const code = error instanceof FirebaseError ? error.code : "";
       if (code === "auth/invalid-action-code" || code === "auth/expired-action-code") {
@@ -52,6 +60,7 @@ function VerifyPage() {
       } else if (code === "auth/invalid-email") {
         setErrorMessage("The email address does not match the one used to book. Please try again.");
         setStage("needs-email");
+        setLinkSent(false);
         return;
       } else {
         setErrorMessage("Sign-in failed. Please request a new link.");
@@ -82,6 +91,7 @@ function VerifyPage() {
     const email = emailInput.trim() || decodeURIComponent(searchParams.get("email") || "");
     if (!email) return;
     setIsSubmitting(true);
+    setLinkSent(false);
     try {
       const res = await fetch("/api/auth/magic-link", {
         method: "POST",
@@ -91,6 +101,7 @@ function VerifyPage() {
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
         setErrorMessage(`A new sign-in link has been sent to ${email}. Check your inbox.`);
+        setLinkSent(true);
       } else {
         setErrorMessage(data.error || "Could not send a new link. Please try again.");
       }
@@ -99,8 +110,6 @@ function VerifyPage() {
     }
     setIsSubmitting(false);
   }
-
-  const linkSent = errorMessage.includes("has been sent to");
 
   return (
     <div className="site-shell">
@@ -119,6 +128,7 @@ function VerifyPage() {
               <p className="muted">
                 For security, please enter the email address you used when booking your appointment.
               </p>
+              {errorMessage && <p className="auth-status auth-status-error">{errorMessage}</p>}
               <form onSubmit={handleEmailSubmit} style={{ marginTop: "1.5rem" }}>
                 <label>
                   Email address
