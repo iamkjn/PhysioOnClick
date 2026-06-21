@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 
-import { getAdminDb } from "@/lib/firebase-admin";
+import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import { createEventWithMeet } from "@/lib/google-calendar";
 
 type BookingPayload = {
@@ -40,6 +40,7 @@ async function sendBookingEmail(
   payload: BookingPayload,
   appointmentLabel: string,
   meetLink: string | null,
+  portalLink: string | null,
 ) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return { sent: false };
@@ -55,6 +56,20 @@ async function sendBookingEmail(
         <p style="margin: 8px 0 0; font-size: 13px; color: #6B8FA0;">Click to join your online session at the scheduled time.</p>
        </div>`
     : `<p style="color: #6B8FA0; font-size: 13px;">📅 A calendar invite will be sent once your appointment is confirmed.</p>`;
+
+  const portalSection = portalLink
+    ? `<div style="margin: 24px 0; text-align: center;">
+        <a href="${portalLink}"
+           style="display: inline-block; background: linear-gradient(135deg, #0891B2, #0E7490);
+                  color: white; text-decoration: none; padding: 14px 32px;
+                  border-radius: 8px; font-weight: bold; font-size: 15px;">
+          Access your patient portal →
+        </a>
+        <p style="margin: 10px 0 0; font-size: 12px; color: #6B8FA0;">
+          This link signs you in automatically. It expires after 24 hours and can only be used once.
+        </p>
+      </div>`
+    : "";
 
   const emailHtml = `
     <div style="font-family: Arial, Helvetica, sans-serif; color: #10233A; line-height: 1.6; max-width: 600px;">
@@ -87,6 +102,7 @@ async function sendBookingEmail(
         </table>
 
         ${meetSection}
+        ${portalSection}
 
         <div style="margin-top: 24px; padding: 16px 20px; background: #FFF9EC; border-radius: 8px; font-size: 13px; color: #92400E;">
           ⚠️ Please cancel at least 24 hours in advance if you need to reschedule. Contact us at hello@physioonclick.co.uk.
@@ -181,9 +197,23 @@ export async function POST(request: Request) {
       createdAt: FieldValue.serverTimestamp(),
     });
 
+    let portalLink: string | null = null;
+    try {
+      const adminAuth = getAdminAuth();
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+      if (adminAuth) {
+        portalLink = await adminAuth.generateSignInWithEmailLink(payload.email, {
+          url: `${siteUrl}/auth/verify?email=${encodeURIComponent(payload.email)}`,
+          handleCodeInApp: true,
+        });
+      }
+    } catch {
+      // Non-blocking — booking proceeds without portal link
+    }
+
     let emailSent = false;
     try {
-      const result = await sendBookingEmail(payload, appointmentLabel, meetLink);
+      const result = await sendBookingEmail(payload, appointmentLabel, meetLink, portalLink);
       emailSent = result.sent;
     } catch {
       emailSent = false;
