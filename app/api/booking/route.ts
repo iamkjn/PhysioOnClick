@@ -12,6 +12,7 @@ type BookingPayload = {
   appointmentDate: string;
   appointmentTime: string;
   notes: string;
+  consent: boolean;
 };
 
 function escapeHtml(value: string) {
@@ -137,6 +138,11 @@ async function sendBookingEmail(
 
 export async function POST(request: Request) {
   const body = (await request.json()) as Partial<BookingPayload>;
+
+  if (!body.consent) {
+    return NextResponse.json({ error: "Consent is required." }, { status: 400 });
+  }
+
   const payload: BookingPayload = {
     fullName: String(body.fullName || "").trim(),
     email: String(body.email || "").trim().toLowerCase(),
@@ -145,6 +151,7 @@ export async function POST(request: Request) {
     appointmentDate: String(body.appointmentDate || "").trim(),
     appointmentTime: String(body.appointmentTime || "").trim(),
     notes: String(body.notes || "").trim(),
+    consent: true,
   };
 
   if (!payload.fullName || !payload.email || !payload.service || !payload.appointmentDate || !payload.appointmentTime) {

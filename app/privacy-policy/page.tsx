@@ -58,6 +58,7 @@ export default function PrivacyPolicyPage() {
             <li><strong>Google Firebase</strong> (Authentication, Firestore database, Storage) — used to store account, appointment, and clinical data securely</li>
             <li><strong>Stripe</strong> — used for payment processing; card data is handled entirely by Stripe and is not stored by PhysioOnClick</li>
             <li><strong>Cal.com</strong> — used for appointment scheduling; booking data is shared with Cal.com to manage your calendar appointment</li>
+            <li><strong>Google Calendar / Google Meet</strong> — used to create appointment events and video consultation links; attendee details (name, email) are shared with Google to generate the meeting link</li>
           </ul>
         </article>
 

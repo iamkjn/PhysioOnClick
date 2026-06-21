@@ -57,6 +57,10 @@ export function BookingForm({ initialService = "" }: { initialService?: string }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.consent) {
+      setErrorMsg("Please confirm your consent before booking.");
+      return;
+    }
     setStatus("loading");
     setErrorMsg("");
     try {
