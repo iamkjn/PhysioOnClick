@@ -79,6 +79,15 @@ Admin-only recovery management page within the existing `/admin/` area. Physio c
 | `RecoveryChart` | `components/recovery-chart.tsx` | Recharts `LineChart` reading the last 56 days of `painLogs` (teal line) and `clinicalAssessments` (navy line) for the selected `personId`. Replaces the dummy `ProgressChart`. |
 | `AssignedExercises` | `components/assigned-exercises.tsx` | Grid of exercises assigned to this person. Each card has a daily checkbox. Reads `assignedExercises` (which exercises) and `exerciseLogs/{today}` (which are ticked). Checking a box merges `completions.{exerciseId}: true` into `exerciseLogs/{today}`. |
 | `AdherenceBar` | `components/adherence-bar.tsx` | "5 of 7 days this week" — computed from `exerciseLogs` for the current Mon–Sun week. Simple progress bar. |
+| `DownloadReportButton` | `components/download-report-button.tsx` | "Download PDF" button on the recovery page. Renders a hidden print-ready `div` containing all recovery data for the selected person and date range, captures it with `html2canvas`, and passes the canvas to `jsPDF` to produce a multi-page PDF download. Libraries: `html2canvas`, `jspdf`. |
+
+**PDF contents (per person, per selected date range):**
+- Header: patient name, date of birth (if dependent), report generated date, date range
+- Recovery chart image (captured from the live `RecoveryChart` via `html2canvas`)
+- Pain log table: date, self-reported score, patient note
+- Clinical assessments table: date, pain score, mobility score, physio notes, linked session
+- Exercise adherence summary: days completed per week over the period
+- Assigned exercises list
 
 ### New — admin-facing (web)
 
@@ -152,5 +161,4 @@ Firestore rules to add/update:
 
 - Push/WhatsApp reminders for daily pain check-in (separate feature)
 - AI-generated recovery commentary ("your pain reduced 20% this week") — separate feature
-- PDF export of recovery report — separate feature
 - Video upload for exercise library — separate feature
