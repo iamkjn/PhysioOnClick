@@ -27,7 +27,9 @@ export function PainCheckIn({ uid, personId }: Props) {
     setSaving(true);
     try {
       await logPainScore(uid, personId, score, note);
-      setTodayLog({ date: new Date().toISOString().slice(0, 10), score, note, loggedAt: new Date() });
+      const d = new Date();
+      const localDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      setTodayLog({ date: localDate, score, note, loggedAt: new Date() });
     } finally {
       setSaving(false);
     }
