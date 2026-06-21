@@ -59,6 +59,7 @@ export function BookingForm({ initialService = "" }: { initialService?: string }
     e.preventDefault();
     if (!form.consent) {
       setErrorMsg("Please confirm your consent before booking.");
+      setStatus("error");
       return;
     }
     setStatus("loading");
