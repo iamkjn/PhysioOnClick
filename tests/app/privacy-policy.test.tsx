@@ -27,17 +27,9 @@ describe('Privacy Policy page', () => {
     render(<PrivacyPolicyPage />)
 
     // These text matches verify all required third-party processors are named
-    expect(screen.getByText((content, element) =>
-      element?.tagName === 'STRONG' && /Google Firebase/i.test(content)
-    )).toBeInTheDocument()
-    expect(screen.getByText((content, element) =>
-      element?.tagName === 'STRONG' && /Stripe/i.test(content)
-    )).toBeInTheDocument()
-    expect(screen.getByText((content, element) =>
-      element?.tagName === 'STRONG' && /Cal\.com/i.test(content)
-    )).toBeInTheDocument()
-    expect(screen.getByText((content, element) =>
-      /Google Calendar/i.test(content) && /Google Meet/i.test(element?.textContent || '')
-    )).toBeInTheDocument()
+    expect(screen.getByText('Google Firebase')).toBeInTheDocument()
+    expect(screen.getByText('Stripe')).toBeInTheDocument()
+    expect(screen.getByText('Cal.com')).toBeInTheDocument()
+    expect(screen.getByText(/Google Calendar \/ Google Meet/)).toBeInTheDocument()
   })
 })
