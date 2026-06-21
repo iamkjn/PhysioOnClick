@@ -28,9 +28,11 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
   function RecoveryChart({ uid, personId }, ref) {
     const [data, setData] = useState<ChartPoint[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
       setLoading(true);
+      setError(null);
       Promise.all([
         getPainLogs(uid, personId, 56),
         getClinicalAssessments(uid, personId, 56),
@@ -47,6 +49,9 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
           a.date.localeCompare(b.date)
         );
         setData(sorted);
+        setLoading(false);
+      }).catch(() => {
+        setError("Could not load chart data.");
         setLoading(false);
       });
     }, [uid, personId]);

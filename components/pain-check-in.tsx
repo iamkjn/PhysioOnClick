@@ -15,6 +15,7 @@ export function PainCheckIn({ uid, personId }: Props) {
   const [score, setScore] = useState(5);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [todayLog, setTodayLog] = useState<PainLog | null | undefined>(undefined);
 
   useEffect(() => {
@@ -25,11 +26,14 @@ export function PainCheckIn({ uid, personId }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setError(null);
     try {
       await logPainScore(uid, personId, score, note);
       const d = new Date();
       const localDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       setTodayLog({ date: localDate, score, note, loggedAt: new Date() });
+    } catch {
+      setError("Could not save, please try again.");
     } finally {
       setSaving(false);
     }
@@ -106,6 +110,7 @@ export function PainCheckIn({ uid, personId }: Props) {
             boxSizing: "border-box",
           }}
         />
+        {error && <p style={{ color: "#ef4444", fontSize: 13, margin: 0 }}>{error}</p>}
         <button
           type="submit"
           disabled={saving}

@@ -20,9 +20,11 @@ export function AssignedExercises({ uid, personId }: Props) {
   const [assigned, setAssigned] = useState<AssignedExercise[]>([]);
   const [todayLog, setTodayLog] = useState<ExerciseLog | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     Promise.all([
       getAssignedExercises(uid, personId),
       getTodayExerciseLog(uid, personId),
@@ -30,19 +32,33 @@ export function AssignedExercises({ uid, personId }: Props) {
       setAssigned(a);
       setTodayLog(log);
       setLoading(false);
+    }).catch(() => {
+      setError("Could not load exercises.");
+      setLoading(false);
     });
   }, [uid, personId]);
 
   async function handleToggle(exerciseId: string, done: boolean) {
-    await toggleExerciseCompletion(uid, personId, exerciseId, done);
-    setTodayLog((prev) => ({
-      date: new Date().toISOString().slice(0, 10),
-      completions: { ...(prev?.completions ?? {}), [exerciseId]: done },
-      loggedAt: new Date(),
-    }));
+    try {
+      await toggleExerciseCompletion(uid, personId, exerciseId, done);
+      setTodayLog((prev) => ({
+        date: new Date().toISOString().slice(0, 10),
+        completions: { ...(prev?.completions ?? {}), [exerciseId]: done },
+        loggedAt: new Date(),
+      }));
+    } catch {
+      setError("Could not save. Please try again.");
+    }
   }
 
   if (loading) return <p className="muted">Loading exercises…</p>;
+  if (error && assigned.length === 0)
+    return (
+      <div className="panel stack">
+        <h3>Your exercises</h3>
+        <p className="muted">{error}</p>
+      </div>
+    );
   if (assigned.length === 0)
     return (
       <div className="panel stack">
@@ -57,6 +73,7 @@ export function AssignedExercises({ uid, personId }: Props) {
     <div className="panel stack">
       <h3>Your exercises</h3>
       <p className="muted">Tick off each exercise as you complete it today.</p>
+      {error && <p style={{ color: "#ef4444", fontSize: 13 }}>{error}</p>}
       <div style={{ display: "grid", gap: "0.75rem" }}>
         {assigned.map((ae) => {
           const ex = exerciseMap.get(ae.exerciseId);

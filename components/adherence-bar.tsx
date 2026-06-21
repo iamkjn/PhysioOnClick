@@ -11,16 +11,27 @@ interface Props {
 
 export function AdherenceBar({ uid, personId }: Props) {
   const [daysCompleted, setDaysCompleted] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setError(null);
     getExerciseLogs(uid, personId, 7).then((logs) => {
       const completed = logs.filter((log) =>
         Object.values(log.completions).some(Boolean)
       ).length;
       setDaysCompleted(completed);
+    }).catch(() => {
+      setError("Could not load adherence data.");
     });
   }, [uid, personId]);
 
+  if (error)
+    return (
+      <div className="panel stack">
+        <h3>This week&apos;s adherence</h3>
+        <p className="muted">{error}</p>
+      </div>
+    );
   if (daysCompleted === null) return null;
 
   const pct = Math.round((daysCompleted / 7) * 100);
