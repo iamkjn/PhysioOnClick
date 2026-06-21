@@ -59,7 +59,7 @@ async function sendBookingEmail(
 
   const portalSection = portalLink
     ? `<div style="margin: 24px 0; text-align: center;">
-        <a href="${portalLink}"
+        <a href="${escapeHtml(portalLink)}"
            style="display: inline-block; background: linear-gradient(135deg, #0891B2, #0E7490);
                   color: white; text-decoration: none; padding: 14px 32px;
                   border-radius: 8px; font-weight: bold; font-size: 15px;">

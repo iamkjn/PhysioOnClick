@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 
 import { getAdminAuth } from "@/lib/firebase-admin";
 
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 const rateLimitMap = new Map<string, number>();
 
 export async function POST(request: Request) {
@@ -54,7 +63,7 @@ export async function POST(request: Request) {
       <div style="padding: 28px 32px; background: white; border: 1px solid #E8F6FA; border-top: none; border-radius: 0 0 12px 12px;">
         <p>Here is your sign-in link for PhysioOnClick. Click the button below to access your patient portal.</p>
         <div style="margin: 24px 0; text-align: center;">
-          <a href="${portalLink}"
+          <a href="${escapeHtml(portalLink)}"
              style="display: inline-block; background: linear-gradient(135deg, #0891B2, #0E7490);
                     color: white; text-decoration: none; padding: 14px 32px;
                     border-radius: 8px; font-weight: bold; font-size: 15px;">
