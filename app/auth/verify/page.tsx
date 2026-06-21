@@ -4,9 +4,8 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FirebaseError } from "firebase/app";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
-import { collection, getDocs, query, updateDoc, where } from "firebase/firestore";
 
-import { auth, db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { ensurePatientRecord } from "@/lib/patient-account";
 
 type Stage = "verifying" | "needs-email" | "signing-in" | "success" | "error";
@@ -50,7 +49,11 @@ function VerifyPage() {
     try {
       const credential = await signInWithEmailLink(auth, email, href);
       await ensurePatientRecord(credential.user, credential.user.displayName || "");
-      await linkBookingsToUser(email, credential.user.uid);
+      const idToken = await credential.user.getIdToken();
+      await fetch("/api/auth/link-bookings", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${idToken}` },
+      }).catch(() => { /* non-blocking */ });
       setStage("success");
       redirectTimerRef.current = setTimeout(() => router.push("/patient"), 1500);
     } catch (error) {
@@ -66,16 +69,6 @@ function VerifyPage() {
         setErrorMessage("Sign-in failed. Please request a new link.");
       }
       setStage("error");
-    }
-  }
-
-  async function linkBookingsToUser(email: string, uid: string) {
-    if (!db) return;
-    try {
-      const snap = await getDocs(query(collection(db, "bookings"), where("email", "==", email)));
-      await Promise.all(snap.docs.map((d) => updateDoc(d.ref, { patientUid: uid })));
-    } catch {
-      // Non-blocking — portal access works even if linking fails
     }
   }
 
