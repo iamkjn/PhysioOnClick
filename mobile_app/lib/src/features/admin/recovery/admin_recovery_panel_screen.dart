@@ -29,6 +29,7 @@ class _AdminRecoveryPanelScreenState extends State<AdminRecoveryPanelScreen> {
   final String _date = DateTime.now().toIso8601String().substring(0, 10);
   bool _saving = false;
   bool _saved = false;
+  late Future<List<Map<String, dynamic>>> _availableExercisesFuture;
 
   Future<void> _saveClinical() async {
     setState(() {
@@ -65,6 +66,12 @@ class _AdminRecoveryPanelScreenState extends State<AdminRecoveryPanelScreen> {
     if (physio == null) return;
     await RecoveryService.assignExercise(
         widget.patientUid, widget.personId, exerciseId, physio.uid);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _availableExercisesFuture = _getAvailableExercises();
   }
 
   @override
@@ -217,7 +224,7 @@ class _AdminRecoveryPanelScreenState extends State<AdminRecoveryPanelScreen> {
           const Text('Add exercise',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           FutureBuilder<List<Map<String, dynamic>>>(
-            future: _getAvailableExercises(),
+            future: _availableExercisesFuture,
             builder: (_, snap) {
               if (!snap.hasData) return const LinearProgressIndicator();
               return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
