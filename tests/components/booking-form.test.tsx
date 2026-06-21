@@ -25,7 +25,7 @@ describe('BookingForm consent checkbox', () => {
 
   it('shows error and does not call fetch when consent is unchecked', async () => {
     const user = userEvent.setup()
-    render(<BookingForm />)
+    const { container } = render(<BookingForm />)
 
     // Fill required fields
     await user.type(screen.getByPlaceholderText('Jane Smith'), 'Jane Smith')
@@ -34,7 +34,7 @@ describe('BookingForm consent checkbox', () => {
     await user.selectOptions(screen.getByDisplayValue('Select a service…'), 'Musculoskeletal Physiotherapy')
 
     // Date input: query by type since there's no id/htmlFor association
-    const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement
+    const dateInput = container.querySelector('input[type="date"]') as HTMLInputElement
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     const dateStr = tomorrow.toISOString().split('T')[0]
@@ -56,13 +56,13 @@ describe('BookingForm consent checkbox', () => {
       new Response(JSON.stringify({ ok: true, appointmentLabel: 'Mon 1 Jan 2026 09:00', meetLink: '' }), { status: 200 })
     )
 
-    render(<BookingForm />)
+    const { container } = render(<BookingForm />)
 
     await user.type(screen.getByPlaceholderText('Jane Smith'), 'Jane Smith')
     await user.type(screen.getByPlaceholderText('jane@example.com'), 'jane@example.com')
     await user.selectOptions(screen.getByDisplayValue('Select a service…'), 'Musculoskeletal Physiotherapy')
 
-    const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement
+    const dateInput = container.querySelector('input[type="date"]') as HTMLInputElement
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     const dateStr = tomorrow.toISOString().split('T')[0]
@@ -92,13 +92,13 @@ describe('BookingForm consent checkbox', () => {
       new Response(JSON.stringify({ ok: true, appointmentLabel: 'Mon 1 Jan 2026 09:00', meetLink: '' }), { status: 200 })
     )
 
-    render(<BookingForm />)
+    const { container } = render(<BookingForm />)
 
     await user.type(screen.getByPlaceholderText('Jane Smith'), 'Jane Smith')
     await user.type(screen.getByPlaceholderText('jane@example.com'), 'jane@example.com')
     await user.selectOptions(screen.getByDisplayValue('Select a service…'), 'Musculoskeletal Physiotherapy')
 
-    const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement
+    const dateInput = container.querySelector('input[type="date"]') as HTMLInputElement
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     const dateStr = tomorrow.toISOString().split('T')[0]

@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import { vi, describe, it, expect } from 'vitest'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
+import type { UserCredential } from 'firebase/auth'
 
 // Use vi.hoisted so FirebaseError is available when vi.mock factories are hoisted
 const { FirebaseError } = vi.hoisted(() => {
@@ -36,13 +37,14 @@ vi.mock('next/navigation', () => ({
   }),
 }))
 
-// Mock fetch for /api/auth/link-bookings (non-blocking)
-global.fetch = vi.fn().mockResolvedValue(new Response('{}', { status: 200 }))
-
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth'
 import VerifyPageWrapper from '@/app/auth/verify/page'
 
 describe('Auth verify page', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn().mockResolvedValue(new Response('{}', { status: 200 }))
+  })
+
   it('shows error when link is not a valid sign-in link', async () => {
     vi.mocked(isSignInWithEmailLink).mockReturnValue(false)
 
@@ -73,7 +75,7 @@ describe('Auth verify page', () => {
         displayName: 'Jane Smith',
         getIdToken: vi.fn().mockResolvedValue('mock-token'),
       },
-    } as never)
+    } as unknown as UserCredential)
 
     render(<VerifyPageWrapper />)
 
