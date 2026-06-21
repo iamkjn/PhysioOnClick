@@ -139,7 +139,7 @@ export async function POST(request: Request) {
   const body = (await request.json()) as Partial<BookingPayload>;
   const payload: BookingPayload = {
     fullName: String(body.fullName || "").trim(),
-    email: String(body.email || "").trim(),
+    email: String(body.email || "").trim().toLowerCase(),
     phone: String(body.phone || "").trim(),
     service: String(body.service || "").trim(),
     appointmentDate: String(body.appointmentDate || "").trim(),
