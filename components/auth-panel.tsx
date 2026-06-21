@@ -17,7 +17,7 @@ import { ensureAppUserRecord, ensurePatientRecord } from "@/lib/patient-account"
 
 export function AuthPanel({ role }: { role: "patient" | "admin" }) {
   const router = useRouter();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "magic-link">("signin");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState(
     firebaseEnabled ? "Use Firebase Authentication to sign in securely." : "Firebase Authentication is not configured yet."
@@ -107,6 +107,32 @@ export function AuthPanel({ role }: { role: "patient" | "admin" }) {
     }
   }
 
+  async function handleMagicLink(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") || "").trim();
+    if (!email) return;
+    try {
+      setIsSubmitting(true);
+      setStatus("Sending your sign-in link…", "info");
+      const res = await fetch("/api/auth/magic-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = (await res.json()) as { ok?: boolean; error?: string };
+      if (!res.ok || !data.ok) {
+        setStatus(data.error || "Could not send the link. Please try again.", "error");
+      } else {
+        setStatus(`Sign-in link sent to ${email}. Check your inbox.`, "success");
+      }
+    } catch {
+      setStatus("Could not send the link. Please try again.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   async function handleGoogleSignIn() {
     if (!auth) {
       setStatus("Firebase Authentication is not configured. Add your environment variables first.", "error");
@@ -141,55 +167,95 @@ export function AuthPanel({ role }: { role: "patient" | "admin" }) {
     <div className="panel auth-panel">
       <div className="auth-panel-header">
         <span className="auth-panel-eyebrow">{role === "admin" ? "Secure admin access" : "Patient access"}</span>
-        <h3>{role === "admin" ? "Admin login" : isSignup ? "Create your account" : "Sign in to continue"}</h3>
+        <h3>
+          {role === "admin"
+            ? "Admin login"
+            : isSignup
+            ? "Create your account"
+            : mode === "magic-link"
+            ? "Sign in with a link"
+            : "Sign in to continue"}
+        </h3>
         <p className="muted">
           {role === "admin"
             ? "Use your secure admin credentials to access bookings, enquiries and patient operations."
+            : mode === "magic-link"
+            ? "Enter your booking email and we will send you a sign-in link. No password needed."
             : "Use the same email you want to use for bookings, saved blogs, rehab updates and secure uploads."}
         </p>
       </div>
 
-      {isPatient ? (
+      {isPatient && mode !== "magic-link" ? (
         <div className="auth-provider-stack">
           <button className="auth-provider-button auth-provider-google" disabled={isSubmitting} onClick={handleGoogleSignIn} type="button">
-            <span className="auth-provider-icon" aria-hidden="true">
-              G
-            </span>
+            <span className="auth-provider-icon" aria-hidden="true">G</span>
             <span>Continue with Google</span>
           </button>
           <div className="auth-divider">
-            <span>or use email</span>
+            <span>or use email &amp; password</span>
           </div>
         </div>
       ) : null}
 
-      <form className="auth-form" onSubmit={handleAuth}>
-        {isSignup && isPatient ? (
+      {mode === "magic-link" ? (
+        <form className="auth-form" onSubmit={handleMagicLink}>
           <label>
-            Full name
-            <input type="text" name="fullName" required minLength={2} placeholder="Your full name" />
+            Email
+            <input type="email" name="email" required placeholder="patient@example.com" />
           </label>
-        ) : null}
-        <label>
-          Email
-          <input type="email" name="email" required placeholder={role === "admin" ? "admin@physioonclick.co.uk" : "patient@example.com"} />
-        </label>
-        <label>
-          Password
-          <input type="password" name="password" required minLength={8} />
-        </label>
-        <button className="button primary" type="submit">
-          {isSubmitting ? "Please wait..." : isSignup ? "Create patient account" : "Continue"}
-        </button>
-      </form>
+          <button className="button primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Sending…" : "Send sign-in link"}
+          </button>
+        </form>
+      ) : (
+        <form className="auth-form" onSubmit={handleAuth}>
+          {isSignup && isPatient ? (
+            <label>
+              Full name
+              <input type="text" name="fullName" required minLength={2} placeholder="Your full name" />
+            </label>
+          ) : null}
+          <label>
+            Email
+            <input type="email" name="email" required placeholder={role === "admin" ? "admin@physioonclick.co.uk" : "patient@example.com"} />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" required minLength={8} />
+          </label>
+          <button className="button primary" type="submit">
+            {isSubmitting ? "Please wait..." : isSignup ? "Create patient account" : "Continue"}
+          </button>
+        </form>
+      )}
+
       {isPatient ? (
         <div className="auth-panel-footer">
-          <span className="muted">{isSignup ? "Already have an account?" : "Need a patient account?"}</span>
-          <button className="text-button" onClick={() => setMode(isSignup ? "signin" : "signup")} type="button">
-            {isSignup ? "Use sign in" : "Create account"}
+          {mode === "magic-link" ? (
+            <>
+              <span className="muted">Prefer a password?</span>
+              <button className="text-button" onClick={() => setMode("signin")} type="button">Sign in with password</button>
+            </>
+          ) : (
+            <>
+              <span className="muted">{isSignup ? "Already have an account?" : "Need a patient account?"}</span>
+              <button className="text-button" onClick={() => setMode(isSignup ? "signin" : "signup")} type="button">
+                {isSignup ? "Use sign in" : "Create account"}
+              </button>
+            </>
+          )}
+        </div>
+      ) : null}
+
+      {isPatient && mode !== "magic-link" ? (
+        <div className="auth-panel-footer" style={{ marginTop: "0.5rem" }}>
+          <span className="muted">Booked before? No password?</span>
+          <button className="text-button" onClick={() => setMode("magic-link")} type="button">
+            Send me a sign-in link
           </button>
         </div>
       ) : null}
+
       <p className={`auth-status auth-status-${messageTone}`}>{message}</p>
     </div>
   );
