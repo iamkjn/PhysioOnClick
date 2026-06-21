@@ -115,8 +115,21 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    match /patients/{userId}/{document=**} {
+    match /patients/{userId}/people/{personId}/painLogs/{date} {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    }
+
+    match /patients/{userId}/people/{personId}/assignedExercises/{exerciseId} {
+      allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    }
+
+    match /patients/{userId}/people/{personId}/exerciseLogs/{date} {
+      allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    }
+
+    match /patients/{userId}/{document=**} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow write: if isAdmin();
     }
 
     match /admin/{document=**} {
