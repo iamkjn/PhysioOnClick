@@ -17,9 +17,11 @@ class RootShell extends StatefulWidget {
   State<RootShell> createState() => _RootShellState();
 }
 
-class _RootShellState extends State<RootShell> {
+class _RootShellState extends State<RootShell> with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   bool _isAdmin = false;
+  late final AnimationController _tabFadeCtrl;
+  late final Animation<double> _fade;
 
   // Screens are instantiated once and kept alive throughout the session.
   late final List<Widget> _baseScreens = const [
@@ -32,7 +34,19 @@ class _RootShellState extends State<RootShell> {
   @override
   void initState() {
     super.initState();
+    _tabFadeCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      value: 1.0,
+    );
+    _fade = CurvedAnimation(parent: _tabFadeCtrl, curve: Curves.easeInOut);
     _checkAdminRole();
+  }
+
+  @override
+  void dispose() {
+    _tabFadeCtrl.dispose();
+    super.dispose();
   }
 
   Future<void> _checkAdminRole() async {
@@ -73,14 +87,21 @@ class _RootShellState extends State<RootShell> {
   void _onNavTap(int index) {
     final isBookingTab = index == 2;
     setState(() => _currentIndex = index);
+    // Fade in the newly selected tab from 0.
+    _tabFadeCtrl.forward(from: 0.0);
 
     if (isBookingTab) {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const WhoIsThisForScreen()),
-        );
+        // Microtask so the fade animation starts before the push overlay appears.
+        Future.microtask(() {
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const WhoIsThisForScreen()),
+            );
+          }
+        });
       }
     }
   }
@@ -93,23 +114,17 @@ class _RootShellState extends State<RootShell> {
     final safeIndex = _currentIndex.clamp(0, screens.length - 1);
 
     return Scaffold(
-      // Animated body: use a Stack with AnimatedOpacity to keep all screens
-      // alive (preserving WebView state, scroll position, etc.) while still
-      // fading between tabs.
-      body: Stack(
-        children: screens.asMap().entries.map((entry) {
-          final i = entry.key;
-          final screen = entry.value;
-          return AnimatedOpacity(
-            opacity: i == safeIndex ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeInOut,
-            child: IgnorePointer(
-              ignoring: i != safeIndex,
-              child: screen,
-            ),
-          );
-        }).toList(),
+      // IndexedStack keeps all screens alive (preserving WebView/scroll state)
+      // while only painting the selected screen. AnimatedOpacity+IgnorePointer
+      // was replaced because Platform Views (WebView) intercept OS touch events
+      // at the native layer even when Flutter marks them as non-interactive,
+      // which froze the home screen.
+      body: FadeTransition(
+        opacity: _fade,
+        child: IndexedStack(
+          index: safeIndex,
+          children: screens,
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.of(context).push(

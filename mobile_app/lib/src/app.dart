@@ -23,6 +23,7 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
   final navigatorKey = GlobalKey<NavigatorState>();
   AppLinks? _appLinks;
   Widget? _home;
+  final _splashStatus = ValueNotifier<String>('Getting things ready...');
 
   @override
   void initState() {
@@ -31,6 +32,12 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
     _initLinks();
     _initFcmListeners();
     _resolveHome();
+  }
+
+  @override
+  void dispose() {
+    _splashStatus.dispose();
+    super.dispose();
   }
 
   /// Determines the correct entry point:
@@ -53,8 +60,22 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
       return;
     }
 
-    // Onboarding done — check persistent auth
-    final user = FirebaseAuth.instance.currentUser;
+    // currentUser is synchronous and returns null on cold-start because Firebase
+    // Auth hasn't finished restoring the persisted session from disk yet.
+    // authStateChanges().first blocks until that restoration completes, so
+    // returning users go directly to RootShell instead of seeing WelcomeScreen.
+    _splashStatus.value = 'Checking your session...';
+    User? user;
+    try {
+      user = await FirebaseAuth.instance
+          .authStateChanges()
+          .first
+          .timeout(const Duration(seconds: 5));
+    } catch (_) {
+      user = FirebaseAuth.instance.currentUser;
+    }
+
+    if (!mounted) return;
     setState(() => _home = user != null ? const RootShell() : const WelcomeScreen());
   }
 
@@ -115,7 +136,7 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
 
         return null;
       },
-      home: _home ?? const SplashScreen(),
+      home: _home ?? SplashScreen(status: _splashStatus),
     );
   }
 }
