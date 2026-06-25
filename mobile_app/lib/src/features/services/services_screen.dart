@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../booking/booking_screen.dart';
+import '../booking/who_is_this_for_screen.dart';
 
 const _services = [
   (
@@ -211,11 +211,7 @@ class _ServiceCardState extends State<_ServiceCard> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const BookingScreen()),
-                          );
-                        },
+                        onPressed: () => WhoIsThisForScreen.go(context),
                         icon: const Icon(Icons.calendar_month_rounded, size: 18),
                         label: Text('Book ${s.title.split(' ').first} session'),
                         style: ElevatedButton.styleFrom(
@@ -280,11 +276,7 @@ class _BookingCTA extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const BookingScreen()),
-                );
-              },
+              onPressed: () => WhoIsThisForScreen.go(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: const Color(0xFF0891B2),

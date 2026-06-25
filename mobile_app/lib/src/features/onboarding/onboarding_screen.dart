@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../root/root_shell.dart';
+import '../../core/page_transitions.dart';
+import '../auth/welcome_screen.dart';
 
 const _kOnboardingDone = 'onboarding_done';
 
@@ -58,10 +59,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   ];
 
   void _finish() {
-    OnboardingScreen.markCompleted(); // fire-and-forget, don't block navigation
+    OnboardingScreen.markCompleted();
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const RootShell()),
+        PhysioFadeRoute(builder: (_) => const WelcomeScreen()),
       );
     }
   }

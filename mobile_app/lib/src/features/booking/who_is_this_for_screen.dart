@@ -11,6 +11,19 @@ import 'booking_screen.dart';
 class WhoIsThisForScreen extends StatelessWidget {
   const WhoIsThisForScreen({super.key});
 
+  /// Routes to [WhoIsThisForScreen] for authenticated users or directly to
+  /// [BookingScreen] (with sign-in banner) for unauthenticated users.
+  static void go(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            user != null ? const WhoIsThisForScreen() : const BookingScreen(),
+      ),
+    );
+  }
+
   Future<void> _select(
     BuildContext context, {
     required String patientName,

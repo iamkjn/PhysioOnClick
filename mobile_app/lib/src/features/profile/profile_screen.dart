@@ -7,7 +7,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../appointments/appointments_screen.dart';
-import '../auth/auth_sheet.dart';
+import '../auth/sign_in_screen.dart';
+import '../auth/sign_up_screen.dart';
+import '../../core/page_transitions.dart';
 import '../people/people_screen.dart';
 import 'exercise_video.dart';
 import 'rehab_program.dart';
@@ -39,8 +41,20 @@ class ProfileScreen extends StatelessWidget {
                   'Sign in or create an account to unlock bookings, rehab plans and secure uploads.',
                   style: theme.textTheme.bodyLarge,
                 ),
-                const SizedBox(height: 18),
-                const AuthSheet(),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).push(
+                    PhysioPageRoute(builder: (_) => const SignInScreen()),
+                  ),
+                  child: const Text('Sign in'),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton(
+                  onPressed: () => Navigator.of(context).push(
+                    PhysioPageRoute(builder: (_) => const SignUpScreen()),
+                  ),
+                  child: const Text('Create account'),
+                ),
               ],
             );
           }
@@ -51,7 +65,7 @@ class ProfileScreen extends StatelessWidget {
               Text('Patient profile', style: theme.textTheme.headlineMedium),
               const SizedBox(height: 8),
               Text(
-                'Your mobile patient area is now connected to Firebase Authentication, rehab programmes and exercise content.',
+                'Manage your appointments, rehab programme and health documents.',
                 style: theme.textTheme.bodyLarge,
               ),
               const SizedBox(height: 18),

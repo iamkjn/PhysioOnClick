@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../booking/booking_screen.dart';
+import '../booking/who_is_this_for_screen.dart';
 import '../services/services_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -181,11 +181,7 @@ class _HeroBanner extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const BookingScreen()),
-                    );
-                  },
+                  onPressed: () => WhoIsThisForScreen.go(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: const Color(0xFF0891B2),
@@ -352,11 +348,7 @@ class _QuickBookCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const BookingScreen()),
-        );
-      },
+      onTap: () => WhoIsThisForScreen.go(context),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
