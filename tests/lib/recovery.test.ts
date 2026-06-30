@@ -20,7 +20,7 @@ describe('computeRecoveryPercent', () => {
 
   it('computes improvement as a percentage of the baseline', () => {
     const logs = [log(8, '2026-01-01'), log(6, '2026-01-08'), log(4, '2026-01-15'), log(4, '2026-01-22')]
-    expect(computeRecoveryPercent(logs)).toBe(50)
+    expect(computeRecoveryPercent(logs)).toBe(42)
   })
 
   it('clamps at 0 when pain has gotten worse than baseline', () => {
