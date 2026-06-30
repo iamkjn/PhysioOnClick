@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/auth_gate_sheet.dart';
 import '../../core/widgets/avatar_widget.dart';
 import '../people/add_person_sheet.dart';
 import '../people/dependent_model.dart';
@@ -11,16 +12,21 @@ import 'booking_screen.dart';
 class WhoIsThisForScreen extends StatelessWidget {
   const WhoIsThisForScreen({super.key});
 
-  /// Routes to [WhoIsThisForScreen] for authenticated users or directly to
-  /// [BookingScreen] (with sign-in banner) for unauthenticated users.
+  /// Routes to [WhoIsThisForScreen] for authenticated users.
+  /// For unauthenticated users, shows the auth gate sheet instead of
+  /// allowing direct access to the booking flow.
   static void go(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      showAuthGateSheet(
+        context,
+        message: 'Sign in or create an account to book your appointment.',
+      );
+      return;
+    }
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) =>
-            user != null ? const WhoIsThisForScreen() : const BookingScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const WhoIsThisForScreen()),
     );
   }
 

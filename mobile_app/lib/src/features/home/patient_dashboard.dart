@@ -192,13 +192,13 @@ class _RecoveryPercentTile extends StatelessWidget {
           return _tile(const Text('Log your first check-in to see your recovery score.'));
         }
 
-        final baselineScore = baselineDocs.first.data()['score'] as int?;
+        final baselineScore = (baselineDocs.first.data()['score'] as num?)?.toInt();
 
         return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
           stream: RecoveryService.watchPainLogs(uid, personId, 3),
           builder: (context, recentSnap) {
             final recentScores = (recentSnap.data?.docs ?? const [])
-                .map((d) => d.data()['score'] as int)
+                .map((d) => (d.data()['score'] as num?)?.toInt() ?? 0)
                 .toList();
             final percent = RecoveryService.computeRecoveryPercent(
               baselineScore: baselineScore,

@@ -78,6 +78,16 @@ class RecoveryService {
         .snapshots();
   }
 
+  /// Computes the recovery improvement percentage relative to [baselineScore].
+  ///
+  /// **Windowing responsibility:** callers must pass the correct window of
+  /// recent entries via `watchPainLogs(uid, personId, 3)` — this function
+  /// operates on whatever [recentScores] it receives and cannot enforce the
+  /// 3-entry window constraint itself. Passing more or fewer entries will
+  /// silently produce a different (incorrect) average.
+  ///
+  /// Returns `null` when there is insufficient data (no baseline, baseline of
+  /// zero, or no recent scores), which the UI interprets as "Log first check-in".
   static int? computeRecoveryPercent({
     required int? baselineScore,
     required List<int> recentScores,
