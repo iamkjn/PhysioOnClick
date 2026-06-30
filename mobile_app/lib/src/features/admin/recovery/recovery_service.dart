@@ -69,6 +69,28 @@ class RecoveryService {
         .snapshots();
   }
 
+  static Stream<QuerySnapshot<Map<String, dynamic>>> watchEarliestPainLog(
+      String uid, String personId) {
+    return _personBase(uid, personId)
+        .collection('painLogs')
+        .orderBy(FieldPath.documentId, descending: false)
+        .limit(1)
+        .snapshots();
+  }
+
+  static int? computeRecoveryPercent({
+    required int? baselineScore,
+    required List<int> recentScores,
+  }) {
+    if (baselineScore == null || baselineScore == 0 || recentScores.isEmpty) {
+      return null;
+    }
+    final current =
+        recentScores.reduce((a, b) => a + b) / recentScores.length;
+    final pct = ((baselineScore - current) / baselineScore * 100).round();
+    return pct.clamp(0, 100);
+  }
+
   static Stream<QuerySnapshot<Map<String, dynamic>>> watchClinicalAssessments(
       String uid, String personId, int days) {
     return _personBase(uid, personId)
