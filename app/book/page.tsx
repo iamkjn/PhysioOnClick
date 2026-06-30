@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { CalEmbed } from "@/components/cal-embed";
+import { BookAuthGate } from "@/components/book-auth-gate";
 
 export const metadata: Metadata = {
   title: "Book an Appointment | PhysioOnClick",
@@ -17,7 +17,7 @@ export default function BookPage() {
         <p>Choose a service and a time that works for you. Your confirmation is sent instantly by email.</p>
       </section>
       <section className="page-section" style={{ paddingTop: "1rem" }}>
-        <CalEmbed />
+        <BookAuthGate />
       </section>
     </div>
   );
