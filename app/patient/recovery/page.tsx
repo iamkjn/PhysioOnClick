@@ -10,6 +10,7 @@ import { RecoveryChart } from "@/components/recovery-chart";
 import { AssignedExercises } from "@/components/assigned-exercises";
 import { AdherenceBar } from "@/components/adherence-bar";
 import { DownloadReportButton } from "@/components/download-report-button";
+import { RecoveryPercentCard } from "@/components/recovery-percent-card";
 
 export default function RecoveryPage() {
   const [uid, setUid] = useState<string | null>(null);
@@ -74,6 +75,10 @@ export default function RecoveryPage() {
       <section className="page-section dashboard-grid">
         <PainCheckIn uid={uid} personId={personId} />
         <AdherenceBar uid={uid} personId={personId} />
+      </section>
+
+      <section className="page-section">
+        <RecoveryPercentCard uid={uid} personId={personId} />
       </section>
 
       <section className="page-section">
