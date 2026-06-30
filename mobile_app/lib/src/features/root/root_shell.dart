@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/auth_gate_sheet.dart';
 import '../admin/recovery/admin_patient_list_screen.dart';
 import '../booking/booking_screen.dart';
 import '../booking/who_is_this_for_screen.dart';
@@ -86,23 +87,29 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
 
   void _onNavTap(int index) {
     final isBookingTab = index == 2;
+
+    if (isBookingTab && FirebaseAuth.instance.currentUser == null) {
+      showAuthGateSheet(
+        context,
+        message: 'Sign in or create an account to book your appointment.',
+      );
+      return;
+    }
+
     setState(() => _currentIndex = index);
     // Fade in the newly selected tab from 0.
     _tabFadeCtrl.forward(from: 0.0);
 
     if (isBookingTab) {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Microtask so the fade animation starts before the push overlay appears.
-        Future.microtask(() {
-          if (mounted) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const WhoIsThisForScreen()),
-            );
-          }
-        });
-      }
+      // Microtask so the fade animation starts before the push overlay appears.
+      Future.microtask(() {
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const WhoIsThisForScreen()),
+          );
+        }
+      });
     }
   }
 
@@ -127,9 +134,18 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const ChatPage()),
-        ),
+        onPressed: () {
+          if (FirebaseAuth.instance.currentUser == null) {
+            showAuthGateSheet(
+              context,
+              message: 'Sign in to chat with our assistant.',
+            );
+            return;
+          }
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const ChatPage()),
+          );
+        },
         backgroundColor: const Color(0xFF0891B2),
         foregroundColor: Colors.white,
         tooltip: 'Ask the assistant',
