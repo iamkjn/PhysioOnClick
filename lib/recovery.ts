@@ -20,6 +20,16 @@ export interface PainLog {
   loggedAt: Date;
 }
 
+export function computeRecoveryPercent(logs: PainLog[]): number | null {
+  if (logs.length === 0) return null;
+  const baseline = logs[0].score;
+  if (baseline === 0) return null;
+  const recent = logs.length > 4 ? logs.slice(-3) : [logs[logs.length - 1]];
+  const current = recent.reduce((sum, log) => sum + log.score, 0) / recent.length;
+  const pct = Math.round(((baseline - current) / baseline) * 100);
+  return Math.min(100, Math.max(0, pct));
+}
+
 export interface ClinicalAssessment {
   date: string;
   painScore: number;
