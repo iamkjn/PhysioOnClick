@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../core/config.dart';
 import '../auth/auth_sheet.dart';
 import 'booking_record.dart';
 
@@ -195,7 +196,7 @@ class _BookingScreenState extends State<BookingScreen> {
           onPageFinished: (_) => setState(() => _webLoading = false),
         ),
       )
-      ..loadRequest(Uri.parse('https://cal.com/physioonclick'));
+      ..loadRequest(Uri.parse(AppConfig.calComBookingUrl));
   }
 
   @override
