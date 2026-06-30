@@ -4,13 +4,17 @@
 import { useEffect, useState } from "react";
 import { getDependents, type Dependent } from "@/lib/dependents";
 
+const ADD_PERSON_VALUE = "__add_person__";
+
 interface Props {
   uid: string;
   displayName: string;
   onSelect: (personId: string, name: string) => void;
+  alwaysShow?: boolean;
+  onAddPerson?: () => void;
 }
 
-export function PersonSwitcher({ uid, displayName, onSelect }: Props) {
+export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false, onAddPerson }: Props) {
   const [dependents, setDependents] = useState<Dependent[]>([]);
   const [selected, setSelected] = useState(uid);
 
@@ -20,12 +24,16 @@ export function PersonSwitcher({ uid, displayName, onSelect }: Props) {
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const val = e.target.value;
+    if (val === ADD_PERSON_VALUE) {
+      onAddPerson?.();
+      return;
+    }
     setSelected(val);
     const name = val === uid ? displayName : (dependents.find((d) => d.id === val)?.name ?? "");
     onSelect(val, name);
   }
 
-  if (dependents.length === 0) return null;
+  if (dependents.length === 0 && !alwaysShow) return null;
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
@@ -51,6 +59,7 @@ export function PersonSwitcher({ uid, displayName, onSelect }: Props) {
             {dep.name} ({dep.relationship})
           </option>
         ))}
+        {onAddPerson ? <option value={ADD_PERSON_VALUE}>+ Add a person</option> : null}
       </select>
     </div>
   );
