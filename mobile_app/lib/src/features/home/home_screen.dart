@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../booking/who_is_this_for_screen.dart';
 import '../services/services_screen.dart';
+import 'patient_dashboard.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -17,7 +18,16 @@ class HomeScreen extends StatelessWidget {
         children: [
           _Header(),
           const SizedBox(height: 20),
-          _HeroBanner(theme: theme),
+          StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              final user = snapshot.data;
+              if (user != null) {
+                return PatientDashboard(user: user);
+              }
+              return _HeroBanner(theme: theme);
+            },
+          ),
           const SizedBox(height: 24),
           _TrustBar(theme: theme),
           const SizedBox(height: 28),
