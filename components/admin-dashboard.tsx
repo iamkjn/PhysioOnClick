@@ -1,15 +1,17 @@
 "use client";
-import { signOut, getAuth } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { useState } from "react";
+import { auth } from "@/lib/firebase";
 
 type Tab = "bookings" | "enquiries" | "stats";
 
 export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<Tab>("bookings");
-  const user = getAuth().currentUser;
+  const user = auth?.currentUser;
 
   async function handleSignOut() {
-    await signOut(getAuth());
+    if (!auth) return;
+    await signOut(auth);
     window.location.reload();
   }
 

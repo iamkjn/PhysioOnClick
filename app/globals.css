@@ -16,6 +16,8 @@
   --color-error:         #DC2626;
   --color-error-dark:    #B91C1C;
   --color-warning:       #D97706;
+  --color-spinner-track:  rgba(255, 255, 255, 0.15);
+  --shadow-card:          0 8px 40px rgba(0, 0, 0, 0.3);
   --font-serif: 'DM Serif Display', Georgia, serif;
   --font-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
 

@@ -16,7 +16,7 @@ export function AdminAuthGate() {
   if (status === "loading") {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--color-navy)" }}>
-        <div style={{ width: 48, height: 48, borderRadius: "50%", border: "4px solid rgba(255,255,255,0.15)", borderTopColor: "var(--color-teal)", animation: "spin 0.8s linear infinite" }} />
+        <div style={{ width: 48, height: 48, borderRadius: "50%", border: "4px solid var(--color-spinner-track)", borderTopColor: "var(--color-teal)", animation: "spin 0.8s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
