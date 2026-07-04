@@ -5,6 +5,7 @@ import 'package:app_links/app_links.dart';
 
 import 'core/page_transitions.dart';
 import 'core/theme.dart';
+import 'core/widgets/connectivity_wrapper.dart';
 import 'features/appointments/appointment_detail_screen.dart';
 import 'features/auth/welcome_screen.dart';
 import 'features/blog/blog_detail_screen.dart';
@@ -136,7 +137,9 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
 
         return null;
       },
-      home: _home ?? SplashScreen(status: _splashStatus),
+      home: ConnectivityWrapper(
+        child: _home ?? SplashScreen(status: _splashStatus),
+      ),
     );
   }
 }
