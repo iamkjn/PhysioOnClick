@@ -2,6 +2,9 @@
 import { signOut } from "firebase/auth";
 import { useState } from "react";
 import { auth } from "@/lib/firebase";
+import { AdminBookingsTable } from "@/components/admin-bookings-table";
+import { AdminEnquiriesTable } from "@/components/admin-enquiries-table";
+import { AdminLiveStats } from "@/components/admin-live-stats";
 
 type Tab = "bookings" | "enquiries" | "stats";
 
@@ -63,9 +66,9 @@ export function AdminDashboard() {
 
       {/* Tab content — placeholder divs replaced in Tasks 2–5 */}
       <main style={{ maxWidth: 1340, margin: "0 auto", padding: "2rem 1.5rem" }}>
-        {activeTab === "bookings" && <div style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>Bookings table loading…</div>}
-        {activeTab === "enquiries" && <div style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>Enquiries table loading…</div>}
-        {activeTab === "stats" && <div style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>Stats loading…</div>}
+        {activeTab === "bookings"  && <AdminBookingsTable />}
+        {activeTab === "enquiries" && <AdminEnquiriesTable />}
+        {activeTab === "stats"     && <AdminLiveStats />}
       </main>
     </div>
   );
