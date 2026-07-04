@@ -2401,3 +2401,85 @@ textarea:focus {
 .empty-state .btn-cta--gold:hover {
   background: var(--color-gold-dark);
 }
+
+/* ── Confirm dialog ────────────────────────────────────────── */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(13, 27, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.confirm-dialog {
+  background: var(--color-surface);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(13, 27, 42, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.confirm-dialog h3 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.confirm-dialog p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.confirm-dialog .btn-cancel {
+  padding: 0.65rem 1.25rem;
+  background: none;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+  font: 600 0.9375rem var(--font-sans);
+  color: var(--color-navy);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.confirm-dialog .btn-cancel:hover {
+  border-color: var(--color-teal);
+}
+
+.confirm-dialog .btn-confirm {
+  padding: 0.65rem 1.25rem;
+  background: var(--color-teal);
+  border: none;
+  border-radius: 10px;
+  font: 600 0.9375rem var(--font-sans);
+  color: white;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.confirm-dialog .btn-confirm:hover {
+  background: var(--color-teal-dark);
+}
+
+.confirm-dialog .btn-confirm--destructive {
+  background: var(--color-error);
+}
+
+.confirm-dialog .btn-confirm--destructive:hover {
+  background: #B91C1C;
+}
