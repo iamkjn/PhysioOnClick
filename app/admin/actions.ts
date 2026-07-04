@@ -14,6 +14,9 @@ export interface PublishSummaryInput {
   nextSteps: string;
   followUpWeeks: number;
   service: string;
+  painScore: number;
+  recoveryPercent: number;
+  sessionOutcome: "improving" | "stable" | "setback";
 }
 
 export async function publishSummary(
