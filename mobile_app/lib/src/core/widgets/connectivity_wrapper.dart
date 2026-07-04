@@ -25,7 +25,10 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
   @override
   void initState() {
     super.initState();
-    // Subscribe to changes — no initial check needed; assume online at start.
+    // Seed from actual state so launch-while-offline shows the offline screen.
+    Connectivity().checkConnectivity().then((results) {
+      if (mounted && _isNone(results)) setState(() => _isOffline = true);
+    });
     _sub = Connectivity().onConnectivityChanged.listen((results) {
       final offline = _isNone(results);
       if (offline != _isOffline && mounted) {
