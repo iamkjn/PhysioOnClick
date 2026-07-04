@@ -55,11 +55,15 @@ export function AdminEnquiriesTable() {
     });
   }, []);
 
-  function cycleStatus(id: string, current: string) {
+  async function cycleStatus(id: string, current: string) {
     const next = STATUS_CYCLE[current] ?? "new";
     setEnquiries((prev) => prev.map((e) => e.id === id ? { ...e, status: next } : e));
     if (!db) return;
-    updateDoc(doc(db, "enquiries", id), { status: next });
+    try {
+      await updateDoc(doc(db, "enquiries", id), { status: next });
+    } catch {
+      setEnquiries((prev) => prev.map((e) => e.id === id ? { ...e, status: current } : e));
+    }
   }
 
   const newCount = enquiries.filter((e) => e.status === "new").length;

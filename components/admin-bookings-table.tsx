@@ -11,6 +11,8 @@ type BookingRecord = {
   email: string;
   service: string;
   appointmentLabel: string;
+  appointmentDate: string;
+  appointmentTime: string;
   status: string;
   calBookingUid: string;
   patientName: string;
@@ -30,9 +32,10 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   cancelled: { bg: "#FEE2E2",                  color: "var(--color-error)" },
 };
 
-function resolveStatus(stored: string, appointmentLabel: string): string {
+function resolveStatus(stored: string, appointmentDate: string, appointmentTime: string): string {
   if (stored === "cancelled") return "cancelled";
-  const date = new Date(appointmentLabel);
+  if (!appointmentDate) return stored;
+  const date = new Date(`${appointmentDate}T${appointmentTime || "00:00"}:00`);
   if (isNaN(date.getTime())) return stored;
   return date < new Date() ? "completed" : "upcoming";
 }
@@ -54,6 +57,8 @@ export function AdminBookingsTable() {
           email:            String(d.email || ""),
           service:          String(d.service || ""),
           appointmentLabel: String(d.appointmentLabel || (d.appointmentDate && d.appointmentTime ? `${d.appointmentDate} ${d.appointmentTime}` : "TBC")),
+          appointmentDate:  String(d.appointmentDate || ""),
+          appointmentTime:  String(d.appointmentTime || ""),
           status:           String(d.status || "pending"),
           calBookingUid:    String(d.calBookingUid || ""),
           patientName:      String(d.patientName || d.fullName || d.name || "Patient"),
@@ -66,7 +71,7 @@ export function AdminBookingsTable() {
     });
   }, []);
 
-  const resolved = bookings.map((b) => ({ ...b, displayStatus: resolveStatus(b.status, b.appointmentLabel) }));
+  const resolved = bookings.map((b) => ({ ...b, displayStatus: resolveStatus(b.status, b.appointmentDate, b.appointmentTime) }));
 
   const counts: Record<StatusFilter, number> = {
     all:       resolved.length,

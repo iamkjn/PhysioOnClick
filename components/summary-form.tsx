@@ -41,7 +41,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   const [form, setForm] = useState({
     painScore: 5,
     recoveryPercent: 50,
-    sessionOutcome: "improving" as Outcome,
+    sessionOutcome: null as Outcome | null,
     workedOn: "",
     exercises: "",
     nextSteps: "",
@@ -63,10 +63,23 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   }, [open]);
 
   async function handlePublish() {
-    if (!form.workedOn || !form.exercises || !form.nextSteps) return;
+    if (!form.workedOn || !form.exercises || !form.nextSteps || form.sessionOutcome === null) return;
     setSaving(true);
     try {
-      const input: PublishSummaryInput = { bookingId: booking.id, patientId: booking.patientId, patientType: booking.patientType, patientName: booking.patientName, service: booking.service, ...form };
+      const input: PublishSummaryInput = {
+        bookingId: booking.id,
+        patientId: booking.patientId,
+        patientType: booking.patientType,
+        patientName: booking.patientName,
+        service: booking.service,
+        painScore: form.painScore,
+        recoveryPercent: form.recoveryPercent,
+        sessionOutcome: form.sessionOutcome as Outcome,
+        workedOn: form.workedOn,
+        exercises: form.exercises,
+        nextSteps: form.nextSteps,
+        followUpWeeks: form.followUpWeeks,
+      };
       await publishSummary(input);
       if (onPublished) onPublished();
       else window.location.reload();
@@ -76,7 +89,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
     }
   }
 
-  const canPublish = !!form.workedOn && !!form.exercises && !!form.nextSteps;
+  const canPublish = !!form.workedOn && !!form.exercises && !!form.nextSteps && form.sessionOutcome !== null;
 
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: "var(--color-text-secondary)", display: "block", marginBottom: 4, fontFamily: "var(--font-sans)", textTransform: "uppercase", letterSpacing: "0.06em" };
   const textareaStyle: React.CSSProperties = { width: "100%", border: "1.5px solid var(--color-border)", borderRadius: 10, padding: "0.5rem 0.75rem", fontSize: 14, resize: "vertical" as const, boxSizing: "border-box" as const, fontFamily: "var(--font-sans)", color: "var(--color-navy)" };
@@ -248,7 +261,13 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
           <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "var(--color-text-secondary)", fontSize: 14, cursor: "pointer", fontFamily: "var(--font-sans)", padding: "0.25rem" }}>
             Cancel
           </button>
-          {!canPublish && <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, textAlign: "center" as const, fontFamily: "var(--font-sans)" }}>Fill in all three session note fields to publish.</p>}
+          {!canPublish && (
+            <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, textAlign: "center" as const, fontFamily: "var(--font-sans)" }}>
+              {!form.sessionOutcome
+                ? "Select a session outcome above to publish."
+                : "Fill in all three session note fields to publish."}
+            </p>
+          )}
         </div>
       </div>
     </>
