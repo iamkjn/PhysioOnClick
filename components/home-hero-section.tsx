@@ -1,20 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { onAuthStateChanged, type User } from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
 import { HomeDashboard } from "@/components/home-dashboard";
+import { useToast } from "@/components/toast-provider";
 
 export function HomeHeroSection({ founderName }: { founderName: string }) {
   const [user, setUser] = useState<User | null>(null);
+  const { show } = useToast();
+  const welcomedRef = useRef(false);
 
   useEffect(() => {
     if (!auth) return;
-    return onAuthStateChanged(auth, setUser);
-  }, []);
+    return onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      if (u && !welcomedRef.current) {
+        welcomedRef.current = true;
+        show(`Welcome back, ${u.displayName?.split(' ')[0] || 'there'}!`, 'info');
+      }
+    });
+  }, [show]);
 
   if (user) {
     return <HomeDashboard user={user} />;

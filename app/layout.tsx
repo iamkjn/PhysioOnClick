@@ -6,6 +6,7 @@ import { ChatWidget } from "@/components/chat-widget";
 import { ConnectivityOverlay } from "@/components/connectivity-overlay";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { ToastProvider } from "@/components/toast-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
@@ -31,12 +32,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body>
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
-        <Analytics />
-        <ChatWidget />
-        <ConnectivityOverlay />
+        <ToastProvider>
+          <SiteHeader />
+          <main>{children}</main>
+          <SiteFooter />
+          <Analytics />
+          <ChatWidget />
+          <ConnectivityOverlay />
+        </ToastProvider>
       </body>
     </html>
   );
