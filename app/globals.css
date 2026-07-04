@@ -14,6 +14,7 @@
   --color-text-secondary:#4A5568;
   --color-success:       #059669;
   --color-error:         #DC2626;
+  --color-error-dark:    #B91C1C;
   --color-warning:       #D97706;
   --font-serif: 'DM Serif Display', Georgia, serif;
   --font-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
@@ -2481,5 +2482,5 @@ textarea:focus {
 }
 
 .confirm-dialog .btn-confirm--destructive:hover {
-  background: #B91C1C;
+  background: var(--color-error-dark);
 }
