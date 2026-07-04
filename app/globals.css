@@ -1,14 +1,33 @@
 :root {
-  --bg: #f4f7fa;
-  --surface: #ffffff;
-  --surface-alt: #edf4fa;
-  --ink: #162232;
-  --muted: #697788;
-  --line: #d9e1e7;
-  --primary: #2380c8;
-  --primary-dark: #1f5f93;
-  --shadow: 0 10px 30px rgba(22, 34, 50, 0.05);
-  --shell: 1340px;
+  /* ── Design tokens ─────────────────────────────────────────── */
+  --color-navy:          #0D1B2A;
+  --color-teal:          #0B6E8E;
+  --color-teal-dark:     #084F68;
+  --color-teal-light:    #E6F3F8;
+  --color-gold:          #B08030;
+  --color-gold-light:    #FDF6E9;
+  --color-bg:            #F7FAFC;
+  --color-surface:       #FFFFFF;
+  --color-border:        #E2E8F0;
+  --color-text-primary:  #0D1B2A;
+  --color-text-secondary:#4A5568;
+  --color-success:       #059669;
+  --color-error:         #DC2626;
+  --color-warning:       #D97706;
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
+
+  /* ── Legacy aliases (keeps all existing CSS classes working) ── */
+  --bg:          var(--color-bg);
+  --surface:     var(--color-surface);
+  --surface-alt: var(--color-teal-light);
+  --ink:         var(--color-navy);
+  --muted:       var(--color-text-secondary);
+  --line:        var(--color-border);
+  --primary:     var(--color-teal);
+  --primary-dark:var(--color-teal-dark);
+  --shadow:      0 2px 16px rgba(11, 110, 142, 0.08);
+  --shell:       1340px;
 }
 
 /* make taps happen instantly on touch devices */
@@ -30,7 +49,7 @@ button {
 
 body {
   margin: 0;
-  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   color: var(--ink);
   background: var(--bg);
 }
@@ -61,6 +80,7 @@ h4 {
   margin: 0 0 1rem;
   line-height: 1.05;
   letter-spacing: -0.03em;
+  font-family: var(--font-serif);
 }
 
 p {
