@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/app_colors.dart';
+import '../../core/widgets/app_toast.dart';
 import '../../core/widgets/auth_gate_sheet.dart';
 import '../admin/recovery/admin_patient_list_screen.dart';
 import '../booking/booking_screen.dart';
@@ -42,6 +44,21 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
     );
     _fade = CurvedAnimation(parent: _tabFadeCtrl, curve: Curves.easeInOut);
     _checkAdminRole();
+    _showWelcomeToast();
+  }
+
+  void _showWelcomeToast() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+      final firstName = user.displayName?.split(' ').first ?? 'there';
+      AppToast.show(
+        context,
+        message: 'Welcome back, $firstName!',
+        type: ToastType.info,
+      );
+    });
   }
 
   @override
@@ -146,7 +163,7 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
             MaterialPageRoute(builder: (_) => const ChatPage()),
           );
         },
-        backgroundColor: const Color(0xFF0891B2),
+        backgroundColor: AppColors.teal,
         foregroundColor: Colors.white,
         tooltip: 'Ask the assistant',
         child: const Icon(Icons.chat_bubble_rounded),
@@ -197,13 +214,13 @@ class _AnimatedNavBarState extends State<_AnimatedNavBar> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         border: Border(
-          top: BorderSide(color: const Color(0xFFC8E8F0), width: 1),
+          top: BorderSide(color: AppColors.border, width: 1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.navy.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -302,12 +319,12 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
                 height: 36,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF0891B2), Color(0xFF0E7490)],
+                    colors: [AppColors.teal, AppColors.tealDark],
                   ),
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF0891B2).withValues(alpha: 0.35),
+                      color: AppColors.teal.withValues(alpha: 0.35),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -363,7 +380,7 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
                     key: ValueKey(widget.selected),
                     color: widget.selected
                         ? widget.primaryColor
-                        : const Color(0xFF5E7A84),
+                        : AppColors.textSecondary,
                     size: 22,
                   ),
                 ),
@@ -376,7 +393,7 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
                   fontWeight: widget.selected ? FontWeight.w700 : FontWeight.w500,
                   color: widget.selected
                       ? widget.primaryColor
-                      : const Color(0xFF5E7A84),
+                      : AppColors.textSecondary,
                 ),
                 child: Text(widget.label),
               ),
