@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/app_colors.dart';
 import '../../core/page_transitions.dart';
 import '../auth/welcome_screen.dart';
 
@@ -164,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Container(
                           height: 54,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: _page < _pages.length - 1 ? Colors.white : AppColors.gold,
                             borderRadius: BorderRadius.circular(18),
                           ),
                           alignment: Alignment.center,
@@ -173,16 +175,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             children: [
                               Text(
                                 _page < _pages.length - 1 ? 'Next' : 'Get started',
-                                style: const TextStyle(
+                                style: GoogleFonts.dmSans(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF0F2D3A),
+                                  fontWeight: FontWeight.w700,
+                                  color: _page < _pages.length - 1 ? AppColors.navy : Colors.white,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Icon(
+                              Icon(
                                 Icons.arrow_forward_rounded,
-                                color: Color(0xFF0891B2),
+                                color: _page < _pages.length - 1 ? AppColors.teal : Colors.white,
                                 size: 20,
                               ),
                             ],
@@ -246,18 +248,16 @@ class _OnboardingPage extends StatelessWidget {
               const SizedBox(height: 36),
               Text(
                 title,
-                style: const TextStyle(
+                style: GoogleFonts.dmSerifDisplay(
                   color: Colors.white,
                   fontSize: 40,
-                  fontWeight: FontWeight.w800,
                   height: 1.05,
-                  letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 18),
               Text(
                 subtitle,
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: Colors.white.withValues(alpha: 0.82),
                   fontSize: 16,
                   height: 1.6,
