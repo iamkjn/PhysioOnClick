@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getPainLogs, computeRecoveryPercent } from "@/lib/recovery";
+import { Skeleton } from "@/components/skeleton";
 
 interface Props {
   uid: string;
@@ -21,7 +22,10 @@ export function RecoveryPercentCard({ uid, personId }: Props) {
   if (percent === undefined) {
     return (
       <div className="panel recovery-percent-card">
-        <p className="muted">Loading recovery score…</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <Skeleton height="2.5rem" width="80px" />
+          <Skeleton height="1rem" width="140px" />
+        </div>
       </div>
     );
   }

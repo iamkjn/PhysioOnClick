@@ -7,6 +7,7 @@ import type { User } from "firebase/auth";
 
 import { PersonSwitcher } from "@/components/person-switcher";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
+import { Skeleton } from "@/components/skeleton";
 
 export function HomeDashboard({ user }: { user: User }) {
   const router = useRouter();
