@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { Analytics } from "@/components/analytics";
 import { ChatWidget } from "@/components/chat-widget";
+import { ConnectivityOverlay } from "@/components/connectivity-overlay";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteFooter />
         <Analytics />
         <ChatWidget />
+        <ConnectivityOverlay />
       </body>
     </html>
   );
