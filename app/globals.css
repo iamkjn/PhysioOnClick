@@ -6,6 +6,7 @@
   --color-teal-light:    #E6F3F8;
   --color-gold:          #B08030;
   --color-gold-light:    #FDF6E9;
+  --color-gold-dark:     #8C6420;
   --color-bg:            #F7FAFC;
   --color-surface:       #FFFFFF;
   --color-border:        #E2E8F0;
@@ -2398,5 +2399,5 @@ textarea:focus {
 }
 
 .empty-state .btn-cta--gold:hover {
-  background: #8C6420;
+  background: var(--color-gold-dark);
 }
