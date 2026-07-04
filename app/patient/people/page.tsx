@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
+import { EmptyState } from "@/components/empty-state";
 import {
   getDependents,
   addDependent,
@@ -320,9 +321,12 @@ export default function PeoplePage() {
         )}
 
         {dependents.length === 0 && !showForm && (
-          <p style={{ color: "#5E7A84" }}>
-            No people added yet. Add a family member or friend to book on their behalf.
-          </p>
+          <EmptyState
+            illustration="people"
+            title="Just you for now"
+            body="Add a family member or friend to book appointments on their behalf."
+            cta={{ label: 'Add a Person', onClick: () => setShowForm(true) }}
+          />
         )}
       </div>
 

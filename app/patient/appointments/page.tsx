@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
+import { EmptyState } from "@/components/empty-state";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 
 export default function AppointmentsPage() {
@@ -42,7 +43,12 @@ export default function AppointmentsPage() {
       <h1 style={{ color: "#0C2A38" }}>My Appointments</h1>
       {loading && <p style={{ color: "#5E7A84" }}>Loading…</p>}
       {!loading && bookings.length === 0 && (
-        <p style={{ color: "#5E7A84" }}>No appointments yet.</p>
+        <EmptyState
+          illustration="calendar"
+          title="No appointments yet"
+          body="Book your first session with a physio today."
+          cta={{ label: 'Book Now', href: '/book', variant: 'gold' }}
+        />
       )}
       {upcoming.length > 0 && (
         <section style={{ marginBottom: "2rem" }}>
