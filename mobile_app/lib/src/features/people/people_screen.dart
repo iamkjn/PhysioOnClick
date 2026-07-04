@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/app_colors.dart';
 import '../../core/widgets/avatar_widget.dart';
+import '../../core/widgets/empty_state.dart';
 import 'add_person_sheet.dart';
 import 'dependent_model.dart';
 import 'people_repository.dart';
@@ -39,6 +41,24 @@ class PeopleScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           final people = snap.data ?? [];
+
+          if (people.isEmpty) {
+            return EmptyState(
+              title: 'Just you for now',
+              body: 'Add a family member or friend to book appointments on their behalf.',
+              icon: Icons.group_outlined,
+              cta: FilledButton(
+                onPressed: () => AddPersonSheet.show(context),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(160, 48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text('Add a Person'),
+              ),
+            );
+          }
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),

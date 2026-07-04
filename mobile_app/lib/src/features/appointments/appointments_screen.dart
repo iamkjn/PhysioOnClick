@@ -1,12 +1,13 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 import '../../core/api_client.dart';
+import '../../core/app_colors.dart';
 import '../../core/widgets/avatar_widget.dart';
+import '../../core/widgets/empty_state.dart';
+import '../booking/who_is_this_for_screen.dart';
 import 'appointment_detail_screen.dart';
 import 'appointments_repository.dart';
 import 'booking_model.dart';
@@ -69,26 +70,21 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
           final past = all.where((b) => !b.isUpcoming).toList();
 
           if (all.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.calendar_today_rounded,
-                    size: 48,
-                    color: Color(0xFF9ADCEE),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'No appointments yet',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Book a session to get started',
-                    style: TextStyle(color: Color(0xFF5E7A84)),
-                  ),
-                ],
+            return EmptyState(
+              title: 'No appointments yet',
+              body: 'Book your first session with a physio today.',
+              icon: Icons.calendar_today_outlined,
+              cta: FilledButton(
+                onPressed: () {
+                  WhoIsThisForScreen.go(context);
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(160, 48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text('Book Now'),
               ),
             );
           }
