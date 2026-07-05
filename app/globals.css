@@ -200,6 +200,7 @@ p {
   color: var(--muted);
   font-weight: 500;
   white-space: nowrap;
+  position: relative;
 }
 
 .button {
@@ -219,6 +220,8 @@ p {
 .button.primary {
   background: var(--primary);
   color: white;
+  position: relative;
+  overflow: hidden;
 }
 
 .button.secondary {
@@ -2673,4 +2676,86 @@ textarea:focus {
     transform: none;
     transition: none;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Micro-interactions: primary button shimmer
+   ──────────────────────────────────────────────────────────── */
+.button.primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 60%
+  );
+  transform: skewX(-15deg);
+  transition: left 0s;
+  pointer-events: none;
+}
+.button.primary:hover {
+  box-shadow: 0 8px 24px rgba(11, 110, 142, 0.35);
+}
+.button.primary:hover::after {
+  left: 125%;
+  transition: left 400ms ease;
+}
+.button.primary:active {
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Micro-interactions: secondary button border highlight
+   ──────────────────────────────────────────────────────────── */
+.button.secondary:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Micro-interactions: call-link underline slide
+   ──────────────────────────────────────────────────────────── */
+.call-link::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-teal);
+  transition: width 200ms ease;
+}
+.call-link:hover::after {
+  width: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Micro-interactions: card hover lift
+   Override the existing combined selector (cards get -4px, buttons keep -2px)
+   .simple-service-card already has its own hover — do not re-declare it
+   ──────────────────────────────────────────────────────────── */
+.simple-blog-card,
+.simple-price-card,
+.simple-package-card,
+.contact-form-card,
+.sessions-include-card,
+.service-split-card,
+.about-specialism-card {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.simple-blog-card:hover,
+.simple-price-card:hover,
+.simple-package-card:hover,
+.contact-form-card:hover,
+.sessions-include-card:hover,
+.service-split-card:hover,
+.about-specialism-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(13, 27, 42, 0.10);
 }
