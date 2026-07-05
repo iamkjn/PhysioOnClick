@@ -2795,3 +2795,32 @@ textarea:focus {
     box-shadow: none;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Page transitions: View Transitions API
+   ──────────────────────────────────────────────────────────── */
+@keyframes vt-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+::view-transition-new(root) {
+  animation: vt-fade-up 220ms ease;
+}
+
+::view-transition-old(root) {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(root),
+  ::view-transition-old(root) {
+    animation: none;
+  }
+}

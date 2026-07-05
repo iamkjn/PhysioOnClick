@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@/components/analytics";
 import { ChatWidget } from "@/components/chat-widget";
 import { ConnectivityOverlay } from "@/components/connectivity-overlay";
+import { ScrollReset } from "@/components/scroll-reset";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ToastProvider } from "@/components/toast-provider";
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body>
         <ToastProvider>
+          <ScrollReset />
           <SiteHeader />
           <main>{children}</main>
           <SiteFooter />
