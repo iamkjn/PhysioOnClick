@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { BlogDirectory } from "@/components/blog-directory";
 import { blogCategories } from "@/lib/blog";
 import { getPublicBlogs } from "@/lib/public-content";
+import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
   title: "Physiotherapy Blog | PhysioOnClick",
@@ -23,7 +24,9 @@ export default function BlogPage() {
         <p>Expert advice, exercise guides and evidence-based articles on physiotherapy and rehabilitation.</p>
       </section>
 
-      <BlogDirectory articles={articles} categories={blogCategories} />
+      <Reveal direction="up">
+        <BlogDirectory articles={articles} categories={blogCategories} />
+      </Reveal>
     </div>
   );
 }
