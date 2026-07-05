@@ -2759,3 +2759,39 @@ textarea:focus {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(13, 27, 42, 0.10);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .button.primary::after {
+    display: none;
+  }
+  .button.primary:hover,
+  .button.primary:active {
+    transform: none;
+    box-shadow: none;
+  }
+  .button.secondary:hover {
+    transition: none;
+  }
+  .call-link::after {
+    display: none;
+  }
+  .simple-blog-card,
+  .simple-price-card,
+  .simple-package-card,
+  .contact-form-card,
+  .sessions-include-card,
+  .service-split-card,
+  .about-specialism-card {
+    transition: none;
+  }
+  .simple-blog-card:hover,
+  .simple-price-card:hover,
+  .simple-package-card:hover,
+  .contact-form-card:hover,
+  .sessions-include-card:hover,
+  .service-split-card:hover,
+  .about-specialism-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
