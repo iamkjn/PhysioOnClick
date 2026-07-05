@@ -47,7 +47,7 @@ export function SiteHeader() {
       <header className={`header-wrap simple-header${scrolled ? " header-wrap--scrolled" : ""}`}>
         <div className="site-shell">
           <div className="nav-row simple-nav">
-            <Link className="brand simple-brand" href="/" viewTransition>
+            <Link className="brand simple-brand" href="/">
               <span className="brand-mark">P</span>
               <div>
                 <strong>PhysioOnClick</strong>
@@ -59,17 +59,16 @@ export function SiteHeader() {
                   key={item.href}
                   className={isActive(item.href) ? "active" : undefined}
                   href={item.href}
-                  viewTransition
                 >
                   {item.label}
                 </Link>
               ))}
             </nav>
             <div className="nav-actions simple-nav-actions">
-              <Link className="call-link" href="/contact" viewTransition>
+              <Link className="call-link" href="/contact">
                 Contact Us
               </Link>
-              <Link className="button primary small" href="/book" viewTransition>
+              <Link className="button primary small" href="/book">
                 Book Now
               </Link>
             </div>
@@ -102,7 +101,6 @@ export function SiteHeader() {
             href={item.href}
             className={`mobile-nav-link${isActive(item.href) ? " active" : ""}`}
             onClick={() => setMenuOpen(false)}
-            viewTransition
           >
             {item.label}
           </Link>
@@ -111,7 +109,6 @@ export function SiteHeader() {
           className="button primary mobile-nav-book"
           href="/book"
           onClick={() => setMenuOpen(false)}
-          viewTransition
         >
           Book Now
         </Link>
