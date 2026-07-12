@@ -635,6 +635,85 @@ No commit for this task — no files changed.
 
 ---
 
+### Task 5: Remove home-visit / in-person copy from the homepage hero and root metadata
+
+**Files:**
+- Modify: `components/home-hero-section.tsx:43,49`
+- Modify: `app/layout.tsx:14,19`
+
+**Interfaces:** None — pure JSX/string content edits, no new props, functions, or exports.
+
+- [ ] **Step 1: Homepage hero badge and copy — `components/home-hero-section.tsx`**
+
+Old:
+```tsx
+        <span className="location-pill">Glasgow & Online Across the UK</span>
+        <h1>
+          Expert Physiotherapy,
+          <span> One Click Away</span>
+        </h1>
+        <p className="home-hero-copy">
+          Evidence-based physiotherapy by {founderName}, HCPC registered physiotherapist. In-person in Glasgow or
+          online consultations across the UK.
+        </p>
+```
+
+New:
+```tsx
+        <span className="location-pill">Online Across the UK</span>
+        <h1>
+          Expert Physiotherapy,
+          <span> One Click Away</span>
+        </h1>
+        <p className="home-hero-copy">
+          Evidence-based physiotherapy by {founderName}, HCPC registered physiotherapist. Online consultations
+          across the UK.
+        </p>
+```
+
+- [ ] **Step 2: Root metadata title/description — `app/layout.tsx`**
+
+Old:
+```tsx
+  title: "PhysioOnClick | Physiotherapy in Glasgow and Online Across the UK",
+```
+
+New:
+```tsx
+  title: "PhysioOnClick | Online Physiotherapy Across the UK",
+```
+
+Old:
+```tsx
+    title: "PhysioOnClick",
+    description: "Evidence-based physiotherapy and rehabilitation in Glasgow and online across the UK.",
+```
+
+New:
+```tsx
+    title: "PhysioOnClick",
+    description: "Evidence-based online physiotherapy and rehabilitation across the UK.",
+```
+
+- [ ] **Step 3: Verify no home-visit/in-person copy remains**
+
+Run: `grep -niE "in-person in glasgow|glasgow & online|in glasgow and online" components/home-hero-section.tsx app/layout.tsx`
+Expected: no output
+
+- [ ] **Step 4: Build check**
+
+Run: `npm run build`
+Expected: build completes with no errors
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add components/home-hero-section.tsx app/layout.tsx
+git commit -m "content: remove home-visit/in-person copy from homepage hero and root metadata"
+```
+
+---
+
 ## Self-Review Notes
 
 - **Spec coverage:** Part A → Task 1 + Task 2 (Glasgow page called out separately since it's a full content rewrite, not a one-line edit). Part B → Task 4. Part C → Task 3. All three spec parts have a task.
