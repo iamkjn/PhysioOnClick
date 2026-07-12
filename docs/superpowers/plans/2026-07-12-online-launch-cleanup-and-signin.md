@@ -805,6 +805,59 @@ git commit -m "content: remove home-visit/in-person copy from chat widget and te
 
 ---
 
+### Task 7: Remove the Glasgow map embed from the Contact page
+
+Found by the final whole-branch review, confirmed by the user: the Contact page's embedded Google Map of Glasgow sits directly below text that was already changed to "Online consultations across the UK" (Task 1), and visually implies a physical clinic to visit. The user asked to remove it.
+
+**Files:**
+- Modify: `app/contact/page.tsx:24-26`
+
+**Interfaces:** None — removes a self-contained JSX block, no props/exports affected.
+
+- [ ] **Step 1: Remove the map card — `app/contact/page.tsx`**
+
+Old:
+```tsx
+            <div className="contact-info-list">
+              <div><strong>Location</strong><span>Online consultations across the UK</span></div>
+              <div><strong>Email</strong><span>hello@physioonclick.co.uk</span></div>
+              <div><strong>Phone</strong><span>Contact via form</span></div>
+              <div><strong>Hours</strong><span>Mon-Fri: 8am-6pm<br />Sat: 9am-1pm</span></div>
+            </div>
+            <div className="contact-map-card">
+              <iframe title="Glasgow map" src="https://www.google.com/maps?q=Glasgow%20UK&output=embed" loading="lazy" />
+            </div>
+```
+
+New:
+```tsx
+            <div className="contact-info-list">
+              <div><strong>Location</strong><span>Online consultations across the UK</span></div>
+              <div><strong>Email</strong><span>hello@physioonclick.co.uk</span></div>
+              <div><strong>Phone</strong><span>Contact via form</span></div>
+              <div><strong>Hours</strong><span>Mon-Fri: 8am-6pm<br />Sat: 9am-1pm</span></div>
+            </div>
+```
+
+- [ ] **Step 2: Verify no map/iframe reference remains on this page**
+
+Run: `grep -n "iframe\|contact-map-card\|Glasgow map" app/contact/page.tsx`
+Expected: no output
+
+- [ ] **Step 3: Build check**
+
+Run: `npm run build`
+Expected: build completes with no errors
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add app/contact/page.tsx
+git commit -m "content: remove Glasgow map embed from contact page"
+```
+
+---
+
 ## Self-Review Notes
 
 - **Spec coverage:** Part A → Task 1 + Task 2 (Glasgow page called out separately since it's a full content rewrite, not a one-line edit). Part B → Task 4. Part C → Task 3. All three spec parts have a task.
