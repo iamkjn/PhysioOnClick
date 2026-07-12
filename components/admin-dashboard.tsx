@@ -29,13 +29,13 @@ export function AdminDashboard() {
       {/* Sticky header */}
       <header style={{ position: "sticky", top: 0, zIndex: 100, background: "var(--color-navy)", height: 56, display: "flex", alignItems: "center", padding: "0 1.5rem", gap: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", flex: 1 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: "var(--color-teal)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, fontFamily: "var(--font-serif)" }}>P</div>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: "var(--color-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, fontFamily: "var(--font-serif)" }}>P</div>
           <span style={{ color: "#fff", fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15 }}>PhysioOnClick</span>
           <span style={{ border: "1px solid var(--color-gold)", color: "var(--color-gold)", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-sans)", letterSpacing: "0.04em" }}>Admin</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <span style={{ color: "rgba(255,255,255,0.55)", fontSize: 13, fontFamily: "var(--font-sans)" }}>{user?.email}</span>
-          <button onClick={handleSignOut} style={{ background: "none", border: "none", color: "var(--color-teal)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-sans)" }}>Sign out</button>
+          <button onClick={handleSignOut} style={{ background: "none", border: "none", color: "var(--color-primary)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-sans)" }}>Sign out</button>
         </div>
       </header>
 
@@ -48,7 +48,7 @@ export function AdminDashboard() {
             style={{
               background: "none",
               border: "none",
-              borderBottom: activeTab === tab.key ? "2px solid var(--color-teal)" : "2px solid transparent",
+              borderBottom: activeTab === tab.key ? "2px solid var(--color-primary)" : "2px solid transparent",
               color: activeTab === tab.key ? "var(--color-navy)" : "var(--color-text-secondary)",
               fontFamily: "var(--font-sans)",
               fontWeight: activeTab === tab.key ? 700 : 400,

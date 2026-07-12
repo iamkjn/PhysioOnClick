@@ -111,7 +111,7 @@ export function AdminLiveStats() {
           <p style={bigNum}>{counts.bookings}</p>
           <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" as const }}>
             {counts.pendingBookings > 0 && pill(`${counts.pendingBookings} pending`, "var(--color-gold-light)", "var(--color-gold)")}
-            {counts.upcomingBookings > 0 && pill(`${counts.upcomingBookings} upcoming`, "var(--color-teal-light)", "var(--color-teal)")}
+            {counts.upcomingBookings > 0 && pill(`${counts.upcomingBookings} upcoming`, "var(--color-primary-light)", "var(--color-primary)")}
           </div>
         </div>
 

@@ -27,7 +27,7 @@ const FILTER_OPTIONS: StatusFilter[] = ["all", "pending", "upcoming", "completed
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   pending:   { bg: "var(--color-gold-light)",  color: "var(--color-gold)" },
-  upcoming:  { bg: "var(--color-teal-light)",  color: "var(--color-teal)" },
+  upcoming:  { bg: "var(--color-primary-light)",  color: "var(--color-primary)" },
   completed: { bg: "#D1FAE5",                  color: "#059669" },
   cancelled: { bg: "#FEE2E2",                  color: "var(--color-error)" },
 };
@@ -104,9 +104,9 @@ export function AdminBookingsTable() {
             key={f}
             onClick={() => setFilter(f)}
             style={{
-              background: filter === f ? "var(--color-teal)" : "var(--color-surface)",
+              background: filter === f ? "var(--color-primary)" : "var(--color-surface)",
               color: filter === f ? "#fff" : "var(--color-text-secondary)",
-              border: `1.5px solid ${filter === f ? "var(--color-teal)" : "var(--color-border)"}`,
+              border: `1.5px solid ${filter === f ? "var(--color-primary)" : "var(--color-border)"}`,
               borderRadius: 999,
               padding: "4px 12px",
               fontSize: 12,
@@ -119,7 +119,7 @@ export function AdminBookingsTable() {
             }}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
-            <span style={{ background: filter === f ? "rgba(255,255,255,0.2)" : "var(--color-teal-light)", color: filter === f ? "#fff" : "var(--color-teal)", borderRadius: 999, padding: "1px 6px", fontSize: 11 }}>
+            <span style={{ background: filter === f ? "rgba(255,255,255,0.2)" : "var(--color-primary-light)", color: filter === f ? "#fff" : "var(--color-primary)", borderRadius: 999, padding: "1px 6px", fontSize: 11 }}>
               {counts[f]}
             </span>
           </button>
@@ -148,7 +148,7 @@ export function AdminBookingsTable() {
             <tbody>
               {displayed.map((item, i) => {
                 const s = STATUS_STYLES[item.displayStatus] ?? STATUS_STYLES.pending;
-                const rowBg = i % 2 === 0 ? "var(--color-surface)" : "var(--color-teal-light)";
+                const rowBg = i % 2 === 0 ? "var(--color-surface)" : "var(--color-primary-light)";
                 return (
                   <tr key={item.id} style={{ background: rowBg, borderBottom: "1px solid var(--color-border)" }}>
                     <td style={td}>
@@ -178,7 +178,7 @@ export function AdminBookingsTable() {
                             <a
                               href={`https://cal.com/reschedule/${item.calBookingUid}`}
                               target="_blank" rel="noopener noreferrer"
-                              style={{ border: "1.5px solid var(--color-teal)", color: "var(--color-teal)", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 600, textDecoration: "none", display: "inline-block", fontFamily: "var(--font-sans)" }}
+                              style={{ border: "1.5px solid var(--color-primary)", color: "var(--color-primary)", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 600, textDecoration: "none", display: "inline-block", fontFamily: "var(--font-sans)" }}
                             >Reschedule</a>
                           </>
                         ) : (

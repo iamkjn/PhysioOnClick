@@ -22,7 +22,7 @@ const STATUS_CYCLE: Record<string, string> = {
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
   "new":         { bg: "var(--color-gold-light)",  color: "var(--color-gold)",  label: "New" },
-  "in-progress": { bg: "var(--color-teal-light)",  color: "var(--color-teal)",  label: "In progress" },
+  "in-progress": { bg: "var(--color-primary-light)",  color: "var(--color-primary)",  label: "In progress" },
   "resolved":    { bg: "#D1FAE5",                  color: "#059669",             label: "Resolved" },
 };
 
@@ -134,7 +134,7 @@ export function AdminEnquiriesTable() {
                   <tr
                     key={item.id}
                     style={{
-                      background: i % 2 === 0 ? "var(--color-surface)" : "var(--color-teal-light)",
+                      background: i % 2 === 0 ? "var(--color-surface)" : "var(--color-primary-light)",
                       borderBottom: "1px solid var(--color-border)",
                     }}
                   >
@@ -170,7 +170,7 @@ export function AdminEnquiriesTable() {
                           style={{
                             background: "none",
                             border: "none",
-                            color: "var(--color-teal)",
+                            color: "var(--color-primary)",
                             fontSize: 12,
                             fontWeight: 600,
                             cursor: "pointer",
