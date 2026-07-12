@@ -858,6 +858,59 @@ git commit -m "content: remove Glasgow map embed from contact page"
 
 ---
 
+### Task 8: Remove remaining "Glasgow clinic" copy from generated service images and blog articles
+
+Found by the final confirmation review's broader sweep — pre-existing, not introduced by this branch, but still violates the online-only goal.
+
+**Files:**
+- Modify: `lib/service-image-svg.ts:122`
+- Modify: `lib/blog.ts:58`
+
+**Interfaces:** None — pure string edits. `lib/blog.ts:58` is inside the `articleSections()` template function used to generate all 108 blog articles, so this one edit fixes the sentence across every generated article, not just one post.
+
+- [ ] **Step 1: Service image SVG label — `lib/service-image-svg.ts`**
+
+Old:
+```ts
+      <text x="102" y="559" font-size="22" font-family="Arial, Helvetica, sans-serif" fill="${style.accent}" font-weight="700">Glasgow clinic and online</text>
+```
+
+New:
+```ts
+      <text x="102" y="559" font-size="22" font-family="Arial, Helvetica, sans-serif" fill="${style.accent}" font-weight="700">Online across the UK</text>
+```
+
+- [ ] **Step 2: Blog article template sentence — `lib/blog.ts`**
+
+Old:
+```ts
+        `In Glasgow clinics and online consultations across the UK, people often arrive worried that pain automatically means harm. In many cases the story is more nuanced. Symptoms can be influenced by load, stress, sleep, deconditioning and recent changes in activity. A good physiotherapy plan helps you understand those factors so your recovery becomes predictable and manageable.`
+```
+
+New:
+```ts
+        `In online physiotherapy consultations across the UK, people often arrive worried that pain automatically means harm. In many cases the story is more nuanced. Symptoms can be influenced by load, stress, sleep, deconditioning and recent changes in activity. A good physiotherapy plan helps you understand those factors so your recovery becomes predictable and manageable.`
+```
+
+- [ ] **Step 3: Verify no "Glasgow clinic" copy remains**
+
+Run: `grep -rniE "glasgow clinic" lib/ app/ components/`
+Expected: no output
+
+- [ ] **Step 4: Build check**
+
+Run: `npm run build`
+Expected: build completes with no errors
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add lib/service-image-svg.ts lib/blog.ts
+git commit -m "content: remove remaining Glasgow clinic copy from service images and blog template"
+```
+
+---
+
 ## Self-Review Notes
 
 - **Spec coverage:** Part A → Task 1 + Task 2 (Glasgow page called out separately since it's a full content rewrite, not a one-line edit). Part B → Task 4. Part C → Task 3. All three spec parts have a task.
