@@ -714,6 +714,97 @@ git commit -m "content: remove home-visit/in-person copy from homepage hero and 
 
 ---
 
+### Task 6: Remove home-visit / in-person copy from the chat widget and Terms page
+
+Found by the final whole-branch review — the chat widget (mounted globally in `app/layout.tsx`, rendered on every page) still quotes an in-person Glasgow price list that no longer matches the real pricing data, and the Terms page has two literal "in-person in Glasgow" references.
+
+**Files:**
+- Modify: `components/chat-widget.tsx:54,59`
+- Modify: `app/terms/page.tsx:6,37`
+
+**Interfaces:** None — pure string content edits.
+
+- [ ] **Step 1: Chat widget "Online Rehab" chip text — `components/chat-widget.tsx`**
+
+Old:
+```tsx
+    text: "UK-wide digital physiotherapy via secure video call with tailored exercise plans, progress tracking and weekly review calls.\n\nOnline patients receive the same structured rehabilitation planning as in-person sessions.",
+```
+
+New:
+```tsx
+    text: "UK-wide digital physiotherapy via secure video call with tailored exercise plans, progress tracking and weekly review calls.\n\nOnline patients receive the same structured rehabilitation planning.",
+```
+
+- [ ] **Step 2: Chat widget pricing text — `components/chat-widget.tsx`**
+
+Old:
+```tsx
+const PRICING_TEXT =
+  "In-person sessions (Glasgow):\n• Initial Assessment (45 min) — £65\n• Follow-Up Session (30 min) — £50\n• Extended Session (60 min) — £80\n\nOnline sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
+```
+
+New:
+```tsx
+const PRICING_TEXT =
+  "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
+```
+
+- [ ] **Step 3: Terms page meta description — `app/terms/page.tsx`**
+
+Old:
+```tsx
+  description: "Terms and conditions for using PhysioOnClick physiotherapy services online and in-person in Glasgow."
+```
+
+New:
+```tsx
+  description: "Terms and conditions for using PhysioOnClick's online physiotherapy services."
+```
+
+- [ ] **Step 4: Terms page "Nature of the service" — `app/terms/page.tsx`**
+
+Old:
+```tsx
+          <p>
+            PhysioOnClick provides physiotherapy consultations online (UK-wide) and in-person in Glasgow.
+            Booking a consultation creates a professional clinical relationship. The standard of care provided
+            online is equal to that of an in-person consultation — a lower standard of care is not acceptable
+            simply because the interaction is remote.
+          </p>
+```
+
+New:
+```tsx
+          <p>
+            PhysioOnClick provides physiotherapy consultations online across the UK.
+            Booking a consultation creates a professional clinical relationship. The standard of care provided
+            online is equal to that of an in-person consultation — a lower standard of care is not acceptable
+            simply because the interaction is remote.
+          </p>
+```
+
+Do not touch `app/terms/page.tsx:57` ("Some clinical presentations require in-person assessment...") — this is a legitimate telehealth safety/liability disclaimer about referring out cases that need hands-on care, not a claim that PhysioOnClick offers in-person sessions. Leave it as-is.
+
+- [ ] **Step 5: Verify no home-visit/in-person copy remains**
+
+Run: `grep -niE "in-person sessions \(glasgow\)|in-person in glasgow|as in-person sessions" components/chat-widget.tsx app/terms/page.tsx`
+Expected: no output
+
+- [ ] **Step 6: Build check**
+
+Run: `npm run build`
+Expected: build completes with no errors
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add components/chat-widget.tsx app/terms/page.tsx
+git commit -m "content: remove home-visit/in-person copy from chat widget and terms page"
+```
+
+---
+
 ## Self-Review Notes
 
 - **Spec coverage:** Part A → Task 1 + Task 2 (Glasgow page called out separately since it's a full content rewrite, not a one-line edit). Part B → Task 4. Part C → Task 3. All three spec parts have a task.
