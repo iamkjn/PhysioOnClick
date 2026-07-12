@@ -3,3 +3,16 @@ node_modules
 .DS_Store
 .env.local
 .env*.local
+.firebase-emulator-data/
+
+# Firebase Admin SDK service account key — never commit real credentials
+physioonclick.json
+
+# Debug logs from firebase-tools CLI runs
+firebase-debug.log
+firestore-debug.log
+
+# Third-party plugin runtime state (not project source)
+.claude-flow/
+.claude/.proven-config-version
+.claude/proven-config.json

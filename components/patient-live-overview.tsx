@@ -65,19 +65,19 @@ export function PatientLiveOverview() {
         status: String(doc.status || "pending")
       }),
       setBookings,
-      userId ? "userId" : "email"
+      userId ? "bookedBy" : "email"
     );
   }, [email, userId]);
 
   useEffect(() => {
-    if (!email && !userId) {
+    if (!email) {
       setEnquiries([]);
       return;
     }
 
     return subscribeUserCollection(
       "enquiries",
-      userId || email,
+      email,
       (doc, id) => ({
         id,
         service: String(doc.service || "General enquiry"),
@@ -85,7 +85,7 @@ export function PatientLiveOverview() {
         message: String(doc.message || "")
       }),
       setEnquiries,
-      userId ? "userId" : "email"
+      "email"
     );
   }, [email, userId]);
 

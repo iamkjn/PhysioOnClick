@@ -20,7 +20,7 @@ export interface PainLog {
   loggedAt: Date;
 }
 
-export function computeRecoveryPercent(logs: PainLog[]): number | null {
+export function computeRecoveryPercent(logs: { score: number }[]): number | null {
   if (logs.length === 0) return null;
   const baseline = logs[0].score;
   if (baseline === 0) return null;
@@ -28,6 +28,28 @@ export function computeRecoveryPercent(logs: PainLog[]): number | null {
   const current = recent.reduce((sum, log) => sum + log.score, 0) / recent.length;
   const pct = Math.round(((baseline - current) / baseline) * 100);
   return Math.min(100, Math.max(0, pct));
+}
+
+export interface RecoveryPoint {
+  date: string;
+  score: number;
+}
+
+export async function getRecoveryScoreSeries(
+  uid: string,
+  personId: string,
+  days = 56
+): Promise<RecoveryPoint[]> {
+  const [painLogs, assessments] = await Promise.all([
+    getPainLogs(uid, personId, days),
+    getClinicalAssessments(uid, personId, days),
+  ]);
+  const scoresByDate = new Map<string, number>();
+  for (const a of assessments) scoresByDate.set(a.date, a.painScore);
+  for (const log of painLogs) scoresByDate.set(log.date, log.score);
+  return Array.from(scoresByDate, ([date, score]) => ({ date, score })).sort((a, b) =>
+    a.date.localeCompare(b.date)
+  );
 }
 
 export interface ClinicalAssessment {

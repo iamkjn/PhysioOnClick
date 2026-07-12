@@ -252,37 +252,16 @@ export const services: Service[] = [
 
 export const pricing: PricingItem[] = [
   {
-    title: "Initial Assessment",
-    duration: "45 min",
-    price: 65,
-    description: "Full clinical assessment, treatment plan and first rehab prescription.",
-    mode: "In-person"
-  },
-  {
-    title: "Follow-Up Session",
-    duration: "30 min",
-    price: 50,
-    description: "Progress review, treatment progression and symptom reassessment.",
-    mode: "In-person"
-  },
-  {
-    title: "Extended Session",
-    duration: "60 min",
-    price: 80,
-    description: "Ideal for complex rehabilitation or multi-area review.",
-    mode: "In-person"
-  },
-  {
     title: "Initial Online Assessment",
-    duration: "45 min",
-    price: 55,
+    duration: "60 min",
+    price: 50,
     description: "Remote assessment with tailored advice and exercise planning.",
     mode: "Online"
   },
   {
     title: "Online Follow-Up",
     duration: "30 min",
-    price: 45,
+    price: 40,
     description: "Ongoing online progression and accountability support.",
     mode: "Online"
   },

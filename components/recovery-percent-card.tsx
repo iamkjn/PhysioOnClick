@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPainLogs, computeRecoveryPercent } from "@/lib/recovery";
+import { getRecoveryScoreSeries, computeRecoveryPercent } from "@/lib/recovery";
 import { Skeleton } from "@/components/skeleton";
 
 interface Props {
@@ -14,7 +14,7 @@ export function RecoveryPercentCard({ uid, personId }: Props) {
 
   useEffect(() => {
     setPercent(undefined);
-    getPainLogs(uid, personId, 9999)
+    getRecoveryScoreSeries(uid, personId, 9999)
       .then((logs) => setPercent(computeRecoveryPercent(logs)))
       .catch(() => setPercent(null));
   }, [uid, personId]);

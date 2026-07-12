@@ -18,12 +18,6 @@ service cloud.firestore {
         request.auth.token.email == resource.data.email;
     }
 
-    function createsOwnEmailResource() {
-      return isSignedIn() &&
-        request.resource.data.email is string &&
-        request.auth.token.email == request.resource.data.email;
-    }
-
     match /blogs/{blogId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
@@ -58,7 +52,10 @@ service cloud.firestore {
     }
 
     match /bookings/{bookingId} {
-      allow create: if true;
+      // Bookings are only ever created server-side (Cal.com webhook, appointments/sync,
+      // link-bookings), all via the Admin SDK which bypasses these rules. No legitimate
+      // client path creates a booking directly, so client-side create is fully denied.
+      allow create: if false;
       allow read: if isAdmin() || ownsEmailResource() ||
         (isSignedIn() && resource.data.bookedBy == request.auth.uid);
       allow update, delete: if isAdmin();
@@ -89,14 +86,16 @@ service cloud.firestore {
     }
 
     match /payments/{paymentId} {
-      allow create: if createsOwnEmailResource();
-      allow read: if isAdmin() || ownsEmailResource();
-      allow update, delete: if isAdmin();
+      // Not currently written or read anywhere in the app (Stripe Checkout doesn't
+      // mirror payment records to Firestore). Admin-only until a real writer exists,
+      // rather than leaving client-writable "payment succeeded" records unused.
+      allow read, write: if isAdmin();
     }
 
     match /enquiries/{enquiryId} {
       allow create: if true;
-      allow read, update, delete: if isAdmin();
+      allow read: if isAdmin() || ownsEmailResource();
+      allow update, delete: if isAdmin();
     }
 
     match /symptomChecks/{checkId} {

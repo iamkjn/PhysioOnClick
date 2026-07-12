@@ -1,7 +1,7 @@
 import { FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import { connectStorageEmulator, getStorage } from "firebase/storage";
 
 const providedFirebaseConfig = {
   apiKey: "AIzaSyB2W4dHgl3mM8QEY5XYiQcSt9usFV35jSw",
@@ -36,3 +36,24 @@ export const firebaseApp = getFirebaseApp();
 export const auth = firebaseApp ? getAuth(firebaseApp) : null;
 export const db = firebaseApp ? getFirestore(firebaseApp) : null;
 export const storage = firebaseApp ? getStorage(firebaseApp) : null;
+
+// Route the client SDK to the local Firebase Emulator Suite instead of the real
+// project when developing locally. Guarded against Next.js Fast Refresh re-running
+// this module and trying to connect twice, which throws.
+declare global {
+  // eslint-disable-next-line no-var
+  var __firebaseEmulatorsConnected: boolean | undefined;
+}
+
+if (
+  process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === "true" &&
+  !globalThis.__firebaseEmulatorsConnected &&
+  auth &&
+  db &&
+  storage
+) {
+  connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  connectStorageEmulator(storage, "127.0.0.1", 9199);
+  globalThis.__firebaseEmulatorsConnected = true;
+}

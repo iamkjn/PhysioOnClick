@@ -5,9 +5,18 @@ import Link from "next/link";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { EmptyState } from "@/components/empty-state";
+import { PersonSwitcher } from "@/components/person-switcher";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 
+function resolveStatus(booking: BookingRecord): BookingRecord["status"] {
+  if (booking.status === "cancelled") return "cancelled";
+  return booking.sessionDate < new Date() ? "completed" : "upcoming";
+}
+
 export default function AppointmentsPage() {
+  const [uid, setUid] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState("");
+  const [personId, setPersonId] = useState<string | null>(null);
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -19,6 +28,9 @@ export default function AppointmentsPage() {
         router.push("/patient");
         return;
       }
+      setUid(u.uid);
+      setDisplayName(u.displayName || u.email || "Patient");
+      setPersonId(u.uid);
       // Sync Cal.com bookings into Firestore first, then load
       try {
         if (u.email) {
@@ -29,18 +41,33 @@ export default function AppointmentsPage() {
       } catch {
         // sync is best-effort
       }
-      getPatientBookings(u.uid)
-        .then(setBookings)
-        .finally(() => setLoading(false));
     });
   }, [router]);
 
-  const upcoming = bookings.filter((b) => b.status === "upcoming");
-  const past = bookings.filter((b) => b.status !== "upcoming");
+  useEffect(() => {
+    if (!uid || !personId) return;
+    setLoading(true);
+    getPatientBookings(uid, personId)
+      .then(setBookings)
+      .finally(() => setLoading(false));
+  }, [uid, personId]);
+
+  const resolved = bookings.map((b) => ({ ...b, displayStatus: resolveStatus(b) }));
+  const upcoming = resolved.filter((b) => b.displayStatus === "upcoming");
+  const past = resolved.filter((b) => b.displayStatus !== "upcoming");
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
       <h1 style={{ color: "#0C2A38" }}>My Appointments</h1>
+      {uid && (
+        <div style={{ marginBottom: "1.5rem" }}>
+          <PersonSwitcher
+            uid={uid}
+            displayName={displayName}
+            onSelect={(id) => setPersonId(id)}
+          />
+        </div>
+      )}
       {loading && <p style={{ color: "#5E7A84" }}>Loading…</p>}
       {!loading && bookings.length === 0 && (
         <EmptyState
@@ -74,7 +101,7 @@ export default function AppointmentsPage() {
   );
 }
 
-function BookingRow({ booking }: { booking: BookingRecord }) {
+function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: BookingRecord["status"] } }) {
   const date = booking.sessionDate.toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
@@ -102,7 +129,7 @@ function BookingRow({ booking }: { booking: BookingRecord }) {
             {booking.service} · {date}
           </span>
         </div>
-        {booking.status !== "upcoming" ? (
+        {booking.displayStatus !== "upcoming" ? (
           booking.summaryId ? (
             <span style={{ fontSize: 20 }}>📋</span>
           ) : (

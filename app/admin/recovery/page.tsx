@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { isAdminUser } from "@/lib/admin-auth";
 import { AdminPatientSelector } from "@/components/admin-patient-selector";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
@@ -11,6 +12,7 @@ import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 
 export default function AdminRecoveryPage() {
   const [adminUid, setAdminUid] = useState<string | null>(null);
+  const [checkedAdmin, setCheckedAdmin] = useState(false);
   const [selection, setSelection] = useState<{
     patientUid: string;
     personId: string;
@@ -18,11 +20,23 @@ export default function AdminRecoveryPage() {
   } | null>(null);
 
   useEffect(() => {
-    if (!auth) return;
-    return onAuthStateChanged(auth, (user) => {
-      setAdminUid(user?.uid ?? null);
+    if (!auth) { setCheckedAdmin(true); return; }
+    return onAuthStateChanged(auth, async (user) => {
+      const isAdmin = user ? await isAdminUser(user) : false;
+      setAdminUid(isAdmin ? user!.uid : null);
+      setCheckedAdmin(true);
     });
   }, []);
+
+  if (!checkedAdmin) {
+    return (
+      <div className="site-shell">
+        <section className="page-section stack">
+          <p className="muted">Checking admin access…</p>
+        </section>
+      </div>
+    );
+  }
 
   if (!adminUid) {
     return (

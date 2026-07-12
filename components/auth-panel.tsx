@@ -1,11 +1,12 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FirebaseError } from "firebase/app";
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  getRedirectResult,
   signInWithEmailAndPassword,
   signInWithPopup,
   signInWithRedirect,
@@ -30,6 +31,20 @@ export function AuthPanel({ role }: { role: "patient" | "admin" }) {
     setMessage(nextMessage);
     setMessageTone(tone);
   }
+
+  useEffect(() => {
+    if (!auth || !isPatient) return;
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (!result) return;
+        await ensurePatientRecord(result.user);
+        setStatus("Google sign-in successful. Redirecting you to your portal…", "success");
+        router.push("/patient");
+        router.refresh();
+      })
+      .catch((error) => setStatus(parseAuthError(error), "error"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function parseAuthError(error: unknown) {
     if (!(error instanceof FirebaseError)) {

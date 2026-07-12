@@ -43,7 +43,8 @@ export async function POST(request: Request) {
       url: `${siteUrl}/auth/verify?email=${encodeURIComponent(email)}`,
       handleCodeInApp: true,
     });
-  } catch {
+  } catch (error) {
+    console.error("generateSignInWithEmailLink failed:", error);
     return NextResponse.json({ error: "Could not generate a sign-in link. Please try again." }, { status: 500 });
   }
 

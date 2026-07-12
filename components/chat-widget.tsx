@@ -56,7 +56,7 @@ const SERVICES = [
 ];
 
 const PRICING_TEXT =
-  "In-person sessions (Glasgow):\n• Initial Assessment (45 min) — £65\n• Follow-Up Session (30 min) — £50\n• Extended Session (60 min) — £80\n\nOnline sessions (UK-wide):\n• Initial Online Assessment (45 min) — £55\n• Online Follow-Up (30 min) — £45\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
+  "In-person sessions (Glasgow):\n• Initial Assessment (45 min) — £65\n• Follow-Up Session (30 min) — £50\n• Extended Session (60 min) — £80\n\nOnline sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
 
 const GREETING =
   "Hi! I'm your PhysioOnClick assistant 👋\n\nHow can I help you today?";

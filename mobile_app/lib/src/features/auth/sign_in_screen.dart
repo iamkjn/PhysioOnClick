@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -12,6 +13,7 @@ import '../../core/page_transitions.dart';
 import '../root/root_shell.dart';
 import 'forgot_password_screen.dart';
 import 'sign_up_screen.dart';
+import 'welcome_screen.dart';
 
 const _googleWebClientId =
     '119591358761-4ojpfo2n6gpjkuoh0ljis9d52ob35o3d.apps.googleusercontent.com';
@@ -98,7 +100,10 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _signInWithGoogle() async {
     setState(() { _loading = true; _error = null; });
     try {
-      final googleUser = await GoogleSignIn(serverClientId: _googleWebClientId).signIn();
+      final googleUser = await GoogleSignIn(
+        clientId: kIsWeb ? _googleWebClientId : null,
+        serverClientId: kIsWeb ? null : _googleWebClientId,
+      ).signIn();
       if (googleUser == null) {
         setState(() => _loading = false);
         return;
@@ -117,6 +122,7 @@ class _SignInScreenState extends State<SignInScreen> {
       _setError(_friendlyFirebaseError(e));
     } catch (e) {
       final msg = e.toString();
+      debugPrint('Google sign-in failed: $msg');
       if (msg.contains('ApiException: 10') || msg.contains('DEVELOPER_ERROR')) {
         _setError('Google sign-in configuration issue. Please use email instead.');
       } else {
@@ -172,7 +178,16 @@ class _SignInScreenState extends State<SignInScreen> {
         surfaceTintColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            final nav = Navigator.of(context);
+            debugPrint('Back pressed on SignInScreen. canPop=${nav.canPop()}');
+            if (nav.canPop()) {
+              nav.pop();
+            } else {
+              debugPrint('Nothing to pop — falling back to WelcomeScreen route.');
+              nav.pushReplacement(PhysioFadeRoute(builder: (_) => const WelcomeScreen()));
+            }
+          },
           tooltip: 'Back',
         ),
       ),

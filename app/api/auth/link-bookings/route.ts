@@ -32,7 +32,17 @@ export async function POST(request: Request) {
   try {
     const snap = await db.collection("bookings").where("email", "==", email).get();
     const batch = db.batch();
-    snap.docs.forEach((d) => batch.update(d.ref, { patientUid: uid }));
+    snap.docs.forEach((d) => {
+      const data = d.data();
+      // bookedBy is what getPatientBookings() and firestore.rules actually check —
+      // a prior version wrote patientUid here instead, which meant guest bookings
+      // never linked to the account after sign-up.
+      batch.update(d.ref, {
+        bookedBy: uid,
+        patientType: data.patientType ?? "self",
+        patientId: data.patientId ?? uid,
+      });
+    });
     await batch.commit();
   } catch {
     // Non-blocking — portal access works even if linking fails

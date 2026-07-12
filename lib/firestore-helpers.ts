@@ -22,19 +22,6 @@ export async function saveEnquiry(payload: Record<string, string>) {
   });
 }
 
-export async function saveBooking(payload: Record<string, string>) {
-  if (!db) {
-    throw new Error("Firestore is not configured.");
-  }
-
-  await addDoc(collection(db, "bookings"), {
-    ...payload,
-    status: "pending",
-    source: "website-booking-form",
-    createdAt: serverTimestamp()
-  });
-}
-
 export function subscribeCollectionCount(collectionName: string, onValue: (count: number) => void) {
   if (!db) {
     onValue(0);

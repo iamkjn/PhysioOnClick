@@ -6,6 +6,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { getBooking, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
+import { DownloadSummaryButton } from "@/components/download-summary-button";
 
 export default function AppointmentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -80,7 +81,10 @@ export default function AppointmentDetailPage() {
 
       {summary ? (
         <div style={{ marginTop: "1.5rem", display: "grid", gap: "1rem" }}>
-          <h2 style={{ color: "#0C2A38" }}>Session summary</h2>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+            <h2 style={{ color: "#0C2A38", margin: 0 }}>Session summary</h2>
+            <DownloadSummaryButton summary={summary} />
+          </div>
           <SummaryBlock title="What we worked on" icon="🩺" body={summary.workedOn} />
           <SummaryBlock title="Exercises assigned" icon="💪" body={summary.exercises} />
           <SummaryBlock title="Next steps & advice" icon="💡" body={summary.nextSteps} />

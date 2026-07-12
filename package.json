@@ -5,9 +5,11 @@
   "scripts": {
     "clean": "rm -rf .next",
     "dev": "next dev",
+    "emulators": "PATH=\"/opt/homebrew/opt/openjdk@21/bin:$PATH\" firebase emulators:start --import=./.firebase-emulator-data --export-on-exit",
     "build": "next build",
     "rebuild": "npm run clean && npm run build",
-    "seed:firestore": "tsx scripts/seed-firestore.ts",
+    "seed:firestore": "tsx --env-file=.env.local scripts/seed-firestore.ts",
+    "emulator:smoke-test": "tsx --env-file=.env.local scripts/emulator-smoke-test.ts",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",

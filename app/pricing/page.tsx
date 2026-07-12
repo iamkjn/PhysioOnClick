@@ -36,22 +36,24 @@ export default function PricingPage() {
       </section>
 
       <section className="page-section stack pricing-sections">
-        <div>
-          <h2>In-Person Sessions <span>(Glasgow home visits)</span></h2>
-          <div className="pricing-grid pricing-grid-three">
-            {inPerson.map((item, i) => (
-              <Reveal key={item.title} direction="up" delay={i * 100}>
-                <article className="simple-price-card">
-                  <h3>{item.title}</h3>
-                  <p className="muted">{item.duration}</p>
-                  <strong>{formatCurrency(item.price)}</strong>
-                  <p>{item.description}</p>
-                  <Link className="button primary" href="/book">Book Now</Link>
-                </article>
-              </Reveal>
-            ))}
+        {inPerson.length > 0 && (
+          <div>
+            <h2>In-Person Sessions <span>(Glasgow home visits)</span></h2>
+            <div className="pricing-grid pricing-grid-three">
+              {inPerson.map((item, i) => (
+                <Reveal key={item.title} direction="up" delay={i * 100}>
+                  <article className="simple-price-card">
+                    <h3>{item.title}</h3>
+                    <p className="muted">{item.duration}</p>
+                    <strong>{formatCurrency(item.price)}</strong>
+                    <p>{item.description}</p>
+                    <Link className="button primary" href="/book">Book Now</Link>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div>
           <Reveal direction="up">

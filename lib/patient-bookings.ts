@@ -34,11 +34,13 @@ function toBookingRecord(id: string, data: Record<string, unknown>): BookingReco
   };
 }
 
-export async function getPatientBookings(userId: string): Promise<BookingRecord[]> {
+export async function getPatientBookings(userId: string, personId?: string): Promise<BookingRecord[]> {
   if (!db) return [];
+  const constraints = [where("bookedBy", "==", userId)];
+  if (personId) constraints.push(where("patientId", "==", personId));
   const q = query(
     collection(db, "bookings"),
-    where("bookedBy", "==", userId),
+    ...constraints,
     orderBy("sessionDate", "desc"),
     limit(50)
   );

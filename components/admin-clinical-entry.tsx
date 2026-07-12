@@ -18,20 +18,28 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
   const [sessionId, setSessionId] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    await addClinicalAssessment(patientUid, personId, {
-      date,
-      painScore,
-      mobilityScore,
-      physioNotes,
-      sessionId,
-    });
-    setSaved(true);
-    setSaving(false);
-    setPhysioNotes("");
+    setError(null);
+    setSaved(false);
+    try {
+      await addClinicalAssessment(patientUid, personId, {
+        date,
+        painScore,
+        mobilityScore,
+        physioNotes,
+        sessionId,
+      });
+      setSaved(true);
+      setPhysioNotes("");
+    } catch {
+      setError("Could not save this assessment. Check that you're signed in with an admin account.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const inputStyle: React.CSSProperties = {
@@ -48,6 +56,9 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
       <h3>Add clinical assessment</h3>
       {saved && (
         <p style={{ color: "#16a34a", fontSize: 14 }}>Saved successfully.</p>
+      )}
+      {error && (
+        <p style={{ color: "#ef4444", fontSize: 14 }}>{error}</p>
       )}
       <form
         onSubmit={(e) => void handleSubmit(e)}

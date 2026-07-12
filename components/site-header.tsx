@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { onAuthStateChanged, signOut, type User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -15,8 +17,23 @@ const navItems = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (!auth) return;
+    return onAuthStateChanged(auth, setUser);
+  }, []);
+
+  async function handleSignOut() {
+    if (!auth) return;
+    await signOut(auth);
+    setMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  }
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -65,6 +82,11 @@ export function SiteHeader() {
               ))}
             </nav>
             <div className="nav-actions simple-nav-actions">
+              {user ? (
+                <button type="button" className="call-link" style={{ background: "none", border: "none", cursor: "pointer" }} onClick={() => void handleSignOut()}>
+                  Sign out
+                </button>
+              ) : null}
               <Link className="call-link" href="/contact">
                 Contact Us
               </Link>
@@ -112,6 +134,16 @@ export function SiteHeader() {
         >
           Book Now
         </Link>
+        {user ? (
+          <button
+            type="button"
+            className="mobile-nav-link"
+            style={{ background: "none", border: "none", textAlign: "left", cursor: "pointer" }}
+            onClick={() => void handleSignOut()}
+          >
+            Sign out
+          </button>
+        ) : null}
       </nav>
     </>
   );
