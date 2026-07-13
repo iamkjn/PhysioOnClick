@@ -24,6 +24,7 @@ export function useToast() {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const viewportRef = useRef<HTMLDivElement>(null);
+  const prevCountRef = useRef(0);
 
   const show = useCallback((message: string, type: ToastType) => {
     const id = `${Date.now()}-${Math.random()}`;
@@ -41,8 +42,22 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const viewport = viewportRef.current;
     if (!viewport) return;
     const cards = Array.from(viewport.children);
-    if (cards.length === 0) return;
-    gsap.from(cards, { y: 8, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
+    if (cards.length === 0) {
+      prevCountRef.current = 0;
+      return;
+    }
+
+    const isGrowing = toasts.length > prevCountRef.current;
+    // When a toast is added, skip the last card (it's new — Toast's own entrance
+    // animation handles it) and only reflow the ones that shifted position.
+    // When a toast is removed, reflow every remaining card to settle.
+    const cardsToReflow = isGrowing ? cards.slice(0, -1) : cards;
+
+    if (cardsToReflow.length > 0) {
+      gsap.from(cardsToReflow, { y: 8, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
+    }
+
+    prevCountRef.current = toasts.length;
   }, [toasts.length]);
 
   return (
