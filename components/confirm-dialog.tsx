@@ -56,7 +56,7 @@ export function ConfirmDialog({
     });
 
     return () => mm.revert();
-  }, [isOpen]);
+  }, { dependencies: [isOpen], revertOnUpdate: true });
 
   if (!isOpen) return null;
 
