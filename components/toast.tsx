@@ -111,7 +111,10 @@ export function Toast({ id, message, type, onDismiss }: ToastProps) {
       <span className="toast-message">{message}</span>
       {!isAutoDismiss && (
         <button className="toast-dismiss" onClick={() => onDismiss(id)} aria-label="Dismiss">
-          ✕
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
+            <line x1="3" y1="3" x2="15" y2="15" />
+            <line x1="15" y1="3" x2="3" y2="15" />
+          </svg>
         </button>
       )}
       {isAutoDismiss && <div ref={progressRef} className="toast-progress" />}
