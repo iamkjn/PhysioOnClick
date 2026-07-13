@@ -2554,7 +2554,6 @@ textarea:focus {
   height: 2px;
   border-radius: 2px;
   background: var(--color-navy);
-  transition: transform 250ms ease, opacity 250ms ease;
   transform-origin: center;
 }
 

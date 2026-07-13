@@ -26,6 +26,9 @@ describe('SiteHeader', () => {
     const hamburger = screen.getByLabelText('Open menu')
     fireEvent.click(hamburger)
     expect(screen.getByLabelText('Close menu')).toBeInTheDocument()
+    expect(hamburger.className).toContain('hamburger--open')
+    expect(document.querySelector('.mobile-nav-panel')?.className).toContain('open')
+    expect(document.querySelector('.mobile-nav-backdrop')?.className).toContain('open')
   })
 
   it('adds header-wrap--scrolled after scrolling past 20px', () => {

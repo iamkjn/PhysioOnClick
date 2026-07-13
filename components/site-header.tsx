@@ -33,18 +33,44 @@ export function SiteHeader() {
     if (bars.length !== 3) return;
 
     const [top, middle, bottom] = Array.from(bars);
-    const duration = 0.25;
-    const ease = "power2.inOut";
 
-    if (menuOpen) {
-      gsap.to(top, { rotate: 45, y: 6, duration, ease });
-      gsap.to(middle, { opacity: 0, duration: duration * 0.6, ease });
-      gsap.to(bottom, { rotate: -45, y: -6, duration, ease });
-    } else {
-      gsap.to(top, { rotate: 0, y: 0, duration, ease });
-      gsap.to(middle, { opacity: 1, duration, ease });
-      gsap.to(bottom, { rotate: 0, y: 0, duration, ease });
-    }
+    const mm = gsap.matchMedia();
+    mm.add(
+      {
+        reduceMotion: "(prefers-reduced-motion: reduce)",
+      },
+      (context) => {
+        const { reduceMotion } = context.conditions as { reduceMotion: boolean };
+
+        if (reduceMotion) {
+          if (menuOpen) {
+            gsap.set(top, { rotate: 45, y: 6 });
+            gsap.set(middle, { opacity: 0 });
+            gsap.set(bottom, { rotate: -45, y: -6 });
+          } else {
+            gsap.set(top, { rotate: 0, y: 0 });
+            gsap.set(middle, { opacity: 1 });
+            gsap.set(bottom, { rotate: 0, y: 0 });
+          }
+          return;
+        }
+
+        const duration = 0.25;
+        const ease = "power2.inOut";
+
+        if (menuOpen) {
+          gsap.to(top, { rotate: 45, y: 6, duration, ease });
+          gsap.to(middle, { opacity: 0, duration: duration * 0.6, ease });
+          gsap.to(bottom, { rotate: -45, y: -6, duration, ease });
+        } else {
+          gsap.to(top, { rotate: 0, y: 0, duration, ease });
+          gsap.to(middle, { opacity: 1, duration, ease });
+          gsap.to(bottom, { rotate: 0, y: 0, duration, ease });
+        }
+      }
+    );
+
+    return () => mm.revert();
   }, [menuOpen]);
 
   useEffect(() => {
