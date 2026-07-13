@@ -2294,7 +2294,7 @@ textarea:focus {
   border-radius: 14px;
   font: 600 1rem var(--font-sans);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(11, 110, 142, 0.25);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
   transition: background 0.15s, transform 0.1s;
 }
 
@@ -2704,7 +2704,7 @@ textarea:focus {
   pointer-events: none;
 }
 .button.primary:hover {
-  box-shadow: 0 8px 24px rgba(11, 110, 142, 0.35);
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
 }
 .button.primary:hover::after {
   left: 125%;

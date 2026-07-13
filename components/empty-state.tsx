@@ -10,7 +10,7 @@ interface EmptyStateProps {
     label: string;
     href?: string;
     onClick?: () => void;
-    variant?: 'teal' | 'gold';
+    variant?: 'primary' | 'gold';
   };
 }
 
