@@ -2557,9 +2557,6 @@ textarea:focus {
   transition: transform 250ms ease, opacity 250ms ease;
   transform-origin: center;
 }
-.hamburger--open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger--open span:nth-child(2) { opacity: 0; }
-.hamburger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* ─────────────────────────────────────────────────────────────
    Navigation: mobile nav panel + backdrop

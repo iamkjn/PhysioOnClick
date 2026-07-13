@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useGSAP } from "@/hooks/use-gsap-timeline";
+import { gsap } from "@/lib/gsap";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -21,6 +23,29 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+
+  useGSAP(() => {
+    const button = hamburgerRef.current;
+    if (!button) return;
+    const bars = button.querySelectorAll("span");
+    if (bars.length !== 3) return;
+
+    const [top, middle, bottom] = Array.from(bars);
+    const duration = 0.25;
+    const ease = "power2.inOut";
+
+    if (menuOpen) {
+      gsap.to(top, { rotate: 45, y: 6, duration, ease });
+      gsap.to(middle, { opacity: 0, duration: duration * 0.6, ease });
+      gsap.to(bottom, { rotate: -45, y: -6, duration, ease });
+    } else {
+      gsap.to(top, { rotate: 0, y: 0, duration, ease });
+      gsap.to(middle, { opacity: 1, duration, ease });
+      gsap.to(bottom, { rotate: 0, y: 0, duration, ease });
+    }
+  }, [menuOpen]);
 
   useEffect(() => {
     if (!auth) return;
@@ -95,6 +120,7 @@ export function SiteHeader() {
               </Link>
             </div>
             <button
+              ref={hamburgerRef}
               className={`hamburger${menuOpen ? " hamburger--open" : ""}`}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
