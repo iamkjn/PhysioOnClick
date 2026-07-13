@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { SkeletonRow } from "@/components/skeleton";
 
 interface SavedBlog {
   id: string;
@@ -17,7 +18,7 @@ export function SavedBlogsSection({ uid }: { uid: string }) {
 
   useEffect(() => {
     if (!db || !uid) {
-      setLoading(false);
+      Promise.resolve().then(() => setLoading(false));
       return;
     }
     const q = query(
@@ -33,7 +34,7 @@ export function SavedBlogsSection({ uid }: { uid: string }) {
       .finally(() => setLoading(false));
   }, [uid]);
 
-  if (loading) return <p style={{ color: "#5E7A84" }}>Loading saved articles…</p>;
+  if (loading) return <SkeletonRow count={3} />;
 
   if (blogs.length === 0) {
     return (

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { SkeletonRow } from "@/components/skeleton";
 
 interface RehabProgram {
   id: string;
@@ -19,7 +20,7 @@ export function RehabProgramsSection({ email }: { email: string }) {
 
   useEffect(() => {
     if (!db || !email) {
-      setLoading(false);
+      Promise.resolve().then(() => setLoading(false));
       return;
     }
     const q = query(
@@ -45,7 +46,7 @@ export function RehabProgramsSection({ email }: { email: string }) {
       .finally(() => setLoading(false));
   }, [email]);
 
-  if (loading) return <p style={{ color: "#5E7A84" }}>Loading rehab programmes…</p>;
+  if (loading) return <SkeletonRow count={2} />;
 
   if (programs.length === 0) {
     return (
