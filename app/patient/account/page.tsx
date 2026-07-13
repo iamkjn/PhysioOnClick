@@ -44,8 +44,11 @@ export default function AccountPage() {
           <div style={{ marginTop: "0.5rem" }}>
             <Skeleton height="0.9rem" width="220px" />
           </div>
+          <div style={{ marginTop: "1rem" }}>
+            <Skeleton height="2.2rem" width="100px" className="skeleton-pill" />
+          </div>
         </div>
-        <div style={{ display: "flex", gap: "0.75rem", marginBottom: "2rem" }}>
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "2rem" }}>
           <Skeleton height="2.4rem" width="140px" className="skeleton-pill" />
           <Skeleton height="2.4rem" width="160px" className="skeleton-pill" />
         </div>
@@ -53,9 +56,21 @@ export default function AccountPage() {
           <SkeletonForm fields={3} />
         </div>
         <div style={{ marginBottom: "2rem" }}>
+          <div style={{ marginBottom: "0.75rem" }}>
+            <Skeleton height="1.1rem" width="180px" />
+          </div>
+          <SkeletonRow count={2} />
+        </div>
+        <div style={{ marginBottom: "2rem" }}>
+          <div style={{ marginBottom: "0.75rem" }}>
+            <Skeleton height="1.1rem" width="180px" />
+          </div>
           <SkeletonRow count={2} />
         </div>
         <div>
+          <div style={{ marginBottom: "0.75rem" }}>
+            <Skeleton height="1.1rem" width="180px" />
+          </div>
           <SkeletonRow count={2} />
         </div>
       </div>
