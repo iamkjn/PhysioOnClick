@@ -2322,6 +2322,10 @@ textarea:focus {
   gap: 0.4rem;
 }
 
+.skeleton-pill {
+  border-radius: 999px !important;
+}
+
 /* ── Connectivity overlay ──────────────────────────────────── */
 .connectivity-overlay {
   position: fixed;
