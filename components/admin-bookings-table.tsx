@@ -4,6 +4,7 @@ import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestor
 import { db } from "@/lib/firebase";
 import { cancelCalBooking } from "@/app/admin/actions";
 import { SummaryForm } from "@/components/summary-form";
+import { SkeletonTable } from "@/components/skeleton";
 
 type BookingRecord = {
   id: string;
@@ -126,7 +127,7 @@ export function AdminBookingsTable() {
         ))}
       </div>
 
-      {loading && <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>Loading bookings…</p>}
+      {loading && <SkeletonTable rows={5} columns={6} />}
 
       {!loading && displayed.length === 0 && (
         <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>No bookings match this filter.</p>

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { collection, doc, onSnapshot, orderBy, query, limit, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { SkeletonTable } from "@/components/skeleton";
 
 type EnquiryRecord = {
   id: string;
@@ -103,9 +104,7 @@ export function AdminEnquiriesTable() {
         </div>
       </div>
 
-      {loading && (
-        <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>Loading enquiries…</p>
-      )}
+      {loading && <SkeletonTable rows={5} columns={6} />}
 
       {!loading && enquiries.length === 0 && (
         <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>
