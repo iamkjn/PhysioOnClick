@@ -2653,37 +2653,6 @@ textarea:focus {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Scroll-reveal animation system
-   ──────────────────────────────────────────────────────────── */
-.reveal {
-  transition-property: opacity, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 600ms;
-}
-.reveal-up    { opacity: 0; transform: translateY(28px); }
-.reveal-down  { opacity: 0; transform: translateY(-28px); }
-.reveal-left  { opacity: 0; transform: translateX(-28px); }
-.reveal-right { opacity: 0; transform: translateX(28px); }
-.reveal-fade  { opacity: 0; }
-.reveal.in-view {
-  opacity: 1;
-  transform: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .reveal-up,
-  .reveal-down,
-  .reveal-left,
-  .reveal-right,
-  .reveal-fade {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────
    Micro-interactions: primary button shimmer
    ──────────────────────────────────────────────────────────── */
 .button.primary::after {

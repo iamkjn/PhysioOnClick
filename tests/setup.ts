@@ -14,3 +14,11 @@ window.matchMedia = window.matchMedia || vi.fn().mockImplementation((query: stri
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn(),
 }))
+
+// jsdom does not implement IntersectionObserver; mock it for tests that use scroll-based animations
+class IntersectionObserverMock {
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+}
+global.IntersectionObserver = IntersectionObserverMock as any
