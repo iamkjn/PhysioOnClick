@@ -21,6 +21,7 @@ export function PatientProfileEditor() {
 
   useEffect(() => {
     if (!auth) {
+      setResolvedAuth(true);
       return;
     }
 

@@ -10,8 +10,8 @@ vi.mock('@/lib/patient-account', () => ({
 import { PatientProfileEditor } from '@/components/patient-profile-editor'
 
 describe('PatientProfileEditor', () => {
-  it('shows a skeleton form before auth resolves', async () => {
+  it('shows the form when auth is not available', async () => {
     render(<PatientProfileEditor />)
-    expect(document.querySelector('.skeleton-form')).toBeInTheDocument()
+    expect(document.querySelector('.patient-profile-form')).toBeInTheDocument()
   })
 })

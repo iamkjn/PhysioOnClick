@@ -22,8 +22,8 @@ const article: BlogArticle = {
 }
 
 describe('BlogFavoriteButton', () => {
-  it('shows a skeleton circle while the favourite state is unresolved', () => {
+  it('shows the button when auth is not available', () => {
     const { container } = render(<BlogFavoriteButton article={article} />)
-    expect(container.querySelector('.skeleton-circle')).toBeInTheDocument()
+    expect(container.querySelector('.blog-favorite-button')).toBeInTheDocument()
   })
 })

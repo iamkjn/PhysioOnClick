@@ -26,6 +26,7 @@ export function BlogFavoriteButton({
 
   useEffect(() => {
     if (!auth) {
+      setResolvedAuth(true);
       return;
     }
 
