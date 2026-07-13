@@ -3,6 +3,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
+import { SkeletonStatGrid } from "@/components/skeleton";
 
 type Counts = {
   blogs: number;
@@ -21,11 +22,18 @@ const DEFAULT: Counts = { blogs: 0, bookings: 0, pendingBookings: 0, upcomingBoo
 
 export function AdminLiveStats() {
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [resolvedAuth, setResolvedAuth] = useState(false);
   const [counts, setCounts] = useState<Counts>(DEFAULT);
 
   useEffect(() => {
-    if (!auth) return;
-    return onAuthStateChanged(auth, (user) => setIsSignedIn(!!user));
+    if (!auth) {
+      setResolvedAuth(true);
+      return;
+    }
+    return onAuthStateChanged(auth, (user) => {
+      setResolvedAuth(true);
+      setIsSignedIn(!!user);
+    });
   }, []);
 
   useEffect(() => {
@@ -87,6 +95,18 @@ export function AdminLiveStats() {
   const pill = (label: string, bg: string, color: string) => (
     <span style={{ background: bg, color, borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-sans)" }}>{label}</span>
   );
+
+  if (!resolvedAuth) {
+    return (
+      <div>
+        <div style={{ marginBottom: "1.5rem" }}>
+          <span style={eyebrow}>Live Stats</span>
+          <h2 style={{ margin: "0.25rem 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Dashboard overview</h2>
+        </div>
+        <SkeletonStatGrid count={4} />
+      </div>
+    );
+  }
 
   return (
     <div>
