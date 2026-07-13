@@ -9,6 +9,7 @@ import {
   type AssignedExercise,
 } from "@/lib/recovery";
 import { exercises as allExercises } from "@/lib/site-data";
+import { SkeletonRow } from "@/components/skeleton";
 
 interface Props {
   adminUid: string;
@@ -18,15 +19,29 @@ interface Props {
 
 export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props) {
   const [assigned, setAssigned] = useState<AssignedExercise[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
 
   useEffect(() => {
-    getAssignedExercises(patientUid, personId).then(setAssigned);
+    setLoaded(false);
+    getAssignedExercises(patientUid, personId).then((a) => {
+      setAssigned(a);
+      setLoaded(true);
+    });
   }, [patientUid, personId]);
 
   const assignedIds = new Set(assigned.map((a) => a.exerciseId));
   const unassigned = allExercises.filter((e) => !assignedIds.has(e.id));
   const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
+
+  if (!loaded) {
+    return (
+      <div className="panel stack">
+        <h3>Assigned exercises</h3>
+        <SkeletonRow count={2} />
+      </div>
+    );
+  }
 
   async function handleAssign(exerciseId: string) {
     setSaving(exerciseId);

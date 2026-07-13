@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { getDependents } from "@/lib/dependents";
+import { SkeletonRow } from "@/components/skeleton";
 
 interface PatientRecord {
   uid: string;
@@ -18,6 +19,7 @@ interface Props {
 
 export function AdminPatientSelector({ onSelect }: Props) {
   const [patients, setPatients] = useState<PatientRecord[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<PatientRecord | null>(null);
   const [personOptions, setPersonOptions] = useState<{ id: string; name: string }[]>([]);
@@ -32,6 +34,7 @@ export function AdminPatientSelector({ onSelect }: Props) {
           email: (d.data().email as string) || "",
         }))
       );
+      setLoaded(true);
     });
   }, []);
 
@@ -51,6 +54,15 @@ export function AdminPatientSelector({ onSelect }: Props) {
       p.displayName.toLowerCase().includes(search.toLowerCase()) ||
       p.email.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (!loaded) {
+    return (
+      <div className="panel stack">
+        <h3>Select patient</h3>
+        <SkeletonRow count={4} />
+      </div>
+    );
+  }
 
   return (
     <div className="panel stack">
