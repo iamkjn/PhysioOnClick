@@ -31,7 +31,7 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
       return;
     }
     setSelected(val);
-    const name = val === uid ? displayName : (dependents.find((d) => d.id === val)?.name ?? "");
+    const name = val === uid ? displayName : (dependents?.find((d) => d.id === val)?.name ?? "");
     onSelect(val, name);
   }
 
