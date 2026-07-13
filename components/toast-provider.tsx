@@ -24,7 +24,7 @@ export function useToast() {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const viewportRef = useRef<HTMLDivElement>(null);
-  const prevCountRef = useRef(0);
+  const prevIdsRef = useRef<string[]>([]);
 
   const show = useCallback((message: string, type: ToastType) => {
     const id = `${Date.now()}-${Math.random()}`;
@@ -41,24 +41,29 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   useGSAP(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    const cards = Array.from(viewport.children);
+    const cards = Array.from(viewport.children) as HTMLElement[];
+    const currentIds = toasts.map((t) => t.id);
+
     if (cards.length === 0) {
-      prevCountRef.current = 0;
+      prevIdsRef.current = [];
       return;
     }
 
-    const isGrowing = toasts.length > prevCountRef.current;
-    // When a toast is added, skip the last card (it's new — Toast's own entrance
-    // animation handles it) and only reflow the ones that shifted position.
-    // When a toast is removed, reflow every remaining card to settle.
-    const cardsToReflow = isGrowing ? cards.slice(0, -1) : cards;
+    // Only reflow cards whose id already existed before this render — a card
+    // whose id is new just mounted and its own entrance animation (in Toast)
+    // handles it, so reflowing it here would interrupt that animation. This
+    // works correctly even when the array length is unchanged, e.g. when a
+    // toast is added while already at the 3-toast cap and `show()` drops the
+    // oldest id to keep the array at length 3.
+    const prevIds = prevIdsRef.current;
+    const cardsToReflow = cards.filter((_, i) => prevIds.includes(currentIds[i]));
 
     if (cardsToReflow.length > 0) {
       gsap.from(cardsToReflow, { y: 8, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
     }
 
-    prevCountRef.current = toasts.length;
-  }, [toasts.length]);
+    prevIdsRef.current = currentIds;
+  }, [toasts]);
 
   return (
     <ToastContext.Provider value={{ show }}>
