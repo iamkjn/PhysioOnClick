@@ -1,7 +1,17 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
+import type { User } from 'firebase/auth'
 
-vi.mock('@/lib/firebase', () => ({ auth: null }))
+const authState: { callback?: (user: User | null) => void } = {}
+
+vi.mock('firebase/auth', () => ({
+  onAuthStateChanged: vi.fn((_auth: unknown, callback: (user: User | null) => void) => {
+    authState.callback = callback
+    return vi.fn()
+  }),
+}))
+
+vi.mock('@/lib/firebase', () => ({ auth: {} }))
 vi.mock('@/lib/firestore-helpers', () => ({
   subscribeUserCollection: vi.fn(() => () => {}),
 }))
@@ -13,8 +23,15 @@ describe('PatientLiveOverview', () => {
     render(<PatientLiveOverview />)
     expect(document.querySelectorAll('.skeleton-row-group').length).toBe(3)
 
+    const authCallback = authState.callback
+    if (!authCallback) {
+      throw new Error('expected onAuthStateChanged callback to be captured')
+    }
+    authCallback(null)
+
     await waitFor(() => {
       expect(screen.getByText(/sign in to load your live bookings/i)).toBeInTheDocument()
     })
+    expect(document.querySelectorAll('.skeleton-row-group').length).toBe(0)
   })
 })

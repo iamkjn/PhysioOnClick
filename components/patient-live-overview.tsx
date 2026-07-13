@@ -38,7 +38,7 @@ export function PatientLiveOverview() {
 
   useEffect(() => {
     if (!auth) {
-      setTimeout(() => setResolvedAuth(true), 0);
+      setResolvedAuth(true);
       return;
     }
 
