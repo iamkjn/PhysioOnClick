@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { getExerciseLogs } from "@/lib/recovery";
+import { Skeleton, SkeletonText } from "@/components/skeleton";
 
 interface Props {
   uid: string;
@@ -32,7 +33,14 @@ export function AdherenceBar({ uid, personId }: Props) {
         <p className="muted">{error}</p>
       </div>
     );
-  if (daysCompleted === null) return null;
+  if (daysCompleted === null)
+    return (
+      <div className="panel stack">
+        <h3>This week&apos;s adherence</h3>
+        <SkeletonText lines={1} lastLineWidth="60%" />
+        <Skeleton height="12px" width="100%" className="skeleton-bar" />
+      </div>
+    );
 
   const pct = Math.round((daysCompleted / 7) * 100);
 
