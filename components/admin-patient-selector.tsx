@@ -25,7 +25,7 @@ export function AdminPatientSelector({ onSelect }: Props) {
   const [personOptions, setPersonOptions] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
-    if (!db) return;
+    if (!db) { setLoaded(true); return; }
     getDocs(collection(db, "patients")).then((snap) => {
       setPatients(
         snap.docs.map((d) => ({
