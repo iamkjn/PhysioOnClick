@@ -37,62 +37,40 @@ export function SiteHeader() {
     const header = headerRef.current;
     if (!header) return;
 
-    const mm = gsap.matchMedia();
-    mm.add(
-      {
-        reduceMotion: "(prefers-reduced-motion: reduce)",
-      },
-      (context) => {
-        const { reduceMotion } = context.conditions as { reduceMotion: boolean };
-
-        const target = scrolled
-          ? {
-              backgroundColor: "rgba(255,255,255,0.85)",
-              boxShadow: "0 2px 20px rgba(13,27,42,0.08)",
-              borderBottomColor: "transparent",
-            }
-          : {
-              backgroundColor: "#ffffff",
-              boxShadow: "0 0 0 rgba(13,27,42,0)",
-              borderBottomColor: "#E2E8F0",
-            };
-
-        if (reduceMotion) {
-          gsap.set(header, target);
-        } else {
-          gsap.to(header, { ...target, duration: 0.25, ease: "power2.out" });
+    const target = scrolled
+      ? {
+          backgroundColor: "rgba(255,255,255,0.85)",
+          boxShadow: "0 2px 20px rgba(13,27,42,0.08)",
+          borderBottomColor: "transparent",
         }
-      }
-    );
+      : {
+          backgroundColor: "#ffffff",
+          boxShadow: "0 0 0 rgba(13,27,42,0)",
+          borderBottomColor: "#E2E8F0",
+        };
 
-    return () => mm.revert();
+    gsap.to(header, {
+      ...target,
+      duration: prefersReducedMotion() ? 0 : 0.25,
+      ease: "power2.out",
+      overwrite: "auto",
+    });
   }, [scrolled]);
 
   useGSAP(() => {
-    const mm = gsap.matchMedia();
-    mm.add(
-      {
-        reduceMotion: "(prefers-reduced-motion: reduce)",
-      },
-      (context) => {
-        const { reduceMotion } = context.conditions as { reduceMotion: boolean };
-
-        navItems.forEach((item) => {
-          const el = underlineRefs.current[item.href];
-          if (!el) return;
-          const target = isActive(item.href)
-            ? { width: 20, opacity: 1 }
-            : { width: 0, opacity: 0 };
-          if (reduceMotion) {
-            gsap.set(el, target);
-          } else {
-            gsap.to(el, { ...target, duration: 0.25, ease: "power2.out" });
-          }
-        });
-      }
-    );
-
-    return () => mm.revert();
+    navItems.forEach((item) => {
+      const el = underlineRefs.current[item.href];
+      if (!el) return;
+      const target = isActive(item.href)
+        ? { width: 20, opacity: 1 }
+        : { width: 0, opacity: 0 };
+      gsap.to(el, {
+        ...target,
+        duration: prefersReducedMotion() ? 0 : 0.25,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    });
   }, [pathname]);
 
   function handleNavHoverStart(href: string) {
@@ -114,44 +92,18 @@ export function SiteHeader() {
     if (bars.length !== 3) return;
 
     const [top, middle, bottom] = Array.from(bars);
+    const duration = prefersReducedMotion() ? 0 : 0.25;
+    const ease = "power2.inOut";
 
-    const mm = gsap.matchMedia();
-    mm.add(
-      {
-        reduceMotion: "(prefers-reduced-motion: reduce)",
-      },
-      (context) => {
-        const { reduceMotion } = context.conditions as { reduceMotion: boolean };
-
-        if (reduceMotion) {
-          if (menuOpen) {
-            gsap.set(top, { rotate: 45, y: 6 });
-            gsap.set(middle, { opacity: 0 });
-            gsap.set(bottom, { rotate: -45, y: -6 });
-          } else {
-            gsap.set(top, { rotate: 0, y: 0 });
-            gsap.set(middle, { opacity: 1 });
-            gsap.set(bottom, { rotate: 0, y: 0 });
-          }
-          return;
-        }
-
-        const duration = 0.25;
-        const ease = "power2.inOut";
-
-        if (menuOpen) {
-          gsap.to(top, { rotate: 45, y: 6, duration, ease });
-          gsap.to(middle, { opacity: 0, duration: duration * 0.6, ease });
-          gsap.to(bottom, { rotate: -45, y: -6, duration, ease });
-        } else {
-          gsap.to(top, { rotate: 0, y: 0, duration, ease });
-          gsap.to(middle, { opacity: 1, duration, ease });
-          gsap.to(bottom, { rotate: 0, y: 0, duration, ease });
-        }
-      }
-    );
-
-    return () => mm.revert();
+    if (menuOpen) {
+      gsap.to(top, { rotate: 45, y: 6, duration, ease, overwrite: "auto" });
+      gsap.to(middle, { opacity: 0, duration: duration * 0.6, ease, overwrite: "auto" });
+      gsap.to(bottom, { rotate: -45, y: -6, duration, ease, overwrite: "auto" });
+    } else {
+      gsap.to(top, { rotate: 0, y: 0, duration, ease, overwrite: "auto" });
+      gsap.to(middle, { opacity: 1, duration, ease, overwrite: "auto" });
+      gsap.to(bottom, { rotate: 0, y: 0, duration, ease, overwrite: "auto" });
+    }
   }, [menuOpen]);
 
   useEffect(() => {

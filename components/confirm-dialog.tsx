@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useGSAP } from '@/hooks/use-gsap-timeline';
-import { gsap } from '@/lib/gsap';
+import { gsap, prefersReducedMotion } from '@/lib/gsap';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -39,24 +39,18 @@ export function ConfirmDialog({
     const dialog = dialogRef.current;
     if (!overlay || !dialog) return;
 
-    const mm = gsap.matchMedia();
-    mm.add({ reduceMotion: '(prefers-reduced-motion: reduce)' }, (context) => {
-      const { reduceMotion } = context.conditions as { reduceMotion: boolean };
-      if (reduceMotion) {
-        gsap.set(overlay, { opacity: 1 });
-        gsap.set(dialog, { opacity: 1, scale: 1 });
-        return;
-      }
-      gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.18, ease: 'power1.out' });
-      gsap.fromTo(
-        dialog,
-        { opacity: 0, scale: 0.94 },
-        { opacity: 1, scale: 1, duration: 0.22, ease: 'back.out(1.7)' }
-      );
-    });
-
-    return () => mm.revert();
-  }, { dependencies: [isOpen], revertOnUpdate: true });
+    if (prefersReducedMotion()) {
+      gsap.set(overlay, { opacity: 1 });
+      gsap.set(dialog, { opacity: 1, scale: 1 });
+      return;
+    }
+    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.18, ease: 'power1.out' });
+    gsap.fromTo(
+      dialog,
+      { opacity: 0, scale: 0.94 },
+      { opacity: 1, scale: 1, duration: 0.22, ease: 'back.out(1.7)' }
+    );
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

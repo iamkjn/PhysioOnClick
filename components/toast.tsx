@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useGSAP } from '@/hooks/use-gsap-timeline';
-import { gsap } from '@/lib/gsap';
+import { gsap, prefersReducedMotion } from '@/lib/gsap';
 
 export type ToastType = 'success' | 'info' | 'warning' | 'error';
 
@@ -69,38 +69,32 @@ export function Toast({ id, message, type, onDismiss }: ToastProps) {
     const el = cardRef.current;
     if (!el) return;
 
-    const mm = gsap.matchMedia();
-    mm.add({ reduceMotion: '(prefers-reduced-motion: reduce)' }, (context) => {
-      const { reduceMotion } = context.conditions as { reduceMotion: boolean };
-      if (reduceMotion) {
-        gsap.set(el, { opacity: 1, y: 0, scale: 1 });
-        return;
-      }
+    if (prefersReducedMotion()) {
+      gsap.set(el, { opacity: 1, y: 0, scale: 1 });
+      return;
+    }
 
+    gsap.fromTo(
+      el,
+      { opacity: 0, y: 16, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.32, ease: 'back.out(1.6)' }
+    );
+
+    if (type === 'warning' || type === 'error') {
       gsap.fromTo(
         el,
-        { opacity: 0, y: 16, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.32, ease: 'back.out(1.6)' }
+        { x: 0 },
+        { x: 4, duration: 0.06, repeat: 5, yoyo: true, delay: 0.32, ease: 'power1.inOut' }
       );
+    }
 
-      if (type === 'warning' || type === 'error') {
-        gsap.fromTo(
-          el,
-          { x: 0 },
-          { x: 4, duration: 0.06, repeat: 5, yoyo: true, delay: 0.32, ease: 'power1.inOut' }
-        );
-      }
-
-      if (progressRef.current) {
-        gsap.fromTo(
-          progressRef.current,
-          { scaleX: 1 },
-          { scaleX: 0, duration: AUTO_DISMISS_MS / 1000, ease: 'none', transformOrigin: 'left center' }
-        );
-      }
-    });
-
-    return () => mm.revert();
+    if (progressRef.current) {
+      gsap.fromTo(
+        progressRef.current,
+        { scaleX: 1 },
+        { scaleX: 0, duration: AUTO_DISMISS_MS / 1000, ease: 'none', transformOrigin: 'left center' }
+      );
+    }
   }, [type]);
 
   return (

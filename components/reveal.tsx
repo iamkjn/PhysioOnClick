@@ -2,7 +2,7 @@
 
 import { CSSProperties, useRef } from "react";
 import { useGSAP } from "@/hooks/use-gsap-timeline";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 
 type Direction = "up" | "down" | "left" | "right" | "fade";
 
@@ -37,43 +37,32 @@ export function Reveal({
     const el = ref.current;
     if (!el) return;
 
-    const mm = gsap.matchMedia();
-    mm.add(
-      {
-        reduceMotion: "(prefers-reduced-motion: reduce)",
-      },
-      (context) => {
-        const { reduceMotion } = context.conditions as { reduceMotion: boolean };
-        if (reduceMotion) {
-          gsap.set(el, { opacity: 1, x: 0, y: 0, scale: 1 });
-          return;
-        }
+    if (prefersReducedMotion()) {
+      gsap.set(el, { opacity: 1, x: 0, y: 0, scale: 1 });
+      return;
+    }
 
-        const offset = OFFSETS[direction];
-        gsap.set(el, { opacity: 0, x: offset.x, y: offset.y, scale: 0.98 });
+    const offset = OFFSETS[direction];
+    gsap.set(el, { opacity: 0, x: offset.x, y: offset.y, scale: 0.98 });
 
-        const trigger = ScrollTrigger.create({
-          trigger: el,
-          start: "top 85%",
-          once: true,
-          onEnter: () => {
-            gsap.to(el, {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              scale: 1,
-              duration: duration / 1000,
-              delay: delay / 1000,
-              ease: "power3.out",
-            });
-          },
+    const trigger = ScrollTrigger.create({
+      trigger: el,
+      start: "top 85%",
+      once: true,
+      onEnter: () => {
+        gsap.to(el, {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          scale: 1,
+          duration: duration / 1000,
+          delay: delay / 1000,
+          ease: "power3.out",
         });
+      },
+    });
 
-        return () => trigger.kill();
-      }
-    );
-
-    return () => mm.revert();
+    return () => trigger.kill();
   }, [direction, delay, duration]);
 
   return (
