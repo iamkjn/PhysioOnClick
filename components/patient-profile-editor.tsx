@@ -6,6 +6,7 @@ import { FormEvent, useEffect, useState } from "react";
 
 import { auth, db } from "@/lib/firebase";
 import { ensurePatientRecord, mergePatientProfileDetails } from "@/lib/patient-account";
+import { SkeletonForm } from "@/components/skeleton";
 
 const phonePattern = /^(?:\+44|0)[0-9\s]{9,14}$/;
 
@@ -16,13 +17,16 @@ export function PatientProfileEditor() {
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState("Sign in to manage your profile details.");
   const [isSaving, setIsSaving] = useState(false);
+  const [resolvedAuth, setResolvedAuth] = useState(false);
 
   useEffect(() => {
     if (!auth) {
+      setResolvedAuth(true);
       return;
     }
 
     return onAuthStateChanged(auth, async (user) => {
+      setResolvedAuth(true);
       setUserId(user?.uid || "");
       setEmail(user?.email || "");
 
@@ -86,6 +90,14 @@ export function PatientProfileEditor() {
     } finally {
       setIsSaving(false);
     }
+  }
+
+  if (!resolvedAuth) {
+    return (
+      <div className="panel patient-profile-panel">
+        <SkeletonForm fields={3} />
+      </div>
+    );
   }
 
   return (

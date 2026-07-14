@@ -16,3 +16,4 @@ firestore-debug.log
 .claude-flow/
 .claude/.proven-config-version
 .claude/proven-config.json
+sdd/

@@ -9,6 +9,7 @@ import { AdminPatientSelector } from "@/components/admin-patient-selector";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
+import { SkeletonChart, SkeletonRow } from "@/components/skeleton";
 
 export default function AdminRecoveryPage() {
   const [adminUid, setAdminUid] = useState<string | null>(null);
@@ -31,8 +32,9 @@ export default function AdminRecoveryPage() {
   if (!checkedAdmin) {
     return (
       <div className="site-shell">
-        <section className="page-section stack">
-          <p className="muted">Checking admin access…</p>
+        <section className="page-section dashboard-grid">
+          <SkeletonRow count={4} />
+          <SkeletonChart height={260} />
         </section>
       </div>
     );

@@ -10,6 +10,7 @@ import {
   type ExerciseLog,
 } from "@/lib/recovery";
 import { exercises } from "@/lib/site-data";
+import { SkeletonRow } from "@/components/skeleton";
 
 interface Props {
   uid: string;
@@ -51,7 +52,13 @@ export function AssignedExercises({ uid, personId }: Props) {
     }
   }
 
-  if (loading) return <p className="muted">Loading exercises…</p>;
+  if (loading)
+    return (
+      <div className="panel stack">
+        <h3>Your exercises</h3>
+        <SkeletonRow count={3} />
+      </div>
+    );
   if (error && assigned.length === 0)
     return (
       <div className="panel stack">

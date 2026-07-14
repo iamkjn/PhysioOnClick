@@ -9,11 +9,11 @@ npm run dev          # start dev server at http://localhost:3000
 npm run build        # production build
 npm run rebuild      # clean .next then build
 npm run lint         # ESLint via next lint
+npm test             # run tests (vitest)
+npm run test:run     # run tests once (vitest run)
 npm run seed:firestore                            # seed all Firestore collections
 npm run seed:firestore -- --only=blogs,services  # seed specific collections only
 ```
-
-No test suite is configured.
 
 ## Architecture
 

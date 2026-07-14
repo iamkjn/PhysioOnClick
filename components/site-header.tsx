@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useGSAP } from "@/hooks/use-gsap-timeline";
+import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -22,6 +24,88 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const underlineRefs = useRef<Record<string, HTMLSpanElement | null>>({});
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  useGSAP(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const target = scrolled
+      ? {
+          backgroundColor: "rgba(255,255,255,0.85)",
+          boxShadow: "0 2px 20px rgba(13,27,42,0.08)",
+          borderBottomColor: "transparent",
+        }
+      : {
+          backgroundColor: "#ffffff",
+          boxShadow: "0 0 0 rgba(13,27,42,0)",
+          borderBottomColor: "#E2E8F0",
+        };
+
+    gsap.to(header, {
+      ...target,
+      duration: prefersReducedMotion() ? 0 : 0.25,
+      ease: "power2.out",
+      overwrite: "auto",
+    });
+  }, [scrolled]);
+
+  useGSAP(() => {
+    navItems.forEach((item) => {
+      const el = underlineRefs.current[item.href];
+      if (!el) return;
+      const target = isActive(item.href)
+        ? { width: 20, opacity: 1 }
+        : { width: 0, opacity: 0 };
+      gsap.to(el, {
+        ...target,
+        duration: prefersReducedMotion() ? 0 : 0.25,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    });
+  }, [pathname]);
+
+  function handleNavHoverStart(href: string) {
+    if (isActive(href) || prefersReducedMotion()) return;
+    const el = underlineRefs.current[href];
+    if (el) gsap.to(el, { width: 16, opacity: 0.4, duration: 0.2, ease: "power2.out" });
+  }
+
+  function handleNavHoverEnd(href: string) {
+    if (isActive(href) || prefersReducedMotion()) return;
+    const el = underlineRefs.current[href];
+    if (el) gsap.to(el, { width: 0, opacity: 0, duration: 0.2, ease: "power2.out" });
+  }
+
+  useGSAP(() => {
+    const button = hamburgerRef.current;
+    if (!button) return;
+    const bars = button.querySelectorAll("span");
+    if (bars.length !== 3) return;
+
+    const [top, middle, bottom] = Array.from(bars);
+    const duration = prefersReducedMotion() ? 0 : 0.25;
+    const ease = "power2.inOut";
+
+    if (menuOpen) {
+      gsap.to(top, { rotate: 45, y: 6, duration, ease, overwrite: "auto" });
+      gsap.to(middle, { opacity: 0, duration: duration * 0.6, ease, overwrite: "auto" });
+      gsap.to(bottom, { rotate: -45, y: -6, duration, ease, overwrite: "auto" });
+    } else {
+      gsap.to(top, { rotate: 0, y: 0, duration, ease, overwrite: "auto" });
+      gsap.to(middle, { opacity: 1, duration, ease, overwrite: "auto" });
+      gsap.to(bottom, { rotate: 0, y: 0, duration, ease, overwrite: "auto" });
+    }
+  }, [menuOpen]);
+
   useEffect(() => {
     if (!auth) return;
     return onAuthStateChanged(auth, setUser);
@@ -34,11 +118,6 @@ export function SiteHeader() {
     router.push("/");
     router.refresh();
   }
-
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname === href || pathname.startsWith(`${href}/`);
-  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -61,7 +140,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className={`header-wrap simple-header${scrolled ? " header-wrap--scrolled" : ""}`}>
+      <header ref={headerRef} className={`header-wrap simple-header${scrolled ? " header-wrap--scrolled" : ""}`}>
         <div className="site-shell">
           <div className="nav-row simple-nav">
             <Link className="brand simple-brand" href="/">
@@ -76,8 +155,17 @@ export function SiteHeader() {
                   key={item.href}
                   className={isActive(item.href) ? "active" : undefined}
                   href={item.href}
+                  onMouseEnter={() => handleNavHoverStart(item.href)}
+                  onMouseLeave={() => handleNavHoverEnd(item.href)}
                 >
                   {item.label}
+                  <span
+                    className="nav-underline"
+                    aria-hidden="true"
+                    ref={(el) => {
+                      underlineRefs.current[item.href] = el;
+                    }}
+                  />
                 </Link>
               ))}
             </nav>
@@ -95,6 +183,7 @@ export function SiteHeader() {
               </Link>
             </div>
             <button
+              ref={hamburgerRef}
               className={`hamburger${menuOpen ? " hamburger--open" : ""}`}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}

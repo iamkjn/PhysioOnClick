@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { getPainLogs, getClinicalAssessments } from "@/lib/recovery";
+import { SkeletonChart } from "@/components/skeleton";
 
 interface ChartPoint {
   date: string;
@@ -61,7 +62,7 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
         <h3>Recovery progress</h3>
         <p className="muted">Pain score trend over the last 56 days.</p>
         {loading ? (
-          <p className="muted">Loading chart…</p>
+          <SkeletonChart height={260} />
         ) : error ? (
           <p className="muted">{error}</p>
         ) : data.length === 0 ? (

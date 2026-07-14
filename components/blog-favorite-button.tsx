@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import type { BlogArticle } from "@/lib/blog";
 import { auth, db } from "@/lib/firebase";
 import { ensurePatientRecord } from "@/lib/patient-account";
+import { SkeletonCircle } from "@/components/skeleton";
 
 export function BlogFavoriteButton({
   article,
@@ -21,13 +22,16 @@ export function BlogFavoriteButton({
   const [isFavourite, setIsFavourite] = useState(false);
   const [status, setStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [resolvedAuth, setResolvedAuth] = useState(false);
 
   useEffect(() => {
     if (!auth) {
+      setResolvedAuth(true);
       return;
     }
 
     return onAuthStateChanged(auth, (user) => {
+      setResolvedAuth(true);
       setUserId(user?.uid || "");
     });
   }, []);
@@ -93,6 +97,14 @@ export function BlogFavoriteButton({
     } finally {
       setIsSaving(false);
     }
+  }
+
+  if (!resolvedAuth) {
+    return (
+      <div className={`blog-favorite-wrap ${compact ? "compact" : ""}`}>
+        <SkeletonCircle size="24px" />
+      </div>
+    );
   }
 
   return (

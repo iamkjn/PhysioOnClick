@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { EmptyState } from "@/components/empty-state";
+import { Skeleton, SkeletonCircle } from "@/components/skeleton";
 import {
   getDependents,
   addDependent,
@@ -31,6 +32,7 @@ export default function PeoplePage() {
   const [currentName, setCurrentName] = useState("");
   const [currentEmail, setCurrentEmail] = useState("");
   const [dependents, setDependents] = useState<Dependent[]>([]);
+  const [dependentsLoaded, setDependentsLoaded] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -52,7 +54,10 @@ export default function PeoplePage() {
       setUid(u.uid);
       setCurrentName(u.displayName || "You");
       setCurrentEmail(u.email || "");
-      getDependents(u.uid).then(setDependents);
+      getDependents(u.uid).then((deps) => {
+        setDependents(deps);
+        setDependentsLoaded(true);
+      });
     });
   }, [router]);
 
@@ -179,7 +184,21 @@ export default function PeoplePage() {
         )}
 
         {/* Dependents */}
-        {dependents.map((dep) =>
+        {!dependentsLoaded &&
+          Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} style={cardStyle} className="skeleton-person-card">
+              <SkeletonCircle size="52px" />
+              <div style={{ flex: 1 }}>
+                <Skeleton height="1em" width="140px" />
+                <div style={{ marginTop: "0.4rem" }}>
+                  <Skeleton height="0.8em" width="180px" />
+                </div>
+              </div>
+            </div>
+          ))}
+
+        {dependentsLoaded &&
+          dependents.map((dep) =>
           editingId === dep.id ? (
             /* Inline edit form */
             <div
@@ -320,7 +339,7 @@ export default function PeoplePage() {
           )
         )}
 
-        {dependents.length === 0 && !showForm && (
+        {dependentsLoaded && dependents.length === 0 && !showForm && (
           <EmptyState
             illustration="people"
             title="Just you for now"

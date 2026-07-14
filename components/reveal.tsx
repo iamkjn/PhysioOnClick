@@ -1,7 +1,8 @@
 "use client";
 
-import { CSSProperties } from "react";
-import { useInView } from "@/hooks/use-in-view";
+import { CSSProperties, useRef } from "react";
+import { useGSAP } from "@/hooks/use-gsap-timeline";
+import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 
 type Direction = "up" | "down" | "left" | "right" | "fade";
 
@@ -14,6 +15,14 @@ interface RevealProps {
   style?: CSSProperties;
 }
 
+const OFFSETS: Record<Direction, { x: number; y: number }> = {
+  up: { x: 0, y: 28 },
+  down: { x: 0, y: -28 },
+  left: { x: -28, y: 0 },
+  right: { x: 28, y: 0 },
+  fade: { x: 0, y: 0 },
+};
+
 export function Reveal({
   children,
   direction = "up",
@@ -22,25 +31,42 @@ export function Reveal({
   className,
   style,
 }: RevealProps) {
-  const [ref, inView] = useInView();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    if (prefersReducedMotion()) {
+      gsap.set(el, { opacity: 1, x: 0, y: 0, scale: 1 });
+      return;
+    }
+
+    const offset = OFFSETS[direction];
+    gsap.set(el, { opacity: 0, x: offset.x, y: offset.y, scale: 0.98 });
+
+    const trigger = ScrollTrigger.create({
+      trigger: el,
+      start: "top 85%",
+      once: true,
+      onEnter: () => {
+        gsap.to(el, {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          scale: 1,
+          duration: duration / 1000,
+          delay: delay / 1000,
+          ease: "power3.out",
+        });
+      },
+    });
+
+    return () => trigger.kill();
+  }, [direction, delay, duration]);
 
   return (
-    <div
-      ref={ref}
-      className={[
-        "reveal",
-        `reveal-${direction}`,
-        inView ? "in-view" : "",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
-      style={{
-        transitionDelay: `${delay}ms`,
-        transitionDuration: `${duration}ms`,
-        ...style,
-      }}
-    >
+    <div ref={ref} className={["reveal", className].filter(Boolean).join(" ")} style={style}>
       {children}
     </div>
   );

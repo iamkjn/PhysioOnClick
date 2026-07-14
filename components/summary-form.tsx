@@ -29,7 +29,7 @@ function RecoveryRing({ percent }: { percent: number }) {
   return (
     <svg width="64" height="64" viewBox="0 0 64 64" style={{ flexShrink: 0 }}>
       <circle cx="32" cy="32" r={r} fill="none" stroke="var(--color-border)" strokeWidth="6" />
-      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--color-teal)" strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} transform="rotate(-90 32 32)" style={{ transition: "stroke-dashoffset 0.2s" }} />
+      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--color-primary)" strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} transform="rotate(-90 32 32)" style={{ transition: "stroke-dashoffset 0.2s" }} />
       <text x="32" y="37" textAnchor="middle" fontSize="14" fontWeight="700" fill="var(--color-navy)" fontFamily="var(--font-sans)">{percent}%</text>
     </svg>
   );
@@ -104,7 +104,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
     return (
       <button
         onClick={() => setOpen(true)}
-        style={{ background: "var(--color-teal-light)", border: "1px solid var(--color-teal)", borderRadius: 8, color: "var(--color-teal)", cursor: "pointer", fontSize: 13, fontWeight: 600, padding: "4px 12px", fontFamily: "var(--font-sans)" }}
+        style={{ background: "var(--color-primary-light)", border: "1px solid var(--color-primary)", borderRadius: 8, color: "var(--color-primary)", cursor: "pointer", fontSize: 13, fontWeight: 600, padding: "4px 12px", fontFamily: "var(--font-sans)" }}
       >
         📋 Write summary
       </button>
@@ -230,9 +230,9 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, followUpWeeks: w }))}
                   style={{
-                    background: form.followUpWeeks === w ? "var(--color-teal)" : "var(--color-surface)",
+                    background: form.followUpWeeks === w ? "var(--color-primary)" : "var(--color-surface)",
                     color: form.followUpWeeks === w ? "#fff" : "var(--color-text-secondary)",
-                    border: `1.5px solid ${form.followUpWeeks === w ? "var(--color-teal)" : "var(--color-border)"}`,
+                    border: `1.5px solid ${form.followUpWeeks === w ? "var(--color-primary)" : "var(--color-border)"}`,
                     borderRadius: 999,
                     padding: "6px 14px",
                     fontSize: 13,
@@ -254,7 +254,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
           <button
             onClick={handlePublish}
             disabled={saving || !canPublish}
-            style={{ background: canPublish ? "var(--color-teal)" : "var(--color-border)", color: "#fff", border: "none", borderRadius: 12, padding: "0.875rem", fontSize: 16, fontWeight: 700, fontFamily: "var(--font-sans)", cursor: canPublish && !saving ? "pointer" : "not-allowed", opacity: saving ? 0.7 : 1 }}
+            style={{ background: canPublish ? "var(--color-primary)" : "var(--color-border)", color: "#fff", border: "none", borderRadius: 12, padding: "0.875rem", fontSize: 16, fontWeight: 700, fontFamily: "var(--font-sans)", cursor: canPublish && !saving ? "pointer" : "not-allowed", opacity: saving ? 0.7 : 1 }}
           >
             {saving ? "Publishing…" : "Publish Summary"}
           </button>

@@ -8,15 +8,21 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { HomeDashboard } from "@/components/home-dashboard";
 import { useToast } from "@/components/toast-provider";
+import { Skeleton, SkeletonStatGrid } from "@/components/skeleton";
 
 export function HomeHeroSection({ founderName }: { founderName: string }) {
   const [user, setUser] = useState<User | null>(null);
+  const [resolvedAuth, setResolvedAuth] = useState(false);
   const { show } = useToast();
   const welcomedRef = useRef(false);
 
   useEffect(() => {
-    if (!auth) return;
+    if (!auth) {
+      setResolvedAuth(true);
+      return;
+    }
     return onAuthStateChanged(auth, (u) => {
+      setResolvedAuth(true);
       setUser(u);
       if (u && !welcomedRef.current) {
         welcomedRef.current = true;
@@ -24,6 +30,20 @@ export function HomeHeroSection({ founderName }: { founderName: string }) {
       }
     });
   }, [show]);
+
+  if (!resolvedAuth) {
+    return (
+      <section className="home-hero home-hero-skeleton">
+        <div className="site-shell home-hero-content skeleton-hero">
+          <Skeleton height="1.2rem" width="220px" className="skeleton-pill" />
+          <div style={{ margin: "1rem 0" }}>
+            <Skeleton height="2.5rem" width="80%" />
+          </div>
+          <SkeletonStatGrid count={2} />
+        </div>
+      </section>
+    );
+  }
 
   if (user) {
     return <HomeDashboard user={user} />;

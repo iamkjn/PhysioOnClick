@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { auth } from "@/lib/firebase";
 import { subscribeUserCollection } from "@/lib/firestore-helpers";
+import { SkeletonRow } from "@/components/skeleton";
 
 type Booking = {
   id: string;
@@ -33,13 +34,16 @@ export function PatientLiveOverview() {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [favouriteBlogs, setFavouriteBlogs] = useState<FavouriteBlog[]>([]);
   const [userId, setUserId] = useState("");
+  const [resolvedAuth, setResolvedAuth] = useState(false);
 
   useEffect(() => {
     if (!auth) {
+      setResolvedAuth(true);
       return;
     }
 
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setResolvedAuth(true);
       setEmail(user?.email || "");
       setUserId(user?.uid || "");
     });
@@ -107,6 +111,19 @@ export function PatientLiveOverview() {
       false
     );
   }, [userId]);
+
+  if (!resolvedAuth) {
+    return (
+      <div className="panel stack">
+        <h3>Account overview</h3>
+        <div className="patient-account-grid">
+          <SkeletonRow count={2} />
+          <SkeletonRow count={2} />
+          <SkeletonRow count={2} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="panel stack">

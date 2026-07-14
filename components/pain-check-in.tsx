@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { getTodayPainLog, logPainScore, type PainLog } from "@/lib/recovery";
+import { SkeletonStatGrid } from "@/components/skeleton";
 
 interface Props {
   uid: string;
@@ -43,7 +44,7 @@ export function PainCheckIn({ uid, personId }: Props) {
     return (
       <div className="panel stack">
         <h3>Today&apos;s pain check-in</h3>
-        <p className="muted">Loading…</p>
+        <SkeletonStatGrid count={1} />
       </div>
     );
   }

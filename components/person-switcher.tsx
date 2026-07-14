@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { getDependents, type Dependent } from "@/lib/dependents";
+import { Skeleton } from "@/components/skeleton";
 
 const ADD_PERSON_VALUE = "__add_person__";
 
@@ -15,10 +16,11 @@ interface Props {
 }
 
 export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false, onAddPerson }: Props) {
-  const [dependents, setDependents] = useState<Dependent[]>([]);
+  const [dependents, setDependents] = useState<Dependent[] | null>(null);
   const [selected, setSelected] = useState(uid);
 
   useEffect(() => {
+    setDependents(null);
     getDependents(uid).then(setDependents);
   }, [uid]);
 
@@ -29,8 +31,13 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
       return;
     }
     setSelected(val);
-    const name = val === uid ? displayName : (dependents.find((d) => d.id === val)?.name ?? "");
+    const name = val === uid ? displayName : (dependents?.find((d) => d.id === val)?.name ?? "");
     onSelect(val, name);
+  }
+
+  if (dependents === null) {
+    if (!alwaysShow) return null;
+    return <Skeleton height="2.4rem" width="220px" />;
   }
 
   if (dependents.length === 0 && !alwaysShow) return null;

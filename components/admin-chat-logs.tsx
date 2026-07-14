@@ -11,6 +11,7 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
+import { SkeletonRow } from "@/components/skeleton";
 
 type ChatMessage = {
   role: "user" | "model";
@@ -83,7 +84,7 @@ export function AdminChatLogs() {
     );
   });
 
-  if (loading) return <p>Loading chat logs…</p>;
+  if (loading) return <SkeletonRow count={4} />;
 
   return (
     <div>

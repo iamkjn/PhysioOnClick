@@ -40,7 +40,7 @@ export function AdminSignIn() {
       <div style={{ background: "var(--color-surface)", borderRadius: 20, padding: "2.5rem 2rem", width: "100%", maxWidth: 420, boxShadow: "var(--shadow-card)" }}>
         {/* Logo + title */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--color-teal)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 22, fontFamily: "var(--font-serif)" }}>P</div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--color-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 22, fontFamily: "var(--font-serif)" }}>P</div>
           <div>
             <div style={{ fontFamily: "var(--font-serif)", fontSize: 24, color: "var(--color-navy)", lineHeight: 1.1 }}>Admin Portal</div>
             <div style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>PhysioOnClick</div>
@@ -56,7 +56,7 @@ export function AdminSignIn() {
           <button
             type="submit"
             disabled={loading}
-            style={{ background: "var(--color-teal)", color: "#fff", border: "none", borderRadius: 10, padding: "0.875rem", fontSize: 16, fontWeight: 700, fontFamily: "var(--font-sans)", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, marginTop: "0.25rem" }}
+            style={{ background: "var(--color-primary)", color: "#fff", border: "none", borderRadius: 10, padding: "0.875rem", fontSize: 16, fontWeight: 700, fontFamily: "var(--font-sans)", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, marginTop: "0.25rem" }}
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
