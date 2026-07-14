@@ -6,6 +6,7 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { AuthPanel } from "@/components/auth-panel";
 import { CalEmbed } from "@/components/cal-embed";
+import { SkeletonForm } from "@/components/skeleton";
 
 export function BookAuthGate() {
   const [user, setUser] = useState<User | null | undefined>(undefined);
@@ -19,7 +20,11 @@ export function BookAuthGate() {
   }, []);
 
   if (user === undefined) {
-    return <p className="muted">Checking your account…</p>;
+    return (
+      <div className="book-auth-gate">
+        <SkeletonForm fields={2} />
+      </div>
+    );
   }
 
   if (!user) {

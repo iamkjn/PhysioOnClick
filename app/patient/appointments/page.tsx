@@ -6,6 +6,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { EmptyState } from "@/components/empty-state";
 import { PersonSwitcher } from "@/components/person-switcher";
+import { SkeletonRow } from "@/components/skeleton";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 
 function resolveStatus(booking: BookingRecord): BookingRecord["status"] {
@@ -68,7 +69,7 @@ export default function AppointmentsPage() {
           />
         </div>
       )}
-      {loading && <p style={{ color: "#5E7A84" }}>Loading…</p>}
+      {loading && <SkeletonRow count={3} />}
       {!loading && bookings.length === 0 && (
         <EmptyState
           illustration="calendar"

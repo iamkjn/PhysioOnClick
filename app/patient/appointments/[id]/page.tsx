@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
+import { SkeletonRow } from "@/components/skeleton";
 import { getBooking, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { DownloadSummaryButton } from "@/components/download-summary-button";
@@ -28,7 +29,7 @@ export default function AppointmentDetailPage() {
   if (loading) {
     return (
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "3rem 1rem" }}>
-        Loading…
+        <SkeletonRow count={1} />
       </div>
     );
   }
