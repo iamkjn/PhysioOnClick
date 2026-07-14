@@ -16,7 +16,7 @@ import {
 import { auth, firebaseEnabled } from "@/lib/firebase";
 import { ensureAppUserRecord, ensurePatientRecord } from "@/lib/patient-account";
 
-export function AuthPanel({ role }: { role: "patient" | "admin" }) {
+export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" | "admin"; redirectTo?: string | null }) {
   const router = useRouter();
   const [mode, setMode] = useState<"signin" | "signup" | "magic-link">("signin");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,15 +32,23 @@ export function AuthPanel({ role }: { role: "patient" | "admin" }) {
     setMessageTone(tone);
   }
 
+  function completePatientSignIn(successMessage: string) {
+    if (redirectTo) {
+      setStatus(`${successMessage} Redirecting you to your portal…`, "success");
+      router.push(redirectTo);
+      router.refresh();
+    } else {
+      setStatus(successMessage, "success");
+    }
+  }
+
   useEffect(() => {
     if (!auth || !isPatient) return;
     getRedirectResult(auth)
       .then(async (result) => {
         if (!result) return;
         await ensurePatientRecord(result.user);
-        setStatus("Google sign-in successful. Redirecting you to your portal…", "success");
-        router.push("/patient");
-        router.refresh();
+        completePatientSignIn("Google sign-in successful.");
       })
       .catch((error) => setStatus(parseAuthError(error), "error"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,9 +106,7 @@ export function AuthPanel({ role }: { role: "patient" | "admin" }) {
           await updateProfile(credential.user, { displayName: fullName });
         }
         await ensurePatientRecord(credential.user, fullName);
-        setStatus("Patient account created. Redirecting you to your portal…", "success");
-        router.push("/patient");
-        router.refresh();
+        completePatientSignIn("Patient account created.");
         return;
       }
 
@@ -109,12 +115,11 @@ export function AuthPanel({ role }: { role: "patient" | "admin" }) {
         await ensureAppUserRecord(credential.user, credential.user.displayName || "", "admin");
         setStatus("Admin sign-in successful. Redirecting…", "success");
         router.push("/admin");
+        router.refresh();
       } else {
         await ensurePatientRecord(credential.user);
-        setStatus("Patient sign-in successful. Redirecting you to your portal…", "success");
-        router.push("/patient");
+        completePatientSignIn("Patient sign-in successful.");
       }
-      router.refresh();
     } catch (error) {
       setStatus(parseAuthError(error), "error");
     } finally {
@@ -161,9 +166,7 @@ export function AuthPanel({ role }: { role: "patient" | "admin" }) {
       provider.setCustomParameters({ prompt: "select_account" });
       const credential = await signInWithPopup(auth, provider);
       await ensurePatientRecord(credential.user);
-      setStatus("Google sign-in successful. Redirecting you to your portal…", "success");
-      router.push("/patient");
-      router.refresh();
+      completePatientSignIn("Google sign-in successful.");
     } catch (error) {
       if (error instanceof FirebaseError && (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment")) {
         const provider = new GoogleAuthProvider();
@@ -196,7 +199,7 @@ export function AuthPanel({ role }: { role: "patient" | "admin" }) {
             ? "Use your secure admin credentials to access bookings, enquiries and patient operations."
             : mode === "magic-link"
             ? "Enter your booking email and we will send you a sign-in link. No password needed."
-            : "Use the same email you want to use for bookings, saved blogs, rehab updates and secure uploads."}
+            : "Use the same email you want to use for bookings, rehab updates and secure uploads."}
         </p>
       </div>
 

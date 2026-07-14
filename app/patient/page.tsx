@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { AuthPanel } from "@/components/auth-panel";
 import { ExerciseLibrary } from "@/components/exercise-library";
+import { PatientAuthGate } from "@/components/patient-auth-gate";
 import { PatientLiveOverview } from "@/components/patient-live-overview";
 import { PatientProfileEditor } from "@/components/patient-profile-editor";
 import { UploadPanel } from "@/components/upload-panel";
@@ -108,7 +108,7 @@ export default function PatientPage() {
       </section>
 
       <section className="page-section dashboard-grid">
-        <AuthPanel role="patient" />
+        <PatientAuthGate />
         <PatientLiveOverview />
       </section>
 
@@ -122,7 +122,7 @@ export default function PatientPage() {
           <span className="eyebrow">Patient account</span>
           <h3>Everything linked to one secure record</h3>
           <p className="muted">
-            Profile details, bookings, enquiries, saved blogs and document uploads now connect to the same Firebase patient
+            Profile details, bookings, enquiries and document uploads now connect to the same Firebase patient
             account for a more consistent portal experience.
           </p>
         </div>

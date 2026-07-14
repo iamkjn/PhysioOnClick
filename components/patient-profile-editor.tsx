@@ -105,7 +105,7 @@ export function PatientProfileEditor() {
       <div className="stack">
         <span className="eyebrow">Profile details</span>
         <h3>Keep your patient account up to date</h3>
-        <p className="muted">Your saved profile helps link bookings, enquiries, uploads and favourite blogs together.</p>
+        <p className="muted">Your saved profile helps link bookings, enquiries and uploads together.</p>
       </div>
 
       <form className="patient-profile-form" onSubmit={handleSubmit}>

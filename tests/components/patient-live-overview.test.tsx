@@ -21,7 +21,7 @@ import { PatientLiveOverview } from '@/components/patient-live-overview'
 describe('PatientLiveOverview', () => {
   it('shows a skeleton for each column before auth resolves, and the sign-in prompt after', async () => {
     render(<PatientLiveOverview />)
-    expect(document.querySelectorAll('.skeleton-row-group').length).toBe(3)
+    expect(document.querySelectorAll('.skeleton-row-group').length).toBe(2)
 
     const authCallback = authState.callback
     if (!authCallback) {

@@ -2,13 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
-import { onSnapshot, query, collection } from "firebase/firestore";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { BlogFavoriteButton } from "@/components/blog-favorite-button";
-import { auth, db } from "@/lib/firebase";
 import type { BlogArticle } from "@/lib/blog";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 
@@ -21,40 +16,14 @@ export function BlogDirectory({
   articles: BlogArticle[];
   categories: string[];
 }) {
-  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
-  const [userId, setUserId] = useState("");
-  const [favoriteSlugs, setFavoriteSlugs] = useState<string[]>([]);
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-
-  useEffect(() => {
-    if (!auth) {
-      return;
-    }
-
-    return onAuthStateChanged(auth, (user) => {
-      setUserId(user?.uid || "");
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!db || !userId) {
-      setFavoriteSlugs([]);
-      return;
-    }
-
-    return onSnapshot(query(collection(db, "patients", userId, "favoriteBlogs")), (snapshot) => {
-      setFavoriteSlugs(snapshot.docs.map((doc) => doc.id));
-    });
-  }, [userId]);
 
   const visibleArticles = useMemo(() => {
     const filtered =
       activeCategory === "All" ? articles : articles.filter((article) => article.category.toLowerCase() === activeCategory.toLowerCase());
 
-    const favouritesFiltered = showFavoritesOnly ? filtered.filter((article) => favoriteSlugs.includes(article.slug)) : filtered;
-    const sorted = [...favouritesFiltered];
+    const sorted = [...filtered];
 
     if (sortMode === "newest") {
       sorted.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
@@ -69,16 +38,7 @@ export function BlogDirectory({
     }
 
     return sorted;
-  }, [activeCategory, articles, favoriteSlugs, showFavoritesOnly, sortMode]);
-
-  function handleSavedBlogsToggle() {
-    if (!userId) {
-      router.push("/patient");
-      return;
-    }
-
-    setShowFavoritesOnly((current) => !current);
-  }
+  }, [activeCategory, articles, sortMode]);
 
   return (
     <>
@@ -111,13 +71,6 @@ export function BlogDirectory({
             <div className="blog-toolbar-block blog-toolbar-block-right">
               <span className="blog-toolbar-label">Sort and view</span>
               <div className="blog-sort-controls">
-                <button
-                  className={`blog-chip ${showFavoritesOnly ? "active" : ""}`}
-                  type="button"
-                  onClick={handleSavedBlogsToggle}
-                >
-                  Saved blogs
-                </button>
                 <label className="blog-sort-label">
                   <span className="sr-only">Sort blog articles</span>
                   <select value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)}>
@@ -127,11 +80,6 @@ export function BlogDirectory({
                   </select>
                 </label>
               </div>
-              {!userId ? (
-                <Link className="blog-toolbar-hint" href="/patient">
-                  Sign in to save blogs
-                </Link>
-              ) : null}
               <span className="blog-result-count">{visibleArticles.length} articles</span>
             </div>
           </div>
@@ -143,7 +91,6 @@ export function BlogDirectory({
           <article className="simple-blog-card" key={article.slug}>
             <div className="simple-blog-card-top">
               <span className="simple-category-pill">{article.category}</span>
-              <BlogFavoriteButton article={article} compact />
             </div>
             <Image
               src={article.image}

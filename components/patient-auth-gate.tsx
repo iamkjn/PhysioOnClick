@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
+import { useEffect, useState } from "react";
 
 import { auth } from "@/lib/firebase";
 import { AuthPanel } from "@/components/auth-panel";
-import { CalEmbed } from "@/components/cal-embed";
 import { SkeletonForm } from "@/components/skeleton";
 
-export function BookAuthGate() {
+export function PatientAuthGate() {
   const [user, setUser] = useState<User | null | undefined>(undefined);
 
   useEffect(() => {
@@ -21,20 +20,13 @@ export function BookAuthGate() {
 
   if (user === undefined) {
     return (
-      <div className="book-auth-gate">
+      <div className="panel auth-panel">
         <SkeletonForm fields={2} />
       </div>
     );
   }
 
-  if (!user) {
-    return (
-      <div className="book-auth-gate">
-        <p className="lead">Sign in or create a free account to book your appointment.</p>
-        <AuthPanel role="patient" redirectTo={null} />
-      </div>
-    );
-  }
+  if (user) return null;
 
-  return <CalEmbed />;
+  return <AuthPanel role="patient" />;
 }

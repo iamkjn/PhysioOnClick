@@ -7,7 +7,6 @@ import Link from "next/link";
 
 import { PatientProfileEditor } from "@/components/patient-profile-editor";
 import { RehabProgramsSection } from "@/components/rehab-programs-section";
-import { SavedBlogsSection } from "@/components/saved-blogs-section";
 import { UploadPanel } from "@/components/upload-panel";
 import { Skeleton, SkeletonForm, SkeletonRow } from "@/components/skeleton";
 
@@ -54,12 +53,6 @@ export default function AccountPage() {
         </div>
         <div style={{ marginBottom: "2rem" }}>
           <SkeletonForm fields={3} />
-        </div>
-        <div style={{ marginBottom: "2rem" }}>
-          <div style={{ marginBottom: "0.75rem" }}>
-            <Skeleton height="1.1rem" width="180px" />
-          </div>
-          <SkeletonRow count={2} />
         </div>
         <div style={{ marginBottom: "2rem" }}>
           <div style={{ marginBottom: "0.75rem" }}>
@@ -152,12 +145,6 @@ export default function AccountPage() {
       <h2 style={sectionHeadingStyle}>Rehab programmes</h2>
       <div style={{ marginBottom: "2rem" }}>
         <RehabProgramsSection email={email} />
-      </div>
-
-      {/* Saved articles */}
-      <h2 style={sectionHeadingStyle}>Saved articles</h2>
-      <div style={{ marginBottom: "2rem" }}>
-        <SavedBlogsSection uid={uid} />
       </div>
 
       {/* Uploads */}

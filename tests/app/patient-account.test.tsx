@@ -9,7 +9,6 @@ vi.mock('firebase/auth', () => ({
 }))
 vi.mock('@/components/patient-profile-editor', () => ({ PatientProfileEditor: () => null }))
 vi.mock('@/components/rehab-programs-section', () => ({ RehabProgramsSection: () => null }))
-vi.mock('@/components/saved-blogs-section', () => ({ SavedBlogsSection: () => null }))
 vi.mock('@/components/upload-panel', () => ({ UploadPanel: () => null }))
 
 import AccountPage from '@/app/patient/account/page'

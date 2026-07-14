@@ -22,17 +22,10 @@ type Enquiry = {
   message: string;
 };
 
-type FavouriteBlog = {
-  id: string;
-  title: string;
-  category: string;
-};
-
 export function PatientLiveOverview() {
   const [email, setEmail] = useState("");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
-  const [favouriteBlogs, setFavouriteBlogs] = useState<FavouriteBlog[]>([]);
   const [userId, setUserId] = useState("");
   const [resolvedAuth, setResolvedAuth] = useState(false);
 
@@ -93,31 +86,11 @@ export function PatientLiveOverview() {
     );
   }, [email, userId]);
 
-  useEffect(() => {
-    if (!userId) {
-      setFavouriteBlogs([]);
-      return;
-    }
-
-    return subscribeUserCollection(
-      `patients/${userId}/favoriteBlogs`,
-      "",
-      (doc, id) => ({
-        id,
-        title: String(doc.title || "Saved blog"),
-        category: String(doc.category || "General")
-      }),
-      setFavouriteBlogs,
-      false
-    );
-  }, [userId]);
-
   if (!resolvedAuth) {
     return (
       <div className="panel stack">
         <h3>Account overview</h3>
         <div className="patient-account-grid">
-          <SkeletonRow count={2} />
           <SkeletonRow count={2} />
           <SkeletonRow count={2} />
         </div>
@@ -160,22 +133,6 @@ export function PatientLiveOverview() {
             </div>
           ) : (
             <p className="muted">No saved enquiries found yet.</p>
-          )}
-        </div>
-
-        <div className="stack">
-          <strong>Saved blogs</strong>
-          {favouriteBlogs.length ? (
-            <div className="stack">
-              {favouriteBlogs.map((blog) => (
-                <div className="list-card" key={blog.id}>
-                  <strong>{blog.title}</strong>
-                  <span>{blog.category}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="muted">No saved blogs yet.</p>
           )}
         </div>
       </div>
