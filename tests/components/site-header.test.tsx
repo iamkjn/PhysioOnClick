@@ -38,4 +38,23 @@ describe('SiteHeader', () => {
     const header = document.querySelector('.header-wrap')
     expect(header?.className).toContain('header-wrap--scrolled')
   })
+
+  it('renders a real nav-underline element inside the active link', () => {
+    render(<SiteHeader />)
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' })
+    const homeLink = primaryNav.querySelector('a[href="/"]')
+    expect(homeLink?.querySelector('.nav-underline')).toBeInTheDocument()
+  })
+
+  it('does not throw when hovering a non-active nav link', () => {
+    render(<SiteHeader />)
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' })
+    const aboutLink = primaryNav.querySelector('a[href="/about"]')
+    expect(aboutLink).toBeInTheDocument()
+    expect(() => {
+      fireEvent.mouseEnter(aboutLink!)
+      fireEvent.mouseLeave(aboutLink!)
+    }).not.toThrow()
+    expect(aboutLink).toBeInTheDocument()
+  })
 })
