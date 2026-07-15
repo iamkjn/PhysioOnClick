@@ -223,17 +223,29 @@ export function ChatWidget() {
         style={{
           position: "fixed", bottom: 24, right: 24, zIndex: 9999,
           width: 56, height: 56, borderRadius: "50%",
-          background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))",
+          background: "linear-gradient(135deg, var(--color-primary-dark), var(--book-rail-top))",
           border: "none", cursor: "pointer",
           boxShadow: "0 4px 20px rgba(8,145,178,0.4)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          color: "white", fontSize: 22,
+          color: "white",
           transition: "transform 0.15s ease, box-shadow 0.15s ease",
         }}
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.08)"; }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
       >
-        {open ? "✕" : "💬"}
+        <svg
+          width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+        >
+          {open ? (
+            <>
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </>
+          ) : (
+            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+          )}
+        </svg>
       </button>
 
       {/* Drawer */}

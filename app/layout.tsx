@@ -35,8 +35,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <ToastProvider>
           <ScrollReset />
+          <a className="skip-link" href="#main-content">
+            Skip to content
+          </a>
           <SiteHeader />
-          <main>{children}</main>
+          <main id="main-content">{children}</main>
           <SiteFooter />
           <Analytics />
           <ChatWidget />

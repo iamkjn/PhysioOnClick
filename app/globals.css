@@ -10,10 +10,19 @@
   --book-accent-light:  #ECF8FD;
   --book-rail-top:      #086087;
   --book-rail-bottom:   #043246;
-  --book-muted-caps:    #5BC2F0;
-  --book-muted-para:    #87D2F4;
+  /* Muted rail tones are white-mixes of --book-accent (60/70/78%). The mix
+     floor is 59%: below that, text drops under 4.5:1 against the lightest
+     point of the rail (--book-rail-top). Caps and para used to sit at 32%
+     and 50% — 3.44:1 and 4.14:1 on 11-14px text. Regenerate by raising the
+     mix, never by hand-picking hex. */
+  --book-muted-caps:    #9FDBF6;
+  --book-muted-para:    #B7E4F8;
   --book-muted-list:    #CAEBFA;
-  --book-chip-bg:       rgba(14, 165, 233, 0.28);
+  /* Recessed, not raised. Insets on the rail (slot chip, physio card) used to
+     be tinted *lighter* than the rail, which stranded light text on a
+     light island. A rail-bottom tint sinks them instead, so the muted tones
+     above keep working on top of them. */
+  --book-inset-bg:      rgba(4, 50, 70, 0.35);
   --book-chip-icon:     #B2E2F8;
   --book-paper:         #F6F3EC;
   --book-paper-border:  #E4DED1;
@@ -63,8 +72,12 @@
   --ink:         var(--color-navy);
   --muted:       var(--color-text-secondary);
   --line:        var(--color-border);
-  --primary:     var(--color-primary);
-  --primary-dark:var(--color-primary-dark);
+  /* Ink grades, not the raw accent: --color-primary is only 2.77:1 on white,
+     so it fails AA both as text and under white-on-accent fills. Both grades
+     below are spec-derived mixes, so they stay in the Clarity family. Reach
+     for --color-primary directly only for decoration or text on dark. */
+  --primary:     var(--color-primary-dark);
+  --primary-dark:var(--book-rail-top);
   --shadow:      0 2px 16px rgba(30, 45, 40, 0.10);
   --shell:       1340px;
 }
@@ -80,6 +93,33 @@ a,
 button {
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
+}
+
+/* One ring for every focusable thing. Inputs (outline:none + a box-shadow
+   ring) and the .book-* screens (white ring on the dark rail) both beat this
+   on specificity and keep their own. */
+:focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 1rem;
+  z-index: 50;
+  padding: 0.75rem 1.1rem;
+  border-radius: 12px;
+  background: white;
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: var(--shadow-panel);
+  /* ponytail: no transition on top — an offscreen element's top transition
+     doesn't tick, so it stays parked at -100px and never reveals. */
+}
+
+.skip-link:focus {
+  top: 1rem;
 }
 
 * {
@@ -380,7 +420,8 @@ p {
 }
 
 .home-hero h1 span {
-  color: var(--primary);
+  /* raw accent: this sits on the dark hero overlay, not on paper */
+  color: var(--color-primary);
 }
 
 .home-hero-copy {
@@ -578,7 +619,7 @@ p {
 
 .simple-cta-band {
   margin-top: 4rem;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  background: linear-gradient(90deg, var(--color-primary-dark), var(--book-rail-top));
   color: white;
 }
 
@@ -2304,7 +2345,7 @@ textarea:focus {
 .connectivity-overlay .btn-retry {
   margin-top: 0.5rem;
   padding: 0.75rem 2rem;
-  background: var(--color-primary);
+  background: var(--color-primary-dark);
   color: white;
   border: none;
   border-radius: 14px;
@@ -2315,7 +2356,7 @@ textarea:focus {
 }
 
 .connectivity-overlay .btn-retry:hover {
-  background: var(--color-primary-dark);
+  background: var(--book-rail-top);
   transform: translateY(-1px);
 }
 
@@ -2430,7 +2471,7 @@ textarea:focus {
 .empty-state .btn-cta {
   margin-top: 0.75rem;
   padding: 0.65rem 1.5rem;
-  background: var(--color-primary);
+  background: var(--color-primary-dark);
   color: white;
   border: none;
   border-radius: 14px;
@@ -2442,7 +2483,7 @@ textarea:focus {
 }
 
 .empty-state .btn-cta:hover {
-  background: var(--color-primary-dark);
+  background: var(--book-rail-top);
   transform: translateY(-1px);
 }
 
@@ -2515,7 +2556,7 @@ textarea:focus {
 
 .confirm-dialog .btn-confirm {
   padding: 0.65rem 1.25rem;
-  background: var(--color-primary);
+  background: var(--color-primary-dark);
   border: none;
   border-radius: 10px;
   font: 600 0.9375rem var(--font-sans);
@@ -2525,7 +2566,7 @@ textarea:focus {
 }
 
 .confirm-dialog .btn-confirm:hover {
-  background: var(--color-primary-dark);
+  background: var(--book-rail-top);
 }
 
 .confirm-dialog .btn-confirm--destructive {
@@ -2639,7 +2680,7 @@ textarea:focus {
 .mobile-nav-link:hover,
 .mobile-nav-link.active {
   background: var(--color-primary-light);
-  color: var(--color-primary);
+  color: var(--color-primary-dark);
 }
 .mobile-nav-book {
   margin-top: 0.75rem;
@@ -2906,7 +2947,8 @@ textarea:focus {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--book-accent);
+  /* accent-dark, like .book-cta: white on the raw accent is only 2.77:1 */
+  background: var(--book-accent-dark);
   color: #fff;
   flex-shrink: 0;
   font-size: 11px;
@@ -2918,7 +2960,7 @@ textarea:focus {
 .book-rail-slotchip {
   display: inline-flex;
   align-items: center;
-  background: var(--book-chip-bg);
+  background: var(--book-inset-bg);
   color: var(--book-chip-icon);
   border-radius: var(--radius-chip);
   padding: 8px 12px;
@@ -2930,7 +2972,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--book-inset-bg);
   border-radius: var(--radius-chip);
   padding: 12px;
   margin-top: 16px;
@@ -2941,7 +2983,7 @@ textarea:focus {
   height: 38px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: var(--book-accent);
+  background: var(--book-accent-dark);
   color: #fff;
   font-weight: 700;
   display: flex;
@@ -3086,7 +3128,7 @@ textarea:focus {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--book-accent);
+  background: var(--book-accent-dark);
   color: #fff;
   font-size: 11px;
   display: flex;
@@ -3217,7 +3259,7 @@ textarea:focus {
 }
 
 .book-cal-day.is-selected {
-  background: var(--book-accent);
+  background: var(--book-accent-dark);
   color: #fff;
   font-weight: 700;
 }
@@ -3605,5 +3647,19 @@ textarea:focus {
   .book-slot,
   .book-input {
     transition: none;
+  }
+}
+
+/* ── Reduced motion ────────────────────────────────────────────
+   Catch-all. The targeted blocks above predate this and stay put
+   where they kill a property this can't (display, box-shadow). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
