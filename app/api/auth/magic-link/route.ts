@@ -13,9 +13,18 @@ function escapeHtml(value: string) {
 
 const rateLimitMap = new Map<string, number>();
 
+// Only these in-app destinations are legitimate post-sign-in landing spots.
+// Anything else (including protocol-relative URLs like //evil.com) falls back to "/patient".
+const ALLOWED_RETURN_PATHS = new Set<string>(["/book", "/patient"]);
+
+function sanitizeReturnPath(value: unknown): string {
+  return typeof value === "string" && ALLOWED_RETURN_PATHS.has(value) ? value : "/patient";
+}
+
 export async function POST(request: Request) {
-  const body = (await request.json()) as { email?: string };
+  const body = (await request.json()) as { email?: string; returnTo?: string };
   const email = String(body.email || "").trim().toLowerCase();
+  const returnTo = sanitizeReturnPath(body.returnTo);
 
   if (!email || !email.includes("@")) {
     return NextResponse.json({ error: "A valid email address is required." }, { status: 400 });
@@ -37,10 +46,14 @@ export async function POST(request: Request) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
+  const verifyUrl = new URL("/auth/verify", siteUrl);
+  verifyUrl.searchParams.set("email", email);
+  verifyUrl.searchParams.set("returnTo", returnTo);
+
   let portalLink: string;
   try {
     portalLink = await adminAuth.generateSignInWithEmailLink(email, {
-      url: `${siteUrl}/auth/verify?email=${encodeURIComponent(email)}`,
+      url: verifyUrl.toString(),
       handleCodeInApp: true,
     });
   } catch (error) {
@@ -50,6 +63,13 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
+    // ponytail: local dev has no email service — surface the link in the server
+    // console so the flow stays testable. Production still hard-fails.
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[dev] magic link for ${email}: ${portalLink}`);
+      rateLimitMap.set(email, now);
+      return NextResponse.json({ ok: true });
+    }
     return NextResponse.json({ error: "Email service is not configured." }, { status: 500 });
   }
 

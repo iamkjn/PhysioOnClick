@@ -36,5 +36,5 @@ export function BookAuthGate() {
     );
   }
 
-  return <CalEmbed />;
+  return <CalEmbed name={user.displayName} email={user.email} />;
 }
