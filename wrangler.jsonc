@@ -1,0 +1,39 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "physioonclick",
+  "main": ".open-next/worker.js",
+
+  // 2025-04-01+ is required for vars defined here to appear in `process.env`.
+  // Lowering this date silently breaks every process.env read in the app.
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "physioonclick"
+    }
+  ],
+
+  "observability": {
+    "enabled": true
+  },
+
+  // Non-secret runtime config only. Secrets (CAL_API_KEY, CAL_WEBHOOK_SECRET,
+  // GEMINI_API_KEY, RESEND_API_KEY, FIREBASE_SERVICE_ACCOUNT_JSON) are set with
+  // `wrangler secret put` / the dashboard and must NEVER be listed here — this
+  // file is committed.
+  //
+  // NEXT_PUBLIC_* is deliberately absent: Next inlines those at BUILD time, so
+  // they must exist in the build environment, not here. Setting them at runtime
+  // does nothing. See .env.example.
+  "vars": {
+    "FIREBASE_ADMIN_PROJECT_ID": "physioonclick",
+    "FIREBASE_ADMIN_STORAGE_BUCKET": "physioonclick.firebasestorage.app"
+  }
+}

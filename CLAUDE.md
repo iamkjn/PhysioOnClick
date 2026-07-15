@@ -59,9 +59,29 @@ Public content (services, pricing, testimonials) is static in `lib/site-data.ts`
 ### Firebase setup
 
 - `lib/firebase.ts` — client SDK (`db`, `auth`, `storage` exports)
-- `lib/firebase-admin.ts` — server admin SDK (API routes, seed script); auth via `FIREBASE_SERVICE_ACCOUNT_JSON` or `FIREBASE_SERVICE_ACCOUNT_PATH`
+- `lib/firebase-admin.ts` — **not** the `firebase-admin` package. A REST-backed shim that mirrors the subset of the admin API this app uses, because firebase-admin cannot run on Cloudflare Workers (its credential layer calls `XMLHttpRequest`; Firestore defaults to gRPC). It speaks the Firestore + Identity Toolkit REST APIs over `fetch` and signs/verifies JWTs with `jose`. Auth via `FIREBASE_SERVICE_ACCOUNT_JSON` only — `FIREBASE_SERVICE_ACCOUNT_PATH` is gone, since Workers has no filesystem.
+  - Implemented surface: `collection`/`doc`/`batch`, `where`/`orderBy`/`limit`/`get`/`add`/`set`/`update`/`delete`/`commit`, `FieldValue.serverTimestamp`/`arrayUnion`, `auth.verifyIdToken`/`generateSignInWithEmailLink`. Anything else (transactions, collectionGroup, aggregates) is deliberately unimplemented — add it when a call site needs it.
+  - Honours `FIRESTORE_EMULATOR_HOST` / `FIREBASE_AUTH_EMULATOR_HOST` **per service**; they are independent.
+  - Covered by `tests/lib/firebase-admin.test.ts` (unit, mocked fetch). Payload shapes were verified against the real Firestore emulator.
 - `lib/firestore-helpers.ts` — generic query helpers
 - Security rules: `firestore.rules`, `storage.rules`; indexes: `firestore.indexes.json`
+
+### Deployment (Cloudflare Workers)
+
+Deployed via `@opennextjs/cloudflare` (OpenNext adapter) — not Pages, not `next-on-pages`.
+
+```bash
+npm run preview     # build + run in the real workerd runtime locally
+npm run deploy      # build + deploy to Cloudflare
+npm run cf-typegen  # regenerate cloudflare-env.d.ts from wrangler.jsonc
+```
+
+- `wrangler.jsonc` — Worker config. `compatibility_date` must stay ≥ `2025-04-01` or vars stop appearing in `process.env`. Only non-secret vars belong here (the file is committed).
+- `open-next.config.ts` — no incremental cache override; add the R2 one if a route ever uses `revalidate`.
+- Secrets are set with `wrangler secret put NAME` (or the dashboard), never in `wrangler.jsonc`.
+- `NEXT_PUBLIC_*` are inlined at **build** time, so they must exist in the build environment — setting them as Worker vars/secrets does nothing.
+- `next.config.mjs` aliases `@firebase/firestore` to its browser build for the server bundle. The client SDK's node build uses gRPC/protobufjs, which calls `new Function()` — workerd forbids that and every SSR'd page 500s. Do not remove that alias.
+- `images.unoptimized` is on: Next's optimizer needs sharp, which Workers lacks. Every image is currently an SVG, which Next passes through anyway.
 
 ### Environment variables
 

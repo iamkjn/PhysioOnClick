@@ -1,8 +1,8 @@
-import crypto from "crypto";
-import { FieldValue } from "firebase-admin/firestore";
+import crypto from "node:crypto";
+
 import { NextRequest, NextResponse } from "next/server";
 
-import { getAdminDb } from "@/lib/firebase-admin";
+import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
   if (!secret || !signature) return false;

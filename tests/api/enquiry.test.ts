@@ -1,11 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("firebase-admin/firestore", () => ({
-  FieldValue: {
-    serverTimestamp: vi.fn().mockReturnValue("__SERVER_TIMESTAMP__"),
-  },
-}));
-
 const addMock = vi.fn().mockResolvedValue({ id: "mock-enquiry-id" });
 let adminDbMock: unknown = {
   collection: () => ({
@@ -13,8 +7,13 @@ let adminDbMock: unknown = {
   }),
 };
 
+// FieldValue now ships from our REST shim rather than firebase-admin, so it is
+// mocked from the same module as getAdminDb.
 vi.mock("@/lib/firebase-admin", () => ({
   getAdminDb: () => adminDbMock,
+  FieldValue: {
+    serverTimestamp: vi.fn().mockReturnValue("__SERVER_TIMESTAMP__"),
+  },
 }));
 
 import { POST } from "@/app/api/enquiry/route";

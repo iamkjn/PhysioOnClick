@@ -1,6 +1,6 @@
 import type { FunctionDeclaration } from "@google/generative-ai";
 import { SchemaType } from "@google/generative-ai";
-import type { Firestore } from "firebase-admin/firestore";
+import type { Firestore } from "@/lib/firebase-admin";
 
 export const GUEST_TOOL_DECLARATIONS: FunctionDeclaration[] = [
   {
