@@ -96,7 +96,7 @@ export function AdminChatLogs() {
           width: "100%",
           padding: "10px 14px",
           borderRadius: 8,
-          border: "1.5px solid #C8E8F0",
+          border: "1.5px solid var(--color-border)",
           fontSize: 14,
           marginBottom: 20,
           boxSizing: "border-box",
@@ -124,7 +124,7 @@ export function AdminChatLogs() {
             <div
               key={s.sessionId}
               style={{
-                border: "1px solid #D8F3F9",
+                border: "1px solid var(--color-primary-light)",
                 borderRadius: 12,
                 overflow: "hidden",
                 background: "white",
@@ -146,13 +146,13 @@ export function AdminChatLogs() {
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14, color: "#10233A" }}>
+                  <div style={{ fontWeight: 600, fontSize: 14, color: "var(--color-text-primary)" }}>
                     {s.patientName}
                   </div>
                   <div
                     style={{
                       fontSize: 13,
-                      color: "#5E7A84",
+                      color: "var(--color-text-secondary)",
                       marginTop: 2,
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -163,16 +163,16 @@ export function AdminChatLogs() {
                   </div>
                 </div>
                 <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ fontSize: 12, color: "#5E7A84" }}>{date}</div>
-                  <div style={{ fontSize: 12, color: "#0891B2", marginTop: 2 }}>
+                  <div style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>{date}</div>
+                  <div style={{ fontSize: 12, color: "var(--color-primary)", marginTop: 2 }}>
                     {s.messages.length} messages
                   </div>
                 </div>
-                <span style={{ color: "#0891B2", fontSize: 18 }}>{isOpen ? "▲" : "▼"}</span>
+                <span style={{ color: "var(--color-primary)", fontSize: 18 }}>{isOpen ? "▲" : "▼"}</span>
               </button>
 
               {isOpen && (
-                <div style={{ borderTop: "1px solid #E8F4F7", padding: "14px 18px" }}>
+                <div style={{ borderTop: "1px solid var(--color-border)", padding: "14px 18px" }}>
                   {s.messages.map((m, i) => (
                     <div
                       key={i}
@@ -189,8 +189,8 @@ export function AdminChatLogs() {
                           padding: "8px 12px",
                           borderRadius:
                             m.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
-                          background: m.role === "user" ? "#0891B2" : "#F0F9FB",
-                          color: m.role === "user" ? "white" : "#10233A",
+                          background: m.role === "user" ? "var(--color-primary)" : "var(--color-primary-light)",
+                          color: m.role === "user" ? "white" : "var(--color-text-primary)",
                           fontSize: 13,
                           lineHeight: 1.5,
                         }}
@@ -198,7 +198,7 @@ export function AdminChatLogs() {
                         {m.text}
                       </div>
                       {m.action && (
-                        <div style={{ marginTop: 4, fontSize: 12, color: "#0891B2" }}>
+                        <div style={{ marginTop: 4, fontSize: 12, color: "var(--color-primary)" }}>
                           → {m.action.label} ({m.action.url})
                         </div>
                       )}

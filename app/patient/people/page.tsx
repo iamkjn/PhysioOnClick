@@ -110,7 +110,7 @@ export default function PeoplePage() {
 
   const inputStyle: React.CSSProperties = {
     padding: "0.6rem 0.85rem",
-    border: "1px solid #D1E8EE",
+    border: "1px solid var(--color-border)",
     borderRadius: 10,
     fontSize: 15,
     width: "100%",
@@ -137,11 +137,11 @@ export default function PeoplePage() {
           marginBottom: "1.5rem",
         }}
       >
-        <h1 style={{ margin: 0, color: "#0C2A38" }}>My People</h1>
+        <h1 style={{ margin: 0, color: "var(--color-text-primary)" }}>My People</h1>
         <button
           onClick={() => setShowForm(true)}
           style={{
-            background: "#0891B2",
+            background: "var(--color-primary)",
             color: "#fff",
             border: "none",
             borderRadius: 12,
@@ -162,11 +162,11 @@ export default function PeoplePage() {
             <Avatar name={currentName} size={52} />
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <strong style={{ color: "#0C2A38" }}>{currentName}</strong>
+                <strong style={{ color: "var(--color-text-primary)" }}>{currentName}</strong>
                 <span
                   style={{
-                    background: "#D8F3F9",
-                    color: "#0E7490",
+                    background: "var(--color-primary-light)",
+                    color: "var(--color-primary-dark)",
                     fontSize: 11,
                     fontWeight: 700,
                     borderRadius: 999,
@@ -176,7 +176,7 @@ export default function PeoplePage() {
                   You
                 </span>
               </div>
-              <span style={{ fontSize: 13, color: "#5E7A84" }}>
+              <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
                 Your account · {currentEmail}
               </span>
             </div>
@@ -210,7 +210,7 @@ export default function PeoplePage() {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
               }}
             >
-              <h3 style={{ marginTop: 0, color: "#0C2A38", fontSize: 16 }}>
+              <h3 style={{ marginTop: 0, color: "var(--color-text-primary)", fontSize: 16 }}>
                 Edit {dep.name}
               </h3>
               <div style={{ display: "grid", gap: "0.75rem" }}>
@@ -258,7 +258,7 @@ export default function PeoplePage() {
                     onClick={() => void handleSave(dep.id)}
                     disabled={saving || !editForm.name || !editForm.dob}
                     style={{
-                      background: "#0891B2",
+                      background: "var(--color-primary)",
                       color: "#fff",
                       border: "none",
                       borderRadius: 12,
@@ -273,11 +273,11 @@ export default function PeoplePage() {
                     onClick={() => setEditingId(null)}
                     style={{
                       background: "none",
-                      border: "1px solid #D1E8EE",
+                      border: "1px solid var(--color-border)",
                       borderRadius: 12,
                       padding: "0.6rem 1.25rem",
                       cursor: "pointer",
-                      color: "#5E7A84",
+                      color: "var(--color-text-secondary)",
                     }}
                   >
                     Cancel
@@ -290,10 +290,10 @@ export default function PeoplePage() {
             <div key={dep.id} style={cardStyle}>
               <Avatar name={dep.name} imageUrl={dep.avatarUrl} size={52} />
               <div style={{ flex: 1 }}>
-                <strong style={{ display: "block", color: "#0C2A38" }}>
+                <strong style={{ display: "block", color: "var(--color-text-primary)" }}>
                   {dep.name}
                 </strong>
-                <span style={{ fontSize: 13, color: "#5E7A84" }}>
+                <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
                   {dep.relationship} · {calcAge(dep.dob)} years old
                 </span>
                 {dep.notes && (
@@ -301,7 +301,7 @@ export default function PeoplePage() {
                     style={{
                       display: "block",
                       fontSize: 12,
-                      color: "#9CA3AF",
+                      color: "var(--color-text-secondary)",
                       marginTop: 2,
                     }}
                   >
@@ -314,7 +314,7 @@ export default function PeoplePage() {
                 style={{
                   background: "none",
                   border: "none",
-                  color: "#5E7A84",
+                  color: "var(--color-text-secondary)",
                   cursor: "pointer",
                   fontSize: 13,
                   fontWeight: 600,
@@ -327,7 +327,7 @@ export default function PeoplePage() {
                 style={{
                   background: "none",
                   border: "none",
-                  color: "#DC2626",
+                  color: "var(--color-error)",
                   cursor: "pointer",
                   fontSize: 13,
                   fontWeight: 600,
@@ -360,7 +360,7 @@ export default function PeoplePage() {
             boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
           }}
         >
-          <h3 style={{ marginTop: 0, color: "#0C2A38" }}>Add a person</h3>
+          <h3 style={{ marginTop: 0, color: "var(--color-text-primary)" }}>Add a person</h3>
           <form onSubmit={(e) => void handleAdd(e)} style={{ display: "grid", gap: "0.75rem" }}>
             <input name="name" placeholder="Full name" required style={inputStyle} />
             <input name="dob" type="date" required style={inputStyle} />
@@ -379,7 +379,7 @@ export default function PeoplePage() {
                 type="submit"
                 disabled={saving}
                 style={{
-                  background: "#0891B2",
+                  background: "var(--color-primary)",
                   color: "#fff",
                   border: "none",
                   borderRadius: 12,
@@ -395,11 +395,11 @@ export default function PeoplePage() {
                 onClick={() => setShowForm(false)}
                 style={{
                   background: "none",
-                  border: "1px solid #D1E8EE",
+                  border: "1px solid var(--color-border)",
                   borderRadius: 12,
                   padding: "0.6rem 1.25rem",
                   cursor: "pointer",
-                  color: "#5E7A84",
+                  color: "var(--color-text-secondary)",
                 }}
               >
                 Cancel

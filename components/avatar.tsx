@@ -1,13 +1,13 @@
 "use client";
 
 const COLOURS = [
-  "#0891B2",
+  "var(--color-primary)",
   "#16A34A",
   "#7C3AED",
-  "#D97706",
-  "#DC2626",
-  "#0E7490",
-  "#059669",
+  "var(--color-warning)",
+  "var(--color-error)",
+  "var(--color-primary-dark)",
+  "var(--color-success)",
   "#9333EA",
 ];
 

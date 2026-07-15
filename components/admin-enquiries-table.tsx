@@ -24,7 +24,7 @@ const STATUS_CYCLE: Record<string, string> = {
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
   "new":         { bg: "var(--color-gold-light)",  color: "var(--color-gold)",  label: "New" },
   "in-progress": { bg: "var(--color-primary-light)",  color: "var(--color-primary)",  label: "In progress" },
-  "resolved":    { bg: "#D1FAE5",                  color: "#059669",             label: "Resolved" },
+  "resolved":    { bg: "#D1FAE5",                  color: "var(--color-success)",             label: "Resolved" },
 };
 
 export function AdminEnquiriesTable() {

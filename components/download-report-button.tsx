@@ -41,9 +41,11 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
       const contentW = pageW - margin * 2;
       let y = margin;
 
-      const brand = "#0891B2";
-      const dark = "#0C2A38";
-      const muted = "#5E7A84";
+      // jsPDF runs outside the DOM, so it can't resolve CSS custom properties —
+      // these are the literal Clarity palette hex values instead of var(--token).
+      const brand = "#0EA5E9";
+      const dark = "#23201B";
+      const muted = "#6B655B";
 
       // Suppress unused variable warning
       void brand;
@@ -201,7 +203,7 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
         display: "inline-flex",
         alignItems: "center",
         gap: "0.5rem",
-        background: generating ? "#D1E8EE" : "#0C2A38",
+        background: generating ? "var(--color-border)" : "var(--color-text-primary)",
         color: "#fff",
         border: "none",
         borderRadius: 12,

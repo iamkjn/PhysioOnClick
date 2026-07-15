@@ -58,7 +58,7 @@ export function RehabProgramsSection({ email }: { email: string }) {
           boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
         }}
       >
-        <p style={{ margin: 0, color: "#5E7A84" }}>No rehab programme assigned yet.</p>
+        <p style={{ margin: 0, color: "var(--color-text-secondary)" }}>No rehab programme assigned yet.</p>
       </div>
     );
   }
@@ -75,11 +75,11 @@ export function RehabProgramsSection({ email }: { email: string }) {
             boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
           }}
         >
-          <strong style={{ display: "block", color: "#0C2A38", fontSize: 16, marginBottom: 4 }}>
+          <strong style={{ display: "block", color: "var(--color-text-primary)", fontSize: 16, marginBottom: 4 }}>
             {p.title}
           </strong>
           {p.stage && (
-            <span style={{ fontSize: 13, color: "#5E7A84", display: "block", marginBottom: 8 }}>
+            <span style={{ fontSize: 13, color: "var(--color-text-secondary)", display: "block", marginBottom: 8 }}>
               {p.stage}
             </span>
           )}
@@ -101,7 +101,7 @@ export function RehabProgramsSection({ email }: { email: string }) {
             </>
           )}
           {p.exerciseIds.length > 0 && (
-            <span style={{ fontSize: 12, color: "#5E7A84" }}>
+            <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>
               {p.exerciseIds.length} exercise{p.exerciseIds.length !== 1 ? "s" : ""} assigned
             </span>
           )}

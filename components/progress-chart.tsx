@@ -18,11 +18,11 @@ export function ProgressChart() {
       <div className="chart-wrap">
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={data}>
-            <XAxis dataKey="week" stroke="#51708d" />
-            <YAxis stroke="#51708d" />
+            <XAxis dataKey="week" stroke="var(--color-text-secondary)" />
+            <YAxis stroke="var(--color-text-secondary)" />
             <Tooltip />
-            <Line type="monotone" dataKey="pain" stroke="#0f3b57" strokeWidth={3} />
-            <Line type="monotone" dataKey="mobility" stroke="#50a4d9" strokeWidth={3} />
+            <Line type="monotone" dataKey="pain" stroke="var(--color-text-primary)" strokeWidth={3} />
+            <Line type="monotone" dataKey="mobility" stroke="var(--color-primary)" strokeWidth={3} />
           </LineChart>
         </ResponsiveContainer>
       </div>

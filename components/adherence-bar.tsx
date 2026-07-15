@@ -50,7 +50,7 @@ export function AdherenceBar({ uid, personId }: Props) {
       <p className="muted">{daysCompleted} of 7 days with exercises completed.</p>
       <div
         style={{
-          background: "#E0F2FE",
+          background: "var(--color-primary-light)",
           borderRadius: 999,
           height: 12,
           overflow: "hidden",
@@ -60,13 +60,13 @@ export function AdherenceBar({ uid, personId }: Props) {
           style={{
             width: `${pct}%`,
             height: "100%",
-            background: pct >= 70 ? "#0891B2" : pct >= 40 ? "#f59e0b" : "#ef4444",
+            background: pct >= 70 ? "var(--color-primary)" : pct >= 40 ? "var(--color-warning)" : "var(--color-error)",
             borderRadius: 999,
             transition: "width 0.4s ease",
           }}
         />
       </div>
-      <span style={{ fontSize: 13, color: "#5E7A84" }}>{pct}% this week</span>
+      <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>{pct}% this week</span>
     </div>
   );
 }

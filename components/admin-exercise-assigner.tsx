@@ -73,10 +73,10 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
               justifyContent: "space-between",
               alignItems: "center",
               padding: "0.5rem 0",
-              borderBottom: "1px solid #E8F4F8",
+              borderBottom: "1px solid var(--color-border)",
             }}
           >
-            <span style={{ fontSize: 14, color: "#0C2A38" }}>
+            <span style={{ fontSize: 14, color: "var(--color-text-primary)" }}>
               {ex?.title ?? ae.exerciseId}
             </span>
             <button
@@ -85,7 +85,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
               style={{
                 background: "none",
                 border: "none",
-                color: "#DC2626",
+                color: "var(--color-error)",
                 cursor: "pointer",
                 fontSize: 13,
                 fontWeight: 600,
@@ -98,7 +98,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
       })}
       {unassigned.length > 0 && (
         <>
-          <h4 style={{ marginBottom: 0, color: "#0C2A38" }}>Add exercise</h4>
+          <h4 style={{ marginBottom: 0, color: "var(--color-text-primary)" }}>Add exercise</h4>
           {unassigned.map((ex) => (
             <div
               key={ex.id}
@@ -107,17 +107,17 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
                 justifyContent: "space-between",
                 alignItems: "center",
                 padding: "0.4rem 0",
-                borderBottom: "1px solid #E8F4F8",
+                borderBottom: "1px solid var(--color-border)",
               }}
             >
-              <span style={{ fontSize: 13, color: "#5E7A84" }}>
+              <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
                 {ex.title} · {ex.bodyPart}
               </span>
               <button
                 onClick={() => void handleAssign(ex.id)}
                 disabled={saving === ex.id}
                 style={{
-                  background: "#0891B2",
+                  background: "var(--color-primary)",
                   color: "#fff",
                   border: "none",
                   borderRadius: 8,

@@ -207,7 +207,7 @@ export function ChatWidget() {
       {copied && (
         <div style={{
           position: "fixed", bottom: 90, right: 24, zIndex: 10000,
-          background: "#164E63", color: "white", fontSize: 13, fontWeight: 500,
+          background: "var(--book-rail-top)", color: "white", fontSize: 13, fontWeight: 500,
           padding: "8px 16px", borderRadius: 20,
           boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
           animation: "fadeIn 0.15s ease",
@@ -223,7 +223,7 @@ export function ChatWidget() {
         style={{
           position: "fixed", bottom: 24, right: 24, zIndex: 9999,
           width: 56, height: 56, borderRadius: "50%",
-          background: "linear-gradient(135deg, #0891B2, #0E7490)",
+          background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))",
           border: "none", cursor: "pointer",
           boxShadow: "0 4px 20px rgba(8,145,178,0.4)",
           display: "flex", alignItems: "center", justifyContent: "center",
@@ -249,12 +249,12 @@ export function ChatWidget() {
             background: "white", borderRadius: 18,
             boxShadow: "0 8px 48px rgba(0,0,0,0.16)",
             zIndex: 9998, overflow: "hidden",
-            border: "1px solid #D8F3F9",
+            border: "1px solid var(--color-primary-light)",
           }}
         >
           {/* Header */}
           <div style={{
-            background: "linear-gradient(135deg, #0891B2, #0E7490)",
+            background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))",
             padding: "14px 18px",
             display: "flex", alignItems: "center", gap: 10,
           }}>
@@ -271,14 +271,14 @@ export function ChatWidget() {
                 PhysioOnClick Assistant
               </div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", marginTop: 1, display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#4ADE80", display: "inline-block" }} />
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--color-success)", display: "inline-block" }} />
                 Online · Always here to help
               </div>
             </div>
           </div>
 
           {/* Messages */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "16px 14px 8px", background: "#F8FEFF" }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: "16px 14px 8px", background: "var(--color-bg)" }}>
             {msgs.map((m, i) => (
               <div key={i} style={{
                 display: "flex",
@@ -290,7 +290,7 @@ export function ChatWidget() {
                 {m.isBot && (
                   <div style={{
                     width: 26, height: 26, borderRadius: "50%",
-                    background: "linear-gradient(135deg, #0891B2, #0E7490)",
+                    background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 12, flexShrink: 0, marginBottom: 2,
                   }}>🛡️</div>
@@ -299,8 +299,8 @@ export function ChatWidget() {
                   maxWidth: "78%",
                   padding: "10px 14px",
                   borderRadius: m.isBot ? "18px 18px 18px 4px" : "18px 18px 4px 18px",
-                  background: m.isBot ? "white" : "linear-gradient(135deg, #0891B2, #0E7490)",
-                  color: m.isBot ? "#164E63" : "white",
+                  background: m.isBot ? "white" : "linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))",
+                  color: m.isBot ? "var(--book-rail-top)" : "white",
                   fontSize: 13.5,
                   lineHeight: 1.6,
                   whiteSpace: "pre-wrap",
@@ -318,7 +318,7 @@ export function ChatWidget() {
           {/* Chips */}
           <div style={{
             padding: "10px 12px 14px",
-            borderTop: "1px solid #E0F7FA",
+            borderTop: "1px solid var(--color-border)",
             background: "white",
             display: "flex", flexWrap: "wrap", gap: 7,
           }}>
@@ -330,9 +330,9 @@ export function ChatWidget() {
                   display: "flex", alignItems: "center", gap: 5,
                   padding: "7px 12px",
                   borderRadius: 20,
-                  border: "1.5px solid #A5F3FC",
+                  border: "1.5px solid var(--color-border)",
                   background: "white",
-                  color: "#164E63",
+                  color: "var(--book-rail-top)",
                   fontSize: 12.5,
                   fontWeight: 500,
                   cursor: "pointer",
@@ -341,15 +341,15 @@ export function ChatWidget() {
                 }}
                 onMouseEnter={e => {
                   const el = e.currentTarget;
-                  el.style.background = "#0891B2";
+                  el.style.background = "var(--color-primary)";
                   el.style.color = "white";
-                  el.style.borderColor = "#0891B2";
+                  el.style.borderColor = "var(--color-primary)";
                 }}
                 onMouseLeave={e => {
                   const el = e.currentTarget;
                   el.style.background = "white";
-                  el.style.color = "#164E63";
-                  el.style.borderColor = "#A5F3FC";
+                  el.style.color = "var(--book-rail-top)";
+                  el.style.borderColor = "var(--color-border)";
                 }}
               >
                 <span>{c.emoji}</span>

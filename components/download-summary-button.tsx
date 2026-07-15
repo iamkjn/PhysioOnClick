@@ -17,8 +17,10 @@ export function DownloadSummaryButton({ summary }: Props) {
       const { jsPDF } = await import("jspdf");
       const margin = 15;
       const contentW = 210 - margin * 2;
-      const dark = "#0C2A38";
-      const muted = "#5E7A84";
+      // jsPDF runs outside the DOM, so it can't resolve CSS custom properties —
+      // these are the literal Clarity palette hex values instead of var(--token).
+      const dark = "#23201B";
+      const muted = "#6B655B";
       let y = margin;
 
       const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -80,7 +82,7 @@ export function DownloadSummaryButton({ summary }: Props) {
         display: "inline-flex",
         alignItems: "center",
         gap: "0.5rem",
-        background: generating ? "#D1E8EE" : "#0C2A38",
+        background: generating ? "var(--color-border)" : "var(--color-text-primary)",
         color: "#fff",
         border: "none",
         borderRadius: 12,

@@ -63,7 +63,7 @@ export function PainCheckIn({ uid, personId }: Props) {
           >
             {todayLog.score}
           </span>
-          <span style={{ color: "#5E7A84", fontSize: 14 }}>/10</span>
+          <span style={{ color: "var(--color-text-secondary)", fontSize: 14 }}>/10</span>
         </div>
         {todayLog.note && <p className="muted">{todayLog.note}</p>}
         <p className="muted" style={{ fontSize: 12 }}>
@@ -80,13 +80,13 @@ export function PainCheckIn({ uid, personId }: Props) {
       <form onSubmit={(e) => void handleSubmit(e)} style={{ display: "grid", gap: "1rem" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 13, color: "#5E7A84" }}>No pain (0)</span>
+            <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>No pain (0)</span>
             <span
               style={{ fontSize: 28, fontWeight: 800, color: COLOURS[score] }}
             >
               {score}
             </span>
-            <span style={{ fontSize: 13, color: "#5E7A84" }}>Worst (10)</span>
+            <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>Worst (10)</span>
           </div>
           <input
             type="range"
@@ -104,19 +104,19 @@ export function PainCheckIn({ uid, personId }: Props) {
           onChange={(e) => setNote(e.target.value)}
           style={{
             padding: "0.6rem 0.85rem",
-            border: "1px solid #D1E8EE",
+            border: "1px solid var(--color-border)",
             borderRadius: 10,
             fontSize: 14,
             width: "100%",
             boxSizing: "border-box",
           }}
         />
-        {error && <p style={{ color: "#ef4444", fontSize: 13, margin: 0 }}>{error}</p>}
+        {error && <p style={{ color: "var(--color-error)", fontSize: 13, margin: 0 }}>{error}</p>}
         <button
           type="submit"
           disabled={saving}
           style={{
-            background: "#0891B2",
+            background: "var(--color-primary)",
             color: "#fff",
             border: "none",
             borderRadius: 12,

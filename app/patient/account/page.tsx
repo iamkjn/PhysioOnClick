@@ -74,8 +74,8 @@ export default function AccountPage() {
     display: "inline-flex",
     alignItems: "center",
     gap: "0.5rem",
-    background: "#D8F3F9",
-    color: "#0E7490",
+    background: "var(--color-primary-light)",
+    color: "var(--color-primary-dark)",
     padding: "0.6rem 1.25rem",
     borderRadius: 999,
     textDecoration: "none",
@@ -84,7 +84,7 @@ export default function AccountPage() {
   };
 
   const sectionHeadingStyle: React.CSSProperties = {
-    color: "#0C2A38",
+    color: "var(--color-text-primary)",
     fontSize: 18,
     fontWeight: 700,
     margin: "0 0 0.75rem",
@@ -102,19 +102,19 @@ export default function AccountPage() {
           boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
         }}
       >
-        <h1 style={{ margin: "0 0 0.25rem", color: "#0C2A38", fontSize: 22 }}>
+        <h1 style={{ margin: "0 0 0.25rem", color: "var(--color-text-primary)", fontSize: 22 }}>
           {displayName}
         </h1>
-        <p style={{ margin: "0 0 1rem", color: "#5E7A84", fontSize: 14 }}>{email}</p>
+        <p style={{ margin: "0 0 1rem", color: "var(--color-text-secondary)", fontSize: 14 }}>{email}</p>
         <button
           onClick={() => void handleSignOut()}
           style={{
             background: "none",
-            border: "1px solid #D1E8EE",
+            border: "1px solid var(--color-border)",
             borderRadius: 10,
             padding: "0.5rem 1.25rem",
             cursor: "pointer",
-            color: "#5E7A84",
+            color: "var(--color-text-secondary)",
             fontWeight: 600,
             fontSize: 14,
           }}

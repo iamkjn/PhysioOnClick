@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { BookAuthGate } from "@/components/book-auth-gate";
+import { BookingFlow } from "@/components/booking-flow";
 
 export const metadata: Metadata = {
   title: "Book an Appointment | PhysioOnClick",
@@ -11,13 +11,10 @@ export const metadata: Metadata = {
 export default function BookPage() {
   return (
     <div className="site-shell">
-      <section className="simple-page-hero">
-        <span>Book online</span>
-        <h1>Book your <span>appointment</span></h1>
-        <p>Choose a service and a time that works for you. Your confirmation is sent instantly by email.</p>
-      </section>
-      <section className="page-section" style={{ paddingTop: "1rem" }}>
-        <BookAuthGate />
+      {/* No page hero: the flow's left rail carries the title, and the site
+          header already sits above it. */}
+      <section className="page-section">
+        <BookingFlow />
       </section>
     </div>
   );

@@ -29,7 +29,7 @@ const FILTER_OPTIONS: StatusFilter[] = ["all", "pending", "upcoming", "completed
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   pending:   { bg: "var(--color-gold-light)",  color: "var(--color-gold)" },
   upcoming:  { bg: "var(--color-primary-light)",  color: "var(--color-primary)" },
-  completed: { bg: "#D1FAE5",                  color: "#059669" },
+  completed: { bg: "#D1FAE5",                  color: "var(--color-success)" },
   cancelled: { bg: "#FEE2E2",                  color: "var(--color-error)" },
 };
 
@@ -192,7 +192,7 @@ export function AdminBookingsTable() {
                         <SummaryForm booking={{ id: item.id, patientId: item.patientId, patientType: item.patientType, patientName: item.patientName, service: item.service }} />
                       )}
                       {item.summaryId && (
-                        <span style={{ fontSize: 12, color: "#059669", fontWeight: 600, fontFamily: "var(--font-sans)" }}>✓ Published</span>
+                        <span style={{ fontSize: 12, color: "var(--color-success)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>✓ Published</span>
                       )}
                     </td>
                   </tr>
