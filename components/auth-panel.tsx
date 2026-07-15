@@ -138,7 +138,7 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
       const res = await fetch("/api/auth/magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, returnTo: window.location.pathname }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (!res.ok || !data.ok) {

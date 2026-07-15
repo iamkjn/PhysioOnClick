@@ -42,6 +42,7 @@
     "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^9.22.0",
     "eslint-config-next": "^15.5.12",
+    "firebase-tools": "^15.23.0",
     "jsdom": "^29.1.1",
     "typescript": "^5.8.2",
     "vitest": "^4.1.9"

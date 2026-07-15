@@ -10,6 +10,15 @@ import { ensurePatientRecord } from "@/lib/patient-account";
 
 type Stage = "verifying" | "needs-email" | "signing-in" | "success" | "error";
 
+// Only these in-app destinations are legitimate post-sign-in landing spots.
+// The emailed link (and its query string) is attacker-editable once it sits in an
+// inbox, so this is validated here too, not just server-side when the link is issued.
+const ALLOWED_RETURN_PATHS = new Set<string>(["/book", "/patient"]);
+
+function sanitizeReturnPath(value: string | null): string {
+  return value && ALLOWED_RETURN_PATHS.has(value) ? value : "/patient";
+}
+
 function VerifyPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -55,7 +64,8 @@ function VerifyPage() {
         headers: { Authorization: `Bearer ${idToken}` },
       }).catch(() => { /* non-blocking */ });
       setStage("success");
-      redirectTimerRef.current = setTimeout(() => router.push("/patient"), 1500);
+      const destination = sanitizeReturnPath(searchParams.get("returnTo"));
+      redirectTimerRef.current = setTimeout(() => router.push(destination), 1500);
     } catch (error) {
       const code = error instanceof FirebaseError ? error.code : "";
       if (code === "auth/invalid-action-code" || code === "auth/expired-action-code") {
@@ -89,7 +99,7 @@ function VerifyPage() {
       const res = await fetch("/api/auth/magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, returnTo: sanitizeReturnPath(searchParams.get("returnTo")) }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
