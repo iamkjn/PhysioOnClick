@@ -11,6 +11,7 @@ import {
 } from "@/lib/recovery";
 import { exercises } from "@/lib/site-data";
 import { SkeletonRow } from "@/components/skeleton";
+import { EmptyState } from "@/components/empty-state";
 
 interface Props {
   uid: string;
@@ -70,7 +71,11 @@ export function AssignedExercises({ uid, personId }: Props) {
     return (
       <div className="panel stack">
         <h3>Your exercises</h3>
-        <p className="muted">No exercises assigned yet — your physio will add them after your session.</p>
+        <EmptyState
+          illustration="chart"
+          title="No exercises yet"
+          body="Your physio will add exercises after your session."
+        />
       </div>
     );
 

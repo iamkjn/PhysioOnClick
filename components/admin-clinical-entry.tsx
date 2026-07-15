@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { addClinicalAssessment } from "@/lib/recovery";
+import { useToast } from "@/components/toast-provider";
 
 interface Props {
   patientUid: string;
@@ -19,6 +20,7 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,21 +37,14 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
       });
       setSaved(true);
       setPhysioNotes("");
+      toast.show("Assessment saved.", "success");
     } catch {
       setError("Could not save this assessment. Check that you're signed in with an admin account.");
+      toast.show("Could not save this assessment.", "error");
     } finally {
       setSaving(false);
     }
   }
-
-  const inputStyle: React.CSSProperties = {
-    padding: "0.6rem 0.85rem",
-    border: "1px solid var(--color-border)",
-    borderRadius: 10,
-    fontSize: 14,
-    width: "100%",
-    boxSizing: "border-box",
-  };
 
   return (
     <div className="panel stack">
@@ -68,12 +63,13 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
           Session date
           <input
             type="date"
+            className="input"
             value={date}
             onChange={(e) => {
               setDate(e.target.value);
               setSaved(false);
             }}
-            style={{ ...inputStyle, marginTop: 4 }}
+            style={{ marginTop: 4 }}
             required
           />
         </label>
@@ -104,6 +100,7 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
         <label style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
           Clinical notes
           <textarea
+            className="input"
             value={physioNotes}
             onChange={(e) => {
               setPhysioNotes(e.target.value);
@@ -111,33 +108,21 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
             }}
             rows={3}
             placeholder="What was worked on, patient response, next steps…"
-            style={{ ...inputStyle, marginTop: 4, resize: "vertical" }}
+            style={{ marginTop: 4, resize: "vertical" }}
           />
         </label>
         <label style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
           Booking ID (optional)
           <input
             type="text"
+            className="input"
             value={sessionId}
             onChange={(e) => setSessionId(e.target.value)}
             placeholder="bookings/…"
-            style={{ ...inputStyle, marginTop: 4 }}
+            style={{ marginTop: 4 }}
           />
         </label>
-        <button
-          type="submit"
-          disabled={saving}
-          style={{
-            background: "var(--color-text-primary)",
-            color: "#fff",
-            border: "none",
-            borderRadius: 12,
-            padding: "0.65rem 1.5rem",
-            fontWeight: 700,
-            cursor: saving ? "not-allowed" : "pointer",
-            fontSize: 15,
-          }}
-        >
+        <button type="submit" className="button primary" disabled={saving}>
           {saving ? "Saving…" : "Save assessment"}
         </button>
       </form>

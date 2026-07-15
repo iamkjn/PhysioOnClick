@@ -112,8 +112,8 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
     <Link href={`/patient/appointments/${booking.id}`} style={{ textDecoration: "none" }}>
       <div
         style={{
-          background: "#fff",
-          borderRadius: 14,
+          background: "var(--color-surface)",
+          borderRadius: "var(--radius-card)",
           padding: "1rem 1.25rem",
           display: "flex",
           alignItems: "center",

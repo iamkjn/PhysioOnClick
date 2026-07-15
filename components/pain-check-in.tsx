@@ -4,13 +4,20 @@
 import { useEffect, useState } from "react";
 import { getTodayPainLog, logPainScore, type PainLog } from "@/lib/recovery";
 import { SkeletonStatGrid } from "@/components/skeleton";
+import { useToast } from "@/components/toast-provider";
 
 interface Props {
   uid: string;
   personId: string;
 }
 
-const COLOURS = ["#16a34a","#22c55e","#4ade80","#86efac","#fbbf24","#fb923c","#f97316","#ef4444","#dc2626","#b91c1c","#7f1d1d"];
+// 3-bucket token approach, matching summary-form.tsx's getPainColor: low pain
+// = success, moderate = warning, high = error.
+function painColor(score: number): string {
+  if (score <= 3) return "var(--color-success)";
+  if (score <= 6) return "var(--color-warning)";
+  return "var(--color-error)";
+}
 
 export function PainCheckIn({ uid, personId }: Props) {
   const [score, setScore] = useState(5);
@@ -18,6 +25,7 @@ export function PainCheckIn({ uid, personId }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [todayLog, setTodayLog] = useState<PainLog | null | undefined>(undefined);
+  const toast = useToast();
 
   useEffect(() => {
     setTodayLog(undefined);
@@ -33,8 +41,10 @@ export function PainCheckIn({ uid, personId }: Props) {
       const d = new Date();
       const localDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       setTodayLog({ date: localDate, score, note, loggedAt: new Date() });
+      toast.show("Pain score logged.", "success");
     } catch {
       setError("Could not save, please try again.");
+      toast.show("Could not save, please try again.", "error");
     } finally {
       setSaving(false);
     }
@@ -58,7 +68,7 @@ export function PainCheckIn({ uid, personId }: Props) {
             style={{
               fontSize: 48,
               fontWeight: 800,
-              color: COLOURS[todayLog.score],
+              color: painColor(todayLog.score),
             }}
           >
             {todayLog.score}
@@ -82,7 +92,7 @@ export function PainCheckIn({ uid, personId }: Props) {
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>No pain (0)</span>
             <span
-              style={{ fontSize: 28, fontWeight: 800, color: COLOURS[score] }}
+              style={{ fontSize: 28, fontWeight: 800, color: painColor(score) }}
             >
               {score}
             </span>
@@ -94,38 +104,18 @@ export function PainCheckIn({ uid, personId }: Props) {
             max={10}
             value={score}
             onChange={(e) => setScore(Number(e.target.value))}
-            style={{ width: "100%", accentColor: COLOURS[score] }}
+            style={{ width: "100%", accentColor: painColor(score) }}
           />
         </div>
         <input
           type="text"
+          className="input"
           placeholder="Optional note (e.g. sharp pain when walking)"
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          style={{
-            padding: "0.6rem 0.85rem",
-            border: "1px solid var(--color-border)",
-            borderRadius: 10,
-            fontSize: 14,
-            width: "100%",
-            boxSizing: "border-box",
-          }}
         />
         {error && <p style={{ color: "var(--color-error)", fontSize: 13, margin: 0 }}>{error}</p>}
-        <button
-          type="submit"
-          disabled={saving}
-          style={{
-            background: "var(--color-primary)",
-            color: "#fff",
-            border: "none",
-            borderRadius: 12,
-            padding: "0.65rem 1.5rem",
-            fontWeight: 700,
-            cursor: saving ? "not-allowed" : "pointer",
-            fontSize: 15,
-          }}
-        >
+        <button type="submit" className="button primary" disabled={saving}>
           {saving ? "Saving…" : "Log pain score"}
         </button>
       </form>

@@ -2,13 +2,13 @@
 
 const COLOURS = [
   "var(--color-primary)",
-  "#16A34A",
-  "#7C3AED",
+  "var(--color-accent)",
+  "var(--color-gold)",
   "var(--color-warning)",
   "var(--color-error)",
   "var(--color-primary-dark)",
   "var(--color-success)",
-  "#9333EA",
+  "var(--book-rail-top)",
 ];
 
 function avatarColor(name: string): string {
@@ -56,7 +56,7 @@ export function Avatar({ name, imageUrl, size = 48, className = "" }: AvatarProp
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "#fff",
+        color: "white",
         fontWeight: 700,
         fontSize: size * 0.38,
         flexShrink: 0,

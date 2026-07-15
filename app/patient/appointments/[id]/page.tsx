@@ -60,8 +60,8 @@ export default function AppointmentDetailPage() {
 
       <div
         style={{
-          background: "#fff",
-          borderRadius: 18,
+          background: "var(--color-surface)",
+          borderRadius: "var(--radius-panel)",
           padding: "1.5rem",
           marginTop: "1.25rem",
           display: "flex",
@@ -112,8 +112,8 @@ export default function AppointmentDetailPage() {
         <div
           style={{
             marginTop: "1.5rem",
-            background: "#fff",
-            borderRadius: 16,
+            background: "var(--color-surface)",
+            borderRadius: "var(--radius-card)",
             padding: "2rem",
             textAlign: "center",
             boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
@@ -142,8 +142,8 @@ function SummaryBlock({
   return (
     <div
       style={{
-        background: "#fff",
-        borderRadius: 14,
+        background: "var(--color-surface)",
+        borderRadius: "var(--radius-card)",
         padding: "1.25rem",
         boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
       }}

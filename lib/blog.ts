@@ -39,7 +39,9 @@ export type BlogArticle = {
 };
 
 export function blogImagePath(slug: string) {
-  return `/blog-images/${slug}`;
+  // v2: covers are decorative now (no baked-in title). The route serves
+  // immutable/1y cache headers, so a redesign must bump this to bust caches.
+  return `/blog-images/${slug}?v=2`;
 }
 
 function toSlug(value: string) {
