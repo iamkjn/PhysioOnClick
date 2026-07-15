@@ -105,16 +105,14 @@ export default function PricingPage() {
         </Reveal>
       </section>
 
-      <section className="page-section" id="book">
-        <div className="panel stack">
+      <section className="simple-cta-band" id="book">
+        <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Ready to book?</span>
-          <h3>Schedule your appointment online</h3>
+          <h2>Schedule your appointment online</h2>
           <p>Pick a time that suits you. Confirmation is sent to your email instantly once the slot is confirmed.</p>
-          <div className="button-row">
-            <Link className="button primary" href="/book">
-              Book now
-            </Link>
-          </div>
+          <Link className="button secondary cta-white" href="/book">
+            Book now
+          </Link>
         </div>
       </section>
     </div>

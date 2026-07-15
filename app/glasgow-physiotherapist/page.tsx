@@ -44,7 +44,7 @@ export default function GlasgowPage() {
       />
       <section className="page-hero page-hero-split">
         <div className="stack">
-          <span className="eyebrow">Local SEO landing page</span>
+          <span className="eyebrow">Physiotherapy in Glasgow</span>
           <h1>Physiotherapist in Glasgow</h1>
           <p className="lead">
             PhysioOnClick provides calm, clinical physiotherapy in Glasgow with transparent pricing, evidence-based
@@ -93,13 +93,7 @@ export default function GlasgowPage() {
         ))}
       </section>
 
-      <section className="page-section panel stack">
-        <span className="eyebrow">Google reviews ready</span>
-        <p>
-          Add your Google Business Profile review widget or embed code here to support local trust signals and stronger
-          conversion from Glasgow-based searches.
-        </p>
-      </section>
+      {/* Google Business Profile review embed goes here */}
     </div>
   );
 }

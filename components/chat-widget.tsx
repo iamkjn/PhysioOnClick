@@ -204,34 +204,13 @@ export function ChatWidget() {
   return (
     <>
       {/* Copied toast */}
-      {copied && (
-        <div style={{
-          position: "fixed", bottom: 90, right: 24, zIndex: 10000,
-          background: "var(--book-rail-top)", color: "white", fontSize: 13, fontWeight: 500,
-          padding: "8px 16px", borderRadius: 20,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
-          animation: "fadeIn 0.15s ease",
-        }}>
-          Email copied ✓
-        </div>
-      )}
+      {copied && <div className="chat-toast">Email copied ✓</div>}
 
       {/* Floating trigger */}
       <button
+        className="chat-trigger"
         onClick={() => setOpen(o => !o)}
         aria-label={open ? "Close chat" : "Open chat assistant"}
-        style={{
-          position: "fixed", bottom: 24, right: 24, zIndex: 9999,
-          width: 56, height: 56, borderRadius: "50%",
-          background: "linear-gradient(135deg, var(--color-primary-dark), var(--book-rail-top))",
-          border: "none", cursor: "pointer",
-          boxShadow: "0 4px 20px rgba(8,145,178,0.4)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          color: "white",
-          transition: "transform 0.15s ease, box-shadow 0.15s ease",
-        }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.08)"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
       >
         <svg
           width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -250,120 +229,34 @@ export function ChatWidget() {
 
       {/* Drawer */}
       {open && (
-        <div
-          role="dialog"
-          aria-label="PhysioOnClick chat assistant"
-          style={{
-            position: "fixed", bottom: 92, right: 24,
-            width: 360, maxWidth: "calc(100vw - 48px)",
-            maxHeight: "72vh",
-            display: "flex", flexDirection: "column",
-            background: "white", borderRadius: 18,
-            boxShadow: "0 8px 48px rgba(0,0,0,0.16)",
-            zIndex: 9998, overflow: "hidden",
-            border: "1px solid var(--color-primary-light)",
-          }}
-        >
+        <div className="chat-drawer" role="dialog" aria-label="PhysioOnClick chat assistant">
           {/* Header */}
-          <div style={{
-            background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))",
-            padding: "14px 18px",
-            display: "flex", alignItems: "center", gap: 10,
-          }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: "50%",
-              background: "rgba(255,255,255,0.2)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 18, flexShrink: 0,
-            }}>
-              🛡️
-            </div>
+          <div className="chat-header">
+            <div className="chat-header-avatar">🛡️</div>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: "white" }}>
-                PhysioOnClick Assistant
-              </div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", marginTop: 1, display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--color-success)", display: "inline-block" }} />
+              <div className="chat-header-title">PhysioOnClick Assistant</div>
+              <div className="chat-header-status">
+                <span className="chat-header-status-dot" />
                 Online · Always here to help
               </div>
             </div>
           </div>
 
           {/* Messages */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "16px 14px 8px", background: "var(--color-bg)" }}>
+          <div className="chat-messages">
             {msgs.map((m, i) => (
-              <div key={i} style={{
-                display: "flex",
-                justifyContent: m.isBot ? "flex-start" : "flex-end",
-                alignItems: "flex-end",
-                gap: 8,
-                marginBottom: 10,
-              }}>
-                {m.isBot && (
-                  <div style={{
-                    width: 26, height: 26, borderRadius: "50%",
-                    background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 12, flexShrink: 0, marginBottom: 2,
-                  }}>🛡️</div>
-                )}
-                <div style={{
-                  maxWidth: "78%",
-                  padding: "10px 14px",
-                  borderRadius: m.isBot ? "18px 18px 18px 4px" : "18px 18px 4px 18px",
-                  background: m.isBot ? "white" : "linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))",
-                  color: m.isBot ? "var(--book-rail-top)" : "white",
-                  fontSize: 13.5,
-                  lineHeight: 1.6,
-                  whiteSpace: "pre-wrap",
-                  boxShadow: m.isBot
-                    ? "0 2px 8px rgba(0,0,0,0.07)"
-                    : "0 2px 8px rgba(8,145,178,0.28)",
-                }}>
-                  {m.text}
-                </div>
+              <div key={i} className={`chat-message-row ${m.isBot ? "is-bot" : "is-user"}`}>
+                {m.isBot && <div className="chat-message-avatar">🛡️</div>}
+                <div className={`chat-bubble ${m.isBot ? "is-bot" : "is-user"}`}>{m.text}</div>
               </div>
             ))}
             <div ref={bottomRef} />
           </div>
 
           {/* Chips */}
-          <div style={{
-            padding: "10px 12px 14px",
-            borderTop: "1px solid var(--color-border)",
-            background: "white",
-            display: "flex", flexWrap: "wrap", gap: 7,
-          }}>
+          <div className="chat-chips">
             {chips.map((c, i) => (
-              <button
-                key={i}
-                onClick={() => onChipClick(c)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 5,
-                  padding: "7px 12px",
-                  borderRadius: 20,
-                  border: "1.5px solid var(--color-border)",
-                  background: "white",
-                  color: "var(--book-rail-top)",
-                  fontSize: 12.5,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "all 0.12s ease",
-                  boxShadow: "0 1px 4px rgba(8,145,178,0.1)",
-                }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget;
-                  el.style.background = "var(--color-primary)";
-                  el.style.color = "white";
-                  el.style.borderColor = "var(--color-primary)";
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget;
-                  el.style.background = "white";
-                  el.style.color = "var(--book-rail-top)";
-                  el.style.borderColor = "var(--color-border)";
-                }}
-              >
+              <button className="chat-chip" key={i} onClick={() => onChipClick(c)}>
                 <span>{c.emoji}</span>
                 <span>{c.label}</span>
               </button>

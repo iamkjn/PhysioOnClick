@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 
 import type { BlogArticle } from "@/lib/blog";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
+import { EmptyState } from "@/components/empty-state";
 
 type SortMode = "newest" | "oldest" | "a-z";
 
@@ -85,6 +86,17 @@ export function BlogDirectory({
           </div>
         </div>
       </section>
+
+      {visibleArticles.length === 0 && (
+        <section className="page-section">
+          <EmptyState
+            illustration="article"
+            title="No articles in this category yet"
+            body="Try a different topic filter, or view all articles."
+            cta={{ label: "View all articles", onClick: () => setActiveCategory("All") }}
+          />
+        </section>
+      )}
 
       <section className="page-section article-grid simple-blog-grid">
         {visibleArticles.map((article) => (

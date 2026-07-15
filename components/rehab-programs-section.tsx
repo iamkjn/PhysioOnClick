@@ -52,8 +52,8 @@ export function RehabProgramsSection({ email }: { email: string }) {
     return (
       <div
         style={{
-          background: "#fff",
-          borderRadius: 14,
+          background: "var(--color-surface)",
+          borderRadius: "var(--radius-card)",
           padding: "1rem 1.25rem",
           boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
         }}
