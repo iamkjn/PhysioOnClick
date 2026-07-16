@@ -635,6 +635,282 @@ No commit for this task — no files changed.
 
 ---
 
+### Task 5: Remove home-visit / in-person copy from the homepage hero and root metadata
+
+**Files:**
+- Modify: `components/home-hero-section.tsx:43,49`
+- Modify: `app/layout.tsx:14,19`
+
+**Interfaces:** None — pure JSX/string content edits, no new props, functions, or exports.
+
+- [ ] **Step 1: Homepage hero badge and copy — `components/home-hero-section.tsx`**
+
+Old:
+```tsx
+        <span className="location-pill">Glasgow & Online Across the UK</span>
+        <h1>
+          Expert Physiotherapy,
+          <span> One Click Away</span>
+        </h1>
+        <p className="home-hero-copy">
+          Evidence-based physiotherapy by {founderName}, HCPC registered physiotherapist. In-person in Glasgow or
+          online consultations across the UK.
+        </p>
+```
+
+New:
+```tsx
+        <span className="location-pill">Online Across the UK</span>
+        <h1>
+          Expert Physiotherapy,
+          <span> One Click Away</span>
+        </h1>
+        <p className="home-hero-copy">
+          Evidence-based physiotherapy by {founderName}, HCPC registered physiotherapist. Online consultations
+          across the UK.
+        </p>
+```
+
+- [ ] **Step 2: Root metadata title/description — `app/layout.tsx`**
+
+Old:
+```tsx
+  title: "PhysioOnClick | Physiotherapy in Glasgow and Online Across the UK",
+```
+
+New:
+```tsx
+  title: "PhysioOnClick | Online Physiotherapy Across the UK",
+```
+
+Old:
+```tsx
+    title: "PhysioOnClick",
+    description: "Evidence-based physiotherapy and rehabilitation in Glasgow and online across the UK.",
+```
+
+New:
+```tsx
+    title: "PhysioOnClick",
+    description: "Evidence-based online physiotherapy and rehabilitation across the UK.",
+```
+
+- [ ] **Step 3: Verify no home-visit/in-person copy remains**
+
+Run: `grep -niE "in-person in glasgow|glasgow & online|in glasgow and online" components/home-hero-section.tsx app/layout.tsx`
+Expected: no output
+
+- [ ] **Step 4: Build check**
+
+Run: `npm run build`
+Expected: build completes with no errors
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add components/home-hero-section.tsx app/layout.tsx
+git commit -m "content: remove home-visit/in-person copy from homepage hero and root metadata"
+```
+
+---
+
+### Task 6: Remove home-visit / in-person copy from the chat widget and Terms page
+
+Found by the final whole-branch review — the chat widget (mounted globally in `app/layout.tsx`, rendered on every page) still quotes an in-person Glasgow price list that no longer matches the real pricing data, and the Terms page has two literal "in-person in Glasgow" references.
+
+**Files:**
+- Modify: `components/chat-widget.tsx:54,59`
+- Modify: `app/terms/page.tsx:6,37`
+
+**Interfaces:** None — pure string content edits.
+
+- [ ] **Step 1: Chat widget "Online Rehab" chip text — `components/chat-widget.tsx`**
+
+Old:
+```tsx
+    text: "UK-wide digital physiotherapy via secure video call with tailored exercise plans, progress tracking and weekly review calls.\n\nOnline patients receive the same structured rehabilitation planning as in-person sessions.",
+```
+
+New:
+```tsx
+    text: "UK-wide digital physiotherapy via secure video call with tailored exercise plans, progress tracking and weekly review calls.\n\nOnline patients receive the same structured rehabilitation planning.",
+```
+
+- [ ] **Step 2: Chat widget pricing text — `components/chat-widget.tsx`**
+
+Old:
+```tsx
+const PRICING_TEXT =
+  "In-person sessions (Glasgow):\n• Initial Assessment (45 min) — £65\n• Follow-Up Session (30 min) — £50\n• Extended Session (60 min) — £80\n\nOnline sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
+```
+
+New:
+```tsx
+const PRICING_TEXT =
+  "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
+```
+
+- [ ] **Step 3: Terms page meta description — `app/terms/page.tsx`**
+
+Old:
+```tsx
+  description: "Terms and conditions for using PhysioOnClick physiotherapy services online and in-person in Glasgow."
+```
+
+New:
+```tsx
+  description: "Terms and conditions for using PhysioOnClick's online physiotherapy services."
+```
+
+- [ ] **Step 4: Terms page "Nature of the service" — `app/terms/page.tsx`**
+
+Old:
+```tsx
+          <p>
+            PhysioOnClick provides physiotherapy consultations online (UK-wide) and in-person in Glasgow.
+            Booking a consultation creates a professional clinical relationship. The standard of care provided
+            online is equal to that of an in-person consultation — a lower standard of care is not acceptable
+            simply because the interaction is remote.
+          </p>
+```
+
+New:
+```tsx
+          <p>
+            PhysioOnClick provides physiotherapy consultations online across the UK.
+            Booking a consultation creates a professional clinical relationship. The standard of care provided
+            online is equal to that of an in-person consultation — a lower standard of care is not acceptable
+            simply because the interaction is remote.
+          </p>
+```
+
+Do not touch `app/terms/page.tsx:57` ("Some clinical presentations require in-person assessment...") — this is a legitimate telehealth safety/liability disclaimer about referring out cases that need hands-on care, not a claim that PhysioOnClick offers in-person sessions. Leave it as-is.
+
+- [ ] **Step 5: Verify no home-visit/in-person copy remains**
+
+Run: `grep -niE "in-person sessions \(glasgow\)|in-person in glasgow|as in-person sessions" components/chat-widget.tsx app/terms/page.tsx`
+Expected: no output
+
+- [ ] **Step 6: Build check**
+
+Run: `npm run build`
+Expected: build completes with no errors
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add components/chat-widget.tsx app/terms/page.tsx
+git commit -m "content: remove home-visit/in-person copy from chat widget and terms page"
+```
+
+---
+
+### Task 7: Remove the Glasgow map embed from the Contact page
+
+Found by the final whole-branch review, confirmed by the user: the Contact page's embedded Google Map of Glasgow sits directly below text that was already changed to "Online consultations across the UK" (Task 1), and visually implies a physical clinic to visit. The user asked to remove it.
+
+**Files:**
+- Modify: `app/contact/page.tsx:24-26`
+
+**Interfaces:** None — removes a self-contained JSX block, no props/exports affected.
+
+- [ ] **Step 1: Remove the map card — `app/contact/page.tsx`**
+
+Old:
+```tsx
+            <div className="contact-info-list">
+              <div><strong>Location</strong><span>Online consultations across the UK</span></div>
+              <div><strong>Email</strong><span>hello@physioonclick.co.uk</span></div>
+              <div><strong>Phone</strong><span>Contact via form</span></div>
+              <div><strong>Hours</strong><span>Mon-Fri: 8am-6pm<br />Sat: 9am-1pm</span></div>
+            </div>
+            <div className="contact-map-card">
+              <iframe title="Glasgow map" src="https://www.google.com/maps?q=Glasgow%20UK&output=embed" loading="lazy" />
+            </div>
+```
+
+New:
+```tsx
+            <div className="contact-info-list">
+              <div><strong>Location</strong><span>Online consultations across the UK</span></div>
+              <div><strong>Email</strong><span>hello@physioonclick.co.uk</span></div>
+              <div><strong>Phone</strong><span>Contact via form</span></div>
+              <div><strong>Hours</strong><span>Mon-Fri: 8am-6pm<br />Sat: 9am-1pm</span></div>
+            </div>
+```
+
+- [ ] **Step 2: Verify no map/iframe reference remains on this page**
+
+Run: `grep -n "iframe\|contact-map-card\|Glasgow map" app/contact/page.tsx`
+Expected: no output
+
+- [ ] **Step 3: Build check**
+
+Run: `npm run build`
+Expected: build completes with no errors
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add app/contact/page.tsx
+git commit -m "content: remove Glasgow map embed from contact page"
+```
+
+---
+
+### Task 8: Remove remaining "Glasgow clinic" copy from generated service images and blog articles
+
+Found by the final confirmation review's broader sweep — pre-existing, not introduced by this branch, but still violates the online-only goal.
+
+**Files:**
+- Modify: `lib/service-image-svg.ts:122`
+- Modify: `lib/blog.ts:58`
+
+**Interfaces:** None — pure string edits. `lib/blog.ts:58` is inside the `articleSections()` template function used to generate all 108 blog articles, so this one edit fixes the sentence across every generated article, not just one post.
+
+- [ ] **Step 1: Service image SVG label — `lib/service-image-svg.ts`**
+
+Old:
+```ts
+      <text x="102" y="559" font-size="22" font-family="Arial, Helvetica, sans-serif" fill="${style.accent}" font-weight="700">Glasgow clinic and online</text>
+```
+
+New:
+```ts
+      <text x="102" y="559" font-size="22" font-family="Arial, Helvetica, sans-serif" fill="${style.accent}" font-weight="700">Online across the UK</text>
+```
+
+- [ ] **Step 2: Blog article template sentence — `lib/blog.ts`**
+
+Old:
+```ts
+        `In Glasgow clinics and online consultations across the UK, people often arrive worried that pain automatically means harm. In many cases the story is more nuanced. Symptoms can be influenced by load, stress, sleep, deconditioning and recent changes in activity. A good physiotherapy plan helps you understand those factors so your recovery becomes predictable and manageable.`
+```
+
+New:
+```ts
+        `In online physiotherapy consultations across the UK, people often arrive worried that pain automatically means harm. In many cases the story is more nuanced. Symptoms can be influenced by load, stress, sleep, deconditioning and recent changes in activity. A good physiotherapy plan helps you understand those factors so your recovery becomes predictable and manageable.`
+```
+
+- [ ] **Step 3: Verify no "Glasgow clinic" copy remains**
+
+Run: `grep -rniE "glasgow clinic" lib/ app/ components/`
+Expected: no output
+
+- [ ] **Step 4: Build check**
+
+Run: `npm run build`
+Expected: build completes with no errors
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add lib/service-image-svg.ts lib/blog.ts
+git commit -m "content: remove remaining Glasgow clinic copy from service images and blog template"
+```
+
+---
+
 ## Self-Review Notes
 
 - **Spec coverage:** Part A → Task 1 + Task 2 (Glasgow page called out separately since it's a full content rewrite, not a one-line edit). Part B → Task 4. Part C → Task 3. All three spec parts have a task.
