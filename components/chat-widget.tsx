@@ -56,7 +56,7 @@ const SERVICES = [
 ];
 
 const PRICING_TEXT =
-  "In-person sessions (Glasgow):\n• Initial Assessment (45 min) — £65\n• Follow-Up Session (30 min) — £50\n• Extended Session (60 min) — £80\n\nOnline sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
+  "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
 
 const GREETING =
   "Hi! I'm your PhysioOnClick assistant 👋\n\nHow can I help you today?";
@@ -84,6 +84,9 @@ export function ChatWidget() {
   const [copied, setCopied] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const wasOpenRef = useRef(false);
 
   // Initialise on first open
   useEffect(() => {
@@ -97,6 +100,29 @@ export function ChatWidget() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs, chips]);
+
+  // Close on Escape while the drawer is open
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  // Move focus into the drawer on open, and back to the trigger on close
+  useEffect(() => {
+    if (open) {
+      const first = drawerRef.current?.querySelector<HTMLElement>(
+        "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+      );
+      first?.focus();
+    } else if (wasOpenRef.current) {
+      triggerRef.current?.focus();
+    }
+    wasOpenRef.current = open;
+  }, [open]);
 
   // ── Tap handlers ───────────────────────────────────────────────────────────
 
@@ -208,6 +234,7 @@ export function ChatWidget() {
 
       {/* Floating trigger */}
       <button
+        ref={triggerRef}
         className="chat-trigger"
         onClick={() => setOpen(o => !o)}
         aria-label={open ? "Close chat" : "Open chat assistant"}
@@ -229,7 +256,7 @@ export function ChatWidget() {
 
       {/* Drawer */}
       {open && (
-        <div className="chat-drawer" role="dialog" aria-label="PhysioOnClick chat assistant">
+        <div ref={drawerRef} className="chat-drawer" role="dialog" aria-modal="true" aria-label="PhysioOnClick chat assistant">
           {/* Header */}
           <div className="chat-header">
             <div className="chat-header-avatar">🛡️</div>

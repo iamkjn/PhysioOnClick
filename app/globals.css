@@ -398,7 +398,10 @@ p {
 
 .home-hero {
   position: relative;
-  min-height: 760px;
+  /* Was 760px — pushed the CTA row below the fold on common 800-900px-tall
+     desktop viewports once the sticky header is subtracted. 600px still
+     gives the illustration room but lets "Book Your Session" clear ~800px. */
+  min-height: 600px;
   overflow: hidden;
   background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-bg) 100%);
 }
@@ -427,10 +430,10 @@ p {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 760px;
-  padding-top: 7rem;
+  min-height: 600px;
+  padding-top: 5rem;
   color: white;
-  padding-bottom: 4rem;
+  padding-bottom: 3rem;
 }
 
 .location-pill {
@@ -458,7 +461,11 @@ p {
 }
 
 .home-hero-copy {
-  max-width: 720px;
+  /* Was a flat 720px — ran ~89 characters/line at this font size, over the
+     65-75ch cap the type scale sets for long-form copy elsewhere (see
+     .article-hero-copy .lead). ch is font-metric-aware, so this holds the
+     cap across viewport widths instead of eyeballing a pixel value. */
+  max-width: 70ch;
   color: rgba(255, 255, 255, 0.92);
   font-size: 1.15rem;
   line-height: 1.55;
@@ -544,6 +551,116 @@ p {
 
 .simple-section {
   padding-top: var(--space-section);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Home: founder + testimonial proof section (app/page.tsx)
+   Reuses .card / .eyebrow / .section-heading conventions — no new card
+   pattern, just a two-up layout for a founder profile plus pull-quotes.
+   ──────────────────────────────────────────────────────────── */
+.home-proof-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 1.6rem;
+  align-items: start;
+  margin-top: 2.5rem;
+}
+
+.home-founder-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.home-founder-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: white;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+
+.home-founder-card h3 {
+  margin: 0;
+}
+
+.home-founder-card > p.muted {
+  margin-bottom: 0.4rem;
+}
+
+.home-founder-credentials {
+  list-style: none;
+  margin: 0.6rem 0 1.4rem;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.home-founder-credentials li {
+  position: relative;
+  padding-left: 1.5rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.home-founder-credentials li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-light);
+  border: 2px solid var(--primary);
+}
+
+.home-founder-card .button {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.home-testimonial-stack {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.home-testimonial-card {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.home-testimonial-card p {
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+.home-testimonial-card footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.home-testimonial-card footer strong {
+  font-size: 0.95rem;
+}
+
+.home-testimonial-card footer span {
+  color: var(--muted);
+  font-size: 0.88rem;
 }
 
 .section-heading {
@@ -2248,7 +2365,8 @@ textarea:focus {
   .site-search-form,
   .dashboard-grid,
   .page-hero-split,
-  .two-col {
+  .two-col,
+  .home-proof-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2269,11 +2387,19 @@ textarea:focus {
   }
 
   .home-hero {
-    min-height: 620px;
+    /* Kept proportional to the 760->600 desktop cut (~21%) rather than left
+       at the old 620px, which — combined with the .home-hero-content bug
+       below — was actually rendering at 760px on mobile too. */
+    min-height: 500px;
   }
 
   .home-hero-content {
-    padding-top: 6rem;
+    /* .home-hero-content's min-height wasn't overridden here before, so it
+       stayed at the desktop 760px and silently forced the mobile hero back
+       up to that height regardless of the .home-hero rule above. */
+    min-height: 500px;
+    padding-top: 4.5rem;
+    padding-bottom: 2.5rem;
   }
 
   .hero-proof-grid {
@@ -2874,12 +3000,14 @@ textarea:focus {
   opacity: 0;
   transform: translateY(-8px);
   pointer-events: none;
-  transition: opacity 300ms ease, transform 300ms ease;
+  visibility: hidden;
+  transition: opacity 300ms ease, transform 300ms ease, visibility 300ms ease;
 }
 .mobile-nav-panel.open {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+  visibility: visible;
 }
 .mobile-nav-link {
   display: flex;
@@ -3452,8 +3580,8 @@ textarea:focus {
 }
 
 .book-cal-nav {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3471,7 +3599,7 @@ textarea:focus {
 .book-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: 6px;
 }
 
 .book-cal-dow {
@@ -3483,7 +3611,7 @@ textarea:focus {
 }
 
 .book-cal-day {
-  height: 32px;
+  min-height: 44px;
   border-radius: 8px;
   border: none;
   background: transparent;

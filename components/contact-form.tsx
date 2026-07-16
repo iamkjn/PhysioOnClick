@@ -137,34 +137,64 @@ export function ContactForm() {
       <form className="contact-form-grid" noValidate onSubmit={handleSubmit}>
         <label>
           Full Name *
-          <input name="name" placeholder="Your name" required />
-          {errors.name ? <span className="field-error">{errors.name}</span> : null}
+          <input
+            name="name"
+            placeholder="Your name"
+            required
+            aria-invalid={errors.name ? true : undefined}
+            aria-describedby={errors.name ? "err-name" : undefined}
+          />
+          {errors.name ? <span className="field-error" id="err-name">{errors.name}</span> : null}
         </label>
         <label>
           Email *
-          <input name="email" placeholder="your@email.com" required type="email" />
-          {errors.email ? <span className="field-error">{errors.email}</span> : null}
+          <input
+            name="email"
+            placeholder="your@email.com"
+            required
+            type="email"
+            aria-invalid={errors.email ? true : undefined}
+            aria-describedby={errors.email ? "err-email" : undefined}
+          />
+          {errors.email ? <span className="field-error" id="err-email">{errors.email}</span> : null}
         </label>
         <label>
           Phone
-          <input name="phone" placeholder="07xxx xxxxxx" />
-          {errors.phone ? <span className="field-error">{errors.phone}</span> : null}
+          <input
+            name="phone"
+            placeholder="07xxx xxxxxx"
+            aria-invalid={errors.phone ? true : undefined}
+            aria-describedby={errors.phone ? "err-phone" : undefined}
+          />
+          {errors.phone ? <span className="field-error" id="err-phone">{errors.phone}</span> : null}
         </label>
         <label>
           Service *
-          <select name="service" required>
+          <select
+            name="service"
+            required
+            aria-invalid={errors.service ? true : undefined}
+            aria-describedby={errors.service ? "err-service" : undefined}
+          >
             <option value="">Select service</option>
             <option>Initial Assessment</option>
             <option>Follow-Up Session</option>
             <option>Online Consultation</option>
             <option>Post-Surgical Rehabilitation</option>
           </select>
-          {errors.service ? <span className="field-error">{errors.service}</span> : null}
+          {errors.service ? <span className="field-error" id="err-service">{errors.service}</span> : null}
         </label>
         <label className="full-span">
           Message *
-          <textarea name="message" placeholder="Tell us about your condition or question..." required rows={6} />
-          {errors.message ? <span className="field-error">{errors.message}</span> : null}
+          <textarea
+            name="message"
+            placeholder="Tell us about your condition or question..."
+            required
+            rows={6}
+            aria-invalid={errors.message ? true : undefined}
+            aria-describedby={errors.message ? "err-message" : undefined}
+          />
+          {errors.message ? <span className="field-error" id="err-message">{errors.message}</span> : null}
         </label>
         <div className="full-span">
           <button className="button primary full-width" disabled={isSubmitting} type="submit">
@@ -172,7 +202,11 @@ export function ContactForm() {
           </button>
         </div>
       </form>
-      <div className={`form-note ${statusTone === "error" ? "error" : statusTone === "success" ? "success" : ""}`}>
+      <div
+        className={`form-note ${statusTone === "error" ? "error" : statusTone === "success" ? "success" : ""}`}
+        role="status"
+        aria-live="polite"
+      >
         <p className="muted">{status}</p>
         {statusTone === "error" ? (
           <Link className="form-note-link" href="mailto:hello@physioonclick.co.uk?subject=PhysioOnClick%20Enquiry">

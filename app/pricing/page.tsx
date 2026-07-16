@@ -67,7 +67,7 @@ export default function PricingPage() {
                   <p className="muted">{item.duration}</p>
                   <strong>{formatCurrency(item.price)}</strong>
                   <p>{item.description}</p>
-                  <Link className="button primary" href="/book">Book Now</Link>
+                  <Link className="button primary" href={`/book?service=${item.id}`}>Book Now</Link>
                 </article>
               </Reveal>
             ))}
@@ -86,7 +86,7 @@ export default function PricingPage() {
                   <h3>{item.title}</h3>
                   <strong>{formatCurrency(item.price)}</strong>
                   <p>{item.description}</p>
-                  <Link className="button primary" href="/book">Get Started</Link>
+                  <Link className="button primary" href={`/book?service=${item.id}`}>Get Started</Link>
                 </article>
               </Reveal>
             ))}
@@ -101,6 +101,7 @@ export default function PricingPage() {
                 <p key={item}>✓ {item}</p>
               ))}
             </div>
+            <p className="muted" style={{ marginTop: 12 }}>Free to reschedule up to 24 hours before your session — no charge for a cancelled slot inside that window.</p>
           </div>
         </Reveal>
       </section>

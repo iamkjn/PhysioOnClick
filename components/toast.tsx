@@ -77,7 +77,10 @@ export function Toast({ id, message, type, onDismiss }: ToastProps) {
     gsap.fromTo(
       el,
       { opacity: 0, y: 16, scale: 0.95 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.32, ease: 'back.out(1.6)' }
+      // was 'back.out(1.6)' — GSAP's back ease overshoots past the target
+      // before settling, i.e. a bounce curve, which the shared motion law
+      // (ease-out-quart/quint/expo, no bounce/elastic) rules out.
+      { opacity: 1, y: 0, scale: 1, duration: 0.32, ease: 'expo.out' }
     );
 
     if (type === 'warning' || type === 'error') {
@@ -98,19 +101,22 @@ export function Toast({ id, message, type, onDismiss }: ToastProps) {
   }, [type]);
 
   return (
-    <div ref={cardRef} className={`toast toast--${type}`} role="alert" aria-live="assertive">
+    <div
+      ref={cardRef}
+      className={`toast toast--${type}`}
+      role={type === 'warning' || type === 'error' ? 'alert' : 'status'}
+      aria-live={type === 'warning' || type === 'error' ? 'assertive' : 'polite'}
+    >
       <span className={`toast-icon-badge toast-icon-badge--${type}`}>
         <ToastIcon type={type} />
       </span>
       <span className="toast-message">{message}</span>
-      {!isAutoDismiss && (
-        <button className="toast-dismiss" onClick={() => onDismiss(id)} aria-label="Dismiss">
-          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
-            <line x1="3" y1="3" x2="15" y2="15" />
-            <line x1="15" y1="3" x2="3" y2="15" />
-          </svg>
-        </button>
-      )}
+      <button className="toast-dismiss" onClick={() => onDismiss(id)} aria-label="Dismiss">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
+          <line x1="3" y1="3" x2="15" y2="15" />
+          <line x1="15" y1="3" x2="3" y2="15" />
+        </svg>
+      </button>
       {isAutoDismiss && <div ref={progressRef} className="toast-progress" />}
     </div>
   );

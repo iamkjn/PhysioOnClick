@@ -81,7 +81,7 @@ export function BlogDirectory({
                   </select>
                 </label>
               </div>
-              <span className="blog-result-count">{visibleArticles.length} articles</span>
+              <span className="blog-result-count" role="status" aria-live="polite">{visibleArticles.length} articles</span>
             </div>
           </div>
         </div>

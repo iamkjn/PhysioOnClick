@@ -86,3 +86,7 @@ npm run cf-typegen  # regenerate cloudflare-env.d.ts from wrangler.jsonc
 ### Environment variables
 
 See `.env.example` for the full list. Key server-only vars: `CAL_WEBHOOK_SECRET`, `CAL_API_KEY`, `ADMIN_EMAIL`, `GEMINI_API_KEY`, `RESEND_API_KEY`, `ENQUIRY_EMAIL_TO`/`ENQUIRY_EMAIL_FROM`, `STRIPE_SECRET_KEY`, and Firebase admin credentials. Key client vars: `NEXT_PUBLIC_FIREBASE_*`, `NEXT_PUBLIC_CAL_USERNAME`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_USE_LIVE_CONTENT`. Local dev works without `RESEND_API_KEY` — magic links log to the console instead of emailing.
+
+## Design Context
+
+`PRODUCT.md` and `DESIGN.md` at the repo root carry the strategic and visual design system for this project (read by `/impeccable` and other design work). Register defaults to `product`; the public marketing pages (`/`, `/about`, `/pricing`, `/blog`, `/glasgow-physiotherapist`) override to `brand`. Brand personality is modern & efficient, explicitly not a "cold SaaS dashboard." Visual system is "The Clarity System": warm paper background, navy ink, a single sky-blue accent graded down for legibility, Fraunces/DM Sans pairing, flat-at-rest/lift-on-hover elevation.

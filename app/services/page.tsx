@@ -42,11 +42,11 @@ export default function ServicesPage() {
               />
               <h2>{service.title}</h2>
               <p>{service.summary}</p>
-              <h4>Treatment Approach</h4>
+              <h3>Treatment Approach</h3>
               <p>{service.approach.join(", ")}.</p>
             </div>
             <div className="service-split-right">
-              <div className="service-conditions-title">Conditions Treated</div>
+              <h3 className="service-conditions-title">Conditions Treated</h3>
               <div className="service-conditions-grid">
                 <div>
                   {service.conditions.slice(0, Math.ceil(service.conditions.length / 2)).map((condition) => (
@@ -59,9 +59,20 @@ export default function ServicesPage() {
                   ))}
                 </div>
               </div>
-              <Link className="button primary" href={`/book?service=${encodeURIComponent(service.title)}`}>
+              {service.faqs?.length ? (
+                <div className="service-faqs">
+                  {service.faqs.map((f) => (
+                    <details key={f.question}>
+                      <summary>{f.question}</summary>
+                      <p>{f.answer}</p>
+                    </details>
+                  ))}
+                </div>
+              ) : null}
+              <Link className="button primary" href={`/book?service=initial-assessment`}>
                 Book Assessment
               </Link>
+              <p className="muted" style={{ marginTop: 8 }}>From £50 online</p>
             </div>
           </article>
           </Reveal>

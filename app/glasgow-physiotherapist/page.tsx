@@ -42,6 +42,11 @@ export default function GlasgowPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqItems.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } }))
+      }) }} />
       <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Physiotherapy in Glasgow</span>
@@ -52,7 +57,7 @@ export default function GlasgowPage() {
           </p>
         </div>
         <div className="page-hero-aside checklist-panel">
-          <h3>Local patient benefits</h3>
+          <h2>Local patient benefits</h2>
           <ul className="clean-list">
             <li>In-person care in Glasgow</li>
             <li>Online follow-up if needed</li>

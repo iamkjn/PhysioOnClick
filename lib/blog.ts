@@ -51,7 +51,7 @@ function toSlug(value: string) {
     .replace(/^-|-$/g, "");
 }
 
-function articleSections(category: string, topic: string, index: number) {
+function articleSections(category: string, topic: string) {
   return [
     {
       heading: "Why this matters",
@@ -86,7 +86,7 @@ function articleSections(category: string, topic: string, index: number) {
       body: [
         `A helpful starting point is to choose one or two key exercises that you can realistically complete most days of the week. Track pain, stiffness and confidence rather than focusing on perfection. Small improvements in walking, sleep, stair tolerance or activity recovery often matter more than a single pain score.`,
         `At PhysioOnClick, we also encourage patients to think in milestones. That might be returning to a comfortable dog walk, kneeling for gardening, lifting a child, getting back into the gym or managing a full workday without a symptom flare. Rehab becomes much more motivating when it is linked to real-life goals.`,
-        `This article forms part of our wider patient education library. Article ${index + 1} is designed to support informed decision-making, not replace individual medical advice. If your symptoms are changing, complex or affecting your confidence, booking a professional assessment is the safest next step.`
+        `This guide forms part of our wider patient education library and is designed to support informed decision-making, not replace individual medical advice. If your symptoms are changing, complex or affecting your confidence, booking a professional assessment is the safest next step.`
       ]
     }
   ];
@@ -102,15 +102,13 @@ export const blogArticles: BlogArticle[] = Array.from({ length: 108 }, (_, index
     slug,
     title,
     category,
-    excerpt:
-      "A clear, evidence-based guide covering symptoms, rehab planning, common mistakes and when to seek assessment.",
+    excerpt: `How ${topic.toLowerCase()} relates to ${category.toLowerCase()}: symptoms to watch for, what assessment looks like, and the rehab steps that help you recover with confidence.`,
     readTime: "6 min read",
     seoTitle: `${title} | PhysioOnClick`,
-    seoDescription:
-      "UK-focused physiotherapy advice from PhysioOnClick on symptom understanding, rehab planning and safe recovery.",
+    seoDescription: `UK physiotherapy guidance on ${topic.toLowerCase()} and ${category.toLowerCase()} — understand your symptoms, plan safe rehabilitation and know when to seek an assessment.`,
     publishedAt: new Date(2025, index % 12, (index % 28) + 1).toISOString(),
     image: blogImagePath(slug),
-    sections: articleSections(category, topic, index)
+    sections: articleSections(category, topic)
   };
 });
 

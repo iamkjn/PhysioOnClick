@@ -21,9 +21,9 @@ vi.mock('@/components/home-dashboard', () => ({ HomeDashboard: () => <div>Dashbo
 import { HomeHeroSection } from '@/components/home-hero-section'
 
 describe('HomeHeroSection', () => {
-  it('shows a skeleton hero while auth is resolving, not the signed-out marketing hero', () => {
+  it('shows the marketing hero immediately while auth is resolving (SSR-visible H1/CTAs)', () => {
     render(<HomeHeroSection founderName="Jane" />)
-    expect(screen.queryByText('Expert Physiotherapy,')).not.toBeInTheDocument()
-    expect(document.querySelector('.skeleton-hero')).toBeInTheDocument()
+    expect(screen.getByText('Expert Physiotherapy,')).toBeInTheDocument()
+    expect(document.querySelector('.skeleton-hero')).not.toBeInTheDocument()
   })
 })

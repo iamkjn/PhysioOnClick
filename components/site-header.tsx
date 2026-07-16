@@ -178,9 +178,8 @@ export function SiteHeader() {
                   Sign out
                 </button>
               ) : null}
-              <Link className="call-link" href="/contact">
-                Contact Us
-              </Link>
+              {/* "Contact" already lives in the primary nav above (line ~17);
+                  this used to duplicate it as "Contact Us" right next to it. */}
               <Link className="button primary small" href="/book">
                 Book Now
               </Link>
@@ -208,6 +207,8 @@ export function SiteHeader() {
       <nav
         className={`mobile-nav-panel${menuOpen ? " open" : ""}`}
         aria-label="Mobile navigation"
+        aria-hidden={!menuOpen}
+        inert={!menuOpen}
       >
         {navItems.map((item) => (
           <Link
