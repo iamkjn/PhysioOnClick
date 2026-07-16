@@ -74,7 +74,7 @@ export function AdminPatientSelector({ onSelect }: Props) {
         onChange={(e) => setSearch(e.target.value)}
         style={{
           padding: "0.6rem 0.85rem",
-          border: "1px solid #D1E8EE",
+          border: "1px solid var(--color-border)",
           borderRadius: 10,
           fontSize: 14,
           width: "100%",
@@ -89,16 +89,16 @@ export function AdminPatientSelector({ onSelect }: Props) {
               onClick={() => void selectPatient(p)}
               style={{
                 textAlign: "left",
-                background: "#F8FBFD",
-                border: "1px solid #D1E8EE",
+                background: "var(--color-bg)",
+                border: "1px solid var(--color-border)",
                 borderRadius: 10,
                 padding: "0.6rem 0.85rem",
                 cursor: "pointer",
                 fontSize: 14,
               }}
             >
-              <strong style={{ color: "#0C2A38" }}>{p.displayName}</strong>
-              <span style={{ color: "#5E7A84", marginLeft: 8 }}>{p.email}</span>
+              <strong style={{ color: "var(--color-text-primary)" }}>{p.displayName}</strong>
+              <span style={{ color: "var(--color-text-secondary)", marginLeft: 8 }}>{p.email}</span>
             </button>
           ))}
         </div>
@@ -112,13 +112,13 @@ export function AdminPatientSelector({ onSelect }: Props) {
               onClick={() => onSelect(selectedPatient.uid, opt.id, opt.name)}
               style={{
                 textAlign: "left",
-                background: "#F8FBFD",
-                border: "1px solid #D1E8EE",
+                background: "var(--color-bg)",
+                border: "1px solid var(--color-border)",
                 borderRadius: 10,
                 padding: "0.6rem 0.85rem",
                 cursor: "pointer",
                 fontSize: 14,
-                color: "#0C2A38",
+                color: "var(--color-text-primary)",
               }}
             >
               {opt.name}
@@ -135,7 +135,7 @@ export function AdminPatientSelector({ onSelect }: Props) {
           style={{
             background: "none",
             border: "none",
-            color: "#0891B2",
+            color: "var(--color-primary)",
             cursor: "pointer",
             fontSize: 13,
             textAlign: "left",

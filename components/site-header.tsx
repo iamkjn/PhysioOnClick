@@ -46,7 +46,10 @@ export function SiteHeader() {
       : {
           backgroundColor: "#ffffff",
           boxShadow: "0 0 0 rgba(13,27,42,0)",
-          borderBottomColor: "#E2E8F0",
+          // GSAP tweens this as a literal color value (not resolved through the
+          // DOM's CSS custom-property cascade), so use the Clarity border hex
+          // directly rather than var(--color-border).
+          borderBottomColor: "#E4DED1",
         };
 
     gsap.to(header, {

@@ -1,7 +1,8 @@
 "use client";
 import { signOut } from "firebase/auth";
-import { useState } from "react";
-import { auth } from "@/lib/firebase";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { auth, db } from "@/lib/firebase";
 import { AdminBookingsTable } from "@/components/admin-bookings-table";
 import { AdminEnquiriesTable } from "@/components/admin-enquiries-table";
 import { AdminLiveStats } from "@/components/admin-live-stats";
@@ -10,7 +11,14 @@ type Tab = "bookings" | "enquiries" | "stats";
 
 export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<Tab>("bookings");
+  const [newEnquiries, setNewEnquiries] = useState(0);
   const user = auth?.currentUser;
+
+  useEffect(() => {
+    if (!db) return;
+    const q = query(collection(db, "enquiries"), where("status", "==", "new"));
+    return onSnapshot(q, (s) => setNewEnquiries(s.size));
+  }, []);
 
   async function handleSignOut() {
     if (!auth) return;
@@ -20,7 +28,7 @@ export function AdminDashboard() {
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "bookings", label: "Bookings" },
-    { key: "enquiries", label: "Enquiries" },
+    { key: "enquiries", label: newEnquiries > 0 ? `Enquiries (${newEnquiries})` : "Enquiries" },
     { key: "stats", label: "Live Stats" },
   ];
 
@@ -29,8 +37,8 @@ export function AdminDashboard() {
       {/* Sticky header */}
       <header style={{ position: "sticky", top: 0, zIndex: 100, background: "var(--color-navy)", height: 56, display: "flex", alignItems: "center", padding: "0 1.5rem", gap: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", flex: 1 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: "var(--color-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, fontFamily: "var(--font-serif)" }}>P</div>
-          <span style={{ color: "#fff", fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15 }}>PhysioOnClick</span>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: "var(--color-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800, fontSize: 16, fontFamily: "var(--font-serif)" }}>P</div>
+          <span style={{ color: "white", fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15 }}>PhysioOnClick</span>
           <span style={{ border: "1px solid var(--color-gold)", color: "var(--color-gold)", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-sans)", letterSpacing: "0.04em" }}>Admin</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>

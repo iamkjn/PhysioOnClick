@@ -17,7 +17,7 @@ type Outcome = "improving" | "stable" | "setback";
 const FOLLOW_UP_OPTIONS = [0, 1, 2, 4, 6, 8] as const;
 
 function getPainColor(score: number): string {
-  if (score <= 3) return "#059669";
+  if (score <= 3) return "var(--color-success)";
   if (score <= 6) return "var(--color-warning, #D97706)";
   return "var(--color-error)";
 }
@@ -95,7 +95,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   const textareaStyle: React.CSSProperties = { width: "100%", border: "1.5px solid var(--color-border)", borderRadius: 10, padding: "0.5rem 0.75rem", fontSize: 14, resize: "vertical" as const, boxSizing: "border-box" as const, fontFamily: "var(--font-sans)", color: "var(--color-navy)" };
 
   const OUTCOMES: { key: Outcome; label: string; color: string }[] = [
-    { key: "improving", label: "Improving ↑", color: "#059669" },
+    { key: "improving", label: "Improving ↑", color: "var(--color-success)" },
     { key: "stable",    label: "Stable →",    color: "var(--color-warning, #D97706)" },
     { key: "setback",   label: "Setback ↓",   color: "var(--color-error)" },
   ];

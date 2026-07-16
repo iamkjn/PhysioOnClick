@@ -44,7 +44,7 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-      <label style={{ fontWeight: 600, fontSize: 14, color: "#0C2A38" }}>
+      <label style={{ fontWeight: 600, fontSize: 14, color: "var(--color-text-primary)" }}>
         Viewing recovery for:
       </label>
       <select
@@ -53,9 +53,9 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
         style={{
           padding: "0.4rem 0.75rem",
           borderRadius: 10,
-          border: "1px solid #D1E8EE",
+          border: "1px solid var(--color-border)",
           fontSize: 14,
-          color: "#0C2A38",
+          color: "var(--color-text-primary)",
           background: "#fff",
           cursor: "pointer",
         }}

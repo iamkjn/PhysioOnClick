@@ -2,6 +2,7 @@ import { collection, getDocs, limit, orderBy, query, where } from "firebase/fire
 
 import type { BlogArticle } from "@/lib/blog";
 import { blogArticles } from "@/lib/blog";
+import { isBookServiceId } from "@/lib/cal-services";
 import type { PricingItem, Service, Testimonial } from "@/lib/site-data";
 import { pricing, services, testimonials } from "@/lib/site-data";
 import { db } from "@/lib/firebase";
@@ -44,10 +45,21 @@ function toService(doc: Record<string, unknown>, fallback?: Service): Service {
   };
 }
 
-function toPricingItem(doc: Record<string, unknown>, fallback?: PricingItem): PricingItem {
+/**
+ * Returns null when the row cannot be tied to a real bookable tier. `id` is a
+ * closed union backing the Cal.com event-type map, so it can only come from a
+ * doc that names a known id or from the static fallback — an arbitrary
+ * Firestore row cannot invent one, and a priced row that cannot be booked is
+ * worse than not showing it.
+ */
+function toPricingItem(doc: Record<string, unknown>, fallback?: PricingItem): PricingItem | null {
+  const id = isBookServiceId(doc.id) ? doc.id : fallback?.id;
+  if (!id) return null;
+
   const mode = String(doc.mode || fallback?.mode || "In-person") as PricingItem["mode"];
 
   return {
+    id,
     title: String(doc.title || fallback?.title || "Untitled pricing"),
     duration: String(doc.duration || fallback?.duration || ""),
     price: Number(doc.price || fallback?.price || 0),
@@ -142,7 +154,13 @@ export async function fetchDynamicPricing() {
       return pricing;
     }
 
-    return snapshot.docs.map((doc, index) => toPricingItem(doc.data(), pricing[index]));
+    const items = snapshot.docs
+      .map((doc, index) => toPricingItem(doc.data(), pricing[index]))
+      .filter((item): item is PricingItem => item !== null);
+
+    // Matches how every other fetchDynamic* here behaves: never surface an
+    // empty pricing page — fall back to the static tiers instead.
+    return items.length ? items : pricing;
   } catch {
     return pricing;
   }

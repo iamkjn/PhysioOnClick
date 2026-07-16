@@ -40,39 +40,10 @@ function escapeXml(value: string) {
     .replace(/'/g, "&apos;");
 }
 
-function wrapLines(text: string, maxLength: number) {
-  const words = text.split(" ");
-  const lines: string[] = [];
-  let current = "";
-
-  for (const word of words) {
-    const next = current ? `${current} ${word}` : word;
-
-    if (next.length <= maxLength) {
-      current = next;
-      continue;
-    }
-
-    if (current) {
-      lines.push(current);
-    }
-
-    current = word;
-  }
-
-  if (current) {
-    lines.push(current);
-  }
-
-  return lines.slice(0, 4);
-}
-
 export function generateBlogCoverSvg(article: BlogArticle) {
   const style = categoryStyles[article.category] || categoryStyles["Back pain"];
   const motif = motifPatterns[article.slug.length % motifPatterns.length];
-  const titleLines = wrapLines(article.title, 28);
   const iconLabel = categoryIcons[article.category] || "Physio guide";
-  const bodyPartLabel = article.title.split(" and ")[0] || article.category;
   const lineArt =
     article.category === "Back pain"
       ? `<path d="M967 252C931 284 922 327 944 365C959 391 956 423 939 451" stroke="${style.accent}" stroke-width="18" stroke-linecap="round" stroke-opacity="0.33"/>`
@@ -110,24 +81,12 @@ export function generateBlogCoverSvg(article: BlogArticle) {
       <text x="72" y="152" font-size="18" font-family="Arial, Helvetica, sans-serif" fill="#607086" font-weight="700">${escapeXml(
         iconLabel
       )}</text>
-      ${titleLines
-        .map(
-          (line, index) =>
-            `<text x="72" y="${292 + index * 72}" font-size="58" font-family="Arial, Helvetica, sans-serif" fill="#142033" font-weight="800">${escapeXml(
-              line
-            )}</text>`
-        )
-        .join("")}
-      <text x="72" y="596" font-size="28" font-family="Arial, Helvetica, sans-serif" fill="#546579">Evidence-based UK physiotherapy guidance</text>
+      <text x="72" y="292" font-size="28" font-family="Arial, Helvetica, sans-serif" fill="#546579">Evidence-based UK physiotherapy guidance</text>
       <g transform="rotate(${motif.rotation} 980 340)">
         <rect x="${motif.x}" y="${motif.y}" width="${motif.width}" height="${motif.height}" rx="${motif.radius}" fill="#ffffff" fill-opacity="0.76" />
       </g>
       <circle cx="980" cy="286" r="58" fill="${style.accent}" fill-opacity="0.12" />
       ${lineArt}
-      <rect x="882" y="504" width="198" height="48" rx="24" fill="${style.accent}" fill-opacity="0.1" />
-      <text x="916" y="535" font-size="24" font-family="Arial, Helvetica, sans-serif" fill="${style.accent}" font-weight="700">${escapeXml(
-        bodyPartLabel
-      )}</text>
     </svg>
   `;
 }

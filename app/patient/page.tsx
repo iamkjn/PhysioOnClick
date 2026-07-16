@@ -37,72 +37,16 @@ export default function PatientPage() {
       </section>
 
       <section className="page-section" style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        <Link
-          href="/patient/appointments"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            background: "#D8F3F9",
-            color: "#0E7490",
-            padding: "0.6rem 1.25rem",
-            borderRadius: 999,
-            textDecoration: "none",
-            fontWeight: 700,
-            fontSize: 14,
-          }}
-        >
+        <Link href="/patient/appointments" className="pill-link">
           📋 My Appointments
         </Link>
-        <Link
-          href="/patient/people"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            background: "#D8F3F9",
-            color: "#0E7490",
-            padding: "0.6rem 1.25rem",
-            borderRadius: 999,
-            textDecoration: "none",
-            fontWeight: 700,
-            fontSize: 14,
-          }}
-        >
+        <Link href="/patient/people" className="pill-link">
           👨‍👩‍👧 My People
         </Link>
-        <Link
-          href="/patient/account"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            background: "#D8F3F9",
-            color: "#0E7490",
-            padding: "0.6rem 1.25rem",
-            borderRadius: 999,
-            textDecoration: "none",
-            fontWeight: 700,
-            fontSize: 14,
-          }}
-        >
+        <Link href="/patient/account" className="pill-link">
           👤 My Account
         </Link>
-        <Link
-          href="/patient/recovery"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            background: "#D8F3F9",
-            color: "#0E7490",
-            padding: "0.6rem 1.25rem",
-            borderRadius: 999,
-            textDecoration: "none",
-            fontWeight: 700,
-            fontSize: 14,
-          }}
-        >
+        <Link href="/patient/recovery" className="pill-link">
           📈 My Recovery
         </Link>
       </section>

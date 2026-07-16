@@ -48,37 +48,8 @@ function escapeXml(value: string) {
     .replace(/'/g, "&apos;");
 }
 
-function wrapLines(text: string, maxLength: number) {
-  const words = text.split(" ");
-  const lines: string[] = [];
-  let current = "";
-
-  for (const word of words) {
-    const next = current ? `${current} ${word}` : word;
-
-    if (next.length <= maxLength) {
-      current = next;
-      continue;
-    }
-
-    if (current) {
-      lines.push(current);
-    }
-
-    current = word;
-  }
-
-  if (current) {
-    lines.push(current);
-  }
-
-  return lines.slice(0, 3);
-}
-
 export function generateServiceCoverSvg(service: Service) {
   const style = serviceStyles[service.slug] || serviceStyles["musculoskeletal-physiotherapy"];
-  const titleLines = wrapLines(service.title, 20);
-  const summaryLine = service.summary.replace(/\.$/, "").slice(0, 72);
   const motif =
     service.slug === "musculoskeletal-physiotherapy"
       ? `<path d="M860 286C834 318 828 361 846 396C858 419 856 450 842 478" stroke="${style.accent}" stroke-width="16" stroke-linecap="round" stroke-opacity="0.34"/>`
@@ -109,17 +80,8 @@ export function generateServiceCoverSvg(service: Service) {
       <text x="100" y="172" font-size="18" font-family="Arial, Helvetica, sans-serif" fill="${style.accent}" font-weight="700">${escapeXml(
         style.label
       )}</text>
-      ${titleLines
-        .map(
-          (line, index) =>
-            `<text x="72" y="${258 + index * 68}" font-size="54" font-family="Arial, Helvetica, sans-serif" fill="#142033" font-weight="800">${escapeXml(
-              line
-            )}</text>`
-        )
-        .join("")}
-      <text x="72" y="488" font-size="26" font-family="Arial, Helvetica, sans-serif" fill="#546579">${escapeXml(summaryLine)}</text>
-      <rect x="72" y="528" width="254" height="48" rx="24" fill="${style.accent}" fill-opacity="0.1" />
-      <text x="102" y="559" font-size="22" font-family="Arial, Helvetica, sans-serif" fill="${style.accent}" font-weight="700">Glasgow clinic and online</text>
+      <rect x="72" y="206" width="254" height="48" rx="24" fill="${style.accent}" fill-opacity="0.1" />
+      <text x="102" y="237" font-size="22" font-family="Arial, Helvetica, sans-serif" fill="${style.accent}" font-weight="700">Glasgow clinic and online</text>
       <rect x="772" y="186" width="238" height="326" rx="42" fill="#ffffff" fill-opacity="0.78" />
       <circle cx="891" cy="252" r="54" fill="${style.accent}" fill-opacity="0.1" />
       ${motif}

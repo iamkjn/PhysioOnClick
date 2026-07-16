@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { EmptyState } from "@/components/empty-state";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Skeleton, SkeletonCircle } from "@/components/skeleton";
+import { useToast } from "@/components/toast-provider";
 import {
   getDependents,
   addDependent,
@@ -42,7 +44,9 @@ export default function PeoplePage() {
     relationship: "Other",
     notes: "",
   });
+  const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
   const router = useRouter();
+  const toast = useToast();
 
   useEffect(() => {
     const auth = getAuth();
@@ -75,6 +79,9 @@ export default function PeoplePage() {
       });
       setDependents(await getDependents(uid));
       setShowForm(false);
+      toast.show("Person added.", "success");
+    } catch {
+      toast.show("Could not add this person. Please try again.", "error");
     } finally {
       setSaving(false);
     }
@@ -97,29 +104,27 @@ export default function PeoplePage() {
       await updateDependent(id, editForm);
       setDependents(await getDependents(uid));
       setEditingId(null);
+      toast.show("Changes saved.", "success");
+    } catch {
+      toast.show("Could not save changes. Please try again.", "error");
     } finally {
       setSaving(false);
     }
   }
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`Remove ${name} from your account?`)) return;
-    await deleteDependent(id);
-    if (uid) setDependents(await getDependents(uid));
+  async function handleDelete(id: string) {
+    try {
+      await deleteDependent(id);
+      if (uid) setDependents(await getDependents(uid));
+      toast.show("Person removed.", "success");
+    } catch {
+      toast.show("Could not remove this person. Please try again.", "error");
+    }
   }
 
-  const inputStyle: React.CSSProperties = {
-    padding: "0.6rem 0.85rem",
-    border: "1px solid #D1E8EE",
-    borderRadius: 10,
-    fontSize: 15,
-    width: "100%",
-    boxSizing: "border-box",
-  };
-
   const cardStyle: React.CSSProperties = {
-    background: "#fff",
-    borderRadius: 16,
+    background: "var(--color-surface)",
+    borderRadius: "var(--radius-card)",
     padding: "1rem 1.25rem",
     display: "flex",
     alignItems: "center",
@@ -137,20 +142,8 @@ export default function PeoplePage() {
           marginBottom: "1.5rem",
         }}
       >
-        <h1 style={{ margin: 0, color: "#0C2A38" }}>My People</h1>
-        <button
-          onClick={() => setShowForm(true)}
-          style={{
-            background: "#0891B2",
-            color: "#fff",
-            border: "none",
-            borderRadius: 12,
-            padding: "0.5rem 1.25rem",
-            fontWeight: 700,
-            cursor: "pointer",
-            fontSize: 14,
-          }}
-        >
+        <h1 style={{ margin: 0, color: "var(--color-text-primary)" }}>My People</h1>
+        <button onClick={() => setShowForm(true)} className="button primary small">
           + Add person
         </button>
       </div>
@@ -162,11 +155,11 @@ export default function PeoplePage() {
             <Avatar name={currentName} size={52} />
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <strong style={{ color: "#0C2A38" }}>{currentName}</strong>
+                <strong style={{ color: "var(--color-text-primary)" }}>{currentName}</strong>
                 <span
                   style={{
-                    background: "#D8F3F9",
-                    color: "#0E7490",
+                    background: "var(--color-primary-light)",
+                    color: "var(--color-primary-dark)",
                     fontSize: 11,
                     fontWeight: 700,
                     borderRadius: 999,
@@ -176,7 +169,7 @@ export default function PeoplePage() {
                   You
                 </span>
               </div>
-              <span style={{ fontSize: 13, color: "#5E7A84" }}>
+              <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
                 Your account · {currentEmail}
               </span>
             </div>
@@ -204,40 +197,40 @@ export default function PeoplePage() {
             <div
               key={dep.id}
               style={{
-                background: "#fff",
-                borderRadius: 16,
+                background: "var(--color-surface)",
+                borderRadius: "var(--radius-card)",
                 padding: "1.25rem",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
               }}
             >
-              <h3 style={{ marginTop: 0, color: "#0C2A38", fontSize: 16 }}>
+              <h3 style={{ marginTop: 0, color: "var(--color-text-primary)", fontSize: 16 }}>
                 Edit {dep.name}
               </h3>
               <div style={{ display: "grid", gap: "0.75rem" }}>
                 <input
+                  className="input"
                   value={editForm.name}
                   onChange={(e) =>
                     setEditForm((f) => ({ ...f, name: e.target.value }))
                   }
                   placeholder="Full name"
                   required
-                  style={inputStyle}
                 />
                 <input
                   type="date"
+                  className="input"
                   value={editForm.dob}
                   onChange={(e) =>
                     setEditForm((f) => ({ ...f, dob: e.target.value }))
                   }
                   required
-                  style={inputStyle}
                 />
                 <select
+                  className="input"
                   value={editForm.relationship}
                   onChange={(e) =>
                     setEditForm((f) => ({ ...f, relationship: e.target.value }))
                   }
-                  style={inputStyle}
                 >
                   {["Mother", "Father", "Son", "Daughter", "Partner", "Other"].map(
                     (r) => (
@@ -246,39 +239,24 @@ export default function PeoplePage() {
                   )}
                 </select>
                 <input
+                  className="input"
                   value={editForm.notes}
                   onChange={(e) =>
                     setEditForm((f) => ({ ...f, notes: e.target.value }))
                   }
                   placeholder="Medical notes (optional)"
-                  style={inputStyle}
                 />
                 <div style={{ display: "flex", gap: "0.75rem" }}>
                   <button
                     onClick={() => void handleSave(dep.id)}
                     disabled={saving || !editForm.name || !editForm.dob}
-                    style={{
-                      background: "#0891B2",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: 12,
-                      padding: "0.6rem 1.5rem",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                    }}
+                    className="button primary"
                   >
                     {saving ? "Saving…" : "Save changes"}
                   </button>
                   <button
                     onClick={() => setEditingId(null)}
-                    style={{
-                      background: "none",
-                      border: "1px solid #D1E8EE",
-                      borderRadius: 12,
-                      padding: "0.6rem 1.25rem",
-                      cursor: "pointer",
-                      color: "#5E7A84",
-                    }}
+                    className="button secondary"
                   >
                     Cancel
                   </button>
@@ -290,10 +268,10 @@ export default function PeoplePage() {
             <div key={dep.id} style={cardStyle}>
               <Avatar name={dep.name} imageUrl={dep.avatarUrl} size={52} />
               <div style={{ flex: 1 }}>
-                <strong style={{ display: "block", color: "#0C2A38" }}>
+                <strong style={{ display: "block", color: "var(--color-text-primary)" }}>
                   {dep.name}
                 </strong>
-                <span style={{ fontSize: 13, color: "#5E7A84" }}>
+                <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
                   {dep.relationship} · {calcAge(dep.dob)} years old
                 </span>
                 {dep.notes && (
@@ -301,7 +279,7 @@ export default function PeoplePage() {
                     style={{
                       display: "block",
                       fontSize: 12,
-                      color: "#9CA3AF",
+                      color: "var(--color-text-secondary)",
                       marginTop: 2,
                     }}
                   >
@@ -314,7 +292,7 @@ export default function PeoplePage() {
                 style={{
                   background: "none",
                   border: "none",
-                  color: "#5E7A84",
+                  color: "var(--color-text-secondary)",
                   cursor: "pointer",
                   fontSize: 13,
                   fontWeight: 600,
@@ -323,11 +301,11 @@ export default function PeoplePage() {
                 Edit
               </button>
               <button
-                onClick={() => void handleDelete(dep.id, dep.name)}
+                onClick={() => setRemoveTarget({ id: dep.id, name: dep.name })}
                 style={{
                   background: "none",
                   border: "none",
-                  color: "#DC2626",
+                  color: "var(--color-error)",
                   cursor: "pointer",
                   fontSize: 13,
                   fontWeight: 600,
@@ -354,53 +332,34 @@ export default function PeoplePage() {
         <div
           style={{
             marginTop: "1.5rem",
-            background: "#fff",
-            borderRadius: 18,
+            background: "var(--color-surface)",
+            borderRadius: "var(--radius-panel)",
             padding: "1.5rem",
             boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
           }}
         >
-          <h3 style={{ marginTop: 0, color: "#0C2A38" }}>Add a person</h3>
+          <h3 style={{ marginTop: 0, color: "var(--color-text-primary)" }}>Add a person</h3>
           <form onSubmit={(e) => void handleAdd(e)} style={{ display: "grid", gap: "0.75rem" }}>
-            <input name="name" placeholder="Full name" required style={inputStyle} />
-            <input name="dob" type="date" required style={inputStyle} />
-            <select name="relationship" required style={inputStyle}>
+            <input name="name" className="input" placeholder="Full name" required />
+            <input name="dob" type="date" className="input" required />
+            <select name="relationship" className="input" required>
               {["Mother", "Father", "Son", "Daughter", "Partner", "Other"].map((r) => (
                 <option key={r}>{r}</option>
               ))}
             </select>
             <input
               name="notes"
+              className="input"
               placeholder="Medical notes (optional)"
-              style={inputStyle}
             />
             <div style={{ display: "flex", gap: "0.75rem" }}>
-              <button
-                type="submit"
-                disabled={saving}
-                style={{
-                  background: "#0891B2",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 12,
-                  padding: "0.6rem 1.5rem",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                }}
-              >
+              <button type="submit" disabled={saving} className="button primary">
                 {saving ? "Saving…" : "Save"}
               </button>
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                style={{
-                  background: "none",
-                  border: "1px solid #D1E8EE",
-                  borderRadius: 12,
-                  padding: "0.6rem 1.25rem",
-                  cursor: "pointer",
-                  color: "#5E7A84",
-                }}
+                className="button secondary"
               >
                 Cancel
               </button>
@@ -408,6 +367,20 @@ export default function PeoplePage() {
           </form>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={removeTarget !== null}
+        title="Remove this person?"
+        body={removeTarget ? `${removeTarget.name} will be removed from your account. This can't be undone.` : ""}
+        confirmLabel="Remove"
+        confirmVariant="destructive"
+        onCancel={() => setRemoveTarget(null)}
+        onConfirm={() => {
+          const target = removeTarget;
+          setRemoveTarget(null);
+          if (target) void handleDelete(target.id);
+        }}
+      />
     </div>
   );
 }

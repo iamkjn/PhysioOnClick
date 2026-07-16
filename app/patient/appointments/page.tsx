@@ -59,7 +59,7 @@ export default function AppointmentsPage() {
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
-      <h1 style={{ color: "#0C2A38" }}>My Appointments</h1>
+      <h1 style={{ color: "var(--color-text-primary)" }}>My Appointments</h1>
       {uid && (
         <div style={{ marginBottom: "1.5rem" }}>
           <PersonSwitcher
@@ -80,7 +80,7 @@ export default function AppointmentsPage() {
       )}
       {upcoming.length > 0 && (
         <section style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.05rem", color: "#0C2A38", marginBottom: "0.75rem" }}>
+          <h2 style={{ fontSize: "1.05rem", color: "var(--color-text-primary)", marginBottom: "0.75rem" }}>
             Upcoming
           </h2>
           {upcoming.map((b) => (
@@ -90,7 +90,7 @@ export default function AppointmentsPage() {
       )}
       {past.length > 0 && (
         <section>
-          <h2 style={{ fontSize: "1.05rem", color: "#0C2A38", marginBottom: "0.75rem" }}>
+          <h2 style={{ fontSize: "1.05rem", color: "var(--color-text-primary)", marginBottom: "0.75rem" }}>
             Past
           </h2>
           {past.map((b) => (
@@ -112,8 +112,8 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
     <Link href={`/patient/appointments/${booking.id}`} style={{ textDecoration: "none" }}>
       <div
         style={{
-          background: "#fff",
-          borderRadius: 14,
+          background: "var(--color-surface)",
+          borderRadius: "var(--radius-card)",
           padding: "1rem 1.25rem",
           display: "flex",
           alignItems: "center",
@@ -125,8 +125,8 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
       >
         <Avatar name={booking.patientName} imageUrl={booking.patientAvatarUrl} size={44} />
         <div style={{ flex: 1 }}>
-          <strong style={{ display: "block", color: "#0C2A38" }}>{booking.patientName}</strong>
-          <span style={{ fontSize: 13, color: "#5E7A84" }}>
+          <strong style={{ display: "block", color: "var(--color-text-primary)" }}>{booking.patientName}</strong>
+          <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
             {booking.service} · {date}
           </span>
         </div>
@@ -139,8 +139,8 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
         ) : (
           <span
             style={{
-              background: "#D8F3F9",
-              color: "#0E7490",
+              background: "var(--color-primary-light)",
+              color: "var(--color-primary-dark)",
               fontSize: 12,
               fontWeight: 700,
               padding: "3px 10px",

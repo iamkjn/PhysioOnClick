@@ -1,8 +1,7 @@
 "use client";
 
-import { CSSProperties, useRef } from "react";
-import { useGSAP } from "@/hooks/use-gsap-timeline";
-import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
+import { CSSProperties, useEffect, useRef } from "react";
+import { prefersReducedMotion } from "@/lib/gsap";
 
 type Direction = "up" | "down" | "left" | "right" | "fade";
 
@@ -23,6 +22,10 @@ const OFFSETS: Record<Direction, { x: number; y: number }> = {
   fade: { x: 0, y: 0 },
 };
 
+// Safety net: if IntersectionObserver never fires (killed by an extension,
+// stalls, whatever), content must not stay hidden forever.
+const FORCE_VISIBLE_MS = 2000;
+
 export function Reveal({
   children,
   direction = "up",
@@ -33,40 +36,61 @@ export function Reveal({
 }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
+  useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || prefersReducedMotion()) return;
 
-    if (prefersReducedMotion()) {
-      gsap.set(el, { opacity: 1, x: 0, y: 0, scale: 1 });
-      return;
-    }
+    // Already in view at mount (above the fold, or a short page) — never
+    // hide it. Only elements below the fold get the pending state, so
+    // there's no flash-of-invisible-content on first paint / hydration.
+    const rect = el.getBoundingClientRect();
+    const alreadyVisible = rect.top < window.innerHeight * 0.88 && rect.bottom > 0;
+    if (alreadyVisible) return;
 
-    const offset = OFFSETS[direction];
-    gsap.set(el, { opacity: 0, x: offset.x, y: offset.y, scale: 0.98 });
+    // No IntersectionObserver (old browser, or a test/SSR-ish environment) —
+    // stay visible rather than hide content with no way to reveal it.
+    if (typeof IntersectionObserver === "undefined") return;
 
-    const trigger = ScrollTrigger.create({
-      trigger: el,
-      start: "top 85%",
-      once: true,
-      onEnter: () => {
-        gsap.to(el, {
-          opacity: 1,
-          x: 0,
-          y: 0,
-          scale: 1,
-          duration: duration / 1000,
-          delay: delay / 1000,
-          ease: "power3.out",
-        });
+    el.classList.add("reveal--pending");
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("reveal--visible");
+          el.classList.remove("reveal--pending");
+          observer.unobserve(el);
+        }
       },
-    });
+      { threshold: 0.15, rootMargin: "0px 0px -12% 0px" }
+    );
+    observer.observe(el);
 
-    return () => trigger.kill();
-  }, [direction, delay, duration]);
+    const forceTimer = window.setTimeout(() => {
+      el.classList.add("reveal--visible");
+      el.classList.remove("reveal--pending");
+      observer.unobserve(el);
+    }, FORCE_VISIBLE_MS);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(forceTimer);
+    };
+  }, []);
+
+  const offset = OFFSETS[direction];
 
   return (
-    <div ref={ref} className={["reveal", className].filter(Boolean).join(" ")} style={style}>
+    <div
+      ref={ref}
+      className={["reveal", className].filter(Boolean).join(" ")}
+      style={{
+        ...style,
+        "--reveal-x": `${offset.x}px`,
+        "--reveal-y": `${offset.y}px`,
+        "--reveal-delay": `${delay}ms`,
+        "--reveal-duration": `${duration}ms`,
+      } as CSSProperties}
+    >
       {children}
     </div>
   );

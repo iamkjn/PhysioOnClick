@@ -1,11 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { getAuth } from "firebase-admin/auth";
-import { FieldValue } from "firebase-admin/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 import { buildSystemPrompt, type PatientContext } from "@/lib/chat-prompt";
 import { AUTH_TOOL_DECLARATIONS, executeFunction, GUEST_TOOL_DECLARATIONS } from "@/lib/chat-tools";
-import { getAdminDb } from "@/lib/firebase-admin";
+import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 
 type HistoryMessage = { role: "user" | "model"; text: string };
 
@@ -18,8 +16,10 @@ type RequestBody = {
 async function verifyToken(authHeader: string | null): Promise<string | null> {
   if (!authHeader?.startsWith("Bearer ")) return null;
   const token = authHeader.slice(7);
+  const auth = getAdminAuth();
+  if (!auth) return null;
   try {
-    const decoded = await getAuth().verifyIdToken(token);
+    const decoded = await auth.verifyIdToken(token);
     return decoded.uid;
   } catch {
     return null;

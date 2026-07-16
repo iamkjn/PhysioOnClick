@@ -21,10 +21,20 @@ const STATUS_CYCLE: Record<string, string> = {
   "resolved":    "new",
 };
 
-const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  "new":         { bg: "var(--color-gold-light)",  color: "var(--color-gold)",  label: "New" },
-  "in-progress": { bg: "var(--color-primary-light)",  color: "var(--color-primary)",  label: "In progress" },
-  "resolved":    { bg: "#D1FAE5",                  color: "#059669",             label: "Resolved" },
+// dashboard-status-pill only ships status-pending/-confirmed/-cancelled
+// modifiers (warning/success/error) — "new" reuses the warning-toned pending
+// modifier, "in-progress" falls back to the base pill (primary), and
+// "resolved" reuses the success-toned confirmed modifier.
+const STATUS_PILL_CLASS: Record<string, string> = {
+  "new":         "dashboard-status-pill status-pending",
+  "in-progress": "dashboard-status-pill",
+  "resolved":    "dashboard-status-pill status-confirmed",
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  "new": "New",
+  "in-progress": "In progress",
+  "resolved": "Resolved",
 };
 
 export function AdminEnquiriesTable() {
@@ -69,21 +79,9 @@ export function AdminEnquiriesTable() {
 
   const newCount = enquiries.filter((e) => e.status === "new").length;
 
-  const th: React.CSSProperties = {
-    color: "#fff",
-    fontWeight: 600,
-    fontSize: 12,
-    padding: "0.625rem 0.75rem",
-    textAlign: "left" as const,
-    whiteSpace: "nowrap" as const,
-    fontFamily: "var(--font-sans)",
-  };
-  const td: React.CSSProperties = { padding: "0.75rem", verticalAlign: "top" as const };
-
   return (
     <div>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "1rem" }}>
+      <div className="dashboard-table-head" style={{ marginBottom: "1rem" }}>
         <div>
           <span style={{ fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase" as const, letterSpacing: "0.08em", fontFamily: "var(--font-sans)" }}>
             Enquiries
@@ -93,13 +91,9 @@ export function AdminEnquiriesTable() {
           </h2>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <span style={{ fontSize: 13, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>
-            {enquiries.length} enquiries
-          </span>
+          <span className="dashboard-table-count">{enquiries.length} enquiries</span>
           {newCount > 0 && (
-            <span style={{ background: "var(--color-gold-light)", color: "var(--color-gold)", borderRadius: 999, padding: "3px 10px", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-sans)" }}>
-              {newCount} new
-            </span>
+            <span className="dashboard-status-pill status-pending">{newCount} new</span>
           )}
         </div>
       </div>
@@ -113,43 +107,36 @@ export function AdminEnquiriesTable() {
       )}
 
       {!loading && enquiries.length > 0 && (
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+        <div className="dashboard-table-wrap">
+          <table className="dashboard-table">
             <thead>
-              <tr style={{ background: "var(--color-navy)" }}>
-                <th style={th}>Received</th>
-                <th style={th}>Name</th>
-                <th style={th}>Service</th>
-                <th style={th}>Email</th>
-                <th style={th}>Message</th>
-                <th style={th}>Status</th>
+              <tr>
+                <th>Received</th>
+                <th>Name</th>
+                <th>Service</th>
+                <th>Email</th>
+                <th>Message</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {enquiries.map((item, i) => {
-                const s = STATUS_STYLES[item.status] ?? STATUS_STYLES.new;
+              {enquiries.map((item) => {
                 const isExp = expanded[item.id] ?? false;
                 return (
-                  <tr
-                    key={item.id}
-                    style={{
-                      background: i % 2 === 0 ? "var(--color-surface)" : "var(--color-primary-light)",
-                      borderBottom: "1px solid var(--color-border)",
-                    }}
-                  >
-                    <td style={{ ...td, color: "var(--color-text-secondary)", fontSize: 12, whiteSpace: "nowrap" as const, fontFamily: "var(--font-sans)" }}>
+                  <tr key={item.id}>
+                    <td style={{ color: "var(--color-text-secondary)", fontSize: 12, whiteSpace: "nowrap" as const, fontFamily: "var(--font-sans)" }}>
                       {item.createdAtLabel}
                     </td>
-                    <td style={{ ...td, color: "var(--color-navy)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>
+                    <td style={{ color: "var(--color-navy)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>
                       {item.name}
                     </td>
-                    <td style={{ ...td, color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>
+                    <td style={{ color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>
                       {item.service}
                     </td>
-                    <td style={{ ...td, color: "var(--color-text-secondary)", fontSize: 12, fontFamily: "var(--font-sans)" }}>
+                    <td style={{ color: "var(--color-text-secondary)", fontSize: 12, fontFamily: "var(--font-sans)" }}>
                       {item.email}
                     </td>
-                    <td style={{ ...td, maxWidth: 280 }}>
+                    <td className="dashboard-message-cell">
                       <p
                         style={{
                           margin: 0,
@@ -181,23 +168,14 @@ export function AdminEnquiriesTable() {
                         </button>
                       )}
                     </td>
-                    <td style={td}>
+                    <td>
                       <button
                         onClick={() => cycleStatus(item.id, item.status)}
                         title="Click to update status"
-                        style={{
-                          background: s.bg,
-                          color: s.color,
-                          border: "none",
-                          borderRadius: 999,
-                          padding: "4px 12px",
-                          fontSize: 12,
-                          fontWeight: 700,
-                          cursor: "pointer",
-                          fontFamily: "var(--font-sans)",
-                        }}
+                        className={STATUS_PILL_CLASS[item.status] ?? "dashboard-status-pill"}
+                        style={{ border: "none", cursor: "pointer" }}
                       >
-                        {s.label}
+                        {STATUS_LABEL[item.status] ?? item.status}
                       </button>
                     </td>
                   </tr>

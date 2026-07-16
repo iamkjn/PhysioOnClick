@@ -1,30 +1,86 @@
 :root {
-  /* ── Design tokens ─────────────────────────────────────────── */
-  --color-navy:          #0D1B2A;
-  --color-primary:       #4F46E5;
-  --color-primary-dark:  #3730A3;
-  --color-primary-light: #EEF2FF;
-  --color-primary-glow:  #818CF8;
+  /* ── Clarity palette ───────────────────────────────────────────
+     Source of truth for the whole site. Every brand colour below is
+     derived from --book-accent the way the design spec derives them
+     (28% black mix for dark, 92% white mix for the light tint, 42%/70%
+     black mix for the rail gradient). If the accent ever changes,
+     regenerate this block the same way rather than hand-picking hex. */
+  --book-accent:        #0EA5E9;
+  --book-accent-dark:   #0A77A8;
+  --book-accent-light:  #ECF8FD;
+  --book-rail-top:      #086087;
+  --book-rail-bottom:   #043246;
+  /* Muted rail tones are white-mixes of --book-accent (60/70/78%). The mix
+     floor is 59%: below that, text drops under 4.5:1 against the lightest
+     point of the rail (--book-rail-top). Caps and para used to sit at 32%
+     and 50% — 3.44:1 and 4.14:1 on 11-14px text. Regenerate by raising the
+     mix, never by hand-picking hex. */
+  --book-muted-caps:    #9FDBF6;
+  --book-muted-para:    #B7E4F8;
+  --book-muted-list:    #CAEBFA;
+  /* Recessed, not raised. Insets on the rail (slot chip, physio card) used to
+     be tinted *lighter* than the rail, which stranded light text on a
+     light island. A rail-bottom tint sinks them instead, so the muted tones
+     above keep working on top of them. */
+  --book-inset-bg:      rgba(4, 50, 70, 0.35);
+  --book-chip-icon:     #B2E2F8;
+  --book-paper:         #F6F3EC;
+  --book-paper-border:  #E4DED1;
+  --book-paper-ink:     #23201B;
+  --book-paper-muted:   #6B655B;
+
+  /* ── Design tokens (aliased onto Clarity) ──────────────────── */
+  --color-navy:          var(--book-rail-bottom);
+  --color-primary:       var(--book-accent);
+  --color-primary-dark:  var(--book-accent-dark);
+  --color-primary-light: var(--book-accent-light);
+  --color-primary-glow:  #38BDF8;
   --gradient-primary:    linear-gradient(135deg, var(--color-primary), var(--color-primary-glow));
+  --gradient-rail:       linear-gradient(168deg, var(--book-rail-top), var(--book-rail-bottom));
   --color-accent:        #10B981;
   --color-coral:         #FF7A59;
   --color-coral-light:   #FFF1EC;
   --color-gold:          #B08030;
   --color-gold-light:    #FDF6E9;
   --color-gold-dark:     #8C6420;
-  --color-bg:            #FAF9FF;
+  --color-bg:            var(--book-paper);
   --color-surface:       #FFFFFF;
-  --color-border:        #E2E8F0;
-  --color-text-primary:  #1E1B3A;
-  --color-text-secondary:#4A5568;
+  --color-border:        var(--book-paper-border);
+  --color-text-primary:  var(--book-paper-ink);
+  --color-text-secondary:var(--book-paper-muted);
   --color-success:       #059669;
+  --color-success-light: #D1FAE5;
   --color-error:         #DC2626;
   --color-error-dark:    #B91C1C;
+  --color-error-light:   #FEE2E2;
   --color-warning:       #D97706;
   --color-spinner-track:  rgba(255, 255, 255, 0.15);
   --shadow-card:          0 8px 40px rgba(0, 0, 0, 0.3);
-  --font-serif: 'DM Serif Display', Georgia, serif;
+  --shadow-panel:         0 28px 66px -24px rgba(30, 45, 40, 0.42);
+  --font-serif: 'Fraunces', Georgia, serif;
   --font-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
+
+  /* Radii — spec: panels 22, inner cards 15, inputs/chips 10–13, pills 999 */
+  --radius-panel: 22px;
+  --radius-card:  15px;
+  --radius-input: 13px;
+  --radius-chip:  10px;
+  --radius-pill:  999px;
+
+  /* Type scale — covers headings, section titles and card titles only;
+     body copy sizes are untouched until a broader pass reaches them. */
+  --text-xs:      0.75rem;
+  --text-sm:      0.875rem;
+  --text-base:    1rem;
+  --text-md:      1.125rem;
+  --text-lg:      1.35rem;
+  --text-xl:      1.7rem;
+  --text-2xl:     2.1rem;
+  --text-3xl:     2.7rem;
+  --text-display: 3.4rem;
+
+  /* Every major section's vertical padding derives from this one value. */
+  --space-section: 4.5rem;
 
   /* ── Legacy aliases (keeps all existing CSS classes working) ── */
   --bg:          var(--color-bg);
@@ -33,9 +89,13 @@
   --ink:         var(--color-navy);
   --muted:       var(--color-text-secondary);
   --line:        var(--color-border);
-  --primary:     var(--color-primary);
-  --primary-dark:var(--color-primary-dark);
-  --shadow:      0 2px 16px rgba(79, 70, 229, 0.10);
+  /* Ink grades, not the raw accent: --color-primary is only 2.77:1 on white,
+     so it fails AA both as text and under white-on-accent fills. Both grades
+     below are spec-derived mixes, so they stay in the Clarity family. Reach
+     for --color-primary directly only for decoration or text on dark. */
+  --primary:     var(--color-primary-dark);
+  --primary-dark:var(--book-rail-top);
+  --shadow:      0 2px 16px rgba(30, 45, 40, 0.10);
   --shell:       1340px;
 }
 
@@ -50,6 +110,33 @@ a,
 button {
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
+}
+
+/* One ring for every focusable thing. Inputs (outline:none + a box-shadow
+   ring) and the .book-* screens (white ring on the dark rail) both beat this
+   on specificity and keep their own. */
+:focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 1rem;
+  z-index: 50;
+  padding: 0.75rem 1.1rem;
+  border-radius: 12px;
+  background: white;
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: var(--shadow-panel);
+  /* ponytail: no transition on top — an offscreen element's top transition
+     doesn't tick, so it stays parked at -100px and never reveals. */
+}
+
+.skip-link:focus {
+  top: 1rem;
 }
 
 * {
@@ -91,6 +178,14 @@ h4 {
   letter-spacing: -0.03em;
   font-family: var(--font-serif);
 }
+
+/* Baseline sizes off the type scale — every page-specific heading below
+   overrides these with a more specific selector, so this only sets the
+   floor for a bare h1-h4 that no rule below touches. */
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-lg); }
+h4 { font-size: var(--text-md); }
 
 p {
   margin: 0;
@@ -214,7 +309,7 @@ p {
   justify-content: center;
   min-height: 46px;
   padding: 0 1.2rem;
-  border-radius: 14px;
+  border-radius: var(--radius-input);
   border: 1px solid transparent;
   font: inherit;
   font-weight: 700;
@@ -243,6 +338,11 @@ p {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.45);
   color: white;
+}
+
+.button.inverted:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.65);
 }
 
 .button.full-width {
@@ -276,7 +376,7 @@ p {
 }
 
 .page-section {
-  padding: 3rem 0;
+  padding: var(--space-section) 0;
 }
 
 .stack {
@@ -300,7 +400,7 @@ p {
   position: relative;
   min-height: 760px;
   overflow: hidden;
-  background: linear-gradient(135deg, #d8e7f4 0%, #edf4fa 100%);
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-bg) 100%);
 }
 
 .home-hero-image,
@@ -318,7 +418,7 @@ p {
 }
 
 .home-hero-overlay {
-  background: linear-gradient(96deg, rgba(18, 35, 54, 0.8) 0%, rgba(18, 35, 54, 0.56) 42%, rgba(18, 35, 54, 0.08) 100%);
+  background: linear-gradient(96deg, rgba(4, 50, 70, 0.8) 0%, rgba(4, 50, 70, 0.56) 42%, rgba(4, 50, 70, 0.08) 100%);
 }
 
 .home-hero-content {
@@ -335,6 +435,9 @@ p {
 
 .location-pill {
   display: inline-flex;
+  /* .home-hero-content is a flex column with default align-items:stretch,
+     which otherwise stretches this to the full hero width. */
+  width: fit-content;
   padding: 0.7rem 1.2rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.35);
@@ -344,13 +447,14 @@ p {
 
 .home-hero h1 {
   max-width: 9ch;
-  font-size: clamp(3rem, 6vw, 5.2rem);
+  font-size: clamp(var(--text-display), 6vw, 5.2rem);
   color: white;
   margin-bottom: 1rem;
 }
 
 .home-hero h1 span {
-  color: var(--primary);
+  /* raw accent: this sits on the dark hero overlay, not on paper */
+  color: var(--color-primary);
 }
 
 .home-hero-copy {
@@ -395,7 +499,7 @@ p {
 
 .trust-bar-section {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(247, 250, 255, 0.98) 100%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 243, 236, 0.98) 100%);
   border-bottom: 1px solid rgba(27, 39, 56, 0.08);
 }
 
@@ -415,7 +519,7 @@ p {
   padding: 0.7rem 1rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(35, 128, 200, 0.12);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
   box-shadow: 0 10px 24px rgba(22, 34, 50, 0.06);
   color: var(--primary-dark);
   font-size: 0.94rem;
@@ -423,8 +527,23 @@ p {
   letter-spacing: -0.01em;
 }
 
+/* Narrower gap and padding keep the wrapped chip rows tidy once four+ chips
+   no longer fit on one line (was previously targeted by a grid-template-
+   columns rule elsewhere that did nothing, since this row is a flexbox). */
+@media (max-width: 640px) {
+  .trust-bar {
+    gap: 0.6rem;
+    padding: 0.85rem 0 1rem;
+  }
+
+  .trust-bar span {
+    padding: 0.6rem 0.85rem;
+    font-size: 0.88rem;
+  }
+}
+
 .simple-section {
-  padding-top: 5rem;
+  padding-top: var(--space-section);
 }
 
 .section-heading {
@@ -434,7 +553,7 @@ p {
 
 .section-heading h2,
 .simple-page-hero h1 {
-  font-size: 3.4rem;
+  font-size: var(--text-display);
 }
 
 .section-heading p,
@@ -445,7 +564,7 @@ p {
 }
 
 .simple-page-hero {
-  background: #dfeaf4;
+  background: var(--color-primary-light);
   text-align: center;
   padding: 3.5rem 1rem 3rem;
   margin: 0 calc((100vw - min(calc(100% - 2rem), var(--shell))) / -2);
@@ -505,7 +624,7 @@ p {
 .simple-service-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 18px 44px rgba(22, 34, 50, 0.1);
-  border-color: rgba(35, 128, 200, 0.18);
+  border-color: color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
 .simple-service-image {
@@ -519,7 +638,7 @@ p {
 .simple-blog-card h2,
 .simple-price-card h3,
 .simple-package-card h3 {
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
   margin: 0;
 }
 
@@ -548,17 +667,24 @@ p {
 
 .simple-cta-band {
   margin-top: 4rem;
-  background: linear-gradient(90deg, #1171b6, #0c69b1);
+  background: linear-gradient(90deg, var(--color-primary-dark), var(--book-rail-top));
   color: white;
 }
 
 .simple-cta-inner {
   text-align: center;
-  padding: 4.2rem 0;
+  padding: var(--space-section) 0;
 }
 
 .simple-cta-inner h2 {
-  font-size: 2.8rem;
+  font-size: var(--text-3xl);
+}
+
+/* pricing/page.tsx reuses this band with an .eyebrow above the heading —
+   the bare .eyebrow rule is --primary (dark blue), which disappears against
+   this band's dark gradient, so flip it to a light tint here. */
+.simple-cta-inner .eyebrow {
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .simple-cta-inner p {
@@ -588,7 +714,7 @@ p {
 
 .service-split-left {
   padding: 2rem;
-  background: #e3eef8;
+  background: var(--color-primary-light);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -641,8 +767,8 @@ p {
 }
 
 .service-assessment-included {
-  background: var(--surface, #f8fdff);
-  border: 1.5px solid #A5F3FC;
+  background: var(--surface, #ffffff);
+  border: 1.5px solid var(--book-muted-list);
   border-radius: 12px;
   padding: 1.1rem 1.25rem;
   margin-bottom: 1.5rem;
@@ -710,8 +836,8 @@ p {
 
 .simple-package-card {
   position: relative;
-  background: #e3eef8;
-  border-color: #b5d5f0;
+  background: var(--color-primary-light);
+  border-color: var(--book-muted-list);
 }
 
 .save-pill {
@@ -720,8 +846,8 @@ p {
   right: 1.7rem;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  background: #d7efe4;
-  color: #2f9b68;
+  background: rgba(5, 150, 105, 0.15);
+  color: var(--color-success);
   font-weight: 700;
   font-size: 0.9rem;
 }
@@ -795,7 +921,7 @@ p {
 
 .blog-chip:hover {
   transform: translateY(-1px);
-  border-color: rgba(35, 128, 200, 0.22);
+  border-color: rgba(14, 165, 233, 0.22);
   color: var(--primary-dark);
 }
 
@@ -954,7 +1080,7 @@ p {
   padding: 1.35rem 1.5rem;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.76);
-  border: 1px solid rgba(35, 128, 200, 0.12);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
   box-shadow: 0 18px 40px rgba(22, 34, 50, 0.08);
   text-align: center;
 }
@@ -1027,7 +1153,7 @@ p {
 
 .article-section p {
   margin: 0;
-  color: #42556f;
+  color: var(--ink);
   font-size: 1.08rem;
   line-height: 1.85;
   text-wrap: pretty;
@@ -1061,18 +1187,8 @@ p {
   padding: 2rem;
 }
 
-.about-overview-card .eyebrow {
-  display: inline-flex;
-  margin-bottom: 0.9rem;
-  color: var(--primary);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .about-overview-card h2 {
-  font-size: 2.4rem;
+  font-size: var(--text-3xl);
   margin-bottom: 0.9rem;
 }
 
@@ -1127,7 +1243,7 @@ p {
 }
 
 .about-profile-body strong {
-  font-size: 1.2rem;
+  font-size: var(--text-lg);
   margin-bottom: 0.35rem;
 }
 
@@ -1216,16 +1332,6 @@ p {
 
 .about-story-copy {
   padding: 2rem;
-}
-
-.about-story-copy .eyebrow {
-  display: inline-flex;
-  margin-bottom: 0.9rem;
-  color: var(--primary);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .about-story-copy p {
@@ -1345,7 +1451,7 @@ label {
 }
 
 .field-error {
-  color: #c25437;
+  color: var(--color-error);
   font-size: 0.88rem;
   font-weight: 600;
   line-height: 1.4;
@@ -1373,16 +1479,194 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: rgba(35, 128, 200, 0.42);
-  box-shadow: 0 0 0 4px rgba(35, 128, 200, 0.12);
+  border-color: color-mix(in srgb, var(--color-primary) 42%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
 .panel {
   background: white;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: var(--radius-panel);
   box-shadow: var(--shadow);
   padding: 1.6rem;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Shared primitives
+   Reusable building blocks referenced by multiple pages/components.
+   Page-specific classes above that duplicate one of these keep their own
+   rule (removing them is a separate pass) — new call sites should reach
+   for these instead of hand-rolling another variant.
+   ──────────────────────────────────────────────────────────── */
+
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: 0.9rem;
+  color: var(--primary);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  background: var(--color-surface);
+  font: 600 var(--text-sm) var(--font-sans);
+}
+
+/* .pill-link is the accent-tinted, non-bordered sibling of .pill — the
+   pattern app/patient/page.tsx used to hand-roll inline per link. */
+.pill-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-light);
+  color: var(--primary);
+  font-weight: 600;
+  transition: background-color 140ms ease;
+}
+
+.pill-link:hover {
+  background: color-mix(in srgb, var(--color-primary) 22%, var(--color-primary-light));
+}
+
+/* Matches the focus ring already used by bare input/select/textarea above —
+   for components that can't use those elements directly (e.g. custom
+   composite fields) but need the same look. */
+.input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-input);
+  padding: 0.65rem 0.9rem;
+  font: inherit;
+  color: var(--ink);
+  background: white;
+}
+
+.input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--color-primary) 42%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+/* components/exercise-library.tsx already renders these class names. */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.card h3 {
+  font-size: var(--text-lg);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Tightens the gap for compact, FAQ-style cards (heading + one paragraph)
+   vs. the default .stack gap used inside a plain .card. */
+.info-card {
+  gap: 0.6rem;
+}
+
+/* app/patient/page.tsx and app/patient/recovery/page.tsx already render
+   this class name for their two-up dashboard sections. */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* ── app/glasgow-physiotherapist/page.tsx primitives ──────────
+   Same visual language as .about-overview-card / .simple-* above:
+   white surface, --line border, --shadow, generous radius. ── */
+.page-hero {
+  padding: var(--space-section) 0 2rem;
+}
+
+.page-hero-split {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.page-hero-aside {
+  background: var(--color-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  padding: 1.75rem;
+  box-shadow: var(--shadow);
+}
+
+.checklist-panel {
+  background: var(--color-primary-light);
+}
+
+/* "Soft" as in lower-contrast than the plain white .panel it modifies. */
+.soft-panel {
+  background: var(--color-bg);
+}
+
+.image-panel {
+  overflow: hidden;
+}
+
+.clean-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.clean-list li {
+  position: relative;
+  padding-left: 1.6rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.clean-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.map-frame {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.map-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .auth-panel {
@@ -1391,7 +1675,7 @@ textarea:focus {
   gap: 1.15rem;
   padding: 1.8rem;
   border-radius: 24px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-primary-light) 100%);
 }
 
 .auth-panel-header {
@@ -1426,7 +1710,7 @@ textarea:focus {
   padding: 1.15rem;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: linear-gradient(180deg, #ffffff 0%, #f5faff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-primary-light) 100%);
 }
 
 .auth-provider-button {
@@ -1437,7 +1721,7 @@ textarea:focus {
   min-height: 56px;
   width: 100%;
   border-radius: 18px;
-  border: 1px solid rgba(35, 128, 200, 0.16);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 16%, transparent);
   background: var(--primary);
   color: white;
   font: inherit;
@@ -1513,20 +1797,20 @@ textarea:focus {
 }
 
 .auth-status-info {
-  background: #f5faff;
-  color: #4d647f;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
 }
 
 .auth-status-success {
   background: #eefaf2;
-  border-color: rgba(58, 160, 88, 0.22);
-  color: #1d7c3a;
+  border-color: rgba(5, 150, 105, 0.22);
+  color: var(--color-success);
 }
 
 .auth-status-error {
-  background: #fff4f1;
-  border-color: rgba(206, 97, 62, 0.2);
-  color: #ad4b2d;
+  background: rgba(220, 38, 38, 0.15);
+  border-color: rgba(220, 38, 38, 0.2);
+  color: var(--color-error);
 }
 
 .patient-profile-panel {
@@ -1607,11 +1891,11 @@ textarea:focus {
 }
 
 .form-note.error p {
-  color: #9c3f27;
+  color: var(--color-error);
 }
 
 .form-note.success p {
-  color: #23744f;
+  color: var(--color-success);
 }
 
 .form-note-link {
@@ -1681,7 +1965,7 @@ textarea:focus {
   display: inline-flex;
   padding: 0.38rem 0.7rem;
   border-radius: 999px;
-  background: #e3eef8;
+  background: var(--color-primary-light);
   color: var(--primary-dark);
   font-weight: 700;
   text-transform: capitalize;
@@ -1699,8 +1983,8 @@ textarea:focus {
 }
 
 .disclaimer-box {
-  border: 1px solid #f0bea6;
-  background: #fbf0ea;
+  border: 1px solid var(--color-coral);
+  background: var(--color-coral-light);
   border-radius: 16px;
   padding: 1.25rem 1.4rem;
   margin-bottom: 2rem;
@@ -1726,7 +2010,7 @@ textarea:focus {
 .progress-steps span {
   height: 6px;
   border-radius: 999px;
-  background: #d9e1e7;
+  background: var(--line);
 }
 
 .progress-steps span.active {
@@ -1835,7 +2119,7 @@ textarea:focus {
 
 .search-form-error {
   margin-top: -0.6rem;
-  color: #c25437;
+  color: var(--color-error);
   font-weight: 600;
 }
 
@@ -1860,7 +2144,7 @@ textarea:focus {
 
 .search-keyword-chip:hover {
   background: white;
-  border-color: rgba(35, 128, 200, 0.28);
+  border-color: color-mix(in srgb, var(--color-primary) 28%, transparent);
   transform: translateY(-1px);
 }
 
@@ -1880,7 +2164,7 @@ textarea:focus {
 }
 
 .search-result-card:hover {
-  border-color: rgba(35, 128, 200, 0.18);
+  border-color: color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
 .search-type {
@@ -1902,8 +2186,8 @@ textarea:focus {
 
 .simple-footer {
   margin-top: 5rem;
-  padding: 3rem 0;
-  background: #0e2238;
+  padding: var(--space-section) 0;
+  background: var(--color-navy);
   color: white;
 }
 
@@ -1947,7 +2231,6 @@ textarea:focus {
 
 @media (max-width: 960px) {
   .nav-row,
-  .trust-bar,
   .simple-card-grid,
   .service-split-card,
   .pricing-grid-three,
@@ -1962,7 +2245,10 @@ textarea:focus {
   .wizard-options-grid.two-col-grid,
   .search-results,
   .search-bar,
-  .site-search-form {
+  .site-search-form,
+  .dashboard-grid,
+  .page-hero-split,
+  .two-col {
     grid-template-columns: 1fr;
   }
 
@@ -2090,9 +2376,9 @@ textarea:focus {
 }
 
 /* Cal.com booking status badges */
-.dashboard-status-pill.status-confirmed { background: #d1fae5; color: #065f46; }
-.dashboard-status-pill.status-pending   { background: #fef3c7; color: #92400e; }
-.dashboard-status-pill.status-cancelled { background: #fee2e2; color: #991b1b; }
+.dashboard-status-pill.status-confirmed { background: rgba(5, 150, 105, 0.15); color: var(--color-success); }
+.dashboard-status-pill.status-pending   { background: rgba(217, 119, 6, 0.15); color: var(--color-warning); }
+.dashboard-status-pill.status-cancelled { background: rgba(220, 38, 38, 0.15); color: var(--color-error); }
 
 /* Chat widget bounce animation */
 @keyframes chat-bounce {
@@ -2104,7 +2390,7 @@ textarea:focus {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #0891B2;
+  background: var(--color-primary);
   animation: chat-bounce 1.2s ease-in-out infinite;
 }
 .chat-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -2113,8 +2399,8 @@ textarea:focus {
 .booking-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
 
 .home-dashboard {
-  padding: 3rem 0 1rem;
-  background: linear-gradient(135deg, #eafcff 0%, #f7fdff 100%);
+  padding: var(--space-section) 0 1rem;
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-bg) 100%);
 }
 
 .home-dashboard-header {
@@ -2155,14 +2441,6 @@ textarea:focus {
   .home-dashboard-grid {
     grid-template-columns: 1fr;
   }
-}
-
-.book-auth-gate {
-  max-width: 480px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 
 /* ── Skeleton shimmer ──────────────────────────────────────── */
@@ -2282,18 +2560,18 @@ textarea:focus {
 .connectivity-overlay .btn-retry {
   margin-top: 0.5rem;
   padding: 0.75rem 2rem;
-  background: var(--color-primary);
+  background: var(--color-primary-dark);
   color: white;
   border: none;
   border-radius: 14px;
   font: 600 1rem var(--font-sans);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 4px 12px rgba(30, 45, 40, 0.25);
   transition: background 0.15s, transform 0.1s;
 }
 
 .connectivity-overlay .btn-retry:hover {
-  background: var(--color-primary-dark);
+  background: var(--book-rail-top);
   transform: translateY(-1px);
 }
 
@@ -2320,7 +2598,7 @@ textarea:focus {
   border-radius: 20px;
   background: var(--color-surface);
   border-left: 4px solid transparent;
-  box-shadow: 0 12px 32px rgba(30, 27, 58, 0.14);
+  box-shadow: 0 12px 32px rgba(30, 45, 40, 0.14);
   pointer-events: all;
   overflow: hidden;
   max-width: min(calc(100vw - 2rem), 420px);
@@ -2382,7 +2660,7 @@ textarea:focus {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 3rem 1.5rem;
+  padding: var(--space-section) 1.5rem;
   gap: 0.75rem;
 }
 
@@ -2392,7 +2670,7 @@ textarea:focus {
 
 .empty-state h3 {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
   color: var(--color-navy);
   margin: 0;
 }
@@ -2408,7 +2686,7 @@ textarea:focus {
 .empty-state .btn-cta {
   margin-top: 0.75rem;
   padding: 0.65rem 1.5rem;
-  background: var(--color-primary);
+  background: var(--color-primary-dark);
   color: white;
   border: none;
   border-radius: 14px;
@@ -2420,7 +2698,7 @@ textarea:focus {
 }
 
 .empty-state .btn-cta:hover {
-  background: var(--color-primary-dark);
+  background: var(--book-rail-top);
   transform: translateY(-1px);
 }
 
@@ -2437,7 +2715,7 @@ textarea:focus {
   position: fixed;
   inset: 0;
   z-index: 9000;
-  background: rgba(13, 27, 42, 0.45);
+  background: rgba(4, 50, 70, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2450,7 +2728,7 @@ textarea:focus {
   padding: 2rem;
   max-width: 400px;
   width: 100%;
-  box-shadow: 0 20px 60px rgba(13, 27, 42, 0.3);
+  box-shadow: 0 20px 60px rgba(4, 50, 70, 0.3);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -2458,7 +2736,7 @@ textarea:focus {
 
 .confirm-dialog h3 {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
   color: var(--color-navy);
   margin: 0;
 }
@@ -2493,7 +2771,7 @@ textarea:focus {
 
 .confirm-dialog .btn-confirm {
   padding: 0.65rem 1.25rem;
-  background: var(--color-primary);
+  background: var(--color-primary-dark);
   border: none;
   border-radius: 10px;
   font: 600 0.9375rem var(--font-sans);
@@ -2503,7 +2781,7 @@ textarea:focus {
 }
 
 .confirm-dialog .btn-confirm:hover {
-  background: var(--color-primary-dark);
+  background: var(--book-rail-top);
 }
 
 .confirm-dialog .btn-confirm--destructive {
@@ -2570,7 +2848,7 @@ textarea:focus {
 .mobile-nav-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(13, 27, 42, 0.3);
+  background: rgba(4, 50, 70, 0.3);
   z-index: 38;
   opacity: 0;
   pointer-events: none;
@@ -2588,7 +2866,7 @@ textarea:focus {
   background: var(--color-surface);
   z-index: 39;
   border-bottom: 1px solid var(--line);
-  box-shadow: 0 8px 32px rgba(13, 27, 42, 0.12);
+  box-shadow: 0 8px 32px rgba(4, 50, 70, 0.12);
   padding: 1rem 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
@@ -2617,7 +2895,7 @@ textarea:focus {
 .mobile-nav-link:hover,
 .mobile-nav-link.active {
   background: var(--color-primary-light);
-  color: var(--color-primary);
+  color: var(--color-primary-dark);
 }
 .mobile-nav-book {
   margin-top: 0.75rem;
@@ -2631,6 +2909,15 @@ textarea:focus {
   }
   .hamburger {
     display: flex;
+  }
+  /* Below 960px .simple-nav switches to a centred column (nav links wrap
+     under the brand); once links/actions are hidden here that leaves an
+     empty second row under the centred brand, wasting ~140px. Collapse
+     back to a single brand-left/hamburger-right row. */
+  .simple-nav {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 
@@ -2647,31 +2934,41 @@ textarea:focus {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Micro-interactions: primary button shimmer
+   Scroll reveal (components/reveal.tsx)
+   Visible by default — .reveal--pending is only ever added by JS, and only
+   for elements not yet in the viewport at mount, so no-JS/SEO/hydration
+   always render real content, never a hidden shell.
    ──────────────────────────────────────────────────────────── */
-.button.primary::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -75%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    105deg,
-    transparent 40%,
-    rgba(255, 255, 255, 0.28) 50%,
-    transparent 60%
-  );
-  transform: skewX(-15deg);
-  transition: left 0s;
-  pointer-events: none;
+.reveal {
+  transition:
+    opacity var(--reveal-duration, 600ms) cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+    transform var(--reveal-duration, 600ms) cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
 }
+
+.reveal--pending {
+  opacity: 0;
+  transform: translate(var(--reveal-x, 0), var(--reveal-y, 0)) scale(0.98);
+}
+
+.reveal--visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transition: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Micro-interactions: primary button — lift + darken, no shimmer.
+   A moving shine sweep reads as coupon-site/salesy; a clinical
+   brand needs calmer feedback, same lift the rest of the site uses.
+   ──────────────────────────────────────────────────────────── */
 .button.primary:hover {
-  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
-}
-.button.primary:hover::after {
-  left: 125%;
-  transition: left 400ms ease;
+  background: var(--primary-dark);
+  box-shadow: 0 8px 24px rgba(30, 45, 40, 0.35);
 }
 .button.primary:active {
   transform: translateY(0) !important;
@@ -2725,13 +3022,10 @@ textarea:focus {
 .service-split-card:hover,
 .about-specialism-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(13, 27, 42, 0.10);
+  box-shadow: 0 12px 32px rgba(4, 50, 70, 0.10);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .button.primary::after {
-    display: none;
-  }
   .button.primary:hover,
   .button.primary:active {
     transform: none;
@@ -2791,4 +3085,1024 @@ textarea:focus {
   ::view-transition-old(root) {
     animation: none;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Booking flow (Clarity design system)
+   Two-column shell shared by every screen of the booking wizard
+   (service select → time & details → confirmation). Colors key
+   off the --book-* tokens defined in :root at the top of this file.
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Shared shell ──────────────────────────────────────────── */
+.book-flow {
+  display: grid;
+  grid-template-columns: 372px 1fr;
+  min-height: 560px;
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  box-shadow: var(--shadow-panel);
+}
+
+.book-rail {
+  background: var(--gradient-rail);
+  padding: 30px 28px;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+.book-rail-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.book-rail-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.book-rail-wordmark {
+  font-weight: 600;
+}
+
+.book-rail-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--book-muted-caps);
+}
+
+.book-rail-title {
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  line-height: 1.15;
+  color: #fff;
+  margin: 0.35rem 0;
+}
+
+.book-rail-summary {
+  font-size: 0.88rem;
+  color: var(--book-muted-para);
+  line-height: 1.5;
+}
+
+.book-rail-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  margin: 20px 0;
+}
+
+.book-rail-list {
+  display: grid;
+  gap: 10px;
+}
+
+.book-rail-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.87rem;
+  color: var(--book-muted-list);
+}
+
+.book-rail-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  /* accent-dark, like .book-cta: white on the raw accent is only 2.77:1 */
+  background: var(--book-accent-dark);
+  color: #fff;
+  flex-shrink: 0;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-rail-slotchip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--book-inset-bg);
+  color: var(--book-chip-icon);
+  border-radius: var(--radius-chip);
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.book-rail-physio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--book-inset-bg);
+  border-radius: var(--radius-chip);
+  padding: 12px;
+  margin-top: 16px;
+}
+
+.book-rail-avatar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--book-accent-dark);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-rail-physio-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.book-rail-physio-cred {
+  font-size: 0.75rem;
+  color: var(--book-muted-para);
+}
+
+.book-rail-spacer {
+  margin-bottom: auto;
+}
+
+.book-rail-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.book-rail-total-label {
+  color: var(--book-muted-para);
+  font-size: 0.85rem;
+}
+
+.book-rail-total-price {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: #fff;
+}
+
+.book-rail-reassure {
+  font-size: 0.76rem;
+  color: var(--book-muted-caps);
+  margin-top: 8px;
+}
+
+.book-panel {
+  background: var(--book-paper);
+  padding: 34px 36px;
+  color: var(--book-paper-ink);
+  display: flex;
+  flex-direction: column;
+}
+
+.book-panel-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--book-paper-muted);
+}
+
+.book-panel-title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  margin: 0.3rem 0 1.25rem;
+}
+
+.book-panel-body {
+  flex: 1;
+}
+
+.book-panel-footer {
+  margin-top: auto;
+  padding-top: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.book-cta {
+  background: var(--book-accent-dark);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-input);
+  padding: 13px 22px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-left: auto;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+/* Same lift as .button.primary:hover — translateY + shadow instead of a
+   brightness filter, so the booking flow's CTA matches the rest of the site. */
+.book-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(30, 45, 40, 0.35);
+}
+
+.book-cta:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.book-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.book-back {
+  background: none;
+  border: none;
+  color: var(--book-paper-muted);
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 140ms ease;
+}
+
+.book-back:hover {
+  color: var(--book-paper-ink);
+}
+
+/* ── Screen 1: service & focus selection ──────────────────── */
+.book-service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.book-service-card {
+  position: relative;
+  text-align: left;
+  padding: 16px;
+  border-radius: var(--radius-card);
+  background: #fff;
+  border: 1.5px solid var(--book-paper-border);
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.book-service-card.is-selected {
+  border-color: var(--book-accent);
+  background: var(--book-accent-light);
+}
+
+.book-service-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--book-accent-dark);
+  color: #fff;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-service-name {
+  display: block;
+  font-weight: 700;
+  font-size: 1rem;
+  padding-right: 22px; /* clears the selected-state check badge */
+}
+
+.book-service-desc {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--book-paper-muted);
+  margin: 0.3rem 0 0.75rem;
+  line-height: 1.45;
+}
+
+.book-service-price {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+}
+
+.book-service-duration {
+  font-size: 0.78rem;
+  color: var(--book-paper-muted);
+}
+
+.book-focus-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--book-paper-muted);
+  margin-top: 22px;
+  margin-bottom: 10px;
+}
+
+.book-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.book-chip {
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--book-paper-border);
+  background: #fff;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.book-chip.is-selected {
+  border-color: var(--book-accent);
+  background: var(--book-accent-light);
+  color: var(--book-accent-dark);
+  font-weight: 600;
+}
+
+/* ── Screen 2: time & details ──────────────────────────────── */
+.book-time-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 22px;
+}
+
+.book-cal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.book-cal-month {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.book-cal-nav {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--book-paper-border);
+  background: #fff;
+  cursor: pointer;
+}
+
+.book-cal-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.book-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.book-cal-dow {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--book-paper-muted);
+  text-align: center;
+  padding-bottom: 4px;
+}
+
+.book-cal-day {
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--book-paper-ink);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.book-cal-day:hover {
+  background: var(--book-accent-light);
+}
+
+.book-cal-day.is-selected {
+  background: var(--book-accent-dark);
+  color: #fff;
+  font-weight: 700;
+}
+
+.book-cal-day.is-disabled {
+  color: var(--book-paper-muted);
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.book-cal-day.is-disabled:hover {
+  background: transparent;
+}
+
+.book-cal-day.is-empty {
+  visibility: hidden;
+}
+
+.book-slots {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.book-slot {
+  padding: 10px 12px;
+  border-radius: var(--radius-chip);
+  border: 1.5px solid var(--book-paper-border);
+  background: #fff;
+  font-size: 0.86rem;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.book-slot.is-selected {
+  border-color: var(--book-accent);
+  background: var(--book-accent-light);
+  color: var(--book-accent-dark);
+  font-weight: 700;
+}
+
+.book-slot.is-unavailable {
+  border-style: dashed;
+  text-decoration: line-through;
+  color: var(--book-paper-muted);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.book-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.book-field-full {
+  grid-column: 1 / -1;
+}
+
+.book-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--book-paper-muted);
+  margin-bottom: 5px;
+}
+
+.book-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-chip);
+  border: 1.5px solid var(--book-paper-border);
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--book-paper-ink);
+  transition: border-color 140ms ease;
+}
+
+.book-input:focus {
+  outline: none;
+  border-color: var(--book-accent);
+}
+
+.book-input::placeholder {
+  color: var(--book-paper-muted);
+  opacity: 0.7;
+}
+
+.book-divider {
+  border: none;
+  border-top: 1px solid var(--book-paper-border);
+  margin: 20px 0;
+}
+
+.book-signed-in {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid var(--book-paper-border);
+  border-radius: var(--radius-chip);
+  padding: 12px 14px;
+  font-size: 0.88rem;
+}
+
+.book-edit {
+  background: none;
+  border: none;
+  color: var(--book-accent-dark);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ── Screen 3: confirmation ────────────────────────────────── */
+.book-done {
+  display: grid;
+  grid-template-columns: 372px 1fr;
+  min-height: 560px;
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  box-shadow: var(--shadow-panel);
+}
+
+.book-done-left {
+  background: var(--gradient-rail);
+  padding: 34px 30px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.book-done-check {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--book-accent);
+  color: #fff;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.book-done-title {
+  font-family: var(--font-serif);
+  font-size: 2.3rem;
+  line-height: 1.15;
+}
+
+.book-done-text {
+  color: var(--book-muted-para);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin: 0.6rem 0 1.5rem;
+}
+
+.book-done-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.book-action-outline {
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-radius: var(--radius-input);
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+
+.book-action-solid {
+  background: #fff;
+  color: var(--book-accent-dark);
+  border: none;
+  border-radius: var(--radius-input);
+  padding: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+
+.book-done-right {
+  background: var(--book-paper);
+  padding: 34px 36px;
+  color: var(--book-paper-ink);
+}
+
+.book-summary-card {
+  border: 1.5px solid var(--book-paper-border);
+  border-radius: var(--radius-card);
+  background: #fff;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.book-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 0.88rem;
+}
+
+.book-summary-label {
+  color: var(--book-paper-muted);
+}
+
+.book-summary-value {
+  font-weight: 600;
+  text-align: right;
+}
+
+.book-next-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.book-next-list {
+  display: grid;
+  gap: 14px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.book-next-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.book-next-num {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--book-accent-light);
+  color: var(--book-accent-dark);
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-next-text {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--book-paper-muted);
+}
+
+/* ── States: error / loading / empty ───────────────────────── */
+.book-error {
+  background: #fff;
+  border: 1.5px solid var(--color-error);
+  color: var(--color-error);
+  border-radius: var(--radius-chip);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+.book-loading {
+  color: var(--book-paper-muted);
+  font-size: 0.86rem;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.book-empty {
+  color: var(--book-paper-muted);
+  font-size: 0.85rem;
+  padding: 16px 0;
+  text-align: center;
+}
+
+/* ── Mobile: collapse to a single column ───────────────────── */
+@media (max-width: 860px) {
+  .book-flow,
+  .book-done {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  /* rail becomes a compact summary bar: logo + service name + price */
+  .book-rail {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    padding: 16px 18px;
+  }
+
+  .book-rail-eyebrow,
+  .book-rail-summary,
+  .book-rail-list,
+  .book-rail-divider,
+  .book-rail-physio,
+  .book-rail-reassure,
+  .book-rail-spacer,
+  .book-rail-slotchip {
+    display: none;
+  }
+
+  .book-rail-brand {
+    margin-bottom: 0;
+  }
+
+  .book-rail-title {
+    font-size: 1.15rem;
+  }
+
+  /* The bar sizes .book-rail-total to its content, so space-between has no
+     room to work and the label/price collide — gap does the spacing here. */
+  .book-rail-total {
+    gap: 10px;
+  }
+
+  .book-rail-total-price {
+    font-size: 1.5rem;
+  }
+
+  .book-panel,
+  .book-done-right,
+  .book-done-left {
+    padding: 22px 18px;
+  }
+
+  .book-service-grid,
+  .book-time-grid,
+  .book-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .book-done-left {
+    justify-content: flex-start;
+  }
+}
+
+/* ── Accessibility: focus rings ────────────────────────────── */
+.book-cta:focus-visible,
+.book-back:focus-visible,
+.book-service-card:focus-visible,
+.book-chip:focus-visible,
+.book-cal-nav:focus-visible,
+.book-cal-day:focus-visible,
+.book-slot:focus-visible,
+.book-input:focus-visible,
+.book-edit:focus-visible {
+  outline: 2px solid var(--book-accent);
+  outline-offset: 2px;
+}
+
+.book-action-outline:focus-visible,
+.book-action-solid:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ── Accessibility: reduced motion ──────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .book-cta,
+  .book-back,
+  .book-service-card,
+  .book-chip,
+  .book-cal-day,
+  .book-slot,
+  .book-input {
+    transition: none;
+  }
+}
+
+/* ── Reduced motion ────────────────────────────────────────────
+   Catch-all. The targeted blocks above predate this and stay put
+   where they kill a property this can't (display, box-shadow). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── components/chat-widget.tsx ────────────────────────────────
+   Extracted from the widget's inline styles so hover/focus states
+   are plain CSS instead of onMouseEnter/onMouseLeave JS, and the
+   drawer's fixed 360px width picks up a small-viewport override via
+   media query instead of being baked in as a style prop. Colours,
+   radii and type all reuse existing tokens rather than raw hex. ── */
+.chat-toast {
+  position: fixed;
+  bottom: 90px;
+  right: 24px;
+  z-index: 10000;
+  background: var(--book-rail-top);
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-card);
+}
+
+.chat-trigger {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gradient-rail);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 40%, transparent);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.chat-trigger:hover,
+.chat-trigger:focus-visible {
+  transform: scale(1.08);
+}
+
+.chat-drawer {
+  position: fixed;
+  bottom: 92px;
+  right: 24px;
+  width: 360px;
+  max-width: calc(100vw - 48px);
+  max-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+  z-index: 9998;
+  overflow: hidden;
+  border: 1px solid var(--color-primary-light);
+}
+
+@media (max-width: 420px) {
+  .chat-drawer {
+    width: calc(100vw - 32px);
+    right: 16px;
+  }
+}
+
+.chat-header {
+  background: var(--gradient-primary);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-header-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-md);
+  flex-shrink: 0;
+}
+
+.chat-header-title {
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: white;
+}
+
+.chat-header-status {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chat-header-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
+  display: inline-block;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px 8px;
+  background: var(--color-bg);
+}
+
+.chat-message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.chat-message-row.is-bot {
+  justify-content: flex-start;
+}
+
+.chat-message-row.is-user {
+  justify-content: flex-end;
+}
+
+.chat-message-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xs);
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+
+.chat-bubble {
+  max-width: 78%;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.chat-bubble.is-bot {
+  border-radius: 18px 18px 18px 4px;
+  background: var(--color-surface);
+  color: var(--book-rail-top);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.chat-bubble.is-user {
+  border-radius: 18px 18px 4px 18px;
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 28%, transparent);
+}
+
+.chat-chips {
+  padding: 10px 12px 14px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.chat-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--book-rail-top);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--color-primary) 10%, transparent);
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.chat-chip:hover,
+.chat-chip:focus-visible {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.chat-trigger:focus-visible,
+.chat-chip:focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
 }

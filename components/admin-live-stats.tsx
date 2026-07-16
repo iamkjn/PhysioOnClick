@@ -12,13 +12,12 @@ type Counts = {
   upcomingBookings: number;
   enquiries: number;
   newEnquiries: number;
-  revenue: number;
   blogs108: number;
   pricingProducts: number;
   testimonials: number;
 };
 
-const DEFAULT: Counts = { blogs: 0, bookings: 0, pendingBookings: 0, upcomingBookings: 0, enquiries: 0, newEnquiries: 0, revenue: 520, blogs108: 108, pricingProducts: 4, testimonials: 3 };
+const DEFAULT: Counts = { blogs: 0, bookings: 0, pendingBookings: 0, upcomingBookings: 0, enquiries: 0, newEnquiries: 0, blogs108: 108, pricingProducts: 4, testimonials: 3 };
 
 export function AdminLiveStats() {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -69,12 +68,25 @@ export function AdminLiveStats() {
     gap: "0.5rem",
   };
 
+  // Bookings is the primary, revenue-adjacent metric admins act on first —
+  // give it an accent treatment so the 3-card row isn't uniform weight.
+  const primaryCardStyle: React.CSSProperties = {
+    ...cardStyle,
+    background: "var(--gradient-rail)",
+    border: "1px solid var(--color-primary-dark)",
+  };
+
   const bigNum: React.CSSProperties = {
     fontFamily: "var(--font-serif)",
     fontSize: 48,
     color: "var(--color-navy)",
     lineHeight: 1,
     margin: 0,
+  };
+
+  const primaryBigNum: React.CSSProperties = {
+    ...bigNum,
+    color: "white",
   };
 
   const eyebrow: React.CSSProperties = {
@@ -84,6 +96,11 @@ export function AdminLiveStats() {
     textTransform: "uppercase" as const,
     letterSpacing: "0.08em",
     fontFamily: "var(--font-sans)",
+  };
+
+  const primaryEyebrow: React.CSSProperties = {
+    ...eyebrow,
+    color: "var(--book-muted-caps)",
   };
 
   const muted: React.CSSProperties = {
@@ -103,7 +120,7 @@ export function AdminLiveStats() {
           <span style={eyebrow}>Live Stats</span>
           <h2 style={{ margin: "0.25rem 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Dashboard overview</h2>
         </div>
-        <SkeletonStatGrid count={4} />
+        <SkeletonStatGrid count={3} />
       </div>
     );
   }
@@ -115,24 +132,24 @@ export function AdminLiveStats() {
         <h2 style={{ margin: "0.25rem 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Dashboard overview</h2>
       </div>
 
-      {/* Primary 2×2 grid */}
+      {/* Primary stat row — Bookings gets accent treatment as the metric admins act on first */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+
+        {/* Bookings */}
+        <div style={primaryCardStyle}>
+          <span style={primaryEyebrow}>Bookings</span>
+          <p style={primaryBigNum}>{counts.bookings}</p>
+          <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" as const }}>
+            {counts.pendingBookings > 0 && pill(`${counts.pendingBookings} pending`, "rgba(255,255,255,0.18)", "white")}
+            {counts.upcomingBookings > 0 && pill(`${counts.upcomingBookings} upcoming`, "rgba(255,255,255,0.18)", "white")}
+          </div>
+        </div>
 
         {/* Blogs */}
         <div style={cardStyle}>
           <span style={eyebrow}>Blogs</span>
           <p style={bigNum}>{counts.blogs}</p>
           <span style={muted}>Live count from Firestore</span>
-        </div>
-
-        {/* Bookings */}
-        <div style={cardStyle}>
-          <span style={eyebrow}>Bookings</span>
-          <p style={bigNum}>{counts.bookings}</p>
-          <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" as const }}>
-            {counts.pendingBookings > 0 && pill(`${counts.pendingBookings} pending`, "var(--color-gold-light)", "var(--color-gold)")}
-            {counts.upcomingBookings > 0 && pill(`${counts.upcomingBookings} upcoming`, "var(--color-primary-light)", "var(--color-primary)")}
-          </div>
         </div>
 
         {/* Enquiries */}
@@ -142,13 +159,6 @@ export function AdminLiveStats() {
           <div style={{ display: "flex", gap: "0.375rem" }}>
             {counts.newEnquiries > 0 && pill(`${counts.newEnquiries} new`, "var(--color-gold-light)", "var(--color-gold)")}
           </div>
-        </div>
-
-        {/* Revenue */}
-        <div style={cardStyle}>
-          <span style={eyebrow}>Projected revenue</span>
-          <p style={bigNum}>£{counts.revenue.toLocaleString()}</p>
-          <span style={muted}>Sample from package sales</span>
         </div>
       </div>
 

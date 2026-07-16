@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getAdminDb } from "@/lib/firebase-admin";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 
 export interface PublishSummaryInput {
   bookingId: string;

@@ -1,14 +1,14 @@
 "use client";
 
 const COLOURS = [
-  "#0891B2",
-  "#16A34A",
-  "#7C3AED",
-  "#D97706",
-  "#DC2626",
-  "#0E7490",
-  "#059669",
-  "#9333EA",
+  "var(--color-primary)",
+  "var(--color-accent)",
+  "var(--color-gold)",
+  "var(--color-warning)",
+  "var(--color-error)",
+  "var(--color-primary-dark)",
+  "var(--color-success)",
+  "var(--book-rail-top)",
 ];
 
 function avatarColor(name: string): string {
@@ -56,7 +56,7 @@ export function Avatar({ name, imageUrl, size = 48, className = "" }: AvatarProp
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "#fff",
+        color: "white",
         fontWeight: 700,
         fontSize: size * 0.38,
         flexShrink: 0,

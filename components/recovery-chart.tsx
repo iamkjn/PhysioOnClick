@@ -73,18 +73,18 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
               <LineChart data={data}>
                 <XAxis
                   dataKey="date"
-                  stroke="#51708d"
+                  stroke="var(--color-text-secondary)"
                   tick={{ fontSize: 11 }}
                   tickFormatter={(v: string) => v.slice(5)}
                 />
-                <YAxis stroke="#51708d" domain={[0, 10]} />
+                <YAxis stroke="var(--color-text-secondary)" domain={[0, 10]} />
                 <Tooltip />
                 <Legend />
                 <Line
                   type="monotone"
                   dataKey="patientPain"
                   name="Self-reported"
-                  stroke="#0891B2"
+                  stroke="var(--color-primary)"
                   strokeWidth={2}
                   dot={false}
                   connectNulls
@@ -93,7 +93,7 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
                   type="monotone"
                   dataKey="physioScore"
                   name="Physio assessment"
-                  stroke="#0C2A38"
+                  stroke="var(--color-text-primary)"
                   strokeWidth={2}
                   dot={{ r: 4 }}
                   connectNulls

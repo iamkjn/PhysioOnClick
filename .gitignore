@@ -17,3 +17,11 @@ firestore-debug.log
 .claude/.proven-config-version
 .claude/proven-config.json
 sdd/
+
+# Cloudflare / OpenNext build output
+.open-next/
+.wrangler/
+cloudflare-env.d.ts
+
+# TS incremental build artifact — should never have been tracked
+tsconfig.tsbuildinfo

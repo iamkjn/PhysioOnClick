@@ -53,15 +53,15 @@ export default function AppointmentDetailPage() {
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
       <Link
         href="/patient/appointments"
-        style={{ color: "#0891B2", textDecoration: "none", fontSize: 14, fontWeight: 600 }}
+        style={{ color: "var(--color-primary)", textDecoration: "none", fontSize: 14, fontWeight: 600 }}
       >
         ← Back to appointments
       </Link>
 
       <div
         style={{
-          background: "#fff",
-          borderRadius: 18,
+          background: "var(--color-surface)",
+          borderRadius: "var(--radius-panel)",
           padding: "1.5rem",
           marginTop: "1.25rem",
           display: "flex",
@@ -72,9 +72,9 @@ export default function AppointmentDetailPage() {
       >
         <Avatar name={booking.patientName} imageUrl={booking.patientAvatarUrl} size={60} />
         <div>
-          <h2 style={{ margin: 0, color: "#0C2A38" }}>{booking.patientName}</h2>
-          <p style={{ margin: "4px 0 0", color: "#5E7A84" }}>{booking.service}</p>
-          <p style={{ margin: "2px 0 0", color: "#0891B2", fontWeight: 600, fontSize: 14 }}>
+          <h2 style={{ margin: 0, color: "var(--color-text-primary)" }}>{booking.patientName}</h2>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>{booking.service}</p>
+          <p style={{ margin: "2px 0 0", color: "var(--color-primary)", fontWeight: 600, fontSize: 14 }}>
             {date}
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function AppointmentDetailPage() {
       {summary ? (
         <div style={{ marginTop: "1.5rem", display: "grid", gap: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-            <h2 style={{ color: "#0C2A38", margin: 0 }}>Session summary</h2>
+            <h2 style={{ color: "var(--color-text-primary)", margin: 0 }}>Session summary</h2>
             <DownloadSummaryButton summary={summary} />
           </div>
           <SummaryBlock title="What we worked on" icon="🩺" body={summary.workedOn} />
@@ -92,7 +92,7 @@ export default function AppointmentDetailPage() {
           {summary.followUpWeeks > 0 && (
             <div
               style={{
-                background: "#D8F3F9",
+                background: "var(--color-primary-light)",
                 borderRadius: 14,
                 padding: "1rem 1.25rem",
                 display: "flex",
@@ -101,7 +101,7 @@ export default function AppointmentDetailPage() {
               }}
             >
               <span>📅</span>
-              <strong style={{ color: "#0E7490" }}>
+              <strong style={{ color: "var(--color-primary-dark)" }}>
                 Follow-up recommended in {summary.followUpWeeks} week
                 {summary.followUpWeeks > 1 ? "s" : ""}
               </strong>
@@ -112,8 +112,8 @@ export default function AppointmentDetailPage() {
         <div
           style={{
             marginTop: "1.5rem",
-            background: "#fff",
-            borderRadius: 16,
+            background: "var(--color-surface)",
+            borderRadius: "var(--radius-card)",
             padding: "2rem",
             textAlign: "center",
             boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
@@ -121,7 +121,7 @@ export default function AppointmentDetailPage() {
         >
           <div style={{ fontSize: 36 }}>⏳</div>
           <h3>Summary coming soon</h3>
-          <p style={{ color: "#5E7A84" }}>
+          <p style={{ color: "var(--color-text-secondary)" }}>
             Your physio will add a session summary shortly.
           </p>
         </div>
@@ -142,8 +142,8 @@ function SummaryBlock({
   return (
     <div
       style={{
-        background: "#fff",
-        borderRadius: 14,
+        background: "var(--color-surface)",
+        borderRadius: "var(--radius-card)",
         padding: "1.25rem",
         boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
       }}
@@ -160,7 +160,7 @@ function SummaryBlock({
         <span>{icon}</span>
         {title}
       </h3>
-      <p style={{ margin: 0, color: "#374151", lineHeight: 1.65 }}>{body}</p>
+      <p style={{ margin: 0, color: "var(--color-text-primary)", lineHeight: 1.65 }}>{body}</p>
     </div>
   );
 }

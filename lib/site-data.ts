@@ -11,16 +11,23 @@ export type Service = {
 };
 
 export function serviceImagePath(slug: string) {
-  return `/service-images/${slug}`;
+  // v2: covers are decorative now (no baked-in title). The route serves
+  // immutable/1y cache headers, so a redesign must bump this to bust caches.
+  return `/service-images/${slug}?v=2`;
 }
 
 export type PricingItem = {
+  id: BookServiceId;
   title: string;
   duration: string;
   price: number;
   description: string;
   mode: "In-person" | "Online" | "Package";
 };
+
+/** Stable keys for the four bookable tiers — the join between pricing,
+ *  the /book flow, and the Cal.com event types in lib/cal-services.ts. */
+export type BookServiceId = "initial-assessment" | "follow-up" | "bundle-4" | "bundle-8";
 
 export type Testimonial = {
   name: string;
@@ -252,6 +259,7 @@ export const services: Service[] = [
 
 export const pricing: PricingItem[] = [
   {
+    id: "initial-assessment",
     title: "Initial Online Assessment",
     duration: "60 min",
     price: 50,
@@ -259,6 +267,7 @@ export const pricing: PricingItem[] = [
     mode: "Online"
   },
   {
+    id: "follow-up",
     title: "Online Follow-Up",
     duration: "30 min",
     price: 40,
@@ -266,6 +275,7 @@ export const pricing: PricingItem[] = [
     mode: "Online"
   },
   {
+    id: "bundle-4",
     title: "4 Session Bundle",
     duration: "Flexible",
     price: 180,
@@ -273,6 +283,7 @@ export const pricing: PricingItem[] = [
     mode: "Package"
   },
   {
+    id: "bundle-8",
     title: "8 Session Bundle",
     duration: "Flexible",
     price: 340,

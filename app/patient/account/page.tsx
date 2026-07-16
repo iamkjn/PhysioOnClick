@@ -38,7 +38,7 @@ export default function AccountPage() {
   if (!uid) {
     return (
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
-        <div style={{ background: "#fff", borderRadius: 18, padding: "1.5rem", marginBottom: "1.5rem", boxShadow: "0 2px 10px rgba(0,0,0,0.07)" }}>
+        <div style={{ background: "var(--color-surface)", borderRadius: "var(--radius-panel)", padding: "1.5rem", marginBottom: "1.5rem", boxShadow: "0 2px 10px rgba(0,0,0,0.07)" }}>
           <Skeleton height="1.5rem" width="160px" className="skeleton-heading" />
           <div style={{ marginTop: "0.5rem" }}>
             <Skeleton height="0.9rem" width="220px" />
@@ -70,21 +70,8 @@ export default function AccountPage() {
     );
   }
 
-  const pillStyle: React.CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    background: "#D8F3F9",
-    color: "#0E7490",
-    padding: "0.6rem 1.25rem",
-    borderRadius: 999,
-    textDecoration: "none",
-    fontWeight: 700,
-    fontSize: 14,
-  };
-
   const sectionHeadingStyle: React.CSSProperties = {
-    color: "#0C2A38",
+    color: "var(--color-text-primary)",
     fontSize: 18,
     fontWeight: 700,
     margin: "0 0 0.75rem",
@@ -95,30 +82,18 @@ export default function AccountPage() {
       {/* User info card */}
       <div
         style={{
-          background: "#fff",
-          borderRadius: 18,
+          background: "var(--color-surface)",
+          borderRadius: "var(--radius-panel)",
           padding: "1.5rem",
           marginBottom: "1.5rem",
           boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
         }}
       >
-        <h1 style={{ margin: "0 0 0.25rem", color: "#0C2A38", fontSize: 22 }}>
+        <h1 style={{ margin: "0 0 0.25rem", color: "var(--color-text-primary)", fontSize: 22 }}>
           {displayName}
         </h1>
-        <p style={{ margin: "0 0 1rem", color: "#5E7A84", fontSize: 14 }}>{email}</p>
-        <button
-          onClick={() => void handleSignOut()}
-          style={{
-            background: "none",
-            border: "1px solid #D1E8EE",
-            borderRadius: 10,
-            padding: "0.5rem 1.25rem",
-            cursor: "pointer",
-            color: "#5E7A84",
-            fontWeight: 600,
-            fontSize: 14,
-          }}
-        >
+        <p style={{ margin: "0 0 1rem", color: "var(--color-text-secondary)", fontSize: 14 }}>{email}</p>
+        <button onClick={() => void handleSignOut()} className="button secondary small">
           Sign out
         </button>
       </div>
@@ -132,8 +107,8 @@ export default function AccountPage() {
           marginBottom: "2rem",
         }}
       >
-        <Link href="/patient/people" style={pillStyle}>👨‍👩‍👧 My People</Link>
-        <Link href="/patient/appointments" style={pillStyle}>📋 My Appointments</Link>
+        <Link href="/patient/people" className="pill-link">👨‍👩‍👧 My People</Link>
+        <Link href="/patient/appointments" className="pill-link">📋 My Appointments</Link>
       </div>
 
       {/* Profile details */}
