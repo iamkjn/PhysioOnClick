@@ -17,6 +17,7 @@ firestore-debug.log
 .claude/.proven-config-version
 .claude/proven-config.json
 sdd/
+.impeccable/
 
 # Cloudflare / OpenNext build output
 .open-next/
