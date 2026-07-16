@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type RefObject } from "react";
 import { createUserWithEmailAndPassword, updateProfile, type User } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 
@@ -70,6 +70,15 @@ export function BookingStepTime({
   const [loadingSlots, setLoadingSlots] = useState(true);
   const [slotsError, setSlotsError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  // Bumped by the "Try again" link on a fetch failure to re-run the effect
+  // below without duplicating its fetch logic.
+  const [retryToken, setRetryToken] = useState(0);
+
+  // Roving keyboard focus for the calendar grid and the time-slot list: refs
+  // let arrow keys jump between the *available* buttons (unavailable ones are
+  // natively `disabled` and can't receive focus, so they're skipped).
+  const dayButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const slotButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -111,7 +120,7 @@ export function BookingStepTime({
     return () => {
       cancelled = true;
     };
-  }, [service.id, viewMonth, today]);
+  }, [service.id, viewMonth, today, retryToken]);
 
   // The API returns only free times. Deriving the physio's usual hours from the
   // whole month lets us show genuinely-busy times struck through, rather than
@@ -143,6 +152,56 @@ export function BookingStepTime({
   function pickDay(key: string) {
     setSelectedDate(key);
     onSelectSlot(null);
+  }
+
+  /** Moves real focus to the next available (non-disabled) day in `step`'s
+   *  direction, scanning past gaps. Arrow keys should skip unavailable days
+   *  the same way Tab already does, not get stuck on them. */
+  function focusAvailableDay(fromIndex: number, step: number) {
+    let idx = fromIndex + step;
+    while (idx >= 0 && idx < daysInMonth) {
+      const key = dateKey(new Date(viewMonth.getFullYear(), viewMonth.getMonth(), idx + 1));
+      if ((slots[key]?.length ?? 0) > 0) {
+        dayButtonRefs.current[idx]?.focus();
+        return;
+      }
+      idx += step;
+    }
+  }
+
+  function handleDayKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    const stepByKey: Record<string, number> = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      ArrowDown: 7,
+      ArrowUp: -7
+    };
+    const step = stepByKey[event.key];
+    if (step === undefined) return;
+    event.preventDefault();
+    focusAvailableDay(index, step);
+  }
+
+  /** Same idea as focusAvailableDay, for the vertical time-slot list. */
+  function focusAvailableSlot(fromIndex: number, step: number) {
+    let idx = fromIndex + step;
+    while (idx >= 0 && idx < slotRows.length) {
+      if (slotRows[idx]?.iso) {
+        slotButtonRefs.current[idx]?.focus();
+        return;
+      }
+      idx += step;
+    }
+  }
+
+  function handleSlotKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      focusAvailableSlot(index, 1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      focusAvailableSlot(index, -1);
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -195,7 +254,7 @@ export function BookingStepTime({
       });
       const data = await res.json();
       if (!res.ok || !data.ok) {
-        setError("That time couldn't be booked — it may have just been taken. Please pick another.");
+        setError("That time was just taken. Please choose another.");
         return;
       }
       onConfirmed({
@@ -213,7 +272,16 @@ export function BookingStepTime({
 
   return (
     <section className="book-panel">
-      <p className="book-panel-eyebrow">Step 2 of 3</p>
+      <p
+        className="book-panel-eyebrow"
+        role="progressbar"
+        aria-valuenow={2}
+        aria-valuemin={1}
+        aria-valuemax={3}
+        aria-valuetext="Step 2 of 3"
+      >
+        Step 2 of 3
+      </p>
       <h1 className="book-panel-title" ref={titleRef} tabIndex={-1}>
         Time &amp; your details
       </h1>
@@ -259,7 +327,12 @@ export function BookingStepTime({
                 </button>
               </div>
 
-              <div className="book-cal-grid" role="group" aria-label="Choose a date">
+              <div
+                className="book-cal-grid"
+                role="group"
+                aria-label="Choose a date"
+                aria-busy={loadingSlots}
+              >
                 {DOW.map((d) => (
                   <span className="book-cal-dow" key={d}>
                     {d}
@@ -277,11 +350,15 @@ export function BookingStepTime({
                     <button
                       type="button"
                       key={key}
+                      ref={(el) => {
+                        dayButtonRefs.current[i] = el;
+                      }}
                       disabled={!has}
-                      aria-label={date.toLocaleDateString("en-GB", { dateStyle: "full" })}
+                      aria-label={`${date.toLocaleDateString("en-GB", { dateStyle: "full" })}${has ? "" : ", no times available"}`}
                       aria-pressed={selected}
                       className={`book-cal-day${selected ? " is-selected" : ""}${has ? "" : " is-disabled"}`}
                       onClick={() => pickDay(key)}
+                      onKeyDown={(event) => handleDayKeyDown(event, i)}
                     >
                       {i + 1}
                     </button>
@@ -294,21 +371,36 @@ export function BookingStepTime({
               {loadingSlots ? (
                 <p className="book-loading">Loading times…</p>
               ) : slotsError ? (
-                <p className="book-error">{slotsError}</p>
+                <div className="book-error">
+                  <p>{slotsError}</p>
+                  <button
+                    type="button"
+                    className="book-edit"
+                    onClick={() => setRetryToken((t) => t + 1)}
+                  >
+                    Try again
+                  </button>
+                </div>
               ) : !selectedDate ? (
                 <p className="book-empty">Pick a date to see available times.</p>
               ) : slotRows.length === 0 ? (
                 <p className="book-empty">No times available on this day.</p>
               ) : (
-                <div className="book-slots" role="group" aria-label="Choose a time">
-                  {slotRows.map(({ time, iso }) => (
+                <div className="book-slots" role="listbox" aria-label="Choose a time">
+                  {slotRows.map(({ time, iso }, i) => (
                     <button
                       type="button"
                       key={time}
+                      ref={(el) => {
+                        slotButtonRefs.current[i] = el;
+                      }}
                       disabled={!iso}
-                      aria-pressed={iso === selectedSlot}
+                      role="option"
+                      aria-selected={iso === selectedSlot}
+                      aria-label={`${time}${iso ? "" : ", unavailable"}`}
                       className={`book-slot${iso && iso === selectedSlot ? " is-selected" : ""}${iso ? "" : " is-unavailable"}`}
                       onClick={() => iso && onSelectSlot(iso)}
+                      onKeyDown={(event) => handleSlotKeyDown(event, i)}
                     >
                       {time}
                     </button>
@@ -393,9 +485,18 @@ export function BookingStepTime({
 
         <div className="book-panel-footer">
           <button type="button" className="book-back" onClick={onBack}>
-            ← Back
+            <span aria-hidden="true">←</span> Back
           </button>
-          <button type="submit" className="book-cta" disabled={submitting || !selectedSlot}>
+          <button
+            type="submit"
+            className="book-cta"
+            disabled={submitting || !selectedSlot}
+            aria-label={
+              !submitting && !selectedSlot
+                ? `Confirm booking. Choose a time above first.`
+                : undefined
+            }
+          >
             {submitting ? "Booking…" : `Confirm booking · £${service.price}`}
           </button>
         </div>

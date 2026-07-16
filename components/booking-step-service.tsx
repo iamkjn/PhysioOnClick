@@ -26,7 +26,16 @@ export function BookingStepService({
 }: Props) {
   return (
     <section className="book-panel">
-      <p className="book-panel-eyebrow">Step 1 of 3</p>
+      <p
+        className="book-panel-eyebrow"
+        role="progressbar"
+        aria-valuenow={1}
+        aria-valuemin={1}
+        aria-valuemax={3}
+        aria-valuetext="Step 1 of 3"
+      >
+        Step 1 of 3
+      </p>
       <h1 className="book-panel-title" ref={titleRef} tabIndex={-1}>
         Choose your service
       </h1>
@@ -58,7 +67,7 @@ export function BookingStepService({
         </div>
 
         <p className="book-focus-eyebrow" id="focus-label">
-          Focus area — optional
+          Focus area (optional)
         </p>
         <div className="book-chip-row" role="group" aria-labelledby="focus-label">
           {FOCUS_AREAS.map((area) => {
@@ -80,7 +89,7 @@ export function BookingStepService({
 
       <div className="book-panel-footer">
         <button type="button" className="book-cta" onClick={onContinue}>
-          Continue to times →
+          Continue to times <span aria-hidden="true">→</span>
         </button>
       </div>
     </section>

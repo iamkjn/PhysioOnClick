@@ -41,7 +41,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
   if (!loaded) {
     return (
       <div className="panel stack">
-        <h3>Assigned exercises</h3>
+        <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Assigned exercises</h2>
         <SkeletonRow count={2} />
       </div>
     );
@@ -75,10 +75,15 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
 
   return (
     <div className="panel stack">
-      <h3>Assigned exercises</h3>
+      {/* h2, not h3 — sibling of AdminPatientSelector/AdminClinicalEntry
+          (also h2) under the recovery page's single h1; size pinned to the
+          old h3 value so this reads the same. "Add exercise" below is
+          bumped h4 → h3 to stay sequential under it. */}
+      <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Assigned exercises</h2>
       {assigned.length === 0 && <p className="muted">None assigned yet.</p>}
       {assigned.map((ae) => {
         const ex = exerciseMap.get(ae.exerciseId);
+        const title = ex?.title ?? ae.exerciseId;
         return (
           <div
             key={ae.exerciseId}
@@ -91,18 +96,22 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
             }}
           >
             <span style={{ fontSize: 14, color: "var(--color-text-primary)" }}>
-              {ex?.title ?? ae.exerciseId}
+              {title}
             </span>
             <button
-              onClick={() => setRemoveTarget({ exerciseId: ae.exerciseId, title: ex?.title ?? ae.exerciseId })}
+              onClick={() => setRemoveTarget({ exerciseId: ae.exerciseId, title })}
               disabled={saving === ae.exerciseId}
+              aria-label={`Remove ${title} from assigned exercises`}
               style={{
                 background: "none",
                 border: "none",
                 color: "var(--color-error)",
-                cursor: "pointer",
-                fontSize: 13,
+                cursor: saving === ae.exerciseId ? "not-allowed" : "pointer",
+                opacity: saving === ae.exerciseId ? 0.6 : 1,
+                fontSize: 14,
                 fontWeight: 600,
+                minHeight: 44,
+                padding: "0 0.5rem",
               }}
             >
               {saving === ae.exerciseId ? "…" : "Remove"}
@@ -112,7 +121,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
       })}
       {unassigned.length > 0 && (
         <>
-          <h4 style={{ marginBottom: 0, color: "var(--color-text-primary)" }}>Add exercise</h4>
+          <h3 style={{ marginBottom: 0, fontSize: "var(--text-md)", color: "var(--color-text-primary)" }}>Add exercise</h3>
           {unassigned.map((ex) => (
             <div
               key={ex.id}
@@ -124,20 +133,26 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
                 borderBottom: "1px solid var(--color-border)",
               }}
             >
-              <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
+              <span style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
                 {ex.title} · {ex.bodyPart}
               </span>
               <button
                 onClick={() => void handleAssign(ex.id)}
                 disabled={saving === ex.id}
+                aria-label={`Assign ${ex.title}`}
                 style={{
-                  background: "var(--color-primary)",
+                  // Readable white-on-accent needs the darker --primary — the
+                  // raw --color-primary token is decoration/text-on-dark only
+                  // and under-contrasts white text.
+                  background: "var(--primary)",
                   color: "#fff",
                   border: "none",
-                  borderRadius: 8,
-                  padding: "0.3rem 0.75rem",
-                  cursor: "pointer",
-                  fontSize: 13,
+                  borderRadius: "var(--radius-chip)",
+                  padding: "0 0.85rem",
+                  minHeight: 44,
+                  cursor: saving === ex.id ? "not-allowed" : "pointer",
+                  opacity: saving === ex.id ? 0.6 : 1,
+                  fontSize: 14,
                   fontWeight: 600,
                 }}
               >

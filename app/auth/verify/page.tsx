@@ -28,6 +28,9 @@ function VerifyPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [linkSent, setLinkSent] = useState(false);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Computed once per render from the URL, shared by the auto-redirect and
+  // the manual "Continue now" fallback so both always agree on where to go.
+  const destination = sanitizeReturnPath(searchParams.get("returnTo"));
 
   useEffect(() => {
     return () => {
@@ -64,7 +67,6 @@ function VerifyPage() {
         headers: { Authorization: `Bearer ${idToken}` },
       }).catch(() => { /* non-blocking */ });
       setStage("success");
-      const destination = sanitizeReturnPath(searchParams.get("returnTo"));
       redirectTimerRef.current = setTimeout(() => router.push(destination), 1500);
     } catch (error) {
       const code = error instanceof FirebaseError ? error.code : "";
@@ -99,7 +101,7 @@ function VerifyPage() {
       const res = await fetch("/api/auth/magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, returnTo: sanitizeReturnPath(searchParams.get("returnTo")) }),
+        body: JSON.stringify({ email, returnTo: destination }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
@@ -119,36 +121,42 @@ function VerifyPage() {
       <section className="page-section" style={{ maxWidth: 480, margin: "80px auto", padding: "0 1rem" }}>
         <div className="panel" style={{ padding: "2rem" }}>
           {stage === "verifying" && (
-            <>
-              <h2>Verifying your link&hellip;</h2>
+            <div role="status" aria-live="polite">
+              <h1>Verifying your link&hellip;</h1>
               <p className="muted">Just a moment while we check your sign-in link.</p>
-            </>
+            </div>
           )}
 
           {stage === "needs-email" && (
             <>
-              <h2>Confirm your email</h2>
+              <h1>Confirm your email</h1>
               <p className="muted">
                 For security, please enter the email address you used when booking your appointment.
               </p>
-              {errorMessage && <p className="auth-status auth-status-error">{errorMessage}</p>}
+              {errorMessage && (
+                <p className="auth-status auth-status-error" role="alert">
+                  {errorMessage}
+                </p>
+              )}
               <form onSubmit={handleEmailSubmit} style={{ marginTop: "1.5rem" }}>
-                <label>
+                <label htmlFor="verify-email-input">
                   Email address
                   <input
+                    id="verify-email-input"
                     type="email"
+                    autoComplete="email"
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
                     required
                     placeholder="patient@example.com"
-                    style={{ width: "100%", marginTop: "0.5rem" }}
+                    style={{ marginTop: "0.5rem" }}
                   />
                 </label>
                 <button
-                  className="button primary"
+                  className="button primary full-width"
                   type="submit"
                   disabled={isSubmitting}
-                  style={{ marginTop: "1rem", width: "100%" }}
+                  style={{ marginTop: "1rem" }}
                 >
                   {isSubmitting ? "Signing you in…" : "Continue"}
                 </button>
@@ -157,46 +165,63 @@ function VerifyPage() {
           )}
 
           {stage === "signing-in" && (
-            <>
-              <h2>Signing you in&hellip;</h2>
+            <div role="status" aria-live="polite">
+              <h1>Signing you in&hellip;</h1>
               <p className="muted">Creating your patient account and linking your appointment.</p>
-            </>
+            </div>
           )}
 
           {stage === "success" && (
-            <>
-              <h2>You are in!</h2>
+            <div role="status" aria-live="polite">
+              <h1>You are in!</h1>
               <p className="muted">Redirecting you to your patient portal&hellip;</p>
-            </>
+              <button
+                type="button"
+                className="button primary full-width"
+                style={{ marginTop: "1rem" }}
+                onClick={() => {
+                  if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+                  router.push(destination);
+                }}
+              >
+                Continue now
+              </button>
+            </div>
           )}
 
-          {stage === "error" && (
-            <>
-              <h2>{linkSent ? "Link sent" : "Something went wrong"}</h2>
-              <p className="muted">{errorMessage}</p>
-              {!linkSent && (
-                <>
-                  <label style={{ marginTop: "1rem", display: "block" }}>
-                    Your booking email
-                    <input
-                      type="email"
-                      value={emailInput}
-                      onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="patient@example.com"
-                      style={{ width: "100%", marginTop: "0.5rem" }}
-                    />
-                  </label>
-                  <button
-                    className="button primary"
-                    onClick={requestNewLink}
-                    disabled={isSubmitting || !emailInput.trim()}
-                    style={{ marginTop: "1rem", width: "100%" }}
-                  >
-                    {isSubmitting ? "Sending…" : "Send me a new link"}
-                  </button>
-                </>
-              )}
-            </>
+          {stage === "error" && linkSent && (
+            <div role="status" aria-live="polite">
+              <h1>Link sent</h1>
+              <p className="auth-status auth-status-success">{errorMessage}</p>
+            </div>
+          )}
+
+          {stage === "error" && !linkSent && (
+            <div role="alert">
+              <h1>Something went wrong</h1>
+              <p className="auth-status auth-status-error">{errorMessage}</p>
+              <label htmlFor="verify-recovery-email" style={{ marginTop: "1rem", display: "block" }}>
+                Your booking email
+                <input
+                  id="verify-recovery-email"
+                  type="email"
+                  autoComplete="email"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  placeholder="patient@example.com"
+                  style={{ marginTop: "0.5rem" }}
+                />
+              </label>
+              <button
+                className="button primary full-width"
+                type="button"
+                onClick={requestNewLink}
+                disabled={isSubmitting || !emailInput.trim()}
+                style={{ marginTop: "1rem" }}
+              >
+                {isSubmitting ? "Sending…" : "Send me a new link"}
+              </button>
+            </div>
           )}
         </div>
       </section>
@@ -210,8 +235,8 @@ export default function VerifyPageWrapper() {
       fallback={
         <div className="site-shell">
           <section className="page-section" style={{ maxWidth: 480, margin: "80px auto", padding: "0 1rem" }}>
-            <div className="panel" style={{ padding: "2rem" }}>
-              <p>Loading&hellip;</p>
+            <div className="panel" style={{ padding: "2rem" }} role="status" aria-live="polite">
+              <p className="muted">Loading&hellip;</p>
             </div>
           </section>
         </div>

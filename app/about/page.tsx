@@ -185,7 +185,7 @@ export default function AboutPage() {
       <Reveal direction="up">
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
-          <h2>Book a Consultation</h2>
+          <h2>Book a consultation</h2>
           <p>Ready to discuss your symptoms and treatment options? Book an in-person or online assessment today.</p>
           <Link className="button secondary cta-white" href="/book">
             Book Assessment

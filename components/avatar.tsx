@@ -29,9 +29,11 @@ interface AvatarProps {
   imageUrl?: string | null;
   size?: number;
   className?: string;
+  /** Override the hash-picked disc colour (e.g. to match a surrounding panel). */
+  color?: string;
 }
 
-export function Avatar({ name, imageUrl, size = 48, className = "" }: AvatarProps) {
+export function Avatar({ name, imageUrl, size = 48, className = "", color }: AvatarProps) {
   const px = `${size}px`;
   if (imageUrl) {
     return (
@@ -52,7 +54,7 @@ export function Avatar({ name, imageUrl, size = 48, className = "" }: AvatarProp
         width: px,
         height: px,
         borderRadius: "50%",
-        background: avatarColor(name),
+        background: color || avatarColor(name),
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -62,8 +64,10 @@ export function Avatar({ name, imageUrl, size = 48, className = "" }: AvatarProp
         flexShrink: 0,
       }}
       className={className}
+      role="img"
+      aria-label={name}
     >
-      {initials(name)}
+      <span aria-hidden="true">{initials(name)}</span>
     </div>
   );
 }

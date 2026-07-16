@@ -32,6 +32,21 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
     setMessageTone(tone);
   }
 
+  // "text-button" has no rule in globals.css (nothing renders it), so this
+  // component defines its look inline — see report for the recommended
+  // shared class. Keeping the className too so a future global rule "just
+  // works" without another pass here.
+  const textButtonStyle: React.CSSProperties = {
+    background: "none",
+    border: "none",
+    padding: "0.4rem 0",
+    color: "var(--primary)",
+    fontWeight: 700,
+    fontSize: 14,
+    fontFamily: "inherit",
+    cursor: "pointer",
+  };
+
   function completePatientSignIn(successMessage: string) {
     if (redirectTo) {
       setStatus(`${successMessage} Redirecting you to your portal…`, "success");
@@ -219,9 +234,14 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
         <form className="auth-form" onSubmit={handleMagicLink}>
           <label>
             Email
-            <input type="email" name="email" required placeholder="patient@example.com" />
+            <input type="email" name="email" required autoComplete="email" placeholder="patient@example.com" />
           </label>
-          <button className="button primary" type="submit" disabled={isSubmitting}>
+          <button
+            className="button primary"
+            type="submit"
+            disabled={isSubmitting}
+            style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? "not-allowed" : "pointer" }}
+          >
             {isSubmitting ? "Sending…" : "Send sign-in link"}
           </button>
         </form>
@@ -230,19 +250,24 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
           {isSignup && isPatient ? (
             <label>
               Full name
-              <input type="text" name="fullName" required minLength={2} placeholder="Your full name" />
+              <input type="text" name="fullName" required minLength={2} autoComplete="name" placeholder="Your full name" />
             </label>
           ) : null}
           <label>
             Email
-            <input type="email" name="email" required placeholder={role === "admin" ? "admin@physioonclick.co.uk" : "patient@example.com"} />
+            <input type="email" name="email" required autoComplete="email" placeholder={role === "admin" ? "admin@physioonclick.co.uk" : "patient@example.com"} />
           </label>
           <label>
             Password
-            <input type="password" name="password" required minLength={8} />
+            <input type="password" name="password" required minLength={8} autoComplete={isSignup ? "new-password" : "current-password"} />
           </label>
-          <button className="button primary" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Please wait..." : isSignup ? "Create patient account" : "Continue"}
+          <button
+            className="button primary"
+            type="submit"
+            disabled={isSubmitting}
+            style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? "not-allowed" : "pointer" }}
+          >
+            {isSubmitting ? "Please wait…" : isSignup ? "Create patient account" : "Continue"}
           </button>
         </form>
       )}
@@ -252,12 +277,12 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
           {mode === "magic-link" ? (
             <>
               <span className="muted">Prefer a password?</span>
-              <button className="text-button" onClick={() => setMode("signin")} type="button">Sign in with password</button>
+              <button className="text-button" style={textButtonStyle} onClick={() => setMode("signin")} type="button">Sign in with password</button>
             </>
           ) : (
             <>
               <span className="muted">{isSignup ? "Already have an account?" : "Need a patient account?"}</span>
-              <button className="text-button" onClick={() => setMode(isSignup ? "signin" : "signup")} type="button">
+              <button className="text-button" style={textButtonStyle} onClick={() => setMode(isSignup ? "signin" : "signup")} type="button">
                 {isSignup ? "Use sign in" : "Create account"}
               </button>
             </>
@@ -268,13 +293,19 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
       {isPatient && mode !== "magic-link" ? (
         <div className="auth-panel-footer" style={{ marginTop: "0.5rem" }}>
           <span className="muted">Booked before? No password?</span>
-          <button className="text-button" onClick={() => setMode("magic-link")} type="button">
+          <button className="text-button" style={textButtonStyle} onClick={() => setMode("magic-link")} type="button">
             Send me a sign-in link
           </button>
         </div>
       ) : null}
 
-      <p className={`auth-status auth-status-${messageTone}`}>{message}</p>
+      <p
+        className={`auth-status auth-status-${messageTone}`}
+        role={messageTone === "error" ? "alert" : "status"}
+        aria-live={messageTone === "error" ? "assertive" : "polite"}
+      >
+        {message}
+      </p>
     </div>
   );
 }

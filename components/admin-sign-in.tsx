@@ -30,7 +30,7 @@ export function AdminSignIn() {
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
           <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--color-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800, fontSize: 22, fontFamily: "var(--font-serif)" }}>P</div>
           <div>
-            <div style={{ fontFamily: "var(--font-serif)", fontSize: 24, color: "var(--color-navy)", lineHeight: 1.1 }}>Admin Portal</div>
+            <h1 style={{ fontFamily: "var(--font-serif)", fontSize: 24, color: "var(--color-navy)", lineHeight: 1.1, margin: 0 }}>Admin Portal</h1>
             <div style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>PhysioOnClick</div>
           </div>
         </div>
@@ -38,14 +38,16 @@ export function AdminSignIn() {
           Sign in to access bookings, enquiries and patient data.
         </p>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: "0.75rem" }}>
-          <input type="email" className="input" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
-          <input type="password" className="input" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-          {error && <p style={{ color: "var(--color-error)", fontSize: 13, margin: 0, fontFamily: "var(--font-sans)" }}>{error}</p>}
+          <label htmlFor="admin-email" className="sr-only">Email address</label>
+          <input id="admin-email" type="email" className="input" placeholder="Email address" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <label htmlFor="admin-password" className="sr-only">Password</label>
+          <input id="admin-password" type="password" className="input" placeholder="Password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          {error && <p role="alert" aria-live="assertive" style={{ color: "var(--color-error)", fontSize: 14, margin: 0, fontFamily: "var(--font-sans)" }}>{error}</p>}
           <button
             type="submit"
             className="button primary full-width"
             disabled={loading}
-            style={{ marginTop: "0.25rem" }}
+            style={{ marginTop: "0.25rem", opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>

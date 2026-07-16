@@ -42,13 +42,20 @@ export default function PricingPage() {
             <h2>In-Person Sessions <span>(Glasgow home visits)</span></h2>
             <div className="pricing-grid pricing-grid-three">
               {inPerson.map((item, i) => (
-                <Reveal key={item.title} direction="up" delay={i * 100}>
-                  <article className="simple-price-card">
+                <Reveal key={item.id} direction="up" delay={i * 100}>
+                  <article className="simple-price-card" style={{ display: "flex", flexDirection: "column" }}>
                     <h3>{item.title}</h3>
                     <p className="muted">{item.duration}</p>
                     <strong>{formatCurrency(item.price)}</strong>
                     <p>{item.description}</p>
-                    <Link className="button primary" href="/book">Book Now</Link>
+                    <Link
+                      className="button primary"
+                      href="/book"
+                      aria-label={`Book ${item.title}`}
+                      style={{ marginTop: "auto" }}
+                    >
+                      Book Now
+                    </Link>
                   </article>
                 </Reveal>
               ))}
@@ -73,13 +80,20 @@ export default function PricingPage() {
           </Reveal>
           <div className="pricing-grid pricing-grid-two">
             {online.map((item, i) => (
-              <Reveal key={item.title} direction="up" delay={i * 100}>
-                <article className="simple-price-card">
+              <Reveal key={item.id} direction="up" delay={i * 100}>
+                <article className="simple-price-card" style={{ display: "flex", flexDirection: "column" }}>
                   <h3>{item.title}</h3>
                   <p className="muted">{item.duration}</p>
                   <strong>{formatCurrency(item.price)}</strong>
                   <p>{item.description}</p>
-                  <Link className="button primary" href={`/book?service=${item.id}`}>Book Now</Link>
+                  <Link
+                    className="button primary"
+                    href={`/book?service=${item.id}`}
+                    aria-label={`Book ${item.title}`}
+                    style={{ marginTop: "auto" }}
+                  >
+                    Book Now
+                  </Link>
                 </article>
               </Reveal>
             ))}
@@ -95,13 +109,20 @@ export default function PricingPage() {
               const sessionCount = Number(item.title.match(/\d+/)?.[0] ?? 0);
               const savings = sessionCount * followUpPrice - item.price;
               return (
-                <Reveal key={item.title} direction="up" delay={i * 100}>
-                  <article className="simple-package-card">
+                <Reveal key={item.id} direction="up" delay={i * 100}>
+                  <article className="simple-package-card" style={{ display: "flex", flexDirection: "column" }}>
                     {savings > 0 ? <div className="save-pill">Save {formatCurrency(savings)}</div> : null}
                     <h3>{item.title}</h3>
                     <strong>{formatCurrency(item.price)}</strong>
                     <p>{item.description}</p>
-                    <Link className="button primary" href={`/book?service=${item.id}`}>Get Started</Link>
+                    <Link
+                      className="button primary"
+                      href={`/book?service=${item.id}`}
+                      aria-label={`Get started with ${item.title}`}
+                      style={{ marginTop: "auto" }}
+                    >
+                      Get Started
+                    </Link>
                   </article>
                 </Reveal>
               );
@@ -117,7 +138,7 @@ export default function PricingPage() {
                 <p key={item}>{item}</p>
               ))}
             </div>
-            <p className="muted" style={{ marginTop: 12 }}>Free to reschedule up to 24 hours before your session — no charge for a cancelled slot inside that window.</p>
+            <p className="muted" style={{ marginTop: "0.75rem" }}>Free to reschedule up to 24 hours before your session, with no charge for a cancelled slot inside that window.</p>
           </div>
         </Reveal>
       </section>

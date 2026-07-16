@@ -64,9 +64,9 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
         {loading ? (
           <SkeletonChart height={260} />
         ) : error ? (
-          <p className="muted">{error}</p>
+          <p className="field-error">{error}</p>
         ) : data.length === 0 ? (
-          <p className="muted">No data yet — log your first pain check-in above.</p>
+          <p className="muted">No data yet. Log your first pain check-in above.</p>
         ) : (
           <div
             className="chart-wrap"
@@ -75,44 +75,60 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
               data[data.length - 1]?.patientPain ?? "not logged"
             }. Baseline (first logged) score: ${data[0]?.patientPain ?? "not logged"}.`}
           >
-            <ResponsiveContainer width="100%" height={260}>
-              <LineChart data={data}>
-                <XAxis
-                  dataKey="date"
-                  stroke="var(--color-text-secondary)"
-                  tick={{ fontSize: 11 }}
-                  tickFormatter={(v: string) => v.slice(5)}
-                />
-                <YAxis stroke="var(--color-text-secondary)" domain={[0, 10]} />
-                <Tooltip
-                  contentStyle={{
-                    background: "var(--color-surface)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: 12,
-                    fontFamily: "inherit",
-                  }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="patientPain"
-                  name="Self-reported"
-                  stroke="var(--color-primary)"
-                  strokeWidth={2}
-                  dot={false}
-                  connectNulls
-                />
-                <Line
-                  type="monotone"
-                  dataKey="physioScore"
-                  name="Physio assessment"
-                  stroke="var(--color-text-primary)"
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                  connectNulls
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {/* role="img" + aria-label above already gives assistive tech a full
+                text summary, so the chart internals are hidden to avoid
+                redundant/confusing announcements of axis ticks and legend. */}
+            <div aria-hidden="true">
+              <ResponsiveContainer width="100%" height={260}>
+                <LineChart data={data}>
+                  <XAxis
+                    dataKey="date"
+                    stroke="var(--color-text-secondary)"
+                    tick={{ fontSize: 11, fill: "var(--color-text-secondary)" }}
+                    tickFormatter={(v: string) => v.slice(5)}
+                  />
+                  <YAxis
+                    stroke="var(--color-text-secondary)"
+                    tick={{ fill: "var(--color-text-secondary)" }}
+                    domain={[0, 10]}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: "var(--color-surface)",
+                      border: "1px solid var(--color-border)",
+                      borderRadius: "var(--radius-card)",
+                      fontFamily: "var(--font-sans)",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      fontFamily: "var(--font-sans)",
+                      fontSize: "var(--text-xs)",
+                      color: "var(--color-text-secondary)",
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="patientPain"
+                    name="Self-reported"
+                    stroke="var(--primary)"
+                    strokeWidth={2}
+                    dot={false}
+                    connectNulls
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="physioScore"
+                    name="Physio assessment"
+                    stroke="var(--color-text-primary)"
+                    strokeWidth={2}
+                    strokeDasharray="5 3"
+                    dot={{ r: 4 }}
+                    connectNulls
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         )}
       </div>

@@ -101,20 +101,24 @@ export function AdminBookingsTable() {
         <span className="dashboard-table-count">{displayed.length} shown · sorted by newest</span>
       </div>
 
-      {/* Filter chips */}
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" as const }}>
+      {/* Filter chips — the most-tapped control on this page, so it keeps a
+          full 44px touch target even though the table rows below stay
+          dense (filter chips are explicitly exempt from the "tint, never
+          solid fill" selected-state rule). */}
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" as const }} role="group" aria-label="Filter bookings by status">
         {FILTER_OPTIONS.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className="button small"
+            aria-pressed={filter === f}
             style={{
               background: filter === f ? "var(--color-primary-dark)" : "var(--color-surface)",
               color: filter === f ? "white" : "var(--color-text-secondary)",
               borderColor: filter === f ? "var(--color-primary-dark)" : "var(--color-border)",
-              padding: "4px 12px",
-              minHeight: "auto",
-              fontSize: 12,
+              padding: "0 12px",
+              minHeight: 44,
+              fontSize: 13,
               gap: "0.375rem",
             }}
           >
@@ -134,7 +138,7 @@ export function AdminBookingsTable() {
 
       {!loading && displayed.length > 0 && (
         <div className="dashboard-table-wrap">
-          <table className="dashboard-table">
+          <table className="dashboard-table admin-bookings-table">
             <caption className="sr-only">Latest appointment bookings with status, actions, and session summary links</caption>
             <thead>
               <tr>
@@ -148,7 +152,7 @@ export function AdminBookingsTable() {
             </thead>
             <tbody>
               {displayed.map((item) => (
-                <tr key={item.id}>
+                <tr key={item.id} className="admin-table-row">
                   <td>
                     <strong style={{ display: "block", color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{item.fullName || item.patientName}</strong>
                     <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{item.email}</span>
@@ -178,14 +182,15 @@ export function AdminBookingsTable() {
                               type="button"
                               className="button small"
                               disabled={item.displayStatus === "cancelled"}
+                              aria-label={`Cancel booking for ${item.fullName || item.patientName}`}
                               onClick={() => setCancelTarget({ id: item.id, label: item.fullName || item.patientName })}
                               style={{
                                 background: "none",
                                 border: "1.5px solid var(--color-error)",
                                 color: "var(--color-error)",
-                                minHeight: "auto",
-                                padding: "4px 10px",
-                                fontSize: 12,
+                                padding: "0 10px",
+                                fontSize: 13,
+                                cursor: item.displayStatus === "cancelled" ? "not-allowed" : "pointer",
                                 opacity: item.displayStatus === "cancelled" ? 0.4 : 1,
                               }}
                             >
@@ -195,7 +200,9 @@ export function AdminBookingsTable() {
                           <a
                             href={`https://cal.com/reschedule/${item.calBookingUid}`}
                             target="_blank" rel="noopener noreferrer"
-                            style={{ border: "1.5px solid var(--color-primary-dark)", color: "var(--color-primary-dark)", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 600, textDecoration: "none", display: "inline-block", fontFamily: "var(--font-sans)" }}
+                            className="button small"
+                            aria-label={`Reschedule booking for ${item.fullName || item.patientName}`}
+                            style={{ border: "1.5px solid var(--color-primary-dark)", color: "var(--color-primary-dark)", background: "none", padding: "0 10px", fontSize: 13 }}
                           >Reschedule</a>
                         </>
                       ) : (
@@ -232,6 +239,13 @@ export function AdminBookingsTable() {
           cancelFormRefs.current[target.id]?.requestSubmit();
         }}
       />
+
+      {/* Row hover — dashboard-table is a shared globals.css class with no
+          hover rule of its own; scoped here rather than editing the shared
+          class (see report for the recommended global version). */}
+      <style>{`
+        .admin-bookings-table tbody tr.admin-table-row:hover { background: var(--surface-alt); }
+      `}</style>
     </div>
   );
 }

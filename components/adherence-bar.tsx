@@ -33,7 +33,7 @@ export function AdherenceBar({ uid, personId }: Props) {
     return (
       <div className="panel stack">
         <h3>This week&apos;s adherence</h3>
-        <p className="muted">{error}</p>
+        <p className="field-error">{error}</p>
       </div>
     );
   if (daysCompleted === null)
@@ -52,9 +52,15 @@ export function AdherenceBar({ uid, personId }: Props) {
       <h3>This week&apos;s adherence</h3>
       <p className="muted">{daysCompleted} of 7 days with exercises completed.</p>
       <div
+        role="progressbar"
+        aria-label="Exercise adherence this week"
+        aria-valuenow={pct}
+        aria-valuemin={0}
+        aria-valuemax={100}
         style={{
           background: "var(--color-primary-light)",
-          borderRadius: 999,
+          border: "1px solid var(--line)",
+          borderRadius: "var(--radius-pill)",
           height: 12,
           overflow: "hidden",
         }}
@@ -63,13 +69,13 @@ export function AdherenceBar({ uid, personId }: Props) {
           style={{
             width: `${pct}%`,
             height: "100%",
-            background: pct >= 70 ? "var(--color-primary)" : pct >= 40 ? "var(--color-warning)" : "var(--color-error)",
-            borderRadius: 999,
+            background: pct >= 70 ? "var(--primary)" : pct >= 40 ? "var(--color-warning)" : "var(--color-error)",
+            borderRadius: "var(--radius-pill)",
             transition: "width 0.4s ease",
           }}
         />
       </div>
-      <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>{pct}% this week</span>
+      <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>{pct}% this week</span>
     </div>
   );
 }

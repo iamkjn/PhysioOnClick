@@ -86,11 +86,17 @@ export function PatientLiveOverview() {
     );
   }, [email, userId]);
 
+  const accountGridStyle: React.CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gap: "1.25rem"
+  };
+
   if (!resolvedAuth) {
     return (
       <div className="panel stack">
-        <h3>Account overview</h3>
-        <div className="patient-account-grid">
+        <h2 style={{ fontSize: "var(--text-lg)" }}>Account overview</h2>
+        <div className="patient-account-grid" style={accountGridStyle}>
           <SkeletonRow count={2} />
           <SkeletonRow count={2} />
         </div>
@@ -100,9 +106,9 @@ export function PatientLiveOverview() {
 
   return (
     <div className="panel stack">
-      <h3>Account overview</h3>
-      {email ? <p className="muted">Signed in as {email}</p> : <p className="muted">Sign in to load your live bookings from Firebase.</p>}
-      <div className="patient-account-grid">
+      <h2 style={{ fontSize: "var(--text-lg)" }}>Account overview</h2>
+      {email ? <p className="muted">Signed in as {email}</p> : <p className="muted">Sign in to see your bookings and enquiries.</p>}
+      <div className="patient-account-grid" style={accountGridStyle}>
         <div className="stack">
           <strong>Bookings</strong>
           {bookings.length ? (
@@ -116,7 +122,7 @@ export function PatientLiveOverview() {
               ))}
             </div>
           ) : (
-            <p className="muted">No live bookings found yet.</p>
+            <p className="muted">No bookings yet. Once you book an appointment, it will show up here.</p>
           )}
         </div>
 
@@ -132,7 +138,7 @@ export function PatientLiveOverview() {
               ))}
             </div>
           ) : (
-            <p className="muted">No saved enquiries found yet.</p>
+            <p className="muted">No enquiries yet. Messages you send us will show up here.</p>
           )}
         </div>
       </div>

@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   description: "How PhysioOnClick collects, stores and uses your personal and clinical data in line with UK GDPR."
 };
 
+// Body text inherits `a { color: inherit; text-decoration: none; }` globally,
+// which makes inline links indistinguishable from surrounding copy. Long-form
+// legal content needs links to read as links, so mid-paragraph anchors here
+// get an explicit accent underline.
+const inlineLinkStyle = { color: "var(--primary)", textDecoration: "underline", fontWeight: 600 };
+
 export default function PrivacyPolicyPage() {
   return (
     <div className="site-shell">
@@ -18,23 +24,25 @@ export default function PrivacyPolicyPage() {
           </div>
           <div className="page-hero-aside">
             <strong>Last updated</strong>
-            <p className="muted">June 2026</p>
+            <p className="muted">
+              <time dateTime="2026-06">June 2026</time>
+            </p>
           </div>
         </section>
       </Reveal>
 
       <section className="page-section two-col">
 
-        <article className="panel stack soft-panel">
+        <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Who we are</h2>
           <p>
             PhysioOnClick is operated by Shivaliba Zala (trading as PhysioOnClick), the data controller for
             all personal data collected through this website and associated services. Contact:{" "}
-            <a href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a>.
+            <a href="mailto:hello@physioonclick.co.uk" style={inlineLinkStyle}>hello@physioonclick.co.uk</a>.
           </p>
         </article>
 
-        <article className="panel stack">
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>What data we collect</h2>
           <p>We collect the following categories of personal data:</p>
           <ul>
@@ -46,7 +54,7 @@ export default function PrivacyPolicyPage() {
           </ul>
         </article>
 
-        <article className="panel stack soft-panel">
+        <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Lawful basis for processing</h2>
           <ul>
             <li><strong>Contract performance:</strong> processing your name, email, and appointment details to deliver the service you have booked</li>
@@ -55,17 +63,17 @@ export default function PrivacyPolicyPage() {
           </ul>
         </article>
 
-        <article className="panel stack">
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Third-party processors</h2>
           <p>Your data is processed by the following third parties on our behalf:</p>
           <ul>
-            <li><strong>Google Firebase</strong> (Authentication, Firestore database, Storage) — used to store account, appointment, and clinical data securely</li>
-            <li><strong>Cal.com</strong> — used for appointment scheduling; booking data is shared with Cal.com to manage your calendar appointment</li>
-            <li><strong>Google Calendar / Google Meet</strong> — used to create appointment events and video consultation links; attendee details (name, email) are shared with Google to generate the meeting link</li>
+            <li><strong>Google Firebase:</strong> Authentication, Firestore database and Storage, used to store account, appointment, and clinical data securely</li>
+            <li><strong>Cal.com:</strong> used for appointment scheduling; booking data is shared with Cal.com to manage your calendar appointment</li>
+            <li><strong>Google Calendar / Google Meet:</strong> used to create appointment events and video consultation links; attendee details (name, email) are shared with Google to generate the meeting link</li>
           </ul>
         </article>
 
-        <article className="panel stack soft-panel">
+        <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Data retention</h2>
           <ul>
             <li><strong>Clinical records:</strong> retained for 8 years from the date of last contact, in line with HCPC record-keeping standards</li>
@@ -73,7 +81,7 @@ export default function PrivacyPolicyPage() {
           </ul>
         </article>
 
-        <article className="panel stack">
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Your rights</h2>
           <p>Under UK GDPR you have the right to:</p>
           <ul>
@@ -81,15 +89,15 @@ export default function PrivacyPolicyPage() {
             <li><strong>Rectification</strong> of inaccurate data</li>
             <li><strong>Erasure</strong> of your data where there is no legal obligation to retain it</li>
             <li><strong>Restriction</strong> of processing in certain circumstances</li>
-            <li><strong>Data portability</strong> — receive your data in a structured, machine-readable format</li>
+            <li><strong>Data portability:</strong> receive your data in a structured, machine-readable format</li>
             <li><strong>Object</strong> to processing based on legitimate interests</li>
           </ul>
           <p>To exercise any of these rights, email{" "}
-            <a href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a>.
+            <a href="mailto:hello@physioonclick.co.uk" style={inlineLinkStyle}>hello@physioonclick.co.uk</a>.
           </p>
         </article>
 
-        <article className="panel stack soft-panel">
+        <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Cookies</h2>
           <p>
             This website uses session cookies for authentication only. We do not use advertising,
@@ -98,12 +106,15 @@ export default function PrivacyPolicyPage() {
           </p>
         </article>
 
-        <article className="panel stack">
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Complaints</h2>
           <p>
             If you have concerns about how we handle your data, you have the right to complain to the
             Information Commissioner&apos;s Office (ICO) at{" "}
-            <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer">ico.org.uk</a>.
+            <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer" style={inlineLinkStyle}>
+              ico.org.uk
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>.
           </p>
         </article>
 

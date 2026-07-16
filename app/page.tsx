@@ -34,7 +34,7 @@ export default async function HomePage() {
           <div className="site-shell section-heading">
             <span className="eyebrow">Meet your physiotherapist</span>
             <h2>Care led by {founder.name}</h2>
-            <p>Every session is delivered — or personally overseen — by the same HCPC registered physiotherapist, not passed between clinicians.</p>
+            <p>Every session is delivered (or personally overseen) by the same HCPC registered physiotherapist, not passed between clinicians.</p>
           </div>
         </Reveal>
         <div className="site-shell home-proof-grid">

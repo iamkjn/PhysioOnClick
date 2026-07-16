@@ -107,13 +107,25 @@ export function BookingFlow() {
   }, []);
 
   if (step === 3 && confirmation) {
-    return <BookingStepDone confirmation={confirmation} />;
+    return (
+      <>
+        <p className="sr-only" role="status" aria-live="polite">
+          Step 3 of 3: booking confirmed.
+        </p>
+        <BookingStepDone confirmation={confirmation} titleRef={panelTitleRef} />
+      </>
+    );
   }
 
   const railChecklist = step === 2 ? service.included.slice(0, 3) : service.included;
+  const stepAnnouncement =
+    step === 1 ? "Step 1 of 3: choose your service." : "Step 2 of 3: time and your details.";
 
   return (
     <div className="book-flow">
+      <p className="sr-only" role="status" aria-live="polite">
+        {stepAnnouncement}
+      </p>
       <aside className="book-rail">
         <div className="book-rail-brand">
           <span className="book-rail-mark" aria-hidden="true">

@@ -65,7 +65,7 @@ export default function RecoveryPage() {
         <div className="stack">
           <span className="eyebrow">Recovery dashboard</span>
           <h1>Track your recovery progress.</h1>
-          <p className="lead">Log daily pain scores, tick off exercises, and download your full report.</p>
+          <p className="muted">Log daily pain scores, tick off exercises, and download your full report.</p>
         </div>
       </section>
 

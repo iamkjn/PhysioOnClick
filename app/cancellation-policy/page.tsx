@@ -18,19 +18,21 @@ export default function CancellationPolicyPage() {
         </div>
         <div className="page-hero-aside">
           <strong>Last updated</strong>
-          <p className="muted">July 2026</p>
+          <p className="muted">
+            <time dateTime="2026-07">July 2026</time>
+          </p>
         </div>
       </section>
       </Reveal>
       <section className="page-section two-col">
-        <article className="panel stack soft-panel">
+        <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Notice period</h2>
           <p>
             Patients should provide at least 24 hours&apos; notice to rearrange or cancel an appointment. Late
             cancellations and non-attendance may be charged in full unless exceptional circumstances apply.
           </p>
         </article>
-        <article className="panel stack">
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Packages and refunds</h2>
           <p>
             Package sessions and online appointments should follow the same cancellation expectations. Refunds,

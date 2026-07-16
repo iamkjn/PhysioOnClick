@@ -65,7 +65,7 @@ export function AssignedExercises({ uid, personId }: Props) {
     return (
       <div className="panel stack">
         <h3>Your exercises</h3>
-        <p className="muted">{error}</p>
+        <p className="field-error">{error}</p>
       </div>
     );
   if (assigned.length === 0)
@@ -86,7 +86,7 @@ export function AssignedExercises({ uid, personId }: Props) {
     <div className="panel stack">
       <h3>Your exercises</h3>
       <p className="muted">Tick off each exercise as you complete it today.</p>
-      {error && <p style={{ color: "var(--color-error)", fontSize: 13 }}>{error}</p>}
+      {error && <p className="field-error">{error}</p>}
       <div style={{ display: "grid", gap: "0.75rem" }}>
         {assigned.map((ae) => {
           const ex = exerciseMap.get(ae.exerciseId);
@@ -101,7 +101,7 @@ export function AssignedExercises({ uid, personId }: Props) {
                 gap: "0.75rem",
                 background: done ? "var(--color-success-light)" : "var(--color-bg)",
                 border: `1px solid ${done ? "var(--color-success)" : "var(--color-border)"}`,
-                borderRadius: 12,
+                borderRadius: "var(--radius-card)",
                 padding: "0.85rem 1rem",
                 cursor: "pointer",
               }}
@@ -114,7 +114,7 @@ export function AssignedExercises({ uid, personId }: Props) {
               />
               <div>
                 <strong style={{ display: "block", color: "var(--color-text-primary)" }}>{ex.title}</strong>
-                <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
+                <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
                   {ex.bodyPart} · {ex.description}
                 </span>
               </div>

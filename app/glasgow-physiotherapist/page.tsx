@@ -98,32 +98,33 @@ export default function GlasgowPage() {
       </section>
 
       <Reveal direction="up">
-      <section className="page-section stack service-faqs">
-        {faqItems.map((faq) => (
-          <details key={faq.question}>
-            <summary>{faq.question}</summary>
-            <p>{faq.answer}</p>
-          </details>
-        ))}
-      </section>
+        <section className="page-section stack service-faqs">
+          <h2>Frequently asked questions</h2>
+          {faqItems.map((faq) => (
+            <details key={faq.question}>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </section>
       </Reveal>
 
       <Reveal direction="up">
-      <section className="simple-cta-band" id="book">
-        <div className="site-shell simple-cta-inner">
-          <span className="eyebrow">Ready to book?</span>
-          <h2>Book physiotherapy in Glasgow</h2>
-          <p>Schedule your in-person or online appointment now, or get in touch if you have a question first.</p>
-          <div className="button-row" style={{ justifyContent: "center" }}>
-            <Link className="button secondary cta-white" href="/book">
-              Book your session
-            </Link>
-            <Link className="button inverted" href="/contact">
-              Contact us
-            </Link>
+        <section className="simple-cta-band" id="book">
+          <div className="site-shell simple-cta-inner">
+            <span className="eyebrow">Ready to book?</span>
+            <h2>Book physiotherapy in Glasgow</h2>
+            <p>Schedule your in-person or online appointment now, or get in touch if you have a question first.</p>
+            <div className="button-row" style={{ justifyContent: "center" }}>
+              <Link className="button secondary cta-white" href="/book">
+                Book your session
+              </Link>
+              <Link className="button inverted" href="/contact">
+                Contact us
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
       </Reveal>
     </div>
   );

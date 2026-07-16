@@ -18,6 +18,7 @@ interface Props {
 export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false, onAddPerson }: Props) {
   const [dependents, setDependents] = useState<Dependent[] | null>(null);
   const [selected, setSelected] = useState(uid);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     setDependents(null);
@@ -37,16 +38,18 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
 
   if (dependents === null) {
     if (!alwaysShow) return null;
-    return <Skeleton height="2.4rem" width="220px" />;
+    return <Skeleton height="2.75rem" width="220px" />;
   }
 
   if (dependents.length === 0 && !alwaysShow) return null;
+
+  const isViewingOther = selected !== uid;
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
       <label
         htmlFor="person-switcher-select"
-        style={{ fontWeight: 600, fontSize: 14, color: "var(--color-text-primary)" }}
+        style={{ fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}
       >
         Viewing recovery for:
       </label>
@@ -54,23 +57,34 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
         id="person-switcher-select"
         value={selected}
         onChange={handleChange}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
         style={{
-          padding: "0.4rem 0.75rem",
-          borderRadius: 10,
-          border: "1px solid var(--color-border)",
-          fontSize: 14,
+          minHeight: 44,
+          padding: "0.6rem 0.9rem",
+          borderRadius: "var(--radius-input)",
+          border: `1px solid ${
+            isFocused
+              ? "color-mix(in srgb, var(--color-primary) 42%, transparent)"
+              : isViewingOther
+                ? "var(--primary)"
+                : "var(--color-border)"
+          }`,
+          fontSize: "var(--text-sm)",
           color: "var(--color-text-primary)",
-          background: "#fff",
+          background: isViewingOther ? "var(--color-primary-light)" : "var(--color-surface)",
           cursor: "pointer",
+          boxShadow: isFocused ? "0 0 0 4px color-mix(in srgb, var(--color-primary) 12%, transparent)" : "none",
+          transition: "border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease"
         }}
       >
-        <option value={uid}>{displayName} (Me)</option>
+        <option value={uid}>{displayName} (You)</option>
         {dependents.map((dep) => (
           <option key={dep.id} value={dep.id}>
             {dep.name} ({dep.relationship})
           </option>
         ))}
-        {onAddPerson ? <option value={ADD_PERSON_VALUE}>+ Add a person</option> : null}
+        {onAddPerson ? <option value={ADD_PERSON_VALUE}>+ Add person</option> : null}
       </select>
     </div>
   );

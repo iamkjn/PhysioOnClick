@@ -55,7 +55,7 @@ export function RehabProgramsSection({ email }: { email: string }) {
           background: "var(--color-surface)",
           borderRadius: "var(--radius-card)",
           padding: "1rem 1.25rem",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+          boxShadow: "var(--shadow)",
         }}
       >
         <p style={{ margin: 0, color: "var(--color-text-secondary)" }}>No rehab programme assigned yet.</p>
@@ -75,25 +75,25 @@ export function RehabProgramsSection({ email }: { email: string }) {
             boxShadow: "var(--shadow)",
           }}
         >
-          <strong style={{ display: "block", color: "var(--color-text-primary)", fontSize: 16, marginBottom: 4 }}>
+          <strong style={{ display: "block", color: "var(--color-text-primary)", fontSize: "var(--text-base)", marginBottom: 4 }}>
             {p.title}
           </strong>
           {p.stage && (
-            <span style={{ fontSize: 13, color: "var(--color-text-secondary)", display: "block", marginBottom: 8 }}>
+            <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", display: "block", marginBottom: 8 }}>
               {p.stage}
             </span>
           )}
           {p.notes && (
-            <p style={{ margin: "0 0 0.75rem", fontSize: 14 }}>{p.notes}</p>
+            <p style={{ margin: "0 0 0.75rem", fontSize: "var(--text-sm)" }}>{p.notes}</p>
           )}
           {p.goals.length > 0 && (
             <>
-              <span style={{ fontWeight: 700, fontSize: 13, display: "block", marginBottom: 6 }}>
+              <span style={{ fontWeight: 700, fontSize: "var(--text-sm)", display: "block", marginBottom: 6 }}>
                 Goals
               </span>
               <ul style={{ margin: "0 0 0.75rem", paddingLeft: "1.25rem" }}>
                 {p.goals.map((g, i) => (
-                  <li key={i} style={{ marginBottom: 4, fontSize: 14 }}>
+                  <li key={i} style={{ marginBottom: 4, fontSize: "var(--text-sm)" }}>
                     {g}
                   </li>
                 ))}
@@ -101,7 +101,7 @@ export function RehabProgramsSection({ email }: { email: string }) {
             </>
           )}
           {p.exerciseIds.length > 0 && (
-            <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
               {p.exerciseIds.length} exercise{p.exerciseIds.length !== 1 ? "s" : ""} assigned
             </span>
           )}

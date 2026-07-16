@@ -50,6 +50,7 @@
   --color-text-secondary:var(--book-paper-muted);
   --color-success:       #059669;
   --color-success-light: #D1FAE5;
+  --color-success-dark:  #065F46;
   --color-error:         #DC2626;
   --color-error-dark:    #B91C1C;
   --color-error-light:   #FEE2E2;
@@ -329,7 +330,7 @@ p {
 }
 
 .button.small {
-  min-height: 42px;
+  min-height: 44px;
 }
 
 .button.inverted {
@@ -345,6 +346,23 @@ p {
 
 .button.full-width {
   width: 100%;
+}
+
+/* No global disabled affordance existed: plain .button submit controls showed
+   no state change while busy/disabled. Cover both native :disabled and
+   aria-disabled, and cancel the hover lift so a disabled control never rises. */
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.button:disabled:hover,
+.button:disabled:focus-visible,
+.button[aria-disabled="true"]:hover,
+.button[aria-disabled="true"]:focus-visible {
+  transform: none;
+  box-shadow: none;
 }
 
 .button:hover,
@@ -777,6 +795,21 @@ p {
 
 .simple-service-card a {
   margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* These "Learn more" / "Read article" text links had no hover or focus
+   affordance beyond the generic outline; give them a visible state and a
+   44px-tall hit area (via min-height above / on .blog-card-link). */
+.simple-service-card a:hover,
+.simple-service-card a:focus-visible,
+.blog-card-link:hover,
+.blog-card-link:focus-visible {
+  color: var(--primary-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .section-button-center {
@@ -911,6 +944,14 @@ p {
   margin-bottom: 1.75rem;
 }
 
+/* Every sibling grid on this page collapses to one column on phones; this one
+   didn't, cramping condition names into two narrow columns. */
+@media (max-width: 560px) {
+  .service-conditions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .service-conditions-grid p,
 .include-grid p {
   color: var(--ink);
@@ -964,6 +1005,12 @@ p {
   color: var(--ink);
   font-size: 0.95rem;
   font-weight: 600;
+}
+
+.service-faqs summary:focus-visible {
+  outline: none;
+  border-radius: 8px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
 .service-faqs summary::-webkit-details-marker {
@@ -1088,9 +1135,9 @@ p {
   top: 1.7rem;
   right: 1.7rem;
   padding: 0.35rem 0.75rem;
-  border-radius: 999px;
-  background: rgba(5, 150, 105, 0.15);
-  color: var(--color-success);
+  border-radius: var(--radius-pill);
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
   font-weight: 700;
   font-size: 0.9rem;
 }
@@ -1151,6 +1198,7 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 44px;
   padding: 0.6rem 1rem;
   border-radius: 999px;
   border: 1px solid var(--line);
@@ -1268,6 +1316,8 @@ p {
 
 .blog-card-link {
   display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   margin-top: auto;
   padding-top: 0.35rem;
 }
@@ -1375,7 +1425,9 @@ p {
 }
 
 .article-reading-column {
-  width: min(100%, 760px);
+  /* Cap on ch, not px: holds body copy to ~72 characters (inside the 65-75ch
+     rule) regardless of viewport, the way .home-hero-copy already does. */
+  width: min(100%, 72ch);
   margin: 0 auto;
   display: grid;
   gap: 2rem;
@@ -1616,25 +1668,113 @@ p {
   gap: 2rem;
 }
 
+/* The info column is the "human" half of the contact page: a soft accent-tint
+   panel that reads as a deliberate twin to the white form card, rather than a
+   bare list stranded on the paper background. Tint-not-fill: a light wash with
+   dark, readable text on top — never a solid accent block. */
+.contact-info-column {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-primary-light);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 16%, var(--color-border));
+  border-radius: var(--radius-panel);
+  padding: 1.8rem 1.8rem 2rem;
+  box-shadow: var(--shadow);
+}
+
 .contact-info-column h2 {
-  margin-top: 0;
+  margin: 0 0 1.2rem;
 }
 
 .contact-info-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contact-info-list li {
   display: grid;
-  gap: 1.2rem;
-  margin: 1.5rem 0 2rem;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: start;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
-.contact-info-list div strong,
-.contact-info-list div span {
+.contact-info-list li:first-child {
+  padding-top: 0;
+}
+
+.contact-info-icon {
+  display: inline-flex;
+  margin-top: 0.15rem;
+  color: var(--primary);
+}
+
+.contact-info-list strong {
   display: block;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
 }
 
-.contact-info-list div span {
+.contact-info-list li span {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.contact-info-link {
+  display: inline-block;
+  margin-top: 0.3rem;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.contact-info-link:hover {
+  text-decoration: underline;
+}
+
+/* The physio identity strip: puts a face (initials avatar) to the practice so
+   the column closes on a person, not a data row. */
+.contact-physio {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 1.4rem 0 1.5rem;
+}
+
+.contact-physio-label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.contact-physio strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.contact-physio > div > span:last-child {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.9rem;
   color: var(--muted);
-  margin-top: 0.35rem;
-  line-height: 1.55;
+  line-height: 1.4;
+}
+
+.contact-cta {
+  margin-top: auto;
 }
 
 .contact-form-card {
@@ -1693,7 +1833,7 @@ select,
 textarea {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-input);
   padding: 0.95rem 1rem;
   font: inherit;
   color: var(--ink);
@@ -2362,6 +2502,9 @@ textarea:focus {
 }
 
 .search-keyword-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   padding: 0.62rem 0.9rem;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -2907,7 +3050,7 @@ textarea:focus {
   margin-bottom: 0.5rem;
 }
 
-.empty-state h3 {
+.empty-state h2 {
   font-family: var(--font-serif);
   font-size: var(--text-lg);
   color: var(--color-navy);
@@ -3657,6 +3800,7 @@ textarea:focus {
 }
 
 .book-chip {
+  min-height: 44px;
   padding: 8px 14px;
   border-radius: var(--radius-pill);
   border: 1.5px solid var(--book-paper-border);
@@ -3693,8 +3837,8 @@ textarea:focus {
 }
 
 .book-cal-nav {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3768,6 +3912,7 @@ textarea:focus {
 }
 
 .book-slot {
+  min-height: 44px;
   padding: 10px 12px;
   border-radius: var(--radius-chip);
   border: 1.5px solid var(--book-paper-border);

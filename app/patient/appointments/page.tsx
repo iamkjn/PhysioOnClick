@@ -21,6 +21,7 @@ export default function AppointmentsPage() {
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncDone, setSyncDone] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -53,8 +54,10 @@ export default function AppointmentsPage() {
   useEffect(() => {
     if (!syncDone || !uid || !personId) return;
     setLoading(true);
+    setLoadError(false);
     getPatientBookings(uid, personId)
       .then(setBookings)
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
   }, [syncDone, uid, personId]);
 
@@ -64,7 +67,11 @@ export default function AppointmentsPage() {
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
-      <h1 style={{ color: "var(--color-text-primary)" }}>My Appointments</h1>
+      <span className="eyebrow">Appointments</span>
+      <h1 style={{ color: "var(--color-text-primary)" }}>Your appointments</h1>
+      <p className="muted" style={{ marginTop: "-0.5rem", marginBottom: "1.5rem" }}>
+        Review upcoming sessions and revisit summaries from past visits.
+      </p>
       {uid && (
         <div style={{ marginBottom: "1.5rem" }}>
           <PersonSwitcher
@@ -75,7 +82,10 @@ export default function AppointmentsPage() {
         </div>
       )}
       {loading && <SkeletonRow count={3} />}
-      {!loading && bookings.length === 0 && (
+      {!loading && loadError && (
+        <p className="field-error">Could not load your appointments. Please refresh the page.</p>
+      )}
+      {!loading && !loadError && bookings.length === 0 && (
         <EmptyState
           illustration="calendar"
           title="No appointments yet"
@@ -139,7 +149,7 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
           >
             {booking.patientName}
           </strong>
-          <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
+          <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
             {booking.service} · {date}
           </span>
         </div>
@@ -148,10 +158,10 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
             style={{
               background: "var(--color-bg)",
               color: "var(--color-text-secondary)",
-              fontSize: 12,
+              fontSize: "var(--text-xs)",
               fontWeight: 700,
               padding: "3px 10px",
-              borderRadius: 999,
+              borderRadius: "var(--radius-pill)",
               border: "1px solid var(--color-border)",
             }}
           >
@@ -159,19 +169,19 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
           </span>
         ) : booking.displayStatus !== "upcoming" ? (
           booking.summaryId ? (
-            <span style={{ fontSize: 20 }}>📋</span>
+            <span role="img" aria-label="Summary available" style={{ fontSize: 20 }}>📋</span>
           ) : (
-            <span style={{ fontSize: 20, opacity: 0.4 }}>⏳</span>
+            <span role="img" aria-label="Summary pending" style={{ fontSize: 20, opacity: 0.4 }}>⏳</span>
           )
         ) : (
           <span
             style={{
               background: "var(--color-primary-light)",
               color: "var(--color-primary-dark)",
-              fontSize: 12,
+              fontSize: "var(--text-xs)",
               fontWeight: 700,
               padding: "3px 10px",
-              borderRadius: 999,
+              borderRadius: "var(--radius-pill)",
             }}
           >
             Upcoming

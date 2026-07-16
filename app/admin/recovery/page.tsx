@@ -67,7 +67,12 @@ export default function AdminRecoveryPage() {
         <AdminHeader />
         <div className="site-shell">
           <section className="page-section stack">
-            <p className="muted">Admin access required.</p>
+            <p className="muted" style={{ fontSize: 14 }}>
+              Admin access required.{" "}
+              <Link href="/admin" style={{ color: "var(--primary)", fontWeight: 600 }}>
+                Go to sign in
+              </Link>
+            </p>
           </section>
         </div>
       </div>

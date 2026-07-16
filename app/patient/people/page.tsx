@@ -159,7 +159,7 @@ export default function PeoplePage() {
                 <span
                   style={{
                     background: "var(--color-primary-light)",
-                    color: "var(--color-primary-dark)",
+                    color: "var(--primary)",
                     fontSize: 11,
                     fontWeight: 700,
                     borderRadius: 999,
@@ -169,7 +169,7 @@ export default function PeoplePage() {
                   You
                 </span>
               </div>
-              <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
+              <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
                 Your account · {currentEmail}
               </span>
             </div>
@@ -200,56 +200,69 @@ export default function PeoplePage() {
                 background: "var(--color-surface)",
                 borderRadius: "var(--radius-card)",
                 padding: "1.25rem",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                boxShadow: "var(--shadow)",
               }}
             >
-              <h3 style={{ marginTop: 0, color: "var(--color-text-primary)", fontSize: 16 }}>
+              <h2 style={{ marginTop: 0, color: "var(--color-text-primary)", fontSize: "var(--text-md)" }}>
                 Edit {dep.name}
-              </h3>
+              </h2>
               <div style={{ display: "grid", gap: "0.75rem" }}>
-                <input
-                  className="input"
-                  value={editForm.name}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, name: e.target.value }))
-                  }
-                  placeholder="Full name"
-                  required
-                />
-                <input
-                  type="date"
-                  className="input"
-                  value={editForm.dob}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, dob: e.target.value }))
-                  }
-                  required
-                />
-                <select
-                  className="input"
-                  value={editForm.relationship}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, relationship: e.target.value }))
-                  }
-                >
-                  {["Mother", "Father", "Son", "Daughter", "Partner", "Other"].map(
-                    (r) => (
-                      <option key={r}>{r}</option>
-                    )
-                  )}
-                </select>
-                <input
-                  className="input"
-                  value={editForm.notes}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, notes: e.target.value }))
-                  }
-                  placeholder="Medical notes (optional)"
-                />
+                <label>
+                  Full name *
+                  <input
+                    className="input"
+                    value={editForm.name}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, name: e.target.value }))
+                    }
+                    placeholder="e.g. Jane Doe"
+                    required
+                  />
+                </label>
+                <label>
+                  Date of birth *
+                  <input
+                    type="date"
+                    className="input"
+                    value={editForm.dob}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, dob: e.target.value }))
+                    }
+                    required
+                  />
+                </label>
+                <label>
+                  Relationship
+                  <select
+                    className="input"
+                    value={editForm.relationship}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, relationship: e.target.value }))
+                    }
+                  >
+                    {["Mother", "Father", "Son", "Daughter", "Partner", "Other"].map(
+                      (r) => (
+                        <option key={r}>{r}</option>
+                      )
+                    )}
+                  </select>
+                </label>
+                <label>
+                  Medical notes <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+                  <input
+                    className="input"
+                    value={editForm.notes}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, notes: e.target.value }))
+                    }
+                    placeholder="Any conditions we should know about"
+                  />
+                </label>
                 <div style={{ display: "flex", gap: "0.75rem" }}>
                   <button
                     onClick={() => void handleSave(dep.id)}
                     disabled={saving || !editForm.name || !editForm.dob}
+                    aria-busy={saving}
                     className="button primary"
                   >
                     {saving ? "Saving…" : "Save changes"}
@@ -271,14 +284,14 @@ export default function PeoplePage() {
                 <strong style={{ display: "block", color: "var(--color-text-primary)" }}>
                   {dep.name}
                 </strong>
-                <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
+                <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
                   {dep.relationship} · {calcAge(dep.dob)} years old
                 </span>
                 {dep.notes && (
                   <span
                     style={{
                       display: "block",
-                      fontSize: 12,
+                      fontSize: "var(--text-sm)",
                       color: "var(--color-text-secondary)",
                       marginTop: 2,
                     }}
@@ -289,26 +302,34 @@ export default function PeoplePage() {
               </div>
               <button
                 onClick={() => startEdit(dep)}
+                aria-label={`Edit ${dep.name}`}
                 style={{
                   background: "none",
                   border: "none",
                   color: "var(--color-text-secondary)",
                   cursor: "pointer",
-                  fontSize: 13,
+                  fontSize: "var(--text-sm)",
                   fontWeight: 600,
+                  padding: "0.65rem 0.5rem",
+                  minHeight: 44,
+                  borderRadius: "var(--radius-chip)",
                 }}
               >
                 Edit
               </button>
               <button
                 onClick={() => setRemoveTarget({ id: dep.id, name: dep.name })}
+                aria-label={`Remove ${dep.name}`}
                 style={{
                   background: "none",
                   border: "none",
                   color: "var(--color-error)",
                   cursor: "pointer",
-                  fontSize: 13,
+                  fontSize: "var(--text-sm)",
                   fontWeight: 600,
+                  padding: "0.65rem 0.5rem",
+                  minHeight: 44,
+                  borderRadius: "var(--radius-chip)",
                 }}
               >
                 Remove
@@ -322,7 +343,7 @@ export default function PeoplePage() {
             illustration="people"
             title="Just you for now"
             body="Add a family member or friend to book appointments on their behalf."
-            cta={{ label: 'Add a Person', onClick: () => setShowForm(true) }}
+            cta={{ label: 'Add person', onClick: () => setShowForm(true) }}
           />
         )}
       </div>
@@ -335,25 +356,37 @@ export default function PeoplePage() {
             background: "var(--color-surface)",
             borderRadius: "var(--radius-panel)",
             padding: "1.5rem",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+            boxShadow: "var(--shadow)",
           }}
         >
-          <h3 style={{ marginTop: 0, color: "var(--color-text-primary)" }}>Add a person</h3>
+          <h2 style={{ marginTop: 0, color: "var(--color-text-primary)", fontSize: "var(--text-md)" }}>Add a person</h2>
           <form onSubmit={(e) => void handleAdd(e)} style={{ display: "grid", gap: "0.75rem" }}>
-            <input name="name" className="input" placeholder="Full name" required />
-            <input name="dob" type="date" className="input" required />
-            <select name="relationship" className="input" required>
-              {["Mother", "Father", "Son", "Daughter", "Partner", "Other"].map((r) => (
-                <option key={r}>{r}</option>
-              ))}
-            </select>
-            <input
-              name="notes"
-              className="input"
-              placeholder="Medical notes (optional)"
-            />
+            <label>
+              Full name *
+              <input name="name" className="input" placeholder="e.g. Jane Doe" required />
+            </label>
+            <label>
+              Date of birth *
+              <input name="dob" type="date" className="input" required />
+            </label>
+            <label>
+              Relationship *
+              <select name="relationship" className="input" required>
+                {["Mother", "Father", "Son", "Daughter", "Partner", "Other"].map((r) => (
+                  <option key={r}>{r}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Medical notes <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+              <input
+                name="notes"
+                className="input"
+                placeholder="Any conditions we should know about"
+              />
+            </label>
             <div style={{ display: "flex", gap: "0.75rem" }}>
-              <button type="submit" disabled={saving} className="button primary">
+              <button type="submit" disabled={saving} aria-busy={saving} className="button primary">
                 {saving ? "Saving…" : "Save"}
               </button>
               <button

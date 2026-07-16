@@ -66,6 +66,10 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         <Reveal direction="up" className="stack article-hero-copy">
           <div className="article-hero-meta">
             <span className="eyebrow">{article.category}</span>
+            <span aria-hidden="true">&middot;</span>
+            <time dateTime={article.publishedAt}>
+              {new Date(article.publishedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+            </time>
           </div>
           <h1>{article.title}</h1>
           <p className="lead">{article.excerpt}</p>
@@ -83,7 +87,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         <Reveal direction="up" className="article-feature-media">
           <Image
             src={article.image}
-            alt=""
+            alt={article.title}
             width={1200}
             height={680}
             unoptimized

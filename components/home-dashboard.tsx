@@ -40,7 +40,7 @@ export function HomeDashboard({ user }: { user: User }) {
             <h3>Quick links</h3>
             <div className="home-dashboard-links-row">
               <Link className="button primary" href="/book" prefetch>
-                Book a session
+                Book a Session
               </Link>
               <Link className="button secondary" href="/patient/people" prefetch>
                 My People

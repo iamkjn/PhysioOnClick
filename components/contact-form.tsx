@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
 import { auth } from "@/lib/firebase";
@@ -33,7 +32,7 @@ export function ContactForm() {
     const nextErrors: Record<string, string> = {};
 
     if (payload.name.length < 2) {
-      nextErrors.name = "Enter the patient's full name.";
+      nextErrors.name = "Enter your full name.";
     }
 
     if (!emailPattern.test(payload.email)) {
@@ -136,7 +135,7 @@ export function ContactForm() {
       <h2>Send an Enquiry</h2>
       <form className="contact-form-grid" noValidate onSubmit={handleSubmit}>
         <label>
-          Full Name *
+          Full Name <span aria-hidden="true">*</span>
           <input
             name="name"
             placeholder="Your name"
@@ -147,7 +146,7 @@ export function ContactForm() {
           {errors.name ? <span className="field-error" id="err-name">{errors.name}</span> : null}
         </label>
         <label>
-          Email *
+          Email <span aria-hidden="true">*</span>
           <input
             name="email"
             placeholder="your@email.com"
@@ -171,14 +170,15 @@ export function ContactForm() {
           {errors.phone ? <span className="field-error" id="err-phone">{errors.phone}</span> : null}
         </label>
         <label>
-          Service *
+          Service <span aria-hidden="true">*</span>
           <select
             name="service"
             required
+            defaultValue=""
             aria-invalid={errors.service ? true : undefined}
             aria-describedby={errors.service ? "err-service" : undefined}
           >
-            <option value="">Select service</option>
+            <option value="" disabled>Select service</option>
             <option>Initial Assessment</option>
             <option>Follow-Up Session</option>
             <option>Online Consultation</option>
@@ -187,7 +187,7 @@ export function ContactForm() {
           {errors.service ? <span className="field-error" id="err-service">{errors.service}</span> : null}
         </label>
         <label className="full-span">
-          Message *
+          Message <span aria-hidden="true">*</span>
           <textarea
             name="message"
             placeholder="Tell us about your condition or question..."
@@ -199,8 +199,8 @@ export function ContactForm() {
           {errors.message ? <span className="field-error" id="err-message">{errors.message}</span> : null}
         </label>
         <div className="full-span">
-          <button className="button primary full-width" disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Sending..." : "Send Enquiry"}
+          <button className="button primary full-width" disabled={isSubmitting} aria-busy={isSubmitting} type="submit">
+            {isSubmitting ? "Sending…" : "Send Enquiry"}
           </button>
         </div>
       </form>
@@ -211,9 +211,9 @@ export function ContactForm() {
       >
         <p className="muted">{status}</p>
         {statusTone === "error" ? (
-          <Link className="form-note-link" href="mailto:hello@physioonclick.co.uk?subject=PhysioOnClick%20Enquiry">
+          <a className="form-note-link" href="mailto:hello@physioonclick.co.uk?subject=PhysioOnClick%20Enquiry">
             Email instead
-          </Link>
+          </a>
         ) : null}
       </div>
     </div>

@@ -90,7 +90,7 @@ export function EmptyState({ illustration, title, body, cta }: EmptyStateProps) 
   return (
     <div className="empty-state">
       {ILLUSTRATIONS[illustration]}
-      <h3>{title}</h3>
+      <h2>{title}</h2>
       <p>{body}</p>
       {cta && (
         cta.href ? (

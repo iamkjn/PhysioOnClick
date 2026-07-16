@@ -25,13 +25,46 @@ export default function PatientPage() {
           </p>
         </div>
         <div className="page-hero-aside dashboard-preview">
-          <div className="dashboard-chip">Upcoming appointment</div>
+          <div
+            className="dashboard-chip"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              padding: "0.35rem 0.85rem",
+              borderRadius: "var(--radius-chip)",
+              background: "var(--color-primary-light)",
+              color: "var(--primary)",
+              fontSize: "var(--text-xs)",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.04em",
+              marginBottom: "0.75rem"
+            }}
+          >
+            Upcoming appointment
+          </div>
           <strong>Follow-up review</strong>
           <p className="muted">Thursday, 19 March at 10:30</p>
-          <div className="progress-pill-row">
-            <span>Pain tracking</span>
-            <span>Exercise library</span>
-            <span>Secure uploads</span>
+          <div
+            className="progress-pill-row"
+            style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1rem" }}
+          >
+            {["Pain tracking", "Exercise library", "Secure uploads"].map((label) => (
+              <span
+                key={label}
+                style={{
+                  padding: "0.3rem 0.7rem",
+                  borderRadius: "var(--radius-pill)",
+                  border: "1px solid var(--line)",
+                  background: "var(--color-surface)",
+                  fontSize: "var(--text-xs)",
+                  fontWeight: 600,
+                  color: "var(--muted)"
+                }}
+              >
+                {label}
+              </span>
+            ))}
           </div>
         </div>
       </section>
@@ -66,7 +99,7 @@ export default function PatientPage() {
           <span className="eyebrow">Patient account</span>
           <h3>Everything linked to one secure record</h3>
           <p className="muted">
-            Profile details, bookings, enquiries and document uploads now connect to the same Firebase patient
+            Profile details, bookings, enquiries and document uploads now connect to the same secure patient
             account for a more consistent portal experience.
           </p>
         </div>

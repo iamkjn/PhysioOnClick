@@ -101,7 +101,7 @@ export function AdminEnquiriesTable() {
 
       {!loading && enquiries.length > 0 && (
         <div className="dashboard-table-wrap">
-          <table className="dashboard-table">
+          <table className="dashboard-table admin-enquiries-table">
             <caption className="sr-only">Latest contact form enquiries with contact details and status</caption>
             <thead>
               <tr>
@@ -117,7 +117,7 @@ export function AdminEnquiriesTable() {
               {enquiries.map((item) => {
                 const isExp = expanded[item.id] ?? false;
                 return (
-                  <tr key={item.id}>
+                  <tr key={item.id} className="admin-table-row">
                     <td style={{ color: "var(--color-text-secondary)", fontSize: 12, whiteSpace: "nowrap" as const, fontFamily: "var(--font-sans)" }}>
                       {item.createdAtLabel}
                     </td>
@@ -147,6 +147,7 @@ export function AdminEnquiriesTable() {
                       {item.message.length > 80 && (
                         <button
                           onClick={() => setExpanded((p) => ({ ...p, [item.id]: !isExp }))}
+                          aria-expanded={isExp}
                           style={{
                             background: "none",
                             border: "none",
@@ -168,7 +169,7 @@ export function AdminEnquiriesTable() {
                           value={item.status}
                           onChange={(e) => updateStatus(item.id, item.status, e.target.value)}
                           title="Change status"
-                          aria-label="Change status"
+                          aria-label={`Change status for ${item.name || "this enquiry"}`}
                           className={STATUS_PILL_CLASS[item.status] ?? "dashboard-status-pill"}
                           style={{
                             border: "none",
@@ -196,6 +197,12 @@ export function AdminEnquiriesTable() {
           </table>
         </div>
       )}
+
+      {/* Row hover — see admin-bookings-table.tsx for the same pattern and
+          the recommended shared globals.css rule in the report. */}
+      <style>{`
+        .admin-enquiries-table tbody tr.admin-table-row:hover { background: var(--surface-alt); }
+      `}</style>
     </div>
   );
 }

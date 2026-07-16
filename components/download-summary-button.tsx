@@ -49,7 +49,7 @@ export function DownloadSummaryButton({ summary }: Props) {
         y += 6;
         pdf.setFontSize(10);
         pdf.setTextColor(muted);
-        const lines = pdf.splitTextToSize(body || "—", contentW) as string[];
+        const lines = pdf.splitTextToSize(body || "Not provided", contentW) as string[];
         pdf.text(lines, margin, y);
         y += lines.length * 5 + 6;
       };
@@ -78,17 +78,20 @@ export function DownloadSummaryButton({ summary }: Props) {
     <button
       onClick={() => void handleDownload()}
       disabled={generating}
+      aria-label={generating ? "Generating session summary PDF" : "Download session summary as PDF"}
+      aria-busy={generating}
       style={{
         display: "inline-flex",
         alignItems: "center",
         gap: "0.5rem",
+        minHeight: 46,
         background: generating ? "var(--color-border)" : "var(--color-text-primary)",
         color: "#fff",
         border: "none",
-        borderRadius: 12,
+        borderRadius: "var(--radius-input)",
         padding: "0.6rem 1.25rem",
         fontWeight: 700,
-        fontSize: 14,
+        fontSize: "var(--text-sm)",
         cursor: generating ? "not-allowed" : "pointer",
       }}
     >

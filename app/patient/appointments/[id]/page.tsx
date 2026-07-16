@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { SkeletonRow } from "@/components/skeleton";
+import { EmptyState } from "@/components/empty-state";
 import { getBooking, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { DownloadSummaryButton } from "@/components/download-summary-button";
@@ -15,6 +16,7 @@ export default function AppointmentDetailPage() {
   const [booking, setBooking] = useState<BookingRecord | null>(null);
   const [summary, setSummary] = useState<SessionSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
@@ -27,10 +29,17 @@ export default function AppointmentDetailPage() {
         setLoading(false);
         return;
       }
-      const [b, s] = await Promise.all([getBooking(id), getSessionSummary(id)]);
-      setBooking(b);
-      setSummary(s);
-      setLoading(false);
+      try {
+        const [b, s] = await Promise.all([getBooking(id), getSessionSummary(id)]);
+        setBooking(b);
+        setSummary(s);
+      } catch {
+        // Without this catch a rejected fetch left loading true forever —
+        // the page just sat on the skeleton with no way out.
+        setLoadError(true);
+      } finally {
+        setLoading(false);
+      }
     });
   }, [id, router]);
 
@@ -45,7 +54,16 @@ export default function AppointmentDetailPage() {
   if (!booking) {
     return (
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "3rem 1rem" }}>
-        Appointment not found.
+        <EmptyState
+          illustration={loadError ? "wifi-off" : "search"}
+          title={loadError ? "Could not load this appointment" : "Appointment not found"}
+          body={
+            loadError
+              ? "Please check your connection and try again."
+              : "This appointment may have been removed, or the link is incorrect."
+          }
+          cta={{ label: "Back to appointments", href: "/patient/appointments" }}
+        />
       </div>
     );
   }
@@ -101,14 +119,14 @@ export default function AppointmentDetailPage() {
             <div
               style={{
                 background: "var(--color-primary-light)",
-                borderRadius: 14,
+                borderRadius: "var(--radius-card)",
                 padding: "1rem 1.25rem",
                 display: "flex",
                 alignItems: "center",
                 gap: "0.75rem",
               }}
             >
-              <span>📅</span>
+              <span aria-hidden="true">📅</span>
               <strong style={{ color: "var(--color-primary-dark)" }}>
                 Follow-up recommended in {summary.followUpWeeks} week
                 {summary.followUpWeeks > 1 ? "s" : ""}
@@ -124,10 +142,10 @@ export default function AppointmentDetailPage() {
             borderRadius: "var(--radius-card)",
             padding: "2rem",
             textAlign: "center",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            boxShadow: "var(--shadow)",
           }}
         >
-          <div style={{ fontSize: 36 }}>⏳</div>
+          <div aria-hidden="true" style={{ fontSize: 36 }}>⏳</div>
           <h3>Summary coming soon</h3>
           <p style={{ color: "var(--color-text-secondary)" }}>
             Your physio will add a session summary shortly.
@@ -153,19 +171,19 @@ function SummaryBlock({
         background: "var(--color-surface)",
         borderRadius: "var(--radius-card)",
         padding: "1.25rem",
-        boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
+        boxShadow: "var(--shadow)",
       }}
     >
       <h3
         style={{
           margin: "0 0 0.5rem",
-          fontSize: 15,
+          fontSize: "var(--text-sm)",
           display: "flex",
           alignItems: "center",
           gap: "0.5rem",
         }}
       >
-        <span>{icon}</span>
+        <span aria-hidden="true">{icon}</span>
         {title}
       </h3>
       <p style={{ margin: 0, color: "var(--color-text-primary)", lineHeight: 1.65 }}>{body}</p>

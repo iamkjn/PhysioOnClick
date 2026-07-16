@@ -199,17 +199,20 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
     <button
       onClick={() => void handleDownload()}
       disabled={generating}
+      aria-label={generating ? "Generating PDF report" : "Download recovery report as PDF"}
+      aria-busy={generating}
       style={{
         display: "inline-flex",
         alignItems: "center",
         gap: "0.5rem",
+        minHeight: 46,
         background: generating ? "var(--color-border)" : "var(--color-text-primary)",
         color: "#fff",
         border: "none",
-        borderRadius: 12,
+        borderRadius: "var(--radius-input)",
         padding: "0.6rem 1.25rem",
         fontWeight: 700,
-        fontSize: 14,
+        fontSize: "var(--text-sm)",
         cursor: generating ? "not-allowed" : "pointer",
       }}
     >

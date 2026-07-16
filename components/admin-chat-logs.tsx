@@ -97,18 +97,12 @@ export function AdminChatLogs() {
   return (
     <div>
       <input
+        className="input"
         value={search}
         onChange={e => setSearch(e.target.value)}
         placeholder="Search by patient name or message…"
-        style={{
-          width: "100%",
-          padding: "10px 14px",
-          borderRadius: 8,
-          border: "1.5px solid var(--color-border)",
-          fontSize: 14,
-          marginBottom: 20,
-          boxSizing: "border-box",
-        }}
+        aria-label="Search chat sessions by patient name or message"
+        style={{ marginBottom: 20 }}
       />
 
       {filtered.length === 0 ? (
@@ -139,7 +133,9 @@ export function AdminChatLogs() {
               }}
             >
               <button
+                className="admin-chat-session-toggle"
                 onClick={() => setExpanded(isOpen ? null : s.sessionId)}
+                aria-expanded={isOpen}
                 style={{
                   width: "100%",
                   display: "flex",
@@ -151,6 +147,7 @@ export function AdminChatLogs() {
                   cursor: "pointer",
                   textAlign: "left",
                   gap: 12,
+                  transition: "background-color 140ms ease",
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -176,7 +173,7 @@ export function AdminChatLogs() {
                     {s.messages.length} messages
                   </div>
                 </div>
-                <span style={{ color: "var(--color-primary-dark)", fontSize: 18 }}>{isOpen ? "▲" : "▼"}</span>
+                <span aria-hidden="true" style={{ color: "var(--color-primary-dark)", fontSize: 18 }}>{isOpen ? "▲" : "▼"}</span>
               </button>
 
               {isOpen && (
@@ -197,7 +194,10 @@ export function AdminChatLogs() {
                           padding: "8px 12px",
                           borderRadius:
                             m.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
-                          background: m.role === "user" ? "var(--color-primary)" : "var(--color-primary-light)",
+                          // rule: readable text uses --primary (AA-checked), not the raw
+                          // --color-primary decoration token — white-on-raw-accent was
+                          // under 3:1 contrast.
+                          background: m.role === "user" ? "var(--primary)" : "var(--color-primary-light)",
                           color: m.role === "user" ? "white" : "var(--color-text-primary)",
                           fontSize: 13,
                           lineHeight: 1.5,
@@ -206,7 +206,7 @@ export function AdminChatLogs() {
                         {m.text}
                       </div>
                       {m.action && (
-                        <div style={{ marginTop: 4, fontSize: 12, color: "var(--color-primary)" }}>
+                        <div style={{ marginTop: 4, fontSize: 12, color: "var(--primary)" }}>
                           → {m.action.label} ({m.action.url})
                         </div>
                       )}
@@ -219,6 +219,13 @@ export function AdminChatLogs() {
         })}
         </div>
       )}
+
+      {/* Scoped hover affordance for session toggles — dashboard-table shares
+          this pattern via a global rule; this list predates that, so it's
+          local until a shared list-row hover class exists (see report). */}
+      <style>{`
+        .admin-chat-session-toggle:hover { background: var(--surface-alt) !important; }
+      `}</style>
     </div>
   );
 }

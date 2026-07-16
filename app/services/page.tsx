@@ -40,7 +40,7 @@ export default function ServicesPage() {
               <Image
                 className="service-split-image"
                 src={service.image}
-                alt={service.title}
+                alt=""
                 width={900}
                 height={520}
                 unoptimized
@@ -71,18 +71,22 @@ export default function ServicesPage() {
                 </div>
               </div>
               {service.faqs?.length ? (
-                <div className="service-faqs">
-                  {service.faqs.map((f) => (
-                    <details key={f.question}>
-                      <summary>{f.question}</summary>
-                      <p>{f.answer}</p>
-                    </details>
-                  ))}
-                </div>
+                <>
+                  <h3 className="service-subhead">Common Questions</h3>
+                  <div className="service-faqs">
+                    {service.faqs.map((f) => (
+                      <details key={f.question}>
+                        <summary>{f.question}</summary>
+                        <p>{f.answer}</p>
+                      </details>
+                    ))}
+                  </div>
+                </>
               ) : null}
               <div className="service-split-cta">
                 <Link className="button primary" href={`/book?service=initial-assessment`}>
                   Book Assessment
+                  <span className="sr-only"> for {service.title}</span>
                 </Link>
                 <p className="muted">From {formatCurrency(minOnlinePrice)} online</p>
               </div>

@@ -81,8 +81,11 @@ export function AdminLiveStats() {
     border: "1px solid var(--color-primary-dark)",
   };
 
+  // Stat numbers are data, not headings — --font-sans per the design system
+  // (Fraunces is reserved for section titles like "Dashboard overview" below).
   const bigNum: React.CSSProperties = {
-    fontFamily: "var(--font-serif)",
+    fontFamily: "var(--font-sans)",
+    fontWeight: 800,
     fontSize: 48,
     color: "var(--color-navy)",
     lineHeight: 1,
@@ -143,7 +146,7 @@ export function AdminLiveStats() {
         {/* Bookings */}
         <div style={primaryCardStyle}>
           <span style={primaryEyebrow}>Bookings</span>
-          <p style={primaryBigNum}>{counts.bookings}</p>
+          <p style={primaryBigNum} aria-live="polite">{counts.bookings}</p>
           <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" as const }}>
             {counts.completedBookings > 0 && pill(`${counts.completedBookings} completed`, "rgba(255,255,255,0.18)", "white")}
             {counts.upcomingBookings > 0 && pill(`${counts.upcomingBookings} upcoming`, "rgba(255,255,255,0.18)", "white")}
@@ -153,14 +156,14 @@ export function AdminLiveStats() {
         {/* Blogs */}
         <div style={cardStyle}>
           <span style={eyebrow}>Blogs</span>
-          <p style={bigNum}>{counts.blogs}</p>
+          <p style={bigNum} aria-live="polite">{counts.blogs}</p>
           <span style={muted}>Live count from Firestore</span>
         </div>
 
         {/* Enquiries */}
         <div style={cardStyle}>
           <span style={eyebrow}>Enquiries</span>
-          <p style={bigNum}>{counts.enquiries}</p>
+          <p style={bigNum} aria-live="polite">{counts.enquiries}</p>
           <div style={{ display: "flex", gap: "0.375rem" }}>
             {counts.newEnquiries > 0 && pill(`${counts.newEnquiries} new`, "var(--color-gold-light)", "var(--color-gold)")}
           </div>

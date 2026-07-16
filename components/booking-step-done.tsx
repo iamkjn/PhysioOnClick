@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, type RefObject } from "react";
 
 import { bookServiceFor } from "@/lib/cal-services";
 import { founder } from "@/lib/site-data";
@@ -25,7 +25,7 @@ function calendarHref(title: string, startIso: string, minutes: number) {
     `DTSTAMP:${icsStamp(start)}`,
     `DTSTART:${icsStamp(start)}`,
     `DTEND:${icsStamp(end)}`,
-    `SUMMARY:${title} — PhysioOnClick`,
+    `SUMMARY:${title} · PhysioOnClick`,
     `DESCRIPTION:Online physiotherapy session with ${founder.name}.`,
     "END:VEVENT",
     "END:VCALENDAR"
@@ -33,7 +33,12 @@ function calendarHref(title: string, startIso: string, minutes: number) {
   return `data:text/calendar;charset=utf-8,${encodeURIComponent(body)}`;
 }
 
-export function BookingStepDone({ confirmation }: { confirmation: BookingConfirmation }) {
+type Props = {
+  confirmation: BookingConfirmation;
+  titleRef?: RefObject<HTMLHeadingElement | null>;
+};
+
+export function BookingStepDone({ confirmation, titleRef }: Props) {
   const service = useMemo(() => bookServiceFor(confirmation.serviceId), [confirmation.serviceId]);
   const firstName = confirmation.name.trim().split(/\s+/)[0] || "there";
 
@@ -43,7 +48,9 @@ export function BookingStepDone({ confirmation }: { confirmation: BookingConfirm
         <span className="book-done-check" aria-hidden="true">
           ✓
         </span>
-        <h1 className="book-done-title">You&rsquo;re booked in, {firstName}.</h1>
+        <h1 className="book-done-title" ref={titleRef} tabIndex={-1}>
+          You&rsquo;re booked in, {firstName}.
+        </h1>
         <p className="book-done-text">
           We&rsquo;ve emailed your confirmation and a link to join the session. You can reschedule free of
           charge up to 24 hours before.
@@ -53,6 +60,7 @@ export function BookingStepDone({ confirmation }: { confirmation: BookingConfirm
             className="book-action-outline"
             href={calendarHref(service.title, confirmation.start, service.minutes)}
             download="physioonclick-session.ics"
+            aria-label="Add to calendar (downloads a calendar file)"
           >
             Add to calendar
           </a>
@@ -89,7 +97,7 @@ export function BookingStepDone({ confirmation }: { confirmation: BookingConfirm
               1
             </span>
             <span className="book-next-text">
-              Fill in your intake form — it takes about 2 minutes and helps {founder.name} prepare.
+              Fill in your intake form. It takes about 2 minutes and helps {founder.name} prepare.
             </span>
           </li>
           <li className="book-next-item">

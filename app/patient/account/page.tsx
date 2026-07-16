@@ -38,7 +38,7 @@ export default function AccountPage() {
   if (!uid) {
     return (
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
-        <div style={{ background: "var(--color-surface)", borderRadius: "var(--radius-panel)", padding: "1.5rem", marginBottom: "1.5rem", boxShadow: "0 2px 10px rgba(0,0,0,0.07)" }}>
+        <div style={{ background: "var(--color-surface)", borderRadius: "var(--radius-panel)", padding: "1.5rem", marginBottom: "1.5rem", boxShadow: "var(--shadow)" }}>
           <Skeleton height="1.5rem" width="160px" className="skeleton-heading" />
           <div style={{ marginTop: "0.5rem" }}>
             <Skeleton height="0.9rem" width="220px" />
@@ -84,13 +84,13 @@ export default function AccountPage() {
           borderRadius: "var(--radius-panel)",
           padding: "1.5rem",
           marginBottom: "1.5rem",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
+          boxShadow: "var(--shadow)",
         }}
       >
-        <h1 style={{ margin: "0 0 0.25rem", color: "var(--color-text-primary)", fontSize: 22 }}>
+        <h1 style={{ margin: "0 0 0.25rem", color: "var(--color-text-primary)", fontSize: "var(--text-lg)" }}>
           {displayName}
         </h1>
-        <p style={{ margin: "0 0 1rem", color: "var(--color-text-secondary)", fontSize: 14 }}>{email}</p>
+        <p style={{ margin: "0 0 1rem", color: "var(--color-text-secondary)", fontSize: "var(--text-sm)" }}>{email}</p>
         <button onClick={() => void handleSignOut()} className="button secondary small">
           Sign out
         </button>

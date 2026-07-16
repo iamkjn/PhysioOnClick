@@ -52,6 +52,7 @@ export function BlogDirectory({
                 <button
                   className={`blog-chip ${activeCategory === "All" ? "active" : ""}`}
                   type="button"
+                  aria-pressed={activeCategory === "All"}
                   onClick={() => setActiveCategory("All")}
                 >
                   All articles
@@ -61,6 +62,7 @@ export function BlogDirectory({
                     className={`blog-chip ${activeCategory === category ? "active" : ""}`}
                     key={category}
                     type="button"
+                    aria-pressed={activeCategory === category}
                     onClick={() => setActiveCategory(category)}
                   >
                     {category}
@@ -115,9 +117,9 @@ export function BlogDirectory({
             />
             <h2>{article.title}</h2>
             <p>{article.excerpt}</p>
-            <span className="muted">
+            <time className="muted" dateTime={article.publishedAt}>
               {new Date(article.publishedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-            </span>
+            </time>
             <Link className="blog-card-link" href={`/blog/${article.slug}`}>
               Read article
             </Link>

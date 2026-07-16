@@ -76,8 +76,8 @@ export function PainCheckIn({ uid, personId }: Props) {
           <span style={{ color: "var(--color-text-secondary)", fontSize: 14 }}>/10</span>
         </div>
         {todayLog.note && <p className="muted">{todayLog.note}</p>}
-        <p className="muted" style={{ fontSize: 12 }}>
-          Logged today — come back tomorrow to log again.
+        <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
+          Logged today. Come back tomorrow to log again.
         </p>
       </div>
     );
@@ -113,10 +113,11 @@ export function PainCheckIn({ uid, personId }: Props) {
           type="text"
           className="input"
           placeholder="Optional note (e.g. sharp pain when walking)"
+          aria-label="Optional note about your pain"
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
-        {error && <p style={{ color: "var(--color-error)", fontSize: 13, margin: 0 }}>{error}</p>}
+        {error && <p className="field-error">{error}</p>}
         <button type="submit" className="button primary" disabled={saving}>
           {saving ? "Saving…" : "Log pain score"}
         </button>

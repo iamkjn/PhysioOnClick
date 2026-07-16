@@ -10,6 +10,14 @@ import { SkeletonForm } from "@/components/skeleton";
 
 const phonePattern = /^(?:\+44|0)[0-9\s]{9,14}$/;
 
+function getStatusTone(message: string): "neutral" | "success" | "error" {
+  if (message.includes("successfully")) return "success";
+  if (message.startsWith("Please") || message.startsWith("Enter") || message.includes("could not")) {
+    return "error";
+  }
+  return "neutral";
+}
+
 export function PatientProfileEditor() {
   const [userId, setUserId] = useState("");
   const [email, setEmail] = useState("");
@@ -100,36 +108,66 @@ export function PatientProfileEditor() {
     );
   }
 
+  const statusTone = getStatusTone(status);
+  const isNameError = statusTone === "error" && status.includes("full name");
+  const isPhoneError = statusTone === "error" && status.includes("phone number");
+
   return (
     <div className="panel patient-profile-panel">
       <div className="stack">
         <span className="eyebrow">Profile details</span>
-        <h3>Keep your patient account up to date</h3>
+        <h2 style={{ fontSize: "var(--text-lg)" }}>Keep your patient account up to date</h2>
         <p className="muted">Your saved profile helps link bookings, enquiries and uploads together.</p>
       </div>
 
       <form className="patient-profile-form" onSubmit={handleSubmit}>
         <label>
           Email address
-          <input disabled value={email} />
+          <input disabled value={email} autoComplete="email" />
+          <span className="muted" style={{ fontSize: "var(--text-xs)", fontWeight: 400 }}>
+            This is the email you sign in with and cannot be changed here.
+          </span>
         </label>
 
         <label>
-          Full name
-          <input onChange={(event) => setFullName(event.target.value)} placeholder="Your full name" value={fullName} />
+          Full name *
+          <input
+            onChange={(event) => setFullName(event.target.value)}
+            placeholder="Your full name"
+            value={fullName}
+            autoComplete="name"
+            aria-required="true"
+            aria-invalid={isNameError || undefined}
+            style={isNameError ? { borderColor: "var(--color-error)" } : undefined}
+          />
         </label>
 
         <label>
-          Mobile number
-          <input onChange={(event) => setPhone(event.target.value)} placeholder="07xxx xxxxxx" value={phone} />
+          Mobile number <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+          <input
+            onChange={(event) => setPhone(event.target.value)}
+            placeholder="07xxx xxxxxx"
+            value={phone}
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            aria-invalid={isPhoneError || undefined}
+            style={isPhoneError ? { borderColor: "var(--color-error)" } : undefined}
+          />
         </label>
 
-        <button className="button primary" disabled={!userId || isSaving} type="submit">
-          {isSaving ? "Saving..." : "Save profile"}
+        <button className="button primary" disabled={!userId || isSaving} aria-busy={isSaving} type="submit">
+          {isSaving ? "Saving…" : "Save profile"}
         </button>
       </form>
 
-      <p className="muted">{status}</p>
+      <div
+        className={`form-note${statusTone === "error" ? " error" : statusTone === "success" ? " success" : ""}`}
+        role={statusTone === "error" ? "alert" : "status"}
+        aria-live="polite"
+      >
+        <p className="muted">{status}</p>
+      </div>
     </div>
   );
 }
