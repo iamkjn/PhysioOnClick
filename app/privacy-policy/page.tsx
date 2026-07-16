@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { Reveal } from "@/components/reveal";
+
 export const metadata: Metadata = {
   title: "Privacy Policy | PhysioOnClick",
   description: "How PhysioOnClick collects, stores and uses your personal and clinical data in line with UK GDPR."
@@ -8,16 +10,18 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <div className="site-shell">
-      <section className="page-hero page-hero-split">
-        <div className="stack">
-          <span className="eyebrow">Privacy policy</span>
-          <h1>GDPR-conscious handling of patient and website data.</h1>
-        </div>
-        <div className="page-hero-aside">
-          <strong>Last updated</strong>
-          <p className="muted">June 2026</p>
-        </div>
-      </section>
+      <Reveal direction="up">
+        <section className="page-hero page-hero-split">
+          <div className="stack">
+            <span className="eyebrow">Privacy policy</span>
+            <h1>GDPR-conscious handling of patient and website data.</h1>
+          </div>
+          <div className="page-hero-aside">
+            <strong>Last updated</strong>
+            <p className="muted">June 2026</p>
+          </div>
+        </section>
+      </Reveal>
 
       <section className="page-section two-col">
 

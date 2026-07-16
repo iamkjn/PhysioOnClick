@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
   title: "Medical Disclaimer | PhysioOnClick",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 export default function MedicalDisclaimerPage() {
   return (
     <div className="site-shell">
+      <Reveal direction="up">
       <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Medical disclaimer</span>
@@ -18,6 +20,7 @@ export default function MedicalDisclaimerPage() {
           <p className="muted">July 2026</p>
         </div>
       </section>
+      </Reveal>
       <section className="page-section two-col">
         <article className="panel stack soft-panel">
           <h2>General information only</h2>

@@ -6,6 +6,7 @@ import { BlogDetailActions } from "@/components/blog-detail-actions";
 import { blogArticles } from "@/lib/blog";
 import { fetchDynamicBlogBySlug } from "@/lib/firestore-content";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
+import { Reveal } from "@/components/reveal";
 
 export async function generateStaticParams() {
   return blogArticles.map((article) => ({ slug: article.slug }));
@@ -62,24 +63,24 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         }}
       />
       <section className="page-hero article-hero">
-        <div className="stack article-hero-copy">
+        <Reveal direction="up" className="stack article-hero-copy">
           <div className="article-hero-meta">
             <span className="eyebrow">{article.category}</span>
           </div>
           <h1>{article.title}</h1>
           <p className="lead">{article.excerpt}</p>
           <BlogDetailActions article={article} />
-        </div>
-        <div className="article-hero-aside">
+        </Reveal>
+        <Reveal direction="up" delay={80} className="article-hero-aside">
           <strong>Evidence-based patient education</strong>
           <p className="muted">
             Clear, UK-focused physiotherapy guidance designed to support informed decisions and safer self-management.
           </p>
-        </div>
+        </Reveal>
       </section>
 
       <section className="page-section article-content article-content-premium">
-        <div className="article-feature-media">
+        <Reveal direction="up" className="article-feature-media">
           <Image
             src={article.image}
             alt=""
@@ -89,7 +90,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             placeholder="blur"
             blurDataURL={medicalImagePlaceholder}
           />
-        </div>
+        </Reveal>
         <div className="article-reading-column">
           {article.sections.map((section, i) => (
             <section className="article-section" key={`${i}-${section.heading}`}>

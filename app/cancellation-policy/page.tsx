@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { Reveal } from "@/components/reveal";
+
 export const metadata: Metadata = {
   title: "Cancellation Policy | PhysioOnClick",
   description: "Notice periods, late cancellation charges, and refund arrangements for PhysioOnClick physiotherapy appointments."
@@ -8,6 +10,7 @@ export const metadata: Metadata = {
 export default function CancellationPolicyPage() {
   return (
     <div className="site-shell">
+      <Reveal direction="up">
       <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Cancellation policy</span>
@@ -18,6 +21,7 @@ export default function CancellationPolicyPage() {
           <p className="muted">July 2026</p>
         </div>
       </section>
+      </Reveal>
       <section className="page-section two-col">
         <article className="panel stack soft-panel">
           <h2>Notice period</h2>

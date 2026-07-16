@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
   title: "Physiotherapist in Glasgow | PhysioOnClick",
@@ -74,24 +75,29 @@ export default function GlasgowPage() {
       </section>
 
       <section className="page-section two-col">
-        <div className="panel stack soft-panel">
-          <h2>Why local patients book PhysioOnClick</h2>
-          <ul className="clean-list">
-            <li>In-person assessments in Glasgow for musculoskeletal and post-surgical care</li>
-            <li>Structured rehabilitation planning with clear milestones and home exercise support</li>
-            <li>Online follow-up options for continuity and convenience</li>
-            <li>Straightforward pricing, no hidden fees</li>
-          </ul>
-        </div>
-        <div className="panel stack image-panel">
-          <h2>Service area</h2>
-          <p className="muted">
-            PhysioOnClick sees patients across Glasgow and the surrounding area, delivering appointments as home
-            visits rather than from a fixed clinic. Online consultations are available UK-wide.
-          </p>
-        </div>
+        <Reveal direction="up">
+          <div className="panel stack soft-panel">
+            <h2>Why local patients book PhysioOnClick</h2>
+            <ul className="clean-list">
+              <li>In-person assessments in Glasgow for musculoskeletal and post-surgical care</li>
+              <li>Structured rehabilitation planning with clear milestones and home exercise support</li>
+              <li>Online follow-up options for continuity and convenience</li>
+              <li>Straightforward pricing, no hidden fees</li>
+            </ul>
+          </div>
+        </Reveal>
+        <Reveal direction="up" delay={80}>
+          <div className="panel stack image-panel">
+            <h2>Service area</h2>
+            <p className="muted">
+              PhysioOnClick sees patients across Glasgow and the surrounding area, delivering appointments as home
+              visits rather than from a fixed clinic. Online consultations are available UK-wide.
+            </p>
+          </div>
+        </Reveal>
       </section>
 
+      <Reveal direction="up">
       <section className="page-section stack service-faqs">
         {faqItems.map((faq) => (
           <details key={faq.question}>
@@ -100,7 +106,9 @@ export default function GlasgowPage() {
           </details>
         ))}
       </section>
+      </Reveal>
 
+      <Reveal direction="up">
       <section className="simple-cta-band" id="book">
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Ready to book?</span>
@@ -116,6 +124,7 @@ export default function GlasgowPage() {
           </div>
         </div>
       </section>
+      </Reveal>
     </div>
   );
 }

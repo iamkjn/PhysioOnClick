@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions | PhysioOnClick",
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <div className="site-shell">
+      <Reveal direction="up">
       <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Terms &amp; Conditions</span>
@@ -19,6 +21,7 @@ export default function TermsPage() {
           <p className="muted">June 2026</p>
         </div>
       </section>
+      </Reveal>
 
       <section className="page-section two-col">
 
