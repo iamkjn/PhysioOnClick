@@ -57,7 +57,7 @@
   --color-spinner-track:  rgba(255, 255, 255, 0.15);
   --shadow-card:          0 8px 40px rgba(0, 0, 0, 0.3);
   --shadow-panel:         0 28px 66px -24px rgba(30, 45, 40, 0.42);
-  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-serif: 'Fraunces', Georgia, serif;
   --font-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
 
   /* Radii — spec: panels 22, inner cards 15, inputs/chips 10–13, pills 999 */
@@ -338,6 +338,11 @@ p {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.45);
   color: white;
+}
+
+.button.inverted:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.65);
 }
 
 .button.full-width {
@@ -2957,31 +2962,13 @@ textarea:focus {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Micro-interactions: primary button shimmer
+   Micro-interactions: primary button — lift + darken, no shimmer.
+   A moving shine sweep reads as coupon-site/salesy; a clinical
+   brand needs calmer feedback, same lift the rest of the site uses.
    ──────────────────────────────────────────────────────────── */
-.button.primary::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -75%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    105deg,
-    transparent 40%,
-    rgba(255, 255, 255, 0.28) 50%,
-    transparent 60%
-  );
-  transform: skewX(-15deg);
-  transition: left 0s;
-  pointer-events: none;
-}
 .button.primary:hover {
+  background: var(--primary-dark);
   box-shadow: 0 8px 24px rgba(30, 45, 40, 0.35);
-}
-.button.primary:hover::after {
-  left: 125%;
-  transition: left 400ms ease;
 }
 .button.primary:active {
   transform: translateY(0) !important;
@@ -3039,9 +3026,6 @@ textarea:focus {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .button.primary::after {
-    display: none;
-  }
   .button.primary:hover,
   .button.primary:active {
     transform: none;
