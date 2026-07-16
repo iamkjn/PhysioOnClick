@@ -4,6 +4,8 @@ import Link from "next/link";
 
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { getPublicServices } from "@/lib/public-content";
+import { pricing } from "@/lib/site-data";
+import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
@@ -15,6 +17,9 @@ export const dynamic = "force-static";
 
 export default function ServicesPage() {
   const services = getPublicServices();
+  const minOnlinePrice = Math.min(
+    ...pricing.filter((item) => item.mode === "Online").map((item) => item.price)
+  );
 
   return (
     <div className="site-shell">
@@ -79,7 +84,7 @@ export default function ServicesPage() {
                 <Link className="button primary" href={`/book?service=initial-assessment`}>
                   Book Assessment
                 </Link>
-                <p className="muted">From £50 online</p>
+                <p className="muted">From {formatCurrency(minOnlinePrice)} online</p>
               </div>
             </div>
           </article>

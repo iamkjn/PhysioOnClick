@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -78,6 +79,7 @@ const BACK_CHIPS: Chip[] = [
 // ─── Widget ───────────────────────────────────────────────────────────────────
 
 export function ChatWidget() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [chips, setChips] = useState<Chip[]>([]);
@@ -124,6 +126,36 @@ export function ChatWidget() {
     wasOpenRef.current = open;
   }, [open]);
 
+  // Trap Tab within the drawer while open
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const drawer = drawerRef.current;
+      if (!drawer) return;
+      const focusable = drawer.querySelectorAll<HTMLElement>(
+        "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [open]);
+
   // ── Tap handlers ───────────────────────────────────────────────────────────
 
   function tapHome() {
@@ -160,7 +192,7 @@ export function ChatWidget() {
   }
 
   function tapBook() {
-    window.location.href = "/book";
+    router.push("/book");
   }
 
   function tapLocation() {
@@ -216,7 +248,7 @@ export function ChatWidget() {
     if (chip.action === "contact") tapContact();
     if (chip.action === "cancellation") tapCancellation();
     if (chip.action === "home") tapHome();
-    if (chip.action === "appointments") window.location.href = "/patient/appointments";
+    if (chip.action === "appointments") router.push("/patient/appointments");
     if (chip.action === "serviceDetail" && chip.text) tapServiceDetail(chip.label, chip.text);
     if (chip.action === "copyEmail") {
       navigator.clipboard.writeText(EMAIL).catch(() => {});
@@ -270,7 +302,7 @@ export function ChatWidget() {
           </div>
 
           {/* Messages */}
-          <div className="chat-messages">
+          <div className="chat-messages" role="log" aria-live="polite">
             {msgs.map((m, i) => (
               <div key={i} className={`chat-message-row ${m.isBot ? "is-bot" : "is-user"}`}>
                 {m.isBot && <div className="chat-message-avatar">🛡️</div>}

@@ -44,10 +44,14 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-      <label style={{ fontWeight: 600, fontSize: 14, color: "var(--color-text-primary)" }}>
+      <label
+        htmlFor="person-switcher-select"
+        style={{ fontWeight: 600, fontSize: 14, color: "var(--color-text-primary)" }}
+      >
         Viewing recovery for:
       </label>
       <select
+        id="person-switcher-select"
         value={selected}
         onChange={handleChange}
         style={{

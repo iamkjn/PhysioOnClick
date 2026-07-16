@@ -1,17 +1,24 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Medical Disclaimer | PhysioOnClick",
+  description: "PhysioOnClick content is for general education only and does not replace individual medical advice, diagnosis or emergency care."
+};
+
 export default function MedicalDisclaimerPage() {
   return (
     <div className="site-shell">
-      <section className="page-hero legal-hero">
+      <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Medical disclaimer</span>
           <h1>Information supports education and triage, not diagnosis.</h1>
         </div>
-        <div className="legal-aside">
-          <strong>Safe expectations</strong>
-          <p className="muted">Clear disclaimers protect users and keep the tone clinically responsible.</p>
+        <div className="page-hero-aside">
+          <strong>Last updated</strong>
+          <p className="muted">July 2026</p>
         </div>
       </section>
-      <section className="page-section legal-grid">
+      <section className="page-section two-col">
         <article className="panel stack soft-panel">
           <h2>General information only</h2>
           <p>

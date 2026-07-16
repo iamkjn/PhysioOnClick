@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { cancelCalBooking } from "@/app/admin/actions";
 import { SummaryForm } from "@/components/summary-form";
 import { SkeletonTable } from "@/components/skeleton";
@@ -38,7 +38,7 @@ const STATUS_PILL_CLASS: Record<string, string> = {
   cancelled: "dashboard-status-pill status-cancelled",
 };
 
-function resolveStatus(stored: string, appointmentDate: string, appointmentTime: string): string {
+export function resolveStatus(stored: string, appointmentDate: string, appointmentTime: string): string {
   if (stored === "cancelled") return "cancelled";
   if (!appointmentDate) return stored;
   const date = new Date(`${appointmentDate}T${appointmentTime || "00:00"}:00`);
@@ -109,9 +109,9 @@ export function AdminBookingsTable() {
             onClick={() => setFilter(f)}
             className="button small"
             style={{
-              background: filter === f ? "var(--color-primary)" : "var(--color-surface)",
+              background: filter === f ? "var(--color-primary-dark)" : "var(--color-surface)",
               color: filter === f ? "white" : "var(--color-text-secondary)",
-              borderColor: filter === f ? "var(--color-primary)" : "var(--color-border)",
+              borderColor: filter === f ? "var(--color-primary-dark)" : "var(--color-border)",
               padding: "4px 12px",
               minHeight: "auto",
               fontSize: 12,
@@ -119,7 +119,7 @@ export function AdminBookingsTable() {
             }}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
-            <span style={{ background: filter === f ? "rgba(255,255,255,0.2)" : "var(--color-primary-light)", color: filter === f ? "white" : "var(--color-primary)", borderRadius: 999, padding: "1px 6px", fontSize: 11 }}>
+            <span style={{ background: filter === f ? "rgba(255,255,255,0.2)" : "var(--color-primary-light)", color: filter === f ? "white" : "var(--color-primary-dark)", borderRadius: 999, padding: "1px 6px", fontSize: 11 }}>
               {counts[f]}
             </span>
           </button>
@@ -135,14 +135,15 @@ export function AdminBookingsTable() {
       {!loading && displayed.length > 0 && (
         <div className="dashboard-table-wrap">
           <table className="dashboard-table">
+            <caption className="sr-only">Latest appointment bookings with status, actions, and session summary links</caption>
             <thead>
               <tr>
-                <th>Patient</th>
-                <th>Service</th>
-                <th>Appointment</th>
-                <th>Status</th>
-                <th>Actions</th>
-                <th>Summary</th>
+                <th scope="col">Patient</th>
+                <th scope="col">Service</th>
+                <th scope="col">Appointment</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+                <th scope="col">Summary</th>
               </tr>
             </thead>
             <tbody>
@@ -167,7 +168,11 @@ export function AdminBookingsTable() {
                         <>
                           <form
                             ref={(el) => { cancelFormRefs.current[item.id] = el; }}
-                            action={cancelCalBooking.bind(null, item.calBookingUid)}
+                            action={async () => {
+                              const idToken = await auth?.currentUser?.getIdToken();
+                              if (!idToken) return;
+                              await cancelCalBooking(item.calBookingUid, idToken);
+                            }}
                           >
                             <button
                               type="button"
@@ -190,7 +195,7 @@ export function AdminBookingsTable() {
                           <a
                             href={`https://cal.com/reschedule/${item.calBookingUid}`}
                             target="_blank" rel="noopener noreferrer"
-                            style={{ border: "1.5px solid var(--color-primary)", color: "var(--color-primary)", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 600, textDecoration: "none", display: "inline-block", fontFamily: "var(--font-sans)" }}
+                            style={{ border: "1.5px solid var(--color-primary-dark)", color: "var(--color-primary-dark)", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 600, textDecoration: "none", display: "inline-block", fontFamily: "var(--font-sans)" }}
                           >Reschedule</a>
                         </>
                       ) : (

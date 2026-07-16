@@ -1,7 +1,7 @@
 import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 
 import type { BlogArticle } from "@/lib/blog";
-import { blogArticles } from "@/lib/blog";
+import { blogArticles, blogImagePath } from "@/lib/blog";
 import { isBookServiceId } from "@/lib/cal-services";
 import type { PricingItem, Service, Testimonial } from "@/lib/site-data";
 import { pricing, services, testimonials } from "@/lib/site-data";
@@ -10,8 +10,10 @@ import { db } from "@/lib/firebase";
 const useLivePublicContent = process.env.NEXT_PUBLIC_USE_LIVE_CONTENT === "true";
 
 function toBlogArticle(doc: Record<string, unknown>, fallback?: BlogArticle): BlogArticle {
+  const slug = String(doc.slug || fallback?.slug || "");
+
   return {
-    slug: String(doc.slug || fallback?.slug || ""),
+    slug,
     title: String(doc.title || fallback?.title || "Untitled article"),
     category: String(doc.category || fallback?.category || "General") as BlogArticle["category"],
     excerpt: String(doc.excerpt || fallback?.excerpt || ""),
@@ -19,7 +21,9 @@ function toBlogArticle(doc: Record<string, unknown>, fallback?: BlogArticle): Bl
     seoTitle: String(doc.seoTitle || fallback?.seoTitle || String(doc.title || "PhysioOnClick")),
     seoDescription: String(doc.seoDescription || fallback?.seoDescription || ""),
     publishedAt: String(doc.publishedAt || fallback?.publishedAt || new Date().toISOString()),
-    image: String(doc.image || fallback?.image || ""),
+    // Never fall through to "" — <Image src=""> throws. Generated cover art
+    // keyed on slug is the same last-resort every static article already uses.
+    image: String(doc.image || fallback?.image || blogImagePath(slug)),
     sections: Array.isArray(doc.sections) && doc.sections.length
       ? (doc.sections as BlogArticle["sections"])
       : fallback?.sections || []
@@ -97,7 +101,13 @@ export async function fetchDynamicBlogs() {
       return blogArticles;
     }
 
-    return snapshot.docs.map((doc, index) => toBlogArticle(doc.data(), blogArticles[index]));
+    // Firestore is ordered publishedAt desc; the static array is in
+    // generation order. Matching fallback by array position pairs docs with
+    // unrelated articles, so match by slug instead.
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return toBlogArticle(data, blogArticles.find((article) => article.slug === data.slug));
+    });
   } catch {
     return blogArticles;
   }
@@ -135,7 +145,12 @@ export async function fetchDynamicServices() {
       return services;
     }
 
-    return snapshot.docs.map((doc, index) => toService(doc.data(), services[index]));
+    // Match fallback by slug, not array position — same reasoning as
+    // fetchDynamicBlogs above.
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return toService(data, services.find((service) => service.slug === data.slug));
+    });
   } catch {
     return services;
   }
@@ -179,7 +194,11 @@ export async function fetchDynamicTestimonials() {
       return testimonials;
     }
 
-    return snapshot.docs.map((doc, index) => toTestimonial(doc.data(), testimonials[index]));
+    // Testimonials have no stable identifying field (name isn't guaranteed
+    // unique), so array-position fallback can't be replaced with a safe
+    // match like blogs/services get. Drop the positional fallback entirely —
+    // toTestimonial already has sane per-field defaults.
+    return snapshot.docs.map((doc) => toTestimonial(doc.data()));
   } catch {
     return testimonials;
   }

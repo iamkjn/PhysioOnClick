@@ -68,7 +68,13 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
         ) : data.length === 0 ? (
           <p className="muted">No data yet — log your first pain check-in above.</p>
         ) : (
-          <div className="chart-wrap">
+          <div
+            className="chart-wrap"
+            role="img"
+            aria-label={`Pain score trend over the last 56 days. Latest self-reported score: ${
+              data[data.length - 1]?.patientPain ?? "not logged"
+            }. Baseline (first logged) score: ${data[0]?.patientPain ?? "not logged"}.`}
+          >
             <ResponsiveContainer width="100%" height={260}>
               <LineChart data={data}>
                 <XAxis
@@ -78,7 +84,14 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
                   tickFormatter={(v: string) => v.slice(5)}
                 />
                 <YAxis stroke="var(--color-text-secondary)" domain={[0, 10]} />
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--color-surface)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: 12,
+                    fontFamily: "inherit",
+                  }}
+                />
                 <Legend />
                 <Line
                   type="monotone"

@@ -158,6 +158,7 @@ export function SiteHeader() {
                   key={item.href}
                   className={isActive(item.href) ? "active" : undefined}
                   href={item.href}
+                  aria-current={isActive(item.href) ? "page" : undefined}
                   onMouseEnter={() => handleNavHoverStart(item.href)}
                   onMouseLeave={() => handleNavHoverEnd(item.href)}
                 >
@@ -215,6 +216,7 @@ export function SiteHeader() {
             key={item.href}
             href={item.href}
             className={`mobile-nav-link${isActive(item.href) ? " active" : ""}`}
+            aria-current={isActive(item.href) ? "page" : undefined}
             onClick={() => setMenuOpen(false)}
           >
             {item.label}

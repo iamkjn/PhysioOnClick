@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { publishSummary, type PublishSummaryInput } from "@/app/admin/actions";
+import { auth } from "@/lib/firebase";
 
 interface SummaryFormProps {
   booking: {
@@ -80,9 +81,10 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
         nextSteps: form.nextSteps,
         followUpWeeks: form.followUpWeeks,
       };
-      await publishSummary(input);
+      const idToken = await auth?.currentUser?.getIdToken();
+      if (!idToken) throw new Error("Not signed in");
+      await publishSummary(input, idToken);
       if (onPublished) onPublished();
-      else window.location.reload();
       setOpen(false);
     } finally {
       setSaving(false);
@@ -94,17 +96,17 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: "var(--color-text-secondary)", display: "block", marginBottom: 4, fontFamily: "var(--font-sans)", textTransform: "uppercase", letterSpacing: "0.06em" };
   const textareaStyle: React.CSSProperties = { width: "100%", border: "1.5px solid var(--color-border)", borderRadius: 10, padding: "0.5rem 0.75rem", fontSize: 14, resize: "vertical" as const, boxSizing: "border-box" as const, fontFamily: "var(--font-sans)", color: "var(--color-navy)" };
 
-  const OUTCOMES: { key: Outcome; label: string; color: string }[] = [
-    { key: "improving", label: "Improving ↑", color: "var(--color-success)" },
-    { key: "stable",    label: "Stable →",    color: "var(--color-warning, #D97706)" },
-    { key: "setback",   label: "Setback ↓",   color: "var(--color-error)" },
+  const OUTCOMES: { key: Outcome; label: string; color: string; tint: string }[] = [
+    { key: "improving", label: "Improving ↑", color: "var(--color-success)", tint: "var(--color-success-light)" },
+    { key: "stable",    label: "Stable →",    color: "var(--color-warning, #D97706)", tint: "rgba(217, 119, 6, 0.15)" },
+    { key: "setback",   label: "Setback ↓",   color: "var(--color-error)", tint: "var(--color-error-light)" },
   ];
 
   if (!open) {
     return (
       <button
         onClick={() => setOpen(true)}
-        style={{ background: "var(--color-primary-light)", border: "1px solid var(--color-primary)", borderRadius: 8, color: "var(--color-primary)", cursor: "pointer", fontSize: 13, fontWeight: 600, padding: "4px 12px", fontFamily: "var(--font-sans)" }}
+        style={{ background: "var(--color-primary-light)", border: "1px solid var(--color-primary-dark)", borderRadius: 8, color: "var(--color-primary-dark)", cursor: "pointer", fontSize: 13, fontWeight: 600, padding: "4px 12px", fontFamily: "var(--font-sans)" }}
       >
         📋 Write summary
       </button>
@@ -181,8 +183,8 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                       type="button"
                       onClick={() => setForm((f) => ({ ...f, sessionOutcome: o.key }))}
                       style={{
-                        background: form.sessionOutcome === o.key ? o.color : "var(--color-surface)",
-                        color: form.sessionOutcome === o.key ? "#fff" : "var(--color-text-secondary)",
+                        background: form.sessionOutcome === o.key ? o.tint : "var(--color-surface)",
+                        color: form.sessionOutcome === o.key ? o.color : "var(--color-text-secondary)",
                         border: `1.5px solid ${form.sessionOutcome === o.key ? o.color : "var(--color-border)"}`,
                         borderRadius: 999,
                         padding: "6px 16px",
@@ -230,9 +232,9 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, followUpWeeks: w }))}
                   style={{
-                    background: form.followUpWeeks === w ? "var(--color-primary)" : "var(--color-surface)",
-                    color: form.followUpWeeks === w ? "#fff" : "var(--color-text-secondary)",
-                    border: `1.5px solid ${form.followUpWeeks === w ? "var(--color-primary)" : "var(--color-border)"}`,
+                    background: form.followUpWeeks === w ? "var(--color-primary-light)" : "var(--color-surface)",
+                    color: form.followUpWeeks === w ? "var(--color-primary-dark)" : "var(--color-text-secondary)",
+                    border: `1.5px solid ${form.followUpWeeks === w ? "var(--color-primary-dark)" : "var(--color-border)"}`,
                     borderRadius: 999,
                     padding: "6px 14px",
                     fontSize: 13,

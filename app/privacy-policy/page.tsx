@@ -8,18 +8,18 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <div className="site-shell">
-      <section className="page-hero legal-hero">
+      <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Privacy policy</span>
           <h1>GDPR-conscious handling of patient and website data.</h1>
         </div>
-        <div className="legal-aside">
+        <div className="page-hero-aside">
           <strong>Last updated</strong>
           <p className="muted">June 2026</p>
         </div>
       </section>
 
-      <section className="page-section legal-grid">
+      <section className="page-section two-col">
 
         <article className="panel stack soft-panel">
           <h2>Who we are</h2>
@@ -37,7 +37,7 @@ export default function PrivacyPolicyPage() {
             <li><strong>Contact details:</strong> name, email address, phone number</li>
             <li><strong>Appointment data:</strong> preferred dates, times, and service type</li>
             <li><strong>Clinical information:</strong> condition notes, session records, progress data, and exercise assignments entered through the patient portal</li>
-            <li><strong>Payment references:</strong> transaction identifiers from Stripe (we do not store card numbers)</li>
+            <li><strong>Payment:</strong> payment is taken at the time of your appointment, not online, so we do not collect or store online payment data</li>
             <li><strong>Usage data:</strong> pages visited and session activity, collected anonymously via analytics</li>
           </ul>
         </article>
@@ -56,7 +56,6 @@ export default function PrivacyPolicyPage() {
           <p>Your data is processed by the following third parties on our behalf:</p>
           <ul>
             <li><strong>Google Firebase</strong> (Authentication, Firestore database, Storage) — used to store account, appointment, and clinical data securely</li>
-            <li><strong>Stripe</strong> — used for payment processing; card data is handled entirely by Stripe and is not stored by PhysioOnClick</li>
             <li><strong>Cal.com</strong> — used for appointment scheduling; booking data is shared with Cal.com to manage your calendar appointment</li>
             <li><strong>Google Calendar / Google Meet</strong> — used to create appointment events and video consultation links; attendee details (name, email) are shared with Google to generate the meeting link</li>
           </ul>
@@ -67,7 +66,6 @@ export default function PrivacyPolicyPage() {
           <ul>
             <li><strong>Clinical records:</strong> retained for 8 years from the date of last contact, in line with HCPC record-keeping standards</li>
             <li><strong>Appointment and contact enquiries:</strong> retained for 12 months after the last interaction</li>
-            <li><strong>Payment references:</strong> retained for 7 years for financial compliance purposes</li>
           </ul>
         </article>
 

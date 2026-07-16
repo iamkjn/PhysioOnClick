@@ -129,7 +129,7 @@ export default function PeoplePage() {
     display: "flex",
     alignItems: "center",
     gap: "1rem",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+    boxShadow: "var(--shadow)",
   };
 
   return (

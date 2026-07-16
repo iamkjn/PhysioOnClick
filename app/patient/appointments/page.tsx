@@ -20,6 +20,7 @@ export default function AppointmentsPage() {
   const [personId, setPersonId] = useState<string | null>(null);
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncDone, setSyncDone] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -29,10 +30,9 @@ export default function AppointmentsPage() {
         router.push("/patient");
         return;
       }
-      setUid(u.uid);
-      setDisplayName(u.displayName || u.email || "Patient");
-      setPersonId(u.uid);
-      // Sync Cal.com bookings into Firestore first, then load
+      // Sync Cal.com bookings into Firestore first, then load — otherwise
+      // the load effect below races the sync and new appointments only
+      // show up after a manual refresh.
       try {
         if (u.email) {
           await fetch(
@@ -40,18 +40,23 @@ export default function AppointmentsPage() {
           );
         }
       } catch {
-        // sync is best-effort
+        // sync is best-effort; still let the page load below
+      } finally {
+        setSyncDone(true);
       }
+      setUid(u.uid);
+      setDisplayName(u.displayName || u.email || "Patient");
+      setPersonId(u.uid);
     });
   }, [router]);
 
   useEffect(() => {
-    if (!uid || !personId) return;
+    if (!syncDone || !uid || !personId) return;
     setLoading(true);
     getPatientBookings(uid, personId)
       .then(setBookings)
       .finally(() => setLoading(false));
-  }, [uid, personId]);
+  }, [syncDone, uid, personId]);
 
   const resolved = bookings.map((b) => ({ ...b, displayStatus: resolveStatus(b) }));
   const upcoming = resolved.filter((b) => b.displayStatus === "upcoming");
@@ -80,7 +85,7 @@ export default function AppointmentsPage() {
       )}
       {upcoming.length > 0 && (
         <section style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.05rem", color: "var(--color-text-primary)", marginBottom: "0.75rem" }}>
+          <h2 style={{ color: "var(--color-text-primary)", marginBottom: "0.75rem" }}>
             Upcoming
           </h2>
           {upcoming.map((b) => (
@@ -90,7 +95,7 @@ export default function AppointmentsPage() {
       )}
       {past.length > 0 && (
         <section>
-          <h2 style={{ fontSize: "1.05rem", color: "var(--color-text-primary)", marginBottom: "0.75rem" }}>
+          <h2 style={{ color: "var(--color-text-primary)", marginBottom: "0.75rem" }}>
             Past
           </h2>
           {past.map((b) => (
@@ -118,19 +123,41 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
           display: "flex",
           alignItems: "center",
           gap: "1rem",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+          boxShadow: "var(--shadow)",
           marginBottom: "0.625rem",
           cursor: "pointer",
         }}
       >
         <Avatar name={booking.patientName} imageUrl={booking.patientAvatarUrl} size={44} />
         <div style={{ flex: 1 }}>
-          <strong style={{ display: "block", color: "var(--color-text-primary)" }}>{booking.patientName}</strong>
+          <strong
+            style={{
+              display: "block",
+              color: booking.displayStatus === "cancelled" ? "var(--color-text-secondary)" : "var(--color-text-primary)",
+              textDecoration: booking.displayStatus === "cancelled" ? "line-through" : "none",
+            }}
+          >
+            {booking.patientName}
+          </strong>
           <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>
             {booking.service} · {date}
           </span>
         </div>
-        {booking.displayStatus !== "upcoming" ? (
+        {booking.displayStatus === "cancelled" ? (
+          <span
+            style={{
+              background: "var(--color-bg)",
+              color: "var(--color-text-secondary)",
+              fontSize: 12,
+              fontWeight: 700,
+              padding: "3px 10px",
+              borderRadius: 999,
+              border: "1px solid var(--color-border)",
+            }}
+          >
+            Cancelled
+          </span>
+        ) : booking.displayStatus !== "upcoming" ? (
           booking.summaryId ? (
             <span style={{ fontSize: 20 }}>📋</span>
           ) : (

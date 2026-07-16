@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
+
 import { ContactForm } from "@/components/contact-form";
 import { Reveal } from "@/components/reveal";
 import { founder } from "@/lib/site-data";
+
+export const metadata: Metadata = {
+  title: "Contact | PhysioOnClick",
+  description: "Get in touch with PhysioOnClick to book an appointment, ask a question or enquire about our physiotherapy services in Glasgow and online across the UK today."
+};
 
 export default function ContactPage() {
   return (

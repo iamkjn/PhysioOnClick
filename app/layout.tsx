@@ -18,6 +18,14 @@ export const metadata: Metadata = {
     title: "PhysioOnClick",
     description: "Evidence-based physiotherapy and rehabilitation in Glasgow and online across the UK.",
     type: "website",
+    images: [
+      {
+        url: "/home-hero-premium.svg",
+        width: 1600,
+        height: 1000,
+        alt: "PhysioOnClick"
+      }
+    ],
   },
 };
 

@@ -1,7 +1,10 @@
 import { render } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 
-vi.mock('next/navigation', () => ({ useParams: () => ({ id: 'b1' }) }))
+vi.mock('next/navigation', () => ({
+  useParams: () => ({ id: 'b1' }),
+  useRouter: () => ({ push: vi.fn() }),
+}))
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => ({})),
   onAuthStateChanged: vi.fn(() => () => {}),

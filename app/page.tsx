@@ -94,7 +94,7 @@ export default async function HomePage() {
                 />
                 <h3>{service.title}</h3>
                 <p>{service.summary}</p>
-                <Link href={`/services#${service.slug}`} prefetch>Learn more →</Link>
+                <Link href={`/services#${service.slug}`} prefetch aria-label={`Learn more about ${service.title}`}>Learn more →</Link>
               </article>
             </Reveal>
           ))}

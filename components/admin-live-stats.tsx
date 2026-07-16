@@ -4,20 +4,18 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { SkeletonStatGrid } from "@/components/skeleton";
+import { resolveStatus } from "@/components/admin-bookings-table";
 
 type Counts = {
   blogs: number;
   bookings: number;
-  pendingBookings: number;
+  completedBookings: number;
   upcomingBookings: number;
   enquiries: number;
   newEnquiries: number;
-  blogs108: number;
-  pricingProducts: number;
-  testimonials: number;
 };
 
-const DEFAULT: Counts = { blogs: 0, bookings: 0, pendingBookings: 0, upcomingBookings: 0, enquiries: 0, newEnquiries: 0, blogs108: 108, pricingProducts: 4, testimonials: 3 };
+const DEFAULT: Counts = { blogs: 0, bookings: 0, completedBookings: 0, upcomingBookings: 0, enquiries: 0, newEnquiries: 0 };
 
 export function AdminLiveStats() {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -42,11 +40,18 @@ export function AdminLiveStats() {
     // Blogs total
     unsubs.push(onSnapshot(collection(db, "blogs"), (s) => setCounts((c) => ({ ...c, blogs: s.size }))));
 
-    // Bookings: total + pending + upcoming
+    // Bookings: total + completed + upcoming, resolved by appointment date
+    // (same logic as the bookings table) rather than raw stored status.
     unsubs.push(onSnapshot(collection(db, "bookings"), (s) => {
-      const pending  = s.docs.filter((d) => d.data().status === "pending").length;
-      const upcoming = s.docs.filter((d) => d.data().status === "upcoming").length;
-      setCounts((c) => ({ ...c, bookings: s.size, pendingBookings: pending, upcomingBookings: upcoming }));
+      let completed = 0;
+      let upcoming = 0;
+      s.docs.forEach((d) => {
+        const data = d.data();
+        const status = resolveStatus(String(data.status || "pending"), String(data.appointmentDate || ""), String(data.appointmentTime || ""));
+        if (status === "completed") completed++;
+        else if (status === "upcoming") upcoming++;
+      });
+      setCounts((c) => ({ ...c, bookings: s.size, completedBookings: completed, upcomingBookings: upcoming }));
     }));
 
     // Enquiries: total
@@ -140,7 +145,7 @@ export function AdminLiveStats() {
           <span style={primaryEyebrow}>Bookings</span>
           <p style={primaryBigNum}>{counts.bookings}</p>
           <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" as const }}>
-            {counts.pendingBookings > 0 && pill(`${counts.pendingBookings} pending`, "rgba(255,255,255,0.18)", "white")}
+            {counts.completedBookings > 0 && pill(`${counts.completedBookings} completed`, "rgba(255,255,255,0.18)", "white")}
             {counts.upcomingBookings > 0 && pill(`${counts.upcomingBookings} upcoming`, "rgba(255,255,255,0.18)", "white")}
           </div>
         </div>
@@ -160,21 +165,6 @@ export function AdminLiveStats() {
             {counts.newEnquiries > 0 && pill(`${counts.newEnquiries} new`, "var(--color-gold-light)", "var(--color-gold)")}
           </div>
         </div>
-      </div>
-
-      {/* Secondary info row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0.75rem" }}>
-        {[
-          { label: "Blog articles", value: counts.blogs108, note: "Ready-to-publish SEO content" },
-          { label: "Pricing products", value: counts.pricingProducts, note: "Stripe checkout mapped" },
-          { label: "Testimonials", value: counts.testimonials, note: "Homepage + local pages" },
-        ].map((item) => (
-          <div key={item.label} style={{ ...cardStyle, padding: "1rem", gap: "0.25rem" }}>
-            <span style={{ ...eyebrow, fontSize: 10 }}>{item.label}</span>
-            <strong style={{ fontFamily: "var(--font-serif)", fontSize: 28, color: "var(--color-navy)" }}>{item.value}</strong>
-            <span style={{ ...muted, fontSize: 11 }}>{item.note}</span>
-          </div>
-        ))}
       </div>
     </div>
   );

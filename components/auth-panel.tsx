@@ -241,7 +241,7 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
             Password
             <input type="password" name="password" required minLength={8} />
           </label>
-          <button className="button primary" type="submit">
+          <button className="button primary" type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Please wait..." : isSignup ? "Create patient account" : "Continue"}
           </button>
         </form>

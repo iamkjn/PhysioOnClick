@@ -17,13 +17,14 @@ export default function PricingPage() {
   const inPerson = pricing.filter((item) => item.mode === "In-person");
   const online = pricing.filter((item) => item.mode === "Online");
   const packages = pricing.filter((item) => item.mode === "Package");
+  const followUpPrice = online.find((item) => item.id === "follow-up")?.price ?? 0;
   const included = [
     "Personalised treatment plan",
     "Email support between sessions",
     "Exercise prescription",
-    "Secure online payment",
+    "Clear pricing confirmed before your session",
     "Progress tracking",
-    "Automatic email receipts"
+    "Free to reschedule with 24 hours' notice"
   ];
 
   return (
@@ -36,7 +37,7 @@ export default function PricingPage() {
       </section>
 
       <section className="page-section stack pricing-sections">
-        {inPerson.length > 0 && (
+        {inPerson.length > 0 ? (
           <div>
             <h2>In-Person Sessions <span>(Glasgow home visits)</span></h2>
             <div className="pricing-grid pricing-grid-three">
@@ -53,6 +54,17 @@ export default function PricingPage() {
               ))}
             </div>
           </div>
+        ) : (
+          <Reveal direction="up">
+            <div className="sessions-include-card">
+              <h2>In-Person Sessions <span>(Glasgow)</span></h2>
+              <p className="muted">
+                In-person sessions in Glasgow are arranged directly with your physiotherapist. Get in touch and
+                we&apos;ll confirm availability and pricing for your visit.
+              </p>
+              <Link className="button secondary" href="/contact">Enquire about in-person sessions</Link>
+            </div>
+          </Reveal>
         )}
 
         <div>
@@ -79,17 +91,21 @@ export default function PricingPage() {
             <h2>Rehab Packages</h2>
           </Reveal>
           <div className="pricing-grid pricing-grid-two">
-            {packages.map((item, i) => (
-              <Reveal key={item.title} direction="up" delay={i * 100}>
-                <article className="simple-package-card">
-                  <div className="save-pill">{item.title.includes("4") ? "Save £20" : "Save £60"}</div>
-                  <h3>{item.title}</h3>
-                  <strong>{formatCurrency(item.price)}</strong>
-                  <p>{item.description}</p>
-                  <Link className="button primary" href={`/book?service=${item.id}`}>Get Started</Link>
-                </article>
-              </Reveal>
-            ))}
+            {packages.map((item, i) => {
+              const sessionCount = Number(item.title.match(/\d+/)?.[0] ?? 0);
+              const savings = sessionCount * followUpPrice - item.price;
+              return (
+                <Reveal key={item.title} direction="up" delay={i * 100}>
+                  <article className="simple-package-card">
+                    {savings > 0 ? <div className="save-pill">Save {formatCurrency(savings)}</div> : null}
+                    <h3>{item.title}</h3>
+                    <strong>{formatCurrency(item.price)}</strong>
+                    <p>{item.description}</p>
+                    <Link className="button primary" href={`/book?service=${item.id}`}>Get Started</Link>
+                  </article>
+                </Reveal>
+              );
+            })}
           </div>
         </div>
 

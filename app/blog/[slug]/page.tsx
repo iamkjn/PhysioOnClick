@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { BlogDetailActions } from "@/components/blog-detail-actions";
-import { blogArticles, getArticle } from "@/lib/blog";
+import { blogArticles } from "@/lib/blog";
 import { fetchDynamicBlogBySlug } from "@/lib/firestore-content";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 
@@ -13,7 +13,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await fetchDynamicBlogBySlug(slug);
 
   if (!article) {
     return {};
@@ -21,7 +21,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return {
     title: article.seoTitle,
-    description: article.seoDescription
+    description: article.seoDescription,
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: {
+      type: "article",
+      title: article.seoTitle,
+      description: article.seoDescription,
+      images: [article.image]
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: [article.image]
+    }
   };
 }
 
@@ -35,9 +46,26 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
 
   return (
     <article className="site-shell">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: article.title,
+            description: article.excerpt,
+            image: article.image,
+            datePublished: article.publishedAt,
+            author: { "@type": "Organization", name: "PhysioOnClick" },
+            publisher: { "@type": "Organization", name: "PhysioOnClick" }
+          })
+        }}
+      />
       <section className="page-hero article-hero">
-        <div className="stack">
-          <span className="eyebrow">{article.category}</span>
+        <div className="stack article-hero-copy">
+          <div className="article-hero-meta">
+            <span className="eyebrow">{article.category}</span>
+          </div>
           <h1>{article.title}</h1>
           <p className="lead">{article.excerpt}</p>
           <BlogDetailActions article={article} />
@@ -51,25 +79,27 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
       </section>
 
       <section className="page-section article-content article-content-premium">
-        <Image
-          src={article.image}
-          alt={article.title}
-          width={1200}
-          height={680}
-          unoptimized
-          placeholder="blur"
-          blurDataURL={medicalImagePlaceholder}
-        />
-        {article.sections.map((section) => (
-          <section key={section.heading}>
-            <h2>{section.heading}</h2>
-            {section.body.map((paragraph) => (
-              <p className="lead" key={paragraph}>
-                {paragraph}
-              </p>
-            ))}
-          </section>
-        ))}
+        <div className="article-feature-media">
+          <Image
+            src={article.image}
+            alt=""
+            width={1200}
+            height={680}
+            unoptimized
+            placeholder="blur"
+            blurDataURL={medicalImagePlaceholder}
+          />
+        </div>
+        <div className="article-reading-column">
+          {article.sections.map((section, i) => (
+            <section className="article-section" key={`${i}-${section.heading}`}>
+              <h2>{section.heading}</h2>
+              {section.body.map((paragraph, j) => (
+                <p key={j}>{paragraph}</p>
+              ))}
+            </section>
+          ))}
+        </div>
       </section>
     </article>
   );

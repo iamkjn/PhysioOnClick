@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getRecoveryScoreSeries, computeRecoveryPercent } from "@/lib/recovery";
+import { getRecoveryScoreSeries, computeRecoveryPercent, isRecoveryRegressing } from "@/lib/recovery";
 import { Skeleton } from "@/components/skeleton";
 
 interface Props {
@@ -11,11 +11,15 @@ interface Props {
 
 export function RecoveryPercentCard({ uid, personId }: Props) {
   const [percent, setPercent] = useState<number | null | undefined>(undefined);
+  const [regressing, setRegressing] = useState(false);
 
   useEffect(() => {
     setPercent(undefined);
     getRecoveryScoreSeries(uid, personId, 9999)
-      .then((logs) => setPercent(computeRecoveryPercent(logs)))
+      .then((logs) => {
+        setPercent(computeRecoveryPercent(logs));
+        setRegressing(isRecoveryRegressing(logs));
+      })
       .catch(() => setPercent(null));
   }, [uid, personId]);
 
@@ -43,7 +47,11 @@ export function RecoveryPercentCard({ uid, personId }: Props) {
     <div className="panel recovery-percent-card">
       <h3>Recovery score</h3>
       <div className="recovery-percent-value">{percent}%</div>
-      <p className="muted">Improvement since your first pain check-in.</p>
+      <p className="muted">
+        {regressing
+          ? "Pain is higher than your first check-in — mention it at your next session."
+          : "Improvement since your first pain check-in."}
+      </p>
     </div>
   );
 }

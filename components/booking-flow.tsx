@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
@@ -57,6 +57,19 @@ export function BookingFlow() {
 
   // undefined = auth still resolving, null = guest, User = signed in
   const [user, setUser] = useState<User | null | undefined>(undefined);
+
+  // Focus the new step panel's title on every step transition so keyboard/
+  // screen-reader users aren't left on the (now-unmounted) triggering button.
+  const panelTitleRef = useRef<HTMLHeadingElement>(null);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    panelTitleRef.current?.focus();
+  }, [step]);
 
   useEffect(() => {
     if (!auth) {
@@ -149,7 +162,7 @@ export function BookingFlow() {
         <div className="book-rail-divider" />
 
         <div className="book-rail-total">
-          <span className="book-rail-total-label">Total today</span>
+          <span className="book-rail-total-label">Total</span>
           <span className="book-rail-total-price">£{service.price}</span>
         </div>
         <p className="book-rail-reassure">Free to reschedule up to 24 hours before your session.</p>
@@ -163,6 +176,7 @@ export function BookingFlow() {
           onServiceChange={handleServiceChange}
           onToggleFocusArea={toggleFocusArea}
           onContinue={() => setStep(2)}
+          titleRef={panelTitleRef}
         />
       ) : (
         <BookingStepTime
@@ -173,6 +187,7 @@ export function BookingFlow() {
           onSelectSlot={setSelectedSlot}
           onBack={() => setStep(1)}
           onConfirmed={handleConfirmed}
+          titleRef={panelTitleRef}
         />
       )}
     </div>

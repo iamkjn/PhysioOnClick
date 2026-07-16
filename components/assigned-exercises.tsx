@@ -6,6 +6,7 @@ import {
   getAssignedExercises,
   getTodayExerciseLog,
   toggleExerciseCompletion,
+  todayKey,
   type AssignedExercise,
   type ExerciseLog,
 } from "@/lib/recovery";
@@ -44,7 +45,7 @@ export function AssignedExercises({ uid, personId }: Props) {
     try {
       await toggleExerciseCompletion(uid, personId, exerciseId, done);
       setTodayLog((prev) => ({
-        date: new Date().toISOString().slice(0, 10),
+        date: todayKey(),
         completions: { ...(prev?.completions ?? {}), [exerciseId]: done },
         loggedAt: new Date(),
       }));
@@ -98,8 +99,8 @@ export function AssignedExercises({ uid, personId }: Props) {
                 display: "flex",
                 alignItems: "flex-start",
                 gap: "0.75rem",
-                background: done ? "#F0FDF4" : "var(--color-bg)",
-                border: `1px solid ${done ? "#86efac" : "var(--color-border)"}`,
+                background: done ? "var(--color-success-light)" : "var(--color-bg)",
+                border: `1px solid ${done ? "var(--color-success)" : "var(--color-border)"}`,
                 borderRadius: 12,
                 padding: "0.85rem 1rem",
                 cursor: "pointer",

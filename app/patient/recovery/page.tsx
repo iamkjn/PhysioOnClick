@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { PersonSwitcher } from "@/components/person-switcher";
@@ -11,13 +12,16 @@ import { AssignedExercises } from "@/components/assigned-exercises";
 import { AdherenceBar } from "@/components/adherence-bar";
 import { DownloadReportButton } from "@/components/download-report-button";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
+import { SkeletonRow } from "@/components/skeleton";
 
 export default function RecoveryPage() {
-  const [uid, setUid] = useState<string | null>(null);
+  // undefined = auth still resolving, null = confirmed signed out, string = signed in.
+  const [uid, setUid] = useState<string | null | undefined>(undefined);
   const [displayName, setDisplayName] = useState("");
   const [personId, setPersonId] = useState<string | null>(null);
   const [personName, setPersonName] = useState("");
   const chartRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (!auth) return;
@@ -35,14 +39,24 @@ export default function RecoveryPage() {
     });
   }, []);
 
-  if (!uid || !personId) {
+  useEffect(() => {
+    if (uid === null) router.push("/patient");
+  }, [uid, router]);
+
+  if (uid === undefined) {
     return (
       <div className="site-shell">
         <section className="page-section stack">
-          <p className="muted">Please sign in to view your recovery dashboard.</p>
+          <SkeletonRow count={3} />
         </section>
       </div>
     );
+  }
+
+  if (uid === null || !personId) {
+    // Signed out — redirect is in flight; render nothing rather than a
+    // "please sign in" flash.
+    return null;
   }
 
   return (

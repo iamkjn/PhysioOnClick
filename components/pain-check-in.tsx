@@ -104,6 +104,8 @@ export function PainCheckIn({ uid, personId }: Props) {
             max={10}
             value={score}
             onChange={(e) => setScore(Number(e.target.value))}
+            aria-label="Pain score, 0 to 10"
+            aria-valuetext={`${score} out of 10`}
             style={{ width: "100%", accentColor: painColor(score) }}
           />
         </div>

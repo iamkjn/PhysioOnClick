@@ -20,14 +20,28 @@ export interface PainLog {
   loggedAt: Date;
 }
 
-export function computeRecoveryPercent(logs: { score: number }[]): number | null {
+function rawRecoveryPercent(logs: { score: number }[]): number | null {
   if (logs.length === 0) return null;
   const baseline = logs[0].score;
   if (baseline === 0) return null;
   const recent = logs.slice(-3);
   const current = recent.reduce((sum, log) => sum + log.score, 0) / recent.length;
   const pct = Math.round(((baseline - current) / baseline) * 100);
-  return Math.min(100, Math.max(0, pct));
+  return Math.min(100, Math.max(-100, pct));
+}
+
+export function computeRecoveryPercent(logs: { score: number }[]): number | null {
+  const pct = rawRecoveryPercent(logs);
+  if (pct === null) return null;
+  return Math.max(0, pct);
+}
+
+// True when pain is trending worse than the first check-in (raw percent < 0),
+// so the UI can distinguish "no change" from "getting worse" even though
+// computeRecoveryPercent clamps both to 0.
+export function isRecoveryRegressing(logs: { score: number }[]): boolean {
+  const pct = rawRecoveryPercent(logs);
+  return pct !== null && pct < 0;
 }
 
 export interface RecoveryPoint {
@@ -74,9 +88,21 @@ export interface ExerciseLog {
   loggedAt: Date;
 }
 
-function todayKey(): string {
-  const d = new Date();
+function localDateKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+export function todayKey(): string {
+  return localDateKey(new Date());
+}
+
+// Local-calendar-date key for `n` days ago (0 = today), matching the
+// document-id scheme used for painLogs/exerciseLogs. Used to build a
+// fixed 7-calendar-day window instead of counting sparse log documents.
+export function dateKeyDaysAgo(n: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return localDateKey(d);
 }
 
 function personBase(uid: string, personId: string) {

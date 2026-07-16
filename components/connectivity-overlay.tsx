@@ -30,7 +30,7 @@ export function ConnectivityOverlay() {
       </svg>
       <h2>No internet connection</h2>
       <p>Check your WiFi or mobile data, then try again.</p>
-      <button className="btn-retry" onClick={() => window.location.reload()}>
+      <button type="button" className="btn-retry" onClick={() => window.location.reload()}>
         Retry
       </button>
     </div>

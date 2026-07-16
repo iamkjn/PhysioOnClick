@@ -163,6 +163,8 @@ export function ContactForm() {
           <input
             name="phone"
             placeholder="07xxx xxxxxx"
+            type="tel"
+            inputMode="tel"
             aria-invalid={errors.phone ? true : undefined}
             aria-describedby={errors.phone ? "err-phone" : undefined}
           />

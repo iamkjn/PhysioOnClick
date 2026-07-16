@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getExerciseLogs } from "@/lib/recovery";
+import { getExerciseLogs, dateKeyDaysAgo } from "@/lib/recovery";
 import { Skeleton, SkeletonText } from "@/components/skeleton";
 
 interface Props {
@@ -16,9 +16,12 @@ export function AdherenceBar({ uid, personId }: Props) {
 
   useEffect(() => {
     setError(null);
-    getExerciseLogs(uid, personId, 7).then((logs) => {
-      const completed = logs.filter((log) =>
-        Object.values(log.completions).some(Boolean)
+    // Fetch a bit more than 7 log documents in case some of the last 7
+    // calendar days have no log — we still only count within the window.
+    getExerciseLogs(uid, personId, 14).then((logs) => {
+      const last7Days = new Set(Array.from({ length: 7 }, (_, i) => dateKeyDaysAgo(i)));
+      const completed = logs.filter(
+        (log) => last7Days.has(log.date) && Object.values(log.completions).some(Boolean)
       ).length;
       setDaysCompleted(completed);
     }).catch(() => {

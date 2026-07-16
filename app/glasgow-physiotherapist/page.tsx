@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Physiotherapist in Glasgow | PhysioOnClick",
@@ -55,6 +56,11 @@ export default function GlasgowPage() {
             PhysioOnClick provides calm, clinical physiotherapy in Glasgow with transparent pricing, evidence-based
             rehabilitation and secure online booking for local patients.
           </p>
+          <div className="button-row">
+            <Link className="button primary" href="/book">
+              Book your session
+            </Link>
+          </div>
         </div>
         <div className="page-hero-aside checklist-panel">
           <h2>Local patient benefits</h2>
@@ -93,6 +99,22 @@ export default function GlasgowPage() {
             <p>{faq.answer}</p>
           </details>
         ))}
+      </section>
+
+      <section className="simple-cta-band" id="book">
+        <div className="site-shell simple-cta-inner">
+          <span className="eyebrow">Ready to book?</span>
+          <h2>Book physiotherapy in Glasgow</h2>
+          <p>Schedule your in-person or online appointment now, or get in touch if you have a question first.</p>
+          <div className="button-row" style={{ justifyContent: "center" }}>
+            <Link className="button secondary cta-white" href="/book">
+              Book your session
+            </Link>
+            <Link className="button inverted" href="/contact">
+              Contact us
+            </Link>
+          </div>
+        </div>
       </section>
     </div>
   );

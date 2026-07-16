@@ -50,7 +50,7 @@ describe('formatSlotChip', () => {
 describe('BookingFlow', () => {
   it('defaults to Initial Assessment and mirrors the price in the rail', () => {
     render(<BookingFlow />)
-    expect(screen.getByRole('radio', { name: /Initial Online Assessment/ })).toBeChecked()
+    expect(screen.getByRole('button', { name: /Initial Online Assessment/ })).toHaveAttribute('aria-pressed', 'true')
     expect(document.querySelector('.book-rail-total-price')).toHaveTextContent('£50')
   })
 
@@ -58,7 +58,7 @@ describe('BookingFlow', () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
 
-    await user.click(screen.getByRole('radio', { name: /8 Session Bundle/ }))
+    await user.click(screen.getByRole('button', { name: /8 Session Bundle/ }))
 
     expect(document.querySelector('.book-rail-total-price')).toHaveTextContent('£340')
     expect(document.querySelector('.book-rail-title')).toHaveTextContent('8 Session Bundle')
@@ -100,7 +100,7 @@ describe('BookingFlow', () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
 
-    await user.click(screen.getByRole('radio', { name: /Online Follow-Up/ }))
+    await user.click(screen.getByRole('button', { name: /Online Follow-Up/ }))
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
     await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
@@ -110,10 +110,10 @@ describe('BookingFlow', () => {
     expect(document.querySelector('.book-rail-physio')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Back/ }))
-    expect(screen.getByRole('radio', { name: /Online Follow-Up/ })).toBeChecked()
+    expect(screen.getByRole('button', { name: /Online Follow-Up/ })).toHaveAttribute('aria-pressed', 'true')
 
     // Switching service must drop the slot -- it belongs to another event type.
-    await user.click(screen.getByRole('radio', { name: /Initial Online Assessment/ }))
+    await user.click(screen.getByRole('button', { name: /Initial Online Assessment/ }))
     expect(document.querySelector('.book-rail-physio')).not.toBeInTheDocument()
   })
 

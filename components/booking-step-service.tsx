@@ -1,5 +1,7 @@
 "use client";
 
+import type { RefObject } from "react";
+
 import { FOCUS_AREAS, type CalService, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId, PricingItem } from "@/lib/site-data";
 
@@ -10,6 +12,7 @@ type Props = {
   onServiceChange: (id: BookServiceId) => void;
   onToggleFocusArea: (area: FocusArea) => void;
   onContinue: () => void;
+  titleRef?: RefObject<HTMLHeadingElement | null>;
 };
 
 export function BookingStepService({
@@ -18,23 +21,25 @@ export function BookingStepService({
   focusAreas,
   onServiceChange,
   onToggleFocusArea,
-  onContinue
+  onContinue,
+  titleRef
 }: Props) {
   return (
     <section className="book-panel">
       <p className="book-panel-eyebrow">Step 1 of 3</p>
-      <h1 className="book-panel-title">Choose your service</h1>
+      <h1 className="book-panel-title" ref={titleRef} tabIndex={-1}>
+        Choose your service
+      </h1>
 
       <div className="book-panel-body">
-        <div className="book-service-grid" role="radiogroup" aria-label="Service">
+        <div className="book-service-grid" role="group" aria-label="Service">
           {services.map((s) => {
             const selected = s.id === serviceId;
             return (
               <button
                 type="button"
                 key={s.id}
-                role="radio"
-                aria-checked={selected}
+                aria-pressed={selected}
                 className={`book-service-card${selected ? " is-selected" : ""}`}
                 onClick={() => onServiceChange(s.id)}
               >

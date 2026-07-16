@@ -72,8 +72,6 @@ export default function AccountPage() {
 
   const sectionHeadingStyle: React.CSSProperties = {
     color: "var(--color-text-primary)",
-    fontSize: 18,
-    fontWeight: 700,
     margin: "0 0 0.75rem",
   };
 

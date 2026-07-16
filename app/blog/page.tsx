@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { BlogDirectory } from "@/components/blog-directory";
 import { blogCategories } from "@/lib/blog";
-import { getPublicBlogs } from "@/lib/public-content";
+import { fetchDynamicBlogs } from "@/lib/firestore-content";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-static";
 
-export default function BlogPage() {
-  const articles = getPublicBlogs();
+export default async function BlogPage() {
+  const articles = await fetchDynamicBlogs();
 
   return (
     <div className="site-shell">

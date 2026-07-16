@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
@@ -11,6 +11,7 @@ import { DownloadSummaryButton } from "@/components/download-summary-button";
 
 export default function AppointmentDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const [booking, setBooking] = useState<BookingRecord | null>(null);
   const [summary, setSummary] = useState<SessionSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -18,13 +19,20 @@ export default function AppointmentDetailPage() {
   useEffect(() => {
     const auth = getAuth();
     return onAuthStateChanged(auth, async (u) => {
-      if (!u || !id) return;
+      if (!u) {
+        router.push("/patient");
+        return;
+      }
+      if (!id) {
+        setLoading(false);
+        return;
+      }
       const [b, s] = await Promise.all([getBooking(id), getSessionSummary(id)]);
       setBooking(b);
       setSummary(s);
       setLoading(false);
     });
-  }, [id]);
+  }, [id, router]);
 
   if (loading) {
     return (
@@ -53,7 +61,7 @@ export default function AppointmentDetailPage() {
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
       <Link
         href="/patient/appointments"
-        style={{ color: "var(--color-primary)", textDecoration: "none", fontSize: 14, fontWeight: 600 }}
+        style={{ color: "var(--color-primary-dark)", textDecoration: "none", fontSize: 14, fontWeight: 600 }}
       >
         ← Back to appointments
       </Link>
@@ -67,14 +75,14 @@ export default function AppointmentDetailPage() {
           display: "flex",
           alignItems: "center",
           gap: "1rem",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+          boxShadow: "var(--shadow)",
         }}
       >
         <Avatar name={booking.patientName} imageUrl={booking.patientAvatarUrl} size={60} />
         <div>
           <h2 style={{ margin: 0, color: "var(--color-text-primary)" }}>{booking.patientName}</h2>
           <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)" }}>{booking.service}</p>
-          <p style={{ margin: "2px 0 0", color: "var(--color-primary)", fontWeight: 600, fontSize: 14 }}>
+          <p style={{ margin: "2px 0 0", color: "var(--color-primary-dark)", fontWeight: 600, fontSize: 14 }}>
             {date}
           </p>
         </div>

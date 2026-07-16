@@ -1,17 +1,24 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Cancellation Policy | PhysioOnClick",
+  description: "Notice periods, late cancellation charges, and refund arrangements for PhysioOnClick physiotherapy appointments."
+};
+
 export default function CancellationPolicyPage() {
   return (
     <div className="site-shell">
-      <section className="page-hero legal-hero">
+      <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Cancellation policy</span>
           <h1>Clear cancellation terms for patients and appointments.</h1>
         </div>
-        <div className="legal-aside">
-          <strong>Transparent by design</strong>
-          <p className="muted">Premium care still needs simple, predictable booking expectations.</p>
+        <div className="page-hero-aside">
+          <strong>Last updated</strong>
+          <p className="muted">July 2026</p>
         </div>
       </section>
-      <section className="page-section legal-grid">
+      <section className="page-section two-col">
         <article className="panel stack soft-panel">
           <h2>Notice period</h2>
           <p>
@@ -22,8 +29,8 @@ export default function CancellationPolicyPage() {
         <article className="panel stack">
           <h2>Packages and refunds</h2>
           <p>
-            Package sessions and online appointments should follow the same cancellation expectations. Refunds can be
-            managed through Stripe in the admin dashboard where clinically and commercially appropriate.
+            Package sessions and online appointments should follow the same cancellation expectations. Refunds,
+            where applicable, are arranged directly by the clinic where clinically and commercially appropriate.
           </p>
         </article>
       </section>

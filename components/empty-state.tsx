@@ -102,6 +102,7 @@ export function EmptyState({ illustration, title, body, cta }: EmptyStateProps) 
           </Link>
         ) : (
           <button
+            type="button"
             className={`btn-cta${cta.variant === 'gold' ? ' btn-cta--gold' : ''}`}
             onClick={cta.onClick}
           >

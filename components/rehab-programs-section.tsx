@@ -69,10 +69,10 @@ export function RehabProgramsSection({ email }: { email: string }) {
         <div
           key={p.id}
           style={{
-            background: "#fff",
-            borderRadius: 14,
+            background: "var(--color-surface)",
+            borderRadius: "var(--radius-card)",
             padding: "1.25rem",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+            boxShadow: "var(--shadow)",
           }}
         >
           <strong style={{ display: "block", color: "var(--color-text-primary)", fontSize: 16, marginBottom: 4 }}>

@@ -38,7 +38,7 @@ export function AdminDashboard() {
       <header style={{ position: "sticky", top: 0, zIndex: 100, background: "var(--color-navy)", height: 56, display: "flex", alignItems: "center", padding: "0 1.5rem", gap: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", flex: 1 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: "var(--color-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800, fontSize: 16, fontFamily: "var(--font-serif)" }}>P</div>
-          <span style={{ color: "white", fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15 }}>PhysioOnClick</span>
+          <h1 style={{ margin: 0, color: "white", fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15 }}>PhysioOnClick</h1>
           <span style={{ border: "1px solid var(--color-gold)", color: "var(--color-gold)", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-sans)", letterSpacing: "0.04em" }}>Admin</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>

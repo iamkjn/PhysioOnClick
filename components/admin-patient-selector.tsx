@@ -6,6 +6,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { getDependents } from "@/lib/dependents";
 import { SkeletonRow } from "@/components/skeleton";
+import { useToast } from "@/components/toast-provider";
 
 interface PatientRecord {
   uid: string;
@@ -20,22 +21,31 @@ interface Props {
 export function AdminPatientSelector({ onSelect }: Props) {
   const [patients, setPatients] = useState<PatientRecord[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<PatientRecord | null>(null);
   const [personOptions, setPersonOptions] = useState<{ id: string; name: string }[]>([]);
+  const toast = useToast();
 
   useEffect(() => {
     if (!db) { setLoaded(true); return; }
-    getDocs(collection(db, "patients")).then((snap) => {
-      setPatients(
-        snap.docs.map((d) => ({
-          uid: d.id,
-          displayName: (d.data().displayName as string) || "Unnamed",
-          email: (d.data().email as string) || "",
-        }))
-      );
-      setLoaded(true);
-    });
+    getDocs(collection(db, "patients"))
+      .then((snap) => {
+        setPatients(
+          snap.docs.map((d) => ({
+            uid: d.id,
+            displayName: (d.data().displayName as string) || "Unnamed",
+            email: (d.data().email as string) || "",
+          }))
+        );
+        setLoaded(true);
+      })
+      .catch(() => {
+        setLoadError("Could not load patients. Check your connection and try again.");
+        toast.show("Could not load patients.", "error");
+        setLoaded(true);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- toast.show is stable; only run on mount
   }, []);
 
   async function selectPatient(p: PatientRecord) {
@@ -81,6 +91,9 @@ export function AdminPatientSelector({ onSelect }: Props) {
           boxSizing: "border-box",
         }}
       />
+      {loadError && (
+        <p style={{ color: "var(--color-error)", fontSize: 13, margin: 0 }}>{loadError}</p>
+      )}
       {!selectedPatient && (
         <div style={{ display: "grid", gap: "0.5rem", maxHeight: 240, overflowY: "auto" }}>
           {filtered.map((p) => (

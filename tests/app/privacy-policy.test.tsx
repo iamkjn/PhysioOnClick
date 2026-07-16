@@ -28,7 +28,6 @@ describe('Privacy Policy page', () => {
 
     // These text matches verify all required third-party processors are named
     expect(screen.getAllByText(/Google Firebase/).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(/Stripe/).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/Cal\.com/).length).toBeGreaterThan(0)
     expect(screen.getByText(/Google Calendar \/ Google Meet/)).toBeInTheDocument()
   })

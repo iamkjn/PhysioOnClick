@@ -10,6 +10,8 @@ import {
 } from "@/lib/recovery";
 import { exercises as allExercises } from "@/lib/site-data";
 import { SkeletonRow } from "@/components/skeleton";
+import { useToast } from "@/components/toast-provider";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 interface Props {
   adminUid: string;
@@ -21,6 +23,8 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
   const [assigned, setAssigned] = useState<AssignedExercise[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<{ exerciseId: string; title: string } | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     setLoaded(false);
@@ -45,18 +49,28 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
 
   async function handleAssign(exerciseId: string) {
     setSaving(exerciseId);
-    await assignExercise(patientUid, personId, exerciseId, adminUid);
-    const updated = await getAssignedExercises(patientUid, personId);
-    setAssigned(updated);
-    setSaving(null);
+    try {
+      await assignExercise(patientUid, personId, exerciseId, adminUid);
+      const updated = await getAssignedExercises(patientUid, personId);
+      setAssigned(updated);
+    } catch {
+      toast.show("Could not assign exercise. Try again.", "error");
+    } finally {
+      setSaving(null);
+    }
   }
 
   async function handleRemove(exerciseId: string) {
     setSaving(exerciseId);
-    await removeExercise(patientUid, personId, exerciseId);
-    const updated = await getAssignedExercises(patientUid, personId);
-    setAssigned(updated);
-    setSaving(null);
+    try {
+      await removeExercise(patientUid, personId, exerciseId);
+      const updated = await getAssignedExercises(patientUid, personId);
+      setAssigned(updated);
+    } catch {
+      toast.show("Could not remove exercise. Try again.", "error");
+    } finally {
+      setSaving(null);
+    }
   }
 
   return (
@@ -80,7 +94,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
               {ex?.title ?? ae.exerciseId}
             </span>
             <button
-              onClick={() => void handleRemove(ae.exerciseId)}
+              onClick={() => setRemoveTarget({ exerciseId: ae.exerciseId, title: ex?.title ?? ae.exerciseId })}
               disabled={saving === ae.exerciseId}
               style={{
                 background: "none",
@@ -133,6 +147,21 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
           ))}
         </>
       )}
+
+      <ConfirmDialog
+        isOpen={removeTarget !== null}
+        title="Remove this exercise?"
+        body={removeTarget ? `This removes "${removeTarget.title}" from the patient's assigned exercises.` : ""}
+        confirmLabel="Remove"
+        confirmVariant="destructive"
+        onCancel={() => setRemoveTarget(null)}
+        onConfirm={() => {
+          const target = removeTarget;
+          setRemoveTarget(null);
+          if (!target) return;
+          void handleRemove(target.exerciseId);
+        }}
+      />
     </div>
   );
 }

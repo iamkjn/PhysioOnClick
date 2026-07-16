@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent, type RefObject } from "react";
 import { createUserWithEmailAndPassword, updateProfile, type User } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 
@@ -18,6 +18,7 @@ type Props = {
   onSelectSlot: (iso: string | null) => void;
   onBack: () => void;
   onConfirmed: (c: BookingConfirmation) => void;
+  titleRef?: RefObject<HTMLHeadingElement | null>;
 };
 
 type SlotMap = Record<string, string[]>;
@@ -60,7 +61,8 @@ export function BookingStepTime({
   selectedSlot,
   onSelectSlot,
   onBack,
-  onConfirmed
+  onConfirmed,
+  titleRef
 }: Props) {
   const today = useMemo(() => new Date(), []);
   const [viewMonth, setViewMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
@@ -212,7 +214,9 @@ export function BookingStepTime({
   return (
     <section className="book-panel">
       <p className="book-panel-eyebrow">Step 2 of 3</p>
-      <h1 className="book-panel-title">Time &amp; your details</h1>
+      <h1 className="book-panel-title" ref={titleRef} tabIndex={-1}>
+        Time &amp; your details
+      </h1>
 
       <form onSubmit={handleSubmit} style={{ display: "contents" }}>
         <div className="book-panel-body">
@@ -230,7 +234,11 @@ export function BookingStepTime({
                   className="book-cal-nav"
                   aria-label="Previous month"
                   disabled={!canGoBack}
-                  onClick={() => setViewMonth(new Date(viewMonth.getFullYear(), viewMonth.getMonth() - 1, 1))}
+                  onClick={() => {
+                    setViewMonth(new Date(viewMonth.getFullYear(), viewMonth.getMonth() - 1, 1));
+                    setSelectedDate(null);
+                    onSelectSlot(null);
+                  }}
                 >
                   ‹
                 </button>
@@ -241,7 +249,11 @@ export function BookingStepTime({
                   type="button"
                   className="book-cal-nav"
                   aria-label="Next month"
-                  onClick={() => setViewMonth(new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 1))}
+                  onClick={() => {
+                    setViewMonth(new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 1));
+                    setSelectedDate(null);
+                    onSelectSlot(null);
+                  }}
                 >
                   ›
                 </button>
@@ -278,7 +290,7 @@ export function BookingStepTime({
               </div>
             </div>
 
-            <div>
+            <div role="status" aria-live="polite">
               {loadingSlots ? (
                 <p className="book-loading">Loading times…</p>
               ) : slotsError ? (

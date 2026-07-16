@@ -8,6 +8,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  limit,
   orderBy,
   query,
 } from "firebase/firestore";
@@ -40,21 +41,28 @@ export function AdminChatLogs() {
     async function load() {
       if (!db) return;
       try {
-        const q = query(collectionGroup(db, "chatSessions"), orderBy("updatedAt", "desc"));
+        // ponytail: capped at 100 sessions, add pagination if the clinic outgrows it
+        const q = query(collectionGroup(db, "chatSessions"), orderBy("updatedAt", "desc"), limit(100));
         const snap = await getDocs(q);
 
         const results: ChatSession[] = [];
+        const patientNameCache = new Map<string, string>();
 
         for (const sessionDoc of snap.docs) {
           const patientId = sessionDoc.ref.parent.parent?.id ?? "";
           const data = sessionDoc.data();
 
           let patientName = patientId;
-          try {
-            const patientSnap = await getDoc(doc(db, "patients", patientId));
-            if (patientSnap.exists()) patientName = patientSnap.data().displayName ?? patientId;
-          } catch {
-            // non-fatal
+          if (patientNameCache.has(patientId)) {
+            patientName = patientNameCache.get(patientId)!;
+          } else {
+            try {
+              const patientSnap = await getDoc(doc(db, "patients", patientId));
+              if (patientSnap.exists()) patientName = patientSnap.data().displayName ?? patientId;
+            } catch {
+              // non-fatal
+            }
+            patientNameCache.set(patientId, patientName);
           }
 
           results.push({
@@ -164,11 +172,11 @@ export function AdminChatLogs() {
                 </div>
                 <div style={{ textAlign: "right", flexShrink: 0 }}>
                   <div style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>{date}</div>
-                  <div style={{ fontSize: 12, color: "var(--color-primary)", marginTop: 2 }}>
+                  <div style={{ fontSize: 12, color: "var(--color-primary-dark)", marginTop: 2 }}>
                     {s.messages.length} messages
                   </div>
                 </div>
-                <span style={{ color: "var(--color-primary)", fontSize: 18 }}>{isOpen ? "▲" : "▼"}</span>
+                <span style={{ color: "var(--color-primary-dark)", fontSize: 18 }}>{isOpen ? "▲" : "▼"}</span>
               </button>
 
               {isOpen && (

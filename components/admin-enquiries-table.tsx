@@ -15,12 +15,6 @@ type EnquiryRecord = {
   createdAtLabel: string;
 };
 
-const STATUS_CYCLE: Record<string, string> = {
-  "new":         "in-progress",
-  "in-progress": "resolved",
-  "resolved":    "new",
-};
-
 // dashboard-status-pill only ships status-pending/-confirmed/-cancelled
 // modifiers (warning/success/error) — "new" reuses the warning-toned pending
 // modifier, "in-progress" falls back to the base pill (primary), and
@@ -66,8 +60,7 @@ export function AdminEnquiriesTable() {
     });
   }, []);
 
-  async function cycleStatus(id: string, current: string) {
-    const next = STATUS_CYCLE[current] ?? "new";
+  async function updateStatus(id: string, current: string, next: string) {
     setEnquiries((prev) => prev.map((e) => e.id === id ? { ...e, status: next } : e));
     if (!db) return;
     try {
@@ -109,14 +102,15 @@ export function AdminEnquiriesTable() {
       {!loading && enquiries.length > 0 && (
         <div className="dashboard-table-wrap">
           <table className="dashboard-table">
+            <caption className="sr-only">Latest contact form enquiries with contact details and status</caption>
             <thead>
               <tr>
-                <th>Received</th>
-                <th>Name</th>
-                <th>Service</th>
-                <th>Email</th>
-                <th>Message</th>
-                <th>Status</th>
+                <th scope="col">Received</th>
+                <th scope="col">Name</th>
+                <th scope="col">Service</th>
+                <th scope="col">Email</th>
+                <th scope="col">Message</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -156,7 +150,7 @@ export function AdminEnquiriesTable() {
                           style={{
                             background: "none",
                             border: "none",
-                            color: "var(--color-primary)",
+                            color: "var(--color-primary-dark)",
                             fontSize: 12,
                             fontWeight: 600,
                             cursor: "pointer",
@@ -169,14 +163,31 @@ export function AdminEnquiriesTable() {
                       )}
                     </td>
                     <td>
-                      <button
-                        onClick={() => cycleStatus(item.id, item.status)}
-                        title="Click to update status"
-                        className={STATUS_PILL_CLASS[item.status] ?? "dashboard-status-pill"}
-                        style={{ border: "none", cursor: "pointer" }}
-                      >
-                        {STATUS_LABEL[item.status] ?? item.status}
-                      </button>
+                      <span style={{ position: "relative", display: "inline-block" }}>
+                        <select
+                          value={item.status}
+                          onChange={(e) => updateStatus(item.id, item.status, e.target.value)}
+                          title="Change status"
+                          aria-label="Change status"
+                          className={STATUS_PILL_CLASS[item.status] ?? "dashboard-status-pill"}
+                          style={{
+                            border: "none",
+                            cursor: "pointer",
+                            appearance: "none",
+                            WebkitAppearance: "none",
+                            paddingRight: "1.5rem",
+                            font: "inherit",
+                          }}
+                        >
+                          {Object.entries(STATUS_LABEL).map(([value, label]) => (
+                            <option key={value} value={value}>{label}</option>
+                          ))}
+                        </select>
+                        <span
+                          aria-hidden="true"
+                          style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 10 }}
+                        >▾</span>
+                      </span>
                     </td>
                   </tr>
                 );

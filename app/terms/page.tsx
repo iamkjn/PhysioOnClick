@@ -9,18 +9,18 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <div className="site-shell">
-      <section className="page-hero legal-hero">
+      <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Terms &amp; Conditions</span>
           <h1>Clear terms for a clinical relationship built on trust.</h1>
         </div>
-        <div className="legal-aside">
+        <div className="page-hero-aside">
           <strong>Last updated</strong>
           <p className="muted">June 2026</p>
         </div>
       </section>
 
-      <section className="page-section legal-grid">
+      <section className="page-section two-col">
 
         <article className="panel stack soft-panel">
           <h2>Who we are</h2>
