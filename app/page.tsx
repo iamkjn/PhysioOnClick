@@ -107,6 +107,17 @@ export default async function HomePage() {
           </div>
         </Reveal>
       </section>
+
+      <section className="simple-cta-band" id="book">
+        <div className="site-shell simple-cta-inner">
+          <span className="eyebrow">Ready when you are</span>
+          <h2>Book your first session</h2>
+          <p>Get a tailored physiotherapy plan from an HCPC registered specialist, in-person in Glasgow or online across the UK.</p>
+          <Link className="button secondary cta-white" href="/book">
+            Book your session
+          </Link>
+        </div>
+      </section>
     </>
   );
 }

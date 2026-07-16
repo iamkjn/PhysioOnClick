@@ -26,7 +26,9 @@ export default function ServicesPage() {
       </section>
 
       <section className="page-section stack simple-services-list">
-        {services.map((service, i) => (
+        {services.map((service, i) => {
+          const half = Math.ceil(service.conditions.length / 2);
+          return (
           <Reveal key={service.slug} direction="up" delay={i * 80}>
           <article className="service-split-card" id={service.slug}>
             <div className="service-split-left">
@@ -42,20 +44,24 @@ export default function ServicesPage() {
               />
               <h2>{service.title}</h2>
               <p>{service.summary}</p>
-              <h3>Treatment Approach</h3>
-              <p>{service.approach.join(", ")}.</p>
+              <h3 className="service-subhead">Treatment Approach</h3>
+              <ul className="service-approach-list">
+                {service.approach.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ul>
             </div>
             <div className="service-split-right">
-              <h3 className="service-conditions-title">Conditions Treated</h3>
+              <h3 className="service-subhead">Conditions Treated</h3>
               <div className="service-conditions-grid">
                 <div>
-                  {service.conditions.slice(0, Math.ceil(service.conditions.length / 2)).map((condition) => (
-                    <p key={condition}>✓ {condition}</p>
+                  {service.conditions.slice(0, half).map((condition) => (
+                    <p key={condition}>{condition}</p>
                   ))}
                 </div>
                 <div>
-                  {service.conditions.slice(Math.ceil(service.conditions.length / 2)).map((condition) => (
-                    <p key={condition}>✓ {condition}</p>
+                  {service.conditions.slice(half).map((condition) => (
+                    <p key={condition}>{condition}</p>
                   ))}
                 </div>
               </div>
@@ -69,14 +75,28 @@ export default function ServicesPage() {
                   ))}
                 </div>
               ) : null}
-              <Link className="button primary" href={`/book?service=initial-assessment`}>
-                Book Assessment
-              </Link>
-              <p className="muted" style={{ marginTop: 8 }}>From £50 online</p>
+              <div className="service-split-cta">
+                <Link className="button primary" href={`/book?service=initial-assessment`}>
+                  Book Assessment
+                </Link>
+                <p className="muted">From £50 online</p>
+              </div>
             </div>
           </article>
           </Reveal>
-        ))}
+          );
+        })}
+      </section>
+
+      <section className="simple-cta-band" id="book">
+        <div className="site-shell simple-cta-inner">
+          <span className="eyebrow">Not sure which service fits?</span>
+          <h2>Start with an assessment</h2>
+          <p>Book an initial assessment and we&apos;ll map out the right plan, in-person in Glasgow or online across the UK.</p>
+          <Link className="button secondary cta-white" href="/book?service=initial-assessment">
+            Book assessment
+          </Link>
+        </div>
       </section>
     </div>
   );

@@ -352,11 +352,7 @@ p {
 .button:hover,
 .button:focus-visible,
 .search-result-card:hover,
-.simple-blog-card:hover,
-.simple-price-card:hover,
-.simple-package-card:hover,
-.contact-form-card:hover,
-.sessions-include-card:hover {
+.simple-blog-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 16px 36px rgba(22, 34, 50, 0.1);
 }
@@ -680,6 +676,14 @@ p {
   line-height: 1.55;
 }
 
+/* Hero is full-bleed, so its paragraph needs its own width cap or it runs
+   to the viewport edge and clips. */
+.simple-page-hero p {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .simple-page-hero {
   background: var(--color-primary-light);
   text-align: center;
@@ -858,16 +862,48 @@ p {
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
-.service-conditions-title {
-  margin-bottom: 1rem;
+/* Shared uppercase sub-label for both columns (Treatment Approach /
+   Conditions Treated) so the split reads as two parallel sub-sections. */
+.service-subhead {
+  margin: 0 0 1rem;
   color: var(--muted);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  font-family: var(--font-sans);
+}
+
+.service-split-left .service-subhead {
+  margin-top: 0.5rem;
+}
+
+/* "Our approach" steps: a real marked list, not a comma run-on. */
+.service-approach-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.service-approach-list li {
+  position: relative;
+  padding-left: 1.6rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.service-approach-list li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 700;
 }
 
 .service-conditions-grid {
@@ -881,6 +917,93 @@ p {
 .include-grid p {
   color: var(--ink);
   line-height: 1.5;
+}
+
+.service-conditions-grid p {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.service-conditions-grid p::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.include-grid p {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.include-grid p::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* FAQ accordion: native <details>, styled off the default triangle. */
+.service-faqs {
+  margin-bottom: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.service-faqs details {
+  border-bottom: 1px solid var(--line);
+}
+
+.service-faqs summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.service-faqs summary::-webkit-details-marker {
+  display: none;
+}
+
+.service-faqs summary::after {
+  content: "+";
+  color: var(--primary);
+  font-size: 1.35rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.service-faqs details[open] summary::after {
+  content: "\2212"; /* minus */
+}
+
+.service-faqs details > p {
+  margin: 0 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* Price + button anchored to the bottom edge so the column fills cleanly
+   instead of centering short content and leaving a void. */
+.service-split-cta {
+  margin-top: auto;
+  padding-top: 1.5rem;
+}
+
+.service-split-cta .button.primary {
+  width: 100%;
+}
+
+.service-split-cta .muted {
+  margin-top: 0.5rem;
 }
 
 .service-assessment-included {
@@ -913,6 +1036,10 @@ p {
   margin: 0;
 }
 
+.pricing-sections {
+  gap: 3rem;
+}
+
 .pricing-sections h2 {
   font-size: 2rem;
   margin-bottom: 1.5rem;
@@ -942,6 +1069,7 @@ p {
   margin: 0.7rem 0 1rem;
   color: var(--primary);
   font-size: 2.2rem;
+  font-family: var(--font-serif);
 }
 
 .simple-price-card p,
@@ -1325,7 +1453,7 @@ p {
 .about-highlight-pill {
   display: inline-flex;
   padding: 0.7rem 0.95rem;
-  border-radius: 999px;
+  border-radius: 14px;
   background: white;
   border: 1px solid var(--line);
   color: var(--ink);
@@ -1377,7 +1505,7 @@ p {
 
 .about-credential-grid span {
   padding: 0.45rem 0.7rem;
-  border-radius: 999px;
+  border-radius: 14px;
   background: var(--surface-alt);
   color: var(--primary-dark);
   font-size: 0.88rem;
@@ -1509,18 +1637,6 @@ p {
   color: var(--muted);
   margin-top: 0.35rem;
   line-height: 1.55;
-}
-
-.contact-map-card {
-  height: 320px;
-  overflow: hidden;
-  border-radius: 18px;
-  border: 1px solid var(--line);
-  background: white;
-}
-
-.contact-map-card iframe {
-  height: 100%;
 }
 
 .contact-form-card {
@@ -2302,7 +2418,6 @@ textarea:focus {
 }
 
 .simple-footer {
-  margin-top: 5rem;
   padding: var(--space-section) 0;
   background: var(--color-navy);
   color: white;
@@ -3107,8 +3222,8 @@ textarea:focus {
    Micro-interactions: secondary button border highlight
    ──────────────────────────────────────────────────────────── */
 .button.secondary:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  border-color: var(--color-primary-dark);
+  color: var(--color-primary-dark);
 }
 
 /* ─────────────────────────────────────────────────────────────

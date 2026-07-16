@@ -62,7 +62,7 @@ export default function GlasgowPage() {
             <li>In-person care in Glasgow</li>
             <li>Online follow-up if needed</li>
             <li>Clear pricing and secure booking</li>
-            <li>Trust-focused healthcare UX</li>
+            <li>Same-week appointments</li>
           </ul>
         </div>
       </section>
@@ -74,31 +74,26 @@ export default function GlasgowPage() {
             <li>In-person assessments in Glasgow for musculoskeletal and post-surgical care</li>
             <li>Structured rehabilitation planning with clear milestones and home exercise support</li>
             <li>Online follow-up options for continuity and convenience</li>
-            <li>Clear healthcare tone, clinical documentation and accessible design</li>
+            <li>Straightforward pricing, no hidden fees</li>
           </ul>
         </div>
         <div className="panel stack image-panel">
-          <h2>Clinic map</h2>
-          <div className="map-frame">
-            <iframe
-              title="Glasgow map"
-              src="https://www.google.com/maps?q=Glasgow%20UK&output=embed"
-              loading="lazy"
-            />
-          </div>
+          <h2>Service area</h2>
+          <p className="muted">
+            PhysioOnClick sees patients across Glasgow and the surrounding area, delivering appointments as home
+            visits rather than from a fixed clinic. Online consultations are available UK-wide.
+          </p>
         </div>
       </section>
 
-      <section className="page-section card-grid">
+      <section className="page-section stack service-faqs">
         {faqItems.map((faq) => (
-          <article className="card stack info-card" key={faq.question}>
-            <h3>{faq.question}</h3>
-            <p className="muted">{faq.answer}</p>
-          </article>
+          <details key={faq.question}>
+            <summary>{faq.question}</summary>
+            <p>{faq.answer}</p>
+          </details>
         ))}
       </section>
-
-      {/* Google Business Profile review embed goes here */}
     </div>
   );
 }

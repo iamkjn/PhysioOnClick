@@ -92,17 +92,34 @@ function articleSections(category: string, topic: string) {
   ];
 }
 
+// Three phrasing angles so the 108 generated posts (lcm(9,12)=36 unique
+// category/topic pairs, repeated 3x) don't read as identical duplicate
+// content when the same pairing recurs — see cycle below.
+const angleTemplates: Array<(topic: string, category: string) => string> = [
+  (topic, category) => `${topic} and ${category.toLowerCase()}: a practical UK physiotherapy guide`,
+  (topic, category) => `Managing ${category.toLowerCase()}: what to know about ${topic.toLowerCase()}`,
+  (topic, category) => `${category} and ${topic.toLowerCase()}: a UK physiotherapist's guide`
+];
+
+const excerptTemplates: Array<(topic: string, category: string) => string> = [
+  (topic, category) => `How ${topic.toLowerCase()} relates to ${category.toLowerCase()}: symptoms to watch for, what assessment looks like, and the rehab steps that help you recover with confidence.`,
+  (topic, category) => `A practical look at ${category.toLowerCase()} and ${topic.toLowerCase()} — what to expect from assessment, how treatment is structured, and when to get extra help.`,
+  (topic, category) => `${category} explained through the lens of ${topic.toLowerCase()}: key symptoms, evidence-based treatment options and realistic recovery timelines.`
+];
+
 export const blogArticles: BlogArticle[] = Array.from({ length: 108 }, (_, index) => {
   const category = categories[index % categories.length];
   const topic = topicSeeds[index % topicSeeds.length];
-  const title = `${topic} and ${category.toLowerCase()}: a practical UK physiotherapy guide`;
+  const cycle = Math.floor(index / 36);
+  const title = angleTemplates[cycle](topic, category);
+  const excerpt = excerptTemplates[cycle](topic, category);
   const slug = toSlug(`${title}-${index + 1}`);
 
   return {
     slug,
     title,
     category,
-    excerpt: `How ${topic.toLowerCase()} relates to ${category.toLowerCase()}: symptoms to watch for, what assessment looks like, and the rehab steps that help you recover with confidence.`,
+    excerpt,
     readTime: "6 min read",
     seoTitle: `${title} | PhysioOnClick`,
     seoDescription: `UK physiotherapy guidance on ${topic.toLowerCase()} and ${category.toLowerCase()} — understand your symptoms, plan safe rehabilitation and know when to seek an assessment.`,

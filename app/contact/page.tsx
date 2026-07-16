@@ -1,5 +1,6 @@
 import { ContactForm } from "@/components/contact-form";
 import { Reveal } from "@/components/reveal";
+import { founder } from "@/lib/site-data";
 
 export default function ContactPage() {
   return (
@@ -20,9 +21,7 @@ export default function ContactPage() {
               <div><strong>Email</strong><span><a href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a></span></div>
               <div><strong>Prefer to talk?</strong><span>Leave your number in the form and we&apos;ll call you back.</span></div>
               <div><strong>Hours</strong><span>Mon-Fri: 8am-6pm<br />Sat: 9am-1pm</span></div>
-            </div>
-            <div className="contact-map-card">
-              <iframe title="Glasgow map" src="https://www.google.com/maps?q=Glasgow%20UK&output=embed" loading="lazy" />
+              <div><strong>Your Physiotherapist</strong><span>{founder.name} &middot; {founder.credentials[0]}</span></div>
             </div>
           </div>
         </Reveal>

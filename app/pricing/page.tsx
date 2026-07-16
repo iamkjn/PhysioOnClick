@@ -98,7 +98,7 @@ export default function PricingPage() {
             <h3>All Sessions Include</h3>
             <div className="include-grid">
               {included.map((item) => (
-                <p key={item}>✓ {item}</p>
+                <p key={item}>{item}</p>
               ))}
             </div>
             <p className="muted" style={{ marginTop: 12 }}>Free to reschedule up to 24 hours before your session — no charge for a cancelled slot inside that window.</p>

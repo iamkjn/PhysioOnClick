@@ -133,7 +133,7 @@ export function ContactForm() {
 
   return (
     <div className="contact-form-card">
-      <h2>Book an Appointment</h2>
+      <h2>Send an Enquiry</h2>
       <form className="contact-form-grid" noValidate onSubmit={handleSubmit}>
         <label>
           Full Name *
