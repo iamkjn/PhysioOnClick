@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
+import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 
 function toLondonParts(isoString: string) {
   const date = new Date(isoString);
@@ -53,15 +53,31 @@ async function fetchCalBookings(email: string): Promise<any[]> {
 }
 
 export async function GET(request: NextRequest) {
-  const email = request.nextUrl.searchParams.get("email");
-  const userId = request.nextUrl.searchParams.get("userId");
-
-  if (!email || !userId) {
-    return NextResponse.json({ error: "email and userId are required" }, { status: 400 });
+  const authHeader = request.headers.get("authorization") || "";
+  const idToken = authHeader.replace("Bearer ", "").trim();
+  if (!idToken) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const adminAuth = getAdminAuth();
   const db = getAdminDb();
-  if (!db) return NextResponse.json({ synced: 0, total: 0 });
+  if (!adminAuth || !db) {
+    return NextResponse.json({ error: "Server not configured" }, { status: 500 });
+  }
+
+  let userId: string;
+  let email: string;
+  try {
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    userId = decoded.uid;
+    email = decoded.email || "";
+  } catch {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
+
+  if (!email) {
+    return NextResponse.json({ synced: 0, total: 0 });
+  }
 
   const calBookings = await fetchCalBookings(email);
 
@@ -78,7 +94,8 @@ export async function GET(request: NextRequest) {
       .get();
 
     if (!existing.empty) {
-      // Always link to the current verified user (email match guarantees ownership)
+      // userId/email come from the verified ID token above, never from the
+      // caller — so this only ever links bookings to the signed-in user.
       await existing.docs[0].ref.update({ bookedBy: userId });
       continue;
     }

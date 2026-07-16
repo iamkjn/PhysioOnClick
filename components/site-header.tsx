@@ -178,7 +178,11 @@ export function SiteHeader() {
                 <button type="button" className="call-link" style={{ background: "none", border: "none", cursor: "pointer" }} onClick={() => void handleSignOut()}>
                   Sign out
                 </button>
-              ) : null}
+              ) : (
+                <Link className="call-link" href="/patient">
+                  Sign In
+                </Link>
+              )}
               {/* "Contact" already lives in the primary nav above (line ~17);
                   this used to duplicate it as "Contact Us" right next to it. */}
               <Link className="button primary small" href="/book">
@@ -238,7 +242,15 @@ export function SiteHeader() {
           >
             Sign out
           </button>
-        ) : null}
+        ) : (
+          <Link
+            className="mobile-nav-link"
+            href="/patient"
+            onClick={() => setMenuOpen(false)}
+          >
+            Sign In
+          </Link>
+        )}
       </nav>
     </>
   );

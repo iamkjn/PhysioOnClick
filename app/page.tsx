@@ -23,7 +23,6 @@ export default async function HomePage() {
           <div className="site-shell trust-bar">
             <span>HCPC Registered</span>
             <span>CSP Member</span>
-            <span>Home visits in Glasgow</span>
             <span>Online appointments across the UK</span>
           </div>
         </section>
@@ -112,7 +111,7 @@ export default async function HomePage() {
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Ready when you are</span>
           <h2>Book your first session</h2>
-          <p>Get a tailored physiotherapy plan from an HCPC registered specialist, in-person in Glasgow or online across the UK.</p>
+          <p>Get a tailored physiotherapy plan from an HCPC registered specialist, delivered online across the UK.</p>
           <Link className="button secondary cta-white" href="/book">
             Book your session
           </Link>

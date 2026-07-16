@@ -4,8 +4,9 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-// Change to https://physioonclick.com for release
-const _baseUrl = 'http://10.0.2.2:3000'; // Android emulator; use http://localhost:3000 for iOS simulator
+import '../../core/config.dart';
+
+const _baseUrl = AppConfig.apiBaseUrl;
 
 class ChatMessage {
   final String role; // 'user' or 'model'

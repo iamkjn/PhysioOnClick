@@ -8,7 +8,7 @@ export function SiteFooter() {
           <Link className="footer-brand-link" href="/">
             <h3>PhysioOnClick</h3>
           </Link>
-          <p>Evidence-based physiotherapy in Glasgow and online across the UK. HCPC registered, CSP member.</p>
+          <p>Evidence-based physiotherapy online across the UK. HCPC registered, CSP member.</p>
         </div>
         <div>
           <h4>Quick links</h4>
@@ -32,7 +32,7 @@ export function SiteFooter() {
         </div>
         <div>
           <h4>Contact</h4>
-          <Link href="/glasgow-physiotherapist">Physiotherapist in Glasgow</Link>
+          <Link href="/glasgow-physiotherapist">Online physio for Glasgow patients</Link>
           <a href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a>
           <Link href="/contact">Contact form</Link>
         </div>

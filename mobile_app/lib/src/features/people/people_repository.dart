@@ -35,8 +35,9 @@ class PeopleRepository {
     await _col.doc(id).delete();
   }
 
-  Future<String> uploadAvatar(String dependentId, File imageFile) async {
-    final ref = _storage.ref('avatars/dependents/$dependentId.jpg');
+  Future<String> uploadAvatar(
+      String ownerId, String dependentId, File imageFile) async {
+    final ref = _storage.ref('avatars/dependents/$ownerId/$dependentId.jpg');
     await ref.putFile(imageFile, SettableMetadata(contentType: 'image/jpeg'));
     return ref.getDownloadURL();
   }

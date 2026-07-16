@@ -41,7 +41,7 @@ const specialisms = [
 const highlights = [
   "4+ years of clinical physiotherapy experience",
   "NHS Tayside placement and orthopaedic rehab exposure",
-  "In-person care in Glasgow and online support across the UK",
+  "Online physiotherapy support across the UK",
   "Evidence-based approach with calm, practical treatment planning"
 ];
 
@@ -76,7 +76,7 @@ export default function AboutPage() {
           </p>
           <p>
             Her approach combines clear communication, practical rehabilitation planning and evidence-based clinical
-            decision making, both in-person in Glasgow and through online appointments across the UK.
+            decision making, delivered through online appointments across the UK.
           </p>
           <div className="about-highlight-list">
             {highlights.map((item) => (
@@ -176,7 +176,7 @@ export default function AboutPage() {
           </div>
           <div className="about-stat-card">
             <strong>UK-wide</strong>
-            <span>Online consultations alongside Glasgow clinic care</span>
+            <span>Online consultations, wherever you are</span>
           </div>
         </div>
       </section>
@@ -186,7 +186,7 @@ export default function AboutPage() {
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
           <h2>Book a consultation</h2>
-          <p>Ready to discuss your symptoms and treatment options? Book an in-person or online assessment today.</p>
+          <p>Ready to discuss your symptoms and treatment options? Book an online assessment today.</p>
           <Link className="button secondary cta-white" href="/book">
             Book Assessment
           </Link>

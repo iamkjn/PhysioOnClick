@@ -11,12 +11,12 @@ import { ToastProvider } from "@/components/toast-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  title: "PhysioOnClick | Physiotherapy in Glasgow and Online Across the UK",
+  title: "PhysioOnClick | Online Physiotherapy Across the UK",
   description:
-    "PhysioOnClick is a UK physiotherapy and rehabilitation platform offering in-person care in Glasgow and online consultations across the UK.",
+    "PhysioOnClick is a UK online physiotherapy and rehabilitation platform offering consultations across the UK.",
   openGraph: {
     title: "PhysioOnClick",
-    description: "Evidence-based physiotherapy and rehabilitation in Glasgow and online across the UK.",
+    description: "Evidence-based online physiotherapy and rehabilitation across the UK.",
     type: "website",
     images: [
       {

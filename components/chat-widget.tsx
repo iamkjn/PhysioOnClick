@@ -52,7 +52,7 @@ const SERVICES = [
   {
     emoji: "💻",
     label: "Online Rehab",
-    text: "UK-wide digital physiotherapy via secure video call with tailored exercise plans, progress tracking and weekly review calls.\n\nOnline patients receive the same structured rehabilitation planning as in-person sessions.",
+    text: "UK-wide digital physiotherapy via secure video call with tailored exercise plans, progress tracking and weekly review calls.\n\nOnline patients receive the same structured rehabilitation planning.",
   },
 ];
 

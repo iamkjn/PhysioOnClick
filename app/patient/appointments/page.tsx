@@ -36,9 +36,10 @@ export default function AppointmentsPage() {
       // show up after a manual refresh.
       try {
         if (u.email) {
-          await fetch(
-            `/api/appointments/sync?email=${encodeURIComponent(u.email)}&userId=${u.uid}`
-          );
+          const idToken = await u.getIdToken();
+          await fetch("/api/appointments/sync", {
+            headers: { Authorization: `Bearer ${idToken}` },
+          });
         }
       } catch {
         // sync is best-effort; still let the page load below

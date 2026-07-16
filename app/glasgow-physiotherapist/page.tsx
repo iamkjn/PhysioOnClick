@@ -3,19 +3,20 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
-  title: "Physiotherapist in Glasgow | PhysioOnClick",
+  title: "Online Physiotherapist for Glasgow Patients | PhysioOnClick",
   description:
-    "Looking for a physiotherapist in Glasgow? Book evidence-based physiotherapy and rehabilitation with PhysioOnClick."
+    "Online physiotherapy for patients in Glasgow — evidence-based rehab and assessments, booked securely online. No clinic visit required."
 };
 
 const faqItems = [
   {
-    question: "Do you offer in-person physiotherapy in Glasgow?",
-    answer: "Yes. PhysioOnClick offers in-person appointments in Glasgow alongside UK-wide online consultations."
+    question: "Do you treat patients in Glasgow?",
+    answer:
+      "Yes. PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist and works with patients in Glasgow (and across the UK) entirely online, through secure video assessments and structured rehab plans."
   },
   {
     question: "Can I book online physiotherapy if I live outside Glasgow?",
-    answer: "Yes. Online physiotherapy assessments and follow-ups are available across the UK."
+    answer: "Yes. Online physiotherapy assessments and follow-ups are available anywhere in the UK."
   },
   {
     question: "What conditions do you treat?",
@@ -27,15 +28,10 @@ const faqItems = [
 export default function GlasgowPage() {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "MedicalBusiness",
+    "@type": "MedicalOrganization",
     name: "PhysioOnClick",
     areaServed: "Glasgow, UK",
-    medicalSpecialty: "Physiotherapy",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Glasgow",
-      addressCountry: "GB"
-    }
+    medicalSpecialty: "Physiotherapy"
   };
 
   return (
@@ -52,10 +48,10 @@ export default function GlasgowPage() {
       <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Physiotherapy in Glasgow</span>
-          <h1>Physiotherapist in Glasgow</h1>
+          <h1>Online Physiotherapist for Glasgow Patients</h1>
           <p className="lead">
-            PhysioOnClick provides calm, clinical physiotherapy in Glasgow with transparent pricing, evidence-based
-            rehabilitation and secure online booking for local patients.
+            PhysioOnClick provides calm, clinical physiotherapy for Glasgow patients — fully online, with
+            transparent pricing, evidence-based rehabilitation and secure booking.
           </p>
           <div className="button-row">
             <Link className="button primary" href="/book">
@@ -66,8 +62,8 @@ export default function GlasgowPage() {
         <div className="page-hero-aside checklist-panel">
           <h2>Local patient benefits</h2>
           <ul className="clean-list">
-            <li>In-person care in Glasgow</li>
-            <li>Online follow-up if needed</li>
+            <li>Glasgow-based, HCPC registered physiotherapist</li>
+            <li>Every session delivered online</li>
             <li>Clear pricing and secure booking</li>
             <li>Same-week appointments</li>
           </ul>
@@ -77,22 +73,24 @@ export default function GlasgowPage() {
       <section className="page-section two-col">
         <Reveal direction="up">
           <div className="panel stack soft-panel">
-            <h2>Why local patients book PhysioOnClick</h2>
+            <h2>Why Glasgow patients book PhysioOnClick</h2>
             <ul className="clean-list">
-              <li>In-person assessments in Glasgow for musculoskeletal and post-surgical care</li>
+              <li>Online assessments for musculoskeletal and post-surgical care, wherever you are in Glasgow</li>
               <li>Structured rehabilitation planning with clear milestones and home exercise support</li>
-              <li>Online follow-up options for continuity and convenience</li>
+              <li>Video follow-ups for continuity and convenience</li>
               <li>Straightforward pricing, no hidden fees</li>
             </ul>
           </div>
         </Reveal>
         <Reveal direction="up" delay={80}>
           <div className="panel stack image-panel">
-            <h2>Service area</h2>
-            <p className="muted">
-              PhysioOnClick sees patients across Glasgow and the surrounding area, delivering appointments as home
-              visits rather than from a fixed clinic. Online consultations are available UK-wide.
-            </p>
+            <h2>How online sessions work</h2>
+            <ul className="clean-list">
+              <li>Book a session online in a few minutes</li>
+              <li>Join your assessment by secure video call</li>
+              <li>Receive a personalised rehab plan and exercise prescription</li>
+              <li>Track progress with follow-up sessions</li>
+            </ul>
           </div>
         </Reveal>
       </section>
@@ -114,7 +112,7 @@ export default function GlasgowPage() {
           <div className="site-shell simple-cta-inner">
             <span className="eyebrow">Ready to book?</span>
             <h2>Book physiotherapy in Glasgow</h2>
-            <p>Schedule your in-person or online appointment now, or get in touch if you have a question first.</p>
+            <p>Schedule your online appointment now, or get in touch if you have a question first.</p>
             <div className="button-row" style={{ justifyContent: "center" }}>
               <Link className="button secondary cta-white" href="/book">
                 Book your session

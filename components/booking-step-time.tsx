@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type RefObject } from "react";
-import { createUserWithEmailAndPassword, updateProfile, type User } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+  type User
+} from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 
 import { auth } from "@/lib/firebase";
@@ -46,12 +51,22 @@ function leadingBlanks(firstOfMonth: Date) {
 function authErrorMessage(error: unknown) {
   if (error instanceof FirebaseError) {
     if (error.code === "auth/email-already-in-use") {
-      return "That email already has an account. Please sign in first, then book.";
+      return "That email already has an account. Switch to “Sign in” to continue.";
     }
     if (error.code === "auth/weak-password") return "Please choose a password of at least 6 characters.";
     if (error.code === "auth/invalid-email") return "That email address doesn't look right.";
+    if (
+      error.code === "auth/invalid-credential" ||
+      error.code === "auth/wrong-password" ||
+      error.code === "auth/user-not-found"
+    ) {
+      return "Your email or password is incorrect.";
+    }
+    if (error.code === "auth/too-many-requests") {
+      return "Too many attempts. Please wait a moment and try again.";
+    }
   }
-  return "We couldn't create your account. Please check your details and try again.";
+  return "We couldn't complete that. Please check your details and try again.";
 }
 
 export function BookingStepTime({
@@ -83,11 +98,15 @@ export function BookingStepTime({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // Guests default to creating an account; returning patients switch to "signin".
+  const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
   const [editingDetails, setEditingDetails] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [consent, setConsent] = useState(false);
 
   const signedIn = Boolean(user);
+  const signingIn = !signedIn && authMode === "signin";
 
   useEffect(() => {
     let cancelled = false;
@@ -213,30 +232,72 @@ export function BookingStepTime({
       return;
     }
 
-    const attendeeName = signedIn ? (user!.displayName ?? name.trim()) : name.trim();
-    const attendeeEmail = signedIn ? (user!.email ?? email.trim()) : email.trim();
-
-    if (!attendeeName || !attendeeEmail) {
-      setError("Please enter your name and email.");
+    if (!consent) {
+      setError("Please confirm your consent before booking.");
       return;
     }
 
     setSubmitting(true);
     try {
-      // Guest: create the account first. If the booking then fails, the retry
-      // lands on the signed-in branch instead of a duplicate-email dead end.
-      if (!signedIn) {
+      // Resolve which account we book under. Signed-in users book as themselves;
+      // guests either sign in to an existing account or create a new one first.
+      let attendeeName: string;
+      let attendeeEmail: string;
+
+      if (signedIn) {
+        attendeeName = user!.displayName ?? name.trim();
+        attendeeEmail = user!.email ?? email.trim();
+        if (!attendeeName || !attendeeEmail) {
+          setError("Please enter your name and email.");
+          return;
+        }
+      } else {
         if (!auth) {
           setError("Accounts aren't configured right now. Please contact us to book.");
           return;
         }
-        try {
-          const credential = await createUserWithEmailAndPassword(auth, attendeeEmail, password);
-          await updateProfile(credential.user, { displayName: attendeeName });
-          await ensurePatientRecord(credential.user, attendeeName);
-        } catch (authError) {
-          setError(authErrorMessage(authError));
-          return;
+        const trimmedEmail = email.trim();
+
+        if (authMode === "signin") {
+          if (!trimmedEmail || !password) {
+            setError("Please enter your email and password.");
+            return;
+          }
+          try {
+            const credential = await signInWithEmailAndPassword(auth, trimmedEmail, password);
+            await ensurePatientRecord(credential.user);
+            attendeeName = credential.user.displayName ?? trimmedEmail;
+            attendeeEmail = credential.user.email ?? trimmedEmail;
+          } catch (authError) {
+            setError(authErrorMessage(authError));
+            return;
+          }
+        } else {
+          const trimmedName = name.trim();
+          if (!trimmedName || !trimmedEmail) {
+            setError("Please enter your name and email.");
+            return;
+          }
+          try {
+            const credential = await createUserWithEmailAndPassword(auth, trimmedEmail, password);
+            await updateProfile(credential.user, { displayName: trimmedName });
+            await ensurePatientRecord(credential.user, trimmedName);
+            attendeeName = trimmedName;
+            attendeeEmail = trimmedEmail;
+          } catch (authError) {
+            // Already registered? Drop them into sign-in instead of dead-ending.
+            if (
+              authError instanceof FirebaseError &&
+              authError.code === "auth/email-already-in-use"
+            ) {
+              setAuthMode("signin");
+              setPassword("");
+              setError("You already have an account. Enter your password to sign in, then book.");
+              return;
+            }
+            setError(authErrorMessage(authError));
+            return;
+          }
         }
       }
 
@@ -432,21 +493,23 @@ export function BookingStepTime({
             </div>
           ) : (
             <div className="book-fields">
-              <div className="book-field">
-                <label className="book-label" htmlFor="book-name">
-                  Full name
-                </label>
-                <input
-                  id="book-name"
-                  className="book-input"
-                  required
-                  autoComplete="name"
-                  placeholder="Alex Morgan"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div className="book-field">
+              {!signingIn ? (
+                <div className="book-field">
+                  <label className="book-label" htmlFor="book-name">
+                    Full name
+                  </label>
+                  <input
+                    id="book-name"
+                    className="book-input"
+                    required
+                    autoComplete="name"
+                    placeholder="Alex Morgan"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+              ) : null}
+              <div className={`book-field${signingIn ? " book-field-full" : ""}`}>
                 <label className="book-label" htmlFor="book-email">
                   Email
                 </label>
@@ -464,23 +527,51 @@ export function BookingStepTime({
               {!signedIn ? (
                 <div className="book-field book-field-full">
                   <label className="book-label" htmlFor="book-password">
-                    Create a password
+                    {signingIn ? "Password" : "Create a password"}
                   </label>
                   <input
                     id="book-password"
                     className="book-input"
                     type="password"
                     required
-                    minLength={6}
-                    autoComplete="new-password"
-                    placeholder="At least 6 characters"
+                    minLength={signingIn ? undefined : 6}
+                    autoComplete={signingIn ? "current-password" : "new-password"}
+                    placeholder={signingIn ? "Your password" : "At least 6 characters"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
               ) : null}
+              {!signedIn ? (
+                <p className="book-field-full book-auth-toggle">
+                  {signingIn ? "New patient?" : "Already have an account?"}{" "}
+                  <button
+                    type="button"
+                    className="book-edit"
+                    onClick={() => {
+                      setAuthMode(signingIn ? "signup" : "signin");
+                      setError(null);
+                    }}
+                  >
+                    {signingIn ? "Create an account" : "Sign in"}
+                  </button>
+                </p>
+              ) : null}
             </div>
           )}
+
+          <label className="book-consent">
+            <input
+              type="checkbox"
+              required
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+            />
+            <span>
+              I consent to online consultation and the storage of my personal and clinical data as described in the{" "}
+              <a href="/privacy-policy">Privacy Policy</a>.
+            </span>
+          </label>
         </div>
 
         <div className="book-panel-footer">
@@ -490,10 +581,10 @@ export function BookingStepTime({
           <button
             type="submit"
             className="book-cta"
-            disabled={submitting || !selectedSlot}
+            disabled={submitting || !selectedSlot || !consent}
             aria-label={
-              !submitting && !selectedSlot
-                ? `Confirm booking. Choose a time above first.`
+              !submitting && (!selectedSlot || !consent)
+                ? `Confirm booking. Choose a time and confirm consent above first.`
                 : undefined
             }
           >

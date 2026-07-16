@@ -110,7 +110,7 @@ class _AddPersonSheetState extends State<AddPersonSheet> {
         );
         final newId = await _repo.addDependent(dep);
         if (_pickedImage != null) {
-          final url = await _repo.uploadAvatar(newId, _pickedImage!);
+          final url = await _repo.uploadAvatar(uid, newId, _pickedImage!);
           await _repo.updateAvatarUrl(newId, url);
         }
       } else {
@@ -125,7 +125,8 @@ class _AddPersonSheetState extends State<AddPersonSheet> {
         );
         await _repo.updateDependent(updated);
         if (_pickedImage != null) {
-          final url = await _repo.uploadAvatar(widget.existing!.id, _pickedImage!);
+          final url =
+              await _repo.uploadAvatar(uid, widget.existing!.id, _pickedImage!);
           await _repo.updateAvatarUrl(widget.existing!.id, url);
         }
       }

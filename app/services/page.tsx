@@ -27,7 +27,7 @@ export default function ServicesPage() {
         <h1>
           Our <span>Services</span>
         </h1>
-        <p>Comprehensive, evidence-based physiotherapy services delivered in-person in Glasgow or online across the UK.</p>
+        <p>Comprehensive, evidence-based physiotherapy services delivered online across the UK.</p>
       </section>
 
       <section className="page-section stack simple-services-list">
@@ -101,7 +101,7 @@ export default function ServicesPage() {
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Not sure which service fits?</span>
           <h2>Start with an assessment</h2>
-          <p>Book an initial assessment and we&apos;ll map out the right plan, in-person in Glasgow or online across the UK.</p>
+          <p>Book an initial assessment and we&apos;ll map out the right plan, delivered online across the UK.</p>
           <Link className="button secondary cta-white" href="/book?service=initial-assessment">
             Book assessment
           </Link>

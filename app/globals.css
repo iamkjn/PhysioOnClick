@@ -4006,6 +4006,36 @@ textarea:focus {
   text-decoration: underline;
 }
 
+.book-auth-toggle {
+  margin-top: 2px;
+  font-size: 0.82rem;
+  color: var(--book-paper-muted);
+}
+
+.book-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--book-paper-muted);
+  cursor: pointer;
+}
+
+.book-consent input {
+  margin-top: 2px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--book-accent);
+}
+
+.book-consent a {
+  color: var(--book-accent-dark);
+  text-decoration: underline;
+}
+
 /* ── Screen 3: confirmation ────────────────────────────────── */
 .book-done {
   display: grid;

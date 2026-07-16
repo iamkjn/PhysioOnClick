@@ -4,7 +4,7 @@ import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions | PhysioOnClick",
-  description: "Terms and conditions for using PhysioOnClick physiotherapy services online and in-person in Glasgow."
+  description: "Terms and conditions for using PhysioOnClick's online physiotherapy services."
 };
 
 // Body text inherits `a { color: inherit; text-decoration: none; }` globally,
@@ -45,7 +45,7 @@ export default function TermsPage() {
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Nature of the service</h2>
           <p>
-            PhysioOnClick provides physiotherapy consultations online (UK-wide) and in-person in Glasgow.
+            PhysioOnClick provides physiotherapy consultations online across the UK.
             Booking a consultation creates a professional clinical relationship. The standard of care provided
             online is equal to that of an in-person consultation. A lower standard of care is not acceptable
             simply because the interaction is remote.

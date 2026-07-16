@@ -16,6 +16,26 @@ service firebase.storage {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
+    function isImageUpload() {
+      return request.resource.size < 5 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+    }
+
+    // Mobile app profile avatar: avatars/users/{uid}.jpg — the filename is the owner's uid.
+    // Storage rules can't put a literal .jpg after a {wildcard} segment, so match the whole
+    // filename and compare it to <uid>.jpg.
+    match /avatars/users/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if (isAdmin() || (isSignedIn() && fileName == request.auth.uid + '.jpg')) && isImageUpload();
+    }
+
+    // Mobile app dependent avatar: avatars/dependents/{ownerUid}/{dependentId}.jpg.
+    // Storage rules can't read Firestore, so the owner uid is embedded in the path instead.
+    match /avatars/dependents/{ownerUid}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if (isAdmin() || (isSignedIn() && request.auth.uid == ownerUid)) && isImageUpload();
+    }
+
     match /exercise-videos/{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin();

@@ -98,11 +98,6 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    match /symptomChecks/{checkId} {
-      allow create: if true;
-      allow read, update, delete: if isAdmin();
-    }
-
     match /patients/{userId} {
       allow read, update: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
       allow create: if isSignedIn() && request.auth.uid == userId;
@@ -129,6 +124,15 @@ service cloud.firestore {
     match /patients/{userId}/{document=**} {
       allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
       allow write: if isAdmin();
+    }
+
+    // Collection-group rule for the admin chat logs viewer (components/admin-chat-logs.tsx),
+    // which runs a collectionGroup("chatSessions") query across all patients/{uid}/chatSessions/{id}.
+    // The recursive wildcard under /patients/{userId} above only authorizes per-patient reads,
+    // not cross-patient collection-group queries — this is required in addition to it.
+    // Read-only: writes to chatSessions continue to go through patients/{userId}/{document=**} above.
+    match /{path=**}/chatSessions/{sessionId} {
+      allow read: if isAdmin();
     }
 
     match /admin/{document=**} {

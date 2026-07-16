@@ -20,7 +20,7 @@ const iconProps = {
 
 export const metadata: Metadata = {
   title: "Contact | PhysioOnClick",
-  description: "Get in touch with PhysioOnClick to book an appointment, ask a question or enquire about our physiotherapy services in Glasgow and online across the UK today."
+  description: "Get in touch with PhysioOnClick to book an appointment, ask a question or enquire about our online physiotherapy services across the UK today."
 };
 
 export default function ContactPage() {
@@ -44,7 +44,7 @@ export default function ContactPage() {
                 </span>
                 <div>
                   <strong>Location</strong>
-                  <span>Glasgow home visits and online consultations across the UK</span>
+                  <span>Online consultations across the UK</span>
                 </div>
               </li>
               <li>

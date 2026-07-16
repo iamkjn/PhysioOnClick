@@ -57,7 +57,7 @@ function articleSections(category: string, topic: string) {
       heading: "Why this matters",
       body: [
         `${topic} is one of the most common concerns discussed in UK physiotherapy appointments, especially when it starts to affect work, walking, sleep or confidence with exercise. At PhysioOnClick, we focus on understanding the whole picture rather than chasing quick fixes. That means asking when symptoms began, what aggravates them, how the condition affects day-to-day tasks and whether there are any signs that suggest further medical review is needed.`,
-        `In Glasgow clinics and online consultations across the UK, people often arrive worried that pain automatically means harm. In many cases the story is more nuanced. Symptoms can be influenced by load, stress, sleep, deconditioning and recent changes in activity. A good physiotherapy plan helps you understand those factors so your recovery becomes predictable and manageable.`
+        `In online physiotherapy consultations across the UK, people often arrive worried that pain automatically means harm. In many cases the story is more nuanced. Symptoms can be influenced by load, stress, sleep, deconditioning and recent changes in activity. A good physiotherapy plan helps you understand those factors so your recovery becomes predictable and manageable.`
       ]
     },
     {

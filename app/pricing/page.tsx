@@ -7,14 +7,13 @@ import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
   title: "Pricing | PhysioOnClick",
-  description: "Transparent physiotherapy pricing for Glasgow home visits and online consultations."
+  description: "Transparent, online physiotherapy pricing with no hidden fees."
 };
 
 export const dynamic = "force-static";
 
 export default function PricingPage() {
   const pricing = getPublicPricing();
-  const inPerson = pricing.filter((item) => item.mode === "In-person");
   const online = pricing.filter((item) => item.mode === "Online");
   const packages = pricing.filter((item) => item.mode === "Package");
   const followUpPrice = online.find((item) => item.id === "follow-up")?.price ?? 0;
@@ -37,43 +36,6 @@ export default function PricingPage() {
       </section>
 
       <section className="page-section stack pricing-sections">
-        {inPerson.length > 0 ? (
-          <div>
-            <h2>In-Person Sessions <span>(Glasgow home visits)</span></h2>
-            <div className="pricing-grid pricing-grid-three">
-              {inPerson.map((item, i) => (
-                <Reveal key={item.id} direction="up" delay={i * 100}>
-                  <article className="simple-price-card" style={{ display: "flex", flexDirection: "column" }}>
-                    <h3>{item.title}</h3>
-                    <p className="muted">{item.duration}</p>
-                    <strong>{formatCurrency(item.price)}</strong>
-                    <p>{item.description}</p>
-                    <Link
-                      className="button primary"
-                      href="/book"
-                      aria-label={`Book ${item.title}`}
-                      style={{ marginTop: "auto" }}
-                    >
-                      Book Now
-                    </Link>
-                  </article>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <Reveal direction="up">
-            <div className="sessions-include-card">
-              <h2>In-Person Sessions <span>(Glasgow)</span></h2>
-              <p className="muted">
-                In-person sessions in Glasgow are arranged directly with your physiotherapist. Get in touch and
-                we&apos;ll confirm availability and pricing for your visit.
-              </p>
-              <Link className="button secondary" href="/contact">Enquire about in-person sessions</Link>
-            </div>
-          </Reveal>
-        )}
-
         <div>
           <Reveal direction="up">
             <h2>Online Consultations <span>(UK-wide)</span></h2>

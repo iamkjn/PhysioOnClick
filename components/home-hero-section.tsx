@@ -49,14 +49,14 @@ export function HomeHeroSection({ founderName }: { founderName: string }) {
       />
       <div className="home-hero-overlay" />
       <div className="site-shell home-hero-content">
-        <span className="location-pill">Glasgow & Online Across the UK</span>
+        <span className="location-pill">Online Across the UK</span>
         <h1>
           Expert Physiotherapy,
           <span> One Click Away</span>
         </h1>
         <p className="home-hero-copy">
-          Evidence-based physiotherapy by {founderName}, HCPC registered physiotherapist. In-person in Glasgow or
-          online consultations across the UK.
+          Evidence-based physiotherapy by {founderName}, HCPC registered physiotherapist. Online consultations
+          across the UK.
         </p>
         <div className="button-row">
           <Link className="button primary" href="/book" prefetch>

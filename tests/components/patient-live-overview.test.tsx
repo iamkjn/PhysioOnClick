@@ -30,7 +30,7 @@ describe('PatientLiveOverview', () => {
     authCallback(null)
 
     await waitFor(() => {
-      expect(screen.getByText(/sign in to load your live bookings/i)).toBeInTheDocument()
+      expect(screen.getByText(/sign in to see your bookings and enquiries/i)).toBeInTheDocument()
     })
     expect(document.querySelectorAll('.skeleton-row-group').length).toBe(0)
   })

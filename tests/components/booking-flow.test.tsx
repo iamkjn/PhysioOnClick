@@ -10,9 +10,12 @@ const onAuthStateChanged = vi.fn((_auth: unknown, cb: (u: unknown) => void) => {
 
 vi.mock('@/lib/firebase', () => ({ auth: {}, db: null }))
 vi.mock('@/lib/patient-account', () => ({ ensurePatientRecord: vi.fn() }))
+const signInWithEmailAndPassword = vi.fn()
+const createUserWithEmailAndPassword = vi.fn()
 vi.mock('firebase/auth', () => ({
   onAuthStateChanged: (...args: [unknown, (u: unknown) => void]) => onAuthStateChanged(...args),
-  createUserWithEmailAndPassword: vi.fn(),
+  createUserWithEmailAndPassword: (...args: unknown[]) => createUserWithEmailAndPassword(...args),
+  signInWithEmailAndPassword: (...args: unknown[]) => signInWithEmailAndPassword(...args),
   updateProfile: vi.fn()
 }))
 
@@ -78,6 +81,40 @@ describe('BookingFlow', () => {
     )
   })
 
+  it('lets a returning patient sign in instead of creating a password', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    signInWithEmailAndPassword.mockResolvedValue({
+      user: { displayName: 'Existing Patient', email: 'pat@example.com' }
+    })
+    ;(fetch as ReturnType<typeof vi.fn>).mockImplementation(async (url: string) => {
+      if (String(url).includes('/api/cal/book')) {
+        return { ok: true, json: async () => ({ ok: true, uid: 'u1' }) }
+      }
+      return { ok: true, json: async () => ({ slots: SLOTS }) }
+    })
+
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+
+    // Switching to sign in drops the name field and relabels the password.
+    await user.click(screen.getByRole('button', { name: 'Sign in' }))
+    expect(screen.queryByLabelText('Full name')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Password')).toBeInTheDocument()
+
+    await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
+    await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
+    await user.click(screen.getByRole('option', { name: '09:00' }))
+
+    await user.type(screen.getByLabelText('Email'), 'pat@example.com')
+    await user.type(screen.getByLabelText('Password'), 'hunter2')
+    await user.click(screen.getByRole('checkbox', { name: /consent/i }))
+    await user.click(screen.getByRole('button', { name: /Confirm booking/ }))
+
+    await waitFor(() => expect(signInWithEmailAndPassword).toHaveBeenCalled())
+    expect(signInWithEmailAndPassword.mock.calls[0][1]).toBe('pat@example.com')
+    await waitFor(() => expect(screen.getByText(/booking confirmed/i)).toBeInTheDocument())
+  })
+
   it('disables days with no availability and marks busy times unavailable', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
@@ -90,8 +127,8 @@ describe('BookingFlow', () => {
     // The 21st is free at 14:00 but busy at 09:00 — 09:00 must still show, disabled.
     await user.click(screen.getByLabelText(/Friday, 21 August 2026/))
     const slots = document.querySelector('.book-slots')!
-    expect(within(slots as HTMLElement).getByRole('button', { name: '14:00' })).toBeEnabled()
-    const busy = within(slots as HTMLElement).getByRole('button', { name: '09:00' })
+    expect(within(slots as HTMLElement).getByRole('option', { name: '14:00' })).toBeEnabled()
+    const busy = within(slots as HTMLElement).getByRole('option', { name: /09:00/ })
     expect(busy).toBeDisabled()
     expect(busy).toHaveClass('is-unavailable')
   })
@@ -104,7 +141,7 @@ describe('BookingFlow', () => {
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
     await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
-    await user.click(screen.getByRole('button', { name: '09:00' }))
+    await user.click(screen.getByRole('option', { name: '09:00' }))
 
     // Slot chosen -> CTA enabled and the rail shows the physio card.
     expect(document.querySelector('.book-rail-physio')).toBeInTheDocument()
@@ -123,5 +160,55 @@ describe('BookingFlow', () => {
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
 
     expect(screen.getByRole('button', { name: /Confirm booking/ })).toBeDisabled()
+  })
+
+  it('keeps confirm disabled until consent is checked, even with a time chosen', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
+    await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
+    await user.click(screen.getByRole('option', { name: '09:00' }))
+
+    const confirmButton = screen.getByRole('button', { name: /Confirm booking/ })
+    expect(confirmButton).toBeDisabled()
+
+    await user.click(screen.getByRole('checkbox', { name: /consent/i }))
+    expect(confirmButton).toBeEnabled()
+  })
+
+  it('blocks booking submission without consent and allows it once checked', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    createUserWithEmailAndPassword.mockResolvedValue({
+      user: { displayName: null, email: null }
+    })
+    ;(fetch as ReturnType<typeof vi.fn>).mockImplementation(async (url: string) => {
+      if (String(url).includes('/api/cal/book')) {
+        return { ok: true, json: async () => ({ ok: true, uid: 'u1' }) }
+      }
+      return { ok: true, json: async () => ({ slots: SLOTS }) }
+    })
+
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
+    await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
+    await user.click(screen.getByRole('option', { name: '09:00' }))
+
+    await user.type(screen.getByLabelText('Full name'), 'Alex Morgan')
+    await user.type(screen.getByLabelText('Email'), 'alex@example.com')
+    await user.type(screen.getByLabelText('Create a password'), 'hunter22')
+
+    // Confirm stays disabled without consent -- clicking it (were it enabled)
+    // must not be reachable, so assert the disabled state directly.
+    const confirmButton = screen.getByRole('button', { name: /Confirm booking/ })
+    expect(confirmButton).toBeDisabled()
+    expect(fetch).not.toHaveBeenCalledWith(expect.stringContaining('/api/cal/book'), expect.anything())
+
+    await user.click(screen.getByRole('checkbox', { name: /consent/i }))
+    expect(confirmButton).toBeEnabled()
+
+    await user.click(confirmButton)
+    await waitFor(() => expect(screen.getByText(/booking confirmed/i)).toBeInTheDocument())
   })
 })
