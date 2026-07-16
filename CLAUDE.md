@@ -26,14 +26,16 @@ Tests live in `tests/`, mirroring the source tree (`tests/lib/`, `tests/app/`, `
 
 **Stack:** Next.js 15 (App Router) + React 19, Firebase (Auth/Firestore/Storage/Functions), Cal.com (booking), Google Gemini (chat assistant), Resend (email), GSAP (animation), Recharts.
 
-### Booking flow (Cal.com-centric)
+### Booking flow (Cal.com-backed, custom UI)
 
-Booking runs through a Cal.com embed (`NEXT_PUBLIC_CAL_USERNAME`) on `app/book/`. Server-side pieces:
+Booking is a custom 3-step flow (`components/booking-flow.tsx`: service → time → confirmation) on `app/book/` — no Cal.com embed. It talks to Cal.com's public v2 API through two server routes that deliberately don't use `CAL_API_KEY`:
 
+- `app/api/cal/slots/` — fetches availability (event types resolved via `lib/cal-services.ts` from `NEXT_PUBLIC_CAL_USERNAME`)
+- `app/api/cal/book/` — creates the booking
 - `app/api/cal-webhook/` — receives Cal.com booking events, verifies HMAC signature with `CAL_WEBHOOK_SECRET`, writes bookings to Firestore
 - `app/api/appointments/sync/` — syncs appointment state
 - `app/api/auth/magic-link/` + `app/api/auth/link-bookings/` — passwordless sign-in via Resend email, then links guest bookings to the account
-- `lib/patient-bookings.ts` — booking Firestore helpers; admin cancel calls Cal.com with server-only `CAL_API_KEY`
+- `lib/patient-bookings.ts` — booking Firestore helpers; admin cancel calls Cal.com via `cancelCalBooking` in `app/admin/actions.ts` with server-only `CAL_API_KEY`
 
 Stripe is largely vestigial: `lib/stripe.ts` remains but there is no checkout route anymore.
 
@@ -53,7 +55,7 @@ Public content (services, pricing, testimonials) is static in `lib/site-data.ts`
 - `components/` — shared React components
 - `lib/` — data, Firebase clients, domain helpers (`recovery.ts`, `dependents.ts`, `session-summaries.ts`, `patient-account.ts`)
 - `functions/` — Firebase Cloud Functions (separate npm project): sends FCM push notifications when a session summary is published
-- `mobile_app/` — separate React Native project, not part of the Next.js build
+- `mobile_app/` — separate Flutter project (Dart SDK ^3.8.1), not part of the Next.js build
 - `docs/` — PRD, TODOs, strategic review
 
 ### Firebase setup

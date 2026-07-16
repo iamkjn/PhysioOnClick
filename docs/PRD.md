@@ -48,7 +48,7 @@ All ten MVP features now exist in the codebase or have a confirmed integration d
 - An expired-link attempt never silently fails — the user sees why and can retry.
 
 ### 4.2 Online Booking
-**Current implementation:** Cal.com inline embed (`components/booking-form.tsx`, `components/cal-embed.tsx`), bookings synced into Firestore via `app/api/cal-webhook`.
+**Current implementation:** custom 3-step booking flow (`components/booking-flow.tsx`) calling Cal.com's public v2 API via `app/api/cal/slots` and `app/api/cal/book` — no embed; bookings synced into Firestore via `app/api/cal-webhook`.
 
 - **FR1:** Patient selects a service and an available time slot and confirms a booking without leaving the site/app.
 - **FR2:** A confirmed booking is written to Firestore (via the Cal.com webhook) and linked to the patient's account when the booking email matches a known patient (`app/api/auth/link-bookings`).
@@ -67,7 +67,7 @@ All ten MVP features now exist in the codebase or have a confirmed integration d
 **Acceptance criteria:** No double-bookings occur; slots shown to patients always match what's actually free in Cal.com.
 
 ### 4.4 Online Payments
-**Current implementation:** Stripe Checkout (`app/api/checkout`).
+**Current implementation:** Cal.com Stripe Connect — payment is collected as part of the Cal.com booking ("Collect payment on booking"); the earlier custom `app/api/checkout` route has been deleted.
 
 - **FR1:** Patient can pay by card for a session, either at time of booking or from the pricing page.
 - **FR2:** Successful payment is recorded and tied to the correct booking/patient.
@@ -174,18 +174,18 @@ Was: `allow create: if createsOwnEmailResource()`, with nothing in the app readi
 ### 8.4 ~~Video Consultation feasibility unconfirmed~~ — PARTIALLY RESOLVED
 Payment side confirmed: Cal.com's Stripe Connect is set up (GBP, £50/£40 pricing, "Collect payment on booking" enabled), and confirmed available on the free plan alongside Cal Video. Cal Video itself isn't yet confirmed turned on as the event type's location — that's the one remaining step. The orphaned custom booking pipeline (`booking-form.tsx`, `api/booking`, `lib/google-calendar.ts`, `api/checkout`) has been deleted as superseded by this.
 
-### 8.5 Calendar & Availability has a history of embed reliability issues
-The Cal.com inline embed previously needed a fix for a Next.js SPA-navigation deduplication bug (embed failing to reinitialize on client-side route changes). This is an ongoing risk of depending on a third-party embed inside Next.js routing, not a one-time fixed issue.
+### 8.5 ~~Calendar & Availability has a history of embed reliability issues~~ — MOOT
+The Cal.com inline embed (and its Next.js SPA-navigation reinitialization bug) is gone: booking is now a custom flow calling Cal.com's API server-side (§4.2), so there is no third-party embed inside Next.js routing to break.
 
 ### 8.6 ~~Zero automated test coverage~~ — CORRECTED
-This was wrong — stated without actually running the suite. A real test suite exists (`tests/`, 8 files, 27 tests), covering the CSP compliance work (consent checkbox, terms, privacy policy) and `computeRecoveryPercent`. Running it caught a genuine bug — see §9. Coverage is still thin on the booking/payment path specifically (no tests for `cal-webhook`, `link-bookings`, or `checkout`), which remains a real gap, just not a "zero coverage" one.
+This was wrong — stated without actually running the suite. A real test suite exists (`tests/`, 42 files, 141 tests), and it has since grown to cover the booking path's API routes (`tests/api/cal-book.test.ts`, `tests/api/cal-slots.test.ts`). Running it caught a genuine bug — see §9. Remaining gap: `cal-webhook` and `link-bookings` are still untested.
 
 ## 9. Roadmap & Priorities
 
 Full reasoning in [`docs/strategic-review.md`](strategic-review.md). Summary of what changes in this document as a result:
 
 **Immediate, in order:**
-1. **Test the money/data path** (§8.6) — booking creation, Stripe checkout, and the magic-link auth flow. Highest blast-radius surface, currently the least verified.
+1. **Test the money/data path** (§8.6) — booking creation (`cal/book` and `cal/slots` now tested) and the magic-link auth flow; `cal-webhook` and `link-bookings` remain. Payment runs through Cal.com Stripe Connect, so there is no custom checkout code to test.
 2. **Confirm §4.11/§8.4** — check whether the current Cal.com plan includes native video before building or integrating anything else.
 3. **Run one real patient through the entire flow** (book → pay → attend → session summary → portal login) before adding new scope. This will surface more real problems than further building will.
 
