@@ -1,14 +1,17 @@
+import type { CSSProperties } from 'react';
+
 interface SkeletonProps {
   width?: string;
   height?: string;
   className?: string;
+  style?: CSSProperties;
 }
 
-export function Skeleton({ width = '100%', height = '1.2em', className }: SkeletonProps) {
+export function Skeleton({ width = '100%', height = '1.2em', className, style }: SkeletonProps) {
   return (
     <span
       className={`skeleton${className ? ` ${className}` : ''}`}
-      style={{ width, height }}
+      style={{ width, height, ...style }}
       aria-hidden="true"
     />
   );
