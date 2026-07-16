@@ -13,6 +13,7 @@ export function ContactForm() {
   const [status, setStatus] = useState("We'll respond within 24 hours. Your data is handled in accordance with our privacy policy.");
   const [statusTone, setStatusTone] = useState<"default" | "success" | "error">("default");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -49,6 +50,10 @@ export function ContactForm() {
 
     if (payload.message.length < 20) {
       nextErrors.message = "Add a little more detail so the enquiry can be triaged properly.";
+    }
+
+    if (!consent) {
+      nextErrors.consent = "Please confirm you have read the Privacy Policy before sending.";
     }
 
     setErrors(nextErrors);
@@ -121,6 +126,7 @@ export function ContactForm() {
       );
       setStatusTone("success");
       setErrors({});
+      setConsent(false);
       form.reset();
     } catch {
       setStatus("We could not save your enquiry right now. Please try again in a moment or email hello@physioonclick.co.uk.");
@@ -197,6 +203,24 @@ export function ContactForm() {
             aria-describedby={errors.message ? "err-message" : undefined}
           />
           {errors.message ? <span className="field-error" id="err-message">{errors.message}</span> : null}
+        </label>
+        <label className="full-span" style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.85rem", lineHeight: 1.5, cursor: "pointer" }}>
+          <input
+            name="consent"
+            type="checkbox"
+            required
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            style={{ marginTop: "3px", flexShrink: 0, width: "16px", height: "16px" }}
+            aria-invalid={errors.consent ? true : undefined}
+            aria-describedby={errors.consent ? "err-consent" : undefined}
+          />
+          <span>
+            I consent to PhysioOnClick storing and using the details above to respond to my enquiry, as
+            described in the{" "}
+            <a href="/privacy-policy" style={{ color: "var(--primary)", textDecoration: "underline", fontWeight: 600 }}>Privacy Policy</a>.
+            {errors.consent ? <span className="field-error" id="err-consent" style={{ display: "block" }}>{errors.consent}</span> : null}
+          </span>
         </label>
         <div className="full-span">
           <button className="button primary full-width" disabled={isSubmitting} aria-busy={isSubmitting} type="submit">

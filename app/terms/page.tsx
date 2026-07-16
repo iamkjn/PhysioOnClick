@@ -43,6 +43,17 @@ export default function TermsPage() {
         </article>
 
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
+          <h2>Regulation &amp; professional standards</h2>
+          <p>
+            Care is regulated by the Health and Care Professions Council (HCPC) and delivered in line with
+            Chartered Society of Physiotherapy (CSP) standards, including standards for remote and digital
+            practice. See our{" "}
+            <Link href="/professional-standards" style={inlineLinkStyle}>Professional Standards</Link> page for
+            registration, consent, confidentiality, safeguarding, indemnity and complaints.
+          </p>
+        </article>
+
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Nature of the service</h2>
           <p>
             PhysioOnClick provides physiotherapy consultations online across the UK.
@@ -83,12 +94,54 @@ export default function TermsPage() {
         </article>
 
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
+          <h2>Your right to cancel</h2>
+          <p>
+            Because appointments are booked at a distance, you normally have a 14-day right to cancel under
+            the Consumer Contracts Regulations 2013. If you ask us to begin your consultation within that
+            period and it is fully carried out, you lose the right to cancel that appointment. This does not
+            affect the notice periods in our{" "}
+            <Link href="/cancellation-policy" style={inlineLinkStyle}>Cancellation Policy</Link>.
+          </p>
+        </article>
+
+        <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Data &amp; privacy</h2>
           <p>
             Your personal and clinical data is processed in accordance with UK GDPR and the Data Protection
             Act 2018. See our{" "}
             <Link href="/privacy-policy" style={inlineLinkStyle}>Privacy Policy</Link> for details on what we
             collect, how we use it, and your rights.
+          </p>
+        </article>
+
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
+          <h2>Indemnity &amp; liability</h2>
+          <p>
+            Appropriate professional indemnity insurance is held for the physiotherapy services provided.
+            Nothing in these terms limits liability for death or personal injury caused by negligence, for
+            fraud, or for anything else that cannot be limited in law. Subject to that, we are not liable for
+            outcomes arising from information you withhold, from failure to follow advice given, or from use
+            of general educational content on this site (see our{" "}
+            <Link href="/medical-disclaimer" style={inlineLinkStyle}>Medical Disclaimer</Link>).
+          </p>
+        </article>
+
+        <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
+          <h2>Intellectual property</h2>
+          <p>
+            Content on this website, and any exercise programmes or materials provided to you, are for your
+            personal use in connection with your care and may not be copied, redistributed or resold without
+            permission.
+          </p>
+        </article>
+
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
+          <h2>Complaints</h2>
+          <p>
+            If you are unhappy with any part of your care, please contact us first at{" "}
+            <a href="mailto:hello@physioonclick.co.uk" style={inlineLinkStyle}>hello@physioonclick.co.uk</a>.
+            Our full complaints route, including escalation to the HCPC and CSP, is set out on the{" "}
+            <Link href="/professional-standards" style={inlineLinkStyle}>Professional Standards</Link> page.
           </p>
         </article>
 
