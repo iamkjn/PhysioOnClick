@@ -3221,7 +3221,7 @@ textarea:focus {
 /* ─────────────────────────────────────────────────────────────
    Micro-interactions: secondary button border highlight
    ──────────────────────────────────────────────────────────── */
-.button.secondary:hover {
+.button.secondary:hover:not(.inverted) {
   border-color: var(--color-primary-dark);
   color: var(--color-primary-dark);
 }
