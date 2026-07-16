@@ -8,7 +8,6 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { HomeDashboard } from "@/components/home-dashboard";
 import { useToast } from "@/components/toast-provider";
-import { Skeleton, SkeletonStatGrid } from "@/components/skeleton";
 
 export function HomeHeroSection({ founderName }: { founderName: string }) {
   const [user, setUser] = useState<User | null>(null);
@@ -31,21 +30,7 @@ export function HomeHeroSection({ founderName }: { founderName: string }) {
     });
   }, [show]);
 
-  if (!resolvedAuth) {
-    return (
-      <section className="home-hero home-hero-skeleton">
-        <div className="site-shell home-hero-content skeleton-hero">
-          <Skeleton height="1.2rem" width="220px" className="skeleton-pill" />
-          <div style={{ margin: "1rem 0" }}>
-            <Skeleton height="2.5rem" width="80%" />
-          </div>
-          <SkeletonStatGrid count={2} />
-        </div>
-      </section>
-    );
-  }
-
-  if (user) {
+  if (resolvedAuth && user) {
     return <HomeDashboard user={user} />;
   }
 
@@ -54,7 +39,11 @@ export function HomeHeroSection({ founderName }: { founderName: string }) {
       <Image
         className="home-hero-image"
         src="/home-hero-premium.svg"
-        alt="Illustrated physiotherapy consultation banner"
+        // Purely decorative background art (an assisted-stretch/mobility-
+        // assessment illustration) sitting behind a dark overlay and the
+        // real H1/subhead text, which already carry the page's content —
+        // alt="" tells screen readers to skip it rather than double up.
+        alt=""
         fill
         priority
       />

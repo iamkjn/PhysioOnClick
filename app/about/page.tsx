@@ -48,6 +48,14 @@ const highlights = [
 export default function AboutPage() {
   return (
     <div className="site-shell">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: founder.name,
+        jobTitle: "HCPC Registered Physiotherapist",
+        worksFor: { "@type": "MedicalBusiness", name: "PhysioOnClick" },
+        address: { "@type": "PostalAddress", addressLocality: "Glasgow", addressCountry: "GB" }
+      }) }} />
       <section className="simple-page-hero about-page-hero">
         <span>About Shivaliba</span>
         <h1>Clinical physiotherapy with calm communication, structured rehabilitation and evidence-based care.</h1>

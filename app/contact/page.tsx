@@ -17,8 +17,8 @@ export default function ContactPage() {
             <h2>Contact Information</h2>
             <div className="contact-info-list">
               <div><strong>Location</strong><span>Glasgow home visits and online consultations across the UK</span></div>
-              <div><strong>Email</strong><span>hello@physioonclick.co.uk</span></div>
-              <div><strong>Phone</strong><span>Contact via form</span></div>
+              <div><strong>Email</strong><span><a href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a></span></div>
+              <div><strong>Prefer to talk?</strong><span>Leave your number in the form and we&apos;ll call you back.</span></div>
               <div><strong>Hours</strong><span>Mon-Fri: 8am-6pm<br />Sat: 9am-1pm</span></div>
             </div>
             <div className="contact-map-card">

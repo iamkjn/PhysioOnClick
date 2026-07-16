@@ -14,9 +14,9 @@ describe('Toast', () => {
     expect(screen.getByLabelText('Dismiss')).toBeInTheDocument()
   })
 
-  it('does not show a dismiss button for auto-dismiss types (success/info)', () => {
+  it('shows a dismiss button for auto-dismiss types too (WCAG 2.2.1 manual control)', () => {
     render(<Toast id="1" message="Done" type="success" onDismiss={vi.fn()} />)
-    expect(screen.queryByLabelText('Dismiss')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Dismiss')).toBeInTheDocument()
   })
 
   it('renders a progress bar only for auto-dismiss types', () => {

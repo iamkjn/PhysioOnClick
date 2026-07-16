@@ -22,17 +22,17 @@ export function SiteFooter() {
         </div>
         <div>
           <h4>Services</h4>
-          <Link href="/services">Musculoskeletal Physio</Link>
-          <Link href="/services">Post-Surgical Rehab</Link>
-          <Link href="/services">Neurological Rehab</Link>
-          <Link href="/services">Paediatric Physio</Link>
-          <Link href="/services">Online Consultations</Link>
+          <Link href="/services#musculoskeletal-physiotherapy">Musculoskeletal Physio</Link>
+          <Link href="/services#post-surgical-rehabilitation">Post-Surgical Rehab</Link>
+          <Link href="/services#neurological-rehabilitation">Neurological Rehab</Link>
+          <Link href="/services#paediatric-physiotherapy">Paediatric Physio</Link>
+          <Link href="/services#online-rehab-programmes">Online Consultations</Link>
         </div>
         <div>
           <h4>Contact</h4>
-          <Link href="/glasgow-physiotherapist">Glasgow, Scotland, UK</Link>
-          <Link href="/contact">hello@physioonclick.co.uk</Link>
-          <Link href="/contact">Contact via booking form</Link>
+          <Link href="/glasgow-physiotherapist">Physiotherapist in Glasgow</Link>
+          <a href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a>
+          <Link href="/contact">Contact form</Link>
         </div>
       </div>
     </footer>

@@ -11,9 +11,10 @@ export type Service = {
 };
 
 export function serviceImagePath(slug: string) {
-  // v2: covers are decorative now (no baked-in title). The route serves
-  // immutable/1y cache headers, so a redesign must bump this to bust caches.
-  return `/service-images/${slug}?v=2`;
+  // v3: each service now gets its own icon composition instead of a
+  // recolored template. The route serves immutable/1y cache headers, so a
+  // redesign must bump this to bust caches.
+  return `/service-images/${slug}?v=3`;
 }
 
 export type PricingItem = {

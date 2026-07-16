@@ -247,7 +247,7 @@ export function BookingStepTime({
                 </button>
               </div>
 
-              <div className="book-cal-grid" role="grid" aria-label="Choose a date">
+              <div className="book-cal-grid" role="group" aria-label="Choose a date">
                 {DOW.map((d) => (
                   <span className="book-cal-dow" key={d}>
                     {d}

@@ -66,6 +66,16 @@ export function BookingFlow() {
     return onAuthStateChanged(auth, setUser);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const raw = new URLSearchParams(window.location.search).get("service");
+    const valid: BookServiceId[] = ["initial-assessment", "follow-up", "bundle-4", "bundle-8"];
+    if (raw && (valid as string[]).includes(raw)) {
+      setServiceId(raw as BookServiceId);
+      setSelectedSlot(null);
+    }
+  }, []);
+
   const service = useMemo(() => bookServiceFor(serviceId), [serviceId]);
 
   // Slots are per-event-type, so a service change invalidates the chosen slot.

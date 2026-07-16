@@ -17,6 +17,15 @@ const nextConfig = {
         protocol: "https",
         hostname: "**"
       }
+    ],
+    // lib/site-data.ts and lib/blog.ts append `?v=2` to local cover-image
+    // URLs as a cache-buster; app/specialism-images serves without a query
+    // string. Next.js 15 warns on local image srcs with query params it
+    // hasn't been told to allow, and Next 16 makes this a hard requirement.
+    localPatterns: [
+      { pathname: "/service-images/**", search: "?v=3" },
+      { pathname: "/blog-images/**", search: "?v=2" },
+      { pathname: "/specialism-images/**", search: "" }
     ]
   },
   experimental: {

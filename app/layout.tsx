@@ -33,6 +33,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "MedicalBusiness",
+          name: "PhysioOnClick",
+          description: "Evidence-based physiotherapy and rehabilitation in Glasgow and online across the UK.",
+          medicalSpecialty: "Physiotherapy",
+          areaServed: "United Kingdom",
+          url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+          address: { "@type": "PostalAddress", addressLocality: "Glasgow", addressCountry: "GB" }
+        }) }} />
         <ToastProvider>
           <ScrollReset />
           <a className="skip-link" href="#main-content">

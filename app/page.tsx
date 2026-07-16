@@ -1,13 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { founder } from "@/lib/site-data";
+import { founder, testimonials } from "@/lib/site-data";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
 import { Reveal } from "@/components/reveal";
 
 export default async function HomePage() {
   const homeServices = getPublicServices().slice(0, 4);
+  const founderInitials = founder.name
+    .split(" ")
+    .map((part) => part[0])
+    .join("");
+  const homeTestimonials = testimonials.slice(0, 2);
 
   return (
     <>
@@ -23,6 +28,50 @@ export default async function HomePage() {
           </div>
         </section>
       </Reveal>
+
+      <section className="page-section simple-section">
+        <Reveal direction="up">
+          <div className="site-shell section-heading">
+            <span className="eyebrow">Meet your physiotherapist</span>
+            <h2>Care led by {founder.name}</h2>
+            <p>Every session is delivered — or personally overseen — by the same HCPC registered physiotherapist, not passed between clinicians.</p>
+          </div>
+        </Reveal>
+        <div className="site-shell home-proof-grid">
+          <Reveal direction="up">
+            <article className="card home-founder-card">
+              <span className="home-founder-avatar" aria-hidden="true">
+                {founderInitials}
+              </span>
+              <h3>{founder.name}</h3>
+              <p className="muted">{founder.location}</p>
+              <ul className="home-founder-credentials">
+                {founder.credentials.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <Link className="button secondary" href="/about" prefetch>
+                More about {founder.name.split(" ")[0]}
+              </Link>
+            </article>
+          </Reveal>
+          <div className="home-testimonial-stack">
+            {homeTestimonials.map((testimonial, i) => (
+              <Reveal key={testimonial.name} direction="up" delay={75 + i * 75}>
+                <blockquote className="card home-testimonial-card">
+                  <p>&ldquo;{testimonial.quote}&rdquo;</p>
+                  <footer>
+                    <strong>{testimonial.name}</strong>
+                    <span>
+                      {testimonial.location} &middot; {testimonial.focus}
+                    </span>
+                  </footer>
+                </blockquote>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="page-section simple-section">
         <Reveal direction="up">
