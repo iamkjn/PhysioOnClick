@@ -569,7 +569,8 @@ export function BookingStepTime({
             />
             <span>
               I consent to online consultation and the storage of my personal and clinical data as described in the{" "}
-              <a href="/privacy-policy">Privacy Policy</a>.
+              <a href="/privacy-policy">Privacy Policy</a>, and I accept the{" "}
+              <a href="/terms">Terms</a>.
             </span>
           </label>
         </div>

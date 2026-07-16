@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@/components/analytics";
 import { ChatWidget } from "@/components/chat-widget";
 import { ConnectivityOverlay } from "@/components/connectivity-overlay";
+import { CookieConsent } from "@/components/cookie-consent";
 import { ScrollReset } from "@/components/scroll-reset";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Analytics />
           <ChatWidget />
           <ConnectivityOverlay />
+          <CookieConsent />
         </ToastProvider>
       </body>
     </html>

@@ -4523,3 +4523,77 @@ textarea:focus {
   outline: 2px solid var(--color-primary-dark);
   outline-offset: 2px;
 }
+
+/* ── Cookie consent banner ─────────────────────────────────────
+   Fixed bottom bar gating Google Consent Mode (see components/
+   cookie-consent.tsx). Uses core Clarity tokens so it inherits
+   light/dark automatically. ── */
+.cookie-consent {
+  position: fixed;
+  z-index: 200;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  margin: 0 auto;
+  max-width: 640px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow-panel);
+}
+
+.cookie-consent-text {
+  flex: 1 1 260px;
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.cookie-consent-text a {
+  color: var(--primary);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.cookie-consent-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.cookie-consent-btn {
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+}
+
+.cookie-consent-btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.cookie-consent-btn:hover {
+  filter: brightness(0.97);
+}
+
+@media (max-width: 520px) {
+  .cookie-consent-actions {
+    width: 100%;
+  }
+  .cookie-consent-btn {
+    flex: 1;
+  }
+}

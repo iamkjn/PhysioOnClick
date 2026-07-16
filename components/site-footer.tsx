@@ -21,6 +21,7 @@ export function SiteFooter() {
           <Link href="/privacy-policy">Privacy Policy</Link>
           <Link href="/cancellation-policy">Cancellation Policy</Link>
           <Link href="/medical-disclaimer">Medical Disclaimer</Link>
+          <Link href="/professional-standards">Professional Standards</Link>
         </div>
         <div>
           <h4>Services</h4>
