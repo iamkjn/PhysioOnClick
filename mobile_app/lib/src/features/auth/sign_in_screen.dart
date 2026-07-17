@@ -10,6 +10,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../core/firebase/patient_account_service.dart';
 import '../../core/page_transitions.dart';
+import '../../core/validators.dart';
 import '../root/root_shell.dart';
 import 'forgot_password_screen.dart';
 import 'sign_up_screen.dart';
@@ -240,18 +241,20 @@ class _SignInScreenState extends State<SignInScreen> {
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         autocorrect: false,
+                        maxLength: 254,
+                        buildCounter: (
+                          _, {
+                          required int currentLength,
+                          required bool isFocused,
+                          required int? maxLength,
+                        }) =>
+                            null,
                         onChanged: (_) => _clearError(),
                         decoration: const InputDecoration(
                           labelText: 'Email address',
                           prefixIcon: Icon(Icons.email_outlined, size: 20),
                         ),
-                        validator: (v) {
-                          final e = (v ?? '').trim();
-                          if (!e.contains('@') || !e.contains('.')) {
-                            return 'Enter a valid email address.';
-                          }
-                          return null;
-                        },
+                        validator: Validators.email,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -275,10 +278,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             tooltip: _passwordVisible ? 'Hide password' : 'Show password',
                           ),
                         ),
-                        validator: (v) {
-                          if ((v ?? '').length < 6) return 'Password must be at least 6 characters.';
-                          return null;
-                        },
+                        validator: Validators.password,
                       ),
                     ],
                   ),
