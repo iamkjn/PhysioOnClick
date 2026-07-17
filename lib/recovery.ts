@@ -8,8 +8,9 @@ import {
   updateDoc,
   query,
   orderBy,
-  limit,
   serverTimestamp,
+  type CollectionReference,
+  type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -110,6 +111,22 @@ function personBase(uid: string, personId: string) {
   return doc(db, "patients", uid, "people", personId);
 }
 
+// The Firestore emulator rejects orderBy("__name__", "desc") ("Firestore does
+// not support descending key scans") even though production allows it — so the
+// old descending-scan queries loaded fine against prod but errored against the
+// emulator, breaking recovery/exercise views for all local dev. These
+// collections hold at most one doc per day (ids are ISO dates, so ascending key
+// order is already chronological); fetch ascending (emulator-safe) and take the
+// most recent `days` in memory. Same result on emulator and prod, no index.
+async function recentByDateKey<T>(
+  col: CollectionReference,
+  days: number,
+  map: (d: QueryDocumentSnapshot) => T,
+): Promise<T[]> {
+  const snap = await getDocs(query(col, orderBy("__name__")));
+  return snap.docs.slice(-days).map(map);
+}
+
 export async function logPainScore(
   uid: string,
   personId: string,
@@ -141,15 +158,12 @@ export async function getPainLogs(
   personId: string,
   days = 56
 ): Promise<PainLog[]> {
-  const col = collection(personBase(uid, personId), "painLogs");
-  const q = query(col, orderBy("__name__", "desc"), limit(days));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({
+  return recentByDateKey(collection(personBase(uid, personId), "painLogs"), days, (d) => ({
     date: d.id,
     score: d.data().score as number,
     note: (d.data().note as string) ?? "",
     loggedAt: (d.data().loggedAt as { toDate(): Date })?.toDate() ?? new Date(),
-  })).reverse();
+  }));
 }
 
 export async function getClinicalAssessments(
@@ -157,17 +171,14 @@ export async function getClinicalAssessments(
   personId: string,
   days = 56
 ): Promise<ClinicalAssessment[]> {
-  const col = collection(personBase(uid, personId), "clinicalAssessments");
-  const q = query(col, orderBy("__name__", "desc"), limit(days));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({
+  return recentByDateKey(collection(personBase(uid, personId), "clinicalAssessments"), days, (d) => ({
     date: d.id,
     painScore: d.data().painScore as number,
     mobilityScore: d.data().mobilityScore as number,
     physioNotes: (d.data().physioNotes as string) ?? "",
     sessionId: (d.data().sessionId as string) ?? "",
     recordedAt: (d.data().recordedAt as { toDate(): Date })?.toDate() ?? new Date(),
-  })).reverse();
+  }));
 }
 
 export async function getAssignedExercises(
@@ -219,14 +230,11 @@ export async function getExerciseLogs(
   personId: string,
   days = 7
 ): Promise<ExerciseLog[]> {
-  const col = collection(personBase(uid, personId), "exerciseLogs");
-  const q = query(col, orderBy("__name__", "desc"), limit(days));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({
+  return recentByDateKey(collection(personBase(uid, personId), "exerciseLogs"), days, (d) => ({
     date: d.id,
     completions: (d.data().completions as Record<string, boolean>) ?? {},
     loggedAt: (d.data().loggedAt as { toDate(): Date })?.toDate() ?? new Date(),
-  })).reverse();
+  }));
 }
 
 export async function assignExercise(

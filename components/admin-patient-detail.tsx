@@ -6,7 +6,6 @@ import {
   collection,
   doc,
   getDoc,
-  limit,
   onSnapshot,
   orderBy,
   query,
@@ -190,12 +189,14 @@ export function AdminPatientDetail({ patientUid }: Props) {
     if (!db) { setAssessments([]); return; }
     setAssessments(null);
     const col = collection(db, "patients", patientUid, "people", person.id, "clinicalAssessments");
-    const q = query(col, orderBy("__name__", "desc"), limit(20));
+    // Ascending key order then slice/reverse in memory: the Firestore emulator
+    // rejects descending key scans, so orderBy("__name__","desc") errored locally.
+    const q = query(col, orderBy("__name__"));
     const unsub = onSnapshot(
       q,
       (snap) => {
         setAssessments(
-          snap.docs.map((d) => {
+          snap.docs.slice(-20).reverse().map((d) => {
             const data = d.data();
             return {
               date: d.id,
