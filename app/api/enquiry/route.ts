@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     message: String(body.message || "").trim()
   };
 
-  if (!payload.name || !payload.email || !payload.service || payload.service.length > LIMITS.sessionId || !payload.message) {
+  if (!payload.name || !payload.email || !payload.service || payload.service.length > LIMITS.service || !payload.message) {
     return NextResponse.json({ error: "Missing required enquiry fields." }, { status: 400 });
   }
 

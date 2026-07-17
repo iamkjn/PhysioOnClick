@@ -9,6 +9,7 @@ export const LIMITS = {
   clinicalNote: 2000,
   message: 2000,
   sessionId: 200,
+  service: 200,
   password: 128,
 } as const;
 
