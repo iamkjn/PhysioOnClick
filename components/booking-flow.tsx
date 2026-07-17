@@ -7,6 +7,8 @@ import { auth } from "@/lib/firebase";
 import { founder } from "@/lib/site-data";
 import { allBookServices, bookServiceFor, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
+import { getDependents, type Dependent } from "@/lib/dependents";
+import { usePerson } from "@/components/person-provider";
 import { BookingStepService } from "@/components/booking-step-service";
 import { BookingStepTime } from "@/components/booking-step-time";
 import { BookingStepDone } from "@/components/booking-step-done";
@@ -58,6 +60,20 @@ export function BookingFlow() {
   // undefined = auth still resolving, null = guest, User = signed in
   const [user, setUser] = useState<User | null | undefined>(undefined);
 
+  // Who the booking is for: null = the account holder ("self"), else a
+  // dependent id. Seeded from the shared PersonProvider context (so booking
+  // continues for whoever was active on /patient/recovery or the dashboard)
+  // and threaded down so both the step-2 picker and the rail can reflect it.
+  const personCtx = usePerson();
+  const [dependents, setDependents] = useState<Dependent[]>([]);
+  const [bookingForId, setBookingForId] = useState<string | null>(null);
+  const [bookingForName, setBookingForName] = useState("");
+
+  const handleBookingForChange = useCallback((id: string | null, name: string) => {
+    setBookingForId(id);
+    setBookingForName(name);
+  }, []);
+
   // Focus the new step panel's title on every step transition so keyboard/
   // screen-reader users aren't left on the (now-unmounted) triggering button.
   const panelTitleRef = useRef<HTMLHeadingElement>(null);
@@ -78,6 +94,32 @@ export function BookingFlow() {
     }
     return onAuthStateChanged(auth, setUser);
   }, []);
+
+  // Only already-signed-in users get the "Booking for" picker (guests who
+  // sign up/in mid-flow stay booking for themselves — see booking-step-time).
+  // Seed the initial target from the shared person context once, falling
+  // back to self if it points at a dependent that isn't (or is no longer)
+  // one of this account's.
+  useEffect(() => {
+    if (!user) {
+      setDependents([]);
+      return;
+    }
+    let cancelled = false;
+    getDependents(user.uid).then((deps) => {
+      if (cancelled) return;
+      setDependents(deps);
+      const ctxId = personCtx?.personId;
+      if (ctxId && ctxId !== user.uid && deps.some((d) => d.id === ctxId)) {
+        setBookingForId(ctxId);
+        setBookingForName(personCtx?.personName || deps.find((d) => d.id === ctxId)?.name || "");
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- seed once per signed-in uid; personCtx is only read at that moment so later context changes elsewhere don't yank the target mid-flow
+  }, [user]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -137,6 +179,12 @@ export function BookingFlow() {
         <p className="book-rail-eyebrow">Your booking</p>
         <h2 className="book-rail-title">{service.title}</h2>
         <p className="book-rail-summary">{service.description}</p>
+
+        {bookingForId ? (
+          <p className="book-rail-slotchip" style={{ marginTop: 12 }}>
+            Booking for {bookingForName || "someone else"}
+          </p>
+        ) : null}
 
         <div className="book-rail-divider" />
 
@@ -200,6 +248,10 @@ export function BookingFlow() {
           onBack={() => setStep(1)}
           onConfirmed={handleConfirmed}
           titleRef={panelTitleRef}
+          dependents={dependents}
+          bookingForId={bookingForId}
+          bookingForName={bookingForName}
+          onBookingForChange={handleBookingForChange}
         />
       )}
     </div>

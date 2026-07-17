@@ -7,6 +7,7 @@ import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
 import { ensurePatientRecord } from "@/lib/patient-account";
+import { validateEmail, LIMITS } from "@/lib/validation";
 
 type Stage = "verifying" | "needs-email" | "signing-in" | "success" | "error";
 
@@ -86,7 +87,11 @@ function VerifyPage() {
 
   async function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!emailInput.trim()) return;
+    const emailErr = validateEmail(emailInput);
+    if (emailErr) {
+      setErrorMessage(emailErr);
+      return;
+    }
     setIsSubmitting(true);
     await completeSignIn(emailInput.trim(), window.location.href);
     setIsSubmitting(false);
@@ -94,7 +99,11 @@ function VerifyPage() {
 
   async function requestNewLink() {
     const email = emailInput.trim() || searchParams.get("email") || "";
-    if (!email) return;
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setErrorMessage(emailErr);
+      return;
+    }
     setIsSubmitting(true);
     setLinkSent(false);
     try {
@@ -148,6 +157,7 @@ function VerifyPage() {
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
                     required
+                    maxLength={LIMITS.email}
                     placeholder="patient@example.com"
                     style={{ marginTop: "0.5rem" }}
                   />
@@ -208,6 +218,8 @@ function VerifyPage() {
                   autoComplete="email"
                   value={emailInput}
                   onChange={(e) => setEmailInput(e.target.value)}
+                  required
+                  maxLength={LIMITS.email}
                   placeholder="patient@example.com"
                   style={{ marginTop: "0.5rem" }}
                 />

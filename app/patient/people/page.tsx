@@ -15,6 +15,17 @@ import {
   deleteDependent,
   type Dependent,
 } from "@/lib/dependents";
+import { validateName, validateDob, validateOptionalText, LIMITS } from "@/lib/validation";
+
+function validatePerson(fields: { name: string; dob: string; notes: string }) {
+  const e: Record<string, string> = {};
+  if (validateName(fields.name)) e.name = "Enter the person's full name.";
+  const dobErr = validateDob(fields.dob);
+  if (dobErr) e.dob = dobErr;
+  const notesErr = validateOptionalText(fields.notes, LIMITS.note);
+  if (notesErr) e.notes = notesErr;
+  return e;
+}
 
 function calcAge(dob: string): number {
   const d = new Date(dob);
@@ -45,6 +56,8 @@ export default function PeoplePage() {
     notes: "",
   });
   const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
+  const [addErrors, setAddErrors] = useState<Record<string, string>>({});
+  const [editErrors, setEditErrors] = useState<Record<string, string>>({});
   const router = useRouter();
   const toast = useToast();
 
@@ -68,17 +81,25 @@ export default function PeoplePage() {
   async function handleAdd(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!uid) return;
+    const fd = new FormData(e.currentTarget);
+    const name = fd.get("name") as string;
+    const dob = fd.get("dob") as string;
+    const relationship = fd.get("relationship") as string;
+    const notes = (fd.get("notes") as string) ?? "";
+
+    const errs = validatePerson({ name, dob, notes });
+    setAddErrors(errs);
+    if (Object.keys(errs).length) {
+      toast.show("Please fix the highlighted fields.", "error");
+      return;
+    }
+
     setSaving(true);
     try {
-      const fd = new FormData(e.currentTarget);
-      await addDependent(uid, {
-        name: fd.get("name") as string,
-        dob: fd.get("dob") as string,
-        relationship: fd.get("relationship") as string,
-        notes: (fd.get("notes") as string) ?? "",
-      });
+      await addDependent(uid, { name, dob, relationship, notes });
       setDependents(await getDependents(uid));
       setShowForm(false);
+      setAddErrors({});
       toast.show("Person added.", "success");
     } catch {
       toast.show("Could not add this person. Please try again.", "error");
@@ -89,6 +110,7 @@ export default function PeoplePage() {
 
   function startEdit(dep: Dependent) {
     setEditingId(dep.id);
+    setEditErrors({});
     setEditForm({
       name: dep.name,
       dob: dep.dob,
@@ -99,11 +121,19 @@ export default function PeoplePage() {
 
   async function handleSave(id: string) {
     if (!uid) return;
+    const errs = validatePerson({ name: editForm.name, dob: editForm.dob, notes: editForm.notes });
+    setEditErrors(errs);
+    if (Object.keys(errs).length) {
+      toast.show("Please fix the highlighted fields.", "error");
+      return;
+    }
+
     setSaving(true);
     try {
       await updateDependent(id, editForm);
       setDependents(await getDependents(uid));
       setEditingId(null);
+      setEditErrors({});
       toast.show("Changes saved.", "success");
     } catch {
       toast.show("Could not save changes. Please try again.", "error");
@@ -217,7 +247,11 @@ export default function PeoplePage() {
                     }
                     placeholder="e.g. Jane Doe"
                     required
+                    maxLength={LIMITS.name}
+                    aria-invalid={editErrors.name ? true : undefined}
+                    aria-describedby={editErrors.name ? "err-edit-name" : undefined}
                   />
+                  {editErrors.name && <span className="field-error" id="err-edit-name">{editErrors.name}</span>}
                 </label>
                 <label>
                   Date of birth *
@@ -229,7 +263,10 @@ export default function PeoplePage() {
                       setEditForm((f) => ({ ...f, dob: e.target.value }))
                     }
                     required
+                    aria-invalid={editErrors.dob ? true : undefined}
+                    aria-describedby={editErrors.dob ? "err-edit-dob" : undefined}
                   />
+                  {editErrors.dob && <span className="field-error" id="err-edit-dob">{editErrors.dob}</span>}
                 </label>
                 <label>
                   Relationship
@@ -256,7 +293,11 @@ export default function PeoplePage() {
                       setEditForm((f) => ({ ...f, notes: e.target.value }))
                     }
                     placeholder="Any conditions we should know about"
+                    maxLength={LIMITS.note}
+                    aria-invalid={editErrors.notes ? true : undefined}
+                    aria-describedby={editErrors.notes ? "err-edit-notes" : undefined}
                   />
+                  {editErrors.notes && <span className="field-error" id="err-edit-notes">{editErrors.notes}</span>}
                 </label>
                 <div style={{ display: "flex", gap: "0.75rem" }}>
                   <button
@@ -268,7 +309,10 @@ export default function PeoplePage() {
                     {saving ? "Saving…" : "Save changes"}
                   </button>
                   <button
-                    onClick={() => setEditingId(null)}
+                    onClick={() => {
+                      setEditingId(null);
+                      setEditErrors({});
+                    }}
                     className="button secondary"
                   >
                     Cancel
@@ -363,11 +407,28 @@ export default function PeoplePage() {
           <form onSubmit={(e) => void handleAdd(e)} style={{ display: "grid", gap: "0.75rem" }}>
             <label>
               Full name *
-              <input name="name" className="input" placeholder="e.g. Jane Doe" required />
+              <input
+                name="name"
+                className="input"
+                placeholder="e.g. Jane Doe"
+                required
+                maxLength={LIMITS.name}
+                aria-invalid={addErrors.name ? true : undefined}
+                aria-describedby={addErrors.name ? "err-add-name" : undefined}
+              />
+              {addErrors.name && <span className="field-error" id="err-add-name">{addErrors.name}</span>}
             </label>
             <label>
               Date of birth *
-              <input name="dob" type="date" className="input" required />
+              <input
+                name="dob"
+                type="date"
+                className="input"
+                required
+                aria-invalid={addErrors.dob ? true : undefined}
+                aria-describedby={addErrors.dob ? "err-add-dob" : undefined}
+              />
+              {addErrors.dob && <span className="field-error" id="err-add-dob">{addErrors.dob}</span>}
             </label>
             <label>
               Relationship *
@@ -383,7 +444,11 @@ export default function PeoplePage() {
                 name="notes"
                 className="input"
                 placeholder="Any conditions we should know about"
+                maxLength={LIMITS.note}
+                aria-invalid={addErrors.notes ? true : undefined}
+                aria-describedby={addErrors.notes ? "err-add-notes" : undefined}
               />
+              {addErrors.notes && <span className="field-error" id="err-add-notes">{addErrors.notes}</span>}
             </label>
             <div style={{ display: "flex", gap: "0.75rem" }}>
               <button type="submit" disabled={saving} aria-busy={saving} className="button primary">
@@ -391,7 +456,10 @@ export default function PeoplePage() {
               </button>
               <button
                 type="button"
-                onClick={() => setShowForm(false)}
+                onClick={() => {
+                  setShowForm(false);
+                  setAddErrors({});
+                }}
                 className="button secondary"
               >
                 Cancel

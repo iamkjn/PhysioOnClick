@@ -12,8 +12,18 @@ service firebase.storage {
       );
     }
 
+    // Same allow-list + cap as components/upload-panel.tsx (which is advisory only).
+    // Delete is separate: request.resource is null on delete, so the type/size
+    // checks would reject every delete if folded into a single write rule.
     match /patient-uploads/{userId}/{allPaths=**} {
-      allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow read, delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, update: if (isAdmin() || (isSignedIn() && request.auth.uid == userId)) &&
+        request.resource.size <= 10 * 1024 * 1024 &&
+        request.resource.contentType in [
+          'application/pdf', 'image/png', 'image/jpeg',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
     }
 
     function isImageUpload() {

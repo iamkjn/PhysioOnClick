@@ -2780,9 +2780,35 @@ textarea:focus {
 
 .booking-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
 
+/* ── Post-login home dashboard ─────────────────────────────────
+   Replaces the marketing hero for signed-in patients. Warm-paper band,
+   a hand-built recovery ring, and an asymmetric action column. Kept calm
+   and legible on purpose: it's a physio practice, not an ops console. */
 .home-dashboard {
-  padding: var(--space-section) 0 1rem;
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-bg) 100%);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(2.4rem, 5vw, 3.75rem) 0 clamp(1.75rem, 4vw, 2.75rem);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-primary-light) 55%, var(--color-bg)) 0%, var(--color-bg) 72%);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Soft accent light in the upper corner: warmth without a glass card. */
+.home-dashboard-glow {
+  position: absolute;
+  inset: -30% -10% auto auto;
+  width: min(560px, 60%);
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 70% 30%, color-mix(in srgb, var(--color-primary) 22%, transparent) 0%, transparent 62%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.home-dashboard-inner {
+  position: relative;
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
 }
 
 .home-dashboard-header {
@@ -2790,38 +2816,270 @@ textarea:focus {
   align-items: flex-end;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 1rem 1.5rem;
 }
 
-.home-dashboard-header h2 {
-  margin: 0.25rem 0 0;
-  font-size: 1.8rem;
+.home-dashboard-greeting .eyebrow {
+  margin-bottom: 0.5rem;
+}
+
+.home-dashboard-greeting h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(1.95rem, 3.6vw, 2.85rem);
+  line-height: 1.03;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.home-dashboard-greeting p {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  max-width: 46ch;
 }
 
 .home-dashboard-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: stretch;
 }
 
-.recovery-percent-card .recovery-percent-value {
-  font-size: 2.6rem;
-  font-weight: 800;
-  color: var(--primary);
-  margin: 0.25rem 0;
-}
-
-.home-dashboard-links-row {
+/* Recovery card: ring + copy side by side, one calm height across states. */
+.recovery-percent-card {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  min-height: 200px;
+  padding: clamp(1.5rem, 3vw, 2.1rem);
 }
 
-@media (max-width: 760px) {
+.recovery-percent-card--empty {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.recovery-percent-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: var(--text-lg);
+}
+
+.recovery-percent-copy p {
+  margin: 0;
+  max-width: 34ch;
+}
+
+.recovery-empty-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+.recovery-empty-link span {
+  transition: transform 160ms ease;
+}
+.recovery-empty-link:hover span {
+  transform: translateX(3px);
+}
+
+.recovery-retry {
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 var(--text-sm) var(--font-sans);
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+.recovery-retry:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 32%, var(--line));
+  background: var(--color-primary-light);
+}
+
+/* Progress ring */
+.recovery-ring {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(116px, 15vw, 150px);
+  aspect-ratio: 1;
+}
+.recovery-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.recovery-ring-track {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 10;
+}
+.recovery-ring-progress {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: var(--dash-c);
+  stroke-dashoffset: var(--dash-offset);
+  animation: ring-draw 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ring-draw {
+  from { stroke-dashoffset: var(--dash-c); }
+  to   { stroke-dashoffset: var(--dash-offset); }
+}
+.recovery-ring-value {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+}
+.recovery-ring-value b {
+  font-size: clamp(1.65rem, 3.4vw, 2.25rem);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1;
+}
+
+/* Action column */
+.home-dashboard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.home-action {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms ease, border-color 180ms ease;
+}
+.home-action:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: color-mix(in srgb, var(--color-primary) 30%, var(--line));
+}
+
+.home-action-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--color-primary-light);
+  color: var(--primary);
+}
+.home-action-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.home-action-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.25;
+}
+.home-action-text strong {
+  font-weight: 700;
+}
+.home-action-text small {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+.home-action-arrow {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 1.1rem;
+  transition: transform 180ms ease, color 180ms ease;
+}
+.home-action:hover .home-action-arrow {
+  transform: translateX(3px);
+  color: var(--primary);
+}
+
+/* Book: the one warm, branded row (reuses the booking rail gradient). */
+.home-action-primary {
+  background: var(--gradient-rail);
+  border-color: transparent;
+  color: #fff;
+}
+.home-action-primary .home-action-icon {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--book-chip-icon);
+}
+.home-action-primary .home-action-text small {
+  color: var(--book-muted-para);
+}
+.home-action-primary .home-action-arrow {
+  color: rgba(255, 255, 255, 0.7);
+}
+.home-action-primary:hover {
+  box-shadow: var(--shadow-panel);
+  border-color: transparent;
+}
+.home-action-primary:hover .home-action-arrow {
+  color: #fff;
+}
+
+/* One-time entrance reveal for the whole band. */
+.home-dashboard-rise {
+  animation: dashboard-rise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes dashboard-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (max-width: 780px) {
   .home-dashboard-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-dashboard-rise,
+  .recovery-ring-progress {
+    animation: none;
+  }
+}
+
+/* ── Recovery chart (components/recovery-chart.tsx) ───────────────────
+   ResponsiveContainer already handles width, but the wrapping div gets an
+   explicit 100% here too since it sits in a flex column (.panel.stack) —
+   defensive against any future non-flex parent silently shrinking it. ── */
+.chart-wrap {
+  width: 100%;
+}
+
+/* ── app/patient/recovery/page.tsx + reused recovery-percent-card.tsx:
+   phone pass. .dashboard-grid and .home-dashboard-grid already collapse to
+   one column well above this breakpoint (960px/780px); this stacks the
+   percent-card's ring above its copy too, which is a flex row down to the
+   narrowest phones otherwise and gets cramped once the ring, heading, and
+   paragraph all fight for the same line at <=640px. ── */
+@media (max-width: 640px) {
+  .recovery-percent-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .recovery-percent-card--result .recovery-percent-copy p {
+    max-width: none;
   }
 }
 

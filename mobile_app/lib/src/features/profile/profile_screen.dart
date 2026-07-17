@@ -266,17 +266,34 @@ class _SecureUploadsSectionState extends State<_SecureUploadsSection> {
         return;
       }
 
+      // Storage rules reject uploads over 10MB — check here so the user gets a
+      // clear message instead of the generic "could not upload" catch below.
+      const maxBytes = 10 * 1024 * 1024;
+      if (bytes.length > maxBytes) {
+        setState(() {
+          isUploading = false;
+          feedback = 'That file is over 10MB. Please upload a smaller document.';
+        });
+        return;
+      }
+
       final fileName = picked.name.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
       final storagePath =
           'patient-uploads/${widget.user.uid}/${DateTime.now().millisecondsSinceEpoch}_$fileName';
 
+      // Content type must be in the storage.rules allow-list (pdf/png/jpeg/doc/docx).
+      const contentTypes = {
+        'pdf': 'application/pdf',
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'doc': 'application/msword',
+        'docx':
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      };
       final ref = FirebaseStorage.instance.ref(storagePath);
       final metadata = SettableMetadata(
-        contentType: picked.extension == 'pdf'
-            ? 'application/pdf'
-            : picked.extension == 'png'
-                ? 'image/png'
-                : 'image/jpeg',
+        contentType: contentTypes[picked.extension] ?? 'application/octet-stream',
       );
 
       await ref.putData(bytes, metadata);

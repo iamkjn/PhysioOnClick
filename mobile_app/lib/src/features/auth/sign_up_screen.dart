@@ -4,11 +4,13 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../core/firebase/patient_account_service.dart';
 import '../../core/page_transitions.dart';
+import '../../core/validators.dart';
 import '../root/root_shell.dart';
 import 'sign_in_screen.dart';
 
@@ -228,15 +230,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         keyboardType: TextInputType.name,
                         textCapitalization: TextCapitalization.words,
                         textInputAction: TextInputAction.next,
+                        inputFormatters: [LengthLimitingTextInputFormatter(80)],
                         onChanged: (_) => _clearError(),
                         decoration: const InputDecoration(
                           labelText: 'Full name',
                           prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
                         ),
-                        validator: (v) {
-                          if ((v ?? '').trim().length < 2) return 'Enter your full name.';
-                          return null;
-                        },
+                        validator: Validators.name,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -244,24 +244,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         autocorrect: false,
+                        inputFormatters: [LengthLimitingTextInputFormatter(254)],
                         onChanged: (_) => _clearError(),
                         decoration: const InputDecoration(
                           labelText: 'Email address',
                           prefixIcon: Icon(Icons.email_outlined, size: 20),
                         ),
-                        validator: (v) {
-                          final e = (v ?? '').trim();
-                          if (!e.contains('@') || !e.contains('.')) {
-                            return 'Enter a valid email address.';
-                          }
-                          return null;
-                        },
+                        validator: Validators.email,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _passwordCtrl,
                         obscureText: !_passwordVisible,
                         textInputAction: TextInputAction.next,
+                        inputFormatters: [LengthLimitingTextInputFormatter(128)],
                         onChanged: (_) => _clearError(),
                         decoration: InputDecoration(
                           labelText: 'Password',
@@ -278,18 +274,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           helperText: 'At least 6 characters',
                         ),
-                        validator: (v) {
-                          if ((v ?? '').length < 6) {
-                            return 'Use at least 6 characters.';
-                          }
-                          return null;
-                        },
+                        validator: (v) => Validators.password(v, min: 6),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _confirmCtrl,
                         obscureText: !_confirmVisible,
                         textInputAction: TextInputAction.done,
+                        inputFormatters: [LengthLimitingTextInputFormatter(128)],
                         onChanged: (_) => _clearError(),
                         onFieldSubmitted: (_) => _registerWithEmail(),
                         decoration: InputDecoration(
@@ -306,10 +298,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 setState(() => _confirmVisible = !_confirmVisible),
                           ),
                         ),
-                        validator: (v) {
-                          if (v != _passwordCtrl.text) return 'Passwords do not match.';
-                          return null;
-                        },
+                        validator: (v) => (v == null || v.isEmpty)
+                            ? 'Confirm your password.'
+                            : (v != _passwordCtrl.text ? 'Passwords do not match.' : null),
                       ),
                     ],
                   ),

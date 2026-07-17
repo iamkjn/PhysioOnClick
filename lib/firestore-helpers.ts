@@ -16,8 +16,13 @@ export async function saveEnquiry(payload: Record<string, string>) {
     throw new Error("Firestore is not configured.");
   }
 
+  // Mirror the doc shape /api/enquiry writes — firestore.rules requires
+  // status == "new" on client-side enquiry creates.
   await addDoc(collection(db, "enquiries"), {
     ...payload,
+    emailLower: (payload.email || "").toLowerCase(),
+    status: "new",
+    source: "website-contact-form",
     createdAt: serverTimestamp()
   });
 }

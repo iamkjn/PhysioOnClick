@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { publishSummary, type PublishSummaryInput } from "@/app/admin/actions";
 import { auth } from "@/lib/firebase";
+import { useToast } from "@/components/toast-provider";
+import { validateRequiredText, validateIntInRange, LIMITS } from "@/lib/validation";
 
 interface SummaryFormProps {
   booking: {
@@ -39,6 +41,8 @@ function RecoveryRing({ percent }: { percent: number }) {
 export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const toast = useToast();
   const [form, setForm] = useState({
     painScore: 5,
     recoveryPercent: 50,
@@ -64,7 +68,22 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   }, [open]);
 
   async function handlePublish() {
-    if (!form.workedOn || !form.exercises || !form.nextSteps || form.sessionOutcome === null) return;
+    const errs: Record<string, string> = {};
+    const w = validateRequiredText(form.workedOn, { max: LIMITS.clinicalNote, message: "Enter what you worked on today." });
+    if (w) errs.workedOn = w;
+    const ex = validateRequiredText(form.exercises, { max: LIMITS.clinicalNote, message: "Enter the exercises you assigned." });
+    if (ex) errs.exercises = ex;
+    const ns = validateRequiredText(form.nextSteps, { max: LIMITS.clinicalNote, message: "Enter the next steps and advice." });
+    if (ns) errs.nextSteps = ns;
+    if (form.sessionOutcome == null) errs.sessionOutcome = "Select a session outcome.";
+    const rp = validateIntInRange(form.recoveryPercent, 0, 100);
+    if (rp) errs.recoveryPercent = rp;
+    setErrors(errs);
+    if (Object.keys(errs).length) {
+      toast.show("Please complete the highlighted fields before publishing.", "error");
+      return;
+    }
+
     setSaving(true);
     try {
       const input: PublishSummaryInput = {
@@ -85,7 +104,11 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
       if (!idToken) throw new Error("Not signed in");
       await publishSummary(input, idToken);
       if (onPublished) onPublished();
+      setErrors({});
+      toast.show("Summary published.", "success");
       setOpen(false);
+    } catch {
+      toast.show("Could not publish. Please try again.", "error");
     } finally {
       setSaving(false);
     }
@@ -168,14 +191,17 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <input
                       id="summary-recovery-percent"
-                      type="number" min={0} max={100}
+                      type="number" min={0} max={100} step={1}
                       value={form.recoveryPercent}
                       onChange={(e) => setForm((f) => ({ ...f, recoveryPercent: Math.min(100, Math.max(0, Number(e.target.value) || 0)) }))}
+                      aria-invalid={errors.recoveryPercent ? true : undefined}
+                      aria-describedby={errors.recoveryPercent ? "err-recovery-percent" : undefined}
                       style={{ border: "1.5px solid var(--color-border)", borderRadius: "var(--radius-input)", padding: "0.5rem 0.75rem", fontSize: 16, fontWeight: 700, width: 72, fontFamily: "var(--font-sans)", color: "var(--color-navy)" }}
                     />
                     <span style={{ fontSize: 16, fontWeight: 700, color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>%</span>
                   </div>
                 </div>
+                {errors.recoveryPercent && <span className="field-error" id="err-recovery-percent">{errors.recoveryPercent}</span>}
               </div>
 
               {/* Session outcome */}
@@ -206,6 +232,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                     </button>
                   ))}
                 </div>
+                {errors.sessionOutcome && <span className="field-error" id="err-session-outcome">{errors.sessionOutcome}</span>}
               </div>
             </div>
           </section>
@@ -218,15 +245,48 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
             <div style={{ display: "grid", gap: "0.75rem" }}>
               <label>
                 <span style={labelStyle}>What we worked on today *</span>
-                <textarea rows={3} required value={form.workedOn} onChange={(e) => setForm((f) => ({ ...f, workedOn: e.target.value }))} placeholder="e.g. Lower back mobility, hip flexor stretching and core activation exercises" style={textareaStyle} />
+                <textarea
+                  rows={3}
+                  required
+                  maxLength={LIMITS.clinicalNote}
+                  value={form.workedOn}
+                  onChange={(e) => setForm((f) => ({ ...f, workedOn: e.target.value }))}
+                  placeholder="e.g. Lower back mobility, hip flexor stretching and core activation exercises"
+                  style={textareaStyle}
+                  aria-invalid={errors.workedOn ? true : undefined}
+                  aria-describedby={errors.workedOn ? "err-worked-on" : undefined}
+                />
+                {errors.workedOn && <span className="field-error" id="err-worked-on">{errors.workedOn}</span>}
               </label>
               <label>
                 <span style={labelStyle}>Exercises assigned *</span>
-                <textarea rows={3} required value={form.exercises} onChange={(e) => setForm((f) => ({ ...f, exercises: e.target.value }))} placeholder="e.g. Cat-cow stretches ×10, bird-dog ×8 each side, glute bridges ×12, twice daily" style={textareaStyle} />
+                <textarea
+                  rows={3}
+                  required
+                  maxLength={LIMITS.clinicalNote}
+                  value={form.exercises}
+                  onChange={(e) => setForm((f) => ({ ...f, exercises: e.target.value }))}
+                  placeholder="e.g. Cat-cow stretches ×10, bird-dog ×8 each side, glute bridges ×12, twice daily"
+                  style={textareaStyle}
+                  aria-invalid={errors.exercises ? true : undefined}
+                  aria-describedby={errors.exercises ? "err-exercises" : undefined}
+                />
+                {errors.exercises && <span className="field-error" id="err-exercises">{errors.exercises}</span>}
               </label>
               <label>
                 <span style={labelStyle}>Next steps & advice *</span>
-                <textarea rows={3} required value={form.nextSteps} onChange={(e) => setForm((f) => ({ ...f, nextSteps: e.target.value }))} placeholder="e.g. Avoid prolonged sitting, use heat pack before exercises, follow up if pain worsens" style={textareaStyle} />
+                <textarea
+                  rows={3}
+                  required
+                  maxLength={LIMITS.clinicalNote}
+                  value={form.nextSteps}
+                  onChange={(e) => setForm((f) => ({ ...f, nextSteps: e.target.value }))}
+                  placeholder="e.g. Avoid prolonged sitting, use heat pack before exercises, follow up if pain worsens"
+                  style={textareaStyle}
+                  aria-invalid={errors.nextSteps ? true : undefined}
+                  aria-describedby={errors.nextSteps ? "err-next-steps" : undefined}
+                />
+                {errors.nextSteps && <span className="field-error" id="err-next-steps">{errors.nextSteps}</span>}
               </label>
             </div>
           </section>

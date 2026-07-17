@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/empty-state";
 import { getBooking, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { DownloadSummaryButton } from "@/components/download-summary-button";
+import { RecoveryPercentCard } from "@/components/recovery-percent-card";
 
 export default function AppointmentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -108,6 +109,31 @@ export default function AppointmentDetailPage() {
 
       {summary ? (
         <div style={{ marginTop: "1.5rem", display: "grid", gap: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "stretch", gap: "1rem", flexWrap: "wrap" }}>
+            <div style={{ flex: "1 1 260px" }}>
+              <RecoveryPercentCard
+                staticPercent={summary.recoveryPercent}
+                subtitle="Recovery score recorded by your physio at this session."
+              />
+            </div>
+            <span
+              aria-label={`Pain score at this session: ${summary.painScore} out of 10`}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                alignSelf: "flex-start",
+                gap: "0.4rem",
+                padding: "0.5rem 0.9rem",
+                borderRadius: "var(--radius-pill)",
+                fontWeight: 700,
+                fontSize: "var(--text-sm)",
+                ...painBadgeColors(summary.painScore),
+              }}
+            >
+              <span aria-hidden="true">🩹</span>
+              Pain {summary.painScore}/10
+            </span>
+          </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
             <h2 style={{ color: "var(--color-text-primary)", margin: 0 }}>Session summary</h2>
             <DownloadSummaryButton summary={summary} />
@@ -154,6 +180,16 @@ export default function AppointmentDetailPage() {
       )}
     </div>
   );
+}
+
+// Coral is reserved for advisory/warning content elsewhere in this design
+// system, so a high pain score (a genuine warning signal) is the one case
+// that legitimately reaches for it here — low/mid scores stay within the
+// calm primary/neutral palette.
+function painBadgeColors(score: number): { background: string; color: string } {
+  if (score >= 7) return { background: "var(--color-coral-light)", color: "var(--color-coral)" };
+  if (score >= 4) return { background: "var(--color-border)", color: "var(--color-text-primary)" };
+  return { background: "var(--color-primary-light)", color: "var(--color-primary-dark)" };
 }
 
 function SummaryBlock({

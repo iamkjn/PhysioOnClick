@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../../core/app_snack_bar.dart';
+import '../../../core/validators.dart';
 import 'recovery_service.dart';
 
 class AdminRecoveryPanelScreen extends StatefulWidget {
@@ -32,23 +34,43 @@ class _AdminRecoveryPanelScreenState extends State<AdminRecoveryPanelScreen> {
   late Future<List<Map<String, dynamic>>> _availableExercisesFuture;
 
   Future<void> _saveClinical() async {
+    final notesErr = Validators.notes(_notesCtrl.text, max: 2000);
+    if (notesErr != null) {
+      setState(() => _saved = false);
+      showAppSnackBar(context, notesErr, isError: true);
+      return;
+    }
     setState(() {
       _saving = true;
       _saved = false;
     });
-    await RecoveryService.addClinicalAssessment(
-      widget.patientUid,
-      widget.personId,
-      date: _date,
-      painScore: _painScore,
-      mobilityScore: _mobilityScore,
-      physioNotes: _notesCtrl.text.trim(),
-    );
-    setState(() {
-      _saving = false;
-      _saved = true;
-      _notesCtrl.clear();
-    });
+    try {
+      await RecoveryService.addClinicalAssessment(
+        widget.patientUid,
+        widget.personId,
+        date: _date,
+        painScore: _painScore,
+        mobilityScore: _mobilityScore,
+        physioNotes: _notesCtrl.text.trim(),
+      );
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _saved = true;
+          _notesCtrl.clear();
+        });
+        showAppSnackBar(context, 'Assessment saved.');
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _saving = false);
+        showAppSnackBar(
+          context,
+          'Could not save the assessment. Please try again.',
+          isError: true,
+        );
+      }
+    }
   }
 
   Future<void> _remove(String exerciseId) async {
@@ -63,7 +85,10 @@ class _AdminRecoveryPanelScreenState extends State<AdminRecoveryPanelScreen> {
 
   Future<void> _assign(String exerciseId) async {
     final physio = FirebaseAuth.instance.currentUser;
-    if (physio == null) return;
+    if (physio == null) {
+      showAppSnackBar(context, 'Please sign in again.', isError: true);
+      return;
+    }
     await RecoveryService.assignExercise(
         widget.patientUid, widget.personId, exerciseId, physio.uid);
   }
@@ -172,6 +197,14 @@ class _AdminRecoveryPanelScreenState extends State<AdminRecoveryPanelScreen> {
           TextField(
             controller: _notesCtrl,
             maxLines: 3,
+            maxLength: 2000,
+            buildCounter:
+                (
+                  _, {
+                  required int currentLength,
+                  required bool isFocused,
+                  required int? maxLength,
+                }) => null,
             decoration: const InputDecoration(
               hintText: 'Clinical notes…',
               border: OutlineInputBorder(

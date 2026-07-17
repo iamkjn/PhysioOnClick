@@ -62,17 +62,46 @@ service cloud.firestore {
     }
 
     match /dependents/{dependentId} {
-      allow read, update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
-      allow read, write: if isAdmin();
+      // Mirrors client-side caps in lib/validation.ts / mobile validators.dart.
+      // dob is a 10-char ISO date and relationship a short picklist value; the
+      // caps just stop a hand-crafted client SDK write storing megabyte strings.
+      function validDependent(d) {
+        return d.name is string && d.name.size() >= 2 && d.name.size() <= 80 &&
+          d.dob is string && d.dob.size() <= 30 &&
+          d.relationship is string && d.relationship.size() <= 50 &&
+          d.notes is string && d.notes.size() <= 500;
+      }
+      function ownsDependent() {
+        return isSignedIn() && resource.data.ownerId == request.auth.uid;
+      }
+      // Split so create/update always run validDependent — an unconstrained
+      // `allow write: if isAdmin()` would OR past it (rules grant if ANY matches).
+      allow read, delete: if isAdmin() || ownsDependent();
+      allow update: if (isAdmin() || ownsDependent()) &&
+        validDependent(request.resource.data);
+      allow create: if (isAdmin() ||
+        (isSignedIn() && request.resource.data.ownerId == request.auth.uid)) &&
+        validDependent(request.resource.data);
     }
 
     match /sessionSummaries/{summaryId} {
+      // Normally created server-side (publishSummary, Admin SDK bypasses rules);
+      // these constraints cover any direct admin-client write path.
+      function validSummary(d) {
+        return d.workedOn is string && d.workedOn.size() >= 1 && d.workedOn.size() <= 2000 &&
+          d.exercises is string && d.exercises.size() >= 1 && d.exercises.size() <= 2000 &&
+          d.nextSteps is string && d.nextSteps.size() >= 1 && d.nextSteps.size() <= 2000 &&
+          d.sessionOutcome in ['improving', 'stable', 'setback'] &&
+          d.recoveryPercent is int && d.recoveryPercent >= 0 && d.recoveryPercent <= 100 &&
+          d.painScore is number && d.painScore >= 0 && d.painScore <= 10 &&
+          d.followUpWeeks is number && d.followUpWeeks >= 0;
+      }
       allow read: if isSignedIn() && (
         isAdmin() ||
         get(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.bookedBy == request.auth.uid
       );
-      allow create, update, delete: if isAdmin();
+      allow create, update: if isAdmin() && validSummary(request.resource.data);
+      allow delete: if isAdmin();
     }
 
     match /pendingSelections/{userId} {
@@ -93,9 +122,27 @@ service cloud.firestore {
     }
 
     match /enquiries/{enquiryId} {
-      allow create: if true;
+      // Create is public (anonymous contact form + the client-SDK fallback in
+      // lib/firestore-helpers.ts), so it enforces the same caps/format/enum as
+      // app/api/enquiry, plus a key allow-list to stop arbitrary-field injection.
+      // Email regex mirrors EMAIL_RE in lib/validation.ts.
+      function validNewEnquiry(d) {
+        return d.status == 'new' &&
+          d.keys().hasOnly(['name', 'email', 'emailLower', 'phone', 'service',
+            'message', 'status', 'source', 'userId', 'patientRef', 'createdAt']) &&
+          d.name is string && d.name.size() >= 2 && d.name.size() <= 80 &&
+          d.email is string && d.email.size() <= 254 &&
+          d.email.matches('^[^@\\s]+@[^@\\s]+[.][^@\\s]+$') &&
+          d.phone is string && d.phone.size() <= 20 &&
+          // `service` is a reserved word in the rules language — bracket-access it.
+          d['service'] is string && d['service'].size() >= 1 && d['service'].size() <= 200 &&
+          d.message is string && d.message.size() >= 20 && d.message.size() <= 2000;
+      }
+      allow create: if validNewEnquiry(request.resource.data);
       allow read: if isAdmin() || ownsEmailResource();
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin() &&
+        request.resource.data.status in ['new', 'in-progress', 'resolved'];
+      allow delete: if isAdmin();
     }
 
     match /patients/{userId} {
@@ -105,12 +152,31 @@ service cloud.firestore {
     }
 
     match /patients/{userId}/people/{personId}/clinicalAssessments/{date} {
+      // Shape written by lib/recovery.ts addClinicalAssessment + mobile RecoveryService.
+      function validAssessment(d) {
+        return d.painScore is int && d.painScore >= 0 && d.painScore <= 10 &&
+          d.mobilityScore is int && d.mobilityScore >= 0 && d.mobilityScore <= 10 &&
+          d.physioNotes is string && d.physioNotes.size() <= 2000 &&
+          d.sessionId is string && d.sessionId.size() <= 200;
+      }
       allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
-      allow write: if isAdmin();
+      allow create, update: if isAdmin() && validAssessment(request.resource.data);
+      allow delete: if isAdmin();
     }
 
     match /patients/{userId}/people/{personId}/painLogs/{date} {
-      allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow read, delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      // Shape written by lib/recovery.ts logPainScore: { score, note, loggedAt }.
+      // score is an integer slider value; loggedAt is a serverTimestamp readers
+      // call .toDate() on, so both are typed to keep the recovery views from throwing.
+      allow create, update: if (isAdmin() || (isSignedIn() && request.auth.uid == userId)) &&
+        request.resource.data.keys().hasOnly(["score", "note", "loggedAt"]) &&
+        request.resource.data.score is int &&
+        request.resource.data.score >= 0 &&
+        request.resource.data.score <= 10 &&
+        request.resource.data.note is string &&
+        request.resource.data.note.size() <= 500 &&
+        request.resource.data.loggedAt is timestamp;
     }
 
     match /patients/{userId}/people/{personId}/assignedExercises/{exerciseId} {
@@ -121,16 +187,20 @@ service cloud.firestore {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
+    // Read-only catch-all. No blanket admin write: overlapping matches grant if ANY
+    // allows, so a write rule here would let admin clients skip the validation in the
+    // explicit subcollection matches above (e.g. clinicalAssessments caps). Every
+    // server-side write (chat transcripts, cal-webhook) uses the Admin SDK shim,
+    // which bypasses rules entirely.
     match /patients/{userId}/{document=**} {
       allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
-      allow write: if isAdmin();
     }
 
     // Collection-group rule for the admin chat logs viewer (components/admin-chat-logs.tsx),
     // which runs a collectionGroup("chatSessions") query across all patients/{uid}/chatSessions/{id}.
     // The recursive wildcard under /patients/{userId} above only authorizes per-patient reads,
     // not cross-patient collection-group queries — this is required in addition to it.
-    // Read-only: writes to chatSessions continue to go through patients/{userId}/{document=**} above.
+    // Read-only: chatSessions are written server-side (app/api/chat via the Admin SDK shim).
     match /{path=**}/chatSessions/{sessionId} {
       allow read: if isAdmin();
     }
