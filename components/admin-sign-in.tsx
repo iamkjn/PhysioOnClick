@@ -2,6 +2,7 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FormEvent, useState } from "react";
 import { auth } from "@/lib/firebase";
+import { validateEmail, LIMITS } from "@/lib/validation";
 
 export function AdminSignIn() {
   const [email, setEmail] = useState("");
@@ -12,9 +13,20 @@ export function AdminSignIn() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
+
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setError(emailErr);
+      return;
+    }
+    if (!password) {
+      setError("Enter your password.");
+      return;
+    }
+
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth!, email, password);
+      await signInWithEmailAndPassword(auth!, email.trim(), password);
       window.location.reload();
     } catch {
       setError("Invalid email or password. Please try again.");
@@ -39,9 +51,9 @@ export function AdminSignIn() {
         </p>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: "0.75rem" }}>
           <label htmlFor="admin-email" className="sr-only">Email address</label>
-          <input id="admin-email" type="email" className="input" placeholder="Email address" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input id="admin-email" type="email" className="input" placeholder="Email address" autoComplete="email" required maxLength={LIMITS.email} value={email} onChange={(e) => setEmail(e.target.value)} />
           <label htmlFor="admin-password" className="sr-only">Password</label>
-          <input id="admin-password" type="password" className="input" placeholder="Password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input id="admin-password" type="password" className="input" placeholder="Password" autoComplete="current-password" required maxLength={LIMITS.password} value={password} onChange={(e) => setPassword(e.target.value)} />
           {error && <p role="alert" aria-live="assertive" style={{ color: "var(--color-error)", fontSize: 14, margin: 0, fontFamily: "var(--font-sans)" }}>{error}</p>}
           <button
             type="submit"
