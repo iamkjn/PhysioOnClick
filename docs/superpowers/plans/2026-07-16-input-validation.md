@@ -1116,6 +1116,6 @@ git add -A && git commit -m "test(mobile): flutter analyze + validator tests pas
 
 ## Follow-ups (out of scope — do NOT implement here)
 
-- **Server-side enforcement** (the real trust boundary): mirror caps/format/enum in `app/api/enquiry`, `app/api/auth/magic-link`, `app/admin/actions.ts` `publishSummary`, and add length/type/enum rules to `firestore.rules` / `storage.rules`.
+- ~~**Server-side enforcement** (the real trust boundary): mirror caps/format/enum in `app/api/enquiry`, `app/api/auth/magic-link`, `app/admin/actions.ts` `publishSummary`, and add length/type/enum rules to `firestore.rules` / `storage.rules`.~~ **Done 2026-07-17** — rules changes need `firebase deploy --only firestore:rules,storage:rules` to go live.
 - Confirm-password field on **web** signup (`auth-panel`).
 - Same-day clinical-assessment overwrite (doc-ID collision) — add a confirm dialog or merge-aware write.
