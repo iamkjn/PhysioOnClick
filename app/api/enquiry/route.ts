@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
+import { LIMITS, validateEmail, validateName, validateRequiredText, validateUKPhone } from "@/lib/validation";
 
 type EnquiryPayload = {
   name: string;
@@ -72,8 +73,22 @@ export async function POST(request: Request) {
     message: String(body.message || "").trim()
   };
 
-  if (!payload.name || !payload.email || !payload.service || !payload.message) {
+  if (!payload.name || !payload.email || !payload.service || payload.service.length > LIMITS.sessionId || !payload.message) {
     return NextResponse.json({ error: "Missing required enquiry fields." }, { status: 400 });
+  }
+
+  // Same rules as components/contact-form.tsx — client checks are advisory only.
+  const invalid =
+    validateName(payload.name) ||
+    validateEmail(payload.email) ||
+    validateUKPhone(payload.phone) ||
+    validateRequiredText(payload.message, {
+      min: 20,
+      max: LIMITS.message,
+      message: "Add a little more detail so the enquiry can be triaged properly.",
+    });
+  if (invalid) {
+    return NextResponse.json({ error: invalid }, { status: 400 });
   }
 
   const db = getAdminDb();

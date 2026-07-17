@@ -112,6 +112,31 @@ describe("POST /api/enquiry", () => {
     });
   });
 
+  it.each([
+    ["invalid email", { email: "not-an-email" }, "Enter a valid email address."],
+    ["email without TLD", { email: "jane@example" }, "Enter a valid email address."],
+    ["over-long email", { email: "a".repeat(250) + "@b.co" }, "Enter a valid email address."],
+    ["over-long name", { name: "x".repeat(81) }, "Name must be 80 characters or fewer."],
+    ["junk phone", { phone: "not a phone" }, "Enter a valid UK phone number, or leave this blank."],
+    ["over-long message", { message: "x".repeat(2001) }, "Keep this to 2000 characters or fewer."],
+    ["too-short message", { message: "help" }, "Add a little more detail so the enquiry can be triaged properly."],
+    ["over-long service", { service: "x".repeat(201) }, "Missing required enquiry fields."],
+  ])("returns 400 for %s", async (_label, overrides, error) => {
+    const res = await POST(makeRequest({ ...validBody, ...overrides }));
+
+    expect(res.status).toBe(400);
+    expect(addMock).not.toHaveBeenCalled();
+    const data = (await res.json()) as { error: string };
+    expect(data.error).toBe(error);
+  });
+
+  it("accepts a blank phone", async () => {
+    const res = await POST(makeRequest({ ...validBody, phone: "" }));
+
+    expect(res.status).toBe(200);
+    expect(addMock).toHaveBeenCalledOnce();
+  });
+
   it("returns 400 when required fields are missing", async () => {
     const { email: _removed, ...withoutEmail } = validBody;
 

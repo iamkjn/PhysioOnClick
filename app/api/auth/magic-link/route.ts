@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAdminAuth } from "@/lib/firebase-admin";
+import { validateEmail } from "@/lib/validation";
 
 function escapeHtml(value: string) {
   return value
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
   const email = String(body.email || "").trim().toLowerCase();
   const returnTo = sanitizeReturnPath(body.returnTo);
 
-  if (!email || !email.includes("@")) {
+  if (validateEmail(email) !== null) {
     return NextResponse.json({ error: "A valid email address is required." }, { status: 400 });
   }
 
