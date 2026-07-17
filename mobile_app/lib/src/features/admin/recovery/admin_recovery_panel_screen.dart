@@ -36,6 +36,7 @@ class _AdminRecoveryPanelScreenState extends State<AdminRecoveryPanelScreen> {
   Future<void> _saveClinical() async {
     final notesErr = Validators.notes(_notesCtrl.text, max: 2000);
     if (notesErr != null) {
+      setState(() => _saved = false);
       showAppSnackBar(context, notesErr, isError: true);
       return;
     }
