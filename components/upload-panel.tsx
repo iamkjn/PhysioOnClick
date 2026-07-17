@@ -9,6 +9,19 @@ import { auth, firebaseEnabled, storage } from "@/lib/firebase";
 
 type MessageTone = "neutral" | "success" | "error";
 
+const ALLOWED_EXT = ["pdf", "png", "jpg", "jpeg", "doc", "docx"];
+const ALLOWED_MIME = [
+  "application/pdf", "image/png", "image/jpeg",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+const MAX_BYTES = 10 * 1024 * 1024;
+
+function safeName(name: string) {
+  const base = name.replace(/[/\\]/g, "").replace(/\.{2,}/g, ".").trim().slice(0, 200);
+  return base || "upload";
+}
+
 export function UploadPanel() {
   const [message, setMessage] = useState("Upload MRI reports, X-rays, GP letters or discharge summaries securely.");
   const [tone, setTone] = useState<MessageTone>("neutral");
@@ -47,11 +60,23 @@ export function UploadPanel() {
       return;
     }
 
+    const ext = (file.name.split(".").pop() || "").toLowerCase();
+    if (!ALLOWED_EXT.includes(ext) || !ALLOWED_MIME.includes(file.type)) {
+      setMessage("Choose a PDF, PNG, JPG or Word document.");
+      setTone("error");
+      return;
+    }
+    if (file.size > MAX_BYTES) {
+      setMessage("Choose a file smaller than 10 MB.");
+      setTone("error");
+      return;
+    }
+
     setUploading(true);
     setTone("neutral");
     setMessage(`Uploading ${file.name}…`);
     try {
-      const fileRef = ref(storage, `patient-uploads/${userId}/${Date.now()}-${file.name}`);
+      const fileRef = ref(storage, `patient-uploads/${userId}/${Date.now()}-${safeName(file.name)}`);
       await uploadBytes(fileRef, file);
       setMessage("File uploaded successfully.");
       setTone("success");
