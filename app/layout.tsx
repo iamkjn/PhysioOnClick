@@ -5,6 +5,7 @@ import { Analytics } from "@/components/analytics";
 import { ChatWidget } from "@/components/chat-widget";
 import { ConnectivityOverlay } from "@/components/connectivity-overlay";
 import { CookieConsent } from "@/components/cookie-consent";
+import { PersonProvider } from "@/components/person-provider";
 import { ScrollReset } from "@/components/scroll-reset";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -52,19 +53,21 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
           address: { "@type": "PostalAddress", addressLocality: "Glasgow", addressCountry: "GB" }
         }) }} />
-        <ToastProvider>
-          <ScrollReset />
-          <a className="skip-link" href="#main-content">
-            Skip to content
-          </a>
-          <SiteHeader />
-          <main id="main-content">{children}</main>
-          <SiteFooter />
-          <Analytics />
-          <ChatWidget />
-          <ConnectivityOverlay />
-          <CookieConsent />
-        </ToastProvider>
+        <PersonProvider>
+          <ToastProvider>
+            <ScrollReset />
+            <a className="skip-link" href="#main-content">
+              Skip to content
+            </a>
+            <SiteHeader />
+            <main id="main-content">{children}</main>
+            <SiteFooter />
+            <Analytics />
+            <ChatWidget />
+            <ConnectivityOverlay />
+            <CookieConsent />
+          </ToastProvider>
+        </PersonProvider>
       </body>
     </html>
   );

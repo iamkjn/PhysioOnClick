@@ -8,9 +8,11 @@ import {
   type User
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { ensurePatientRecord } from "@/lib/patient-account";
+import type { Dependent } from "@/lib/dependents";
 import type { CalService, FocusArea } from "@/lib/cal-services";
 import type { PricingItem } from "@/lib/site-data";
 import type { BookingConfirmation } from "@/components/booking-flow";
@@ -24,6 +26,12 @@ type Props = {
   onBack: () => void;
   onConfirmed: (c: BookingConfirmation) => void;
   titleRef?: RefObject<HTMLHeadingElement | null>;
+  /** Dependents belonging to the signed-in user, for the "Booking for" picker. */
+  dependents: Dependent[];
+  /** Who the booking is for: `null` = the account holder ("self"), else a dependent id. */
+  bookingForId: string | null;
+  bookingForName: string;
+  onBookingForChange: (id: string | null, name: string) => void;
 };
 
 type SlotMap = Record<string, string[]>;
@@ -77,7 +85,11 @@ export function BookingStepTime({
   onSelectSlot,
   onBack,
   onConfirmed,
-  titleRef
+  titleRef,
+  dependents,
+  bookingForId,
+  bookingForName,
+  onBookingForChange
 }: Props) {
   const today = useMemo(() => new Date(), []);
   const [viewMonth, setViewMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
@@ -301,6 +313,31 @@ export function BookingStepTime({
         }
       }
 
+      // Mirrors mobile_app's WhoIsThisForScreen: for an already signed-in
+      // user, record who this booking is for in pendingSelections/{uid}
+      // before creating the Cal.com booking. app/api/cal-webhook/route.ts
+      // reads this doc when the BOOKING_CREATED webhook fires and merges it
+      // onto the new `bookings` record, then deletes it. Guests (who just
+      // signed up/in above) are left out here — the webhook already
+      // defaults an unmatched booking to "self", which is correct for them.
+      if (signedIn && db) {
+        const isSelf = !bookingForId || bookingForId === user!.uid;
+        try {
+          await setDoc(doc(db, "pendingSelections", user!.uid), {
+            patientType: isSelf ? "self" : "dependent",
+            patientId: isSelf ? user!.uid : bookingForId,
+            patientName: isSelf ? attendeeName : bookingForName || "Patient",
+            patientAvatarUrl: isSelf
+              ? user!.photoURL ?? ""
+              : dependents.find((d) => d.id === bookingForId)?.avatarUrl ?? "",
+            selectedAt: serverTimestamp()
+          });
+        } catch {
+          // Best-effort: never block the booking on this write failing.
+          console.error("Could not record who this booking is for; it will default to self.");
+        }
+      }
+
       const res = await fetch("/api/cal/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -472,6 +509,35 @@ export function BookingStepTime({
           </div>
 
           <div className="book-divider" />
+
+          {signedIn && dependents.length > 0 ? (
+            <div className="book-field book-field-full" style={{ marginBottom: 16 }}>
+              <label className="book-label" htmlFor="book-booking-for">
+                Booking for
+              </label>
+              <select
+                id="book-booking-for"
+                className="book-input"
+                value={bookingForId ?? user!.uid}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === user!.uid) {
+                    onBookingForChange(null, user!.displayName ?? "");
+                  } else {
+                    const dep = dependents.find((d) => d.id === val);
+                    onBookingForChange(val, dep?.name ?? "");
+                  }
+                }}
+              >
+                <option value={user!.uid}>{user!.displayName || "Myself"} (my appointment)</option>
+                {dependents.map((dep) => (
+                  <option key={dep.id} value={dep.id}>
+                    {dep.name} ({dep.relationship})
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
 
           {signedIn && !editingDetails ? (
             <div className="book-signed-in">

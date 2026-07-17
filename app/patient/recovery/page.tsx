@@ -96,7 +96,7 @@ export default function RecoveryPage() {
       </section>
 
       <section className="page-section">
-        <RecoveryChart ref={chartRef} uid={uid} personId={personId} />
+        <RecoveryChart ref={chartRef} uid={uid} personId={personId} showMobility />
       </section>
 
       <section className="page-section">

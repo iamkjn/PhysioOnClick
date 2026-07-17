@@ -9,6 +9,8 @@ export interface SessionSummary {
   exercises: string;
   nextSteps: string;
   followUpWeeks: number;
+  painScore: number;
+  recoveryPercent: number;
   publishedAt: Date;
 }
 
@@ -32,6 +34,8 @@ export async function getSessionSummary(bookingId: string): Promise<SessionSumma
     exercises: (data.exercises as string) ?? "",
     nextSteps: (data.nextSteps as string) ?? "",
     followUpWeeks: (data.followUpWeeks as number) ?? 0,
+    painScore: (data.painScore as number) ?? 0,
+    recoveryPercent: (data.recoveryPercent as number) ?? 0,
     publishedAt: ts?.toDate ? ts.toDate() : new Date(),
   };
 }
