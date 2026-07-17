@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { addClinicalAssessment } from "@/lib/recovery";
 import { useToast } from "@/components/toast-provider";
+import { validateOptionalText, LIMITS } from "@/lib/validation";
 
 interface Props {
   patientUid: string;
@@ -20,13 +21,29 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const toast = useToast();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSaved(false);
+
+    const errs: Record<string, string> = {};
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (!date) errs.date = "Enter a session date of today or earlier.";
+    else if (date > todayStr) errs.date = "Enter a session date of today or earlier.";
+    const notesErr = validateOptionalText(physioNotes, LIMITS.clinicalNote);
+    if (notesErr) errs.physioNotes = notesErr;
+    const sidErr = validateOptionalText(sessionId, LIMITS.sessionId);
+    if (sidErr) errs.sessionId = "Enter a valid booking ID, or leave this blank.";
+    setErrors(errs);
+    if (Object.keys(errs).length) {
+      toast.show("Please fix the highlighted fields before saving.", "error");
+      return;
+    }
+
     setSaving(true);
     setError(null);
-    setSaved(false);
     try {
       await addClinicalAssessment(patientUid, personId, {
         date,
@@ -37,6 +54,7 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
       });
       setSaved(true);
       setPhysioNotes("");
+      setErrors({});
       toast.show("Assessment saved.", "success");
     } catch {
       setError("Could not save this assessment. Check that you're signed in with an admin account.");
@@ -73,10 +91,14 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
               setDate(e.target.value);
               setSaved(false);
             }}
+            max={today}
             style={{ marginTop: 4 }}
             required
             aria-required="true"
+            aria-invalid={errors.date ? true : undefined}
+            aria-describedby={errors.date ? "err-clinical-date" : undefined}
           />
+          {errors.date && <span className="field-error" id="err-clinical-date">{errors.date}</span>}
         </label>
         <label style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
           Pain score:{" "}
@@ -117,8 +139,12 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
             }}
             rows={3}
             placeholder="What was worked on, patient response, next steps…"
+            maxLength={LIMITS.clinicalNote}
             style={{ marginTop: 4, resize: "vertical" }}
+            aria-invalid={errors.physioNotes ? true : undefined}
+            aria-describedby={errors.physioNotes ? "err-clinical-notes" : undefined}
           />
+          {errors.physioNotes && <span className="field-error" id="err-clinical-notes">{errors.physioNotes}</span>}
         </label>
         <label style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
           Booking ID (optional)
@@ -128,8 +154,12 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
             value={sessionId}
             onChange={(e) => setSessionId(e.target.value)}
             placeholder="bookings/…"
+            maxLength={LIMITS.sessionId}
             style={{ marginTop: 4 }}
+            aria-invalid={errors.sessionId ? true : undefined}
+            aria-describedby={errors.sessionId ? "err-clinical-session-id" : undefined}
           />
+          {errors.sessionId && <span className="field-error" id="err-clinical-session-id">{errors.sessionId}</span>}
         </label>
         <button
           type="submit"
