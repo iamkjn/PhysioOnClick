@@ -187,6 +187,52 @@ service cloud.firestore {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
+    // Shape written by the mobile blog favourite toggle (blog_screen.dart /
+    // blog_detail_screen.dart), via PatientAccountService.favouriteBlogDoc. Every
+    // BlogArticle field is a Dart String, so publishedAt is an ISO string, not a
+    // timestamp. Writes are a full set() (no merge), so the caps apply to the whole doc.
+    // Delete is separate: request.resource is null on delete, so validFavourite
+    // would reject every un-favourite if folded into one write rule.
+    match /patients/{userId}/favoriteBlogs/{slug} {
+      function validFavourite(d) {
+        return d.keys().hasOnly(['slug', 'title', 'category', 'excerpt', 'image',
+          'publishedAt', 'savedAt', 'userId', 'userEmail']) &&
+          d.slug is string && d.slug.size() >= 1 && d.slug.size() <= 200 &&
+          d.title is string && d.title.size() <= 300 &&
+          d.category is string && d.category.size() <= 100 &&
+          d.excerpt is string && d.excerpt.size() <= 2000 &&
+          d.image is string && d.image.size() <= 1000 &&
+          d.publishedAt is string && d.publishedAt.size() <= 40 &&
+          d.savedAt is timestamp &&
+          d.userId is string && d.userId == userId &&
+          d.userEmail is string && d.userEmail.size() <= 254;
+      }
+      allow read, delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, update: if (isAdmin() || (isSignedIn() && request.auth.uid == userId)) &&
+        validFavourite(request.resource.data);
+    }
+
+    // Shape written by the mobile document upload (profile_screen.dart) after the
+    // Storage putData succeeds. storage.rules is what actually caps the bytes at 10MB;
+    // mirroring the cap here just stops the Firestore record claiming a size the
+    // upload never had. `size` is picked.size, a Dart int.
+    match /patients/{userId}/uploads/{uploadId} {
+      function validUpload(d) {
+        return d.keys().hasOnly(['fileName', 'downloadUrl', 'storagePath', 'size',
+          'uploadedAt', 'uploadedBy', 'extension']) &&
+          d.fileName is string && d.fileName.size() >= 1 && d.fileName.size() <= 255 &&
+          d.downloadUrl is string && d.downloadUrl.size() <= 2000 &&
+          d.storagePath is string && d.storagePath.size() <= 500 &&
+          d.size is int && d.size >= 0 && d.size <= 10 * 1024 * 1024 &&
+          d.uploadedAt is timestamp &&
+          d.uploadedBy is string && d.uploadedBy.size() <= 254 &&
+          d.extension is string && d.extension.size() <= 10;
+      }
+      allow read, delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, update: if (isAdmin() || (isSignedIn() && request.auth.uid == userId)) &&
+        validUpload(request.resource.data);
+    }
+
     // Read-only catch-all. No blanket admin write: overlapping matches grant if ANY
     // allows, so a write rule here would let admin clients skip the validation in the
     // explicit subcollection matches above (e.g. clinicalAssessments caps). Every
