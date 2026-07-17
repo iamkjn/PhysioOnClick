@@ -15,6 +15,7 @@ import {
 
 import { auth, firebaseEnabled } from "@/lib/firebase";
 import { ensureAppUserRecord, ensurePatientRecord } from "@/lib/patient-account";
+import { LIMITS, validateEmail, validateName } from "@/lib/validation";
 
 export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" | "admin"; redirectTo?: string | null }) {
   const router = useRouter();
@@ -103,13 +104,26 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email"));
+    const email = String(formData.get("email")).trim();
     const password = String(formData.get("password"));
     const fullName = String(formData.get("fullName") || "").trim();
 
     if (!auth) {
       setStatus("Firebase Authentication is not configured. Add your environment variables first.", "error");
       return;
+    }
+
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setStatus(emailErr, "error");
+      return;
+    }
+    if (isSignup) {
+      const nameErr = validateName(fullName);
+      if (nameErr) {
+        setStatus(nameErr, "error");
+        return;
+      }
     }
 
     try {
@@ -146,7 +160,11 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") || "").trim();
-    if (!email) return;
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setStatus(emailErr, "error");
+      return;
+    }
     try {
       setIsSubmitting(true);
       setStatus("Sending your sign-in link…", "info");
@@ -234,7 +252,7 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
         <form className="auth-form" onSubmit={handleMagicLink}>
           <label>
             Email
-            <input type="email" name="email" required autoComplete="email" placeholder="patient@example.com" />
+            <input type="email" name="email" required autoComplete="email" placeholder="patient@example.com" maxLength={LIMITS.email} />
           </label>
           <button
             className="button primary"
@@ -250,16 +268,16 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
           {isSignup && isPatient ? (
             <label>
               Full name
-              <input type="text" name="fullName" required minLength={2} autoComplete="name" placeholder="Your full name" />
+              <input type="text" name="fullName" required minLength={2} maxLength={LIMITS.name} autoComplete="name" placeholder="Your full name" />
             </label>
           ) : null}
           <label>
             Email
-            <input type="email" name="email" required autoComplete="email" placeholder={role === "admin" ? "admin@physioonclick.co.uk" : "patient@example.com"} />
+            <input type="email" name="email" required autoComplete="email" placeholder={role === "admin" ? "admin@physioonclick.co.uk" : "patient@example.com"} maxLength={LIMITS.email} />
           </label>
           <label>
             Password
-            <input type="password" name="password" required minLength={8} autoComplete={isSignup ? "new-password" : "current-password"} />
+            <input type="password" name="password" required minLength={8} maxLength={LIMITS.password} autoComplete={isSignup ? "new-password" : "current-password"} />
           </label>
           <button
             className="button primary"

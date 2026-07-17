@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../core/firebase/patient_account_service.dart';
+import '../../core/validators.dart';
 
 const _googleWebClientId = '119591358761-4ojpfo2n6gpjkuoh0ljis9d52ob35o3d.apps.googleusercontent.com';
 
@@ -120,7 +121,7 @@ class _AuthSheetState extends State<AuthSheet> {
       if (isRegisterMode) {
         final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+          password: _passwordController.text,
         );
 
         await credential.user?.updateDisplayName(_nameController.text.trim());
@@ -134,7 +135,7 @@ class _AuthSheetState extends State<AuthSheet> {
       } else {
         final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+          password: _passwordController.text,
         );
 
         if (credential.user != null) {
@@ -225,7 +226,8 @@ class _AuthSheetState extends State<AuthSheet> {
   Future<void> _sendPasswordReset() async {
     final email = _emailController.text.trim();
 
-    if (!email.contains('@') || !email.contains('.')) {
+    final err = Validators.email(email);
+    if (err != null) {
       setState(() {
         message = 'Enter your email above first, then tap reset password.';
       });
@@ -295,15 +297,7 @@ class _AuthSheetState extends State<AuthSheet> {
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'Full name'),
                   textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (!isRegisterMode) {
-                      return null;
-                    }
-                    if ((value ?? '').trim().length < 2) {
-                      return 'Enter your full name.';
-                    }
-                    return null;
-                  },
+                  validator: (value) => isRegisterMode ? Validators.name(value) : null,
                 ),
                 const SizedBox(height: 12),
               ],
@@ -312,25 +306,14 @@ class _AuthSheetState extends State<AuthSheet> {
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  final email = (value ?? '').trim();
-                  if (!email.contains('@') || !email.contains('.')) {
-                    return 'Enter a valid email address.';
-                  }
-                  return null;
-                },
+                validator: Validators.email,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Password'),
-                validator: (value) {
-                  if ((value ?? '').trim().length < 6) {
-                    return 'Use at least 6 characters.';
-                  }
-                  return null;
-                },
+                validator: Validators.password,
               ),
               const SizedBox(height: 16),
               ElevatedButton(

@@ -7,8 +7,8 @@ import { FormEvent, useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { ensurePatientRecord, mergePatientProfileDetails } from "@/lib/patient-account";
 import { SkeletonForm } from "@/components/skeleton";
-
-const phonePattern = /^(?:\+44|0)[0-9\s]{9,14}$/;
+import { useToast } from "@/components/toast-provider";
+import { validateName, validateUKPhone, LIMITS } from "@/lib/validation";
 
 function getStatusTone(message: string): "neutral" | "success" | "error" {
   if (message.includes("successfully")) return "success";
@@ -19,11 +19,13 @@ function getStatusTone(message: string): "neutral" | "success" | "error" {
 }
 
 export function PatientProfileEditor() {
+  const toast = useToast();
   const [userId, setUserId] = useState("");
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState("Sign in to manage your profile details.");
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [resolvedAuth, setResolvedAuth] = useState(false);
 
@@ -42,6 +44,7 @@ export function PatientProfileEditor() {
         setFullName("");
         setPhone("");
         setStatus("Sign in to manage your profile details.");
+        setErrors({});
         return;
       }
 
@@ -74,13 +77,15 @@ export function PatientProfileEditor() {
       return;
     }
 
-    if (fullName.trim().length < 2) {
-      setStatus("Enter your full name before saving.");
-      return;
-    }
+    const nextErrors: Record<string, string> = {};
+    const nameErr = validateName(fullName);
+    if (nameErr) nextErrors.name = nameErr;
+    const phoneErr = validateUKPhone(phone);
+    if (phoneErr) nextErrors.phone = phoneErr;
+    setErrors(nextErrors);
 
-    if (phone.trim() && !phonePattern.test(phone.trim())) {
-      setStatus("Enter a valid UK phone number or leave the phone field blank.");
+    if (Object.keys(nextErrors).length) {
+      toast.show("Check the highlighted fields and try again.", "error");
       return;
     }
 
@@ -93,6 +98,7 @@ export function PatientProfileEditor() {
         email
       });
       setStatus("Profile updated successfully.");
+      toast.show("Profile updated successfully.", "success");
     } catch {
       setStatus("We could not update your profile right now. Please try again.");
     } finally {
@@ -109,8 +115,6 @@ export function PatientProfileEditor() {
   }
 
   const statusTone = getStatusTone(status);
-  const isNameError = statusTone === "error" && status.includes("full name");
-  const isPhoneError = statusTone === "error" && status.includes("phone number");
 
   return (
     <div className="panel patient-profile-panel">
@@ -136,10 +140,13 @@ export function PatientProfileEditor() {
             placeholder="Your full name"
             value={fullName}
             autoComplete="name"
+            maxLength={LIMITS.name}
             aria-required="true"
-            aria-invalid={isNameError || undefined}
-            style={isNameError ? { borderColor: "var(--color-error)" } : undefined}
+            aria-invalid={errors.name ? true : undefined}
+            aria-describedby={errors.name ? "err-full-name" : undefined}
+            style={errors.name ? { borderColor: "var(--color-error)" } : undefined}
           />
+          {errors.name && <span className="field-error" id="err-full-name">{errors.name}</span>}
         </label>
 
         <label>
@@ -151,9 +158,12 @@ export function PatientProfileEditor() {
             type="tel"
             inputMode="tel"
             autoComplete="tel"
-            aria-invalid={isPhoneError || undefined}
-            style={isPhoneError ? { borderColor: "var(--color-error)" } : undefined}
+            maxLength={LIMITS.phone}
+            aria-invalid={errors.phone ? true : undefined}
+            aria-describedby={errors.phone ? "err-phone-number" : undefined}
+            style={errors.phone ? { borderColor: "var(--color-error)" } : undefined}
           />
+          {errors.phone && <span className="field-error" id="err-phone-number">{errors.phone}</span>}
         </label>
 
         <button className="button primary" disabled={!userId || isSaving} aria-busy={isSaving} type="submit">

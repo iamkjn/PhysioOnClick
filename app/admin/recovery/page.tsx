@@ -6,28 +6,12 @@ import Link from "next/link";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { isAdminUser } from "@/lib/admin-auth";
+import { AdminShell } from "@/components/admin-shell";
 import { AdminPatientSelector } from "@/components/admin-patient-selector";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { SkeletonChart, SkeletonRow } from "@/components/skeleton";
-
-// Same sticky navy header as components/admin-dashboard.tsx, plus a link
-// back — this page otherwise renders with zero admin chrome.
-function AdminHeader() {
-  return (
-    <header style={{ position: "sticky", top: 0, zIndex: 100, background: "var(--color-navy)", height: 56, display: "flex", alignItems: "center", padding: "0 1.5rem", gap: "1rem" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", flex: 1 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 8, background: "var(--color-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800, fontSize: 16, fontFamily: "var(--font-serif)" }}>P</div>
-        <span style={{ color: "white", fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15 }}>PhysioOnClick</span>
-        <span style={{ border: "1px solid var(--color-gold)", color: "var(--color-gold)", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-sans)", letterSpacing: "0.04em" }}>Admin</span>
-      </div>
-      <Link href="/admin" style={{ color: "white", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-sans)", textDecoration: "none" }}>
-        ← Back to dashboard
-      </Link>
-    </header>
-  );
-}
 
 export default function AdminRecoveryPage() {
   const [adminUid, setAdminUid] = useState<string | null>(null);
@@ -49,22 +33,20 @@ export default function AdminRecoveryPage() {
 
   if (!checkedAdmin) {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--color-bg)" }}>
-        <AdminHeader />
+      <AdminShell backHref="/admin" backLabel="← Back to dashboard">
         <div className="site-shell">
           <section className="page-section dashboard-grid">
             <SkeletonRow count={4} />
             <SkeletonChart height={260} />
           </section>
         </div>
-      </div>
+      </AdminShell>
     );
   }
 
   if (!adminUid) {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--color-bg)" }}>
-        <AdminHeader />
+      <AdminShell backHref="/admin" backLabel="← Back to dashboard">
         <div className="site-shell">
           <section className="page-section stack">
             <p className="muted" style={{ fontSize: 14 }}>
@@ -75,13 +57,12 @@ export default function AdminRecoveryPage() {
             </p>
           </section>
         </div>
-      </div>
+      </AdminShell>
     );
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--color-bg)" }}>
-      <AdminHeader />
+    <AdminShell backHref="/admin" backLabel="← Back to dashboard">
       <div className="site-shell">
         <section className="page-section" style={{ paddingBottom: "1rem" }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-sans)" }}>Admin</span>
@@ -119,6 +100,6 @@ export default function AdminRecoveryPage() {
           </section>
         )}
       </div>
-    </div>
+    </AdminShell>
   );
 }

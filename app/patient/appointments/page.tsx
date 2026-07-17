@@ -6,6 +6,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { EmptyState } from "@/components/empty-state";
 import { PersonSwitcher } from "@/components/person-switcher";
+import { usePerson } from "@/components/person-provider";
 import { SkeletonRow } from "@/components/skeleton";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 
@@ -17,12 +18,15 @@ function resolveStatus(booking: BookingRecord): BookingRecord["status"] {
 export default function AppointmentsPage() {
   const [uid, setUid] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
-  const [personId, setPersonId] = useState<string | null>(null);
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncDone, setSyncDone] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const router = useRouter();
+  // Shared with the rest of the app (home dashboard, recovery) via
+  // PersonProvider, so switching person here or elsewhere stays in sync.
+  const personCtx = usePerson();
+  const personId = uid ? (personCtx?.personId ?? uid) : null;
 
   useEffect(() => {
     const auth = getAuth();
@@ -48,7 +52,6 @@ export default function AppointmentsPage() {
       }
       setUid(u.uid);
       setDisplayName(u.displayName || u.email || "Patient");
-      setPersonId(u.uid);
     });
   }, [router]);
 
@@ -78,7 +81,10 @@ export default function AppointmentsPage() {
           <PersonSwitcher
             uid={uid}
             displayName={displayName}
-            onSelect={(id) => setPersonId(id)}
+            onSelect={() => {
+              // PersonSwitcher persists the selection via the shared
+              // PersonProvider context; personId above already reads from it.
+            }}
           />
         </div>
       )}

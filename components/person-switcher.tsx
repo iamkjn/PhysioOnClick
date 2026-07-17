@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { getDependents, type Dependent } from "@/lib/dependents";
 import { Skeleton } from "@/components/skeleton";
+import { usePerson } from "@/components/person-provider";
 
 const ADD_PERSON_VALUE = "__add_person__";
 
@@ -16,14 +17,39 @@ interface Props {
 }
 
 export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false, onAddPerson }: Props) {
+  // Optional: undefined when no PersonProvider is mounted (e.g. admin pages,
+  // or this component rendered in isolation) — every use below is guarded.
+  const personCtx = usePerson();
   const [dependents, setDependents] = useState<Dependent[] | null>(null);
-  const [selected, setSelected] = useState(uid);
+  const [selected, setSelected] = useState(() =>
+    personCtx?.personId && personCtx.personId !== uid ? personCtx.personId : uid
+  );
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     setDependents(null);
-    getDependents(uid).then(setDependents);
+    getDependents(uid).then((deps) => {
+      setDependents(deps);
+      // Reconcile guard: if the shared context points at a person who no
+      // longer exists for this uid (removed dependent, or a different
+      // account signed in), fall back to self. Runs once dependents load.
+      personCtx?.reconcile(uid, deps.map((d) => d.id));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- personCtx.reconcile has a stable identity (useCallback); only re-run when uid changes
   }, [uid]);
+
+  // Keep local selection (and the caller, via onSelect) in sync with the
+  // shared context — e.g. another switcher instance on the same page
+  // changed it, or the reconcile guard above just reset it to self.
+  useEffect(() => {
+    if (!personCtx) return;
+    const nextId = personCtx.personId && personCtx.personId !== uid ? personCtx.personId : uid;
+    if (nextId === selected) return;
+    setSelected(nextId);
+    const name = nextId === uid ? displayName : (dependents?.find((d) => d.id === nextId)?.name ?? "");
+    onSelect(nextId, name);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to the context's personId changing; reading selected/uid/displayName/dependents/onSelect here without depending on them avoids re-running this on every local update
+  }, [personCtx?.personId]);
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const val = e.target.value;
@@ -34,6 +60,7 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
     setSelected(val);
     const name = val === uid ? displayName : (dependents?.find((d) => d.id === val)?.name ?? "");
     onSelect(val, name);
+    personCtx?.setPerson(val === uid ? null : val, name);
   }
 
   if (dependents === null) {

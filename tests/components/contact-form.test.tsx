@@ -32,6 +32,7 @@ async function fillValidForm() {
     screen.getByPlaceholderText("Tell us about your condition or question..."),
     "This is a valid enquiry message with enough detail.",
   );
+  await user.click(screen.getByRole("checkbox", { name: /i consent/i }));
 
   return user;
 }

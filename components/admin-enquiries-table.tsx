@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { collection, doc, onSnapshot, orderBy, query, limit, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { SkeletonTable } from "@/components/skeleton";
+import { useToast } from "@/components/toast-provider";
 
 type EnquiryRecord = {
   id: string;
@@ -32,6 +33,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export function AdminEnquiriesTable() {
+  const toast = useToast();
   const [enquiries, setEnquiries] = useState<EnquiryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -67,6 +69,7 @@ export function AdminEnquiriesTable() {
       await updateDoc(doc(db, "enquiries", id), { status: next });
     } catch {
       setEnquiries((prev) => prev.map((e) => e.id === id ? { ...e, status: current } : e));
+      toast.show("Couldn't update the status. Please try again.", "error");
     }
   }
 

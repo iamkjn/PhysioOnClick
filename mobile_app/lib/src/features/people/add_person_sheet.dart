@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/app_snack_bar.dart';
+import '../../core/validators.dart';
 import '../../core/widgets/avatar_widget.dart';
 import 'dependent_model.dart';
 import 'people_repository.dart';
@@ -28,6 +30,7 @@ class AddPersonSheet extends StatefulWidget {
 
 class _AddPersonSheetState extends State<AddPersonSheet> {
   final _repo = PeopleRepository();
+  final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
   String _relationship = 'Other';
@@ -35,7 +38,14 @@ class _AddPersonSheetState extends State<AddPersonSheet> {
   File? _pickedImage;
   bool _saving = false;
 
-  static const _relationships = ['Mother', 'Father', 'Son', 'Daughter', 'Partner', 'Other'];
+  static const _relationships = [
+    'Mother',
+    'Father',
+    'Son',
+    'Daughter',
+    'Partner',
+    'Other',
+  ];
 
   @override
   void initState() {
@@ -78,7 +88,11 @@ class _AddPersonSheetState extends State<AddPersonSheet> {
       ),
     );
     if (source == null) return;
-    final xfile = await picker.pickImage(source: source, imageQuality: 80, maxWidth: 512);
+    final xfile = await picker.pickImage(
+      source: source,
+      imageQuality: 80,
+      maxWidth: 512,
+    );
     if (xfile != null) setState(() => _pickedImage = File(xfile.path));
   }
 
@@ -93,8 +107,16 @@ class _AddPersonSheetState extends State<AddPersonSheet> {
   }
 
   Future<void> _save() async {
+    final dobErr = Validators.dob(_dob);
+    if (!(_formKey.currentState?.validate() ?? false) || dobErr != null) {
+      showAppSnackBar(
+        context,
+        dobErr ?? 'Please add a name and date of birth.',
+        isError: true,
+      );
+      return;
+    }
     final name = _nameCtrl.text.trim();
-    if (name.isEmpty || _dob == null) return;
     final uid = FirebaseAuth.instance.currentUser!.uid;
     setState(() => _saving = true);
 
@@ -125,12 +147,26 @@ class _AddPersonSheetState extends State<AddPersonSheet> {
         );
         await _repo.updateDependent(updated);
         if (_pickedImage != null) {
-          final url =
-              await _repo.uploadAvatar(uid, widget.existing!.id, _pickedImage!);
+          final url = await _repo.uploadAvatar(
+            uid,
+            widget.existing!.id,
+            _pickedImage!,
+          );
           await _repo.updateAvatarUrl(widget.existing!.id, url);
         }
       }
-      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        showAppSnackBar(context, 'Person saved.');
+        Navigator.pop(context);
+      }
+    } catch (_) {
+      if (mounted) {
+        showAppSnackBar(
+          context,
+          'Could not save. Check your connection and try again.',
+          isError: true,
+        );
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -150,110 +186,138 @@ class _AddPersonSheetState extends State<AddPersonSheet> {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        child: ListView(
-          controller: ctrl,
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Center(
-              child: AvatarWidget(
-                name: name.isEmpty ? '?' : name,
-                imageUrl: _pickedImage != null ? null : widget.existing?.avatarUrl,
-                size: 80,
-                showEditBadge: true,
-                onTap: _pickImage,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              isEdit ? 'Edit person' : 'Add a person',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _nameCtrl,
-              onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(
-                labelText: 'Full name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 14),
-            DropdownButtonFormField<String>(
-              value: _relationship,
-              decoration: const InputDecoration(
-                labelText: 'Relationship',
-                border: OutlineInputBorder(),
-              ),
-              items: _relationships
-                  .map((r) => DropdownMenuItem(value: r, child: Text(r)))
-                  .toList(),
-              onChanged: (v) => setState(() => _relationship = v!),
-            ),
-            const SizedBox(height: 14),
-            InkWell(
-              onTap: _pickDob,
-              child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Date of birth',
-                  border: OutlineInputBorder(),
-                ),
-                child: Text(
-                  _dob != null
-                      ? '${_dob!.day}/${_dob!.month}/${_dob!.year}'
-                      : 'Tap to select',
-                  style: TextStyle(
-                    color: _dob != null ? Colors.black87 : Colors.grey[600],
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            controller: ctrl,
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _notesCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Medical notes (optional)',
-                border: OutlineInputBorder(),
-                hintText: 'e.g. diabetic, had knee surgery 2022',
-              ),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: (name.isEmpty || _dob == null || _saving) ? null : _save,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0891B2),
-                foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(52),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+              const SizedBox(height: 20),
+              Center(
+                child: AvatarWidget(
+                  name: name.isEmpty ? '?' : name,
+                  imageUrl: _pickedImage != null
+                      ? null
+                      : widget.existing?.avatarUrl,
+                  size: 80,
+                  showEditBadge: true,
+                  onTap: _pickImage,
                 ),
               ),
-              child: _saving
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : Text(
-                      isEdit ? 'Save changes' : 'Add person',
-                      style: const TextStyle(fontWeight: FontWeight.w700),
+              const SizedBox(height: 20),
+              Text(
+                isEdit ? 'Edit person' : 'Add a person',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _nameCtrl,
+                onChanged: (_) => setState(() {}),
+                maxLength: 80,
+                buildCounter:
+                    (
+                      _, {
+                      required int currentLength,
+                      required bool isFocused,
+                      required int? maxLength,
+                    }) => null,
+                decoration: const InputDecoration(
+                  labelText: 'Full name',
+                  border: OutlineInputBorder(),
+                ),
+                validator: Validators.name,
+              ),
+              const SizedBox(height: 14),
+              DropdownButtonFormField<String>(
+                value: _relationship,
+                decoration: const InputDecoration(
+                  labelText: 'Relationship',
+                  border: OutlineInputBorder(),
+                ),
+                items: _relationships
+                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                    .toList(),
+                onChanged: (v) => setState(() => _relationship = v!),
+              ),
+              const SizedBox(height: 14),
+              InkWell(
+                onTap: _pickDob,
+                child: InputDecorator(
+                  decoration: const InputDecoration(
+                    labelText: 'Date of birth',
+                    border: OutlineInputBorder(),
+                  ),
+                  child: Text(
+                    _dob != null
+                        ? '${_dob!.day}/${_dob!.month}/${_dob!.year}'
+                        : 'Tap to select',
+                    style: TextStyle(
+                      color: _dob != null ? Colors.black87 : Colors.grey[600],
                     ),
-            ),
-          ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _notesCtrl,
+                maxLength: 500,
+                buildCounter:
+                    (
+                      _, {
+                      required int currentLength,
+                      required bool isFocused,
+                      required int? maxLength,
+                    }) => null,
+                decoration: const InputDecoration(
+                  labelText: 'Medical notes (optional)',
+                  border: OutlineInputBorder(),
+                  hintText: 'e.g. diabetic, had knee surgery 2022',
+                ),
+                maxLines: 2,
+                validator: Validators.notes,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: (name.isEmpty || _dob == null || _saving)
+                    ? null
+                    : _save,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0891B2),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: _saving
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        isEdit ? 'Save changes' : 'Add person',
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/validators.dart';
+
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key, this.initialEmail = ''});
 
@@ -170,19 +172,20 @@ class _FormView extends StatelessWidget {
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             autocorrect: false,
+            maxLength: 254,
+            buildCounter: (
+              _, {
+              required int currentLength,
+              required int? maxLength,
+              required bool isFocused,
+            }) => null,
             onChanged: (_) => onErrorClear(),
             onFieldSubmitted: (_) => onSend(),
             decoration: const InputDecoration(
               labelText: 'Email address',
               prefixIcon: Icon(Icons.email_outlined, size: 20),
             ),
-            validator: (v) {
-              final e = (v ?? '').trim();
-              if (!e.contains('@') || !e.contains('.')) {
-                return 'Enter a valid email address.';
-              }
-              return null;
-            },
+            validator: Validators.email,
           ),
         ),
 

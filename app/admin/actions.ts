@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import { LIMITS } from "@/lib/validation";
 
 // Server actions are public HTTP endpoints — the /admin page gate is client-side
 // only, so every action must verify the caller's ID token itself.
@@ -45,15 +46,17 @@ function assertValidSummaryInput(input: PublishSummaryInput): void {
     "bookingId", "patientId", "patientType", "patientName",
     "workedOn", "exercises", "nextSteps", "service",
   ];
+  const notes = ["workedOn", "exercises", "nextSteps"] as const;
   const valid =
     !!input &&
     strings.every((k) => typeof input[k] === "string") &&
     input.bookingId.length > 0 &&
     !input.bookingId.includes("/") &&
     input.patientId.length > 0 &&
+    notes.every((k) => input[k].trim().length > 0 && input[k].length <= LIMITS.clinicalNote) &&
     Number.isFinite(input.followUpWeeks) &&
     Number.isFinite(input.painScore) && input.painScore >= 0 && input.painScore <= 10 &&
-    Number.isFinite(input.recoveryPercent) && input.recoveryPercent >= 0 && input.recoveryPercent <= 100 &&
+    Number.isInteger(input.recoveryPercent) && input.recoveryPercent >= 0 && input.recoveryPercent <= 100 &&
     OUTCOMES.includes(input.sessionOutcome);
   if (!valid) throw new Error("Invalid summary input");
 }
