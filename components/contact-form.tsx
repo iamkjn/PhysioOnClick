@@ -5,9 +5,7 @@ import { useState } from "react";
 import { auth } from "@/lib/firebase";
 import { saveEnquiry } from "@/lib/firestore-helpers";
 import { ensurePatientRecord, mergePatientProfileDetails } from "@/lib/patient-account";
-
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const phonePattern = /^(?:\+44|0)[0-9\s]{9,14}$/;
+import { validateEmail, validateName, validateUKPhone, validateRequiredText, LIMITS } from "@/lib/validation";
 
 export function ContactForm() {
   const [status, setStatus] = useState("We'll respond within 24 hours. Your data is handled in accordance with our privacy policy.");
@@ -31,30 +29,19 @@ export function ContactForm() {
     const currentUser = auth?.currentUser || null;
 
     const nextErrors: Record<string, string> = {};
-
-    if (payload.name.length < 2) {
-      nextErrors.name = "Enter your full name.";
-    }
-
-    if (!emailPattern.test(payload.email)) {
-      nextErrors.email = "Enter a valid email address.";
-    }
-
-    if (payload.phone && !phonePattern.test(payload.phone)) {
-      nextErrors.phone = "Enter a valid UK phone number or leave this blank.";
-    }
-
-    if (!payload.service) {
-      nextErrors.service = "Choose the service you want to enquire about.";
-    }
-
-    if (payload.message.length < 20) {
-      nextErrors.message = "Add a little more detail so the enquiry can be triaged properly.";
-    }
-
-    if (!consent) {
-      nextErrors.consent = "Please confirm you have read the Privacy Policy before sending.";
-    }
+    const nameErr = validateName(payload.name);
+    if (nameErr) nextErrors.name = nameErr;
+    const emailErr = validateEmail(payload.email);
+    if (emailErr) nextErrors.email = emailErr;
+    const phoneErr = validateUKPhone(payload.phone);
+    if (phoneErr) nextErrors.phone = phoneErr;
+    if (!payload.service) nextErrors.service = "Choose the service you want to enquire about.";
+    const messageErr = validateRequiredText(payload.message, {
+      min: 20, max: LIMITS.message,
+      message: "Add a little more detail so the enquiry can be triaged properly.",
+    });
+    if (messageErr) nextErrors.message = messageErr;
+    if (!consent) nextErrors.consent = "Please confirm you have read the Privacy Policy before sending.";
 
     setErrors(nextErrors);
 
@@ -146,6 +133,7 @@ export function ContactForm() {
             name="name"
             placeholder="Your name"
             required
+            maxLength={LIMITS.name}
             aria-invalid={errors.name ? true : undefined}
             aria-describedby={errors.name ? "err-name" : undefined}
           />
@@ -158,6 +146,7 @@ export function ContactForm() {
             placeholder="your@email.com"
             required
             type="email"
+            maxLength={LIMITS.email}
             aria-invalid={errors.email ? true : undefined}
             aria-describedby={errors.email ? "err-email" : undefined}
           />
@@ -170,6 +159,7 @@ export function ContactForm() {
             placeholder="07xxx xxxxxx"
             type="tel"
             inputMode="tel"
+            maxLength={LIMITS.phone}
             aria-invalid={errors.phone ? true : undefined}
             aria-describedby={errors.phone ? "err-phone" : undefined}
           />
@@ -199,6 +189,7 @@ export function ContactForm() {
             placeholder="Tell us about your condition or question..."
             required
             rows={6}
+            maxLength={LIMITS.message}
             aria-invalid={errors.message ? true : undefined}
             aria-describedby={errors.message ? "err-message" : undefined}
           />
