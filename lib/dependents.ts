@@ -20,6 +20,8 @@ export interface Dependent {
   relationship: string;
   notes: string;
   avatarUrl?: string;
+  email?: string;
+  phone?: string;
 }
 
 export async function getDependents(userId: string): Promise<Dependent[]> {
@@ -48,7 +50,7 @@ export async function addDependent(
 
 export async function updateDependent(
   id: string,
-  data: Partial<Pick<Dependent, "name" | "dob" | "relationship" | "notes" | "avatarUrl">>
+  data: Partial<Pick<Dependent, "name" | "dob" | "relationship" | "notes" | "avatarUrl" | "email" | "phone">>
 ): Promise<void> {
   if (!db) return;
   await updateDoc(doc(db, "dependents", id), data);

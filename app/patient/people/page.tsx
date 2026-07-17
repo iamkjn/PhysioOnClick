@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebase";
 import { Avatar } from "@/components/avatar";
 import { EmptyState } from "@/components/empty-state";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -29,6 +31,15 @@ function calcAge(dob: string): number {
   return age;
 }
 
+// Uploads a dependent photo and returns its download URL.
+// Path matches the mobile app convention + storage.rules: avatars/dependents/{ownerUid}/{id}.jpg
+async function uploadAvatar(uid: string, id: string, file: File): Promise<string> {
+  if (!storage) throw new Error("Storage not available");
+  const fileRef = ref(storage, `avatars/dependents/${uid}/${id}.jpg`);
+  await uploadBytes(fileRef, file);
+  return getDownloadURL(fileRef);
+}
+
 export default function PeoplePage() {
   const [uid, setUid] = useState<string | null>(null);
   const [currentName, setCurrentName] = useState("");
@@ -43,7 +54,10 @@ export default function PeoplePage() {
     dob: "",
     relationship: "Other",
     notes: "",
+    email: "",
+    phone: "",
   });
+  const [editPhoto, setEditPhoto] = useState<File | null>(null);
   const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
   const router = useRouter();
   const toast = useToast();
@@ -71,12 +85,19 @@ export default function PeoplePage() {
     setSaving(true);
     try {
       const fd = new FormData(e.currentTarget);
-      await addDependent(uid, {
+      const id = await addDependent(uid, {
         name: fd.get("name") as string,
         dob: fd.get("dob") as string,
         relationship: fd.get("relationship") as string,
         notes: (fd.get("notes") as string) ?? "",
+        email: ((fd.get("email") as string) ?? "").trim(),
+        phone: ((fd.get("phone") as string) ?? "").trim(),
       });
+      const photo = fd.get("photo") as File | null;
+      if (photo && photo.size > 0) {
+        const avatarUrl = await uploadAvatar(uid, id, photo);
+        await updateDependent(id, { avatarUrl });
+      }
       setDependents(await getDependents(uid));
       setShowForm(false);
       toast.show("Person added.", "success");
@@ -89,11 +110,14 @@ export default function PeoplePage() {
 
   function startEdit(dep: Dependent) {
     setEditingId(dep.id);
+    setEditPhoto(null);
     setEditForm({
       name: dep.name,
       dob: dep.dob,
       relationship: dep.relationship,
       notes: dep.notes,
+      email: dep.email ?? "",
+      phone: dep.phone ?? "",
     });
   }
 
@@ -102,6 +126,10 @@ export default function PeoplePage() {
     setSaving(true);
     try {
       await updateDependent(id, editForm);
+      if (editPhoto && editPhoto.size > 0) {
+        const avatarUrl = await uploadAvatar(uid, id, editPhoto);
+        await updateDependent(id, { avatarUrl });
+      }
       setDependents(await getDependents(uid));
       setEditingId(null);
       toast.show("Changes saved.", "success");
@@ -258,6 +286,39 @@ export default function PeoplePage() {
                     placeholder="Any conditions we should know about"
                   />
                 </label>
+                <label>
+                  Email <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+                  <input
+                    type="email"
+                    className="input"
+                    value={editForm.email}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, email: e.target.value }))
+                    }
+                    placeholder="name@example.com"
+                  />
+                </label>
+                <label>
+                  Contact number <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+                  <input
+                    type="tel"
+                    className="input"
+                    value={editForm.phone}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, phone: e.target.value }))
+                    }
+                    placeholder="e.g. 07700 900000"
+                  />
+                </label>
+                <label>
+                  Photo <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="input"
+                    onChange={(e) => setEditPhoto(e.target.files?.[0] ?? null)}
+                  />
+                </label>
                 <div style={{ display: "flex", gap: "0.75rem" }}>
                   <button
                     onClick={() => void handleSave(dep.id)}
@@ -297,6 +358,18 @@ export default function PeoplePage() {
                     }}
                   >
                     {dep.notes}
+                  </span>
+                )}
+                {(dep.email || dep.phone) && (
+                  <span
+                    style={{
+                      display: "block",
+                      fontSize: "var(--text-sm)",
+                      color: "var(--color-text-secondary)",
+                      marginTop: 2,
+                    }}
+                  >
+                    {[dep.email, dep.phone].filter(Boolean).join(" · ")}
                   </span>
                 )}
               </div>
@@ -384,6 +457,18 @@ export default function PeoplePage() {
                 className="input"
                 placeholder="Any conditions we should know about"
               />
+            </label>
+            <label>
+              Email <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+              <input name="email" type="email" className="input" placeholder="name@example.com" />
+            </label>
+            <label>
+              Contact number <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+              <input name="phone" type="tel" className="input" placeholder="e.g. 07700 900000" />
+            </label>
+            <label>
+              Photo <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+              <input name="photo" type="file" accept="image/*" className="input" />
             </label>
             <div style={{ display: "flex", gap: "0.75rem" }}>
               <button type="submit" disabled={saving} aria-busy={saving} className="button primary">
