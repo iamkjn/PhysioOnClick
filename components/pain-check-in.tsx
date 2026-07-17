@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getTodayPainLog, logPainScore, type PainLog } from "@/lib/recovery";
 import { SkeletonStatGrid } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
+import { validateOptionalText, LIMITS } from "@/lib/validation";
 
 interface Props {
   uid: string;
@@ -36,6 +37,13 @@ export function PainCheckIn({ uid, personId }: Props) {
     e.preventDefault();
     setSaving(true);
     setError(null);
+    const noteErr = validateOptionalText(note, LIMITS.note);
+    if (noteErr) {
+      setError(noteErr);
+      toast.show("Please shorten your note before saving.", "error");
+      setSaving(false);
+      return;
+    }
     try {
       await logPainScore(uid, personId, score, note);
       const d = new Date();
@@ -116,6 +124,7 @@ export function PainCheckIn({ uid, personId }: Props) {
           aria-label="Optional note about your pain"
           value={note}
           onChange={(e) => setNote(e.target.value)}
+          maxLength={LIMITS.note}
         />
         {error && <p className="field-error">{error}</p>}
         <button type="submit" className="button primary" disabled={saving}>
