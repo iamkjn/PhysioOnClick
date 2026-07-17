@@ -16,6 +16,7 @@ import type { Dependent } from "@/lib/dependents";
 import type { CalService, FocusArea } from "@/lib/cal-services";
 import type { PricingItem } from "@/lib/site-data";
 import type { BookingConfirmation } from "@/components/booking-flow";
+import { LIMITS, validateEmail, validateName } from "@/lib/validation";
 
 type Props = {
   service: CalService & PricingItem;
@@ -247,6 +248,21 @@ export function BookingStepTime({
     if (!consent) {
       setError("Please confirm your consent before booking.");
       return;
+    }
+
+    if (!signedIn) {
+      const emailErr = validateEmail(email);
+      if (emailErr) {
+        setError(emailErr);
+        return;
+      }
+      if (authMode === "signup") {
+        const nameErr = validateName(name);
+        if (nameErr) {
+          setError(nameErr);
+          return;
+        }
+      }
     }
 
     setSubmitting(true);
@@ -572,6 +588,7 @@ export function BookingStepTime({
                     placeholder="Alex Morgan"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    maxLength={LIMITS.name}
                   />
                 </div>
               ) : null}
@@ -588,6 +605,7 @@ export function BookingStepTime({
                   placeholder="alex@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  maxLength={LIMITS.email}
                 />
               </div>
               {!signedIn ? (
