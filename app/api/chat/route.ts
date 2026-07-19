@@ -82,27 +82,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "GEMINI_API_KEY not configured" }, { status: 500 });
   }
 
-  const uid = await verifyToken(req.headers.get("Authorization"));
-  const patientContext = uid ? await fetchPatientContext(uid) : undefined;
-  const db = getAdminDb();
-
-  const history: HistoryMessage[] = rawHistory
-    .filter(
-      (m): m is HistoryMessage =>
-        typeof m === "object" &&
-        m !== null &&
-        ((m as HistoryMessage).role === "user" || (m as HistoryMessage).role === "model") &&
-        typeof (m as HistoryMessage).text === "string"
-    )
-    .slice(-20);
-
-  const systemPrompt = buildSystemPrompt(patientContext);
-  const toolDeclarations = uid ? AUTH_TOOL_DECLARATIONS : GUEST_TOOL_DECLARATIONS;
-
   const sessionId = incomingSessionId ?? crypto.randomUUID();
   let actionForClient: { type: string; label: string; url: string } | undefined;
 
   try {
+    const uid = await verifyToken(req.headers.get("Authorization"));
+    const patientContext = uid ? await fetchPatientContext(uid) : undefined;
+    const db = getAdminDb();
+
+    const history: HistoryMessage[] = rawHistory
+      .filter(
+        (m): m is HistoryMessage =>
+          typeof m === "object" &&
+          m !== null &&
+          ((m as HistoryMessage).role === "user" || (m as HistoryMessage).role === "model") &&
+          typeof (m as HistoryMessage).text === "string"
+      )
+      .slice(-20);
+
+    const systemPrompt = buildSystemPrompt(patientContext);
+    const toolDeclarations = uid ? AUTH_TOOL_DECLARATIONS : GUEST_TOOL_DECLARATIONS;
+
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
@@ -157,42 +157,47 @@ export async function POST(req: NextRequest) {
 
     const reply = response.text();
 
-    // Persist to Firestore for logged-in patients
+    // Persist to Firestore for logged-in patients. Scoped in its own try/catch so a
+    // write failure is logged but doesn't discard an already-generated valid reply.
     if (uid && db) {
-      const sessionRef = db
-        .collection("patients")
-        .doc(uid)
-        .collection("chatSessions")
-        .doc(sessionId);
+      try {
+        const sessionRef = db
+          .collection("patients")
+          .doc(uid)
+          .collection("chatSessions")
+          .doc(sessionId);
 
-      const sessionSnap = await sessionRef.get();
-      if (!sessionSnap.exists) {
-        await sessionRef.set({
-          createdAt: FieldValue.serverTimestamp(),
-          updatedAt: FieldValue.serverTimestamp(),
-          messages: [
-            { role: "user", text: message, timestamp: new Date().toISOString() },
-            {
-              role: "model",
-              text: reply,
-              timestamp: new Date().toISOString(),
-              ...(actionForClient ? { action: actionForClient } : {}),
-            },
-          ],
-        });
-      } else {
-        await sessionRef.update({
-          updatedAt: FieldValue.serverTimestamp(),
-          messages: FieldValue.arrayUnion(
-            { role: "user", text: message, timestamp: new Date().toISOString() },
-            {
-              role: "model",
-              text: reply,
-              timestamp: new Date().toISOString(),
-              ...(actionForClient ? { action: actionForClient } : {}),
-            }
-          ),
-        });
+        const sessionSnap = await sessionRef.get();
+        if (!sessionSnap.exists) {
+          await sessionRef.set({
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
+            messages: [
+              { role: "user", text: message, timestamp: new Date().toISOString() },
+              {
+                role: "model",
+                text: reply,
+                timestamp: new Date().toISOString(),
+                ...(actionForClient ? { action: actionForClient } : {}),
+              },
+            ],
+          });
+        } else {
+          await sessionRef.update({
+            updatedAt: FieldValue.serverTimestamp(),
+            messages: FieldValue.arrayUnion(
+              { role: "user", text: message, timestamp: new Date().toISOString() },
+              {
+                role: "model",
+                text: reply,
+                timestamp: new Date().toISOString(),
+                ...(actionForClient ? { action: actionForClient } : {}),
+              }
+            ),
+          });
+        }
+      } catch (persistErr) {
+        console.error("[/api/chat] failed to persist chat history:", persistErr);
       }
     }
 

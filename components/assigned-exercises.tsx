@@ -26,19 +26,25 @@ export function AssignedExercises({ uid, personId }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
     setError(null);
     Promise.all([
       getAssignedExercises(uid, personId),
       getTodayExerciseLog(uid, personId),
     ]).then(([a, log]) => {
+      if (cancelled) return;
       setAssigned(a);
       setTodayLog(log);
       setLoading(false);
     }).catch(() => {
+      if (cancelled) return;
       setError("Could not load exercises.");
       setLoading(false);
     });
+    return () => {
+      cancelled = true;
+    };
   }, [uid, personId]);
 
   async function handleToggle(exerciseId: string, done: boolean) {

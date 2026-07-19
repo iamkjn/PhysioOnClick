@@ -35,14 +35,14 @@ service firebase.storage {
     // Storage rules can't put a literal .jpg after a {wildcard} segment, so match the whole
     // filename and compare it to <uid>.jpg.
     match /avatars/users/{fileName} {
-      allow read: if isSignedIn();
+      allow read: if isAdmin() || (isSignedIn() && fileName == request.auth.uid + '.jpg');
       allow write: if (isAdmin() || (isSignedIn() && fileName == request.auth.uid + '.jpg')) && isImageUpload();
     }
 
     // Mobile app dependent avatar: avatars/dependents/{ownerUid}/{dependentId}.jpg.
     // Storage rules can't read Firestore, so the owner uid is embedded in the path instead.
     match /avatars/dependents/{ownerUid}/{fileName} {
-      allow read: if isSignedIn();
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == ownerUid);
       allow write: if (isAdmin() || (isSignedIn() && request.auth.uid == ownerUid)) && isImageUpload();
     }
 

@@ -10,15 +10,27 @@ let addMock: ReturnType<typeof vi.fn>;
 let updateMock: ReturnType<typeof vi.fn>;
 let getMock: ReturnType<typeof vi.fn>;
 let whereMock: ReturnType<typeof vi.fn>;
+let selectionDeleteMock: ReturnType<typeof vi.fn>;
 
-function makeDb(existingDocs: Array<{ ref: { update: ReturnType<typeof vi.fn> } }> = []) {
+function makeDb(
+  existingDocs: Array<{ ref: { update: ReturnType<typeof vi.fn> } }> = [],
+  pendingSelection: Record<string, unknown> | null = null,
+) {
   getMock = vi.fn().mockResolvedValue({ empty: existingDocs.length === 0, docs: existingDocs });
   whereMock = vi.fn().mockReturnValue({ limit: () => ({ get: getMock }) });
   addMock = vi.fn().mockResolvedValue({});
+  selectionDeleteMock = vi.fn().mockResolvedValue({});
   return {
     collection: vi.fn().mockReturnValue({
       where: whereMock,
       add: addMock,
+    }),
+    doc: vi.fn().mockReturnValue({
+      get: vi.fn().mockResolvedValue({
+        exists: pendingSelection !== null,
+        data: () => pendingSelection,
+      }),
+      delete: selectionDeleteMock,
     }),
   };
 }
@@ -169,5 +181,46 @@ describe("GET /api/appointments/sync", () => {
 
     const data = (await res.json()) as { synced: number; total: number };
     expect(data).toMatchObject({ synced: 1, total: 1 });
+  });
+
+  it("attributes a synced booking to the pending dependent selection, not the account holder", async () => {
+    verifyIdTokenMock.mockResolvedValue({ uid: "real-uid", email: "real@example.com" });
+    vi.stubEnv("CAL_API_KEY", "cal_test_key");
+    adminDbMock = makeDb([], {
+      patientType: "dependent",
+      patientId: "dep-1",
+      patientName: "Child Patient",
+      patientAvatarUrl: "",
+    });
+    global.fetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: [
+            {
+              uid: "cal-uid-3",
+              start: futureIso,
+              status: "accepted",
+              title: "Initial Assessment",
+              attendees: [{ name: "Real Patient", email: "Real@Example.com" }],
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
+
+    const res = await GET(makeRequest({ authHeader: "Bearer valid-token" }));
+
+    expect(res.status).toBe(200);
+    const written = addMock.mock.calls[0][0];
+    expect(written).toMatchObject({
+      bookedBy: "real-uid",
+      patientType: "dependent",
+      patientId: "dep-1",
+      patientName: "Child Patient",
+      // normalized so link-bookings' lowercase lookup can match it
+      email: "real@example.com",
+    });
+    expect(selectionDeleteMock).toHaveBeenCalledOnce();
   });
 });

@@ -108,7 +108,8 @@ export async function fetchDynamicBlogs() {
       const data = doc.data();
       return toBlogArticle(data, blogArticles.find((article) => article.slug === data.slug));
     });
-  } catch {
+  } catch (error) {
+    console.error("fetchDynamicBlogs: Firestore query failed, falling back to static blogs", error);
     return blogArticles;
   }
 }
@@ -125,7 +126,8 @@ export async function fetchDynamicBlogBySlug(slug: string) {
     if (!snapshot.empty) {
       return toBlogArticle(snapshot.docs[0].data(), blogArticles.find((article) => article.slug === slug));
     }
-  } catch {
+  } catch (error) {
+    console.error("fetchDynamicBlogBySlug: Firestore query failed, falling back to static blog", error);
     return blogArticles.find((article) => article.slug === slug);
   }
 
@@ -151,7 +153,8 @@ export async function fetchDynamicServices() {
       const data = doc.data();
       return toService(data, services.find((service) => service.slug === data.slug));
     });
-  } catch {
+  } catch (error) {
+    console.error("fetchDynamicServices: Firestore query failed, falling back to static services", error);
     return services;
   }
 }
@@ -169,14 +172,22 @@ export async function fetchDynamicPricing() {
       return pricing;
     }
 
+    // Match fallback by id, not array position — same reasoning as
+    // fetchDynamicBlogs/fetchDynamicServices above. A reordered or
+    // incomplete pricing collection must not pair a doc with the wrong
+    // static tier and its unrelated bookable id.
     const items = snapshot.docs
-      .map((doc, index) => toPricingItem(doc.data(), pricing[index]))
+      .map((doc) => {
+        const data = doc.data();
+        return toPricingItem(data, pricing.find((item) => item.id === data.id));
+      })
       .filter((item): item is PricingItem => item !== null);
 
     // Matches how every other fetchDynamic* here behaves: never surface an
     // empty pricing page — fall back to the static tiers instead.
     return items.length ? items : pricing;
-  } catch {
+  } catch (error) {
+    console.error("fetchDynamicPricing: Firestore query failed, falling back to static pricing", error);
     return pricing;
   }
 }
@@ -199,7 +210,8 @@ export async function fetchDynamicTestimonials() {
     // match like blogs/services get. Drop the positional fallback entirely —
     // toTestimonial already has sane per-field defaults.
     return snapshot.docs.map((doc) => toTestimonial(doc.data()));
-  } catch {
+  } catch (error) {
+    console.error("fetchDynamicTestimonials: Firestore query failed, falling back to static testimonials", error);
     return testimonials;
   }
 }

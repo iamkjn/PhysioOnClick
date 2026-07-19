@@ -29,8 +29,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true }); // no email, nothing to link
   }
 
+  // Normalize to match the lowercase/trimmed email the webhook now writes on
+  // new bookings. Historical booking docs written before that fix may still
+  // hold mixed-case emails and won't match this query — see route notes.
+  const normalizedEmail = email.toLowerCase().trim();
+
   try {
-    const snap = await db.collection("bookings").where("email", "==", email).get();
+    const snap = await db.collection("bookings").where("email", "==", normalizedEmail).get();
     const batch = db.batch();
     snap.docs.forEach((d) => {
       const data = d.data();

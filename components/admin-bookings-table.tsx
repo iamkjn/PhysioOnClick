@@ -6,6 +6,7 @@ import { cancelCalBooking } from "@/app/admin/actions";
 import { SummaryForm } from "@/components/summary-form";
 import { SkeletonTable } from "@/components/skeleton";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useToast } from "@/components/toast-provider";
 
 type BookingRecord = {
   id: string;
@@ -38,19 +39,35 @@ const STATUS_PILL_CLASS: Record<string, string> = {
   cancelled: "dashboard-status-pill status-cancelled",
 };
 
+// appointmentDate/appointmentTime are Europe/London wall-clock strings (see
+// toLondonParts() in app/api/cal-webhook/route.ts). Comparing them via `new
+// Date(...)` parses in the VIEWER's local timezone, so an admin outside the
+// UK gets the wrong upcoming/completed split. Instead, compute "now" as the
+// same kind of London wall-clock string and compare lexicographically — both
+// sides use zero-padded "YYYY-MM-DD"/"HH:MM", so string order matches date
+// order regardless of DST.
+function nowInLondon(): string {
+  const londonStr = new Date().toLocaleString("en-GB", { timeZone: "Europe/London" });
+  const [datePart, timePart] = londonStr.split(", ");
+  const [day, month, year] = datePart.split("/");
+  const [hour, minute] = timePart.split(":");
+  return `${year}-${month}-${day}T${hour}:${minute}`;
+}
+
 export function resolveStatus(stored: string, appointmentDate: string, appointmentTime: string): string {
   if (stored === "cancelled") return "cancelled";
-  if (!appointmentDate) return stored;
-  const date = new Date(`${appointmentDate}T${appointmentTime || "00:00"}:00`);
-  if (isNaN(date.getTime())) return stored;
-  return date < new Date() ? "completed" : "upcoming";
+  if (!appointmentDate || !/^\d{4}-\d{2}-\d{2}$/.test(appointmentDate)) return stored;
+  const time = appointmentTime || "00:00";
+  return `${appointmentDate}T${time}` < nowInLondon() ? "completed" : "upcoming";
 }
 
 export function AdminBookingsTable() {
+  const toast = useToast();
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [cancelTarget, setCancelTarget] = useState<{ id: string; label: string } | null>(null);
+  const [cancelling, setCancelling] = useState<string | null>(null);
   const cancelFormRefs = useRef<Record<string, HTMLFormElement | null>>({});
 
   useEffect(() => {
@@ -173,15 +190,23 @@ export function AdminBookingsTable() {
                           <form
                             ref={(el) => { cancelFormRefs.current[item.id] = el; }}
                             action={async () => {
-                              const idToken = await auth?.currentUser?.getIdToken();
-                              if (!idToken) return;
-                              await cancelCalBooking(item.calBookingUid, idToken);
+                              setCancelling(item.id);
+                              try {
+                                const idToken = await auth?.currentUser?.getIdToken();
+                                if (!idToken) throw new Error("Not signed in");
+                                await cancelCalBooking(item.calBookingUid, idToken);
+                                toast.show("Booking cancelled.", "success");
+                              } catch {
+                                toast.show("Could not cancel this booking. Try again.", "error");
+                              } finally {
+                                setCancelling(null);
+                              }
                             }}
                           >
                             <button
                               type="button"
                               className="button small"
-                              disabled={item.displayStatus === "cancelled"}
+                              disabled={item.displayStatus === "cancelled" || cancelling === item.id}
                               aria-label={`Cancel booking for ${item.fullName || item.patientName}`}
                               onClick={() => setCancelTarget({ id: item.id, label: item.fullName || item.patientName })}
                               style={{
@@ -190,11 +215,11 @@ export function AdminBookingsTable() {
                                 color: "var(--color-error)",
                                 padding: "0 10px",
                                 fontSize: 13,
-                                cursor: item.displayStatus === "cancelled" ? "not-allowed" : "pointer",
-                                opacity: item.displayStatus === "cancelled" ? 0.4 : 1,
+                                cursor: item.displayStatus === "cancelled" || cancelling === item.id ? "not-allowed" : "pointer",
+                                opacity: item.displayStatus === "cancelled" ? 0.4 : cancelling === item.id ? 0.6 : 1,
                               }}
                             >
-                              Cancel
+                              {cancelling === item.id ? "Cancelling…" : "Cancel"}
                             </button>
                           </form>
                           <a

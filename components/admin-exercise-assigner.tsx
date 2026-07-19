@@ -27,11 +27,16 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
   const toast = useToast();
 
   useEffect(() => {
+    let cancelled = false;
     setLoaded(false);
     getAssignedExercises(patientUid, personId).then((a) => {
+      if (cancelled) return;
       setAssigned(a);
       setLoaded(true);
     });
+    return () => {
+      cancelled = true;
+    };
   }, [patientUid, personId]);
 
   const assignedIds = new Set(assigned.map((a) => a.exerciseId));

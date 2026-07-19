@@ -76,98 +76,120 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Database unavailable" }, { status: 500 });
   }
 
-  if (triggerEvent === "BOOKING_CREATED" && booking) {
-    const { appointmentDate, appointmentTime, appointmentLabel } = toLondonParts(booking.startTime);
-    const attendee = booking.attendees[0] ?? { name: "", email: "" };
-
-    const bookingRef = await db.collection("bookings").add({
-      fullName: attendee.name,
-      email: attendee.email,
-      phone: attendee.phoneNumber ?? "",
-      service: booking.eventType.title,
-      appointmentDate,
-      appointmentTime,
-      appointmentLabel,
-      sessionDate: new Date(booking.startTime),
-      notes: booking.responses?.notes?.value ?? "",
-      status: "upcoming",
-      source: "cal-com",
-      calBookingUid: booking.uid,
-      createdAt: FieldValue.serverTimestamp(),
-    });
-
-    // Link booking to Firebase user and merge dependent selection if present.
-    // Mobile-only users are in the `patients` collection; web users are in `users`.
-    // Check both so bookings link correctly regardless of which platform the patient used to sign up.
-    const usersSnap = await db
-      .collection("users")
-      .where("email", "==", attendee.email)
-      .limit(1)
-      .get();
-
-    let resolvedUserId: string | null = null;
-    if (!usersSnap.empty) {
-      resolvedUserId = usersSnap.docs[0].id;
-    } else {
-      const patientsSnap = await db
-        .collection("patients")
-        .where("email", "==", attendee.email)
+  try {
+    if (triggerEvent === "BOOKING_CREATED" && booking) {
+      // A duplicate delivery, or a race with /api/appointments/sync (which
+      // may have already created this booking from the live Cal.com API
+      // before this webhook arrived), must not create a second doc.
+      const existingSnap = await db
+        .collection("bookings")
+        .where("calBookingUid", "==", booking.uid)
         .limit(1)
         .get();
-      if (!patientsSnap.empty) resolvedUserId = patientsSnap.docs[0].id;
-    }
 
-    if (resolvedUserId !== null) {
-      const userId = resolvedUserId;
-      const selectionSnap = await db.doc(`pendingSelections/${userId}`).get();
+      if (existingSnap.empty) {
+        const { appointmentDate, appointmentTime, appointmentLabel } = toLondonParts(booking.startTime);
+        const attendee = booking.attendees[0] ?? { name: "", email: "" };
+        const attendeeEmail = attendee.email.trim().toLowerCase();
 
-      if (selectionSnap.exists) {
-        const sel = selectionSnap.data()!;
-        await bookingRef.update({
-          bookedBy: userId,
-          patientType: sel.patientType,
-          patientId: sel.patientId,
-          patientName: sel.patientName,
-          patientAvatarUrl: sel.patientAvatarUrl ?? "",
+        const bookingRef = await db.collection("bookings").add({
+          fullName: attendee.name,
+          email: attendeeEmail,
+          phone: attendee.phoneNumber ?? "",
+          service: booking.eventType.title,
+          appointmentDate,
+          appointmentTime,
+          appointmentLabel,
+          sessionDate: new Date(booking.startTime),
+          notes: booking.responses?.notes?.value ?? "",
+          status: "upcoming",
+          source: "cal-com",
+          calBookingUid: booking.uid,
+          createdAt: FieldValue.serverTimestamp(),
         });
-        await db.doc(`pendingSelections/${userId}`).delete();
-      } else {
-        await bookingRef.update({
-          bookedBy: userId,
-          patientType: "self",
-          patientId: userId,
-          patientName: attendee.name,
-          patientAvatarUrl: "",
+
+        // Link booking to Firebase user and merge dependent selection if present.
+        // Mobile-only users are in the `patients` collection; web users are in `users`.
+        // Check both so bookings link correctly regardless of which platform the patient used to sign up.
+        const usersSnap = await db
+          .collection("users")
+          .where("email", "==", attendeeEmail)
+          .limit(1)
+          .get();
+
+        let resolvedUserId: string | null = null;
+        if (!usersSnap.empty) {
+          resolvedUserId = usersSnap.docs[0].id;
+        } else {
+          const patientsSnap = await db
+            .collection("patients")
+            .where("email", "==", attendeeEmail)
+            .limit(1)
+            .get();
+          if (!patientsSnap.empty) resolvedUserId = patientsSnap.docs[0].id;
+        }
+
+        if (resolvedUserId !== null) {
+          const userId = resolvedUserId;
+          const selectionSnap = await db.doc(`pendingSelections/${userId}`).get();
+
+          if (selectionSnap.exists) {
+            const sel = selectionSnap.data()!;
+            await bookingRef.update({
+              bookedBy: userId,
+              patientType: sel.patientType,
+              patientId: sel.patientId,
+              patientName: sel.patientName,
+              patientAvatarUrl: sel.patientAvatarUrl ?? "",
+            });
+            await db.doc(`pendingSelections/${userId}`).delete();
+          } else {
+            await bookingRef.update({
+              bookedBy: userId,
+              patientType: "self",
+              patientId: userId,
+              patientName: attendee.name,
+              patientAvatarUrl: "",
+            });
+          }
+        }
+      }
+    } else if (triggerEvent === "BOOKING_CANCELLED" && booking) {
+      const snapshot = await db
+        .collection("bookings")
+        .where("calBookingUid", "==", booking.uid)
+        .limit(1)
+        .get();
+      if (!snapshot.empty) {
+        await snapshot.docs[0].ref.update({ status: "cancelled" });
+      }
+    } else if (triggerEvent === "BOOKING_RESCHEDULED" && booking) {
+      const { appointmentDate, appointmentTime, appointmentLabel } = toLondonParts(booking.startTime);
+      const originalUid = booking.rescheduledFromUid ?? booking.uid;
+      const snapshot = await db
+        .collection("bookings")
+        .where("calBookingUid", "==", originalUid)
+        .limit(1)
+        .get();
+      if (!snapshot.empty) {
+        await snapshot.docs[0].ref.update({
+          appointmentDate,
+          appointmentTime,
+          appointmentLabel,
+          sessionDate: new Date(booking.startTime),
+          calBookingUid: booking.uid,
         });
       }
     }
-  } else if (triggerEvent === "BOOKING_CANCELLED" && booking) {
-    const snapshot = await db
-      .collection("bookings")
-      .where("calBookingUid", "==", booking.uid)
-      .limit(1)
-      .get();
-    if (!snapshot.empty) {
-      await snapshot.docs[0].ref.update({ status: "cancelled" });
-    }
-  } else if (triggerEvent === "BOOKING_RESCHEDULED" && booking) {
-    const { appointmentDate, appointmentTime, appointmentLabel } = toLondonParts(booking.startTime);
-    const originalUid = booking.rescheduledFromUid ?? booking.uid;
-    const snapshot = await db
-      .collection("bookings")
-      .where("calBookingUid", "==", originalUid)
-      .limit(1)
-      .get();
-    if (!snapshot.empty) {
-      await snapshot.docs[0].ref.update({
-        appointmentDate,
-        appointmentTime,
-        appointmentLabel,
-        sessionDate: new Date(booking.startTime),
-        calBookingUid: booking.uid,
-      });
-    }
-  }
 
-  return NextResponse.json({ received: true });
+    return NextResponse.json({ received: true });
+  } catch (err) {
+    // All three branches are idempotent — BOOKING_CREATED is guarded by the
+    // calBookingUid lookup above, and cancel/reschedule look up by uid before
+    // updating — so a Cal.com redelivery is safe. Fail with 500 so Cal.com
+    // retries: swallowing this with a 200 would strand a cancellation, leaving
+    // a booking the patient cancelled showing as upcoming forever.
+    console.error("cal-webhook: failed to process event", err);
+    return NextResponse.json({ error: "Processing error" }, { status: 500 });
+  }
 }

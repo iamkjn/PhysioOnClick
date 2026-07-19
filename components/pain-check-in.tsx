@@ -29,8 +29,15 @@ export function PainCheckIn({ uid, personId }: Props) {
   const toast = useToast();
 
   useEffect(() => {
+    let cancelled = false;
     setTodayLog(undefined);
-    getTodayPainLog(uid, personId).then(setTodayLog);
+    getTodayPainLog(uid, personId).then((log) => {
+      if (cancelled) return;
+      setTodayLog(log);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [uid, personId]);
 
   async function handleSubmit(e: React.FormEvent) {

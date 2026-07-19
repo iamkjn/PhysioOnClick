@@ -112,10 +112,29 @@ export async function GET(request: NextRequest) {
     const attendee = (b.attendees as Array<{ name?: string; email?: string; phoneNumber?: string }>)?.[0] ?? {};
     const service: string =
       b.title ?? (b.eventType as { title?: string } | undefined)?.title ?? "Appointment";
+    const attendeeEmail = (attendee.email ?? email).trim().toLowerCase();
+
+    // Consult a pending dependent selection the same way app/api/cal-webhook
+    // does, so a booking is attributed identically regardless of which route
+    // wins the race to create its Firestore doc.
+    let patientType = "self";
+    let patientId = userId;
+    let patientName = attendee.name ?? email;
+    let patientAvatarUrl = "";
+
+    const selectionSnap = await db.doc(`pendingSelections/${userId}`).get();
+    if (selectionSnap.exists) {
+      const sel = selectionSnap.data()!;
+      patientType = sel.patientType;
+      patientId = sel.patientId;
+      patientName = sel.patientName;
+      patientAvatarUrl = sel.patientAvatarUrl ?? "";
+      await db.doc(`pendingSelections/${userId}`).delete();
+    }
 
     await db.collection("bookings").add({
       fullName: attendee.name ?? email,
-      email: attendee.email ?? email,
+      email: attendeeEmail,
       phone: attendee.phoneNumber ?? "",
       service,
       appointmentDate,
@@ -127,10 +146,10 @@ export async function GET(request: NextRequest) {
       source: "cal-com",
       calBookingUid: uid,
       bookedBy: userId,
-      patientType: "self",
-      patientId: userId,
-      patientName: attendee.name ?? email,
-      patientAvatarUrl: "",
+      patientType,
+      patientId,
+      patientName,
+      patientAvatarUrl,
       createdAt: FieldValue.serverTimestamp(),
     });
 

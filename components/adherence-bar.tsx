@@ -15,18 +15,25 @@ export function AdherenceBar({ uid, personId }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+    setDaysCompleted(null);
     setError(null);
     // Fetch a bit more than 7 log documents in case some of the last 7
     // calendar days have no log — we still only count within the window.
     getExerciseLogs(uid, personId, 14).then((logs) => {
+      if (cancelled) return;
       const last7Days = new Set(Array.from({ length: 7 }, (_, i) => dateKeyDaysAgo(i)));
       const completed = logs.filter(
         (log) => last7Days.has(log.date) && Object.values(log.completions).some(Boolean)
       ).length;
       setDaysCompleted(completed);
     }).catch(() => {
+      if (cancelled) return;
       setError("Could not load adherence data.");
     });
+    return () => {
+      cancelled = true;
+    };
   }, [uid, personId]);
 
   if (error)

@@ -45,7 +45,15 @@ export function formatSlotChip(iso: string) {
     minute: "2-digit",
     timeZone: "Europe/London"
   });
-  return `${date} · ${time} · GMT (UK)`;
+  // GMT in winter, BST in summer — derive it instead of hardcoding "GMT".
+  const tzName =
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/London",
+      timeZoneName: "short"
+    })
+      .formatToParts(d)
+      .find((part) => part.type === "timeZoneName")?.value ?? "GMT";
+  return `${date} · ${time} · ${tzName} (UK)`;
 }
 
 export function BookingFlow() {

@@ -40,39 +40,42 @@ export function AdminChatLogs() {
 
     async function load() {
       if (!db) return;
+      // narrowing on the module-level `db` is lost inside the nested async callbacks below
+      const database = db;
       try {
         // ponytail: capped at 100 sessions, add pagination if the clinic outgrows it
-        const q = query(collectionGroup(db, "chatSessions"), orderBy("updatedAt", "desc"), limit(100));
+        const q = query(collectionGroup(database, "chatSessions"), orderBy("updatedAt", "desc"), limit(100));
         const snap = await getDocs(q);
 
-        const results: ChatSession[] = [];
+        const patientIds = Array.from(
+          new Set(snap.docs.map(sessionDoc => sessionDoc.ref.parent.parent?.id ?? ""))
+        );
         const patientNameCache = new Map<string, string>();
-
-        for (const sessionDoc of snap.docs) {
-          const patientId = sessionDoc.ref.parent.parent?.id ?? "";
-          const data = sessionDoc.data();
-
-          let patientName = patientId;
-          if (patientNameCache.has(patientId)) {
-            patientName = patientNameCache.get(patientId)!;
-          } else {
+        await Promise.all(
+          patientIds.map(async patientId => {
+            let patientName = patientId;
             try {
-              const patientSnap = await getDoc(doc(db, "patients", patientId));
+              const patientSnap = await getDoc(doc(database, "patients", patientId));
               if (patientSnap.exists()) patientName = patientSnap.data().displayName ?? patientId;
             } catch {
               // non-fatal
             }
             patientNameCache.set(patientId, patientName);
-          }
+          })
+        );
 
-          results.push({
+        const results: ChatSession[] = snap.docs.map(sessionDoc => {
+          const patientId = sessionDoc.ref.parent.parent?.id ?? "";
+          const data = sessionDoc.data();
+
+          return {
             sessionId: sessionDoc.id,
             patientId,
-            patientName,
+            patientName: patientNameCache.get(patientId) ?? patientId,
             updatedAt: data.updatedAt,
             messages: data.messages ?? [],
-          });
-        }
+          };
+        });
 
         setSessions(results);
       } finally {

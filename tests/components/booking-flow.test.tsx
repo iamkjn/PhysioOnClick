@@ -44,9 +44,14 @@ afterEach(() => {
 })
 
 describe('formatSlotChip', () => {
-  it('renders the rail chip in London time', () => {
+  it('labels a summer slot BST, not GMT', () => {
     // 13:00 UTC in August is 14:00 BST.
-    expect(formatSlotChip('2026-08-20T13:00:00.000Z')).toBe('Thu 20 Aug 2026 · 14:00 · GMT (UK)')
+    expect(formatSlotChip('2026-08-20T13:00:00.000Z')).toBe('Thu 20 Aug 2026 · 14:00 · BST (UK)')
+  })
+
+  it('labels a winter slot GMT', () => {
+    // 13:00 UTC in January is 13:00 GMT — no offset.
+    expect(formatSlotChip('2026-01-20T13:00:00.000Z')).toBe('Tue 20 Jan 2026 · 13:00 · GMT (UK)')
   })
 })
 

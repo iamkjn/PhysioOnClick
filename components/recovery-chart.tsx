@@ -44,12 +44,14 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
     );
 
     useEffect(() => {
+      let cancelled = false;
       setLoading(true);
       setError(null);
       Promise.all([
         getPainLogs(uid, personId, 56),
         getClinicalAssessments(uid, personId, 56),
       ]).then(([painLogs, assessments]) => {
+        if (cancelled) return;
         const map = new Map<string, ChartPoint>();
         for (const log of painLogs) {
           map.set(log.date, { date: log.date, patientPain: log.score });
@@ -64,9 +66,13 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
         setData(sorted);
         setLoading(false);
       }).catch(() => {
+        if (cancelled) return;
         setError("Could not load chart data.");
         setLoading(false);
       });
+      return () => {
+        cancelled = true;
+      };
     }, [uid, personId]);
 
     const mobilityPoints = data.filter((d) => d.mobilityScore !== undefined);
