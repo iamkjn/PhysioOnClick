@@ -153,7 +153,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
             <h3 style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Session Summary</h3>
             <p style={{ margin: "0.25rem 0 0", fontSize: 13, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{booking.patientName} · {booking.service}</p>
           </div>
-          <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--color-text-secondary)", lineHeight: 1, padding: "0.25rem" }} aria-label="Close">×</button>
+          <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--color-text-secondary)", lineHeight: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 44, minHeight: 44, margin: "-0.75rem -0.75rem 0 0" }} aria-label="Close">×</button>
         </div>
 
         <div style={{ padding: "1.5rem", display: "grid", gap: "1.5rem", flex: 1 }}>

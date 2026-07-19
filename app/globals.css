@@ -167,7 +167,7 @@ iframe {
 }
 
 main {
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 h1,
@@ -3278,7 +3278,12 @@ textarea:focus {
   cursor: pointer;
   padding: 0;
   line-height: 1;
-  margin-left: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin: -8px -8px -8px 0.25rem;
 }
 
 .toast-dismiss:hover { color: var(--color-text-primary); }
