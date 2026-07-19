@@ -28,8 +28,16 @@ describe('Terms & Conditions page', () => {
   it('contains contact email and links to policy pages', () => {
     render(<TermsPage />)
 
-    expect(screen.getByRole('link', { name: /hello@physioonclick\.co\.uk/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /cancellation policy/i })).toHaveAttribute('href', '/cancellation-policy')
+    const emailLinks = screen.getAllByRole('link', { name: /hello@physioonclick\.co\.uk/i })
+    expect(emailLinks).toHaveLength(2)
+    for (const link of emailLinks) {
+      expect(link).toHaveAttribute('href', 'mailto:hello@physioonclick.co.uk')
+    }
+    const cancellationLinks = screen.getAllByRole('link', { name: /cancellation policy/i })
+    expect(cancellationLinks).toHaveLength(2)
+    for (const link of cancellationLinks) {
+      expect(link).toHaveAttribute('href', '/cancellation-policy')
+    }
     expect(screen.getByRole('link', { name: /privacy policy/i })).toHaveAttribute('href', '/privacy-policy')
   })
 })
