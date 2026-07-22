@@ -1,6 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function SiteFooter() {
+  // Hidden on the admin dashboard for the same reason as SiteHeader — the
+  // marketing footer's patient links don't belong in the back office.
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <footer className="footer simple-footer">
       <div className="site-shell footer-grid">

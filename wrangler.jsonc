@@ -20,6 +20,15 @@
     }
   ],
 
+  // Custom domains. `custom_domain: true` makes wrangler create the DNS record
+  // and TLS cert on deploy — do NOT also hand-create A/CNAME records for these
+  // in the dashboard, the two will fight. The zone's MX/SPF/DKIM records
+  // (IONOS email, Resend sending) are untouched by this and must stay.
+  "routes": [
+    { "pattern": "physioonclick.co.uk", "custom_domain": true },
+    { "pattern": "www.physioonclick.co.uk", "custom_domain": true }
+  ],
+
   "observability": {
     "enabled": true
   },

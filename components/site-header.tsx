@@ -141,6 +141,12 @@ export function SiteHeader() {
     setMenuOpen(false);
   }, [pathname]);
 
+  // The admin dashboard ships its own header and nav. Rendering the public
+  // marketing chrome above it stacks two headers and shows patient-facing
+  // links that make no sense there. Placed after every hook, not before, so
+  // hook order stays stable across renders.
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <>
       <header ref={headerRef} className={`header-wrap simple-header${scrolled ? " header-wrap--scrolled" : ""}`}>

@@ -41,7 +41,7 @@ describe('AdminChatLogsGate', () => {
     vi.mocked(isAdminUser).mockResolvedValue(true)
     render(<AdminChatLogsGate />)
 
-    authCallback?.({ email: 'admin@physioonclick.co.uk' })
+    authCallback?.({ email: 'hello@physioonclick.co.uk' })
 
     await waitFor(() => {
       expect(screen.getByText('chat logs content')).toBeInTheDocument()

@@ -6,7 +6,7 @@ import { LIMITS } from "@/lib/validation";
 
 // Server actions are public HTTP endpoints — the /admin page gate is client-side
 // only, so every action must verify the caller's ID token itself.
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@physioonclick.co.uk";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "hello@physioonclick.co.uk";
 
 async function requireAdmin(idToken: string): Promise<void> {
   if (!idToken || typeof idToken !== "string") {

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { Analytics } from "@/components/analytics";
-import { ChatWidget } from "@/components/chat-widget";
 import { ConnectivityOverlay } from "@/components/connectivity-overlay";
 import { CookieConsent } from "@/components/cookie-consent";
 import { PersonProvider } from "@/components/person-provider";
@@ -63,7 +62,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <main id="main-content">{children}</main>
             <SiteFooter />
             <Analytics />
-            <ChatWidget />
+            {/* ChatWidget is disabled until GEMINI_API_KEY is set on the Worker.
+                Without the key /api/chat 500s on every message, so showing the
+                launcher would advertise a broken feature. Re-enable by restoring
+                the import and this element once the secret exists. */}
             <ConnectivityOverlay />
             <CookieConsent />
           </ToastProvider>

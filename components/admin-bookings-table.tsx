@@ -65,6 +65,7 @@ export function AdminBookingsTable() {
   const toast = useToast();
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [cancelTarget, setCancelTarget] = useState<{ id: string; label: string } | null>(null);
   const [cancelling, setCancelling] = useState<string | null>(null);
@@ -92,6 +93,13 @@ export function AdminBookingsTable() {
           summaryId:        d.summaryId as string | undefined,
         };
       }));
+      setLoading(false);
+    }, (err) => {
+      // Without this handler a rejected read (most often a Firestore rules
+      // denial) leaves `loading` true forever and the table shows skeleton
+      // rows indefinitely, with no clue as to why.
+      console.error("bookings snapshot failed", err);
+      setLoadError("Could not load bookings. Check that this account has admin access.");
       setLoading(false);
     });
   }, []);
@@ -149,7 +157,11 @@ export function AdminBookingsTable() {
 
       {loading && <SkeletonTable rows={5} columns={6} />}
 
-      {!loading && displayed.length === 0 && (
+      {!loading && loadError && (
+        <p style={{ color: "var(--color-error)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>{loadError}</p>
+      )}
+
+      {!loading && !loadError && displayed.length === 0 && (
         <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>No bookings match this filter.</p>
       )}
 
