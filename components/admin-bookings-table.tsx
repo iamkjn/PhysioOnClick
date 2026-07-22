@@ -61,19 +61,39 @@ export function resolveStatus(stored: string, appointmentDate: string, appointme
   return `${appointmentDate}T${time}` < nowInLondon() ? "completed" : "upcoming";
 }
 
+type SortKey = "patient" | "service" | "appointment" | "status";
+type SortDir = "asc" | "desc";
+
+const PAGE_SIZE = 10;
+
+/** Column header labels, in table order, for the sortable headers. */
+const SORT_LABELS: Record<SortKey, string> = {
+  patient: "Patient",
+  service: "Service",
+  appointment: "Appointment",
+  status: "Status",
+};
+
 export function AdminBookingsTable() {
   const toast = useToast();
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [filter, setFilter] = useState<StatusFilter>("all");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: "appointment", dir: "desc" });
+  const [page, setPage] = useState(1);
   const [cancelTarget, setCancelTarget] = useState<{ id: string; label: string } | null>(null);
   const [cancelling, setCancelling] = useState<string | null>(null);
   const cancelFormRefs = useRef<Record<string, HTMLFormElement | null>>({});
 
   useEffect(() => {
     if (!db) return;
-    const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"), limit(25));
+    // Fetched in one live subscription and then filtered, sorted and paged in
+    // memory. That keeps the realtime updates and makes sorting instant; at a
+    // single-practice scale 200 rows is well within what the client can hold.
+    // Past that, this needs Firestore cursor pagination instead.
+    const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"), limit(200));
     return onSnapshot(q, (snapshot) => {
       setBookings(snapshot.docs.map((doc) => {
         const d = doc.data();
@@ -114,7 +134,43 @@ export function AdminBookingsTable() {
     cancelled: resolved.filter((b) => b.displayStatus === "cancelled").length,
   };
 
-  const displayed = filter === "all" ? resolved : resolved.filter((b) => b.displayStatus === filter);
+  const byStatus = filter === "all" ? resolved : resolved.filter((b) => b.displayStatus === filter);
+
+  const term = search.trim().toLowerCase();
+  const matched = term
+    ? byStatus.filter((b) =>
+        [b.fullName, b.patientName, b.email, b.service].some((f) => f.toLowerCase().includes(term)))
+    : byStatus;
+
+  // Sort keys map to what the column actually displays, so the order matches
+  // what the reader sees. "appointment" sorts on the raw date+time rather than
+  // the label, since the label can be "TBC" — those sort last in either
+  // direction, as an unscheduled booking is never a meaningful extreme.
+  const sorted = [...matched].sort((a, b) => {
+    const dir = sort.dir === "asc" ? 1 : -1;
+    if (sort.key === "appointment") {
+      const av = a.appointmentDate ? `${a.appointmentDate}T${a.appointmentTime || "00:00"}` : "";
+      const bv = b.appointmentDate ? `${b.appointmentDate}T${b.appointmentTime || "00:00"}` : "";
+      if (!av && !bv) return 0;
+      if (!av) return 1;
+      if (!bv) return -1;
+      return av < bv ? -dir : av > bv ? dir : 0;
+    }
+    const av = sort.key === "patient" ? (a.fullName || a.patientName) : sort.key === "service" ? a.service : a.displayStatus;
+    const bv = sort.key === "patient" ? (b.fullName || b.patientName) : sort.key === "service" ? b.service : b.displayStatus;
+    return av.localeCompare(bv) * dir;
+  });
+
+  const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  // Clamped rather than stored, so deleting or filtering rows can never strand
+  // the view on a page that no longer exists.
+  const currentPage = Math.min(page, pageCount);
+  const displayed = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  function toggleSort(key: SortKey) {
+    setSort((s) => ({ key, dir: s.key === key && s.dir === "asc" ? "desc" : "asc" }));
+    setPage(1);
+  }
 
   return (
     <div>
@@ -123,7 +179,22 @@ export function AdminBookingsTable() {
           <span style={{ fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase" as const, letterSpacing: "0.08em", fontFamily: "var(--font-sans)" }}>Bookings</span>
           <h2 style={{ margin: "0.25rem 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Latest appointment requests</h2>
         </div>
-        <span className="dashboard-table-count">{displayed.length} shown · sorted by newest</span>
+        <span className="dashboard-table-count">
+          {sorted.length} {sorted.length === 1 ? "booking" : "bookings"} · sorted by {SORT_LABELS[sort.key].toLowerCase()} ({sort.dir === "asc" ? "ascending" : "descending"})
+        </span>
+      </div>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <label htmlFor="bookings-search" className="sr-only">Search bookings by patient, email or service</label>
+        <input
+          id="bookings-search"
+          type="search"
+          className="input"
+          placeholder="Search patient, email or service…"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          style={{ maxWidth: 380 }}
+        />
       </div>
 
       {/* Filter chips — the most-tapped control on this page, so it keeps a
@@ -134,7 +205,7 @@ export function AdminBookingsTable() {
         {FILTER_OPTIONS.map((f) => (
           <button
             key={f}
-            onClick={() => setFilter(f)}
+            onClick={() => { setFilter(f); setPage(1); }}
             className="button small"
             aria-pressed={filter === f}
             style={{
@@ -161,8 +232,10 @@ export function AdminBookingsTable() {
         <p style={{ color: "var(--color-error)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>{loadError}</p>
       )}
 
-      {!loading && !loadError && displayed.length === 0 && (
-        <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>No bookings match this filter.</p>
+      {!loading && !loadError && sorted.length === 0 && (
+        <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>
+          {term ? `No bookings match “${search.trim()}”.` : "No bookings match this filter."}
+        </p>
       )}
 
       {!loading && displayed.length > 0 && (
@@ -171,10 +244,26 @@ export function AdminBookingsTable() {
             <caption className="sr-only">Latest appointment bookings with status, actions, and session summary links</caption>
             <thead>
               <tr>
-                <th scope="col">Patient</th>
-                <th scope="col">Service</th>
-                <th scope="col">Appointment</th>
-                <th scope="col">Status</th>
+                {(Object.keys(SORT_LABELS) as SortKey[]).map((key) => (
+                  <th
+                    key={key}
+                    scope="col"
+                    // aria-sort tells a screen reader the current order without
+                    // relying on the arrow glyph, which is decorative only.
+                    aria-sort={sort.key === key ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleSort(key)}
+                      style={{ background: "none", border: 0, padding: 0, font: "inherit", color: "inherit", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "0.35rem" }}
+                    >
+                      {SORT_LABELS[key]}
+                      <span aria-hidden="true" style={{ opacity: sort.key === key ? 1 : 0.35, fontSize: 10 }}>
+                        {sort.key === key && sort.dir === "asc" ? "▲" : "▼"}
+                      </span>
+                    </button>
+                  </th>
+                ))}
                 <th scope="col">Actions</th>
                 <th scope="col">Summary</th>
               </tr>
@@ -260,6 +349,38 @@ export function AdminBookingsTable() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {!loading && !loadError && pageCount > 1 && (
+        <nav
+          aria-label="Bookings pagination"
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" as const, marginTop: "1rem" }}
+        >
+          <span style={{ fontSize: 13, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>
+            Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, sorted.length)} of {sorted.length}
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span aria-live="polite" style={{ fontSize: 13, color: "var(--color-navy)", fontFamily: "var(--font-sans)", minWidth: 90, textAlign: "center" as const }}>
+              Page {currentPage} of {pageCount}
+            </span>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setPage(currentPage + 1)}
+              disabled={currentPage === pageCount}
+            >
+              Next
+            </button>
+          </div>
+        </nav>
       )}
 
       <ConfirmDialog
