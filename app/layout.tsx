@@ -28,6 +28,13 @@ export const metadata: Metadata = {
       }
     ],
   },
+  // Signals to content classifiers / mobile-carrier filters that this is a
+  // general-audience medical site, not adult content. Helps avoid being
+  // mis-categorised and blocked by default on mobile networks.
+  other: {
+    rating: "general",
+    classification: "Health, Medical, Physiotherapy",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
