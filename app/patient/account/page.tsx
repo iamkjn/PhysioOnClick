@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
 
-import { PatientPortalNav } from "@/components/patient-portal-nav";
 import { PatientProfileEditor } from "@/components/patient-profile-editor";
 import { RehabProgramsSection } from "@/components/rehab-programs-section";
 import { UploadPanel } from "@/components/upload-panel";
@@ -78,7 +77,6 @@ export default function AccountPage() {
 
   return (
     <div style={{ maxWidth: 680, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
-      <PatientPortalNav />
       {/* User info card */}
       <div
         style={{

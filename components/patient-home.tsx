@@ -2,25 +2,23 @@
 
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { auth } from "@/lib/firebase";
 import { ensurePatientRecord } from "@/lib/patient-account";
-import { usePerson } from "@/components/person-provider";
 import { AuthPanel } from "@/components/auth-panel";
-import { PatientPortalNav } from "@/components/patient-portal-nav";
-import { PatientDashboard } from "@/components/patient-dashboard";
-import { PatientLiveOverview } from "@/components/patient-live-overview";
 import { SkeletonRow } from "@/components/skeleton";
 
-// The patient portal home. Signed out, it shows the sign-in / sign-up panel
-// (redirecting back here on success). Signed in, it becomes the mobile-style
-// dashboard: the portal tab selector, a greeting, the pain/adherence/streak
-// cards, and the bookings/enquiries overview below.
+// /patient is now purely the sign-in gate. The single signed-in home is `/`
+// (components/home-dashboard.tsx), so a signed-in visitor here is bounced there
+// and the sign-in panel redirects to `/` on success. This is also the reliable
+// place to finish a Google *redirect* sign-in (which returns to /patient), where
+// the AuthPanel can be unmounted before its own completion runs — so we ensure
+// the patient record here before redirecting.
 export function PatientHome() {
   // undefined = auth still resolving, null = signed out, string = signed in.
   const [uid, setUid] = useState<string | null | undefined>(undefined);
-  const [displayName, setDisplayName] = useState("");
-  const personCtx = usePerson();
+  const router = useRouter();
 
   useEffect(() => {
     if (!auth) {
@@ -28,20 +26,20 @@ export function PatientHome() {
       return;
     }
     return onAuthStateChanged(auth, (user) => {
-      setUid(user ? user.uid : null);
-      setDisplayName(user?.displayName || user?.email || "there");
-      // This gate is always mounted on /patient, so it's the reliable place to
-      // finish any sign-in — including the Google *redirect* return, where the
-      // AuthPanel can be unmounted before its own completion runs. Idempotent
-      // (setDoc merge), so it's safe to also fire alongside AuthPanel's own
-      // ensurePatientRecord on the popup/email paths.
       if (user) {
         void ensurePatientRecord(user).catch((err) =>
-          console.error("ensurePatientRecord failed on portal home", err)
+          console.error("ensurePatientRecord failed on portal gate", err)
         );
+        setUid(user.uid);
+      } else {
+        setUid(null);
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (typeof uid === "string") router.replace("/");
+  }, [uid, router]);
 
   if (uid === undefined) {
     return (
@@ -51,45 +49,26 @@ export function PatientHome() {
     );
   }
 
-  if (uid === null) {
-    return (
-      <>
-        <section className="page-hero page-hero-split">
-          <div className="stack">
-            <span className="eyebrow">Patient portal</span>
-            <h1>Appointments, uploads and rehab progress in one secure space.</h1>
-            <p className="lead">
-              Sign in to view upcoming appointments, track pain scores and exercise adherence, and pick up your
-              recovery where you left off.
-            </p>
-          </div>
-        </section>
-        <section className="page-section dashboard-grid">
-          <AuthPanel role="patient" redirectTo="/patient" />
-        </section>
-      </>
-    );
+  if (typeof uid === "string") {
+    // Signed in — redirect to the home dashboard is in flight; render nothing
+    // rather than flashing the sign-in panel.
+    return null;
   }
-
-  const personId = personCtx?.personId ?? uid;
 
   return (
     <>
-      <PatientPortalNav />
-      <section className="page-hero" style={{ paddingBottom: "0.5rem" }}>
+      <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Patient portal</span>
-          <h1 style={{ marginBottom: 0 }}>Welcome back, {displayName.split(" ")[0]}.</h1>
-          <p className="muted">Your recovery at a glance. Tap any card for the full picture.</p>
+          <h1>Appointments, uploads and rehab progress in one secure space.</h1>
+          <p className="lead">
+            Sign in to view upcoming appointments, track pain scores and exercise adherence, and pick up your
+            recovery where you left off.
+          </p>
         </div>
       </section>
-
-      <section className="page-section">
-        <PatientDashboard uid={uid} personId={personId} />
-      </section>
-
       <section className="page-section dashboard-grid">
-        <PatientLiveOverview />
+        <AuthPanel role="patient" redirectTo="/" />
       </section>
     </>
   );

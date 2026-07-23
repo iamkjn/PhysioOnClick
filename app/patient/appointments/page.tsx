@@ -6,7 +6,6 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { EmptyState } from "@/components/empty-state";
 import { PersonSwitcher } from "@/components/person-switcher";
-import { PatientPortalNav } from "@/components/patient-portal-nav";
 import { usePerson } from "@/components/person-provider";
 import { SkeletonRow } from "@/components/skeleton";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
@@ -72,7 +71,6 @@ export default function AppointmentsPage() {
 
   return (
     <div className="site-shell patient-page">
-      <PatientPortalNav />
       <span className="eyebrow">Appointments</span>
       <h1 style={{ color: "var(--color-text-primary)" }}>Your appointments</h1>
       <p className="muted" style={{ marginTop: "-0.5rem", marginBottom: "1.5rem" }}>

@@ -6,6 +6,7 @@ import type { User } from "firebase/auth";
 
 import { PersonSwitcher } from "@/components/person-switcher";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
+import { PatientDashboard } from "@/components/patient-dashboard";
 import { usePerson } from "@/components/person-provider";
 
 function greeting() {
@@ -110,6 +111,11 @@ export function HomeDashboard({ user }: { user: User }) {
               </Link>
             ))}
           </nav>
+        </div>
+
+        <div className="home-dashboard-charts">
+          <h3 className="home-dashboard-charts-title">Your recovery at a glance</h3>
+          <PatientDashboard uid={user.uid} personId={personId} />
         </div>
       </div>
     </section>

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { PatientPortalNav } from "@/components/patient-portal-nav";
 import { EmptyState } from "@/components/empty-state";
 import { SkeletonRow } from "@/components/skeleton";
 import { subscribeNotifications, markAllRead, type AppNotification, type NotificationKind } from "@/lib/notifications";
@@ -53,7 +52,6 @@ export default function NotificationsPage() {
   if (uid === undefined || (uid && items === null)) {
     return (
       <div className="site-shell patient-page">
-        <PatientPortalNav />
         <section className="page-section stack">
           <SkeletonRow count={4} />
         </section>
@@ -67,7 +65,6 @@ export default function NotificationsPage() {
 
   return (
     <div className="site-shell patient-page">
-      <PatientPortalNav />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", margin: "1rem 0 1.5rem" }}>
         <div>
           <span className="eyebrow">Notifications</span>

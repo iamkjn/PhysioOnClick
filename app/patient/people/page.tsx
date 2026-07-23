@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
-import { PatientPortalNav } from "@/components/patient-portal-nav";
 import { EmptyState } from "@/components/empty-state";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Skeleton, SkeletonCircle } from "@/components/skeleton";
@@ -165,7 +164,6 @@ export default function PeoplePage() {
 
   return (
     <div className="site-shell patient-page">
-      <PatientPortalNav />
       <div
         style={{
           display: "flex",
