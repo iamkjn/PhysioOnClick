@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => '/patient' }))
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => ({})),
   onAuthStateChanged: vi.fn((_auth, cb) => {

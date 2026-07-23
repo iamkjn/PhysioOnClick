@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
+import { PatientPortalNav } from "@/components/patient-portal-nav";
 import { EmptyState } from "@/components/empty-state";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Skeleton, SkeletonCircle } from "@/components/skeleton";
@@ -163,7 +164,8 @@ export default function PeoplePage() {
   };
 
   return (
-    <div style={{ maxWidth: 640, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
+    <div className="site-shell patient-page">
+      <PatientPortalNav />
       <div
         style={{
           display: "flex",
@@ -178,7 +180,7 @@ export default function PeoplePage() {
         </button>
       </div>
 
-      <div style={{ display: "grid", gap: "0.75rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "0.75rem" }}>
         {/* "You" card — the signed-in user, always first, not editable */}
         {uid && (
           <div style={cardStyle}>

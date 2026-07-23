@@ -189,6 +189,19 @@ service cloud.firestore {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
+    // In-app notifications for the patient portal. Created server-side (Cloud
+    // Functions / seed) or by an admin; the owner reads them and may only flip
+    // `read` to true (marking as read) — they can't forge title/body/kind.
+    match /patients/{userId}/notifications/{notificationId} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        isSignedIn() && request.auth.uid == userId &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["read"]) &&
+        request.resource.data.read is bool
+      );
+    }
+
     match /patients/{userId}/people/{personId}/exerciseLogs/{date} {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }

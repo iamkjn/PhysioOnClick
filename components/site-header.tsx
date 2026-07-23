@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { NotificationBell } from "@/components/notification-bell";
+import { track } from "@/lib/analytics";
 import { useGSAP } from "@/hooks/use-gsap-timeline";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
@@ -181,9 +183,12 @@ export function SiteHeader() {
             </nav>
             <div className="nav-actions simple-nav-actions">
               {user ? (
-                <button type="button" className="call-link" style={{ background: "none", border: "none", cursor: "pointer" }} onClick={() => void handleSignOut()}>
-                  Sign out
-                </button>
+                <>
+                  <NotificationBell />
+                  <button type="button" className="call-link" style={{ background: "none", border: "none", cursor: "pointer" }} onClick={() => void handleSignOut()}>
+                    Sign out
+                  </button>
+                </>
               ) : (
                 <Link className="call-link" href="/patient">
                   Sign In
@@ -191,7 +196,7 @@ export function SiteHeader() {
               )}
               {/* "Contact" already lives in the primary nav above (line ~17);
                   this used to duplicate it as "Contact Us" right next to it. */}
-              <Link className="button primary small" href="/book">
+              <Link className="button primary small" href="/book" onClick={() => track("book_now_click", { source: "header" })}>
                 Book Now
               </Link>
             </div>

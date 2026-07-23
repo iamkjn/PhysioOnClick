@@ -12,6 +12,14 @@ const providedFirebaseConfig = {
   appId: "1:119591358761:web:78643d985cc47c56baa738"
 };
 
+// measurementId (the "G-XXXXXXX" id from Firebase console -> Project settings)
+// is only used by Firebase Analytics and is optional. It is a BUILD-time var on
+// this stack (NEXT_PUBLIC_* are inlined at build; setting it at runtime on the
+// Worker does nothing). It must NOT gate firebaseEnabled -- Auth/Firestore/
+// Storage work fine without it -- so it is spread into the config only when set,
+// and analytics no-ops when it is empty (see lib/analytics.ts).
+export const firebaseMeasurementId = process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "";
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || providedFirebaseConfig.apiKey,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || providedFirebaseConfig.authDomain,
@@ -19,7 +27,9 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || providedFirebaseConfig.storageBucket,
   messagingSenderId:
     process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || providedFirebaseConfig.messagingSenderId,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || providedFirebaseConfig.appId
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || providedFirebaseConfig.appId,
+  // Only include when set so the empty-string fallback can't flip firebaseEnabled false.
+  ...(firebaseMeasurementId ? { measurementId: firebaseMeasurementId } : {})
 };
 
 export const firebaseEnabled = Object.values(firebaseConfig).every(Boolean);

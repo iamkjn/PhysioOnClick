@@ -20,9 +20,33 @@ export interface BookingRecord {
   summaryId?: string;
 }
 
-function toBookingRecord(id: string, data: Record<string, unknown>): BookingRecord {
+// Resolve the booking's start moment from whatever the writer stored. The
+// Cal webhook and appointments/sync both write a `sessionDate` Timestamp AND
+// `appointmentDate`+`appointmentTime` strings, but seeded and legacy bookings
+// can be missing the Timestamp. The old code defaulted a missing/invalid
+// Timestamp to `new Date()` (now) — which then compared equal-or-later against
+// the render-time `new Date()` in resolveStatus and made past appointments
+// read as "upcoming" forever. Prefer the Timestamp, fall back to parsing the
+// string fields (stored as London-local "YYYY-MM-DD" + "HH:MM"), and only as a
+// last resort use the epoch so an undateable booking sorts to the past rather
+// than masquerading as upcoming.
+function resolveSessionDate(data: Record<string, unknown>): Date {
   const ts = data.sessionDate as { toDate?: () => Date } | undefined;
-  const date = ts?.toDate ? ts.toDate() : new Date();
+  if (ts?.toDate) {
+    const d = ts.toDate();
+    if (!Number.isNaN(d.getTime())) return d;
+  }
+  const day = typeof data.appointmentDate === "string" ? data.appointmentDate : "";
+  const time = typeof data.appointmentTime === "string" ? data.appointmentTime : "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    const d = new Date(`${day}T${/^\d{2}:\d{2}$/.test(time) ? time : "00:00"}`);
+    if (!Number.isNaN(d.getTime())) return d;
+  }
+  return new Date(0);
+}
+
+function toBookingRecord(id: string, data: Record<string, unknown>): BookingRecord {
+  const date = resolveSessionDate(data);
   return {
     id,
     patientName: (data.patientName as string) ?? "Patient",

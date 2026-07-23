@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { PersonSwitcher } from "@/components/person-switcher";
+import { PatientPortalNav } from "@/components/patient-portal-nav";
 import { PainCheckIn } from "@/components/pain-check-in";
 import { RecoveryChart } from "@/components/recovery-chart";
 import { AssignedExercises } from "@/components/assigned-exercises";
@@ -60,7 +61,8 @@ export default function RecoveryPage() {
   }
 
   return (
-    <div className="site-shell">
+    <div className="site-shell patient-page">
+      <PatientPortalNav />
       <section className="page-hero">
         <div className="stack">
           <span className="eyebrow">Recovery dashboard</span>
