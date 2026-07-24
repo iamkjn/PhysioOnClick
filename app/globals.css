@@ -1970,6 +1970,39 @@ textarea:focus {
   padding-bottom: 4rem;
 }
 
+/* Patient sub-pages are dense, app-like utility screens — not marketing pages.
+   They keep the warm paper + serif titles (DESIGN.md) but run a tighter vertical
+   rhythm and a smaller hero title than the 4.5rem section scale the brand pages
+   use, so the sub-pages don't read as huge headings floating in empty space. */
+.patient-page .page-hero {
+  padding: 1.75rem 0 0.5rem;
+}
+
+.patient-page .page-hero h1 {
+  font-size: var(--text-2xl);
+  line-height: 1.15;
+}
+
+.patient-page .page-hero .lead,
+.patient-page .page-hero .muted {
+  font-size: var(--text-base);
+  margin-top: 0.35rem;
+}
+
+.patient-page .page-section {
+  padding: 1.1rem 0;
+}
+
+.patient-page .page-section:first-of-type {
+  padding-top: 0.5rem;
+}
+
+/* Panels on the sub-pages carry the section rhythm internally, so a consistent
+   heading size + gap keeps card titles from jumping around page to page. */
+.patient-page .panel > h3 {
+  font-size: var(--text-lg);
+}
+
 /* The pain / adherence / streak cards on the signed-in home (`/`), below the
    greeting + quick links. Kept as one section so the home reads as a single
    dashboard rather than two stacked homes. */
@@ -2051,8 +2084,8 @@ textarea:focus {
 }
 
 .exercise-card-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 0.75rem;
 }
 
