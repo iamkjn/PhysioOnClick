@@ -2021,6 +2021,107 @@ textarea:focus {
   }
 }
 
+/* ── Exercise program cards (components/assigned-exercises.tsx) ──
+   Ported from the mobile exercises screen: figure tile + name/detail +
+   completion box, with a horizontal category filter row. */
+.exercise-filter-row {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.exercise-filter-pill {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--surface-alt);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.exercise-filter-pill.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.exercise-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.exercise-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 0.85rem;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.exercise-card.done {
+  background: var(--color-primary-light);
+  border-color: var(--primary);
+}
+
+.exercise-figure-tile {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  border-radius: 14px;
+}
+
+.exercise-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.exercise-card-body strong {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.exercise-card-body span {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.exercise-check {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  border: 2px solid var(--color-border);
+  background: var(--surface-alt);
+  color: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.exercise-check.done {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
 /* Three at-a-glance cards that fill the shell width and wrap to one
    column on narrow screens — the fix for the empty side gutters. */
 .patient-dashboard-grid {
