@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 import { founder, testimonials } from "@/lib/site-data";
 import { getPublicServices } from "@/lib/public-content";
@@ -7,6 +8,11 @@ import { HomeHeroSection } from "@/components/home-hero-section";
 import { Reveal } from "@/components/reveal";
 
 export default async function HomePage() {
+  // Set by the header's auth observer on sign-in/out. Lets the hero render a
+  // dashboard loader (not the logged-out hero) for returning patients, so the
+  // signed-in home doesn't flash the marketing hero first. Signed-out visitors
+  // have no cookie and get the marketing hero immediately.
+  const initialSignedIn = (await cookies()).get("poc-auth")?.value === "1";
   const homeServices = getPublicServices().slice(0, 4);
   const founderInitials = founder.name
     .split(" ")
@@ -16,7 +22,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HomeHeroSection founderName={founder.name} />
+      <HomeHeroSection founderName={founder.name} initialSignedIn={initialSignedIn} />
 
       <Reveal direction="fade">
         <section className="trust-bar-section">

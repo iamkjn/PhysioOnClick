@@ -30,6 +30,12 @@ const SECONDARY_ACTIONS = [
     icon: <path d="M4 15l4-5 4 3 6-8M4 20h16" />,
   },
   {
+    href: "/patient/exercises",
+    label: "My exercises",
+    hint: "Your assigned rehab plan",
+    icon: <path d="M6.5 6.5 9 9M15 15l2.5 2.5M4 8v8M8 4v16M16 4v16M20 8v8M8 12h8" />,
+  },
+  {
     href: "/patient/people",
     label: "My people",
     hint: "Family members you manage",
@@ -82,20 +88,10 @@ export function HomeDashboard({ user }: { user: User }) {
         <div className="home-dashboard-grid">
           <RecoveryPercentCard uid={user.uid} personId={personId} />
 
+          {/* "Book a session" intentionally omitted — the header's persistent
+              "Book Now" button already covers booking, so repeating it here was
+              redundant. */}
           <nav className="home-dashboard-actions" aria-label="Quick links">
-            <Link className="home-action home-action-primary" href="/book" prefetch>
-              <span className="home-action-icon" aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M7 3v3M17 3v3M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1ZM12 12v4M10 14h4" />
-                </svg>
-              </span>
-              <span className="home-action-text">
-                <strong>Book a session</strong>
-                <small>Find your next available slot</small>
-              </span>
-              <span className="home-action-arrow" aria-hidden>→</span>
-            </Link>
-
             {SECONDARY_ACTIONS.map((action) => (
               <Link key={action.href} className="home-action" href={action.href} prefetch>
                 <span className="home-action-icon" aria-hidden>

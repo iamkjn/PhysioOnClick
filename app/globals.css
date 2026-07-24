@@ -1984,6 +1984,43 @@ textarea:focus {
   color: var(--color-navy);
 }
 
+/* ── Route-level loader (app/loading.tsx) ──────────────────────── */
+.route-status {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.app-spinner {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 3px solid var(--color-primary-light);
+  border-top-color: var(--primary);
+  animation: app-spin 0.7s linear infinite;
+}
+
+.route-status-text {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+@keyframes app-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-spinner {
+    animation-duration: 1.6s;
+  }
+}
+
 /* Three at-a-glance cards that fill the shell width and wrap to one
    column on narrow screens — the fix for the empty side gutters. */
 .patient-dashboard-grid {

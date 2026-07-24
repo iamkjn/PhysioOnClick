@@ -113,7 +113,17 @@ export function SiteHeader() {
 
   useEffect(() => {
     if (!auth) return;
-    return onAuthStateChanged(auth, setUser);
+    return onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      // Mirror auth state into a cookie the server can read, so the `/` home
+      // renders a dashboard loader (not the logged-out hero) for returning
+      // patients on their next load. Lax + 1-year; cleared on sign-out.
+      if (typeof document !== "undefined") {
+        document.cookie = u
+          ? "poc-auth=1; path=/; max-age=31536000; samesite=lax"
+          : "poc-auth=; path=/; max-age=0; samesite=lax";
+      }
+    });
   }, []);
 
   async function handleSignOut() {

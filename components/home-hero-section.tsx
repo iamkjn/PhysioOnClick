@@ -7,9 +7,16 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
 import { HomeDashboard } from "@/components/home-dashboard";
+import { SkeletonStatGrid, SkeletonText } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 
-export function HomeHeroSection({ founderName }: { founderName: string }) {
+export function HomeHeroSection({
+  founderName,
+  initialSignedIn = false,
+}: {
+  founderName: string;
+  initialSignedIn?: boolean;
+}) {
   const [user, setUser] = useState<User | null>(null);
   const [resolvedAuth, setResolvedAuth] = useState(false);
   const { show } = useToast();
@@ -30,8 +37,30 @@ export function HomeHeroSection({ founderName }: { founderName: string }) {
     });
   }, [show]);
 
+  // Resolved and signed in → the dashboard.
   if (resolvedAuth && user) {
     return <HomeDashboard user={user} />;
+  }
+
+  // Still resolving. If the poc-auth cookie says this visitor was signed in,
+  // show a dashboard-shaped loader instead of the marketing hero — otherwise a
+  // returning patient sees the logged-out hero flash before their dashboard
+  // paints. The cookie is read server-side (app/page.tsx) so this same branch
+  // is chosen on the server and the client, avoiding a hydration mismatch.
+  // Signed-out visitors (no cookie) get the marketing hero immediately, which
+  // keeps it as the LCP element for SEO.
+  if (!resolvedAuth && initialSignedIn) {
+    return (
+      <section className="home-dashboard">
+        <div className="home-dashboard-glow" aria-hidden />
+        <div className="site-shell home-dashboard-inner" aria-busy="true" aria-label="Loading your dashboard">
+          <SkeletonText lines={2} lastLineWidth="45%" />
+          <div style={{ marginTop: "1.5rem" }}>
+            <SkeletonStatGrid count={4} />
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
