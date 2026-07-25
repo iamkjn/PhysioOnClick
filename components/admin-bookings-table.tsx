@@ -174,17 +174,17 @@ export function AdminBookingsTable() {
 
   return (
     <div>
-      <div className="dashboard-table-head" style={{ marginBottom: "1rem" }}>
+      <div className="dashboard-table-head">
         <div>
-          <span style={{ fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase" as const, letterSpacing: "0.08em", fontFamily: "var(--font-sans)" }}>Bookings</span>
-          <h2 style={{ margin: "0.25rem 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Latest appointment requests</h2>
+          <span className="dashboard-eyebrow">Bookings</span>
+          <h2>Latest appointment requests</h2>
         </div>
         <span className="dashboard-table-count">
           {sorted.length} {sorted.length === 1 ? "booking" : "bookings"} · sorted by {SORT_LABELS[sort.key].toLowerCase()} ({sort.dir === "asc" ? "ascending" : "descending"})
         </span>
       </div>
 
-      <div style={{ marginBottom: "1rem" }}>
+      <div style={{ marginBottom: "var(--space-4)" }}>
         <label htmlFor="bookings-search" className="sr-only">Search bookings by patient, email or service</label>
         <input
           id="bookings-search"
@@ -201,7 +201,7 @@ export function AdminBookingsTable() {
           full 44px touch target even though the table rows below stay
           dense (filter chips are explicitly exempt from the "tint, never
           solid fill" selected-state rule). */}
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" as const }} role="group" aria-label="Filter bookings by status">
+      <div style={{ display: "flex", gap: "var(--space-2)", marginBottom: "1.25rem", flexWrap: "wrap" as const }} role="group" aria-label="Filter bookings by status">
         {FILTER_OPTIONS.map((f) => (
           <button
             key={f}
@@ -212,14 +212,14 @@ export function AdminBookingsTable() {
               background: filter === f ? "var(--color-primary-dark)" : "var(--color-surface)",
               color: filter === f ? "white" : "var(--color-text-secondary)",
               borderColor: filter === f ? "var(--color-primary-dark)" : "var(--color-border)",
-              padding: "0 12px",
+              padding: "0 var(--space-3)",
               minHeight: 44,
-              fontSize: 13,
+              fontSize: "var(--text-xs)",
               gap: "0.375rem",
             }}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
-            <span style={{ background: filter === f ? "rgba(255,255,255,0.2)" : "var(--color-primary-light)", color: filter === f ? "white" : "var(--color-primary-dark)", borderRadius: 999, padding: "1px 6px", fontSize: 11 }}>
+            <span style={{ background: filter === f ? "rgba(255,255,255,0.2)" : "var(--color-primary-light)", color: filter === f ? "white" : "var(--color-primary-dark)", borderRadius: "var(--radius-pill)", padding: "1px 6px", fontSize: 11 }}>
               {counts[f]}
             </span>
           </button>
@@ -229,18 +229,18 @@ export function AdminBookingsTable() {
       {loading && <SkeletonTable rows={5} columns={6} />}
 
       {!loading && loadError && (
-        <p style={{ color: "var(--color-error)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>{loadError}</p>
+        <p style={{ color: "var(--color-error)", fontFamily: "var(--font-sans)", padding: "var(--space-6) 0" }}>{loadError}</p>
       )}
 
       {!loading && !loadError && sorted.length === 0 && (
-        <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>
+        <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", padding: "var(--space-6) 0" }}>
           {term ? `No bookings match “${search.trim()}”.` : "No bookings match this filter."}
         </p>
       )}
 
       {!loading && displayed.length > 0 && (
         <div className="dashboard-table-wrap">
-          <table className="dashboard-table admin-bookings-table">
+          <table className="dashboard-table">
             <caption className="sr-only">Latest appointment bookings with status, actions, and session summary links</caption>
             <thead>
               <tr>
@@ -273,7 +273,7 @@ export function AdminBookingsTable() {
                 <tr key={item.id} className="admin-table-row">
                   <td>
                     <strong style={{ display: "block", color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{item.fullName || item.patientName}</strong>
-                    <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{item.email}</span>
+                    <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{item.email}</span>
                   </td>
                   <td style={{ color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{item.service}</td>
                   <td style={{ color: item.appointmentLabel === "TBC" ? "var(--color-text-secondary)" : "var(--color-navy)", fontStyle: item.appointmentLabel === "TBC" ? "italic" : "normal", fontFamily: "var(--font-sans)" }}>
@@ -285,7 +285,7 @@ export function AdminBookingsTable() {
                     </span>
                   </td>
                   <td>
-                    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" as const }}>
+                    <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" as const }}>
                       {item.calBookingUid ? (
                         <>
                           <form
@@ -315,7 +315,7 @@ export function AdminBookingsTable() {
                                 border: "1.5px solid var(--color-error)",
                                 color: "var(--color-error)",
                                 padding: "0 10px",
-                                fontSize: 13,
+                                fontSize: "var(--text-xs)",
                                 cursor: item.displayStatus === "cancelled" || cancelling === item.id ? "not-allowed" : "pointer",
                                 opacity: item.displayStatus === "cancelled" ? 0.4 : cancelling === item.id ? 0.6 : 1,
                               }}
@@ -328,7 +328,7 @@ export function AdminBookingsTable() {
                             target="_blank" rel="noopener noreferrer"
                             className="button small"
                             aria-label={`Reschedule booking for ${item.fullName || item.patientName}`}
-                            style={{ border: "1.5px solid var(--color-primary-dark)", color: "var(--color-primary-dark)", background: "none", padding: "0 10px", fontSize: 13 }}
+                            style={{ border: "1.5px solid var(--color-primary-dark)", color: "var(--color-primary-dark)", background: "none", padding: "0 10px", fontSize: "var(--text-xs)" }}
                           >Reschedule</a>
                         </>
                       ) : (
@@ -341,7 +341,7 @@ export function AdminBookingsTable() {
                       <SummaryForm booking={{ id: item.id, patientId: item.patientId, patientType: item.patientType, patientName: item.patientName, service: item.service }} />
                     )}
                     {item.summaryId && (
-                      <span style={{ fontSize: 12, color: "var(--color-success)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>✓ Published</span>
+                      <span style={{ fontSize: "var(--text-xs)", color: "var(--color-success)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>✓ Published</span>
                     )}
                   </td>
                 </tr>
@@ -354,12 +354,12 @@ export function AdminBookingsTable() {
       {!loading && !loadError && pageCount > 1 && (
         <nav
           aria-label="Bookings pagination"
-          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" as const, marginTop: "1rem" }}
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" as const, marginTop: "var(--space-4)" }}
         >
-          <span style={{ fontSize: 13, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>
+          <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>
             Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, sorted.length)} of {sorted.length}
           </span>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
             <button
               type="button"
               className="btn btn-secondary"
@@ -368,7 +368,7 @@ export function AdminBookingsTable() {
             >
               Previous
             </button>
-            <span aria-live="polite" style={{ fontSize: 13, color: "var(--color-navy)", fontFamily: "var(--font-sans)", minWidth: 90, textAlign: "center" as const }}>
+            <span aria-live="polite" style={{ fontSize: "var(--text-xs)", color: "var(--color-navy)", fontFamily: "var(--font-sans)", minWidth: 90, textAlign: "center" as const }}>
               Page {currentPage} of {pageCount}
             </span>
             <button
@@ -397,13 +397,6 @@ export function AdminBookingsTable() {
           cancelFormRefs.current[target.id]?.requestSubmit();
         }}
       />
-
-      {/* Row hover — dashboard-table is a shared globals.css class with no
-          hover rule of its own; scoped here rather than editing the shared
-          class (see report for the recommended global version). */}
-      <style>{`
-        .admin-bookings-table tbody tr.admin-table-row:hover { background: var(--surface-alt); }
-      `}</style>
     </div>
   );
 }

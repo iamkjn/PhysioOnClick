@@ -42,7 +42,7 @@ export default function AdminPatientDetailPage() {
       <AdminShell backHref="/admin" backLabel="← Back to dashboard">
         <div className="site-shell">
           <section className="page-section stack">
-            <p className="muted" style={{ fontSize: 14 }}>
+            <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
               Admin access required.{" "}
               <Link href="/admin" style={{ color: "var(--primary)", fontWeight: 600 }}>
                 Go to sign in

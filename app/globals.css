@@ -2766,6 +2766,114 @@ textarea:focus {
   text-transform: capitalize;
 }
 
+/* ── Admin chrome (components/admin-*.tsx) ──────────────────────
+   Small shared bits factored out of near-identical inline styles that were
+   duplicated across the admin dashboard/tables/gates before this pass. */
+
+/* The small uppercase label above a dashboard-table-head heading or a
+   section title (e.g. "Bookings", "Live Stats", "Admin") — was hand-rolled
+   as an identical style object in 5+ places. */
+.dashboard-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-sans);
+}
+
+.dashboard-table-head {
+  margin-bottom: var(--space-4);
+}
+
+/* Was declared for an "h3" that no admin table actually renders inside
+   .dashboard-table-head (both admin-bookings-table.tsx and
+   admin-enquiries-table.tsx use an h2) — fixed to match, and folded in the
+   font styling both call sites duplicated inline. */
+.dashboard-table-head h2 {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--color-navy);
+}
+
+/* Eyebrow + serif sub-heading, stacked (not a .dashboard-table-head row) —
+   used by admin-live-stats.tsx's "Live Stats / Dashboard overview" header,
+   which repeated this pair identically for its loading and loaded states. */
+.dashboard-section-header {
+  margin-bottom: var(--space-5);
+}
+.dashboard-section-header h2 {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--color-navy);
+}
+
+/* Hover affordance for admin table rows — admin-bookings-table.tsx and
+   admin-enquiries-table.tsx each carried an identical scoped <style> tag
+   for this; both render <tr className="admin-table-row"> inside a
+   .dashboard-table, so one rule covers both. */
+.dashboard-table tbody tr.admin-table-row:hover {
+  background: var(--surface-alt);
+}
+
+/* Full-bleed navy backdrop shared by admin-sign-in.tsx and the
+   loading/forbidden states in admin-auth-gate.tsx + admin-chat-logs-gate.tsx
+   — all three render the same flex-centered navy screen with a white card
+   on top; each had its own copy of the wrapper + card styling. */
+.admin-gate-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-navy);
+  padding: var(--space-4);
+}
+.admin-gate-screen-wide {
+  padding: var(--space-6);
+}
+.admin-gate-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-panel);
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem var(--space-6);
+  box-shadow: var(--shadow-card);
+}
+.admin-gate-card-wide {
+  max-width: 640px;
+  padding: var(--space-6);
+}
+.admin-gate-card-centered {
+  text-align: center;
+}
+.admin-gate-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-chip);
+  background: var(--gradient-primary);
+  margin-bottom: var(--space-5);
+}
+.admin-gate-message {
+  font-family: var(--font-sans);
+  color: var(--color-navy);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: var(--space-5);
+}
+.admin-gate-button {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-chip);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
 .symptom-checker-wrap {
   display: flex;
   justify-content: center;

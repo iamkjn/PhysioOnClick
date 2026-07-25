@@ -63,10 +63,10 @@ export function AdminPatientsList() {
 
   return (
     <div className="panel stack">
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" as const }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" as const }}>
         <h1 style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Patients</h1>
         {loaded && (
-          <span className="muted" style={{ fontSize: 13 }}>
+          <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
             {filtered.length} of {patients.length} patient{patients.length === 1 ? "" : "s"}
           </span>
         )}
@@ -82,17 +82,17 @@ export function AdminPatientsList() {
       />
 
       {loadError && (
-        <p role="alert" style={{ color: "var(--color-error)", fontSize: 14, margin: 0 }}>{loadError}</p>
+        <p role="alert" style={{ color: "var(--color-error)", fontSize: "var(--text-sm)", margin: 0 }}>{loadError}</p>
       )}
 
       {!loaded ? (
         <SkeletonRow count={6} />
       ) : filtered.length === 0 ? (
-        <p className="muted" style={{ margin: 0, fontSize: 14 }}>
+        <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>
           {patients.length === 0 ? "No patients yet." : `No patients match “${search}”.`}
         </p>
       ) : (
-        <div role="list" aria-label="Patients" style={{ display: "grid", gap: "0.5rem" }}>
+        <div role="list" aria-label="Patients" style={{ display: "grid", gap: "var(--space-2)" }}>
           {filtered.map((p) => (
             <Link
               key={p.uid}
@@ -112,11 +112,11 @@ export function AdminPatientsList() {
             >
               <Avatar name={p.displayName} imageUrl={p.photoUrl} size={38} />
               <span style={{ display: "grid", gap: 2, minWidth: 0 }}>
-                <strong style={{ color: "var(--color-text-primary)", fontSize: 14 }}>{p.displayName}</strong>
+                <strong style={{ color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>{p.displayName}</strong>
                 <span
                   style={{
                     color: "var(--color-text-secondary)",
-                    fontSize: 13,
+                    fontSize: "var(--text-xs)",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",

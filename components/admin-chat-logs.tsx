@@ -111,7 +111,7 @@ export function AdminChatLogs() {
       {filtered.length === 0 ? (
         <p>No chat sessions found.</p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           {filtered.map(s => {
           const date = s.updatedAt
             ? new Date(s.updatedAt.seconds * 1000).toLocaleDateString("en-GB", {
@@ -149,17 +149,17 @@ export function AdminChatLogs() {
                   border: "none",
                   cursor: "pointer",
                   textAlign: "left",
-                  gap: 12,
+                  gap: "var(--space-3)",
                   transition: "background-color 140ms ease",
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14, color: "var(--color-text-primary)" }}>
+                  <div style={{ fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}>
                     {s.patientName}
                   </div>
                   <div
                     style={{
-                      fontSize: 13,
+                      fontSize: "var(--text-xs)",
                       color: "var(--color-text-secondary)",
                       marginTop: 2,
                       overflow: "hidden",
@@ -171,8 +171,8 @@ export function AdminChatLogs() {
                   </div>
                 </div>
                 <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>{date}</div>
-                  <div style={{ fontSize: 12, color: "var(--color-primary-dark)", marginTop: 2 }}>
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>{date}</div>
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--color-primary-dark)", marginTop: 2 }}>
                     {s.messages.length} messages
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export function AdminChatLogs() {
                       <div
                         style={{
                           maxWidth: "80%",
-                          padding: "8px 12px",
+                          padding: "var(--space-2) var(--space-3)",
                           borderRadius:
                             m.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
                           // rule: readable text uses --primary (AA-checked), not the raw
@@ -202,14 +202,14 @@ export function AdminChatLogs() {
                           // under 3:1 contrast.
                           background: m.role === "user" ? "var(--primary)" : "var(--color-primary-light)",
                           color: m.role === "user" ? "white" : "var(--color-text-primary)",
-                          fontSize: 13,
+                          fontSize: "var(--text-xs)",
                           lineHeight: 1.5,
                         }}
                       >
                         {m.text}
                       </div>
                       {m.action && (
-                        <div style={{ marginTop: 4, fontSize: 12, color: "var(--primary)" }}>
+                        <div style={{ marginTop: "var(--space-1)", fontSize: "var(--text-xs)", color: "var(--primary)" }}>
                           → {m.action.label} ({m.action.url})
                         </div>
                       )}

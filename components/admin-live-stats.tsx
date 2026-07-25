@@ -67,10 +67,10 @@ export function AdminLiveStats() {
     background: "var(--color-surface)",
     border: "1px solid var(--color-border)",
     borderRadius: 20,
-    padding: "1.5rem",
+    padding: "var(--space-5)",
     display: "flex",
     flexDirection: "column" as const,
-    gap: "0.5rem",
+    gap: "var(--space-2)",
   };
 
   // Bookings is the primary, revenue-adjacent metric admins act on first —
@@ -97,36 +97,20 @@ export function AdminLiveStats() {
     color: "white",
   };
 
-  const eyebrow: React.CSSProperties = {
-    fontSize: 11,
-    fontWeight: 700,
-    color: "var(--color-text-secondary)",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.08em",
-    fontFamily: "var(--font-sans)",
-  };
-
-  const primaryEyebrow: React.CSSProperties = {
-    ...eyebrow,
-    color: "var(--book-muted-caps)",
-  };
-
-  const muted: React.CSSProperties = {
-    fontSize: 12,
-    color: "var(--color-text-secondary)",
-    fontFamily: "var(--font-sans)",
-  };
+  // The Bookings card is on an accent background, so its eyebrow needs a
+  // lighter override on top of the shared .dashboard-eyebrow class.
+  const primaryEyebrowStyle: React.CSSProperties = { color: "var(--book-muted-caps)" };
 
   const pill = (label: string, bg: string, color: string) => (
-    <span style={{ background: bg, color, borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-sans)" }}>{label}</span>
+    <span style={{ background: bg, color, borderRadius: "var(--radius-pill)", padding: "2px var(--space-2)", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-sans)" }}>{label}</span>
   );
 
   if (!resolvedAuth) {
     return (
       <div>
-        <div style={{ marginBottom: "1.5rem" }}>
-          <span style={eyebrow}>Live Stats</span>
-          <h2 style={{ margin: "0.25rem 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Dashboard overview</h2>
+        <div className="dashboard-section-header">
+          <span className="dashboard-eyebrow">Live Stats</span>
+          <h2>Dashboard overview</h2>
         </div>
         <SkeletonStatGrid count={3} />
       </div>
@@ -135,17 +119,17 @@ export function AdminLiveStats() {
 
   return (
     <div>
-      <div style={{ marginBottom: "1.5rem" }}>
-        <span style={eyebrow}>Live Stats</span>
-        <h2 style={{ margin: "0.25rem 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Dashboard overview</h2>
+      <div className="dashboard-section-header">
+        <span className="dashboard-eyebrow">Live Stats</span>
+        <h2>Dashboard overview</h2>
       </div>
 
       {/* Primary stat row — Bookings gets accent treatment as the metric admins act on first */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "var(--space-4)", marginBottom: "var(--space-5)" }}>
 
         {/* Bookings */}
         <div style={primaryCardStyle}>
-          <span style={primaryEyebrow}>Bookings</span>
+          <span className="dashboard-eyebrow" style={primaryEyebrowStyle}>Bookings</span>
           <p style={primaryBigNum} aria-live="polite">{counts.bookings}</p>
           <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" as const }}>
             {counts.completedBookings > 0 && pill(`${counts.completedBookings} completed`, "rgba(255,255,255,0.18)", "white")}
@@ -155,14 +139,14 @@ export function AdminLiveStats() {
 
         {/* Blogs */}
         <div style={cardStyle}>
-          <span style={eyebrow}>Blogs</span>
+          <span className="dashboard-eyebrow">Blogs</span>
           <p style={bigNum} aria-live="polite">{counts.blogs}</p>
-          <span style={muted}>Live count from Firestore</span>
+          <span className="muted" style={{ fontSize: "var(--text-xs)" }}>Live count from Firestore</span>
         </div>
 
         {/* Enquiries */}
         <div style={cardStyle}>
-          <span style={eyebrow}>Enquiries</span>
+          <span className="dashboard-eyebrow">Enquiries</span>
           <p style={bigNum} aria-live="polite">{counts.enquiries}</p>
           <div style={{ display: "flex", gap: "0.375rem" }}>
             {counts.newEnquiries > 0 && pill(`${counts.newEnquiries} new`, "var(--color-gold-light)", "var(--color-gold)")}

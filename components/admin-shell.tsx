@@ -39,8 +39,8 @@ export function AdminShell({ backHref, backLabel, children }: AdminShellProps) {
           height: 56,
           display: "flex",
           alignItems: "center",
-          padding: "0 1.5rem",
-          gap: "1rem",
+          padding: "0 var(--space-5)",
+          gap: "var(--space-4)",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", flex: 1 }}>
@@ -79,13 +79,13 @@ export function AdminShell({ backHref, backLabel, children }: AdminShellProps) {
             Admin
           </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
           {backHref && (
             <Link
               href={backHref}
               style={{
                 color: "rgba(255,255,255,0.75)",
-                fontSize: 13,
+                fontSize: "var(--text-xs)",
                 fontWeight: 600,
                 fontFamily: "var(--font-sans)",
                 textDecoration: "none",
@@ -95,7 +95,7 @@ export function AdminShell({ backHref, backLabel, children }: AdminShellProps) {
             </Link>
           )}
           {user?.email && (
-            <span style={{ color: "rgba(255,255,255,0.55)", fontSize: 13, fontFamily: "var(--font-sans)" }}>
+            <span style={{ color: "rgba(255,255,255,0.55)", fontSize: "var(--text-xs)", fontFamily: "var(--font-sans)" }}>
               {user.email}
             </span>
           )}
@@ -105,12 +105,12 @@ export function AdminShell({ backHref, backLabel, children }: AdminShellProps) {
               background: "none",
               border: "none",
               color: "var(--color-primary)",
-              fontSize: 13,
+              fontSize: "var(--text-xs)",
               fontWeight: 600,
               cursor: "pointer",
               fontFamily: "var(--font-sans)",
               minHeight: 44,
-              padding: "0 0.25rem",
+              padding: "0 var(--space-1)",
             }}
           >
             Sign out

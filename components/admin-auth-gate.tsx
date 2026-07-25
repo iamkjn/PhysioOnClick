@@ -21,9 +21,9 @@ export function AdminAuthGate() {
 
   if (status === "loading") {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--color-navy)", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-        <div style={{ width: "100%", maxWidth: 640, background: "var(--color-surface)", borderRadius: 20, padding: "2rem", boxShadow: "var(--shadow-card)" }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: "var(--gradient-primary)", marginBottom: "1.5rem" }} />
+      <div className="admin-gate-screen admin-gate-screen-wide">
+        <div className="admin-gate-card admin-gate-card-wide">
+          <div className="admin-gate-icon" />
           <SkeletonStatGrid count={4} />
         </div>
       </div>
@@ -34,15 +34,12 @@ export function AdminAuthGate() {
 
   if (status === "forbidden") {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--color-navy)", padding: "1rem" }}>
-        <div style={{ background: "var(--color-surface)", borderRadius: 20, padding: "2.5rem 2rem", width: "100%", maxWidth: 420, boxShadow: "var(--shadow-card)", textAlign: "center" }}>
-          <p style={{ fontFamily: "var(--font-sans)", color: "var(--color-navy)", fontSize: 15, lineHeight: 1.6, marginBottom: "1.5rem" }}>
+      <div className="admin-gate-screen">
+        <div className="admin-gate-card admin-gate-card-centered">
+          <p className="admin-gate-message">
             This account doesn&apos;t have admin access to PhysioOnClick.
           </p>
-          <button
-            onClick={() => auth && signOut(auth)}
-            style={{ background: "var(--color-primary)", color: "#fff", border: "none", borderRadius: 10, padding: "0.75rem 1.5rem", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-sans)", cursor: "pointer" }}
-          >
+          <button onClick={() => auth && signOut(auth)} className="admin-gate-button">
             Sign out
           </button>
         </div>

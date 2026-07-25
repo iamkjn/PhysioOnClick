@@ -54,11 +54,11 @@ export function AdminDashboard() {
         style={{
           background: "var(--color-surface)",
           borderBottom: "1px solid var(--color-border)",
-          padding: "0 1.5rem",
+          padding: "0 var(--space-5)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: "1rem",
+          gap: "var(--space-4)",
         }}
       >
         <div
@@ -83,7 +83,7 @@ export function AdminDashboard() {
                 color: activeTab === tab.key ? "var(--color-navy)" : "var(--color-text-secondary)",
                 fontFamily: "var(--font-sans)",
                 fontWeight: activeTab === tab.key ? 700 : 400,
-                fontSize: 14,
+                fontSize: "var(--text-sm)",
                 padding: "0.875rem 1.25rem",
                 minHeight: 46,
                 cursor: "pointer",
@@ -101,7 +101,7 @@ export function AdminDashboard() {
             color: "var(--primary)",
             fontFamily: "var(--font-sans)",
             fontWeight: 600,
-            fontSize: 14,
+            fontSize: "var(--text-sm)",
             textDecoration: "none",
             padding: "0.875rem 0.25rem",
             display: "inline-flex",
@@ -115,7 +115,7 @@ export function AdminDashboard() {
       </div>
 
       {/* Tab content */}
-      <main style={{ maxWidth: 1340, margin: "0 auto", padding: "2rem 1.5rem" }}>
+      <main style={{ maxWidth: "var(--shell)", margin: "0 auto", padding: "var(--space-6) var(--space-5)" }}>
         <div id="admin-tabpanel-bookings" role="tabpanel" aria-labelledby="admin-tab-bookings" hidden={activeTab !== "bookings"}>
           {activeTab === "bookings" && <AdminBookingsTable />}
         </div>

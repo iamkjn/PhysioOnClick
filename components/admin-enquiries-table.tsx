@@ -77,16 +77,16 @@ export function AdminEnquiriesTable() {
 
   return (
     <div>
-      <div className="dashboard-table-head" style={{ marginBottom: "1rem" }}>
+      <div className="dashboard-table-head">
         <div>
-          <span style={{ fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase" as const, letterSpacing: "0.08em", fontFamily: "var(--font-sans)" }}>
+          <span className="dashboard-eyebrow">
             Enquiries
           </span>
-          <h2 style={{ margin: "0.25rem 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>
+          <h2>
             Latest contact form submissions
           </h2>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
           <span className="dashboard-table-count">{enquiries.length} enquiries</span>
           {newCount > 0 && (
             <span className="dashboard-status-pill status-pending">{newCount} new</span>
@@ -97,14 +97,14 @@ export function AdminEnquiriesTable() {
       {loading && <SkeletonTable rows={5} columns={6} />}
 
       {!loading && enquiries.length === 0 && (
-        <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", padding: "2rem 0" }}>
+        <p style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", padding: "var(--space-6) 0" }}>
           No enquiries yet.
         </p>
       )}
 
       {!loading && enquiries.length > 0 && (
         <div className="dashboard-table-wrap">
-          <table className="dashboard-table admin-enquiries-table">
+          <table className="dashboard-table">
             <caption className="sr-only">Latest contact form enquiries with contact details and status</caption>
             <thead>
               <tr>
@@ -121,7 +121,7 @@ export function AdminEnquiriesTable() {
                 const isExp = expanded[item.id] ?? false;
                 return (
                   <tr key={item.id} className="admin-table-row">
-                    <td style={{ color: "var(--color-text-secondary)", fontSize: 12, whiteSpace: "nowrap" as const, fontFamily: "var(--font-sans)" }}>
+                    <td style={{ color: "var(--color-text-secondary)", fontSize: "var(--text-xs)", whiteSpace: "nowrap" as const, fontFamily: "var(--font-sans)" }}>
                       {item.createdAtLabel}
                     </td>
                     <td style={{ color: "var(--color-navy)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>
@@ -130,7 +130,7 @@ export function AdminEnquiriesTable() {
                     <td style={{ color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>
                       {item.service}
                     </td>
-                    <td style={{ color: "var(--color-text-secondary)", fontSize: 12, fontFamily: "var(--font-sans)" }}>
+                    <td style={{ color: "var(--color-text-secondary)", fontSize: "var(--text-xs)", fontFamily: "var(--font-sans)" }}>
                       {item.email}
                     </td>
                     <td className="dashboard-message-cell">
@@ -155,7 +155,7 @@ export function AdminEnquiriesTable() {
                             background: "none",
                             border: "none",
                             color: "var(--color-primary-dark)",
-                            fontSize: 12,
+                            fontSize: "var(--text-xs)",
                             fontWeight: 600,
                             cursor: "pointer",
                             padding: "2px 0",
@@ -179,7 +179,7 @@ export function AdminEnquiriesTable() {
                             cursor: "pointer",
                             appearance: "none",
                             WebkitAppearance: "none",
-                            paddingRight: "1.5rem",
+                            paddingRight: "var(--space-5)",
                             font: "inherit",
                           }}
                         >
@@ -189,7 +189,7 @@ export function AdminEnquiriesTable() {
                         </select>
                         <span
                           aria-hidden="true"
-                          style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 10 }}
+                          style={{ position: "absolute", right: "var(--space-2)", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 10 }}
                         >▾</span>
                       </span>
                     </td>
@@ -200,12 +200,6 @@ export function AdminEnquiriesTable() {
           </table>
         </div>
       )}
-
-      {/* Row hover — see admin-bookings-table.tsx for the same pattern and
-          the recommended shared globals.css rule in the report. */}
-      <style>{`
-        .admin-enquiries-table tbody tr.admin-table-row:hover { background: var(--surface-alt); }
-      `}</style>
     </div>
   );
 }
