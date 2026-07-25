@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,9 +11,21 @@ import '../appointments/appointments_screen.dart';
 import '../auth/sign_in_screen.dart';
 import '../auth/sign_up_screen.dart';
 import '../../core/page_transitions.dart';
+import '../motion/motion_check_screen.dart';
+import '../motion/motion_service.dart';
+import '../motion/motion_targets.dart';
 import '../people/people_screen.dart';
 import 'exercise_video.dart';
 import 'rehab_program.dart';
+
+/// Cached across the whole session — `availableCameras()` talks to platform
+/// hardware, so only probe it once rather than once per exercise row.
+Future<bool>? _deviceHasCameraFuture;
+
+Future<bool> _deviceHasCamera() {
+  return _deviceHasCameraFuture ??=
+      availableCameras().then((cameras) => cameras.isNotEmpty).catchError((_) => false);
+}
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -113,7 +126,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 18),
               Text('Assigned rehab programmes', style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),
-              _RehabProgramsSection(userEmail: user.email ?? ''),
+              _RehabProgramsSection(userEmail: user.email ?? '', uid: user.uid),
               const SizedBox(height: 18),
               Text('Saved blog articles', style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),
@@ -455,9 +468,10 @@ class _SecureUploadsSectionState extends State<_SecureUploadsSection> {
 }
 
 class _RehabProgramsSection extends StatelessWidget {
-  const _RehabProgramsSection({required this.userEmail});
+  const _RehabProgramsSection({required this.userEmail, required this.uid});
 
   final String userEmail;
+  final String uid;
 
   @override
   Widget build(BuildContext context) {
@@ -528,7 +542,7 @@ class _RehabProgramsSection extends StatelessWidget {
                       const SizedBox(height: 14),
                       Text('Assigned exercises', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
                       const SizedBox(height: 10),
-                      _ExerciseLibrarySection(exerciseIds: program.exerciseIds),
+                      _ExerciseLibrarySection(exerciseIds: program.exerciseIds, uid: uid),
                     ],
                   ),
                 ),
@@ -542,9 +556,10 @@ class _RehabProgramsSection extends StatelessWidget {
 }
 
 class _ExerciseLibrarySection extends StatelessWidget {
-  const _ExerciseLibrarySection({required this.exerciseIds});
+  const _ExerciseLibrarySection({required this.exerciseIds, required this.uid});
 
   final List<String> exerciseIds;
+  final String uid;
 
   Future<List<ExerciseVideo>> _loadExercises() async {
     if (exerciseIds.isEmpty) {
@@ -609,11 +624,75 @@ class _ExerciseLibrarySection extends StatelessWidget {
                         style: theme.textTheme.bodySmall?.copyWith(color: const Color(0xFF2380C8)),
                       ),
                     ],
+                    _CheckMotionButton(
+                      exerciseId: item.id,
+                      exerciseTitle: item.title,
+                      uid: uid,
+                    ),
                   ],
                 ),
               ),
             );
           }).toList(),
+        );
+      },
+    );
+  }
+}
+
+/// Renders a "Check your {bodyPart} motion" button under an exercise card
+/// when — and only when — that exercise has a motion target configured
+/// (`exerciseMotionTargets/{exerciseId}` or a code default) AND the device
+/// reports at least one camera. Renders nothing otherwise, so exercises
+/// without motion grading (e.g. balance work) are unaffected.
+class _CheckMotionButton extends StatelessWidget {
+  const _CheckMotionButton({
+    required this.exerciseId,
+    required this.exerciseTitle,
+    required this.uid,
+  });
+
+  final String exerciseId;
+  final String exerciseTitle;
+  final String uid;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<MotionTarget?>(
+      future: MotionService.getMotionTarget(exerciseId),
+      builder: (context, targetSnapshot) {
+        final target = targetSnapshot.data;
+        if (targetSnapshot.connectionState != ConnectionState.done || target == null) {
+          return const SizedBox.shrink();
+        }
+
+        return FutureBuilder<bool>(
+          future: _deviceHasCamera(),
+          builder: (context, cameraSnapshot) {
+            if (cameraSnapshot.data != true) {
+              return const SizedBox.shrink();
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MotionCheckScreen(
+                      exerciseId: exerciseId,
+                      exerciseTitle: exerciseTitle,
+                      target: target,
+                      uid: uid,
+                      personId: uid,
+                    ),
+                  ),
+                ),
+                icon: const Icon(Icons.videocam_rounded),
+                label: Text('Check your ${target.bodyPart.toLowerCase()} motion'),
+              ),
+            );
+          },
         );
       },
     );
