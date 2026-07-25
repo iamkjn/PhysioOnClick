@@ -128,7 +128,7 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
   const detectorRef = useRef<PoseDetector | null>(null);
   const judgeRef = useRef<MotionJudge | null>(null);
   const rafRef = useRef<number | null>(null);
-  const stoppedRef = useRef(false);
+  const savingRef = useRef(false);
   const phaseRef = useRef<Phase>('requesting');
   const lastSeenAtRef = useRef(0);
   const startedAtRef = useRef(0);
@@ -159,7 +159,16 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
   }, []);
 
   useEffect(() => {
-    stoppedRef.current = false;
+    // `cancelled` is a closure-local guard, own to THIS effect invocation —
+    // not a shared ref. Under StrictMode's dev mount->unmount->remount, a
+    // shared ref gets reset by the second invocation, so a still-pending
+    // getUserMedia()/createPoseDetector() from the first invocation would
+    // read the reset flag and wrongly believe it's still current, then
+    // overwrite the stream/detector the second invocation created —
+    // orphaning the first invocation's tracks (camera stays on after
+    // close). With a per-invocation local, a stale invocation always sees
+    // its own `cancelled = true` and tears down its OWN resources instead.
+    let cancelled = false;
 
     const stopMedia = () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -169,7 +178,7 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
     };
 
     function loop(now: number) {
-      if (stoppedRef.current) return;
+      if (cancelled) return;
       const video = videoRef.current;
       const canvas = canvasRef.current;
       const detector = detectorRef.current;
@@ -200,10 +209,12 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
       } catch {
-        if (!stoppedRef.current) setPhase('denied');
+        if (!cancelled) setPhase('denied');
         return;
       }
-      if (stoppedRef.current) {
+      if (cancelled) {
+        // A stale invocation — tear down the stream IT just created; never
+        // touch the shared refs, which may already belong to a newer one.
         stream.getTracks().forEach((t) => t.stop());
         return;
       }
@@ -218,17 +229,24 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
           // the stream is still attached and will render once allowed.
         }
       }
+      if (cancelled) {
+        stream.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+        return;
+      }
 
       let detector: PoseDetector;
       try {
         detector = await createPoseDetector();
       } catch {
-        if (!stoppedRef.current) setPhase('denied');
+        if (!cancelled) setPhase('denied');
         stopMedia();
         return;
       }
-      if (stoppedRef.current) {
+      if (cancelled) {
         detector.close();
+        stream.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
         return;
       }
       detectorRef.current = detector;
@@ -243,7 +261,7 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
     start();
 
     return () => {
-      stoppedRef.current = true;
+      cancelled = true;
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
       stopMedia();
@@ -252,7 +270,11 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
   }, [attempt]);
 
   async function handleFinish() {
-    stoppedRef.current = true;
+    // Guard against a rapid double-tap firing this twice before the
+    // re-render that hides the Finish button — a ref (not state) so the
+    // check is synchronous and immune to React's batching.
+    if (savingRef.current) return;
+    savingRef.current = true;
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
     setPhase('saving');
@@ -388,9 +410,9 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
 
             {phase === 'denied' && (
               <div className="motion-check-status-panel motion-check-status-panel--error">
-                <p className="motion-check-status-title">We couldn&rsquo;t access your camera</p>
+                <p className="motion-check-status-title">We couldn&rsquo;t start the camera</p>
                 <p className="motion-check-status-sub">
-                  Check your browser&rsquo;s camera permission for this site, then try again.
+                  Check that this site has camera permission and that no other app is using it, then try again.
                 </p>
                 <div className="motion-check-status-actions">
                   <button type="button" className="motion-check-btn motion-check-btn--secondary" onClick={onClose}>
@@ -415,7 +437,12 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
         <footer className="motion-check-footer">
           <p className="motion-check-disclaimer">Movement feedback only &mdash; not a medical assessment.</p>
           {(phase === 'running' || phase === 'no-track') && (
-            <button type="button" className="motion-check-btn motion-check-btn--primary motion-check-btn-finish" onClick={handleFinish}>
+            <button
+              type="button"
+              className="motion-check-btn motion-check-btn--primary motion-check-btn-finish"
+              onClick={handleFinish}
+              disabled={savingRef.current}
+            >
               Finish
             </button>
           )}

@@ -20,15 +20,23 @@ const exerciseTitles = new Map(allExercises.map((e) => [e.id, e.title]));
 export function AdminMotionSessions({ patientUid, personId }: Props) {
   const [sessions, setSessions] = useState<MotionSession[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoaded(false);
-    getMotionSessions(patientUid, personId).then((s) => {
-      if (cancelled) return;
-      setSessions(s);
-      setLoaded(true);
-    });
+    setLoadError(null);
+    getMotionSessions(patientUid, personId)
+      .then((s) => {
+        if (cancelled) return;
+        setSessions(s);
+        setLoaded(true);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setLoadError("Couldn't load — try again.");
+        setLoaded(true);
+      });
     return () => {
       cancelled = true;
     };
@@ -39,6 +47,15 @@ export function AdminMotionSessions({ patientUid, personId }: Props) {
       <div className="panel stack">
         <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Motion check sessions</h2>
         <SkeletonTable rows={3} columns={6} />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="panel stack">
+        <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Motion check sessions</h2>
+        <p className="field-error">{loadError}</p>
       </div>
     );
   }
