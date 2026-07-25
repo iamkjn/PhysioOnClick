@@ -250,21 +250,21 @@ export function AdminPatientDetail({ patientUid }: Props) {
   if (patient === null) {
     return (
       <div className="panel stack">
-        <p className="muted" style={{ fontSize: 14 }}>This patient record couldn&apos;t be found.</p>
+        <p className="muted" style={{ fontSize: "var(--text-sm)" }}>This patient record couldn&apos;t be found.</p>
       </div>
     );
   }
 
   return (
-    <div className="stack" style={{ gap: "1.5rem" }}>
+    <div className="stack" style={{ gap: "var(--space-5)" }}>
       {/* Header */}
-      <div className="panel" style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" as const }}>
+      <div className="panel" style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", flexWrap: "wrap" as const }}>
         <Avatar name={patient.displayName} imageUrl={patient.photoUrl} size={52} />
         <div style={{ flex: 1, minWidth: 200 }}>
           <h1 style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>
             {patient.displayName}
           </h1>
-          <p className="muted" style={{ margin: "2px 0 0", fontSize: 13 }}>
+          <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--text-xs)" }}>
             {patient.email}{patient.phoneNumber ? ` · ${patient.phoneNumber}` : ""}
           </p>
         </div>
@@ -285,14 +285,14 @@ export function AdminPatientDetail({ patientUid }: Props) {
           {latestPain === undefined ? (
             <Skeleton height="2rem" width="60%" />
           ) : latestPain === null ? (
-            <p className="muted" style={{ margin: 0, fontSize: 14 }}>No pain check-ins logged yet.</p>
+            <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No pain check-ins logged yet.</p>
           ) : (
             <>
               <p style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 32, fontWeight: 800, color: "var(--color-navy)" }}>
                 {latestPain.score}
-                <span style={{ fontSize: 16, fontWeight: 400, color: "var(--color-text-secondary)" }}>/10</span>
+                <span style={{ fontSize: "var(--text-base)", fontWeight: 400, color: "var(--color-text-secondary)" }}>/10</span>
               </p>
-              <p className="muted" style={{ margin: 0, fontSize: 13 }}>
+              <p className="muted" style={{ margin: 0, fontSize: "var(--text-xs)" }}>
                 Logged {latestPain.date}
                 {latestPain.note ? ` · “${latestPain.note}”` : ""}
               </p>
@@ -308,14 +308,14 @@ export function AdminPatientDetail({ patientUid }: Props) {
       <div className="panel stack">
         <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Bookings</h2>
         {bookingsError && (
-          <p role="alert" style={{ color: "var(--color-error)", fontSize: 14, margin: 0 }}>Could not load bookings.</p>
+          <p role="alert" style={{ color: "var(--color-error)", fontSize: "var(--text-sm)", margin: 0 }}>Could not load bookings.</p>
         )}
         {!bookings ? (
           <SkeletonRow count={3} />
         ) : bookings.length === 0 ? (
-          <p className="muted" style={{ margin: 0, fontSize: 14 }}>No bookings for {person.name || "this person"} yet.</p>
+          <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No bookings for {person.name || "this person"} yet.</p>
         ) : (
-          <div style={{ display: "grid", gap: "0.5rem" }}>
+          <div style={{ display: "grid", gap: "var(--space-2)" }}>
             {bookings.map((b) => {
               const status = displayStatus(b);
               return (
@@ -324,15 +324,15 @@ export function AdminPatientDetail({ patientUid }: Props) {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.75rem",
+                  gap: "var(--space-3)",
                   flexWrap: "wrap" as const,
                   padding: "0.6rem 0",
                   borderBottom: "1px solid var(--color-border)",
                 }}
               >
                 <div style={{ flex: 1, minWidth: 160 }}>
-                  <strong style={{ display: "block", fontSize: 14, color: "var(--color-text-primary)" }}>{b.service}</strong>
-                  <span className="muted" style={{ fontSize: 13 }}>
+                  <strong style={{ display: "block", fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}>{b.service}</strong>
+                  <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
                     {b.sessionDate.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                   </span>
                 </div>
@@ -348,7 +348,7 @@ export function AdminPatientDetail({ patientUid }: Props) {
                       border: "1.5px solid var(--color-error)",
                       color: "var(--color-error)",
                       padding: "0 10px",
-                      fontSize: 13,
+                      fontSize: "var(--text-xs)",
                       cursor: cancelling === b.id ? "not-allowed" : "pointer",
                       opacity: cancelling === b.id ? 0.6 : 1,
                     }}
@@ -370,17 +370,17 @@ export function AdminPatientDetail({ patientUid }: Props) {
           {!assessments ? (
             <SkeletonRow count={2} />
           ) : assessments.length === 0 ? (
-            <p className="muted" style={{ margin: 0, fontSize: 14 }}>No assessments recorded yet.</p>
+            <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No assessments recorded yet.</p>
           ) : (
-            <div style={{ display: "grid", gap: "0.5rem" }}>
+            <div style={{ display: "grid", gap: "var(--space-2)" }}>
               {assessments.map((a) => (
-                <div key={a.date} style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--color-border)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", fontSize: 13 }}>
+                <div key={a.date} style={{ padding: "var(--space-2) 0", borderBottom: "1px solid var(--color-border)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: "var(--space-3)", fontSize: "var(--text-xs)" }}>
                     <strong style={{ color: "var(--color-text-primary)" }}>{a.date}</strong>
                     <span className="muted">Pain {a.painScore}/10 · Mobility {a.mobilityScore}/10</span>
                   </div>
                   {a.physioNotes && (
-                    <p className="muted" style={{ margin: "4px 0 0", fontSize: 13 }}>{a.physioNotes}</p>
+                    <p className="muted" style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)" }}>{a.physioNotes}</p>
                   )}
                 </div>
               ))}
@@ -401,16 +401,16 @@ export function AdminPatientDetail({ patientUid }: Props) {
         {!bookings ? (
           <SkeletonRow count={2} />
         ) : bookings.length === 0 ? (
-          <p className="muted" style={{ margin: 0, fontSize: 14 }}>No bookings to summarise yet.</p>
+          <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No bookings to summarise yet.</p>
         ) : (
-          <div style={{ display: "grid", gap: "0.75rem" }}>
+          <div style={{ display: "grid", gap: "var(--space-3)" }}>
             {bookings.map((b) => {
               const summary = summaries[b.id];
               const status = displayStatus(b);
               return (
-                <div key={b.id} style={{ padding: "0.75rem 0", borderBottom: "1px solid var(--color-border)" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" as const }}>
-                    <strong style={{ fontSize: 14, color: "var(--color-text-primary)" }}>
+                <div key={b.id} style={{ padding: "var(--space-3) 0", borderBottom: "1px solid var(--color-border)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" as const }}>
+                    <strong style={{ fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}>
                       {b.service} · {b.sessionDate.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                     </strong>
                     {status === "completed" && summary === null && (
@@ -421,7 +421,7 @@ export function AdminPatientDetail({ patientUid }: Props) {
                     )}
                   </div>
                   {summary && (
-                    <div style={{ marginTop: "0.5rem", display: "grid", gap: "0.4rem", fontSize: 13 }}>
+                    <div style={{ marginTop: "var(--space-2)", display: "grid", gap: "0.4rem", fontSize: "var(--text-xs)" }}>
                       <p style={{ margin: 0 }}><strong>Worked on:</strong> {summary.workedOn}</p>
                       <p style={{ margin: 0 }}><strong>Exercises:</strong> {summary.exercises}</p>
                       <p style={{ margin: 0 }}><strong>Next steps:</strong> {summary.nextSteps}</p>
@@ -433,7 +433,7 @@ export function AdminPatientDetail({ patientUid }: Props) {
                     </div>
                   )}
                   {summary === undefined && (
-                    <p className="muted" style={{ margin: "0.4rem 0 0", fontSize: 13 }}>Loading…</p>
+                    <p className="muted" style={{ margin: "0.4rem 0 0", fontSize: "var(--text-xs)" }}>Loading…</p>
                   )}
                 </div>
               );

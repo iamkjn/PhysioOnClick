@@ -116,8 +116,11 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
   const canPublish = !!form.workedOn && !!form.exercises && !!form.nextSteps && form.sessionOutcome !== null;
 
-  const labelStyle: React.CSSProperties = { fontSize: 14, fontWeight: 700, color: "var(--color-text-secondary)", display: "block", marginBottom: 4, fontFamily: "var(--font-sans)", textTransform: "uppercase", letterSpacing: "0.06em" };
-  const textareaStyle: React.CSSProperties = { width: "100%", border: "1.5px solid var(--color-border)", borderRadius: 10, padding: "0.5rem 0.75rem", fontSize: 14, resize: "vertical" as const, boxSizing: "border-box" as const, fontFamily: "var(--font-sans)", color: "var(--color-navy)" };
+  const labelStyle: React.CSSProperties = { fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-text-secondary)", display: "block", marginBottom: "var(--space-1)", fontFamily: "var(--font-sans)", textTransform: "uppercase", letterSpacing: "0.06em" };
+  const textareaStyle: React.CSSProperties = { width: "100%", border: "1.5px solid var(--color-border)", borderRadius: "var(--radius-chip)", padding: "var(--space-2) var(--space-3)", fontSize: "var(--text-sm)", resize: "vertical" as const, boxSizing: "border-box" as const, fontFamily: "var(--font-sans)", color: "var(--color-navy)" };
+  // Shared heading style for the three drawer sections below — only the
+  // Follow-up section overrides the bottom margin (0.75rem vs 1rem).
+  const sectionTitleStyle: React.CSSProperties = { margin: "0 0 var(--space-4)", fontFamily: "var(--font-serif)", fontSize: "var(--text-base)", color: "var(--color-navy)" };
 
   const OUTCOMES: { key: Outcome; label: string; color: string; tint: string }[] = [
     { key: "improving", label: "Improving ↑", color: "var(--color-success)", tint: "var(--color-success-light)" },
@@ -129,7 +132,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
     return (
       <button
         onClick={() => setOpen(true)}
-        style={{ background: "var(--color-primary-light)", border: "1px solid var(--color-primary-dark)", borderRadius: "var(--radius-chip)", color: "var(--color-primary-dark)", cursor: "pointer", fontSize: 14, fontWeight: 600, minHeight: 36, padding: "0 12px", fontFamily: "var(--font-sans)" }}
+        style={{ background: "var(--color-primary-light)", border: "1px solid var(--color-primary-dark)", borderRadius: "var(--radius-chip)", color: "var(--color-primary-dark)", cursor: "pointer", fontSize: "var(--text-sm)", fontWeight: 600, minHeight: 36, padding: "0 var(--space-3)", fontFamily: "var(--font-sans)" }}
       >
         <span aria-hidden="true">📋</span> Write summary
       </button>
@@ -148,27 +151,27 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
       <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "min(480px, 100vw)", background: "var(--color-surface)", zIndex: 201, overflowY: "auto", boxShadow: "-4px 0 32px rgba(0,0,0,0.15)", display: "flex", flexDirection: "column" as const }}>
 
         {/* Drawer header */}
-        <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem", position: "sticky", top: 0, background: "var(--color-surface)", zIndex: 1 }}>
+        <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", position: "sticky", top: 0, background: "var(--color-surface)", zIndex: 1 }}>
           <div>
             <h3 style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Session Summary</h3>
-            <p style={{ margin: "0.25rem 0 0", fontSize: 13, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{booking.patientName} · {booking.service}</p>
+            <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{booking.patientName} · {booking.service}</p>
           </div>
           <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--color-text-secondary)", lineHeight: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 44, minHeight: 44, margin: "-0.75rem -0.75rem 0 0" }} aria-label="Close">×</button>
         </div>
 
-        <div style={{ padding: "1.5rem", display: "grid", gap: "1.5rem", flex: 1 }}>
+        <div style={{ padding: "var(--space-5)", display: "grid", gap: "var(--space-5)", flex: 1 }}>
 
           {/* ── Assessment Scores ── */}
           <section>
-            <h4 style={{ margin: "0 0 1rem", fontFamily: "var(--font-serif)", fontSize: 16, color: "var(--color-navy)" }}>Assessment Scores</h4>
-            <div style={{ display: "grid", gap: "1rem" }}>
+            <h4 style={sectionTitleStyle}>Assessment Scores</h4>
+            <div style={{ display: "grid", gap: "var(--space-4)" }}>
 
               {/* Pain score */}
               <div>
                 {/* htmlFor/id — the label previously wrapped only the caption
                     text, leaving the range input with no accessible name. */}
                 <label htmlFor="summary-pain-score" style={labelStyle}>Pain level today (0 = none · 10 = worst)</label>
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
                   <input
                     id="summary-pain-score"
                     type="range" min={0} max={10} step={1}
@@ -177,7 +180,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                     aria-valuetext={`${form.painScore} out of 10`}
                     style={{ flex: 1, accentColor: getPainColor(form.painScore) }}
                   />
-                  <span style={{ background: getPainColor(form.painScore), color: "#fff", borderRadius: 999, padding: "3px 12px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-sans)", minWidth: 36, textAlign: "center" as const }}>
+                  <span style={{ background: getPainColor(form.painScore), color: "#fff", borderRadius: "var(--radius-pill)", padding: "3px var(--space-3)", fontSize: "var(--text-sm)", fontWeight: 700, fontFamily: "var(--font-sans)", minWidth: 36, textAlign: "center" as const }}>
                     {form.painScore}
                   </span>
                 </div>
@@ -186,9 +189,9 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
               {/* Recovery % */}
               <div>
                 <label htmlFor="summary-recovery-percent" style={labelStyle}>Estimated recovery progress</label>
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
                   <RecoveryRing percent={form.recoveryPercent} />
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                     <input
                       id="summary-recovery-percent"
                       type="number" min={0} max={100} step={1}
@@ -196,9 +199,9 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                       onChange={(e) => setForm((f) => ({ ...f, recoveryPercent: Math.min(100, Math.max(0, Number(e.target.value) || 0)) }))}
                       aria-invalid={errors.recoveryPercent ? true : undefined}
                       aria-describedby={errors.recoveryPercent ? "err-recovery-percent" : undefined}
-                      style={{ border: "1.5px solid var(--color-border)", borderRadius: "var(--radius-input)", padding: "0.5rem 0.75rem", fontSize: 16, fontWeight: 700, width: 72, fontFamily: "var(--font-sans)", color: "var(--color-navy)" }}
+                      style={{ border: "1.5px solid var(--color-border)", borderRadius: "var(--radius-input)", padding: "var(--space-2) var(--space-3)", fontSize: "var(--text-base)", fontWeight: 700, width: 72, fontFamily: "var(--font-sans)", color: "var(--color-navy)" }}
                     />
-                    <span style={{ fontSize: 16, fontWeight: 700, color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>%</span>
+                    <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>%</span>
                   </div>
                 </div>
                 {errors.recoveryPercent && <span className="field-error" id="err-recovery-percent">{errors.recoveryPercent}</span>}
@@ -207,7 +210,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
               {/* Session outcome */}
               <div role="group" aria-label="Session outcome">
                 <span style={labelStyle}>Session outcome</span>
-                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" as const }}>
+                <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" as const }}>
                   {OUTCOMES.map((o) => (
                     <button
                       key={o.key}
@@ -218,10 +221,10 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                         background: form.sessionOutcome === o.key ? o.tint : "var(--color-surface)",
                         color: form.sessionOutcome === o.key ? o.color : "var(--color-text-secondary)",
                         border: `1.5px solid ${form.sessionOutcome === o.key ? o.color : "var(--color-border)"}`,
-                        borderRadius: 999,
-                        padding: "0 16px",
+                        borderRadius: "var(--radius-pill)",
+                        padding: "0 var(--space-4)",
                         minHeight: 40,
-                        fontSize: 14,
+                        fontSize: "var(--text-sm)",
                         fontWeight: 600,
                         cursor: "pointer",
                         fontFamily: "var(--font-sans)",
@@ -239,10 +242,10 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
           {/* ── Session Notes ── */}
           <section>
-            <h4 style={{ margin: "0 0 1rem", fontFamily: "var(--font-serif)", fontSize: 16, color: "var(--color-navy)" }}>
-              Session Notes <span style={{ fontFamily: "var(--font-sans)", fontSize: 12, fontWeight: 400, color: "var(--color-text-secondary)", textTransform: "none" as const }}>· all three required</span>
+            <h4 style={sectionTitleStyle}>
+              Session Notes <span style={{ fontFamily: "var(--font-sans)", fontSize: "var(--text-xs)", fontWeight: 400, color: "var(--color-text-secondary)", textTransform: "none" as const }}>· all three required</span>
             </h4>
-            <div style={{ display: "grid", gap: "0.75rem" }}>
+            <div style={{ display: "grid", gap: "var(--space-3)" }}>
               <label>
                 <span style={labelStyle}>What we worked on today *</span>
                 <textarea
@@ -293,8 +296,8 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
           {/* ── Follow-up ── */}
           <section>
-            <h4 style={{ margin: "0 0 0.75rem", fontFamily: "var(--font-serif)", fontSize: 16, color: "var(--color-navy)" }}>Recommend Follow-up</h4>
-            <div role="group" aria-label="Recommend follow-up" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" as const }}>
+            <h4 style={{ ...sectionTitleStyle, margin: "0 0 var(--space-3)" }}>Recommend Follow-up</h4>
+            <div role="group" aria-label="Recommend follow-up" style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" as const }}>
               {FOLLOW_UP_OPTIONS.map((w) => (
                 <button
                   key={w}
@@ -305,10 +308,10 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                     background: form.followUpWeeks === w ? "var(--color-primary-light)" : "var(--color-surface)",
                     color: form.followUpWeeks === w ? "var(--color-primary-dark)" : "var(--color-text-secondary)",
                     border: `1.5px solid ${form.followUpWeeks === w ? "var(--color-primary-dark)" : "var(--color-border)"}`,
-                    borderRadius: 999,
+                    borderRadius: "var(--radius-pill)",
                     padding: "0 14px",
                     minHeight: 40,
-                    fontSize: 14,
+                    fontSize: "var(--text-sm)",
                     fontWeight: 600,
                     cursor: "pointer",
                     fontFamily: "var(--font-sans)",
@@ -323,21 +326,21 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
         </div>
 
         {/* Sticky footer */}
-        <div style={{ padding: "1rem 1.5rem", borderTop: "1px solid var(--color-border)", display: "flex", flexDirection: "column" as const, gap: "0.5rem", position: "sticky", bottom: 0, background: "var(--color-surface)" }}>
+        <div style={{ padding: "var(--space-4) var(--space-5)", borderTop: "1px solid var(--color-border)", display: "flex", flexDirection: "column" as const, gap: "var(--space-2)", position: "sticky", bottom: 0, background: "var(--color-surface)" }}>
           <button
             onClick={handlePublish}
             disabled={saving || !canPublish}
             // Readable white-on-accent needs the darker --primary — raw
             // --color-primary under white text was ~2.8:1, well under AA.
-            style={{ background: canPublish ? "var(--primary)" : "var(--color-border)", color: "#fff", border: "none", borderRadius: "var(--radius-input)", minHeight: 46, padding: "0.875rem", fontSize: 16, fontWeight: 700, fontFamily: "var(--font-sans)", cursor: canPublish && !saving ? "pointer" : "not-allowed", opacity: saving ? 0.7 : 1 }}
+            style={{ background: canPublish ? "var(--primary)" : "var(--color-border)", color: "#fff", border: "none", borderRadius: "var(--radius-input)", minHeight: 46, padding: "0.875rem", fontSize: "var(--text-base)", fontWeight: 700, fontFamily: "var(--font-sans)", cursor: canPublish && !saving ? "pointer" : "not-allowed", opacity: saving ? 0.7 : 1 }}
           >
             {saving ? "Publishing…" : "Publish Summary"}
           </button>
-          <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "var(--color-text-secondary)", fontSize: 14, cursor: "pointer", fontFamily: "var(--font-sans)", padding: "0.25rem" }}>
+          <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "var(--color-text-secondary)", fontSize: "var(--text-sm)", cursor: "pointer", fontFamily: "var(--font-sans)", padding: "var(--space-1)" }}>
             Cancel
           </button>
           {!canPublish && (
-            <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0, textAlign: "center" as const, fontFamily: "var(--font-sans)" }}>
+            <p style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", margin: 0, textAlign: "center" as const, fontFamily: "var(--font-sans)" }}>
               {!form.sessionOutcome
                 ? "Select a session outcome above to publish."
                 : "Fill in all three session note fields to publish."}

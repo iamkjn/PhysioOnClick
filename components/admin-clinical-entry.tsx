@@ -23,6 +23,8 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const toast = useToast();
+  // Shared across all five field labels below — identical style repeated inline before this.
+  const fieldLabelStyle: React.CSSProperties = { fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -71,17 +73,17 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
           old h3 value so this reads the same. */}
       <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Add clinical assessment</h2>
       {saved && (
-        <p role="status" aria-live="polite" style={{ color: "var(--color-success)", fontSize: 14 }}>Saved successfully.</p>
+        <p role="status" aria-live="polite" style={{ color: "var(--color-success)", fontSize: "var(--text-sm)" }}>Saved successfully.</p>
       )}
       {error && (
-        <p role="alert" aria-live="assertive" style={{ color: "var(--color-error)", fontSize: 14 }}>{error}</p>
+        <p role="alert" aria-live="assertive" style={{ color: "var(--color-error)", fontSize: "var(--text-sm)" }}>{error}</p>
       )}
       <form
         onSubmit={(e) => void handleSubmit(e)}
         aria-busy={saving}
-        style={{ display: "grid", gap: "0.75rem" }}
+        style={{ display: "grid", gap: "var(--space-3)" }}
       >
-        <label style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
+        <label style={fieldLabelStyle}>
           Session date <span aria-hidden="true" style={{ color: "var(--color-error)" }}>*</span>
           <input
             type="date"
@@ -92,7 +94,7 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
               setSaved(false);
             }}
             max={today}
-            style={{ marginTop: 4 }}
+            style={{ marginTop: "var(--space-1)" }}
             required
             aria-required="true"
             aria-invalid={errors.date ? true : undefined}
@@ -100,7 +102,7 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
           />
           {errors.date && <span className="field-error" id="err-clinical-date">{errors.date}</span>}
         </label>
-        <label style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
+        <label style={fieldLabelStyle}>
           Pain score:{" "}
           <strong style={{ color: "var(--color-text-primary)" }}>{painScore}/10</strong>
           <input
@@ -111,10 +113,10 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
             onChange={(e) => setPainScore(Number(e.target.value))}
             aria-label="Pain score"
             aria-valuetext={`${painScore} out of 10`}
-            style={{ width: "100%", marginTop: 4, accentColor: "var(--color-primary)" }}
+            style={{ width: "100%", marginTop: "var(--space-1)", accentColor: "var(--color-primary)" }}
           />
         </label>
-        <label style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
+        <label style={fieldLabelStyle}>
           Mobility score:{" "}
           <strong style={{ color: "var(--color-text-primary)" }}>{mobilityScore}/10</strong>
           <input
@@ -125,10 +127,10 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
             onChange={(e) => setMobilityScore(Number(e.target.value))}
             aria-label="Mobility score"
             aria-valuetext={`${mobilityScore} out of 10`}
-            style={{ width: "100%", marginTop: 4, accentColor: "var(--color-primary)" }}
+            style={{ width: "100%", marginTop: "var(--space-1)", accentColor: "var(--color-primary)" }}
           />
         </label>
-        <label style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
+        <label style={fieldLabelStyle}>
           Clinical notes (optional)
           <textarea
             className="input"
@@ -140,13 +142,13 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
             rows={3}
             placeholder="What was worked on, patient response, next steps…"
             maxLength={LIMITS.clinicalNote}
-            style={{ marginTop: 4, resize: "vertical" }}
+            style={{ marginTop: "var(--space-1)", resize: "vertical" }}
             aria-invalid={errors.physioNotes ? true : undefined}
             aria-describedby={errors.physioNotes ? "err-clinical-notes" : undefined}
           />
           {errors.physioNotes && <span className="field-error" id="err-clinical-notes">{errors.physioNotes}</span>}
         </label>
-        <label style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
+        <label style={fieldLabelStyle}>
           Booking ID (optional)
           <input
             type="text"
@@ -155,7 +157,7 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
             onChange={(e) => setSessionId(e.target.value)}
             placeholder="bookings/…"
             maxLength={LIMITS.sessionId}
-            style={{ marginTop: 4 }}
+            style={{ marginTop: "var(--space-1)" }}
             aria-invalid={errors.sessionId ? true : undefined}
             aria-describedby={errors.sessionId ? "err-clinical-session-id" : undefined}
           />

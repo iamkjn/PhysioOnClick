@@ -49,7 +49,7 @@ export default function AdminRecoveryPage() {
       <AdminShell backHref="/admin" backLabel="← Back to dashboard">
         <div className="site-shell">
           <section className="page-section stack">
-            <p className="muted" style={{ fontSize: 14 }}>
+            <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
               Admin access required.{" "}
               <Link href="/admin" style={{ color: "var(--primary)", fontWeight: 600 }}>
                 Go to sign in
@@ -64,10 +64,10 @@ export default function AdminRecoveryPage() {
   return (
     <AdminShell backHref="/admin" backLabel="← Back to dashboard">
       <div className="site-shell">
-        <section className="page-section" style={{ paddingBottom: "1rem" }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-sans)" }}>Admin</span>
-          <h1 style={{ margin: "0.25rem 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Patient recovery management</h1>
-          <p style={{ margin: "0.25rem 0 0", fontSize: 13, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>
+        <section className="page-section" style={{ paddingBottom: "var(--space-4)" }}>
+          <span className="dashboard-eyebrow">Admin</span>
+          <h1 style={{ margin: "var(--space-1) 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Patient recovery management</h1>
+          <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>
             Assign exercises and record clinical assessments for any patient.
           </p>
         </section>

@@ -114,14 +114,14 @@ export function AdminPatientSelector({ onSelect }: Props) {
         onChange={(e) => setSearch(e.target.value)}
       />
       {loadError && (
-        <p role="alert" style={{ color: "var(--color-error)", fontSize: 14, margin: 0 }}>{loadError}</p>
+        <p role="alert" style={{ color: "var(--color-error)", fontSize: "var(--text-sm)", margin: 0 }}>{loadError}</p>
       )}
       {!selectedPatient && (
         <div
           role="group"
           aria-label="Patients"
           onKeyDown={handleOptionListKeyDown}
-          style={{ display: "grid", gap: "0.5rem", maxHeight: 240, overflowY: "auto" }}
+          style={{ display: "grid", gap: "var(--space-2)", maxHeight: 240, overflowY: "auto" }}
         >
           {filtered.map((p) => (
             <button
@@ -135,23 +135,23 @@ export function AdminPatientSelector({ onSelect }: Props) {
                 borderRadius: "var(--radius-chip)",
                 padding: "0.6rem 0.85rem",
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: "var(--text-sm)",
                 transition: "background-color 140ms ease, border-color 140ms ease",
               }}
             >
               <strong style={{ color: "var(--color-text-primary)" }}>{p.displayName}</strong>
-              <span style={{ color: "var(--color-text-secondary)", marginLeft: 8 }}>{p.email}</span>
+              <span style={{ color: "var(--color-text-secondary)", marginLeft: "var(--space-2)" }}>{p.email}</span>
             </button>
           ))}
           {filtered.length === 0 && (
-            <p className="muted" style={{ margin: 0, fontSize: 14 }}>No patients match &ldquo;{search}&rdquo;.</p>
+            <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No patients match &ldquo;{search}&rdquo;.</p>
           )}
         </div>
       )}
       {selectedPatient && personOptions.length > 1 && (
-        <div style={{ display: "grid", gap: "0.5rem" }}>
-          <p className="muted" style={{ fontSize: 14 }}>Select person:</p>
-          <div role="group" aria-label="People on this account" onKeyDown={handleOptionListKeyDown} style={{ display: "grid", gap: "0.5rem" }}>
+        <div style={{ display: "grid", gap: "var(--space-2)" }}>
+          <p className="muted" style={{ fontSize: "var(--text-sm)" }}>Select person:</p>
+          <div role="group" aria-label="People on this account" onKeyDown={handleOptionListKeyDown} style={{ display: "grid", gap: "var(--space-2)" }}>
             {personOptions.map((opt) => {
               const isSelected = selectedPersonId === opt.id;
               return (
@@ -168,7 +168,7 @@ export function AdminPatientSelector({ onSelect }: Props) {
                     borderRadius: "var(--radius-chip)",
                     padding: "0.6rem 0.85rem",
                     cursor: "pointer",
-                    fontSize: 14,
+                    fontSize: "var(--text-sm)",
                     fontWeight: isSelected ? 700 : 400,
                     color: isSelected ? "var(--primary-dark)" : "var(--color-text-primary)",
                     transition: "background-color 140ms ease, border-color 140ms ease",
@@ -193,7 +193,7 @@ export function AdminPatientSelector({ onSelect }: Props) {
             border: "none",
             color: "var(--primary)",
             cursor: "pointer",
-            fontSize: 14,
+            fontSize: "var(--text-sm)",
             fontWeight: 600,
             textAlign: "left",
             padding: "0.4rem 0",
