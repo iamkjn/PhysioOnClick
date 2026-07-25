@@ -11,6 +11,8 @@ import { AdminPatientSelector } from "@/components/admin-patient-selector";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
+import { AdminMotionTargets } from "@/components/admin-motion-targets";
+import { AdminMotionSessions } from "@/components/admin-motion-sessions";
 import { SkeletonChart, SkeletonRow } from "@/components/skeleton";
 
 export default function AdminRecoveryPage() {
@@ -93,7 +95,12 @@ export default function AdminRecoveryPage() {
               patientUid={selection.patientUid}
               personId={selection.personId}
             />
+            <AdminMotionTargets adminUid={adminUid} />
             <AdminClinicalEntry
+              patientUid={selection.patientUid}
+              personId={selection.personId}
+            />
+            <AdminMotionSessions
               patientUid={selection.patientUid}
               personId={selection.personId}
             />

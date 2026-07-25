@@ -2406,6 +2406,31 @@ textarea:focus {
   min-height: 44px; font-size: var(--text-sm); font-weight: 600; cursor: pointer;
 }
 .assign-add-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* components/admin-motion-targets.tsx — one small form per exercise that
+   has a "Check your motion" target, mirroring the .assign-row rhythm above
+   but wide enough for five number inputs + a Save button. */
+.motion-target-row {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.motion-target-row:last-child { border-bottom: none; padding-bottom: 0; }
+.motion-target-row-head strong { font-size: var(--text-sm); color: var(--color-text-primary); }
+.motion-target-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: var(--space-3);
+  align-items: end;
+}
+.motion-target-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
 .notifications-head {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--space-4); flex-wrap: wrap; margin: var(--space-4) 0 var(--space-5);
