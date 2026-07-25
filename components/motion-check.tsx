@@ -28,6 +28,10 @@ type MotionCheckProps = {
 type Phase = 'requesting' | 'denied' | 'no-track' | 'running' | 'saving';
 
 const NO_TRACK_TIMEOUT_MS = 3000;
+// How long a person must be continuously visible before rep/ROM tracking
+// starts counting — gives the patient a moment to get into frame and settle
+// before the first frames of fumbling get judged as a rep.
+const READY_DELAY_MS = 2500;
 const DEFAULT_ACCENT = '#38BDF8'; // matches --color-primary-glow fallback
 
 // A light BlazePose stick-figure skeleton — just the limbs, no face mesh —
@@ -118,9 +122,13 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
     romMin: 0,
     romMax: 0,
     phase: 'down',
-    cue: 'Get ready',
+    cue: 'Get into frame',
   });
   const [attempt, setAttempt] = useState(0);
+  // Gates rep/ROM tracking: false until a person has been continuously
+  // visible for READY_DELAY_MS, so the HUD (rep count / ROM meter) — and the
+  // MotionJudge itself — only come alive once the patient is actually set up.
+  const [trackingReady, setTrackingReady] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -132,6 +140,8 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
   const phaseRef = useRef<Phase>('requesting');
   const lastSeenAtRef = useRef(0);
   const startedAtRef = useRef(0);
+  const readyStartRef = useRef<number | null>(null);
+  const trackingReadyRef = useRef(false);
   const accentRef = useRef(DEFAULT_ACCENT);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
@@ -193,8 +203,27 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
 
         if (landmarks.length > 0) {
           lastSeenAtRef.current = now;
-          if (phaseRef.current === 'no-track') setPhase('running');
-          setFrame(judge.update(landmarks));
+          if (phaseRef.current === 'no-track') {
+            // Person re-acquired after dropping out of frame — re-run the
+            // ready countdown rather than resume tracking mid-fumble.
+            setPhase('running');
+            readyStartRef.current = null;
+            trackingReadyRef.current = false;
+            setTrackingReady(false);
+          }
+
+          if (readyStartRef.current === null) readyStartRef.current = now;
+          const readyElapsed = now - readyStartRef.current;
+          if (readyElapsed < READY_DELAY_MS) {
+            const remaining = Math.max(1, Math.ceil((READY_DELAY_MS - readyElapsed) / 1000));
+            setFrame((f) => ({ ...f, cue: `Get ready… ${remaining}` }));
+          } else {
+            if (!trackingReadyRef.current) {
+              trackingReadyRef.current = true;
+              setTrackingReady(true);
+            }
+            setFrame(judge.update(landmarks));
+          }
         } else if (phaseRef.current === 'running' && now - lastSeenAtRef.current > NO_TRACK_TIMEOUT_MS) {
           setPhase('no-track');
         }
@@ -253,7 +282,10 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
       judgeRef.current = new MotionJudge(target);
       lastSeenAtRef.current = performance.now();
       startedAtRef.current = performance.now();
-      setFrame({ angle: 0, reps: 0, romMin: 0, romMax: 0, phase: 'down', cue: 'Get ready' });
+      readyStartRef.current = null;
+      trackingReadyRef.current = false;
+      setTrackingReady(false);
+      setFrame({ angle: 0, reps: 0, romMin: 0, romMax: 0, phase: 'down', cue: 'Get into frame' });
       setPhase('running');
       rafRef.current = requestAnimationFrame(loop);
     }
@@ -377,21 +409,23 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
 
             {showCamera && phase !== 'saving' && (
               <>
-                <div className="motion-check-hud">
-                  <div className="motion-check-rep-counter">
-                    <span className="motion-check-rep-count">{frame.reps}</span>
-                    <span className="motion-check-rep-label">/ {target.repTarget} reps</span>
-                  </div>
-                  <div className="motion-check-rom-meter" aria-label="Range of motion">
-                    <div className="motion-check-rom-track">
-                      <div className="motion-check-rom-fill" style={{ width: `${romPct}%` }} />
-                      <div className="motion-check-rom-best" style={{ left: `${romBestPct}%` }} />
+                {trackingReady && (
+                  <div className="motion-check-hud">
+                    <div className="motion-check-rep-counter">
+                      <span className="motion-check-rep-count">{frame.reps}</span>
+                      <span className="motion-check-rep-label">/ {target.repTarget} reps</span>
                     </div>
-                    <span className="motion-check-rom-label">
-                      {frame.angle}&deg; / {target.targetRomMax}&deg;
-                    </span>
+                    <div className="motion-check-rom-meter" aria-label="Range of motion">
+                      <div className="motion-check-rom-track">
+                        <div className="motion-check-rom-fill" style={{ width: `${romPct}%` }} />
+                        <div className="motion-check-rom-best" style={{ left: `${romBestPct}%` }} />
+                      </div>
+                      <span className="motion-check-rom-label">
+                        {frame.angle}&deg; / {target.targetRomMax}&deg;
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
                 <div
                   className={`motion-check-cue-banner${phase === 'no-track' ? ' motion-check-cue-banner--warning' : ''}`}
                   aria-live="polite"

@@ -89,7 +89,7 @@ export default function AdminRecoveryPage() {
         </section>
 
         {selection && (
-          <section className="page-section dashboard-grid">
+          <section className="page-section admin-panels-grid">
             <AdminExerciseAssigner
               adminUid={adminUid}
               patientUid={selection.patientUid}

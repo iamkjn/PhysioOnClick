@@ -4,12 +4,12 @@ import {
   doc,
   getDoc,
   getDocs,
-  addDoc,
   setDoc,
   serverTimestamp,
   query,
   orderBy,
   limit,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { todayKey } from "@/lib/recovery";
@@ -60,19 +60,29 @@ export async function saveMotionSession(
   personId: string,
   s: Omit<MotionSession, "createdAt" | "source">
 ): Promise<void> {
+  // Both writes go in one batch so a session is never recorded without the
+  // day's exercise being marked complete (which feeds the streak) — either
+  // both land or neither does, instead of the two sequential writes racing
+  // a mid-flight failure/reload.
+  if (!db) throw new Error("Firestore not available");
   const base = personBase(uid, personId);
-  await addDoc(collection(base, "motionSessions"), {
+  const batch = writeBatch(db);
+
+  const sessionRef = doc(collection(base, "motionSessions"));
+  batch.set(sessionRef, {
     ...s,
     source: "web",
     createdAt: serverTimestamp(),
   });
 
   const logRef = doc(base, "exerciseLogs", todayKey());
-  await setDoc(
+  batch.set(
     logRef,
     { completions: { [s.exerciseId]: true }, loggedAt: serverTimestamp() },
     { merge: true }
   );
+
+  await batch.commit();
 }
 
 export async function getMotionSessions(

@@ -1992,6 +1992,19 @@ textarea:focus {
   align-items: start;
 }
 
+/* app/admin/recovery/page.tsx: 3-4 clinical panels (exercise assigner,
+   motion targets, clinical entry, motion sessions) shown side by side once
+   a patient is selected. .dashboard-grid's fixed 2fr/1fr split was built
+   for exactly two items and squeezes a 3rd/4th into a narrow column —
+   this instead gives every panel a comfortable minimum width and wraps to
+   as many columns as fit the viewport. */
+.admin-panels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
 /* ── Patient portal (app/patient/*) ────────────────────────────
    Shared chrome for the signed-in portal: the tab "selector", the
    mobile-style dashboard card grid, and a consistent page rhythm so

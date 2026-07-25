@@ -1,19 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 vi.mock('@/lib/firebase', () => ({ db: {} }))
-const getDoc = vi.fn(); const setDoc = vi.fn().mockResolvedValue(undefined); const addDoc = vi.fn().mockResolvedValue({ id: 'x' })
+const getDoc = vi.fn(); const setDoc = vi.fn().mockResolvedValue(undefined)
+const batchSet = vi.fn(); const batchCommit = vi.fn().mockResolvedValue(undefined)
+const writeBatch = vi.fn(() => ({ set: batchSet, commit: batchCommit }))
 vi.mock('firebase/firestore', () => ({
   doc: vi.fn((..._a) => ({ __doc: _a })),
   collection: vi.fn((..._a) => ({ __col: _a })),
   getDoc: (...a: unknown[]) => getDoc(...a),
   getDocs: vi.fn().mockResolvedValue({ docs: [] }),
   setDoc: (...a: unknown[]) => setDoc(...a),
-  addDoc: (...a: unknown[]) => addDoc(...a),
   serverTimestamp: () => 'TS',
   query: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+  writeBatch: (...a: unknown[]) => writeBatch(...a),
 }))
 import { getMotionTarget, saveMotionSession } from '@/lib/motion'
 
-beforeEach(() => { getDoc.mockReset(); setDoc.mockClear(); addDoc.mockClear() })
+beforeEach(() => { getDoc.mockReset(); setDoc.mockClear(); batchSet.mockClear(); batchCommit.mockClear(); writeBatch.mockClear() })
 
 describe('getMotionTarget', () => {
   it('falls back to the code default when no Firestore doc', async () => {
@@ -28,15 +30,22 @@ describe('getMotionTarget', () => {
 })
 
 describe('saveMotionSession', () => {
-  it('writes the session and marks today\'s exercise log complete', async () => {
+  it('writes the session and marks today\'s exercise log complete atomically', async () => {
     await saveMotionSession('u1', 'p1', {
       exerciseId: 'ex-1', bodyPart: 'Lower limb', date: '2026-07-25',
       reps: 10, repTarget: 10, romMin: 85, romMax: 170, targetRomMin: 85, targetRomMax: 170,
       avgQuality: 88, passed: true, durationSec: 42,
     })
-    expect(addDoc).toHaveBeenCalledTimes(1)
+    // Both writes go through the same batch, committed once.
+    expect(writeBatch).toHaveBeenCalledTimes(1)
+    expect(batchSet).toHaveBeenCalledTimes(2)
+    expect(batchCommit).toHaveBeenCalledTimes(1)
+
+    const sessionCall = batchSet.mock.calls.find(c => JSON.stringify(c[1]).includes('"reps":10'))
+    expect(sessionCall).toBeTruthy()
+
     // the exerciseLogs merge write:
-    const mergeCall = setDoc.mock.calls.find(c => JSON.stringify(c[1]).includes('completions'))
+    const mergeCall = batchSet.mock.calls.find(c => JSON.stringify(c[1]).includes('completions'))
     expect(mergeCall).toBeTruthy()
     expect(mergeCall![2]).toEqual({ merge: true })
   })
