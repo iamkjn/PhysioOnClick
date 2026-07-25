@@ -180,3 +180,42 @@ describe('patients/{uid} catch-all stays read-only', () => {
     await assertFails(setDoc(favouriteDoc(db, ADMIN), favourite({ userId: ADMIN, excerpt: 'x'.repeat(2001) })))
   })
 })
+
+describe('patients/{uid}/people/{personId}/goals (admin-set daily streak goal)', () => {
+  const PERSON = 'person-1'
+  const goalDoc = (db: unknown, uid = PATIENT) =>
+    doc(db as never, `patients/${uid}/people/${PERSON}/goals/current`)
+  const goal = (overrides: Record<string, unknown> = {}) => ({
+    streakTarget: 14,
+    updatedBy: ADMIN,
+    updatedAt: serverTimestamp(),
+    ...overrides,
+  })
+
+  it('lets the owner read their own goal', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(admin), goal()))
+
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(getDoc(goalDoc(owner)))
+  })
+
+  it('denies the owner writing their own goal', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(goalDoc(db), goal()))
+  })
+
+  it('lets an admin create and update the goal', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(db), goal()))
+    await assertSucceeds(setDoc(goalDoc(db), goal({ streakTarget: 21 }), { merge: true }))
+  })
+
+  it('denies a different signed-in user reading the goal', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(admin), goal()))
+
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(getDoc(goalDoc(other)))
+  })
+})

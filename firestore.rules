@@ -206,6 +206,13 @@ service cloud.firestore {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
+    // Admin-set daily streak goal (lib/goals.ts). The physio sets the target;
+    // the owner may only read their own goal, never write it directly.
+    match /patients/{userId}/people/{personId}/goals/{goalId} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, update, delete: if isAdmin();
+    }
+
     // Shape written by the mobile blog favourite toggle (blog_screen.dart /
     // blog_detail_screen.dart), via PatientAccountService.favouriteBlogDoc. Every
     // BlogArticle field is a Dart String, so publishedAt is an ISO string, not a

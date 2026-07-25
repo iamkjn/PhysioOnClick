@@ -10,6 +10,7 @@ import { AdminShell } from "@/components/admin-shell";
 import { AdminPatientSelector } from "@/components/admin-patient-selector";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
+import { AdminStreakGoal } from "@/components/admin-streak-goal";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { SkeletonChart, SkeletonRow } from "@/components/skeleton";
 
@@ -94,6 +95,11 @@ export default function AdminRecoveryPage() {
               personId={selection.personId}
             />
             <AdminClinicalEntry
+              patientUid={selection.patientUid}
+              personId={selection.personId}
+            />
+            <AdminStreakGoal
+              adminUid={adminUid}
               patientUid={selection.patientUid}
               personId={selection.personId}
             />
