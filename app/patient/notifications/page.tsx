@@ -1,19 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { EmptyState } from "@/components/empty-state";
 import { SkeletonRow } from "@/components/skeleton";
 import { subscribeNotifications, markAllRead, type AppNotification, type NotificationKind } from "@/lib/notifications";
+import { BellIcon, CalendarIcon, MessageIcon, TrophyIcon, TrendDownIcon } from "@/components/icons";
 
-const KIND_ICON: Record<NotificationKind, string> = {
-  appointment: "📅",
-  message: "💬",
-  milestone: "🏆",
-  adherence: "📉",
-  system: "🔔",
+const KIND_ICON: Record<NotificationKind, ComponentType<{ className?: string }>> = {
+  appointment: CalendarIcon,
+  message: MessageIcon,
+  milestone: TrophyIcon,
+  adherence: TrendDownIcon,
+  system: BellIcon,
 };
 
 function timeAgo(date: Date | null): string {
@@ -100,19 +101,24 @@ export default function NotificationsPage() {
         />
       ) : (
         <div className="notification-list">
-          {(items ?? []).map((n) => (
-            <div key={n.id} className={`notification-item${n.read ? "" : " unread"}`}>
-              <span className="notification-item-icon" aria-hidden="true">{KIND_ICON[n.kind] ?? "🔔"}</span>
-              <div className="notification-item-body">
-                <div className="notification-item-head">
-                  <strong>{n.title}</strong>
-                  <span className="notification-item-time">{timeAgo(n.createdAt)}</span>
+          {(items ?? []).map((n) => {
+            const Icon = KIND_ICON[n.kind] ?? BellIcon;
+            return (
+              <div key={n.id} className={`notification-item${n.read ? "" : " unread"}`}>
+                <span className="notification-item-icon" aria-hidden="true">
+                  <Icon className="notification-item-icon-svg" />
+                </span>
+                <div className="notification-item-body">
+                  <div className="notification-item-head">
+                    <strong>{n.title}</strong>
+                    <span className="notification-item-time">{timeAgo(n.createdAt)}</span>
+                  </div>
+                  <p>{n.body}</p>
                 </div>
-                <p>{n.body}</p>
+                {!n.read && <span className="notification-item-dot" aria-label="Unread" />}
               </div>
-              {!n.read && <span className="notification-item-dot" aria-label="Unread" />}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

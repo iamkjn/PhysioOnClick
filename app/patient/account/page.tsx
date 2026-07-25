@@ -9,6 +9,7 @@ import { PatientProfileEditor } from "@/components/patient-profile-editor";
 import { RehabProgramsSection } from "@/components/rehab-programs-section";
 import { UploadPanel } from "@/components/upload-panel";
 import { Skeleton, SkeletonForm, SkeletonRow } from "@/components/skeleton";
+import { PeopleIcon, ClipboardIcon } from "@/components/icons";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -37,92 +38,86 @@ export default function AccountPage() {
 
   if (!uid) {
     return (
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
-        <div style={{ background: "var(--color-surface)", borderRadius: "var(--radius-panel)", padding: "1.5rem", marginBottom: "1.5rem", boxShadow: "var(--shadow)" }}>
-          <Skeleton height="1.5rem" width="160px" className="skeleton-heading" />
-          <div style={{ marginTop: "0.5rem" }}>
+      <div className="site-shell patient-page">
+        <section className="page-hero">
+          <div className="stack">
+            <Skeleton height="1.5rem" width="160px" className="skeleton-heading" />
             <Skeleton height="0.9rem" width="220px" />
-          </div>
-          <div style={{ marginTop: "1rem" }}>
             <Skeleton height="2.2rem" width="100px" className="skeleton-pill" />
           </div>
-        </div>
-        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "2rem" }}>
-          <Skeleton height="2.4rem" width="140px" className="skeleton-pill" />
-          <Skeleton height="2.4rem" width="160px" className="skeleton-pill" />
-        </div>
-        <div style={{ marginBottom: "2rem" }}>
+        </section>
+
+        <section className="page-section">
+          <div className="button-row">
+            <Skeleton height="2.4rem" width="140px" className="skeleton-pill" />
+            <Skeleton height="2.4rem" width="160px" className="skeleton-pill" />
+          </div>
+        </section>
+
+        <section className="page-section">
           <SkeletonForm fields={3} />
-        </div>
-        <div style={{ marginBottom: "2rem" }}>
-          <div style={{ marginBottom: "0.75rem" }}>
-            <Skeleton height="1.1rem" width="180px" />
-          </div>
+        </section>
+
+        <section className="page-section stack">
+          <Skeleton height="1.1rem" width="180px" />
           <SkeletonRow count={2} />
-        </div>
-        <div>
-          <div style={{ marginBottom: "0.75rem" }}>
-            <Skeleton height="1.1rem" width="180px" />
-          </div>
+        </section>
+
+        <section className="page-section stack">
+          <Skeleton height="1.1rem" width="180px" />
           <SkeletonRow count={2} />
-        </div>
+        </section>
       </div>
     );
   }
 
-  const sectionHeadingStyle: React.CSSProperties = {
-    color: "var(--color-text-primary)",
-    margin: "0 0 0.75rem",
-  };
-
   return (
-    <div style={{ maxWidth: 680, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
-      {/* User info card */}
-      <div
-        style={{
-          background: "var(--color-surface)",
-          borderRadius: "var(--radius-panel)",
-          padding: "1.5rem",
-          marginBottom: "1.5rem",
-          boxShadow: "var(--shadow)",
-        }}
-      >
-        <h1 style={{ margin: "0 0 0.25rem", color: "var(--color-text-primary)", fontSize: "var(--text-lg)" }}>
-          {displayName}
-        </h1>
-        <p style={{ margin: "0 0 1rem", color: "var(--color-text-secondary)", fontSize: "var(--text-sm)" }}>{email}</p>
-        <button onClick={() => void handleSignOut()} className="button secondary small">
-          Sign out
-        </button>
-      </div>
+    <div className="site-shell patient-page">
+      {/* User info */}
+      <section className="page-hero">
+        <div className="stack">
+          <h1 style={{ color: "var(--color-text-primary)" }}>{displayName}</h1>
+          <p className="muted">{email}</p>
+          <button onClick={() => void handleSignOut()} className="button secondary small">
+            Sign out
+          </button>
+        </div>
+      </section>
 
       {/* Quick links */}
-      <div
-        style={{
-          display: "flex",
-          gap: "0.75rem",
-          flexWrap: "wrap",
-          marginBottom: "2rem",
-        }}
-      >
-        <Link href="/patient/people" className="pill-link">👨‍👩‍👧 My People</Link>
-        <Link href="/patient/appointments" className="pill-link">📋 My Appointments</Link>
-      </div>
+      <section className="page-section">
+        <div className="button-row">
+          <Link href="/patient/people" className="pill-link">
+            <PeopleIcon className="pill-link-icon" />
+            My People
+          </Link>
+          <Link href="/patient/appointments" className="pill-link">
+            <ClipboardIcon className="pill-link-icon" />
+            My Appointments
+          </Link>
+        </div>
+      </section>
 
       {/* Profile details */}
-      <div style={{ marginBottom: "2rem" }}>
+      <section className="page-section">
         <PatientProfileEditor />
-      </div>
+      </section>
 
       {/* Rehab programmes */}
-      <h2 style={sectionHeadingStyle}>Rehab programmes</h2>
-      <div style={{ marginBottom: "2rem" }}>
+      <section className="page-section stack">
+        <div className="section-heading">
+          <h2>Rehab programmes</h2>
+        </div>
         <RehabProgramsSection email={email} />
-      </div>
+      </section>
 
       {/* Uploads */}
-      <h2 style={sectionHeadingStyle}>Secure document uploads</h2>
-      <UploadPanel />
+      <section className="page-section stack">
+        <div className="section-heading">
+          <h2>Secure document uploads</h2>
+        </div>
+        <UploadPanel />
+      </section>
     </div>
   );
 }

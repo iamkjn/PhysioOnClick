@@ -164,21 +164,17 @@ export default function PeoplePage() {
 
   return (
     <div className="site-shell patient-page">
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <h1 style={{ margin: 0, color: "var(--color-text-primary)" }}>My People</h1>
-        <button onClick={() => setShowForm(true)} className="button primary small">
-          + Add person
-        </button>
-      </div>
+      <section className="page-hero">
+        <div className="page-hero-row">
+          <h1 style={{ color: "var(--color-text-primary)" }}>My People</h1>
+          <button onClick={() => setShowForm(true)} className="button primary small">
+            + Add person
+          </button>
+        </div>
+      </section>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "0.75rem" }}>
+      <section className="page-section">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "var(--space-3)" }}>
         {/* "You" card — the signed-in user, always first, not editable */}
         {uid && (
           <div style={cardStyle}>
@@ -390,20 +386,14 @@ export default function PeoplePage() {
             cta={{ label: 'Add person', onClick: () => setShowForm(true) }}
           />
         )}
-      </div>
+        </div>
+      </section>
 
       {/* Add person form */}
       {showForm && (
-        <div
-          style={{
-            marginTop: "1.5rem",
-            background: "var(--color-surface)",
-            borderRadius: "var(--radius-panel)",
-            padding: "1.5rem",
-            boxShadow: "var(--shadow)",
-          }}
-        >
-          <h2 style={{ marginTop: 0, color: "var(--color-text-primary)", fontSize: "var(--text-md)" }}>Add a person</h2>
+        <section className="page-section">
+          <div className="panel">
+            <h2 style={{ marginTop: 0, color: "var(--color-text-primary)", fontSize: "var(--text-md)" }}>Add a person</h2>
           <form onSubmit={(e) => void handleAdd(e)} style={{ display: "grid", gap: "0.75rem" }}>
             <label>
               Full name *
@@ -466,7 +456,8 @@ export default function PeoplePage() {
               </button>
             </div>
           </form>
-        </div>
+          </div>
+        </section>
       )}
 
       <ConfirmDialog

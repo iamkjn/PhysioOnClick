@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { usePerson } from "@/components/person-provider";
 import { SkeletonRow } from "@/components/skeleton";
+import { ClipboardIcon } from "@/components/icons";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 
 function resolveStatus(booking: BookingRecord): BookingRecord["status"] {
@@ -71,13 +72,16 @@ export default function AppointmentsPage() {
 
   return (
     <div className="site-shell patient-page">
-      <span className="eyebrow">Appointments</span>
-      <h1 style={{ color: "var(--color-text-primary)" }}>Your appointments</h1>
-      <p className="muted" style={{ marginTop: "-0.5rem", marginBottom: "1.5rem" }}>
-        Review upcoming sessions and revisit summaries from past visits.
-      </p>
+      <section className="page-hero">
+        <div className="stack">
+          <span className="eyebrow">Appointments</span>
+          <h1 style={{ color: "var(--color-text-primary)" }}>Your appointments</h1>
+          <p className="muted">Review upcoming sessions and revisit summaries from past visits.</p>
+        </div>
+      </section>
+
       {uid && (
-        <div style={{ marginBottom: "1.5rem" }}>
+        <section className="page-section">
           <PersonSwitcher
             uid={uid}
             displayName={displayName}
@@ -86,25 +90,34 @@ export default function AppointmentsPage() {
               // PersonProvider context; personId above already reads from it.
             }}
           />
-        </div>
+        </section>
       )}
-      {loading && <SkeletonRow count={3} />}
+
+      {loading && (
+        <section className="page-section">
+          <SkeletonRow count={3} />
+        </section>
+      )}
       {!loading && loadError && (
-        <p className="field-error">Could not load your appointments. Please refresh the page.</p>
+        <section className="page-section">
+          <p className="field-error">Could not load your appointments. Please refresh the page.</p>
+        </section>
       )}
       {!loading && !loadError && bookings.length === 0 && (
-        <EmptyState
-          illustration="calendar"
-          title="No appointments yet"
-          body="Book your first session with a physio today."
-          cta={{ label: 'Book Now', href: '/book', variant: 'gold' }}
-        />
+        <section className="page-section">
+          <EmptyState
+            illustration="calendar"
+            title="No appointments yet"
+            body="Book your first session with a physio today."
+            cta={{ label: 'Book Now', href: '/book', variant: 'gold' }}
+          />
+        </section>
       )}
       {upcoming.length > 0 && (
-        <section style={{ marginBottom: "2rem" }}>
-          <h2 style={{ color: "var(--color-text-primary)", marginBottom: "0.75rem" }}>
-            Upcoming
-          </h2>
+        <section className="page-section stack">
+          <div className="section-heading">
+            <h2>Upcoming</h2>
+          </div>
           <div className="patient-dashboard-grid">
             {upcoming.map((b) => (
               <BookingRow key={b.id} booking={b} />
@@ -113,10 +126,10 @@ export default function AppointmentsPage() {
         </section>
       )}
       {past.length > 0 && (
-        <section>
-          <h2 style={{ color: "var(--color-text-primary)", marginBottom: "0.75rem" }}>
-            Past
-          </h2>
+        <section className="page-section stack">
+          <div className="section-heading">
+            <h2>Past</h2>
+          </div>
           <div className="patient-dashboard-grid">
             {past.map((b) => (
               <BookingRow key={b.id} booking={b} />
@@ -180,7 +193,9 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
           </span>
         ) : booking.displayStatus !== "upcoming" ? (
           booking.summaryId ? (
-            <span role="img" aria-label="Summary available" style={{ fontSize: 20 }}>📋</span>
+            <span role="img" aria-label="Summary available">
+              <ClipboardIcon className="inline-icon" />
+            </span>
           ) : (
             <span role="img" aria-label="Summary pending" style={{ fontSize: 20, opacity: 0.4 }}>⏳</span>
           )

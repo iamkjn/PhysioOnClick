@@ -1919,6 +1919,26 @@ textarea:focus {
   background: color-mix(in srgb, var(--color-primary) 22%, var(--color-primary-light));
 }
 
+/* Icon glyph inside a .pill-link (e.g. "My People", "My Appointments" on
+   /patient/account) — sized to sit on the text baseline instead of towering
+   over it at the SVG's intrinsic size. */
+.pill-link-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Generic small icon dropped inline next to a short label (booking-row status,
+   the appointment follow-up banner) — not part of a bigger icon system, just
+   enough to replace a decorative emoji with a crisp SVG at the same visual size. */
+.inline-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  vertical-align: -3px;
+}
+
 /* Matches the focus ring already used by bare input/select/textarea above —
    for components that can't use those elements directly (e.g. custom
    composite fields) but need the same look. */
@@ -2005,6 +2025,32 @@ textarea:focus {
 
 .patient-page .page-section:first-of-type {
   padding-top: 0.5rem;
+}
+
+/* Title + trailing action button on one line inside a .page-hero (e.g. "My
+   People" + "+ Add person"). Wraps to a second line on narrow screens rather
+   than squeezing the button under the title. */
+.page-hero-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+/* .section-heading is the centered, display-sized marketing band used on the
+   home/about pages. Patient sub-pages reuse it as a plain in-page label (e.g.
+   "Rehab programmes" on /patient/account) for its spacing, so it needs to
+   read as a small left-aligned heading here, not a hero banner. */
+.patient-page .section-heading {
+  text-align: left;
+  max-width: none;
+}
+
+.patient-page .section-heading h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+  color: var(--color-text-primary);
 }
 
 /* Panels on the sub-pages carry the section rhythm internally, so a consistent
@@ -2265,6 +2311,14 @@ textarea:focus {
 .notification-item-icon {
   font-size: 20px;
   line-height: 1.2;
+}
+
+/* KIND_ICON now renders an SVG (see app/patient/notifications/page.tsx)
+   instead of an emoji glyph — size it to match the old font-size: 20px. */
+.notification-item-icon-svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-secondary);
 }
 
 .notification-item-body {
