@@ -299,3 +299,51 @@ describe('patients/{uid}/people/{personId}/patientExerciseVideos (patient-added 
     await assertSucceeds(setDoc(videoDoc(db), video({ url: 'https://youtu.be/dQw4w9WgXcQ' })))
   })
 })
+
+describe('patients/{uid}/followUps (admin-scheduled follow-up)', () => {
+  const followUpDoc = (db: unknown, uid = PATIENT) =>
+    doc(db as never, `patients/${uid}/followUps/follow-up-1`)
+  const followUp = (overrides: Record<string, unknown> = {}) => ({
+    dueDate: '2026-08-12',
+    note: 'Check knee progress',
+    service: 'Physiotherapy',
+    personId: PATIENT,
+    createdBy: ADMIN,
+    createdAt: serverTimestamp(),
+    ...overrides,
+  })
+
+  it('lets the owner read their own follow-up', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(followUpDoc(admin), followUp()))
+
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(getDoc(followUpDoc(owner)))
+  })
+
+  it('denies the owner writing their own follow-up', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(followUpDoc(db), followUp()))
+  })
+
+  it('lets an admin create, update, and delete a follow-up', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(followUpDoc(db), followUp()))
+    await assertSucceeds(setDoc(followUpDoc(db), followUp({ note: 'Updated note' }), { merge: true }))
+    await assertSucceeds(deleteDoc(followUpDoc(db)))
+  })
+
+  it('denies a different signed-in user reading the follow-up', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(followUpDoc(admin), followUp()))
+
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(getDoc(followUpDoc(other)))
+  })
+
+  it('denies unauthenticated reads and writes', async () => {
+    const db = testEnv.unauthenticatedContext().firestore()
+    await assertFails(getDoc(followUpDoc(db)))
+    await assertFails(setDoc(followUpDoc(db), followUp()))
+  })
+})

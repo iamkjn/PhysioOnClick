@@ -10,10 +10,23 @@ import { usePerson } from "@/components/person-provider";
 import { SkeletonRow } from "@/components/skeleton";
 import { ClipboardIcon } from "@/components/icons";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
+import { getFollowUps, type FollowUp } from "@/lib/follow-ups";
 
 function resolveStatus(booking: BookingRecord): BookingRecord["status"] {
   if (booking.status === "cancelled") return "cancelled";
   return booking.sessionDate < new Date() ? "completed" : "upcoming";
+}
+
+// dueDate is a plain "YYYY-MM-DD" calendar day with no time component —
+// parsing it as local midnight (rather than letting `new Date("YYYY-MM-DD")`
+// default to UTC midnight) keeps the displayed day from shifting a day back
+// in timezones behind UTC.
+function prettyDueDate(dueDate: string): string {
+  return new Date(`${dueDate}T00:00:00`).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export default function AppointmentsPage() {
@@ -23,6 +36,7 @@ export default function AppointmentsPage() {
   const [loading, setLoading] = useState(true);
   const [syncDone, setSyncDone] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const router = useRouter();
   // Shared with the rest of the app (home dashboard, recovery) via
   // PersonProvider, so switching person here or elsewhere stays in sync.
@@ -66,6 +80,13 @@ export default function AppointmentsPage() {
       .finally(() => setLoading(false));
   }, [syncDone, uid, personId]);
 
+  useEffect(() => {
+    if (!uid) return;
+    getFollowUps(uid)
+      .then(setFollowUps)
+      .catch(() => setFollowUps([]));
+  }, [uid]);
+
   const resolved = bookings.map((b) => ({ ...b, displayStatus: resolveStatus(b) }));
   const upcoming = resolved.filter((b) => b.displayStatus === "upcoming");
   const past = resolved.filter((b) => b.displayStatus !== "upcoming");
@@ -90,6 +111,22 @@ export default function AppointmentsPage() {
               // PersonProvider context; personId above already reads from it.
             }}
           />
+        </section>
+      )}
+
+      {followUps.length > 0 && (
+        <section className="page-section">
+          <div className="panel stack">
+            <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>
+              Upcoming follow-up{followUps.length > 1 ? "s" : ""}
+            </h2>
+            {followUps.map((f) => (
+              <p key={f.id} style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}>
+                Follow-up on <strong>{prettyDueDate(f.dueDate)}</strong>
+                {f.note ? ` — ${f.note}` : ""}
+              </p>
+            ))}
+          </div>
         </section>
       )}
 
