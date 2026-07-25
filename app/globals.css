@@ -2160,13 +2160,36 @@ textarea:focus {
 
 .exercise-card {
   display: flex;
-  align-items: center;
-  gap: 0.9rem;
+  flex-direction: column;
+  gap: 0.6rem;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 18px;
   padding: 0.85rem;
   transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.exercise-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.exercise-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.exercise-card-actions:empty { display: none; }
+.exercise-card-actions button { flex: 1 1 auto; justify-content: center; }
+.exercise-card-actions .exercise-video-watch { flex: 0 0 auto; }
+
+.exercise-motion-result {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-success);
+  margin-top: 2px;
 }
 
 .exercise-card.done {
