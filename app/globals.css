@@ -83,6 +83,16 @@
   /* Every major section's vertical padding derives from this one value. */
   --space-section: 4.5rem;
 
+  /* Spacing scale (8px base) — use for gap / padding / margin so vertical
+     rhythm is consistent. Replaces ad-hoc rem values across components. */
+  --space-1: 0.25rem;  /* 4px  */
+  --space-2: 0.5rem;   /* 8px  */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.5rem;   /* 24px */
+  --space-6: 2rem;     /* 32px */
+  --space-8: 3rem;     /* 48px */
+
   /* ── Legacy aliases (keeps all existing CSS classes working) ── */
   --bg:          var(--color-bg);
   --surface:     var(--color-surface);
