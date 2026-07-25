@@ -95,23 +95,45 @@ export function AdminDashboard() {
             </button>
           ))}
         </div>
-        <Link
-          href="/admin/patients"
-          style={{
-            color: "var(--primary)",
-            fontFamily: "var(--font-sans)",
-            fontWeight: 600,
-            fontSize: "var(--text-sm)",
-            textDecoration: "none",
-            padding: "0.875rem 0.25rem",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.35rem",
-            minHeight: 46,
-          }}
-        >
-          Patients <span aria-hidden="true">→</span>
-        </Link>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-4)", flexWrap: "wrap" }}>
+          {/* Exercises & motion → the per-patient rehab screen: assign exercises
+              from the library, set motion-check targets, streak goals and
+              follow-ups. Previously reachable only by typing the URL. */}
+          <Link
+            href="/admin/recovery"
+            style={{
+              color: "var(--primary)",
+              fontFamily: "var(--font-sans)",
+              fontWeight: 600,
+              fontSize: "var(--text-sm)",
+              textDecoration: "none",
+              padding: "0.875rem 0.25rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              minHeight: 46,
+            }}
+          >
+            Exercises &amp; motion <span aria-hidden="true">→</span>
+          </Link>
+          <Link
+            href="/admin/patients"
+            style={{
+              color: "var(--primary)",
+              fontFamily: "var(--font-sans)",
+              fontWeight: 600,
+              fontSize: "var(--text-sm)",
+              textDecoration: "none",
+              padding: "0.875rem 0.25rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              minHeight: 46,
+            }}
+          >
+            Patients <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </div>
 
       {/* Tab content */}
