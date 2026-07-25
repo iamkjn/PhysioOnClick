@@ -2517,7 +2517,26 @@ textarea:focus {
   border-bottom: 1px solid var(--color-border);
 }
 .motion-target-row:last-child { border-bottom: none; padding-bottom: 0; }
+.motion-target-row-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
 .motion-target-row-head strong { font-size: var(--text-sm); color: var(--color-text-primary); }
+/* Small body-part badge so a physio scanning the list can quickly find the
+   right check for a patient's complaint (e.g. "Knee", "Shoulder") without
+   reading every exercise title. */
+.motion-target-bodypart {
+  flex: 0 0 auto;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-primary-dark);
+  background: var(--color-primary-light);
+  border-radius: var(--radius-chip);
+  padding: 2px 8px;
+}
 .motion-target-fields {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
@@ -5838,11 +5857,21 @@ textarea:focus {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-.motion-check-cue-banner {
+/* Bottom-anchored stack that holds the cue banner and (when visible) the
+   "having trouble?" fallback link underneath it, so the two stay grouped
+   and positioned together instead of each needing their own absolute
+   offset math. */
+.motion-check-bottom-stack {
   position: absolute;
   left: var(--space-3);
   right: var(--space-3);
   bottom: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.motion-check-cue-banner {
   padding: 10px 14px;
   border-radius: var(--radius-input);
   background: rgba(4, 20, 30, 0.6);
@@ -5893,6 +5922,46 @@ textarea:focus {
   display: flex;
   gap: var(--space-3);
   margin-top: var(--space-2);
+}
+
+/* GDPR/no-storage consent panel — the very first thing shown when the modal
+   opens, before getUserMedia is ever called. Reuses .motion-check-status-panel
+   (same dark, centred treatment as the requesting/denied states) so the
+   camera box doesn't resize or restyle as the patient moves through phases. */
+.motion-check-consent-body {
+  max-width: 34ch;
+}
+
+/* Unobtrusive "having trouble?" fallback — shown on the consent panel and
+   on denied/no-track states so a patient stuck on camera trouble always has
+   a way to reach their physio instead of just closing the modal. */
+.motion-check-trouble-link {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.motion-check-trouble-link a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.motion-check-trouble-link a:hover {
+  color: var(--color-primary-glow);
+}
+
+/* Overlay variant sits over the live camera feed (no-track state) rather
+   than inside the opaque status panel, so it needs its own small pill
+   background to stay readable against arbitrary video content. */
+.motion-check-trouble-link--overlay {
+  text-align: center;
+  padding: 6px 12px;
+  border-radius: var(--radius-input);
+  background: rgba(4, 20, 30, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .motion-check-spinner {

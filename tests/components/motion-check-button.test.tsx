@@ -51,7 +51,10 @@ describe('MotionCheckButton', () => {
 
     render(<MotionCheckButton exerciseId="ex-1" exercise={exercise} uid="u1" personId="p1" />)
 
-    expect(await screen.findByRole('button', { name: /check your motion/i })).toBeInTheDocument()
+    // Button label now surfaces the target body part (e.g. "Check your Lower
+    // limb motion") instead of a generic label, so patients can tell which
+    // check they're about to start.
+    expect(await screen.findByRole('button', { name: /check your lower limb motion/i })).toBeInTheDocument()
   })
 
   it('renders nothing when there is no video input device', async () => {
@@ -84,7 +87,7 @@ describe('MotionCheckButton', () => {
 
     render(<MotionCheckButton exerciseId="ex-1" exercise={exercise} uid="u1" personId="p1" />)
 
-    const button = await screen.findByRole('button', { name: /check your motion/i })
+    const button = await screen.findByRole('button', { name: /check your lower limb motion/i })
     button.click()
 
     expect(await screen.findByTestId('motion-check-stub')).toBeInTheDocument()

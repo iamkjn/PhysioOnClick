@@ -63,7 +63,7 @@ export function MotionCheckButton({ exerciseId, exercise, uid, personId }: Props
   return (
     <>
       <button type="button" className="motion-check-trigger" onClick={() => setOpen(true)}>
-        Check your motion
+        Check your {target.bodyPart} motion
       </button>
       {open && (
         <MotionCheck

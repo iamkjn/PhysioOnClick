@@ -80,7 +80,11 @@ export function AdminMotionTargets({ adminUid }: Props) {
             title: ex.title,
             base: target,
             fields: fieldsFrom(target),
-          }));
+          }))
+          // Grouped by body part (then title) so a physio scanning the list
+          // for, say, a patient's knee complaint finds every knee exercise
+          // clustered together instead of scattered in catalogue order.
+          .sort((a, b) => a.base.bodyPart.localeCompare(b.base.bodyPart) || a.title.localeCompare(b.title));
         setRows(next);
         setLoaded(true);
       })
@@ -165,6 +169,7 @@ export function AdminMotionTargets({ adminUid }: Props) {
           aria-busy={saving === row.exerciseId}
         >
           <div className="motion-target-row-head">
+            <span className="motion-target-bodypart">{row.base.bodyPart}</span>
             <strong>{row.title}</strong>
           </div>
           <div className="motion-target-fields">

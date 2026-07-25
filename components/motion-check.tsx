@@ -25,7 +25,12 @@ type MotionCheckProps = {
   onClose: () => void;
 };
 
-type Phase = 'requesting' | 'denied' | 'no-track' | 'running' | 'saving';
+type Phase = 'consent' | 'requesting' | 'denied' | 'no-track' | 'running' | 'saving';
+
+// Where the "having trouble?" fallback link sends a patient who can't get
+// the camera working — the existing public contact route, opened in a new
+// tab so the modal (and any in-progress session) stays put behind it.
+const CONTACT_HREF = '/contact';
 
 const NO_TRACK_TIMEOUT_MS = 3000;
 // How long a person must be continuously visible before rep/ROM tracking
@@ -114,8 +119,26 @@ function drawSkeleton(
   }
 }
 
+// Unobtrusive fallback shown on the consent screen and on error/no-track
+// states — a patient stuck on camera trouble shouldn't be stranded with no
+// way out other than closing the modal.
+function TroubleLink({ overlay = false }: { overlay?: boolean }) {
+  return (
+    <p className={`motion-check-trouble-link${overlay ? ' motion-check-trouble-link--overlay' : ''}`}>
+      Having trouble recording your movement?{' '}
+      <a href={CONTACT_HREF} target="_blank" rel="noopener noreferrer">
+        Contact your physio
+      </a>
+    </p>
+  );
+}
+
 export function MotionCheck({ exercise, target, uid, personId, onClose }: MotionCheckProps) {
-  const [phase, setPhase] = useState<Phase>('requesting');
+  const [phase, setPhase] = useState<Phase>('consent');
+  // Flips to true only when the patient clicks "Allow camera & continue" on
+  // the consent panel — gates the getUserMedia effect below so the camera is
+  // never requested before that explicit click.
+  const [consentGiven, setConsentGiven] = useState(false);
   const [frame, setFrame] = useState<FrameResult>({
     angle: 0,
     reps: 0,
@@ -137,7 +160,7 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
   const judgeRef = useRef<MotionJudge | null>(null);
   const rafRef = useRef<number | null>(null);
   const savingRef = useRef(false);
-  const phaseRef = useRef<Phase>('requesting');
+  const phaseRef = useRef<Phase>('consent');
   const lastSeenAtRef = useRef(0);
   const startedAtRef = useRef(0);
   const readyStartRef = useRef<number | null>(null);
@@ -178,6 +201,10 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
     // orphaning the first invocation's tracks (camera stays on after
     // close). With a per-invocation local, a stale invocation always sees
     // its own `cancelled = true` and tears down its OWN resources instead.
+    //
+    // Nothing here should run until the patient has explicitly clicked
+    // through the consent panel — getUserMedia must never fire before that.
+    if (!consentGiven) return;
     let cancelled = false;
 
     const stopMedia = () => {
@@ -298,8 +325,8 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
       rafRef.current = null;
       stopMedia();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- exercise/target/uid/personId are stable for the life of the modal; only `attempt` (Retry) should re-run camera/detector setup
-  }, [attempt]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- exercise/target/uid/personId are stable for the life of the modal; only `attempt` (Retry) and `consentGiven` (initial Allow) should re-run camera/detector setup
+  }, [attempt, consentGiven]);
 
   async function handleFinish() {
     // Guard against a rapid double-tap firing this twice before the
@@ -369,12 +396,12 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
   const romBestPct = Math.max(0, Math.min(100, Math.round((frame.romMax / target.targetRomMax) * 100)));
 
   return (
-    <div className="motion-check-overlay" role="dialog" aria-modal="true" aria-label={`Check your motion: ${exercise.title}`}>
+    <div className="motion-check-overlay" role="dialog" aria-modal="true" aria-label={`Check your ${target.bodyPart} motion: ${exercise.title}`}>
       <div className="motion-check-modal">
         <header className="motion-check-header">
           <div className="motion-check-heading">
-            <h2 className="motion-check-title">{exercise.title}</h2>
-            <p className="motion-check-subtitle">{exercise.bodyPart} &middot; target {target.repTarget} reps</p>
+            <h2 className="motion-check-title">{target.bodyPart} &middot; {exercise.title}</h2>
+            <p className="motion-check-subtitle">Target {target.repTarget} reps</p>
           </div>
           <button
             ref={closeButtonRef}
@@ -426,13 +453,40 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
                     </div>
                   </div>
                 )}
-                <div
-                  className={`motion-check-cue-banner${phase === 'no-track' ? ' motion-check-cue-banner--warning' : ''}`}
-                  aria-live="polite"
-                >
-                  {phase === 'no-track' ? 'Step back so we can see you' : frame.cue}
+                <div className="motion-check-bottom-stack">
+                  <div
+                    className={`motion-check-cue-banner${phase === 'no-track' ? ' motion-check-cue-banner--warning' : ''}`}
+                    aria-live="polite"
+                  >
+                    {phase === 'no-track' ? 'Step back so we can see you' : frame.cue}
+                  </div>
+                  {phase === 'no-track' && <TroubleLink overlay />}
                 </div>
               </>
+            )}
+
+            {phase === 'consent' && (
+              <div className="motion-check-status-panel motion-check-consent">
+                <p className="motion-check-status-title">Camera movement check</p>
+                <p className="motion-check-status-sub motion-check-consent-body">
+                  This uses your camera to measure how you move. All processing happens on your device
+                  &mdash; your video is never recorded, uploaded, or stored. Only your movement scores
+                  (reps and range of motion) are saved.
+                </p>
+                <div className="motion-check-status-actions">
+                  <button type="button" className="motion-check-btn motion-check-btn--secondary" onClick={handleClose}>
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="motion-check-btn motion-check-btn--primary"
+                    onClick={() => setConsentGiven(true)}
+                  >
+                    Allow camera &amp; continue
+                  </button>
+                </div>
+                <TroubleLink />
+              </div>
             )}
 
             {phase === 'requesting' && (
@@ -456,6 +510,7 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
                     Retry
                   </button>
                 </div>
+                <TroubleLink />
               </div>
             )}
 
