@@ -5,6 +5,7 @@ import { auth } from "@/lib/firebase";
 import { useToast } from "@/components/toast-provider";
 import { validateRequiredText, validateIntInRange, LIMITS } from "@/lib/validation";
 import { ClipboardIcon } from "@/components/icons";
+import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 
 interface SummaryFormProps {
   booking: {
@@ -13,6 +14,7 @@ interface SummaryFormProps {
     patientType: string;
     patientName: string;
     service: string;
+    bookedBy: string;
   };
   onPublished?: () => void;
 }
@@ -44,6 +46,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const toast = useToast();
+  const adminUid = auth?.currentUser?.uid;
   const [form, setForm] = useState({
     painScore: 5,
     recoveryPercent: 50,
@@ -223,6 +226,17 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
             </div>
           </section>
 
+          {/* ── Assign exercises ── */}
+          <section>
+            <h4 className="summary-section-title">Assign exercises</h4>
+            <p className="summary-section-hint" style={{ marginBottom: "var(--space-2)" }}>
+              Adds exercises to their program instantly (separate from publishing this summary). Exercises marked 🎯 also enable the patient&apos;s motion check.
+            </p>
+            {adminUid && booking.bookedBy && (
+              <AdminExerciseAssigner adminUid={adminUid} patientUid={booking.bookedBy} personId={booking.patientId} />
+            )}
+          </section>
+
           {/* ── Session Notes ── */}
           <section>
             <h4 className="summary-section-title">
@@ -246,6 +260,9 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
               </label>
               <label>
                 <span className="summary-label">Exercises assigned *</span>
+                <span className="summary-section-hint" style={{ display: "block", marginBottom: "var(--space-1)" }}>
+                  Notes for the summary — the structured list above is what appears in their app.
+                </span>
                 <textarea
                   rows={3}
                   required

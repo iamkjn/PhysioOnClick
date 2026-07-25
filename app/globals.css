@@ -2494,6 +2494,14 @@ textarea:focus {
 }
 .assign-row-label { font-size: var(--text-sm); color: var(--color-text-primary); }
 .assign-row-sub   { font-size: var(--text-sm); color: var(--color-text-secondary); }
+.motion-check-badge {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-muted, var(--color-border));
+  border-radius: var(--radius-sm, 4px);
+  padding: 0.1rem 0.4rem;
+  font-weight: 500;
+}
 .assign-remove {
   background: none; border: none; color: var(--color-error);
   font-size: var(--text-sm); font-weight: 600; min-height: 44px;

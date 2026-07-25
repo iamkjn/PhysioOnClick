@@ -415,7 +415,7 @@ export function AdminPatientDetail({ patientUid }: Props) {
                     </strong>
                     {status === "completed" && summary === null && (
                       <SummaryForm
-                        booking={{ id: b.id, patientId: person.id, patientType: b.patientType, patientName: b.patientName, service: b.service }}
+                        booking={{ id: b.id, patientId: person.id, patientType: b.patientType, patientName: b.patientName, service: b.service, bookedBy: patientUid }}
                         onPublished={() => handlePublished(b.id)}
                       />
                     )}

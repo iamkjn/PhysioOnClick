@@ -21,6 +21,7 @@ type BookingRecord = {
   patientName: string;
   patientId: string;
   patientType: string;
+  bookedBy: string;
   summaryId?: string;
 };
 
@@ -110,6 +111,7 @@ export function AdminBookingsTable() {
           patientName:      String(d.patientName || d.fullName || d.name || "Patient"),
           patientId:        String(d.patientId || d.bookedBy || ""),
           patientType:      String(d.patientType || "self"),
+          bookedBy:         String(d.bookedBy || d.patientId || ""),
           summaryId:        d.summaryId as string | undefined,
         };
       }));
@@ -338,7 +340,7 @@ export function AdminBookingsTable() {
                   </td>
                   <td>
                     {item.displayStatus === "completed" && !item.summaryId && item.patientId && (
-                      <SummaryForm booking={{ id: item.id, patientId: item.patientId, patientType: item.patientType, patientName: item.patientName, service: item.service }} />
+                      <SummaryForm booking={{ id: item.id, patientId: item.patientId, patientType: item.patientType, patientName: item.patientName, service: item.service, bookedBy: item.bookedBy }} />
                     )}
                     {item.summaryId && (
                       <span style={{ fontSize: "var(--text-xs)", color: "var(--color-success)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>✓ Published</span>

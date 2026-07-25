@@ -12,6 +12,16 @@ import { exercises as allExercises } from "@/lib/site-data";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { DEFAULT_MOTION_TARGETS } from "@/lib/motion-targets";
+
+function MotionBadge({ exerciseId }: { exerciseId: string }) {
+  if (!(exerciseId in DEFAULT_MOTION_TARGETS)) return null;
+  return (
+    <span className="motion-check-badge" title="Enables the patient's motion check">
+      🎯 Motion
+    </span>
+  );
+}
 
 interface Props {
   adminUid: string;
@@ -103,7 +113,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
         return (
           <div key={ae.exerciseId} className="assign-row">
             <span className="assign-row-label">
-              {title}
+              {title} <MotionBadge exerciseId={ae.exerciseId} />
             </span>
             <button
               onClick={() => setRemoveTarget({ exerciseId: ae.exerciseId, title })}
@@ -124,7 +134,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
               <p className="assign-group-label">{category}</p>
               {unassignedByCategory.get(category)!.map((ex) => (
                 <div key={ex.id} className="assign-row">
-                  <span className="assign-row-sub">{ex.title}</span>
+                  <span className="assign-row-sub">{ex.title} <MotionBadge exerciseId={ex.id} /></span>
                   <button
                     onClick={() => void handleAssign(ex.id)}
                     disabled={saving === ex.id}
