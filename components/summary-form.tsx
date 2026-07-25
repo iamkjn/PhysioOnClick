@@ -52,7 +52,6 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
     recoveryPercent: 50,
     sessionOutcome: null as Outcome | null,
     workedOn: "",
-    exercises: "",
     nextSteps: "",
     followUpWeeks: 2,
   });
@@ -75,8 +74,6 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
     const errs: Record<string, string> = {};
     const w = validateRequiredText(form.workedOn, { max: LIMITS.clinicalNote, message: "Enter what you worked on today." });
     if (w) errs.workedOn = w;
-    const ex = validateRequiredText(form.exercises, { max: LIMITS.clinicalNote, message: "Enter the exercises you assigned." });
-    if (ex) errs.exercises = ex;
     const ns = validateRequiredText(form.nextSteps, { max: LIMITS.clinicalNote, message: "Enter the next steps and advice." });
     if (ns) errs.nextSteps = ns;
     if (form.sessionOutcome == null) errs.sessionOutcome = "Select a session outcome.";
@@ -100,7 +97,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
         recoveryPercent: form.recoveryPercent,
         sessionOutcome: form.sessionOutcome as Outcome,
         workedOn: form.workedOn,
-        exercises: form.exercises,
+        exercises: "See the exercises assigned to you in the app.",
         nextSteps: form.nextSteps,
         followUpWeeks: form.followUpWeeks,
       };
@@ -118,7 +115,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
     }
   }
 
-  const canPublish = !!form.workedOn && !!form.exercises && !!form.nextSteps && form.sessionOutcome !== null;
+  const canPublish = !!form.workedOn && !!form.nextSteps && form.sessionOutcome !== null;
 
   const OUTCOMES: { key: Outcome; label: string; color: string; tint: string }[] = [
     { key: "improving", label: "Improving ↑", color: "var(--color-success)", tint: "var(--color-success-light)" },
@@ -240,7 +237,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
           {/* ── Session Notes ── */}
           <section>
             <h4 className="summary-section-title">
-              Session Notes <span className="summary-section-hint">· all three required</span>
+              Session Notes <span className="summary-section-hint">· both required</span>
             </h4>
             <div className="summary-fields summary-fields--compact">
               <label>
@@ -257,24 +254,6 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                   aria-describedby={errors.workedOn ? "err-worked-on" : undefined}
                 />
                 {errors.workedOn && <span className="field-error" id="err-worked-on">{errors.workedOn}</span>}
-              </label>
-              <label>
-                <span className="summary-label">Exercises assigned *</span>
-                <span className="summary-section-hint" style={{ display: "block", marginBottom: "var(--space-1)" }}>
-                  Notes for the summary — the structured list above is what appears in their app.
-                </span>
-                <textarea
-                  rows={3}
-                  required
-                  maxLength={LIMITS.clinicalNote}
-                  value={form.exercises}
-                  onChange={(e) => setForm((f) => ({ ...f, exercises: e.target.value }))}
-                  placeholder="e.g. Cat-cow stretches ×10, bird-dog ×8 each side, glute bridges ×12, twice daily"
-                  className="summary-textarea"
-                  aria-invalid={errors.exercises ? true : undefined}
-                  aria-describedby={errors.exercises ? "err-exercises" : undefined}
-                />
-                {errors.exercises && <span className="field-error" id="err-exercises">{errors.exercises}</span>}
               </label>
               <label>
                 <span className="summary-label">Next steps & advice *</span>
@@ -337,7 +316,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
             <p className="summary-help-text">
               {!form.sessionOutcome
                 ? "Select a session outcome above to publish."
-                : "Fill in all three session note fields to publish."}
+                : "Fill in both session note fields to publish."}
             </p>
           )}
         </div>

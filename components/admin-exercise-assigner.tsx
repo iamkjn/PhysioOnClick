@@ -34,6 +34,8 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
   const [removeTarget, setRemoveTarget] = useState<{ exerciseId: string; title: string } | null>(null);
+  const [search, setSearch] = useState("");
+  const [catFilter, setCatFilter] = useState("All");
   const toast = useToast();
 
   useEffect(() => {
@@ -50,12 +52,19 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
   }, [patientUid, personId]);
 
   const assignedIds = new Set(assigned.map((a) => a.exerciseId));
-  const unassigned = allExercises.filter((e) => !assignedIds.has(e.id));
   const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
+  const allCategories = Array.from(new Set(allExercises.map((e) => e.bodyPart))).sort((a, b) => a.localeCompare(b));
 
-  // Group the "Add exercise" list by bodyPart so the physio can scan by
-  // category instead of a long flat list. Catalogue order is preserved
-  // within each category; categories themselves are sorted alphabetically.
+  // Unassigned exercises, narrowed by the category filter + free-text search.
+  const q = search.trim().toLowerCase();
+  const unassigned = allExercises.filter(
+    (e) =>
+      !assignedIds.has(e.id) &&
+      (catFilter === "All" || e.bodyPart === catFilter) &&
+      (q === "" || e.title.toLowerCase().includes(q) || e.bodyPart.toLowerCase().includes(q)),
+  );
+
+  // Group the (filtered) "Add exercise" list by bodyPart, alphabetical.
   const unassignedByCategory = new Map<string, typeof unassigned>();
   for (const ex of unassigned) {
     const bucket = unassignedByCategory.get(ex.bodyPart);
@@ -126,28 +135,59 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
           </div>
         );
       })}
-      {unassigned.length > 0 && (
-        <>
-          <h3 style={{ marginBottom: 0, fontSize: "var(--text-md)", color: "var(--color-text-primary)" }}>Add exercise</h3>
-          {categories.map((category) => (
-            <div key={category} className="assign-group">
-              <p className="assign-group-label">{category}</p>
-              {unassignedByCategory.get(category)!.map((ex) => (
-                <div key={ex.id} className="assign-row">
-                  <span className="assign-row-sub">{ex.title} <MotionBadge exerciseId={ex.id} /></span>
-                  <button
-                    onClick={() => void handleAssign(ex.id)}
-                    disabled={saving === ex.id}
-                    aria-label={`Assign ${ex.title}`}
-                    className="assign-add-btn"
-                  >
-                    {saving === ex.id ? "…" : "Assign"}
-                  </button>
-                </div>
-              ))}
-            </div>
-          ))}
-        </>
+      <h3 style={{ marginBottom: 0, fontSize: "var(--text-md)", color: "var(--color-text-primary)" }}>Add exercise from library</h3>
+      <input
+        type="search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search exercises…"
+        aria-label="Search exercises"
+        style={{
+          width: "100%",
+          border: "1.5px solid var(--color-border)",
+          borderRadius: "var(--radius-input)",
+          padding: "var(--space-2) var(--space-3)",
+          fontSize: "var(--text-sm)",
+          fontFamily: "var(--font-sans)",
+          color: "var(--color-navy)",
+          boxSizing: "border-box",
+        }}
+      />
+      <div className="exercise-filter-row" role="tablist" aria-label="Filter exercises by category">
+        {["All", ...allCategories].map((c) => (
+          <button
+            key={c}
+            type="button"
+            role="tab"
+            aria-selected={catFilter === c}
+            className={`exercise-filter-pill${catFilter === c ? " active" : ""}`}
+            onClick={() => setCatFilter(c)}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+      {categories.length === 0 ? (
+        <p className="muted">No exercises match your search.</p>
+      ) : (
+        categories.map((category) => (
+          <div key={category} className="assign-group">
+            <p className="assign-group-label">{category}</p>
+            {unassignedByCategory.get(category)!.map((ex) => (
+              <div key={ex.id} className="assign-row">
+                <span className="assign-row-sub">{ex.title} <MotionBadge exerciseId={ex.id} /></span>
+                <button
+                  onClick={() => void handleAssign(ex.id)}
+                  disabled={saving === ex.id}
+                  aria-label={`Assign ${ex.title}`}
+                  className="assign-add-btn"
+                >
+                  {saving === ex.id ? "…" : "Assign"}
+                </button>
+              </div>
+            ))}
+          </div>
+        ))
       )}
 
       <ConfirmDialog
