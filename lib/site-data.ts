@@ -353,6 +353,114 @@ export const exercises: Exercise[] = [
     stage: "Mobility phase",
     description: "Challenges balance safely and can be progressed with hand support as needed.",
     videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "ex-5",
+    title: "Straight Leg Raise",
+    bodyPart: "Knee",
+    condition: "Post knee replacement",
+    stage: "Early rehab",
+    description: "Strengthens the thigh muscle while keeping the knee straight, moving as guided.",
+    videoUrl: "https://www.youtube.com/embed/1iQvKfV5fCE"
+  },
+  {
+    id: "ex-6",
+    title: "Heel Slide",
+    bodyPart: "Knee",
+    condition: "Post knee replacement",
+    stage: "Early rehab",
+    description: "Gently restores knee bending range through a slow, controlled sliding motion.",
+    videoUrl: "https://www.youtube.com/embed/uKYLJ3f6QBA"
+  },
+  {
+    id: "ex-7",
+    title: "Mini Squat",
+    bodyPart: "Knee",
+    condition: "Knee osteoarthritis",
+    stage: "Strength phase",
+    description: "Builds functional leg strength through a small, controlled bend at the knees and hips.",
+    videoUrl: "https://www.youtube.com/embed/wPM8icPu6H8"
+  },
+  {
+    id: "ex-8",
+    title: "Shoulder Flexion",
+    bodyPart: "Shoulder",
+    condition: "Shoulder impingement",
+    stage: "Mobility phase",
+    description: "Encourages a comfortable overhead reaching range, moving only as far as feels controlled.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "ex-9",
+    title: "Pendulum Swing",
+    bodyPart: "Shoulder",
+    condition: "Rotator cuff repair",
+    stage: "Early rehab",
+    description: "Uses a gentle, relaxed swinging motion to ease shoulder stiffness without active lifting.",
+    videoUrl: "https://www.youtube.com/embed/1iQvKfV5fCE"
+  },
+  {
+    id: "ex-10",
+    title: "Single Leg Balance",
+    bodyPart: "Balance",
+    condition: "Falls prevention",
+    stage: "Mobility phase",
+    description: "Improves standing balance and confidence, with hand support nearby if needed.",
+    videoUrl: "https://www.youtube.com/embed/uKYLJ3f6QBA"
+  },
+  {
+    id: "ex-11",
+    title: "Hip Bridge",
+    bodyPart: "Hip",
+    condition: "Hip pain",
+    stage: "Strength phase",
+    description: "Strengthens the hips and glutes through a slow, controlled lifting and lowering motion.",
+    videoUrl: "https://www.youtube.com/embed/wPM8icPu6H8"
+  },
+  {
+    id: "ex-12",
+    title: "Heel Raises",
+    bodyPart: "Ankle",
+    condition: "Ankle sprain",
+    stage: "Strength phase",
+    description: "Builds calf and ankle strength by rising onto the toes in a slow, controlled way.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "ex-13",
+    title: "Chin Tuck",
+    bodyPart: "Neck",
+    condition: "Neck pain",
+    stage: "Early rehab",
+    description: "Encourages gentle neck alignment through a small, comfortable tucking motion.",
+    videoUrl: "https://www.youtube.com/embed/1iQvKfV5fCE"
+  },
+  {
+    id: "ex-14",
+    title: "Dead Bug",
+    bodyPart: "Core",
+    condition: "Low back pain",
+    stage: "Strength phase",
+    description: "Builds core control by moving the arms and legs slowly while keeping the trunk steady.",
+    videoUrl: "https://www.youtube.com/embed/uKYLJ3f6QBA"
+  },
+  {
+    id: "ex-15",
+    title: "Bird Dog",
+    bodyPart: "Lumbar spine",
+    condition: "Back pain",
+    stage: "Strength phase",
+    description: "Improves spinal stability by extending opposite arm and leg in a slow, controlled pattern.",
+    videoUrl: "https://www.youtube.com/embed/wPM8icPu6H8"
+  },
+  {
+    id: "ex-16",
+    title: "Stationary Bike",
+    bodyPart: "Knee",
+    condition: "Post knee replacement",
+    stage: "Mobility phase",
+    description: "Supports gentle, low-impact movement to build knee range and general fitness.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
   }
 ];
 

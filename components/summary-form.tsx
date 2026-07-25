@@ -4,6 +4,7 @@ import { publishSummary, type PublishSummaryInput } from "@/app/admin/actions";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/components/toast-provider";
 import { validateRequiredText, validateIntInRange, LIMITS } from "@/lib/validation";
+import { ClipboardIcon } from "@/components/icons";
 
 interface SummaryFormProps {
   booking: {
@@ -30,9 +31,9 @@ function RecoveryRing({ percent }: { percent: number }) {
   const circ = 2 * Math.PI * r;
   const offset = circ - (Math.min(100, Math.max(0, percent)) / 100) * circ;
   return (
-    <svg width="64" height="64" viewBox="0 0 64 64" style={{ flexShrink: 0 }}>
+    <svg width="64" height="64" viewBox="0 0 64 64" className="summary-ring">
       <circle cx="32" cy="32" r={r} fill="none" stroke="var(--color-border)" strokeWidth="6" />
-      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--color-primary)" strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} transform="rotate(-90 32 32)" style={{ transition: "stroke-dashoffset 0.2s" }} />
+      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--color-primary)" strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} transform="rotate(-90 32 32)" className="summary-ring-arc" />
       <text x="32" y="37" textAnchor="middle" fontSize="14" fontWeight="700" fill="var(--color-navy)" fontFamily="var(--font-sans)">{percent}%</text>
     </svg>
   );
@@ -116,12 +117,6 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
   const canPublish = !!form.workedOn && !!form.exercises && !!form.nextSteps && form.sessionOutcome !== null;
 
-  const labelStyle: React.CSSProperties = { fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-text-secondary)", display: "block", marginBottom: "var(--space-1)", fontFamily: "var(--font-sans)", textTransform: "uppercase", letterSpacing: "0.06em" };
-  const textareaStyle: React.CSSProperties = { width: "100%", border: "1.5px solid var(--color-border)", borderRadius: "var(--radius-chip)", padding: "var(--space-2) var(--space-3)", fontSize: "var(--text-sm)", resize: "vertical" as const, boxSizing: "border-box" as const, fontFamily: "var(--font-sans)", color: "var(--color-navy)" };
-  // Shared heading style for the three drawer sections below — only the
-  // Follow-up section overrides the bottom margin (0.75rem vs 1rem).
-  const sectionTitleStyle: React.CSSProperties = { margin: "0 0 var(--space-4)", fontFamily: "var(--font-serif)", fontSize: "var(--text-base)", color: "var(--color-navy)" };
-
   const OUTCOMES: { key: Outcome; label: string; color: string; tint: string }[] = [
     { key: "improving", label: "Improving ↑", color: "var(--color-success)", tint: "var(--color-success-light)" },
     { key: "stable",    label: "Stable →",    color: "var(--color-warning, #D97706)", tint: "rgba(217, 119, 6, 0.15)" },
@@ -130,11 +125,8 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        style={{ background: "var(--color-primary-light)", border: "1px solid var(--color-primary-dark)", borderRadius: "var(--radius-chip)", color: "var(--color-primary-dark)", cursor: "pointer", fontSize: "var(--text-sm)", fontWeight: 600, minHeight: 36, padding: "0 var(--space-3)", fontFamily: "var(--font-sans)" }}
-      >
-        <span aria-hidden="true">📋</span> Write summary
+      <button onClick={() => setOpen(true)} className="summary-trigger">
+        <ClipboardIcon className="inline-icon" /> Write summary
       </button>
     );
   }
@@ -142,45 +134,43 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   return (
     <>
       {/* Backdrop */}
-      <div
-        onClick={() => setOpen(false)}
-        style={{ position: "fixed", inset: 0, background: "rgba(13,27,42,0.5)", zIndex: 200 }}
-      />
+      <div onClick={() => setOpen(false)} className="summary-backdrop" />
 
       {/* Drawer */}
-      <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "min(480px, 100vw)", background: "var(--color-surface)", zIndex: 201, overflowY: "auto", boxShadow: "-4px 0 32px rgba(0,0,0,0.15)", display: "flex", flexDirection: "column" as const }}>
+      <div className="summary-drawer">
 
         {/* Drawer header */}
-        <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--color-border)", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", position: "sticky", top: 0, background: "var(--color-surface)", zIndex: 1 }}>
+        <div className="summary-drawer-header">
           <div>
-            <h3 style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Session Summary</h3>
-            <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{booking.patientName} · {booking.service}</p>
+            <h3 className="summary-drawer-title">Session Summary</h3>
+            <p className="summary-drawer-subtitle">{booking.patientName} · {booking.service}</p>
           </div>
-          <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--color-text-secondary)", lineHeight: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 44, minHeight: 44, margin: "-0.75rem -0.75rem 0 0" }} aria-label="Close">×</button>
+          <button onClick={() => setOpen(false)} className="summary-close" aria-label="Close">×</button>
         </div>
 
-        <div style={{ padding: "var(--space-5)", display: "grid", gap: "var(--space-5)", flex: 1 }}>
+        <div className="summary-body">
 
           {/* ── Assessment Scores ── */}
           <section>
-            <h4 style={sectionTitleStyle}>Assessment Scores</h4>
-            <div style={{ display: "grid", gap: "var(--space-4)" }}>
+            <h4 className="summary-section-title">Assessment Scores</h4>
+            <div className="summary-fields">
 
               {/* Pain score */}
               <div>
                 {/* htmlFor/id — the label previously wrapped only the caption
                     text, leaving the range input with no accessible name. */}
-                <label htmlFor="summary-pain-score" style={labelStyle}>Pain level today (0 = none · 10 = worst)</label>
-                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
+                <label htmlFor="summary-pain-score" className="summary-label">Pain level today (0 = none · 10 = worst)</label>
+                <div className="summary-row">
                   <input
                     id="summary-pain-score"
                     type="range" min={0} max={10} step={1}
                     value={form.painScore}
                     onChange={(e) => setForm((f) => ({ ...f, painScore: Number(e.target.value) }))}
                     aria-valuetext={`${form.painScore} out of 10`}
-                    style={{ flex: 1, accentColor: getPainColor(form.painScore) }}
+                    className="summary-pain-slider"
+                    style={{ accentColor: getPainColor(form.painScore) }}
                   />
-                  <span style={{ background: getPainColor(form.painScore), color: "#fff", borderRadius: "var(--radius-pill)", padding: "3px var(--space-3)", fontSize: "var(--text-sm)", fontWeight: 700, fontFamily: "var(--font-sans)", minWidth: 36, textAlign: "center" as const }}>
+                  <span className="summary-pain-badge" style={{ background: getPainColor(form.painScore) }}>
                     {form.painScore}
                   </span>
                 </div>
@@ -188,10 +178,10 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
               {/* Recovery % */}
               <div>
-                <label htmlFor="summary-recovery-percent" style={labelStyle}>Estimated recovery progress</label>
-                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
+                <label htmlFor="summary-recovery-percent" className="summary-label">Estimated recovery progress</label>
+                <div className="summary-row">
                   <RecoveryRing percent={form.recoveryPercent} />
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                  <div className="summary-inline-group">
                     <input
                       id="summary-recovery-percent"
                       type="number" min={0} max={100} step={1}
@@ -199,9 +189,9 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                       onChange={(e) => setForm((f) => ({ ...f, recoveryPercent: Math.min(100, Math.max(0, Number(e.target.value) || 0)) }))}
                       aria-invalid={errors.recoveryPercent ? true : undefined}
                       aria-describedby={errors.recoveryPercent ? "err-recovery-percent" : undefined}
-                      style={{ border: "1.5px solid var(--color-border)", borderRadius: "var(--radius-input)", padding: "var(--space-2) var(--space-3)", fontSize: "var(--text-base)", fontWeight: 700, width: 72, fontFamily: "var(--font-sans)", color: "var(--color-navy)" }}
+                      className="summary-recovery-input"
                     />
-                    <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>%</span>
+                    <span className="summary-recovery-suffix">%</span>
                   </div>
                 </div>
                 {errors.recoveryPercent && <span className="field-error" id="err-recovery-percent">{errors.recoveryPercent}</span>}
@@ -209,26 +199,19 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
               {/* Session outcome */}
               <div role="group" aria-label="Session outcome">
-                <span style={labelStyle}>Session outcome</span>
-                <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" as const }}>
+                <span className="summary-label">Session outcome</span>
+                <div className="summary-chip-row">
                   {OUTCOMES.map((o) => (
                     <button
                       key={o.key}
                       type="button"
                       aria-pressed={form.sessionOutcome === o.key}
                       onClick={() => setForm((f) => ({ ...f, sessionOutcome: o.key }))}
+                      className="summary-chip"
                       style={{
                         background: form.sessionOutcome === o.key ? o.tint : "var(--color-surface)",
                         color: form.sessionOutcome === o.key ? o.color : "var(--color-text-secondary)",
                         border: `1.5px solid ${form.sessionOutcome === o.key ? o.color : "var(--color-border)"}`,
-                        borderRadius: "var(--radius-pill)",
-                        padding: "0 var(--space-4)",
-                        minHeight: 40,
-                        fontSize: "var(--text-sm)",
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        fontFamily: "var(--font-sans)",
-                        transition: "all 0.15s",
                       }}
                     >
                       {o.label}
@@ -242,12 +225,12 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
           {/* ── Session Notes ── */}
           <section>
-            <h4 style={sectionTitleStyle}>
-              Session Notes <span style={{ fontFamily: "var(--font-sans)", fontSize: "var(--text-xs)", fontWeight: 400, color: "var(--color-text-secondary)", textTransform: "none" as const }}>· all three required</span>
+            <h4 className="summary-section-title">
+              Session Notes <span className="summary-section-hint">· all three required</span>
             </h4>
-            <div style={{ display: "grid", gap: "var(--space-3)" }}>
+            <div className="summary-fields summary-fields--compact">
               <label>
-                <span style={labelStyle}>What we worked on today *</span>
+                <span className="summary-label">What we worked on today *</span>
                 <textarea
                   rows={3}
                   required
@@ -255,14 +238,14 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                   value={form.workedOn}
                   onChange={(e) => setForm((f) => ({ ...f, workedOn: e.target.value }))}
                   placeholder="e.g. Lower back mobility, hip flexor stretching and core activation exercises"
-                  style={textareaStyle}
+                  className="summary-textarea"
                   aria-invalid={errors.workedOn ? true : undefined}
                   aria-describedby={errors.workedOn ? "err-worked-on" : undefined}
                 />
                 {errors.workedOn && <span className="field-error" id="err-worked-on">{errors.workedOn}</span>}
               </label>
               <label>
-                <span style={labelStyle}>Exercises assigned *</span>
+                <span className="summary-label">Exercises assigned *</span>
                 <textarea
                   rows={3}
                   required
@@ -270,14 +253,14 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                   value={form.exercises}
                   onChange={(e) => setForm((f) => ({ ...f, exercises: e.target.value }))}
                   placeholder="e.g. Cat-cow stretches ×10, bird-dog ×8 each side, glute bridges ×12, twice daily"
-                  style={textareaStyle}
+                  className="summary-textarea"
                   aria-invalid={errors.exercises ? true : undefined}
                   aria-describedby={errors.exercises ? "err-exercises" : undefined}
                 />
                 {errors.exercises && <span className="field-error" id="err-exercises">{errors.exercises}</span>}
               </label>
               <label>
-                <span style={labelStyle}>Next steps & advice *</span>
+                <span className="summary-label">Next steps & advice *</span>
                 <textarea
                   rows={3}
                   required
@@ -285,7 +268,7 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                   value={form.nextSteps}
                   onChange={(e) => setForm((f) => ({ ...f, nextSteps: e.target.value }))}
                   placeholder="e.g. Avoid prolonged sitting, use heat pack before exercises, follow up if pain worsens"
-                  style={textareaStyle}
+                  className="summary-textarea"
                   aria-invalid={errors.nextSteps ? true : undefined}
                   aria-describedby={errors.nextSteps ? "err-next-steps" : undefined}
                 />
@@ -296,26 +279,19 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
           {/* ── Follow-up ── */}
           <section>
-            <h4 style={{ ...sectionTitleStyle, margin: "0 0 var(--space-3)" }}>Recommend Follow-up</h4>
-            <div role="group" aria-label="Recommend follow-up" style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" as const }}>
+            <h4 className="summary-section-title summary-section-title--compact">Recommend Follow-up</h4>
+            <div role="group" aria-label="Recommend follow-up" className="summary-chip-row">
               {FOLLOW_UP_OPTIONS.map((w) => (
                 <button
                   key={w}
                   type="button"
                   aria-pressed={form.followUpWeeks === w}
                   onClick={() => setForm((f) => ({ ...f, followUpWeeks: w }))}
+                  className="summary-chip"
                   style={{
                     background: form.followUpWeeks === w ? "var(--color-primary-light)" : "var(--color-surface)",
                     color: form.followUpWeeks === w ? "var(--color-primary-dark)" : "var(--color-text-secondary)",
                     border: `1.5px solid ${form.followUpWeeks === w ? "var(--color-primary-dark)" : "var(--color-border)"}`,
-                    borderRadius: "var(--radius-pill)",
-                    padding: "0 14px",
-                    minHeight: 40,
-                    fontSize: "var(--text-sm)",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    fontFamily: "var(--font-sans)",
-                    transition: "all 0.15s",
                   }}
                 >
                   {w === 0 ? "None" : `${w} wk${w > 1 ? "s" : ""}`}
@@ -326,21 +302,22 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
         </div>
 
         {/* Sticky footer */}
-        <div style={{ padding: "var(--space-4) var(--space-5)", borderTop: "1px solid var(--color-border)", display: "flex", flexDirection: "column" as const, gap: "var(--space-2)", position: "sticky", bottom: 0, background: "var(--color-surface)" }}>
+        <div className="summary-footer">
           <button
             onClick={handlePublish}
             disabled={saving || !canPublish}
+            className={`summary-publish${saving ? " is-saving" : ""}`}
             // Readable white-on-accent needs the darker --primary — raw
             // --color-primary under white text was ~2.8:1, well under AA.
-            style={{ background: canPublish ? "var(--primary)" : "var(--color-border)", color: "#fff", border: "none", borderRadius: "var(--radius-input)", minHeight: 46, padding: "0.875rem", fontSize: "var(--text-base)", fontWeight: 700, fontFamily: "var(--font-sans)", cursor: canPublish && !saving ? "pointer" : "not-allowed", opacity: saving ? 0.7 : 1 }}
+            style={{ background: canPublish ? "var(--primary)" : "var(--color-border)" }}
           >
             {saving ? "Publishing…" : "Publish Summary"}
           </button>
-          <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "var(--color-text-secondary)", fontSize: "var(--text-sm)", cursor: "pointer", fontFamily: "var(--font-sans)", padding: "var(--space-1)" }}>
+          <button onClick={() => setOpen(false)} className="summary-cancel">
             Cancel
           </button>
           {!canPublish && (
-            <p style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", margin: 0, textAlign: "center" as const, fontFamily: "var(--font-sans)" }}>
+            <p className="summary-help-text">
               {!form.sessionOutcome
                 ? "Select a session outcome above to publish."
                 : "Fill in all three session note fields to publish."}

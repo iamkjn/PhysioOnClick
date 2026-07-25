@@ -274,3 +274,122 @@ describe('exerciseMotionTargets', () => {
     await assertFails(setDoc(targetDoc(db), motionTarget()))
   })
 })
+
+describe('patients/{uid}/people/{personId}/goals (admin-set daily streak goal)', () => {
+  const PERSON = 'person-1'
+  const goalDoc = (db: unknown, uid = PATIENT) =>
+    doc(db as never, `patients/${uid}/people/${PERSON}/goals/current`)
+  const goal = (overrides: Record<string, unknown> = {}) => ({
+    streakTarget: 14,
+    updatedBy: ADMIN,
+    updatedAt: serverTimestamp(),
+    ...overrides,
+  })
+
+  it('lets the owner read their own goal', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(admin), goal()))
+
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(getDoc(goalDoc(owner)))
+  })
+
+  it('denies the owner writing their own goal', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(goalDoc(db), goal()))
+  })
+
+  it('lets an admin create and update the goal', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(db), goal()))
+    await assertSucceeds(setDoc(goalDoc(db), goal({ streakTarget: 21 }), { merge: true }))
+  })
+
+  it('denies a different signed-in user reading the goal', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(admin), goal()))
+
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(getDoc(goalDoc(other)))
+  })
+
+  it('denies an admin write with streakTarget 0', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(goalDoc(db), goal({ streakTarget: 0 })))
+  })
+
+  it('denies an admin write with a negative streakTarget', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(goalDoc(db), goal({ streakTarget: -3 })))
+  })
+
+  it('denies an admin write with a non-integer streakTarget', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(goalDoc(db), goal({ streakTarget: 3.5 })))
+  })
+
+  it('allows an admin write with a valid streakTarget', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(db), goal({ streakTarget: 7 })))
+  })
+})
+
+describe('patients/{uid}/people/{personId}/patientExerciseVideos (patient-added YouTube link)', () => {
+  const PERSON = 'person-1'
+  const videoDoc = (db: unknown, uid = PATIENT) =>
+    doc(db as never, `patients/${uid}/people/${PERSON}/patientExerciseVideos/ex-1`)
+  const video = (overrides: Record<string, unknown> = {}) => ({
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    updatedAt: serverTimestamp(),
+    ...overrides,
+  })
+
+  it('lets the owner write their own link', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(db), video()))
+  })
+
+  it('lets the owner read and remove their own link', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(db), video()))
+    await assertSucceeds(getDoc(videoDoc(db)))
+    await assertSucceeds(deleteDoc(videoDoc(db)))
+  })
+
+  it('denies a different signed-in user reading or writing', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(owner), video()))
+
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(setDoc(videoDoc(other), video()))
+    await assertFails(getDoc(videoDoc(other)))
+  })
+
+  it('denies unauthenticated writes', async () => {
+    const db = testEnv.unauthenticatedContext().firestore()
+    await assertFails(setDoc(videoDoc(db), video()))
+  })
+
+  it('lets an admin read the link', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(owner), video()))
+
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(getDoc(videoDoc(admin)))
+  })
+
+  it('denies a javascript: url', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(videoDoc(db), video({ url: 'javascript:alert(1)' })))
+  })
+
+  it('denies a non-YouTube https url', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(videoDoc(db), video({ url: 'https://vimeo.com/12345' })))
+  })
+
+  it('allows a valid youtu.be url', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(db), video({ url: 'https://youtu.be/dQw4w9WgXcQ' })))
+  })
+})

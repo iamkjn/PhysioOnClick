@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { exercises } from '@/lib/site-data'
 
 const getMotionTargetMock = vi.fn()
 const saveMotionTargetMock = vi.fn().mockResolvedValue(undefined)
@@ -41,8 +42,10 @@ describe('AdminMotionTargets', () => {
   it('does not render a form for exercises with no motion target', async () => {
     render(<AdminMotionTargets adminUid="admin-1" />)
     await screen.findByDisplayValue('85')
-    // ex-2/ex-3/ex-4 all resolve to null in this test's mock.
-    expect(getMotionTargetMock).toHaveBeenCalledTimes(4)
+    // Every other exercise in the full catalogue resolves to null in this
+    // test's mock, so only ex-1 gets a form. Derived from the real catalogue
+    // length rather than hardcoded, so it doesn't drift as exercises are added.
+    expect(getMotionTargetMock).toHaveBeenCalledTimes(exercises.length)
     expect(screen.getAllByRole('button', { name: /save/i })).toHaveLength(1)
   })
 

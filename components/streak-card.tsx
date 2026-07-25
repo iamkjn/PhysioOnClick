@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getExerciseLogs, dateKeyDaysAgo } from "@/lib/recovery";
+import { getStreakGoal } from "@/lib/goals";
 import { Skeleton, SkeletonText } from "@/components/skeleton";
 
 interface Props {
@@ -26,11 +27,13 @@ function computeStreak(completedDates: Set<string>): number {
 
 export function StreakCard({ uid, personId }: Props) {
   const [streak, setStreak] = useState<number | null>(null);
+  const [goal, setGoal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setStreak(null);
+    setGoal(null);
     setError(null);
     // 60 days back is plenty to bound any realistic single-practice streak
     // while keeping the read small.
@@ -45,6 +48,13 @@ export function StreakCard({ uid, personId }: Props) {
       .catch(() => {
         if (!cancelled) setError("Could not load your streak.");
       });
+    // The admin-set goal is a nice-to-have overlay on top of the streak, not
+    // load-bearing — a failure here shouldn't block or error the whole card.
+    getStreakGoal(uid, personId)
+      .then((g) => {
+        if (!cancelled) setGoal(g);
+      })
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -79,11 +89,39 @@ export function StreakCard({ uid, personId }: Props) {
           {streak === 1 ? "day" : "days"}
         </span>
       </div>
-      <p className="muted" style={{ margin: 0 }}>
-        {streak === 0
-          ? "Complete today's exercises to start a streak."
-          : "Consecutive days with exercises completed. Keep it going!"}
-      </p>
+      {goal === null ? (
+        <p className="muted" style={{ margin: 0 }}>
+          {streak === 0
+            ? "Complete today's exercises to start a streak."
+            : "Consecutive days with exercises completed. Keep it going!"}
+        </p>
+      ) : (
+        <div className="streak-goal">
+          <div className="streak-goal-label">
+            <span>
+              {streak} / {goal} day goal
+            </span>
+            {streak >= goal && (
+              <span className="streak-goal-reached">
+                <span aria-hidden="true">✓</span> Goal reached!
+              </span>
+            )}
+          </div>
+          <div
+            className="streak-goal-track"
+            role="progressbar"
+            aria-valuenow={Math.min(streak, goal)}
+            aria-valuemin={0}
+            aria-valuemax={goal}
+            aria-label={`Streak progress toward your ${goal}-day goal`}
+          >
+            <div
+              className={`streak-goal-fill${streak >= goal ? " is-complete" : ""}`}
+              style={{ width: `${Math.min(100, Math.round((streak / goal) * 100))}%` }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
