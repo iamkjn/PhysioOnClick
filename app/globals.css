@@ -2211,6 +2211,93 @@ textarea:focus {
   color: #fff;
 }
 
+/* Patient-added YouTube reference link per exercise card. Sits as a third
+   line inside .exercise-card-body — deliberately unobtrusive (small text,
+   no background) so it doesn't compete with the title/completion toggle. */
+.exercise-video-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.exercise-video-watch {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.exercise-video-watch:hover {
+  text-decoration: underline;
+}
+
+.exercise-video-add-btn,
+.exercise-video-edit-btn,
+.exercise-video-remove-btn,
+.exercise-video-cancel {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  min-height: 24px;
+}
+
+.exercise-video-add-btn:hover,
+.exercise-video-edit-btn:hover,
+.exercise-video-remove-btn:hover,
+.exercise-video-cancel:hover {
+  color: var(--primary);
+}
+
+.exercise-video-remove-btn:hover {
+  color: var(--color-error);
+}
+
+.exercise-video-edit-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  width: 100%;
+}
+
+.exercise-video-edit-row input {
+  padding: 0.5rem 0.7rem;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-input);
+}
+
+.exercise-video-edit-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.exercise-video-save {
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+}
+
+.exercise-video-save:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.exercise-video-edit-row .field-error {
+  font-size: var(--text-xs);
+}
+
 /* Three at-a-glance cards that fill the shell width and wrap to one
    column on narrow screens — the fix for the empty side gutters. */
 .patient-dashboard-grid {

@@ -189,6 +189,13 @@ service cloud.firestore {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
+    // Patient-added YouTube reference link per assigned exercise (lib/exercise-videos.ts).
+    // Separate subcollection from assignedExercises above so the owner can add their
+    // own link but never touch what the physio actually assigned.
+    match /patients/{userId}/people/{personId}/exerciseVideos/{exerciseId} {
+      allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    }
+
     // In-app notifications for the patient portal. Created server-side (Cloud
     // Functions / seed) or by an admin; the owner reads them and may only flip
     // `read` to true (marking as read) — they can't forge title/body/kind.

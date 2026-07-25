@@ -10,6 +10,11 @@ import {
   type AssignedExercise,
   type ExerciseLog,
 } from "@/lib/recovery";
+import {
+  getExerciseVideos,
+  setExerciseVideo,
+  removeExerciseVideo,
+} from "@/lib/exercise-videos";
 import { exercises } from "@/lib/site-data";
 import { SkeletonRow } from "@/components/skeleton";
 import { EmptyState } from "@/components/empty-state";
@@ -30,6 +35,16 @@ export function AssignedExercises({ uid, personId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("All");
 
+  // Patient-added YouTube reference links, keyed by exerciseId — an isolated
+  // subcollection (lib/exercise-videos.ts) the patient owns, separate from the
+  // admin-owned assignment above. editingVideoId tracks which single card (if
+  // any) currently has its inline editor open.
+  const [videos, setVideos] = useState<Record<string, string>>({});
+  const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
+  const [draftUrl, setDraftUrl] = useState("");
+  const [videoErrors, setVideoErrors] = useState<Record<string, string>>({});
+  const [savingVideoId, setSavingVideoId] = useState<string | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -37,10 +52,14 @@ export function AssignedExercises({ uid, personId }: Props) {
     Promise.all([
       getAssignedExercises(uid, personId),
       getTodayExerciseLog(uid, personId),
-    ]).then(([a, log]) => {
+      // Video links are a nice-to-have add-on — a failure here shouldn't stop
+      // the assigned-exercise list itself from rendering.
+      getExerciseVideos(uid, personId).catch(() => ({})),
+    ]).then(([a, log, v]) => {
       if (cancelled) return;
       setAssigned(a);
       setTodayLog(log);
+      setVideos(v);
       setLoading(false);
     }).catch(() => {
       if (cancelled) return;
@@ -85,6 +104,62 @@ export function AssignedExercises({ uid, personId }: Props) {
         loggedAt: new Date(),
       }));
       setError("Could not save. Please try again.");
+    }
+  }
+
+  function startVideoEdit(exerciseId: string) {
+    setEditingVideoId(exerciseId);
+    setDraftUrl(videos[exerciseId] ?? "");
+    setVideoErrors((prev) => {
+      if (!(exerciseId in prev)) return prev;
+      const next = { ...prev };
+      delete next[exerciseId];
+      return next;
+    });
+  }
+
+  function cancelVideoEdit() {
+    setEditingVideoId(null);
+    setDraftUrl("");
+  }
+
+  async function handleSaveVideo(exerciseId: string) {
+    setSavingVideoId(exerciseId);
+    try {
+      await setExerciseVideo(uid, personId, exerciseId, draftUrl.trim());
+      // Update local state immediately so the "Watch" link appears without a refetch.
+      setVideos((prev) => ({ ...prev, [exerciseId]: draftUrl.trim() }));
+      setVideoErrors((prev) => {
+        if (!(exerciseId in prev)) return prev;
+        const next = { ...prev };
+        delete next[exerciseId];
+        return next;
+      });
+      setEditingVideoId(null);
+      setDraftUrl("");
+    } catch (err) {
+      setVideoErrors((prev) => ({
+        ...prev,
+        [exerciseId]: err instanceof Error ? err.message : "Please enter a valid YouTube link.",
+      }));
+    } finally {
+      setSavingVideoId(null);
+    }
+  }
+
+  async function handleRemoveVideo(exerciseId: string) {
+    const previousUrl = videos[exerciseId];
+    // Optimistic removal, same pattern as handleToggle above.
+    setVideos((prev) => {
+      const next = { ...prev };
+      delete next[exerciseId];
+      return next;
+    });
+    try {
+      await removeExerciseVideo(uid, personId, exerciseId);
+    } catch {
+      setVideos((prev) => ({ ...prev, [exerciseId]: previousUrl }));
+      setVideoErrors((prev) => ({ ...prev, [exerciseId]: "Could not remove link. Please try again." }));
     }
   }
 
@@ -147,12 +222,78 @@ export function AssignedExercises({ uid, personId }: Props) {
       <div className="exercise-card-list">
         {visible.map(({ ae, ex }) => {
           const done = todayLog?.completions?.[ae.exerciseId] ?? false;
+          const videoUrl = videos[ae.exerciseId];
+          const isEditingVideo = editingVideoId === ae.exerciseId;
+          const videoError = videoErrors[ae.exerciseId];
           return (
             <div key={ae.exerciseId} className={`exercise-card${done ? " done" : ""}`}>
               <ExerciseFigure name={ex.title} size={56} />
               <div className="exercise-card-body">
                 <strong>{ex.title}</strong>
                 <span>{ex.bodyPart} · {ex.stage}</span>
+
+                {isEditingVideo ? (
+                  <div className="exercise-video-edit-row">
+                    <input
+                      type="url"
+                      inputMode="url"
+                      placeholder="Paste a YouTube link"
+                      value={draftUrl}
+                      aria-label={`YouTube link for ${ex.title}`}
+                      onChange={(e) => setDraftUrl(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") void handleSaveVideo(ae.exerciseId);
+                        if (e.key === "Escape") cancelVideoEdit();
+                      }}
+                    />
+                    <div className="exercise-video-edit-actions">
+                      <button
+                        type="button"
+                        className="exercise-video-save"
+                        disabled={savingVideoId === ae.exerciseId}
+                        onClick={() => void handleSaveVideo(ae.exerciseId)}
+                      >
+                        {savingVideoId === ae.exerciseId ? "Saving…" : "Save"}
+                      </button>
+                      <button type="button" className="exercise-video-cancel" onClick={cancelVideoEdit}>
+                        Cancel
+                      </button>
+                    </div>
+                    {videoError && <span className="field-error">{videoError}</span>}
+                  </div>
+                ) : videoUrl ? (
+                  <div className="exercise-video-row">
+                    <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="exercise-video-watch">
+                      ▶ Watch my video
+                    </a>
+                    <button
+                      type="button"
+                      className="exercise-video-edit-btn"
+                      aria-label={`Edit video link for ${ex.title}`}
+                      onClick={() => startVideoEdit(ae.exerciseId)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="exercise-video-remove-btn"
+                      aria-label={`Remove video link for ${ex.title}`}
+                      onClick={() => void handleRemoveVideo(ae.exerciseId)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="exercise-video-row">
+                    <button
+                      type="button"
+                      className="exercise-video-add-btn"
+                      onClick={() => startVideoEdit(ae.exerciseId)}
+                    >
+                      + Add video link
+                    </button>
+                  </div>
+                )}
               </div>
               <button
                 type="button"

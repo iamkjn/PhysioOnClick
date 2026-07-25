@@ -219,3 +219,48 @@ describe('patients/{uid}/people/{personId}/goals (admin-set daily streak goal)',
     await assertFails(getDoc(goalDoc(other)))
   })
 })
+
+describe('patients/{uid}/people/{personId}/exerciseVideos (patient-added YouTube link)', () => {
+  const PERSON = 'person-1'
+  const videoDoc = (db: unknown, uid = PATIENT) =>
+    doc(db as never, `patients/${uid}/people/${PERSON}/exerciseVideos/ex-1`)
+  const video = (overrides: Record<string, unknown> = {}) => ({
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    updatedAt: serverTimestamp(),
+    ...overrides,
+  })
+
+  it('lets the owner write their own link', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(db), video()))
+  })
+
+  it('lets the owner read and remove their own link', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(db), video()))
+    await assertSucceeds(getDoc(videoDoc(db)))
+    await assertSucceeds(deleteDoc(videoDoc(db)))
+  })
+
+  it('denies a different signed-in user reading or writing', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(owner), video()))
+
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(setDoc(videoDoc(other), video()))
+    await assertFails(getDoc(videoDoc(other)))
+  })
+
+  it('denies unauthenticated writes', async () => {
+    const db = testEnv.unauthenticatedContext().firestore()
+    await assertFails(setDoc(videoDoc(db), video()))
+  })
+
+  it('lets an admin read the link', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(owner), video()))
+
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(getDoc(videoDoc(admin)))
+  })
+})
