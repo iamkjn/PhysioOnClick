@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,9 +11,22 @@ import '../appointments/appointments_screen.dart';
 import '../auth/sign_in_screen.dart';
 import '../auth/sign_up_screen.dart';
 import '../../core/page_transitions.dart';
+import '../admin/recovery/recovery_service.dart';
+import '../motion/motion_check_screen.dart';
+import '../motion/motion_service.dart';
+import '../motion/motion_targets.dart';
 import '../people/people_screen.dart';
 import 'exercise_video.dart';
 import 'rehab_program.dart';
+
+/// Cached across the whole session — `availableCameras()` talks to platform
+/// hardware, so only probe it once rather than once per exercise row.
+Future<bool>? _deviceHasCameraFuture;
+
+Future<bool> _deviceHasCamera() {
+  return _deviceHasCameraFuture ??=
+      availableCameras().then((cameras) => cameras.isNotEmpty).catchError((_) => false);
+}
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -114,6 +128,10 @@ class ProfileScreen extends StatelessWidget {
               Text('Assigned rehab programmes', style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),
               _RehabProgramsSection(userEmail: user.email ?? ''),
+              const SizedBox(height: 18),
+              Text('Your exercises', style: theme.textTheme.titleLarge),
+              const SizedBox(height: 12),
+              _AssignedExercisesSection(uid: user.uid),
               const SizedBox(height: 18),
               Text('Saved blog articles', style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),
@@ -614,6 +632,185 @@ class _ExerciseLibrarySection extends StatelessWidget {
               ),
             );
           }).toList(),
+        );
+      },
+    );
+  }
+}
+
+/// Patient-facing view of the exercises their physio assigned via the admin
+/// recovery panel (`patients/{uid}/people/{personId}/assignedExercises`,
+/// filtered to `active == true`) — the same source `AdminRecoveryPanelScreen`
+/// reads/writes. This mirrors the web app's assigned-exercises list so both
+/// surfaces show the same set, unlike `_RehabProgramsSection` above (which
+/// reads the separate, programme-level `rehabPrograms` collection for
+/// context/goals only).
+///
+/// `personId` is always the patient's own uid ("Me") — dependent switching on
+/// this screen is out of scope, matching `patient_dashboard.dart`.
+class _AssignedExercisesSection extends StatefulWidget {
+  const _AssignedExercisesSection({required this.uid});
+
+  final String uid;
+
+  @override
+  State<_AssignedExercisesSection> createState() => _AssignedExercisesSectionState();
+}
+
+class _AssignedExercisesSectionState extends State<_AssignedExercisesSection> {
+  late final Future<Map<String, ExerciseVideo>> _exerciseVideosFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _exerciseVideosFuture = _loadExerciseVideos();
+  }
+
+  static Future<Map<String, ExerciseVideo>> _loadExerciseVideos() async {
+    final snapshot = await FirebaseFirestore.instance.collection('exerciseVideos').get();
+    return {
+      for (final doc in snapshot.docs) doc.id: ExerciseVideo.fromMap(doc.data(), doc.id),
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final personId = widget.uid;
+
+    return FutureBuilder<Map<String, ExerciseVideo>>(
+      future: _exerciseVideosFuture,
+      builder: (context, videosSnapshot) {
+        final exerciseVideos = videosSnapshot.data ?? const <String, ExerciseVideo>{};
+
+        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: RecoveryService.watchAssignedExercises(widget.uid, personId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasError) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Text(
+                    'We could not load your assigned exercises right now.',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+              );
+            }
+
+            final docs = snapshot.data?.docs ?? <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+
+            if (docs.isEmpty) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Text(
+                    'No exercises assigned yet — your physio will add them.',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+              );
+            }
+
+            return Column(
+              children: docs.map((doc) {
+                final exerciseId = doc.id;
+                final video = exerciseVideos[exerciseId];
+                final title = video?.title ?? exerciseId;
+                final bodyPart = video?.bodyPart ?? '';
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          if (bodyPart.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(bodyPart, style: theme.textTheme.bodyMedium),
+                          ],
+                          _CheckMotionButton(
+                            exerciseId: exerciseId,
+                            exerciseTitle: title,
+                            uid: widget.uid,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+/// Renders a "Check your {bodyPart} motion" button under an exercise card
+/// when — and only when — that exercise has a motion target configured
+/// (`exerciseMotionTargets/{exerciseId}` or a code default) AND the device
+/// reports at least one camera. Renders nothing otherwise, so exercises
+/// without motion grading (e.g. balance work) are unaffected.
+class _CheckMotionButton extends StatelessWidget {
+  const _CheckMotionButton({
+    required this.exerciseId,
+    required this.exerciseTitle,
+    required this.uid,
+  });
+
+  final String exerciseId;
+  final String exerciseTitle;
+  final String uid;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<MotionTarget?>(
+      future: MotionService.getMotionTarget(exerciseId),
+      builder: (context, targetSnapshot) {
+        final target = targetSnapshot.data;
+        if (targetSnapshot.connectionState != ConnectionState.done || target == null) {
+          return const SizedBox.shrink();
+        }
+
+        return FutureBuilder<bool>(
+          future: _deviceHasCamera(),
+          builder: (context, cameraSnapshot) {
+            if (cameraSnapshot.data != true) {
+              return const SizedBox.shrink();
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MotionCheckScreen(
+                      exerciseId: exerciseId,
+                      exerciseTitle: exerciseTitle,
+                      target: target,
+                      uid: uid,
+                      personId: uid,
+                    ),
+                  ),
+                ),
+                icon: const Icon(Icons.videocam_rounded),
+                label: Text('Check your ${target.bodyPart.toLowerCase()} motion'),
+              ),
+            );
+          },
         );
       },
     );

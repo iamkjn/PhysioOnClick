@@ -64,5 +64,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Used to check your movement during exercises.</string>
 </dict>
 </plist>
