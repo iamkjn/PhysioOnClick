@@ -2204,9 +2204,16 @@ textarea:focus {
   background: var(--color-primary-light);
 }
 
+.notification-bell {
+  color: var(--color-text-primary);
+}
 .notification-bell-icon {
-  font-size: 18px;
+  display: inline-flex;
   line-height: 1;
+}
+.notification-bell-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .notification-bell-badge {

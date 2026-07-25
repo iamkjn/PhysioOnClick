@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { subscribeNotifications } from "@/lib/notifications";
+import { BellIcon } from "@/components/icons";
 
 // Header bell that shows the signed-in patient's unread notification count and
 // links to the notifications screen. Renders nothing when signed out.
@@ -33,7 +34,7 @@ export function NotificationBell() {
       className="notification-bell"
       aria-label={unread > 0 ? `Notifications, ${unread} unread` : "Notifications"}
     >
-      <span aria-hidden="true" className="notification-bell-icon">🔔</span>
+      <span aria-hidden="true" className="notification-bell-icon"><BellIcon /></span>
       {unread > 0 && (
         <span className="notification-bell-badge" aria-hidden="true">
           {unread > 9 ? "9+" : unread}
