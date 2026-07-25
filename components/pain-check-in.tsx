@@ -78,7 +78,7 @@ export function PainCheckIn({ uid, personId }: Props) {
     return (
       <div className="panel stack">
         <h3>Today&apos;s pain check-in</h3>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
           <span
             style={{
               fontSize: 48,
@@ -88,7 +88,7 @@ export function PainCheckIn({ uid, personId }: Props) {
           >
             {todayLog.score}
           </span>
-          <span style={{ color: "var(--color-text-secondary)", fontSize: 14 }}>/10</span>
+          <span style={{ color: "var(--color-text-secondary)", fontSize: "var(--text-sm)" }}>/10</span>
         </div>
         {todayLog.note && <p className="muted">{todayLog.note}</p>}
         <p className="muted" style={{ fontSize: "var(--text-xs)" }}>
@@ -102,16 +102,16 @@ export function PainCheckIn({ uid, personId }: Props) {
     <div className="panel stack">
       <h3>Today&apos;s pain check-in</h3>
       <p className="muted">How is your pain right now? 0 = no pain, 10 = worst possible.</p>
-      <form onSubmit={(e) => void handleSubmit(e)} style={{ display: "grid", gap: "1rem" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <form onSubmit={(e) => void handleSubmit(e)} style={{ display: "grid", gap: "var(--space-4)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>No pain (0)</span>
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>No pain (0)</span>
             <span
               style={{ fontSize: 28, fontWeight: 800, color: painColor(score) }}
             >
               {score}
             </span>
-            <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>Worst (10)</span>
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>Worst (10)</span>
           </div>
           <input
             type="range"

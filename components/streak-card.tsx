@@ -70,7 +70,7 @@ export function StreakCard({ uid, personId }: Props) {
   return (
     <div className="panel stack">
       <h3>Daily streak</h3>
-      <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)" }}>
         <span aria-hidden="true" style={{ fontSize: 32 }}>🔥</span>
         <span style={{ fontSize: 40, fontWeight: 800, color: "var(--color-navy)", fontFamily: "var(--font-serif)", lineHeight: 1 }}>
           {streak}

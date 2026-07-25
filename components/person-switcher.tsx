@@ -73,7 +73,7 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
   const isViewingOther = selected !== uid;
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
       <label
         htmlFor="person-switcher-select"
         style={{ fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}
@@ -88,7 +88,7 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
         onBlur={() => setIsFocused(false)}
         style={{
           minHeight: 44,
-          padding: "0.6rem 0.9rem",
+          padding: "var(--space-2) var(--space-4)",
           borderRadius: "var(--radius-input)",
           border: `1px solid ${
             isFocused

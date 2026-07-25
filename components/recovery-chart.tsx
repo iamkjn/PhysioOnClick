@@ -117,7 +117,7 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
                   <XAxis
                     dataKey="date"
                     stroke="var(--color-text-secondary)"
-                    tick={{ fontSize: 11, fill: "var(--color-text-secondary)" }}
+                    tick={{ fontSize: "var(--text-xs)", fill: "var(--color-text-secondary)" }}
                     tickFormatter={(v: string) => v.slice(5)}
                   />
                   <YAxis

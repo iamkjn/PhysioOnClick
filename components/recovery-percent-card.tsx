@@ -91,7 +91,7 @@ export function RecoveryPercentCard({ uid, personId, staticPercent, subtitle }: 
     return (
       <div className="panel recovery-percent-card recovery-percent-card--pending">
         <SkeletonCircle size="132px" />
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", flex: 1 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", flex: 1 }}>
           <Skeleton height="1rem" width="120px" />
           <Skeleton height="0.75rem" width="80%" />
         </div>

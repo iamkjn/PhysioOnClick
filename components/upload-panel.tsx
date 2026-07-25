@@ -99,11 +99,11 @@ export function UploadPanel() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: "0.5rem",
+          gap: "var(--space-2)",
           border: `1.5px dashed ${isFocused ? "var(--primary)" : "var(--line)"}`,
           borderRadius: "var(--radius-card)",
           background: "var(--color-bg)",
-          padding: "1.75rem 1rem",
+          padding: "var(--space-5) var(--space-4)",
           textAlign: "center",
           cursor: uploading ? "not-allowed" : "pointer",
           opacity: uploading ? 0.7 : 1,
@@ -114,7 +114,7 @@ export function UploadPanel() {
         <span style={{ fontWeight: 700, color: "var(--color-text-primary)" }}>
           {uploading ? "Uploading…" : "Click to choose a file"}
         </span>
-        <span className="muted" style={{ fontSize: "0.85em" }}>PDF, PNG, JPG or Word document</span>
+        <span className="muted" style={{ fontSize: "var(--text-sm)" }}>PDF, PNG, JPG or Word document</span>
         <input
           type="file"
           accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"

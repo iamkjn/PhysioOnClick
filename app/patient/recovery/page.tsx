@@ -69,7 +69,7 @@ export default function RecoveryPage() {
         </div>
       </section>
 
-      <section className="page-section stack" style={{ gap: "0.5rem" }}>
+      <section className="page-section stack" style={{ gap: "var(--space-2)" }}>
         <PersonSwitcher
           uid={uid}
           displayName={displayName}

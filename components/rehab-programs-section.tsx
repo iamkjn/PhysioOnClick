@@ -50,50 +50,35 @@ export function RehabProgramsSection({ email }: { email: string }) {
 
   if (programs.length === 0) {
     return (
-      <div
-        style={{
-          background: "var(--color-surface)",
-          borderRadius: "var(--radius-card)",
-          padding: "1rem 1.25rem",
-          boxShadow: "var(--shadow)",
-        }}
-      >
-        <p style={{ margin: 0, color: "var(--color-text-secondary)" }}>No rehab programme assigned yet.</p>
+      <div className="card">
+        <p className="muted" style={{ margin: 0 }}>No rehab programme assigned yet.</p>
       </div>
     );
   }
 
   return (
-    <div style={{ display: "grid", gap: "0.75rem" }}>
+    <div style={{ display: "grid", gap: "var(--space-3)" }}>
       {programs.map((p) => (
-        <div
-          key={p.id}
-          style={{
-            background: "var(--color-surface)",
-            borderRadius: "var(--radius-card)",
-            padding: "1.25rem",
-            boxShadow: "var(--shadow)",
-          }}
-        >
-          <strong style={{ display: "block", color: "var(--color-text-primary)", fontSize: "var(--text-base)", marginBottom: 4 }}>
+        <div key={p.id} className="card">
+          <strong style={{ display: "block", color: "var(--color-text-primary)", fontSize: "var(--text-base)", marginBottom: "var(--space-1)" }}>
             {p.title}
           </strong>
           {p.stage && (
-            <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", display: "block", marginBottom: 8 }}>
+            <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", display: "block", marginBottom: "var(--space-2)" }}>
               {p.stage}
             </span>
           )}
           {p.notes && (
-            <p style={{ margin: "0 0 0.75rem", fontSize: "var(--text-sm)" }}>{p.notes}</p>
+            <p style={{ margin: "0 0 var(--space-3)", fontSize: "var(--text-sm)" }}>{p.notes}</p>
           )}
           {p.goals.length > 0 && (
             <>
-              <span style={{ fontWeight: 700, fontSize: "var(--text-sm)", display: "block", marginBottom: 6 }}>
+              <span style={{ fontWeight: 700, fontSize: "var(--text-sm)", display: "block", marginBottom: "var(--space-2)" }}>
                 Goals
               </span>
-              <ul style={{ margin: "0 0 0.75rem", paddingLeft: "1.25rem" }}>
+              <ul style={{ margin: "0 0 var(--space-3)", paddingLeft: "1.25rem" }}>
                 {p.goals.map((g, i) => (
-                  <li key={i} style={{ marginBottom: 4, fontSize: "var(--text-sm)" }}>
+                  <li key={i} style={{ marginBottom: "var(--space-1)", fontSize: "var(--text-sm)" }}>
                     {g}
                   </li>
                 ))}

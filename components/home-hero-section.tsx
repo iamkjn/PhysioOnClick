@@ -48,7 +48,7 @@ export function HomeHeroSection({
         <div className="home-dashboard-glow" aria-hidden />
         <div className="site-shell home-dashboard-inner" aria-busy="true" aria-label="Loading your dashboard">
           <SkeletonText lines={2} lastLineWidth="45%" />
-          <div style={{ marginTop: "1.5rem" }}>
+          <div style={{ marginTop: "var(--space-5)" }}>
             <SkeletonStatGrid count={4} />
           </div>
         </div>

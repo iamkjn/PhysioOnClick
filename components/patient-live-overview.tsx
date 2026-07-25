@@ -89,7 +89,7 @@ export function PatientLiveOverview() {
   const accountGridStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: "1.25rem"
+    gap: "var(--space-5)"
   };
 
   if (!resolvedAuth) {
