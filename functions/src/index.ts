@@ -1,4 +1,5 @@
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { onSchedule } from "firebase-functions/v2/scheduler";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { getMessaging } from "firebase-admin/messaging";
@@ -87,5 +88,91 @@ export const onFollowUpCreated = onDocumentCreated(
     });
 
     await event.data!.ref.update({ notificationSent: FieldValue.serverTimestamp() });
+  }
+);
+
+export const sendFollowUpReminders = onSchedule(
+  { schedule: "0 8 * * *", timeZone: "Europe/London" },
+  async () => {
+    const db = getFirestore();
+
+    const fmt = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "Europe/London" });
+    const now = new Date();
+    const todayStr = fmt(now);
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const tomorrowStr = fmt(tomorrow);
+
+    const snap = await db
+      .collectionGroup("followUps")
+      .where("dueDate", "in", [todayStr, tomorrowStr])
+      .get();
+
+    for (const doc of snap.docs) {
+      try {
+        const data = doc.data();
+        const patientUid = doc.ref.parent.parent?.id;
+        if (!patientUid) continue;
+
+        const isToday = data.dueDate === todayStr;
+        const flag = isToday ? "dayOf" : "dayBefore";
+        if (data.reminders?.[flag]) continue;
+
+        const parts = typeof data.dueDate === "string" ? data.dueDate.split("-") : [];
+        let pretty = String(data.dueDate ?? "");
+        if (parts.length === 3) {
+          const parsed = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+          if (!isNaN(parsed.getTime())) {
+            pretty = parsed.toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            });
+          }
+        }
+
+        await db
+          .collection("patients")
+          .doc(patientUid)
+          .collection("notifications")
+          .add({
+            title: isToday ? "Follow-up today" : "Follow-up tomorrow",
+            body: `Reminder: your physiotherapy follow-up is ${
+              isToday ? "today" : "tomorrow"
+            } (${pretty}).${data.note ? " " + data.note : ""}`,
+            kind: "appointment",
+            read: false,
+            createdAt: FieldValue.serverTimestamp(),
+          });
+
+        try {
+          const userSnap = await db.doc(`users/${patientUid}`).get();
+          const fcmToken: string | undefined = userSnap.data()?.fcmToken;
+          if (fcmToken) {
+            await getMessaging().send({
+              token: fcmToken,
+              notification: {
+                title: isToday ? "📅 Follow-up today" : "📅 Follow-up tomorrow",
+                body: `Your follow-up is ${isToday ? "today" : "tomorrow"} (${pretty})`,
+              },
+              data: {
+                type: "followup-reminder",
+                dueDate: String(data.dueDate),
+              },
+              apns: { payload: { aps: { sound: "default" } } },
+              android: { notification: { sound: "default" } },
+            });
+          }
+        } catch (fcmErr) {
+          console.error("sendFollowUpReminders: FCM send failed", doc.ref.path, fcmErr);
+        }
+
+        await doc.ref.set(
+          { reminders: { [flag]: FieldValue.serverTimestamp() } },
+          { merge: true }
+        );
+      } catch (err) {
+        console.error("sendFollowUpReminders: failed to process doc", doc.ref.path, err);
+      }
+    }
   }
 );
