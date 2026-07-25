@@ -18,6 +18,7 @@ import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest'
 const PATIENT = 'patient-uid'
 const OTHER = 'other-uid'
 const ADMIN = 'admin-uid'
+const PERSON = 'person-1'
 
 let testEnv: RulesTestEnvironment
 
@@ -178,5 +179,98 @@ describe('patients/{uid} catch-all stays read-only', () => {
   it('denies an admin bypassing the favourite caps', async () => {
     const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
     await assertFails(setDoc(favouriteDoc(db, ADMIN), favourite({ userId: ADMIN, excerpt: 'x'.repeat(2001) })))
+  })
+})
+
+// "Check your motion" feature: per-patient motion capture sessions, scored against
+// admin-authored joint-angle targets per exercise.
+
+function motionSession(overrides: Record<string, unknown> = {}) {
+  return {
+    exerciseId: 'squat',
+    recordedAt: serverTimestamp(),
+    jointAngles: { knee: 92, hip: 88 },
+    score: 76,
+    ...overrides,
+  }
+}
+
+function motionTarget(overrides: Record<string, unknown> = {}) {
+  return {
+    exerciseId: 'squat',
+    minAngle: 70,
+    maxAngle: 170,
+    jointName: 'knee',
+    ...overrides,
+  }
+}
+
+describe('patients/{uid}/people/{personId}/motionSessions', () => {
+  const sessionDoc = (db: unknown, uid = PATIENT) =>
+    doc(db as never, `patients/${uid}/people/${PERSON}/motionSessions/session-1`)
+
+  it('lets the owning patient write a motion session', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(sessionDoc(db), motionSession()))
+  })
+
+  it('lets the owning patient read their motion session', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await setDoc(sessionDoc(admin), motionSession())
+
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(getDoc(sessionDoc(db)))
+  })
+
+  it('lets an admin read and write a motion session', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(sessionDoc(db), motionSession()))
+    await assertSucceeds(getDoc(sessionDoc(db)))
+  })
+
+  it('denies another signed-in patient reading or writing', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await setDoc(sessionDoc(admin), motionSession())
+
+    const db = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(getDoc(sessionDoc(db)))
+    await assertFails(setDoc(sessionDoc(db, PATIENT), motionSession()))
+  })
+
+  it('denies an unauthenticated write', async () => {
+    const db = testEnv.unauthenticatedContext().firestore()
+    await assertFails(setDoc(sessionDoc(db), motionSession()))
+  })
+})
+
+describe('exerciseMotionTargets', () => {
+  const targetDoc = (db: unknown) => doc(db as never, 'exerciseMotionTargets/squat')
+
+  it('lets any signed-in user read', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await setDoc(targetDoc(admin), motionTarget())
+
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(getDoc(targetDoc(db)))
+  })
+
+  it('denies an unauthenticated read', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await setDoc(targetDoc(admin), motionTarget())
+
+    const db = testEnv.unauthenticatedContext().firestore()
+    await assertFails(getDoc(targetDoc(db)))
+  })
+
+  it('lets an admin create, update and delete', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(targetDoc(db), motionTarget()))
+    await assertSucceeds(setDoc(targetDoc(db), motionTarget({ maxAngle: 175 })))
+    await assertSucceeds(deleteDoc(targetDoc(db)))
+  })
+
+  it('denies a non-admin signed-in user writing', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(targetDoc(db), motionTarget()))
   })
 })

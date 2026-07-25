@@ -43,6 +43,14 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // "Check your motion" feature: admin-authored joint-angle targets per exercise,
+    // scored against client-captured motionSessions below. Mirrors exerciseVideos,
+    // but read is gated to signed-in users rather than public.
+    match /exerciseMotionTargets/{exerciseId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
     match /rehabPrograms/{programId} {
       allow read: if isAdmin() ||
         (isSignedIn() &&
@@ -203,6 +211,14 @@ service cloud.firestore {
     }
 
     match /patients/{userId}/people/{personId}/exerciseLogs/{date} {
+      allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    }
+
+    // "Check your motion" feature: captured motion-check sessions, scored against
+    // exerciseMotionTargets above. Explicit block (the read-only patients/** catch-all
+    // below would already cover reads, but not writes) mirroring exerciseLogs' owner
+    // condition exactly.
+    match /patients/{userId}/people/{personId}/motionSessions/{sessionId} {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
