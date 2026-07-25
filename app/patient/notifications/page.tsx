@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -48,6 +48,17 @@ export default function NotificationsPage() {
     if (!uid) return;
     return subscribeNotifications(uid, setItems);
   }, [uid]);
+
+  // Opening the page clears the unread badge: mark the first loaded batch read
+  // once. The header bell listens to the same collection, so it updates live.
+  const autoMarked = useRef(false);
+  useEffect(() => {
+    if (!uid || items === null || autoMarked.current) return;
+    if (items.some((n) => !n.read)) {
+      autoMarked.current = true;
+      void markAllRead(uid, items);
+    }
+  }, [uid, items]);
 
   if (uid === undefined || (uid && items === null)) {
     return (
