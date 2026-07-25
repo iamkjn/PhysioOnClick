@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { onAuthStateChanged, type User } from "firebase/auth";
@@ -8,7 +8,6 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { HomeDashboard } from "@/components/home-dashboard";
 import { SkeletonStatGrid, SkeletonText } from "@/components/skeleton";
-import { useToast } from "@/components/toast-provider";
 
 export function HomeHeroSection({
   founderName,
@@ -19,8 +18,6 @@ export function HomeHeroSection({
 }) {
   const [user, setUser] = useState<User | null>(null);
   const [resolvedAuth, setResolvedAuth] = useState(false);
-  const { show } = useToast();
-  const welcomedRef = useRef(false);
 
   useEffect(() => {
     if (!auth) {
@@ -30,12 +27,8 @@ export function HomeHeroSection({
     return onAuthStateChanged(auth, (u) => {
       setResolvedAuth(true);
       setUser(u);
-      if (u && !welcomedRef.current) {
-        welcomedRef.current = true;
-        show(`Welcome back, ${u.displayName?.split(' ')[0] || 'there'}!`, 'info');
-      }
     });
-  }, [show]);
+  }, []);
 
   // Resolved and signed in → the dashboard.
   if (resolvedAuth && user) {
