@@ -346,4 +346,19 @@ describe('patients/{uid}/followUps (admin-scheduled follow-up)', () => {
     await assertFails(getDoc(followUpDoc(db)))
     await assertFails(setDoc(followUpDoc(db), followUp()))
   })
+
+  it('denies an admin write with an over-long note', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(followUpDoc(db), followUp({ note: 'x'.repeat(2001) })))
+  })
+
+  it('denies an admin write with a non-string dueDate', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(followUpDoc(db), followUp({ dueDate: 20260812 })))
+  })
+
+  it('allows an admin write with a valid dueDate and note', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(followUpDoc(db), followUp()))
+  })
 })

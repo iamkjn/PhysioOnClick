@@ -81,11 +81,11 @@ export default function AppointmentsPage() {
   }, [syncDone, uid, personId]);
 
   useEffect(() => {
-    if (!uid) return;
-    getFollowUps(uid)
+    if (!uid || !personId) return;
+    getFollowUps(uid, personId)
       .then(setFollowUps)
       .catch(() => setFollowUps([]));
-  }, [uid]);
+  }, [uid, personId]);
 
   const resolved = bookings.map((b) => ({ ...b, displayStatus: resolveStatus(b) }));
   const upcoming = resolved.filter((b) => b.displayStatus === "upcoming");

@@ -148,14 +148,24 @@ function prettyDate(dueDate: string): string {
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }
 
+// `new Date("2026-02-30")` silently rolls over to a valid-looking date
+// (2026-03-02), which would let admin and patient render mismatched days for
+// the same doc. Parsing the Y/M/D components and reconstructing them via
+// Date.UTC catches any rollover: a non-existent calendar date never round-trips.
+function isRealCalendarDate(dueDate: string): boolean {
+  if (!DUE_DATE_RE.test(dueDate)) return false;
+  const [y, m, d] = dueDate.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+}
+
 function assertValidFollowUpInput(input: ScheduleFollowUpInput): void {
   const valid =
     !!input &&
     typeof input.patientUid === "string" && input.patientUid.length > 0 &&
     !input.patientUid.includes("/") &&
     typeof input.patientName === "string" && input.patientName.length > 0 &&
-    typeof input.dueDate === "string" && DUE_DATE_RE.test(input.dueDate) &&
-    !Number.isNaN(new Date(input.dueDate).getTime()) &&
+    typeof input.dueDate === "string" && isRealCalendarDate(input.dueDate) &&
     input.dueDate >= todayISO() &&
     typeof input.note === "string" && input.note.length <= LIMITS.clinicalNote &&
     (input.service === undefined || typeof input.service === "string") &&

@@ -26,8 +26,15 @@ function toFollowUp(id: string, data: Record<string, unknown>): FollowUp {
   };
 }
 
-// Upcoming follow-ups for a patient (dueDate >= today), soonest first.
-export async function getFollowUps(uid: string): Promise<FollowUp[]> {
+// Upcoming follow-ups for a patient (dueDate >= today), soonest first, scoped
+// to one person. Docs live at patients/{uid}/followUps (not nested per person)
+// and carry a personId field, so the person filter is applied client-side
+// after the date query rather than as a second `where` — this matches how
+// scheduleFollowUp writes personId (app/admin/actions.ts) without requiring a
+// composite index. A follow-up with no personId predates that field and is
+// treated as belonging to the account owner (uid), mirroring scheduleFollowUp's
+// own `personId ?? patientUid` default, so old docs keep showing for that person.
+export async function getFollowUps(uid: string, personId: string): Promise<FollowUp[]> {
   if (!db) return [];
   const today = new Date().toISOString().slice(0, 10);
   const q = query(
@@ -36,5 +43,7 @@ export async function getFollowUps(uid: string): Promise<FollowUp[]> {
     orderBy("dueDate", "asc")
   );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => toFollowUp(d.id, d.data() as Record<string, unknown>));
+  return snap.docs
+    .map((d) => toFollowUp(d.id, d.data() as Record<string, unknown>))
+    .filter((f) => (f.personId ?? uid) === personId);
 }
