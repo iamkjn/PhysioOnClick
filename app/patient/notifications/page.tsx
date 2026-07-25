@@ -54,10 +54,10 @@ export default function NotificationsPage() {
   const autoMarked = useRef(false);
   useEffect(() => {
     if (!uid || items === null || autoMarked.current) return;
-    if (items.some((n) => !n.read)) {
-      autoMarked.current = true;
-      void markAllRead(uid, items);
-    }
+    // Trip on the first loaded batch so only what was present when the page
+    // opened gets cleared; notifications that arrive live afterward stay unread.
+    autoMarked.current = true;
+    if (items.some((n) => !n.read)) void markAllRead(uid, items);
   }, [uid, items]);
 
   if (uid === undefined || (uid && items === null)) {

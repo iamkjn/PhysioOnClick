@@ -43,4 +43,14 @@ describe('NotificationsPage auto mark-read', () => {
     await new Promise((r) => setTimeout(r, 20))
     expect(markAllRead).not.toHaveBeenCalled()
   })
+
+  it('does not auto-mark notifications that arrive after the first load', async () => {
+    render(<NotificationsPage />)
+    emit([readItem])                 // first batch: nothing unread → guard trips, no mark
+    await new Promise((r) => setTimeout(r, 20))
+    expect(markAllRead).not.toHaveBeenCalled()
+    emit([unread, readItem])         // live arrival after open
+    await new Promise((r) => setTimeout(r, 20))
+    expect(markAllRead).not.toHaveBeenCalled()
+  })
 })
