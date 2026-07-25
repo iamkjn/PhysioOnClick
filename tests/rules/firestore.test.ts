@@ -218,12 +218,32 @@ describe('patients/{uid}/people/{personId}/goals (admin-set daily streak goal)',
     const other = testEnv.authenticatedContext(OTHER).firestore()
     await assertFails(getDoc(goalDoc(other)))
   })
+
+  it('denies an admin write with streakTarget 0', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(goalDoc(db), goal({ streakTarget: 0 })))
+  })
+
+  it('denies an admin write with a negative streakTarget', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(goalDoc(db), goal({ streakTarget: -3 })))
+  })
+
+  it('denies an admin write with a non-integer streakTarget', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(goalDoc(db), goal({ streakTarget: 3.5 })))
+  })
+
+  it('allows an admin write with a valid streakTarget', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(db), goal({ streakTarget: 7 })))
+  })
 })
 
-describe('patients/{uid}/people/{personId}/exerciseVideos (patient-added YouTube link)', () => {
+describe('patients/{uid}/people/{personId}/patientExerciseVideos (patient-added YouTube link)', () => {
   const PERSON = 'person-1'
   const videoDoc = (db: unknown, uid = PATIENT) =>
-    doc(db as never, `patients/${uid}/people/${PERSON}/exerciseVideos/ex-1`)
+    doc(db as never, `patients/${uid}/people/${PERSON}/patientExerciseVideos/ex-1`)
   const video = (overrides: Record<string, unknown> = {}) => ({
     url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     updatedAt: serverTimestamp(),
@@ -262,5 +282,20 @@ describe('patients/{uid}/people/{personId}/exerciseVideos (patient-added YouTube
 
     const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
     await assertSucceeds(getDoc(videoDoc(admin)))
+  })
+
+  it('denies a javascript: url', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(videoDoc(db), video({ url: 'javascript:alert(1)' })))
+  })
+
+  it('denies a non-YouTube https url', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(videoDoc(db), video({ url: 'https://vimeo.com/12345' })))
+  })
+
+  it('allows a valid youtu.be url', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(videoDoc(db), video({ url: 'https://youtu.be/dQw4w9WgXcQ' })))
   })
 })

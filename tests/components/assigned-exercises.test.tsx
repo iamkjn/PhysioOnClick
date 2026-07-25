@@ -13,11 +13,18 @@ vi.mock('@/lib/recovery', () => ({
 const getExerciseVideosMock = vi.fn()
 const setExerciseVideoMock = vi.fn()
 const removeExerciseVideoMock = vi.fn()
-vi.mock('@/lib/exercise-videos', () => ({
-  getExerciseVideos: (...args: unknown[]) => getExerciseVideosMock(...args),
-  setExerciseVideo: (...args: unknown[]) => setExerciseVideoMock(...args),
-  removeExerciseVideo: (...args: unknown[]) => removeExerciseVideoMock(...args),
-}))
+vi.mock('@/lib/exercise-videos', async (importOriginal) => {
+  // isYouTubeUrl is kept real (not mocked) — components/assigned-exercises.tsx
+  // re-validates stored urls with it before rendering a link, and the tests
+  // below rely on that real fail-closed behaviour.
+  const actual = await importOriginal<typeof import('@/lib/exercise-videos')>()
+  return {
+    ...actual,
+    getExerciseVideos: (...args: unknown[]) => getExerciseVideosMock(...args),
+    setExerciseVideo: (...args: unknown[]) => setExerciseVideoMock(...args),
+    removeExerciseVideo: (...args: unknown[]) => removeExerciseVideoMock(...args),
+  }
+})
 
 import { AssignedExercises } from '@/components/assigned-exercises'
 import { exercises } from '@/lib/site-data'

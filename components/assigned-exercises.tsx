@@ -14,6 +14,7 @@ import {
   getExerciseVideos,
   setExerciseVideo,
   removeExerciseVideo,
+  isYouTubeUrl,
 } from "@/lib/exercise-videos";
 import { exercises } from "@/lib/site-data";
 import { SkeletonRow } from "@/components/skeleton";
@@ -222,7 +223,14 @@ export function AssignedExercises({ uid, personId }: Props) {
       <div className="exercise-card-list">
         {visible.map(({ ae, ex }) => {
           const done = todayLog?.completions?.[ae.exerciseId] ?? false;
-          const videoUrl = videos[ae.exerciseId];
+          // Defense in depth: re-validate on render, even though setExerciseVideo
+          // already validates on write. A stored value could still end up
+          // malformed (a manual Firestore edit, a future writer that forgets to
+          // validate, etc.), so never trust it as an href without checking again
+          // here. Fail closed — an invalid stored url renders as "no link" so
+          // the "Add video link" affordance shows instead.
+          const rawVideoUrl = videos[ae.exerciseId];
+          const videoUrl = rawVideoUrl && isYouTubeUrl(rawVideoUrl) ? rawVideoUrl : undefined;
           const isEditingVideo = editingVideoId === ae.exerciseId;
           const videoError = videoErrors[ae.exerciseId];
           return (

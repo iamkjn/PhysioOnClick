@@ -191,9 +191,21 @@ service cloud.firestore {
 
     // Patient-added YouTube reference link per assigned exercise (lib/exercise-videos.ts).
     // Separate subcollection from assignedExercises above so the owner can add their
-    // own link but never touch what the physio actually assigned.
-    match /patients/{userId}/people/{personId}/exerciseVideos/{exerciseId} {
-      allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    // own link but never touch what the physio actually assigned. Named
+    // patientExerciseVideos (not exerciseVideos) so it can't collide with the
+    // unrelated top-level, public-read /exerciseVideos collection matched above.
+    match /patients/{userId}/people/{personId}/patientExerciseVideos/{exerciseId} {
+      // Defense in depth on top of the client-side isYouTubeUrl() check in
+      // lib/exercise-videos.ts: the url must actually be a YouTube link, so a
+      // javascript: URI or an arbitrary https url can never be stored, even
+      // from a hand-crafted client SDK write.
+      function validVideoUrl(d) {
+        return d.url is string && d.url.size() <= 500 &&
+          d.url.matches('^https://(www\\.)?(youtube\\.com/|youtu\\.be/|m\\.youtube\\.com/).*');
+      }
+      allow read, delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, update: if (isAdmin() || (isSignedIn() && request.auth.uid == userId)) &&
+        validVideoUrl(request.resource.data);
     }
 
     // In-app notifications for the patient portal. Created server-side (Cloud
@@ -217,7 +229,12 @@ service cloud.firestore {
     // the owner may only read their own goal, never write it directly.
     match /patients/{userId}/people/{personId}/goals/{goalId} {
       allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
-      allow create, update, delete: if isAdmin();
+      // Defense in depth on top of the client-side check in lib/goals.ts
+      // setStreakGoal — the target must be a whole number of at least 1 day.
+      allow create, update: if isAdmin() &&
+        request.resource.data.streakTarget is int &&
+        request.resource.data.streakTarget >= 1;
+      allow delete: if isAdmin();
     }
 
     // Shape written by the mobile blog favourite toggle (blog_screen.dart /

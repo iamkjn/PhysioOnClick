@@ -1,9 +1,12 @@
 // lib/exercise-videos.ts
 //
 // Patient-added YouTube reference links, one per assigned exercise. Lives in
-// the patient's OWN subcollection (patients/{uid}/people/{personId}/exerciseVideos/{exerciseId}),
+// the patient's OWN subcollection (patients/{uid}/people/{personId}/patientExerciseVideos/{exerciseId}),
 // isolated from the admin-owned assignedExercises collection — a patient can attach
 // their own reference link but can never alter what the physio actually assigned.
+// Named patientExerciseVideos (not exerciseVideos) to avoid colliding with the
+// unrelated top-level, public-read /exerciseVideos collection (lib/site-data
+// seed target, read by the Flutter app).
 import { collection, doc, deleteDoc, getDocs, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -15,7 +18,7 @@ function personBase(uid: string, personId: string) {
 }
 
 function videoRef(uid: string, personId: string, exerciseId: string) {
-  return doc(personBase(uid, personId), "exerciseVideos", exerciseId);
+  return doc(personBase(uid, personId), "patientExerciseVideos", exerciseId);
 }
 
 // Accepts only real YouTube watch/short/embed links over http(s) — never
@@ -54,12 +57,12 @@ export function isYouTubeUrl(url: string): boolean {
   return false;
 }
 
-// Reads the whole exerciseVideos subcollection into an { [exerciseId]: url } map.
+// Reads the whole patientExerciseVideos subcollection into an { [exerciseId]: url } map.
 export async function getExerciseVideos(
   uid: string,
   personId: string
 ): Promise<Record<string, string>> {
-  const col = collection(personBase(uid, personId), "exerciseVideos");
+  const col = collection(personBase(uid, personId), "patientExerciseVideos");
   const snap = await getDocs(col);
   const result: Record<string, string> = {};
   for (const d of snap.docs) {
