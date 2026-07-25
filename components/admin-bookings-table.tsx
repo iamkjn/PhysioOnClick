@@ -288,7 +288,11 @@ export function AdminBookingsTable() {
                   </td>
                   <td>
                     <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" as const }}>
-                      {item.calBookingUid ? (
+                      {/* Cancel/Reschedule only make sense for a session that
+                          hasn't happened yet — pending or upcoming. A completed
+                          or cancelled booking (a past date) shows no such
+                          actions; completed rows get "Write summary" instead. */}
+                      {item.calBookingUid && (item.displayStatus === "pending" || item.displayStatus === "upcoming") ? (
                         <>
                           <form
                             ref={(el) => { cancelFormRefs.current[item.id] = el; }}
@@ -309,7 +313,7 @@ export function AdminBookingsTable() {
                             <button
                               type="button"
                               className="button small"
-                              disabled={item.displayStatus === "cancelled" || cancelling === item.id}
+                              disabled={cancelling === item.id}
                               aria-label={`Cancel booking for ${item.fullName || item.patientName}`}
                               onClick={() => setCancelTarget({ id: item.id, label: item.fullName || item.patientName })}
                               style={{
@@ -318,8 +322,8 @@ export function AdminBookingsTable() {
                                 color: "var(--color-error)",
                                 padding: "0 10px",
                                 fontSize: "var(--text-xs)",
-                                cursor: item.displayStatus === "cancelled" || cancelling === item.id ? "not-allowed" : "pointer",
-                                opacity: item.displayStatus === "cancelled" ? 0.4 : cancelling === item.id ? 0.6 : 1,
+                                cursor: cancelling === item.id ? "not-allowed" : "pointer",
+                                opacity: cancelling === item.id ? 0.6 : 1,
                               }}
                             >
                               {cancelling === item.id ? "Cancelling…" : "Cancel"}
