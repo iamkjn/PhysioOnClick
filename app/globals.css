@@ -5392,3 +5392,330 @@ textarea:focus {
     flex: 1;
   }
 }
+
+/* ── components/motion-check.tsx ───────────────────────────────
+   "Check your motion" live camera flow. Full-screen modal so the
+   patient can see themselves clearly; the video/canvas pairing
+   stays visually calm (Clarity System tokens) even though the
+   underlying content is a live camera feed. Works in light/dark
+   because every colour is a token or a controlled-opacity white/
+   navy overlay, never a raw hex tied to one scheme. ── */
+.motion-check-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  background: rgba(4, 20, 30, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.motion-check-modal {
+  width: 100%;
+  max-width: 440px;
+  max-height: 92vh;
+  background: var(--color-surface);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.motion-check-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) 0;
+}
+
+.motion-check-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.motion-check-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 2px 0 0;
+}
+
+.motion-check-close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  background: none;
+  color: var(--color-navy);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, opacity 0.15s;
+}
+
+.motion-check-close:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.motion-check-close:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.motion-check-stage {
+  padding: var(--space-4) var(--space-5);
+}
+
+.motion-check-camera {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: #0b1f29;
+}
+
+.motion-check-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.motion-check-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  pointer-events: none;
+}
+
+.motion-check-hud {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  pointer-events: none;
+}
+
+.motion-check-rep-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(4, 20, 30, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.motion-check-rep-count {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.motion-check-rep-label {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.motion-check-rom-meter {
+  flex: 1;
+  max-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.motion-check-rom-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.25);
+  overflow: visible;
+}
+
+.motion-check-rom-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-glow);
+  transition: width 0.12s linear;
+}
+
+.motion-check-rom-best {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: #fff;
+  opacity: 0.85;
+  transform: translateX(-1px);
+}
+
+.motion-check-rom-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.motion-check-cue-banner {
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: var(--space-3);
+  padding: 10px 14px;
+  border-radius: var(--radius-input);
+  background: rgba(4, 20, 30, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: center;
+}
+
+.motion-check-cue-banner--warning {
+  background: color-mix(in srgb, var(--color-warning) 75%, black 15%);
+}
+
+.motion-check-status-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  text-align: center;
+  background: rgba(4, 20, 30, 0.9);
+  color: #fff;
+}
+
+.motion-check-status-panel p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.motion-check-status-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-md) !important;
+  color: #fff !important;
+}
+
+.motion-check-status-sub {
+  color: rgba(255, 255, 255, 0.72) !important;
+  max-width: 30ch;
+}
+
+.motion-check-status-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.motion-check-spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: var(--color-primary-glow);
+  animation: motion-check-spin 0.8s linear infinite;
+}
+
+@keyframes motion-check-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.motion-check-btn {
+  min-height: 44px;
+  padding: 0.75rem 1.35rem;
+  border-radius: var(--radius-input);
+  font: 600 0.9375rem var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.motion-check-btn--primary {
+  border: none;
+  background: var(--color-primary-dark);
+  color: #fff;
+}
+
+.motion-check-btn--primary:hover {
+  background: var(--book-rail-top);
+}
+
+.motion-check-btn--secondary {
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: #fff;
+}
+
+.motion-check-btn--secondary:hover {
+  border-color: #fff;
+}
+
+.motion-check-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5) var(--space-5);
+}
+
+.motion-check-disclaimer {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.motion-check-btn-finish {
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .motion-check-overlay {
+    padding: 0;
+  }
+  .motion-check-modal {
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+  .motion-check-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .motion-check-btn-finish {
+    order: -1;
+  }
+}
