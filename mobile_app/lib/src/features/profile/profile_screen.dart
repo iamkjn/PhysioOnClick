@@ -11,6 +11,7 @@ import '../appointments/appointments_screen.dart';
 import '../auth/sign_in_screen.dart';
 import '../auth/sign_up_screen.dart';
 import '../../core/page_transitions.dart';
+import '../admin/recovery/recovery_service.dart';
 import '../motion/motion_check_screen.dart';
 import '../motion/motion_service.dart';
 import '../motion/motion_targets.dart';
@@ -126,7 +127,11 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 18),
               Text('Assigned rehab programmes', style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),
-              _RehabProgramsSection(userEmail: user.email ?? '', uid: user.uid),
+              _RehabProgramsSection(userEmail: user.email ?? ''),
+              const SizedBox(height: 18),
+              Text('Your exercises', style: theme.textTheme.titleLarge),
+              const SizedBox(height: 12),
+              _AssignedExercisesSection(uid: user.uid),
               const SizedBox(height: 18),
               Text('Saved blog articles', style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),
@@ -468,10 +473,9 @@ class _SecureUploadsSectionState extends State<_SecureUploadsSection> {
 }
 
 class _RehabProgramsSection extends StatelessWidget {
-  const _RehabProgramsSection({required this.userEmail, required this.uid});
+  const _RehabProgramsSection({required this.userEmail});
 
   final String userEmail;
-  final String uid;
 
   @override
   Widget build(BuildContext context) {
@@ -542,7 +546,7 @@ class _RehabProgramsSection extends StatelessWidget {
                       const SizedBox(height: 14),
                       Text('Assigned exercises', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
                       const SizedBox(height: 10),
-                      _ExerciseLibrarySection(exerciseIds: program.exerciseIds, uid: uid),
+                      _ExerciseLibrarySection(exerciseIds: program.exerciseIds),
                     ],
                   ),
                 ),
@@ -556,10 +560,9 @@ class _RehabProgramsSection extends StatelessWidget {
 }
 
 class _ExerciseLibrarySection extends StatelessWidget {
-  const _ExerciseLibrarySection({required this.exerciseIds, required this.uid});
+  const _ExerciseLibrarySection({required this.exerciseIds});
 
   final List<String> exerciseIds;
-  final String uid;
 
   Future<List<ExerciseVideo>> _loadExercises() async {
     if (exerciseIds.isEmpty) {
@@ -624,16 +627,131 @@ class _ExerciseLibrarySection extends StatelessWidget {
                         style: theme.textTheme.bodySmall?.copyWith(color: const Color(0xFF2380C8)),
                       ),
                     ],
-                    _CheckMotionButton(
-                      exerciseId: item.id,
-                      exerciseTitle: item.title,
-                      uid: uid,
-                    ),
                   ],
                 ),
               ),
             );
           }).toList(),
+        );
+      },
+    );
+  }
+}
+
+/// Patient-facing view of the exercises their physio assigned via the admin
+/// recovery panel (`patients/{uid}/people/{personId}/assignedExercises`,
+/// filtered to `active == true`) — the same source `AdminRecoveryPanelScreen`
+/// reads/writes. This mirrors the web app's assigned-exercises list so both
+/// surfaces show the same set, unlike `_RehabProgramsSection` above (which
+/// reads the separate, programme-level `rehabPrograms` collection for
+/// context/goals only).
+///
+/// `personId` is always the patient's own uid ("Me") — dependent switching on
+/// this screen is out of scope, matching `patient_dashboard.dart`.
+class _AssignedExercisesSection extends StatefulWidget {
+  const _AssignedExercisesSection({required this.uid});
+
+  final String uid;
+
+  @override
+  State<_AssignedExercisesSection> createState() => _AssignedExercisesSectionState();
+}
+
+class _AssignedExercisesSectionState extends State<_AssignedExercisesSection> {
+  late final Future<Map<String, ExerciseVideo>> _exerciseVideosFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _exerciseVideosFuture = _loadExerciseVideos();
+  }
+
+  static Future<Map<String, ExerciseVideo>> _loadExerciseVideos() async {
+    final snapshot = await FirebaseFirestore.instance.collection('exerciseVideos').get();
+    return {
+      for (final doc in snapshot.docs) doc.id: ExerciseVideo.fromMap(doc.data(), doc.id),
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final personId = widget.uid;
+
+    return FutureBuilder<Map<String, ExerciseVideo>>(
+      future: _exerciseVideosFuture,
+      builder: (context, videosSnapshot) {
+        final exerciseVideos = videosSnapshot.data ?? const <String, ExerciseVideo>{};
+
+        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: RecoveryService.watchAssignedExercises(widget.uid, personId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasError) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Text(
+                    'We could not load your assigned exercises right now.',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+              );
+            }
+
+            final docs = snapshot.data?.docs ?? <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+
+            if (docs.isEmpty) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Text(
+                    'No exercises assigned yet — your physio will add them.',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+              );
+            }
+
+            return Column(
+              children: docs.map((doc) {
+                final exerciseId = doc.id;
+                final video = exerciseVideos[exerciseId];
+                final title = video?.title ?? exerciseId;
+                final bodyPart = video?.bodyPart ?? '';
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          if (bodyPart.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(bodyPart, style: theme.textTheme.bodyMedium),
+                          ],
+                          _CheckMotionButton(
+                            exerciseId: exerciseId,
+                            exerciseTitle: title,
+                            uid: widget.uid,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          },
         );
       },
     );
