@@ -2211,6 +2211,31 @@ textarea:focus {
   color: #fff;
 }
 
+/* Camera-gated "Check your motion" trigger — components/motion-check-button.tsx.
+   Sits between the exercise body and the completion checkbox; only rendered
+   at all when a motion target + camera are both available, so it stays a
+   quiet secondary action rather than competing with the primary check. */
+.motion-check-trigger {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--primary);
+  background: transparent;
+  color: var(--primary-dark);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.motion-check-trigger:hover {
+  background: var(--color-primary-light);
+}
+
 /* Three at-a-glance cards that fill the shell width and wrap to one
    column on narrow screens — the fix for the empty side gutters. */
 .patient-dashboard-grid {

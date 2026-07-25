@@ -14,6 +14,7 @@ import { exercises } from "@/lib/site-data";
 import { SkeletonRow } from "@/components/skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { ExerciseFigure } from "@/components/exercise-figure";
+import { MotionCheckButton } from "@/components/motion-check-button";
 
 interface Props {
   uid: string;
@@ -154,6 +155,7 @@ export function AssignedExercises({ uid, personId }: Props) {
                 <strong>{ex.title}</strong>
                 <span>{ex.bodyPart} · {ex.stage}</span>
               </div>
+              <MotionCheckButton exerciseId={ex.id} exercise={ex} uid={uid} personId={personId} />
               <button
                 type="button"
                 className={`exercise-check${done ? " done" : ""}`}
