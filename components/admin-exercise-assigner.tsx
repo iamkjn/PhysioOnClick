@@ -90,34 +90,15 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
         const ex = exerciseMap.get(ae.exerciseId);
         const title = ex?.title ?? ae.exerciseId;
         return (
-          <div
-            key={ae.exerciseId}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "0.5rem 0",
-              borderBottom: "1px solid var(--color-border)",
-            }}
-          >
-            <span style={{ fontSize: 14, color: "var(--color-text-primary)" }}>
+          <div key={ae.exerciseId} className="assign-row">
+            <span className="assign-row-label">
               {title}
             </span>
             <button
               onClick={() => setRemoveTarget({ exerciseId: ae.exerciseId, title })}
               disabled={saving === ae.exerciseId}
               aria-label={`Remove ${title} from assigned exercises`}
-              style={{
-                background: "none",
-                border: "none",
-                color: "var(--color-error)",
-                cursor: saving === ae.exerciseId ? "not-allowed" : "pointer",
-                opacity: saving === ae.exerciseId ? 0.6 : 1,
-                fontSize: 14,
-                fontWeight: 600,
-                minHeight: 44,
-                padding: "0 0.5rem",
-              }}
+              className="assign-remove"
             >
               {saving === ae.exerciseId ? "…" : "Remove"}
             </button>
@@ -128,38 +109,15 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
         <>
           <h3 style={{ marginBottom: 0, fontSize: "var(--text-md)", color: "var(--color-text-primary)" }}>Add exercise</h3>
           {unassigned.map((ex) => (
-            <div
-              key={ex.id}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "0.4rem 0",
-                borderBottom: "1px solid var(--color-border)",
-              }}
-            >
-              <span style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
+            <div key={ex.id} className="assign-row">
+              <span className="assign-row-sub">
                 {ex.title} · {ex.bodyPart}
               </span>
               <button
                 onClick={() => void handleAssign(ex.id)}
                 disabled={saving === ex.id}
                 aria-label={`Assign ${ex.title}`}
-                style={{
-                  // Readable white-on-accent needs the darker --primary — the
-                  // raw --color-primary token is decoration/text-on-dark only
-                  // and under-contrasts white text.
-                  background: "var(--primary)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "var(--radius-chip)",
-                  padding: "0 0.85rem",
-                  minHeight: 44,
-                  cursor: saving === ex.id ? "not-allowed" : "pointer",
-                  opacity: saving === ex.id ? 0.6 : 1,
-                  fontSize: 14,
-                  fontWeight: 600,
-                }}
+                className="assign-add-btn"
               >
                 {saving === ex.id ? "…" : "Assign"}
               </button>

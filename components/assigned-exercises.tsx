@@ -120,7 +120,7 @@ export function AssignedExercises({ uid, personId }: Props) {
     <div className="panel stack">
       <div>
         <h3 style={{ margin: 0 }}>Your program</h3>
-        <p className="muted" style={{ margin: "0.25rem 0 0" }}>
+        <p className="muted" style={{ margin: "var(--space-1) 0 0" }}>
           {completedCount} of {resolved.length} completed today
         </p>
       </div>

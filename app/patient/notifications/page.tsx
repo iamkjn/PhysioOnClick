@@ -76,10 +76,10 @@ export default function NotificationsPage() {
 
   return (
     <div className="site-shell patient-page">
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", margin: "1rem 0 1.5rem" }}>
+      <div className="notifications-head">
         <div>
           <span className="eyebrow">Notifications</span>
-          <h1 style={{ margin: "0.25rem 0 0", color: "var(--color-text-primary)" }}>Your updates</h1>
+          <h1 style={{ margin: "var(--space-1) 0 0", color: "var(--color-text-primary)" }}>Your updates</h1>
         </div>
         <button
           type="button"

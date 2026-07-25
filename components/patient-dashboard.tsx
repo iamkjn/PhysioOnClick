@@ -31,7 +31,7 @@ export function PatientDashboard({ uid, personId }: Props) {
   return (
     <div className="patient-dashboard-grid">
       <DashboardCard caption="My pain recovery" href="/patient/recovery">
-        <div className="panel stack" style={{ gap: "0.75rem" }}>
+        <div className="panel stack" style={{ gap: "var(--space-3)" }}>
           <h3 style={{ margin: 0 }}>Pain score</h3>
           <RecoveryChart uid={uid} personId={personId} />
         </div>
