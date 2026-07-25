@@ -18,7 +18,7 @@ function MotionBadge({ exerciseId }: { exerciseId: string }) {
   if (!(exerciseId in DEFAULT_MOTION_TARGETS)) return null;
   return (
     <span className="motion-check-badge" title="Enables the patient's motion check">
-      🎯 Motion
+      🎯 Motion check
     </span>
   );
 }

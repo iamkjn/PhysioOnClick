@@ -6,6 +6,7 @@ import { useToast } from "@/components/toast-provider";
 import { validateRequiredText, validateIntInRange, LIMITS } from "@/lib/validation";
 import { ClipboardIcon } from "@/components/icons";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
+import { getStreakGoal, setStreakGoal } from "@/lib/goals";
 
 interface SummaryFormProps {
   booking: {
@@ -47,6 +48,8 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const toast = useToast();
   const adminUid = auth?.currentUser?.uid;
+  const patientUid = booking.bookedBy || booking.patientId;
+  const [streakGoal, setStreakGoalState] = useState(0);
   const [form, setForm] = useState({
     painScore: 5,
     recoveryPercent: 50,
@@ -69,6 +72,27 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [open]);
+
+  // Load the patient's current daily-streak goal when the dialog opens.
+  useEffect(() => {
+    if (!open || !patientUid) return;
+    let cancelled = false;
+    getStreakGoal(patientUid, booking.patientId)
+      .then((g) => { if (!cancelled) setStreakGoalState(g ?? 0); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [open, patientUid, booking.patientId]);
+
+  async function handleStreakGoal(days: number) {
+    if (!patientUid || !adminUid) return;
+    setStreakGoalState(days);
+    try {
+      await setStreakGoal(patientUid, booking.patientId, days, adminUid);
+      toast.show(`Daily streak goal set to ${days} days.`, "success");
+    } catch {
+      toast.show("Could not set streak goal. Try again.", "error");
+    }
+  }
 
   async function handlePublish() {
     const errs: Record<string, string> = {};
@@ -229,8 +253,8 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
             <p className="summary-section-hint" style={{ marginBottom: "var(--space-2)" }}>
               Adds exercises to their program instantly (separate from publishing this summary). Exercises marked 🎯 also enable the patient&apos;s motion check.
             </p>
-            {adminUid && booking.bookedBy && (
-              <AdminExerciseAssigner adminUid={adminUid} patientUid={booking.bookedBy} personId={booking.patientId} />
+            {adminUid && patientUid && (
+              <AdminExerciseAssigner adminUid={adminUid} patientUid={patientUid} personId={booking.patientId} />
             )}
           </section>
 
@@ -291,6 +315,32 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
                   }}
                 >
                   {w === 0 ? "None" : `${w} wk${w > 1 ? "s" : ""}`}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* ── Daily streak goal ── */}
+          <section>
+            <h4 className="summary-section-title summary-section-title--compact">Daily streak goal</h4>
+            <p className="summary-section-hint" style={{ marginBottom: "var(--space-2)" }}>
+              How many consecutive days to keep the streak going — sets instantly and shows on their streak card.
+            </p>
+            <div role="group" aria-label="Daily streak goal" className="summary-chip-row">
+              {[3, 5, 7, 14, 30].map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  aria-pressed={streakGoal === d}
+                  onClick={() => void handleStreakGoal(d)}
+                  className="summary-chip"
+                  style={{
+                    background: streakGoal === d ? "var(--color-primary-light)" : "var(--color-surface)",
+                    color: streakGoal === d ? "var(--color-primary-dark)" : "var(--color-text-secondary)",
+                    border: `1.5px solid ${streakGoal === d ? "var(--color-primary-dark)" : "var(--color-border)"}`,
+                  }}
+                >
+                  {d} days
                 </button>
               ))}
             </div>
