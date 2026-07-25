@@ -241,6 +241,23 @@ service cloud.firestore {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
+    // Admin-scheduled follow-up (scheduleFollowUp in app/admin/actions.ts, via
+    // the Admin SDK shim, which bypasses this rule). The owner may only read —
+    // same shape as the notifications rule above, and needed explicitly because
+    // the read-only patients/{userId}/{document=**} catch-all below covers read
+    // but this collection also needs an admin write path.
+    match /patients/{userId}/followUps/{followUpId} {
+      // Mirrors the caps in assertValidFollowUpInput (app/admin/actions.ts):
+      // dueDate is a "YYYY-MM-DD" string and note is capped at LIMITS.clinicalNote.
+      function validFollowUp(d) {
+        return d.dueDate is string && d.dueDate.size() <= 10 &&
+          d.note is string && d.note.size() <= 2000;
+      }
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, update: if isAdmin() && validFollowUp(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
     // Admin-set daily streak goal (lib/goals.ts). The physio sets the target;
     // the owner may only read their own goal, never write it directly.
     match /patients/{userId}/people/{personId}/goals/{goalId} {

@@ -11,6 +11,7 @@ import { AdminPatientSelector } from "@/components/admin-patient-selector";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
 import { AdminStreakGoal } from "@/components/admin-streak-goal";
+import { AdminFollowUp } from "@/components/admin-follow-up";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { AdminMotionTargets } from "@/components/admin-motion-targets";
 import { AdminMotionSessions } from "@/components/admin-motion-sessions";
@@ -108,6 +109,12 @@ export default function AdminRecoveryPage() {
             <AdminStreakGoal
               adminUid={adminUid}
               patientUid={selection.patientUid}
+              personId={selection.personId}
+            />
+            <AdminFollowUp
+              adminUid={adminUid}
+              patientUid={selection.patientUid}
+              patientName={selection.personName}
               personId={selection.personId}
             />
           </section>

@@ -47,3 +47,45 @@ export const onSummaryPublished = onDocumentCreated(
     await event.data!.ref.update({ notificationSent: FieldValue.serverTimestamp() });
   }
 );
+
+export const onFollowUpCreated = onDocumentCreated(
+  "patients/{userId}/followUps/{followUpId}",
+  async (event) => {
+    const data = event.data?.data();
+    if (!data) return;
+
+    const db = getFirestore();
+
+    const userSnap = await db.doc(`users/${event.params.userId}`).get();
+    if (!userSnap.exists) return;
+    const fcmToken: string | undefined = userSnap.data()?.fcmToken;
+    if (!fcmToken) return;
+
+    const parsedDate = data.dueDate ? new Date(data.dueDate) : null;
+    const prettyDate =
+      parsedDate && !isNaN(parsedDate.getTime())
+        ? parsedDate.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+        : "soon";
+
+    await getMessaging().send({
+      token: fcmToken,
+      notification: {
+        title: "📅 Follow-up scheduled",
+        body: `Your physio scheduled a follow-up for ${prettyDate}`,
+      },
+      data: {
+        type: "followup",
+        followUpId: event.params.followUpId,
+        dueDate: String(data.dueDate ?? ""),
+      },
+      apns: { payload: { aps: { sound: "default" } } },
+      android: { notification: { sound: "default" } },
+    });
+
+    await event.data!.ref.update({ notificationSent: FieldValue.serverTimestamp() });
+  }
+);
