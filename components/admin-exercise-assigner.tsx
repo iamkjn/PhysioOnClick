@@ -43,6 +43,17 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
   const unassigned = allExercises.filter((e) => !assignedIds.has(e.id));
   const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
 
+  // Group the "Add exercise" list by bodyPart so the physio can scan by
+  // category instead of a long flat list. Catalogue order is preserved
+  // within each category; categories themselves are sorted alphabetically.
+  const unassignedByCategory = new Map<string, typeof unassigned>();
+  for (const ex of unassigned) {
+    const bucket = unassignedByCategory.get(ex.bodyPart);
+    if (bucket) bucket.push(ex);
+    else unassignedByCategory.set(ex.bodyPart, [ex]);
+  }
+  const categories = Array.from(unassignedByCategory.keys()).sort((a, b) => a.localeCompare(b));
+
   if (!loaded) {
     return (
       <div className="panel stack">
@@ -108,19 +119,22 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
       {unassigned.length > 0 && (
         <>
           <h3 style={{ marginBottom: 0, fontSize: "var(--text-md)", color: "var(--color-text-primary)" }}>Add exercise</h3>
-          {unassigned.map((ex) => (
-            <div key={ex.id} className="assign-row">
-              <span className="assign-row-sub">
-                {ex.title} · {ex.bodyPart}
-              </span>
-              <button
-                onClick={() => void handleAssign(ex.id)}
-                disabled={saving === ex.id}
-                aria-label={`Assign ${ex.title}`}
-                className="assign-add-btn"
-              >
-                {saving === ex.id ? "…" : "Assign"}
-              </button>
+          {categories.map((category) => (
+            <div key={category} className="assign-group">
+              <p className="assign-group-label">{category}</p>
+              {unassignedByCategory.get(category)!.map((ex) => (
+                <div key={ex.id} className="assign-row">
+                  <span className="assign-row-sub">{ex.title}</span>
+                  <button
+                    onClick={() => void handleAssign(ex.id)}
+                    disabled={saving === ex.id}
+                    aria-label={`Assign ${ex.title}`}
+                    className="assign-add-btn"
+                  >
+                    {saving === ex.id ? "…" : "Assign"}
+                  </button>
+                </div>
+              ))}
             </div>
           ))}
         </>

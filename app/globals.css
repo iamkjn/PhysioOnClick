@@ -2381,6 +2381,14 @@ textarea:focus {
   min-height: 44px; font-size: var(--text-sm); font-weight: 600; cursor: pointer;
 }
 .assign-add-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.assign-group-label {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
 .notifications-head {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--space-4); flex-wrap: wrap; margin: var(--space-4) 0 var(--space-5);
