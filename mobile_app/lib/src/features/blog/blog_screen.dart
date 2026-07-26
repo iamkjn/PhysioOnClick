@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/analytics/analytics_service.dart';
 import '../../core/firebase/patient_account_service.dart';
 import 'blog_article.dart';
 import 'blog_detail_screen.dart';
@@ -339,6 +340,10 @@ class _BlogScreenState extends State<BlogScreen> {
                                   const SizedBox(height: 14),
                                   TextButton(
                                     onPressed: () {
+                                      Analytics.track('blog_open', {
+                                        'slug': article.slug,
+                                        'source': 'blog_list',
+                                      });
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
                                           builder: (_) => BlogDetailScreen(article: article),

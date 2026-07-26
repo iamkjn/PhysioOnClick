@@ -461,6 +461,45 @@ export const exercises: Exercise[] = [
     stage: "Mobility phase",
     description: "Supports gentle, low-impact movement to build knee range and general fitness.",
     videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  // Facial-rehab exercises for facial-palsy / post-stroke / older patients.
+  // Their motion check uses the FACE camera engine (symmetry + gentle reps),
+  // not the body pose engine — see lib/face-targets.ts (face-* ids).
+  {
+    id: "face-smile",
+    title: "Smile / Mouth Raise",
+    bodyPart: "Face",
+    condition: "Facial palsy / stroke recovery",
+    stage: "Facial rehab",
+    description: "Gently raise both mouth corners into a smile, aiming to move the weaker side to match the stronger one.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "face-brow-raise",
+    title: "Eyebrow Raise",
+    bodyPart: "Face",
+    condition: "Facial palsy / stroke recovery",
+    stage: "Facial rehab",
+    description: "Lift both eyebrows as evenly as you can, then relax — retraining symmetrical forehead control.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "face-eye-close",
+    title: "Gentle Eye Close",
+    bodyPart: "Face",
+    condition: "Facial palsy / stroke recovery",
+    stage: "Facial rehab",
+    description: "Softly close both eyes together and reopen, encouraging even eyelid control on both sides.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "face-cheek-puff",
+    title: "Cheek Puff",
+    bodyPart: "Face",
+    condition: "Facial palsy / stroke recovery",
+    stage: "Facial rehab",
+    description: "Puff out both cheeks and hold, then release — building lip seal and cheek-muscle control.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
   }
 ];
 

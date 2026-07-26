@@ -29,89 +29,36 @@ export function AdminShell({ backHref, backLabel, children }: AdminShellProps) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--color-bg)" }}>
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-          background: "var(--color-navy)",
-          height: 56,
-          display: "flex",
-          alignItems: "center",
-          padding: "0 var(--space-5)",
-          gap: "var(--space-4)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", flex: 1 }}>
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              background: "var(--color-primary)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontWeight: 800,
-              fontSize: 16,
-              fontFamily: "var(--font-serif)",
-            }}
-          >
+    <div className="admin-app-shell">
+      <header className="admin-topbar">
+        <div className="admin-brand">
+          <div className="admin-brand-mark">
             P
           </div>
-          <span style={{ color: "white", fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15 }}>
+          <span className="admin-brand-name">
             PhysioOnClick
           </span>
-          <span
-            style={{
-              border: "1px solid var(--color-gold)",
-              color: "var(--color-gold)",
-              borderRadius: 999,
-              padding: "2px 8px",
-              fontSize: 11,
-              fontWeight: 700,
-              fontFamily: "var(--font-sans)",
-              letterSpacing: "0.04em",
-            }}
-          >
+          <span className="admin-badge">
             Admin
           </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
+        <div className="admin-topbar-actions">
           {backHref && (
             <Link
               href={backHref}
-              style={{
-                color: "rgba(255,255,255,0.75)",
-                fontSize: "var(--text-xs)",
-                fontWeight: 600,
-                fontFamily: "var(--font-sans)",
-                textDecoration: "none",
-              }}
+              className="admin-back-link"
             >
               {backLabel ?? "← Back"}
             </Link>
           )}
           {user?.email && (
-            <span style={{ color: "rgba(255,255,255,0.55)", fontSize: "var(--text-xs)", fontFamily: "var(--font-sans)" }}>
+            <span className="admin-user-email">
               {user.email}
             </span>
           )}
           <button
             onClick={() => void handleSignOut()}
-            style={{
-              background: "none",
-              border: "none",
-              color: "var(--color-primary)",
-              fontSize: "var(--text-xs)",
-              fontWeight: 600,
-              cursor: "pointer",
-              fontFamily: "var(--font-sans)",
-              minHeight: 44,
-              padding: "0 var(--space-1)",
-            }}
+            className="admin-signout"
           >
             Sign out
           </button>

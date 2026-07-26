@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { scheduleFollowUp } from "@/app/admin/actions";
 import { auth } from "@/lib/firebase";
+import { track } from "@/lib/analytics";
 import { useToast } from "@/components/toast-provider";
 import { LIMITS, validateOptionalText } from "@/lib/validation";
 
@@ -47,6 +48,7 @@ export function AdminFollowUp({ patientUid, patientName, personId }: Props) {
         { patientUid, patientName, dueDate, note, personId },
         idToken
       );
+      track("follow_up_scheduled", { for_dependent: Boolean(personId) });
       toast.show("Follow-up scheduled — patient notified.", "success");
       setDueDate(today);
       setNote("");

@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.physioonclick.mobile_app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     // ndkVersion = flutter.ndkVersion
 
     compileOptions {

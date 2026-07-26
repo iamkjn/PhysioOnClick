@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 
@@ -56,11 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0C2A38),
-              Color(0xFF0B5870),
-              Color(0xFF0891B2),
-            ],
+            colors: [Color(0xFF0C2A38), Color(0xFF0B5870), Color(0xFF0891B2)],
             stops: [0.0, 0.55, 1.0],
           ),
         ),
@@ -184,6 +182,7 @@ class _Dot extends StatefulWidget {
 class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _anim;
+  Timer? _startTimer;
 
   @override
   void initState() {
@@ -193,13 +192,14 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
       duration: const Duration(milliseconds: 600),
     );
     _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
-    Future.delayed(Duration(milliseconds: widget.delay), () {
+    _startTimer = Timer(Duration(milliseconds: widget.delay), () {
       if (mounted) _ctrl.repeat(reverse: true);
     });
   }
 
   @override
   void dispose() {
+    _startTimer?.cancel();
     _ctrl.dispose();
     super.dispose();
   }

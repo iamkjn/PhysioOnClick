@@ -50,22 +50,12 @@ export function AdminDashboard() {
           Kept outside the role="tablist" div below so it's ordinary
           navigation rather than a fourth (fake) tab — it doesn't participate
           in handleTabKeyDown's arrow-key cycling. */}
-      <div
-        style={{
-          background: "var(--color-surface)",
-          borderBottom: "1px solid var(--color-border)",
-          padding: "0 var(--space-5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "var(--space-4)",
-        }}
-      >
+      <div className="admin-dashboard-nav">
         <div
           role="tablist"
           aria-label="Admin dashboard sections"
           onKeyDown={handleTabKeyDown}
-          style={{ display: "flex" }}
+          className="admin-dashboard-tabs"
         >
           {tabs.map((tab) => (
             <button
@@ -76,60 +66,25 @@ export function AdminDashboard() {
               aria-controls={`admin-tabpanel-${tab.key}`}
               tabIndex={activeTab === tab.key ? 0 : -1}
               onClick={() => setActiveTab(tab.key)}
-              style={{
-                background: "none",
-                border: "none",
-                borderBottom: activeTab === tab.key ? "2px solid var(--color-primary)" : "2px solid transparent",
-                color: activeTab === tab.key ? "var(--color-navy)" : "var(--color-text-secondary)",
-                fontFamily: "var(--font-sans)",
-                fontWeight: activeTab === tab.key ? 700 : 400,
-                fontSize: "var(--text-sm)",
-                padding: "0.875rem 1.25rem",
-                minHeight: 46,
-                cursor: "pointer",
-                transition: "color 0.15s",
-                marginBottom: -1,
-              }}
+              className={`admin-tab-button${activeTab === tab.key ? " is-active" : ""}`}
             >
               {tab.label}
             </button>
           ))}
         </div>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-4)", flexWrap: "wrap" }}>
+        <div className="admin-dashboard-links">
           {/* Exercises & motion → the per-patient rehab screen: assign exercises
               from the library, set motion-check targets, streak goals and
               follow-ups. Previously reachable only by typing the URL. */}
           <Link
             href="/admin/recovery"
-            style={{
-              color: "var(--primary)",
-              fontFamily: "var(--font-sans)",
-              fontWeight: 600,
-              fontSize: "var(--text-sm)",
-              textDecoration: "none",
-              padding: "0.875rem 0.25rem",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.35rem",
-              minHeight: 46,
-            }}
+            className="admin-dashboard-link"
           >
             Exercises &amp; motion <span aria-hidden="true">→</span>
           </Link>
           <Link
             href="/admin/patients"
-            style={{
-              color: "var(--primary)",
-              fontFamily: "var(--font-sans)",
-              fontWeight: 600,
-              fontSize: "var(--text-sm)",
-              textDecoration: "none",
-              padding: "0.875rem 0.25rem",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.35rem",
-              minHeight: 46,
-            }}
+            className="admin-dashboard-link"
           >
             Patients <span aria-hidden="true">→</span>
           </Link>
@@ -137,7 +92,12 @@ export function AdminDashboard() {
       </div>
 
       {/* Tab content */}
-      <main style={{ maxWidth: "var(--shell)", margin: "0 auto", padding: "var(--space-6) var(--space-5)" }}>
+      <main className="admin-dashboard-main">
+        <div className="admin-dashboard-heading">
+          <span className="dashboard-eyebrow">Admin</span>
+          <h1>Dashboard</h1>
+          <p>Manage bookings, enquiries, patient records and recovery tools from one workspace.</p>
+        </div>
         <div id="admin-tabpanel-bookings" role="tabpanel" aria-labelledby="admin-tab-bookings" hidden={activeTab !== "bookings"}>
           {activeTab === "bookings" && <AdminBookingsTable />}
         </div>

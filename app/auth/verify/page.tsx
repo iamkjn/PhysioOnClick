@@ -6,6 +6,7 @@ import { FirebaseError } from "firebase/app";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
+import { track } from "@/lib/analytics";
 import { ensurePatientRecord } from "@/lib/patient-account";
 import { validateEmail, LIMITS } from "@/lib/validation";
 
@@ -67,6 +68,7 @@ function VerifyPage() {
         method: "POST",
         headers: { Authorization: `Bearer ${idToken}` },
       }).catch(() => { /* non-blocking */ });
+      track("login", { method: "magic_link", role: "patient" });
       setStage("success");
       redirectTimerRef.current = setTimeout(() => router.push(destination), 1500);
     } catch (error) {

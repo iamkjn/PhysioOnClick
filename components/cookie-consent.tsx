@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // ponytail: localStorage + Google Consent Mode, no cookie library. The banner
 // only exists to gate the analytics_storage consent set as "denied" by default
@@ -16,11 +17,18 @@ function updateConsent(granted: boolean) {
 }
 
 export function CookieConsent() {
+  const pathname = usePathname();
   // Start hidden; only reveal after we've confirmed no prior choice on the client,
   // to avoid a flash and SSR mismatch.
   const [visible, setVisible] = useState(false);
+  const isAdminRoute = pathname?.startsWith("/admin");
 
   useEffect(() => {
+    if (isAdminRoute) {
+      setVisible(false);
+      return;
+    }
+
     let stored: string | null = null;
     try {
       stored = localStorage.getItem(STORAGE_KEY);
@@ -30,7 +38,7 @@ export function CookieConsent() {
     if (stored !== "granted" && stored !== "denied") {
       setVisible(true);
     }
-  }, []);
+  }, [isAdminRoute]);
 
   function choose(granted: boolean) {
     try {
@@ -42,7 +50,7 @@ export function CookieConsent() {
     setVisible(false);
   }
 
-  if (!visible) {
+  if (!visible || isAdminRoute) {
     return null;
   }
 

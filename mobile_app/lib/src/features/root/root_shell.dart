@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/analytics/analytics_service.dart';
 import '../../core/app_colors.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../core/widgets/auth_gate_sheet.dart';
@@ -20,7 +22,8 @@ class RootShell extends StatefulWidget {
   State<RootShell> createState() => _RootShellState();
 }
 
-class _RootShellState extends State<RootShell> with SingleTickerProviderStateMixin {
+class _RootShellState extends State<RootShell>
+    with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   bool _isAdmin = false;
   late final AnimationController _tabFadeCtrl;
@@ -48,6 +51,8 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
   }
 
   void _showWelcomeToast() {
+    if (Firebase.apps.isEmpty) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final user = FirebaseAuth.instance.currentUser;
@@ -68,6 +73,8 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
   }
 
   Future<void> _checkAdminRole() async {
+    if (Firebase.apps.isEmpty) return;
+
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     final snap = await FirebaseFirestore.instance
@@ -81,36 +88,56 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
   }
 
   List<Widget> get _screens => [
-        ..._baseScreens,
-        if (_isAdmin) const AdminPatientListScreen(),
-      ];
+    ..._baseScreens,
+    if (_isAdmin) const AdminPatientListScreen(),
+  ];
 
   // Nav items config — icons and labels.
   List<_NavConfig> get _navItems => [
-        const _NavConfig(icon: Icons.home_rounded, label: 'Home'),
-        const _NavConfig(icon: Icons.healing_rounded, label: 'Services'),
-        const _NavConfig(
-          icon: Icons.calendar_month_rounded,
-          label: 'Booking',
-          highlight: true,
-        ),
-        const _NavConfig(icon: Icons.person_rounded, label: 'Profile'),
-        if (_isAdmin)
-          const _NavConfig(
-            icon: Icons.admin_panel_settings_rounded,
-            label: 'Manage',
-          ),
-      ];
+    const _NavConfig(icon: Icons.home_rounded, label: 'Home'),
+    const _NavConfig(icon: Icons.healing_rounded, label: 'Services'),
+    const _NavConfig(
+      icon: Icons.calendar_month_rounded,
+      label: 'Booking',
+      highlight: true,
+    ),
+    const _NavConfig(icon: Icons.person_rounded, label: 'Profile'),
+    if (_isAdmin)
+      const _NavConfig(
+        icon: Icons.admin_panel_settings_rounded,
+        label: 'Manage',
+      ),
+  ];
+
+  // Tab labels used as GA4 screen names (index-aligned with _baseScreens +
+  // the optional admin tab).
+  static const _tabScreenNames = [
+    'home',
+    'services',
+    'booking',
+    'profile',
+    'admin_manage',
+  ];
 
   void _onNavTap(int index) {
     final isBookingTab = index == 2;
 
-    if (isBookingTab && FirebaseAuth.instance.currentUser == null) {
+    final isGuest =
+        Firebase.apps.isEmpty || FirebaseAuth.instance.currentUser == null;
+
+    if (isBookingTab && isGuest) {
+      Analytics.track('auth_gate_shown', {'source': 'booking_tab'});
       showAuthGateSheet(
         context,
         message: 'Sign in or create an account to book your appointment.',
       );
       return;
+    }
+
+    if (index < _tabScreenNames.length) {
+      final name = _tabScreenNames[index];
+      Analytics.track('tab_switch', {'tab': name});
+      Analytics.trackScreen(name);
     }
 
     setState(() => _currentIndex = index);
@@ -145,23 +172,26 @@ class _RootShellState extends State<RootShell> with SingleTickerProviderStateMix
       // which froze the home screen.
       body: FadeTransition(
         opacity: _fade,
-        child: IndexedStack(
-          index: safeIndex,
-          children: screens,
-        ),
+        child: IndexedStack(index: safeIndex, children: screens),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (FirebaseAuth.instance.currentUser == null) {
+          final isGuest =
+              Firebase.apps.isEmpty ||
+              FirebaseAuth.instance.currentUser == null;
+
+          if (isGuest) {
+            Analytics.track('auth_gate_shown', {'source': 'chat_fab'});
             showAuthGateSheet(
               context,
               message: 'Sign in to chat with our assistant.',
             );
             return;
           }
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const ChatPage()),
-          );
+          Analytics.track('chat_open', {'source': 'fab'});
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const ChatPage()));
         },
         backgroundColor: AppColors.teal,
         foregroundColor: Colors.white,
@@ -215,9 +245,7 @@ class _AnimatedNavBarState extends State<_AnimatedNavBar> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.border, width: 1),
-        ),
+        border: Border(top: BorderSide(color: AppColors.border, width: 1)),
         boxShadow: [
           BoxShadow(
             color: AppColors.navy.withValues(alpha: 0.05),
@@ -237,13 +265,15 @@ class _AnimatedNavBarState extends State<_AnimatedNavBar> {
               final item = entry.value;
               final selected = i == widget.selectedIndex;
 
-              return _NavItem(
-                icon: item.icon,
-                label: item.label,
-                selected: selected,
-                highlight: item.highlight,
-                onTap: () => widget.onTap(i),
-                primaryColor: widget.primaryColor,
+              return Expanded(
+                child: _NavItem(
+                  icon: item.icon,
+                  label: item.label,
+                  selected: selected,
+                  highlight: item.highlight,
+                  onTap: () => widget.onTap(i),
+                  primaryColor: widget.primaryColor,
+                ),
               );
             }).toList(),
           ),
@@ -274,7 +304,8 @@ class _NavItem extends StatefulWidget {
   State<_NavItem> createState() => _NavItemState();
 }
 
-class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin {
+class _NavItemState extends State<_NavItem>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _pressCtrl;
   late final Animation<double> _scale;
 
@@ -286,9 +317,10 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
       duration: const Duration(milliseconds: 120),
       reverseDuration: const Duration(milliseconds: 200),
     );
-    _scale = Tween(begin: 1.0, end: 0.88)
-        .chain(CurveTween(curve: Curves.easeInOut))
-        .animate(_pressCtrl);
+    _scale = Tween(
+      begin: 1.0,
+      end: 0.88,
+    ).chain(CurveTween(curve: Curves.easeInOut)).animate(_pressCtrl);
   }
 
   @override
@@ -311,37 +343,42 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
         behavior: HitTestBehavior.opaque,
         child: ScaleTransition(
           scale: _scale,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56,
-                height: 36,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.teal, AppColors.tealDark],
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.teal.withValues(alpha: 0.35),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 52,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.teal, AppColors.tealDark],
                     ),
-                  ],
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.teal.withValues(alpha: 0.35),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Icon(widget.icon, color: Colors.white, size: 20),
                 ),
-                child: Icon(widget.icon, color: Colors.white, size: 20),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                widget.label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: widget.primaryColor,
+                const SizedBox(height: 4),
+                Text(
+                  widget.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: widget.primaryColor,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -357,15 +394,15 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
       behavior: HitTestBehavior.opaque,
       child: ScaleTransition(
         scale: _scale,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: SizedBox(
+          width: double.infinity,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 220),
                 curve: Curves.easeOutCubic,
-                width: 56,
+                width: 52,
                 height: 36,
                 decoration: BoxDecoration(
                   color: widget.selected
@@ -390,12 +427,18 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
                 duration: const Duration(milliseconds: 200),
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: widget.selected ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight: widget.selected
+                      ? FontWeight.w700
+                      : FontWeight.w500,
                   color: widget.selected
                       ? widget.primaryColor
                       : AppColors.textSecondary,
                 ),
-                child: Text(widget.label),
+                child: Text(
+                  widget.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),

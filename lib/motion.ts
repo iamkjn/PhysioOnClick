@@ -14,6 +14,7 @@ import {
 import { db } from "@/lib/firebase";
 import { todayKey } from "@/lib/recovery";
 import { DEFAULT_MOTION_TARGETS, type MotionTarget } from "@/lib/motion-targets";
+import { DEFAULT_FACE_TARGETS, type FaceTarget } from "@/lib/face-targets";
 
 export type MotionSession = {
   exerciseId: string;
@@ -29,6 +30,14 @@ export type MotionSession = {
   passed: boolean;
   durationSec: number;
   source: "web" | "mobile";
+  // Discriminates body-joint sessions ("body", the default for any legacy doc
+  // written before facial tracking existed) from facial-symmetry sessions.
+  kind?: "body" | "face";
+  // Facial-only fields, present when kind === "face". Body sessions omit them.
+  symmetryAvg?: number; // 0–100, left/right evenness averaged over the session
+  weakerSide?: "left" | "right" | "even";
+  leftRangePct?: number; // 0–100 best per-side activation
+  rightRangePct?: number;
   createdAt?: unknown;
 };
 
@@ -53,6 +62,14 @@ export async function saveMotionTarget(target: MotionTarget, adminUid: string): 
     { ...target, updatedAt: serverTimestamp(), updatedBy: adminUid },
     { merge: true }
   );
+}
+
+export async function getFaceMotionTarget(exerciseId: string): Promise<FaceTarget | null> {
+  if (!db) throw new Error("Firestore not available");
+  const ref = doc(db, "faceMotionTargets", exerciseId);
+  const snap = await getDoc(ref);
+  if (snap.exists()) return snap.data() as FaceTarget;
+  return DEFAULT_FACE_TARGETS[exerciseId] ?? null;
 }
 
 export async function saveMotionSession(

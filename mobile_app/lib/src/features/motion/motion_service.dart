@@ -4,6 +4,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'face_engine.dart';
+import 'face_targets.dart';
 import 'motion_engine.dart';
 import 'motion_targets.dart';
 
@@ -88,6 +90,88 @@ class MotionService {
       'passed': summary.passed,
       'durationSec': durationSec,
       'source': 'mobile',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    final logRef = base.collection('exerciseLogs').doc(date);
+    batch.set(
+      logRef,
+      {
+        'completions': {target.exerciseId: true},
+        'loggedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
+
+    await batch.commit();
+  }
+
+  /// Reads `faceMotionTargets/{exerciseId}` (top-level, admin editable), the
+  /// facial analogue of [getMotionTarget]. Falls back to the code default,
+  /// then `null`.
+  static Future<FaceTarget?> getFaceMotionTarget(String exerciseId) async {
+    final ref = _db.collection('faceMotionTargets').doc(exerciseId);
+    final snap = await ref.get();
+    final data = snap.data();
+    if (snap.exists && data != null) {
+      return _faceTargetFromMap(data);
+    }
+    return defaultFaceTargets[exerciseId];
+  }
+
+  static FaceTarget _faceTargetFromMap(Map<String, dynamic> data) {
+    return FaceTarget(
+      exerciseId: data['exerciseId'] as String,
+      label: (data['label'] as String?) ?? data['exerciseId'] as String,
+      bodyPart: (data['bodyPart'] as String?) ?? 'Face',
+      leftPair: (data['leftPair'] as List).map((e) => (e as num).toInt()).toList(),
+      rightPair: (data['rightPair'] as List).map((e) => (e as num).toInt()).toList(),
+      invert: (data['invert'] as bool?) ?? false,
+      restSignal: (data['restSignal'] as num).toDouble(),
+      activeSignal: (data['activeSignal'] as num).toDouble(),
+      repEnterPct: (data['repEnterPct'] as num).toInt(),
+      repExitPct: (data['repExitPct'] as num).toInt(),
+      repTarget: (data['repTarget'] as num).toInt(),
+    );
+  }
+
+  /// Facial analogue of [saveMotionSession]. Writes the same `motionSessions`
+  /// doc shape the web report reads, tagged `kind: 'face'` with the symmetry
+  /// fields, and marks the day's exercise complete in the same batch so a
+  /// facial session counts toward the shared streak.
+  static Future<void> saveFaceMotionSession(
+    String uid,
+    String personId, {
+    required FaceTarget target,
+    required FaceSessionSummary summary,
+    required String date,
+    required int durationSec,
+  }) async {
+    final base = _personBase(uid, personId);
+    final batch = _db.batch();
+
+    final sessionRef = base.collection('motionSessions').doc();
+    batch.set(sessionRef, {
+      'exerciseId': target.exerciseId,
+      'bodyPart': target.bodyPart,
+      'date': date,
+      'reps': summary.reps,
+      'repTarget': target.repTarget,
+      // Body ROM fields don't apply to a facial session; zero them and carry
+      // the facial signals in the kind-specific fields (matches web).
+      'romMin': 0,
+      'romMax': 0,
+      'targetRomMin': 0,
+      'targetRomMax': 0,
+      'avgQuality': summary.avgQuality,
+      'passed': summary.passed,
+      'durationSec': durationSec,
+      'source': 'mobile',
+      'kind': 'face',
+      'symmetryAvg': summary.symmetryAvg,
+      'weakerSide': summary.weakerSide,
+      'leftRangePct': summary.leftRangePct,
+      'rightRangePct': summary.rightRangePct,
       'createdAt': FieldValue.serverTimestamp(),
     });
 

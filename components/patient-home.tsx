@@ -67,8 +67,18 @@ export function PatientHome() {
           </p>
         </div>
       </section>
-      <section className="page-section dashboard-grid">
+      <section className="page-section patient-auth-layout">
         <AuthPanel role="patient" redirectTo="/" />
+        <aside className="panel auth-context-panel" aria-label="Patient portal benefits">
+          <span className="eyebrow">What you can do</span>
+          <h2>Pick up your care plan without hunting through emails.</h2>
+          <ul className="auth-context-list">
+            <li>View upcoming appointments and session notes.</li>
+            <li>Track pain scores, streaks and exercise adherence.</li>
+            <li>Manage people you book or care for in one account.</li>
+            <li>Keep rehab updates ready before your next consultation.</li>
+          </ul>
+        </aside>
       </section>
     </>
   );

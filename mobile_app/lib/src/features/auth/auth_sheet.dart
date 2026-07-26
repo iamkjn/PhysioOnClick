@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../core/analytics/analytics_service.dart';
 import '../../core/firebase/patient_account_service.dart';
 import '../../core/validators.dart';
 
@@ -132,6 +133,7 @@ class _AuthSheetState extends State<AuthSheet> {
             authProvider: 'password',
           );
         }
+        Analytics.track('sign_up', {'method': 'password'});
       } else {
         final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -144,6 +146,7 @@ class _AuthSheetState extends State<AuthSheet> {
             authProvider: 'password',
           );
         }
+        Analytics.track('login', {'method': 'password'});
       }
     });
   }
@@ -170,6 +173,7 @@ class _AuthSheetState extends State<AuthSheet> {
           userCredential.user!,
           authProvider: 'google.com',
         );
+        Analytics.track('login', {'method': 'google'});
       }
     });
   }
@@ -219,6 +223,7 @@ class _AuthSheetState extends State<AuthSheet> {
           preferredName: displayName,
           authProvider: 'apple.com',
         );
+        Analytics.track('login', {'method': 'apple'});
       }
     });
   }

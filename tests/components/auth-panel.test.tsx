@@ -35,6 +35,10 @@ vi.mock("firebase/auth", () => ({
 
 vi.mock("@/lib/firebase", () => ({ auth: {}, firebaseEnabled: true }));
 
+vi.mock("@/lib/analytics", () => ({
+  track: vi.fn(),
+}));
+
 vi.mock("@/lib/patient-account", () => ({
   ensureAppUserRecord: vi.fn().mockResolvedValue(undefined),
   ensurePatientRecord: vi.fn().mockResolvedValue(undefined),

@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { track } from "@/lib/analytics";
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type Msg = { isBot: boolean; text: string };
@@ -268,7 +270,12 @@ export function ChatWidget() {
       <button
         ref={triggerRef}
         className="chat-trigger"
-        onClick={() => setOpen(o => !o)}
+        onClick={() =>
+          setOpen(o => {
+            if (!o) track("chat_open", { source: "widget" });
+            return !o;
+          })
+        }
         aria-label={open ? "Close chat" : "Open chat assistant"}
       >
         <svg

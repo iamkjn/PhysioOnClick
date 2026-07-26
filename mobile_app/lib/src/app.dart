@@ -1,8 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
 
+import 'core/analytics/analytics_service.dart';
 import 'core/page_transitions.dart';
 import 'core/theme.dart';
 import 'core/widgets/connectivity_wrapper.dart';
@@ -48,8 +50,9 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
   Future<void> _resolveHome() async {
     bool onboardingDone = false;
     try {
-      onboardingDone = await OnboardingScreen.isCompleted()
-          .timeout(const Duration(seconds: 3));
+      onboardingDone = await OnboardingScreen.isCompleted().timeout(
+        const Duration(seconds: 3),
+      );
     } catch (_) {
       onboardingDone = false;
     }
@@ -61,6 +64,11 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
       return;
     }
 
+    if (Firebase.apps.isEmpty) {
+      setState(() => _home = const WelcomeScreen());
+      return;
+    }
+
     // currentUser is synchronous and returns null on cold-start because Firebase
     // Auth hasn't finished restoring the persisted session from disk yet.
     // authStateChanges().first blocks until that restoration completes, so
@@ -68,19 +76,22 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
     _splashStatus.value = 'Checking your session...';
     User? user;
     try {
-      user = await FirebaseAuth.instance
-          .authStateChanges()
-          .first
-          .timeout(const Duration(seconds: 5));
+      user = await FirebaseAuth.instance.authStateChanges().first.timeout(
+        const Duration(seconds: 5),
+      );
     } catch (_) {
       user = FirebaseAuth.instance.currentUser;
     }
 
     if (!mounted) return;
-    setState(() => _home = user != null ? const RootShell() : const WelcomeScreen());
+    setState(
+      () => _home = user != null ? const RootShell() : const WelcomeScreen(),
+    );
   }
 
   void _initFcmListeners() {
+    if (Firebase.apps.isEmpty) return;
+
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) _handleNotificationTap(message);
     });
@@ -105,7 +116,9 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
 
   void _handleIncomingUri(Uri uri) {
     final isBlogLink =
-        (uri.scheme == 'physioonclick' && uri.host == 'blog' && uri.pathSegments.isNotEmpty) ||
+        (uri.scheme == 'physioonclick' &&
+            uri.host == 'blog' &&
+            uri.pathSegments.isNotEmpty) ||
         (uri.pathSegments.length >= 2 && uri.pathSegments.first == 'blog');
 
     if (!isBlogLink) return;
@@ -122,6 +135,8 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
       title: 'PhysioOnClick',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
+      // Auto-logs a `screen_view` for every named-route push/pop.
+      navigatorObservers: [if (Analytics.observer != null) Analytics.observer!],
       theme: buildPhysioTheme(),
       // Use custom iOS-style slide for all route transitions.
       onGenerateRoute: (settings) {

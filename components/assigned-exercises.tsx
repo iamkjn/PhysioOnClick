@@ -11,6 +11,7 @@ import {
   type ExerciseLog,
 } from "@/lib/recovery";
 import { getMotionSessions, type MotionSession } from "@/lib/motion";
+import { track } from "@/lib/analytics";
 import { exercises } from "@/lib/site-data";
 import { SkeletonRow } from "@/components/skeleton";
 import { EmptyState } from "@/components/empty-state";
@@ -193,6 +194,7 @@ export function AssignedExercises({ uid, personId }: Props) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="exercise-video-watch"
+                    onClick={() => track("exercise_video_play", { exercise_id: ex.id })}
                   >
                     ▶ Watch demo
                   </a>

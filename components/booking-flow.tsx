@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
+import { track } from "@/lib/analytics";
 import { founder } from "@/lib/site-data";
 import { allBookServices, bookServiceFor, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
@@ -151,10 +152,14 @@ export function BookingFlow() {
     setFocusAreas((prev) => (prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]));
   }, []);
 
-  const handleConfirmed = useCallback((next: BookingConfirmation) => {
-    setConfirmation(next);
-    setStep(3);
-  }, []);
+  const handleConfirmed = useCallback(
+    (next: BookingConfirmation) => {
+      track("booking_confirmed", { service_id: serviceId, for_dependent: Boolean(bookingForId) });
+      setConfirmation(next);
+      setStep(3);
+    },
+    [serviceId, bookingForId]
+  );
 
   if (step === 3 && confirmation) {
     return (
@@ -243,7 +248,10 @@ export function BookingFlow() {
           focusAreas={focusAreas}
           onServiceChange={handleServiceChange}
           onToggleFocusArea={toggleFocusArea}
-          onContinue={() => setStep(2)}
+          onContinue={() => {
+            track("booking_step_service_done", { service_id: serviceId, focus_areas: focusAreas.length });
+            setStep(2);
+          }}
           titleRef={panelTitleRef}
         />
       ) : (

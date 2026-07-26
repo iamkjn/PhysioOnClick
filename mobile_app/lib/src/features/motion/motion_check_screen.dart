@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
+import '../../core/analytics/analytics_service.dart';
 import '../../core/app_colors.dart';
 import 'motion_engine.dart';
 import 'motion_service.dart';
@@ -298,6 +299,13 @@ class _MotionCheckScreenState extends State<MotionCheckScreen>
     final elapsedSec = _startedAt == null
         ? 0
         : DateTime.now().difference(_startedAt!).inSeconds;
+
+    Analytics.track('motion_check_complete', {
+      'body_part': widget.target.bodyPart,
+      'exercise': widget.exerciseTitle,
+      'reps': _judge.summary().reps,
+      'duration_sec': elapsedSec,
+    });
 
     try {
       await MotionService.saveMotionSession(

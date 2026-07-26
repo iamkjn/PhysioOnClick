@@ -16,11 +16,9 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // Web uses the same Firebase project; register a Web app in the
-  // Firebase console and replace the appId + apiKey with web-specific values.
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBdmEnOoVjsuvZ2gRhZK8HUei-7fitv-OQ',
-    appId: '1:119591358761:web:000000000000000000000000',
+    apiKey: 'AIzaSyB2W4dHgl3mM8QEY5XYiQcSt9usFV35jSw',
+    appId: '1:119591358761:web:78643d985cc47c56baa738',
     messagingSenderId: '119591358761',
     projectId: 'physioonclick',
     storageBucket: 'physioonclick.firebasestorage.app',

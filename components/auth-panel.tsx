@@ -14,6 +14,7 @@ import {
 } from "firebase/auth";
 
 import { auth, firebaseEnabled } from "@/lib/firebase";
+import { track } from "@/lib/analytics";
 import { ensureAppUserRecord, ensurePatientRecord } from "@/lib/patient-account";
 import { LIMITS, validateEmail, validateName } from "@/lib/validation";
 
@@ -56,6 +57,12 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
     } else {
       setStatus(successMessage, "success");
     }
+  }
+
+  function runAfterSignIn(task: Promise<unknown>, label: string) {
+    void task.catch((error) => {
+      console.error(`${label} failed after sign-in`, error);
+    });
   }
 
   useEffect(() => {
@@ -134,19 +141,25 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
         if (fullName) {
           await updateProfile(credential.user, { displayName: fullName });
         }
-        await ensurePatientRecord(credential.user, fullName);
+        runAfterSignIn(ensurePatientRecord(credential.user, fullName), "ensurePatientRecord");
+        track("sign_up", { method: "password" });
         completePatientSignIn("Patient account created.");
         return;
       }
 
       const credential = await signInWithEmailAndPassword(auth, email, password);
       if (role === "admin") {
-        await ensureAppUserRecord(credential.user, credential.user.displayName || "", "admin");
+        runAfterSignIn(
+          ensureAppUserRecord(credential.user, credential.user.displayName || "", "admin"),
+          "ensureAppUserRecord"
+        );
+        track("login", { method: "password", role: "admin" });
         setStatus("Admin sign-in successful. Redirecting…", "success");
         router.push("/admin");
         router.refresh();
       } else {
-        await ensurePatientRecord(credential.user);
+        runAfterSignIn(ensurePatientRecord(credential.user), "ensurePatientRecord");
+        track("login", { method: "password", role: "patient" });
         completePatientSignIn("Patient sign-in successful.");
       }
     } catch (error) {
@@ -177,6 +190,7 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
       if (!res.ok || !data.ok) {
         setStatus(data.error || "Could not send the link. Please try again.", "error");
       } else {
+        track("magic_link_requested");
         setStatus(`Sign-in link sent to ${email}. Check your inbox.`, "success");
       }
     } catch {
@@ -198,7 +212,8 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: "select_account" });
       const credential = await signInWithPopup(auth, provider);
-      await ensurePatientRecord(credential.user);
+      runAfterSignIn(ensurePatientRecord(credential.user), "ensurePatientRecord");
+      track("login", { method: "google", role: "patient" });
       completePatientSignIn("Google sign-in successful.");
     } catch (error) {
       if (error instanceof FirebaseError && (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment")) {

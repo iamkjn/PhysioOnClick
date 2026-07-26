@@ -24,8 +24,9 @@ class _PatientDashboardState extends State<PatientDashboard> {
   String _personId = '';
   String _personName = '';
 
-  String get _meName =>
-      widget.user.displayName?.isNotEmpty == true ? widget.user.displayName! : 'Me';
+  String get _meName => widget.user.displayName?.isNotEmpty == true
+      ? widget.user.displayName!
+      : 'Me';
 
   @override
   void initState() {
@@ -54,7 +55,9 @@ class _PatientDashboardState extends State<PatientDashboard> {
           const SizedBox(height: 4),
           Text(
             'Viewing recovery for $_personName',
-            style: theme.textTheme.bodySmall?.copyWith(color: const Color(0xFF5E7A84)),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: const Color(0xFF5E7A84),
+            ),
           ),
           const SizedBox(height: 12),
           StreamBuilder<List<Dependent>>(
@@ -86,7 +89,9 @@ class _PatientDashboardState extends State<PatientDashboard> {
                     backgroundColor: const Color(0xFF0891B2),
                     foregroundColor: Colors.white,
                     minimumSize: const Size.fromHeight(44),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: const Text('Book session'),
                 ),
@@ -100,7 +105,9 @@ class _PatientDashboardState extends State<PatientDashboard> {
                   ),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(44),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: const Text('My People'),
                 ),
@@ -117,7 +124,9 @@ class _PatientDashboardState extends State<PatientDashboard> {
               ),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(44),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               child: const Text('My Appointments'),
             ),
@@ -150,7 +159,7 @@ class _PersonDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      initialValue: selectedId,
+      value: selectedId,
       decoration: const InputDecoration(
         labelText: 'Viewing recovery for',
         border: OutlineInputBorder(),
@@ -159,9 +168,15 @@ class _PersonDropdown extends StatelessWidget {
       items: [
         DropdownMenuItem(value: meId, child: Text('$meName (Me)')),
         ...dependents.map(
-          (d) => DropdownMenuItem(value: d.id, child: Text('${d.name} (${d.relationship})')),
+          (d) => DropdownMenuItem(
+            value: d.id,
+            child: Text('${d.name} (${d.relationship})'),
+          ),
         ),
-        const DropdownMenuItem(value: _addPersonValue, child: Text('+ Add a person')),
+        const DropdownMenuItem(
+          value: _addPersonValue,
+          child: Text('+ Add a person'),
+        ),
       ],
       onChanged: (value) {
         if (value == null) return;
@@ -169,7 +184,9 @@ class _PersonDropdown extends StatelessWidget {
           onAddPerson();
           return;
         }
-        final name = value == meId ? meName : dependents.firstWhere((d) => d.id == value).name;
+        final name = value == meId
+            ? meName
+            : dependents.firstWhere((d) => d.id == value).name;
         onSelect(value, name);
       },
     );
@@ -189,10 +206,13 @@ class _RecoveryPercentTile extends StatelessWidget {
       builder: (context, baselineSnap) {
         final baselineDocs = baselineSnap.data?.docs ?? const [];
         if (baselineDocs.isEmpty) {
-          return _tile(const Text('Log your first check-in to see your recovery score.'));
+          return _tile(
+            const Text('Log your first check-in to see your recovery score.'),
+          );
         }
 
-        final baselineScore = (baselineDocs.first.data()['score'] as num?)?.toInt();
+        final baselineScore = (baselineDocs.first.data()['score'] as num?)
+            ?.toInt();
 
         return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
           stream: RecoveryService.watchPainLogs(uid, personId, 3),
