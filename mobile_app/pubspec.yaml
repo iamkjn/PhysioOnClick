@@ -52,6 +52,9 @@ dependencies:
   connectivity_plus: ^6.0.0
   camera: ^0.11.2+1
   google_mlkit_pose_detection: ^0.15.0
+  # Facial motion check (palsy/stroke/older-patient symmetry). NOTE: ML Kit
+  # Face Mesh is Android-only; face_check_screen.dart gates iOS with a message.
+  google_mlkit_face_mesh_detection: ^0.5.0
 
 dev_dependencies:
   flutter_test:

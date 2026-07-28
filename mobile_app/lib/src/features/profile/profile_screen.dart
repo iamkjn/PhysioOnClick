@@ -12,6 +12,8 @@ import '../auth/sign_in_screen.dart';
 import '../auth/sign_up_screen.dart';
 import '../../core/page_transitions.dart';
 import '../admin/recovery/recovery_service.dart';
+import '../motion/face_check_screen.dart';
+import '../motion/face_engine.dart';
 import '../motion/motion_check_screen.dart';
 import '../motion/motion_service.dart';
 import '../motion/motion_targets.dart';
@@ -774,8 +776,16 @@ class _CheckMotionButton extends StatelessWidget {
   final String exerciseTitle;
   final String uid;
 
+  // face-* exercises are graded by the facial symmetry engine + camera screen,
+  // not the body pose one.
+  bool get _isFacial => exerciseId.startsWith('face-');
+
   @override
   Widget build(BuildContext context) {
+    return _isFacial ? _buildFacial(context) : _buildBody(context);
+  }
+
+  Widget _buildBody(BuildContext context) {
     return FutureBuilder<MotionTarget?>(
       future: MotionService.getMotionTarget(exerciseId),
       builder: (context, targetSnapshot) {
@@ -783,34 +793,65 @@ class _CheckMotionButton extends StatelessWidget {
         if (targetSnapshot.connectionState != ConnectionState.done || target == null) {
           return const SizedBox.shrink();
         }
+        return _cameraGatedButton(
+          context,
+          label: 'Check your ${target.bodyPart.toLowerCase()} motion',
+          builder: (_) => MotionCheckScreen(
+            exerciseId: exerciseId,
+            exerciseTitle: exerciseTitle,
+            target: target,
+            uid: uid,
+            personId: uid,
+          ),
+        );
+      },
+    );
+  }
 
-        return FutureBuilder<bool>(
-          future: _deviceHasCamera(),
-          builder: (context, cameraSnapshot) {
-            if (cameraSnapshot.data != true) {
-              return const SizedBox.shrink();
-            }
+  Widget _buildFacial(BuildContext context) {
+    return FutureBuilder<FaceTarget?>(
+      future: MotionService.getFaceMotionTarget(exerciseId),
+      builder: (context, targetSnapshot) {
+        final target = targetSnapshot.data;
+        if (targetSnapshot.connectionState != ConnectionState.done || target == null) {
+          return const SizedBox.shrink();
+        }
+        return _cameraGatedButton(
+          context,
+          label: 'Check your facial motion',
+          builder: (_) => FaceCheckScreen(
+            exerciseId: exerciseId,
+            exerciseTitle: exerciseTitle,
+            target: target,
+            uid: uid,
+            personId: uid,
+          ),
+        );
+      },
+    );
+  }
 
-            return Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: OutlinedButton.icon(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MotionCheckScreen(
-                      exerciseId: exerciseId,
-                      exerciseTitle: exerciseTitle,
-                      target: target,
-                      uid: uid,
-                      personId: uid,
-                    ),
-                  ),
-                ),
-                icon: const Icon(Icons.videocam_rounded),
-                label: Text('Check your ${target.bodyPart.toLowerCase()} motion'),
-              ),
-            );
-          },
+  // Renders the "Check your motion" button only when the device reports a
+  // camera; shared by the body and facial paths.
+  Widget _cameraGatedButton(
+    BuildContext context, {
+    required String label,
+    required WidgetBuilder builder,
+  }) {
+    return FutureBuilder<bool>(
+      future: _deviceHasCamera(),
+      builder: (context, cameraSnapshot) {
+        if (cameraSnapshot.data != true) {
+          return const SizedBox.shrink();
+        }
+        return Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: OutlinedButton.icon(
+            onPressed: () =>
+                Navigator.push(context, MaterialPageRoute(builder: builder)),
+            icon: const Icon(Icons.videocam_rounded),
+            label: Text(label),
+          ),
         );
       },
     );
