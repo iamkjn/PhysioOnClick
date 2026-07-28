@@ -27,13 +27,19 @@ const NUMBER_FIELDS: { key: keyof EditableFields; label: string; min: number }[]
   { key: "repTarget", label: "Rep target (reps)", min: 1 },
 ];
 
-// Guards the two relationships the patient-facing ROM meter and rep judge
-// depend on: a zero/negative targetRomMax would divide-by-zero into NaN in
-// the ROM meter, and a rep judge only counts a rep on enter->exit angle
-// crossing, so repEnterAngle must stay above repExitAngle or it never fires.
-function validationError(fields: EditableFields): string | null {
+// Guards the relationships the patient-facing ROM meter and rep judge depend
+// on: a zero/negative targetRomMax would divide-by-zero into NaN in the ROM
+// meter, and the rep judge only counts a rep on an enter->exit angle crossing.
+// The crossing direction flips with the exercise's motion direction:
+//  - "extend" (angle peaks high): repEnterAngle must stay ABOVE repExitAngle.
+//  - "flex" (angle dips low): repEnterAngle must stay BELOW repExitAngle.
+function validationError(fields: EditableFields, direction: "extend" | "flex"): string | null {
   if (fields.targetRomMax <= 0) return "Target ROM max must be greater than 0.";
-  if (fields.repEnterAngle <= fields.repExitAngle) {
+  if (direction === "flex") {
+    if (fields.repEnterAngle >= fields.repExitAngle) {
+      return "For a flex exercise, rep enter angle must be less than rep exit angle.";
+    }
+  } else if (fields.repEnterAngle <= fields.repExitAngle) {
     return "Rep enter angle must be greater than rep exit angle.";
   }
   return null;
@@ -114,7 +120,7 @@ export function AdminMotionTargets({ adminUid }: Props) {
     e.preventDefault();
     const row = rows.find((r) => r.exerciseId === exerciseId);
     if (!row) return;
-    const error = validationError(row.fields);
+    const error = validationError(row.fields, row.base.direction ?? "extend");
     if (error) {
       setFieldErrors((prev) => ({ ...prev, [exerciseId]: error }));
       return;
@@ -171,6 +177,9 @@ export function AdminMotionTargets({ adminUid }: Props) {
           <div className="motion-target-row-head">
             <span className="motion-target-bodypart">{row.base.bodyPart}</span>
             <strong>{row.title}</strong>
+            <span className="motion-target-direction">
+              {(row.base.direction ?? "extend") === "flex" ? "flex (enter < exit)" : "extend (enter > exit)"}
+            </span>
           </div>
           <div className="motion-target-fields">
             {NUMBER_FIELDS.map(({ key, label, min }) => (

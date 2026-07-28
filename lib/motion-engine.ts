@@ -8,6 +8,8 @@ export const POSE = {
   L_HIP: 23, R_HIP: 24,
   L_KNEE: 25, R_KNEE: 26,
   L_ANKLE: 27, R_ANKLE: 28,
+  L_HEEL: 29, R_HEEL: 30,
+  L_FOOT_INDEX: 31, R_FOOT_INDEX: 32,
 } as const;
 
 // Interior angle (degrees, 0–180) at `vertex` formed by vertex→a and vertex→b.

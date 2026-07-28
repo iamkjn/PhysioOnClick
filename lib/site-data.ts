@@ -518,6 +518,24 @@ export const exercises: Exercise[] = [
     stage: "Facial rehab",
     description: "A wider smile progression — push both mouth corners up and out as far as feels comfortable, keeping the sides even.",
     videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "face-eye-wide",
+    title: "Open Eyes Wide",
+    bodyPart: "Face",
+    condition: "Facial palsy / stroke recovery",
+    stage: "Facial rehab",
+    description: "Open both eyes as wide as you can, as if surprised, then relax — encouraging even eyelid lift on both sides.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "face-pucker",
+    title: "Lip Pucker",
+    bodyPart: "Face",
+    condition: "Facial palsy / stroke recovery",
+    stage: "Facial rehab",
+    description: "Draw both lips forward into a pucker, as if to kiss or whistle, then relax — building lip-rounding control for speech and drinking.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
   }
 ];
 

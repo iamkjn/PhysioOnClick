@@ -2627,6 +2627,17 @@ textarea:focus {
   border-radius: var(--radius-chip);
   padding: 2px 8px;
 }
+/* Direction / movement-type hint next to a target's title, so an admin tuning
+   the enter/exit thresholds knows which relationship must hold. */
+.motion-target-direction {
+  flex: 0 0 auto;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-2, rgba(0, 0, 0, 0.05));
+  border-radius: var(--radius-chip);
+  padding: 2px 8px;
+}
 .motion-target-fields {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));

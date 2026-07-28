@@ -78,4 +78,22 @@ export const DEFAULT_MOTION_TARGETS: Record<string, MotionTarget> = {
   'ex-11': { exerciseId: 'ex-11', bodyPart: 'Hip',
     joint: { a: POSE.R_SHOULDER, vertex: POSE.R_HIP, b: POSE.R_KNEE },
     targetRomMin: 120, targetRomMax: 175, repEnterAngle: 165, repExitAngle: 135, repTarget: 10 },
+  // Heel Raises: rise onto the toes — the knee→ankle→foot angle opens as the
+  // foot plantar-flexes (~95° flat → ~135° on toes). Extend-type. A small ROM,
+  // so the thresholds are close together but still clear of tracking jitter.
+  'ex-12': { exerciseId: 'ex-12', bodyPart: 'Ankle',
+    joint: { a: POSE.R_KNEE, vertex: POSE.R_ANKLE, b: POSE.R_FOOT_INDEX },
+    targetRomMin: 95, targetRomMax: 140, repEnterAngle: 125, repExitAngle: 105, repTarget: 12 },
+  // Dead Bug: from a tabletop position, extend one leg out and return — the
+  // trunk→hip→knee angle opens from ~90° to ~160°. Tracked as a leg-extension
+  // proxy for the alternating core movement. Extend-type.
+  'ex-14': { exerciseId: 'ex-14', bodyPart: 'Core',
+    joint: { a: POSE.R_SHOULDER, vertex: POSE.R_HIP, b: POSE.R_KNEE },
+    targetRomMin: 90, targetRomMax: 165, repEnterAngle: 150, repExitAngle: 110, repTarget: 8 },
+  // Bird Dog: on hands and knees, extend the leg straight back — the
+  // trunk→hip→knee angle opens from ~90° (knee tucked) to ~170° (leg out).
+  // Tracked as the leg-extension half of the pattern. Extend-type.
+  'ex-15': { exerciseId: 'ex-15', bodyPart: 'Lumbar spine',
+    joint: { a: POSE.R_SHOULDER, vertex: POSE.R_HIP, b: POSE.R_KNEE },
+    targetRomMin: 90, targetRomMax: 170, repEnterAngle: 150, repExitAngle: 110, repTarget: 8 },
 };

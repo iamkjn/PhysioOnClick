@@ -100,6 +100,37 @@ export const DEFAULT_FACE_TARGETS: Record<string, FaceTarget> = {
     repExitPct: 25,
     repTarget: 6,
   },
+  // Eyes wide / surprise: open both eyes wide — the upper↔lower eyelid gap
+  // GROWS (the opposite of eye-close, so no invert). Retrains even eye
+  // opening after facial palsy.
+  'face-eye-wide': {
+    exerciseId: 'face-eye-wide',
+    label: 'Open eyes wide',
+    bodyPart: 'Face',
+    leftPair: [FACE.L_EYE_UPPER, FACE.L_EYE_LOWER],
+    rightPair: [FACE.R_EYE_UPPER, FACE.R_EYE_LOWER],
+    restSignal: 0.11,
+    activeSignal: 0.16,
+    repEnterPct: 55,
+    repExitPct: 25,
+    repTarget: 6,
+  },
+  // Lip pucker / kiss: draw both mouth corners inward — the corner↔nose
+  // distance SHRINKS, so this inverts (opposite of smile). Builds lip-rounding
+  // control for speech and drinking.
+  'face-pucker': {
+    exerciseId: 'face-pucker',
+    label: 'Lip pucker',
+    bodyPart: 'Face',
+    leftPair: [FACE.L_MOUTH_CORNER, FACE.NOSE_TIP],
+    rightPair: [FACE.R_MOUTH_CORNER, FACE.NOSE_TIP],
+    invert: true,
+    restSignal: 0.9,
+    activeSignal: 0.72,
+    repEnterPct: 55,
+    repExitPct: 25,
+    repTarget: 6,
+  },
 };
 
 export function getDefaultFaceTarget(exerciseId: string): FaceTarget | null {

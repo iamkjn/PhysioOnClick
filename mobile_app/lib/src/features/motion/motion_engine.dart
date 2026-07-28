@@ -37,6 +37,10 @@ abstract final class PoseIndex {
   static const int rKnee = 26;
   static const int lAnkle = 27;
   static const int rAnkle = 28;
+  static const int lHeel = 29;
+  static const int rHeel = 30;
+  static const int lFootIndex = 31;
+  static const int rFootIndex = 32;
 }
 
 /// Interior angle (degrees, 0-180) at `vertex` formed by vertex->a and

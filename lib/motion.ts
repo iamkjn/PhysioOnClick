@@ -76,6 +76,16 @@ export async function getFaceMotionTarget(exerciseId: string): Promise<FaceTarge
   return DEFAULT_FACE_TARGETS[exerciseId] ?? null;
 }
 
+export async function saveFaceMotionTarget(target: FaceTarget, adminUid: string): Promise<void> {
+  if (!db) throw new Error("Firestore not available");
+  const ref = doc(db, "faceMotionTargets", target.exerciseId);
+  await setDoc(
+    ref,
+    { ...target, updatedAt: serverTimestamp(), updatedBy: adminUid },
+    { merge: true }
+  );
+}
+
 export async function saveMotionSession(
   uid: string,
   personId: string,

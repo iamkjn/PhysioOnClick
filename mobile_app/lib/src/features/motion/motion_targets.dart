@@ -165,4 +165,37 @@ const Map<String, MotionTarget> defaultMotionTargets = {
     repExitAngle: 135,
     repTarget: 10,
   ),
+  // Heel Raises: rise onto the toes — knee->ankle->foot angle opens. Extend.
+  'ex-12': MotionTarget(
+    exerciseId: 'ex-12',
+    bodyPart: 'Ankle',
+    joint: MotionJoint(a: PoseIndex.rKnee, vertex: PoseIndex.rAnkle, b: PoseIndex.rFootIndex),
+    targetRomMin: 95,
+    targetRomMax: 140,
+    repEnterAngle: 125,
+    repExitAngle: 105,
+    repTarget: 12,
+  ),
+  // Dead Bug: extend one leg out and return — leg-extension proxy. Extend.
+  'ex-14': MotionTarget(
+    exerciseId: 'ex-14',
+    bodyPart: 'Core',
+    joint: MotionJoint(a: PoseIndex.rShoulder, vertex: PoseIndex.rHip, b: PoseIndex.rKnee),
+    targetRomMin: 90,
+    targetRomMax: 165,
+    repEnterAngle: 150,
+    repExitAngle: 110,
+    repTarget: 8,
+  ),
+  // Bird Dog: extend the leg straight back — leg-extension half. Extend.
+  'ex-15': MotionTarget(
+    exerciseId: 'ex-15',
+    bodyPart: 'Lumbar spine',
+    joint: MotionJoint(a: PoseIndex.rShoulder, vertex: PoseIndex.rHip, b: PoseIndex.rKnee),
+    targetRomMin: 90,
+    targetRomMax: 170,
+    repEnterAngle: 150,
+    repExitAngle: 110,
+    repTarget: 8,
+  ),
 };

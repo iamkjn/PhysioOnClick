@@ -51,6 +51,14 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Facial "Check your motion" targets (symmetry + rep thresholds for
+    // palsy/stroke/older-patient facial rehab). Same access model as
+    // exerciseMotionTargets: any signed-in user reads, only admin writes.
+    match /faceMotionTargets/{exerciseId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
     match /rehabPrograms/{programId} {
       allow read: if isAdmin() ||
         (isSignedIn() &&
