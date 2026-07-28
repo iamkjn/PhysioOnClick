@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { cancelCalBooking } from "@/app/admin/actions";
+import { track } from "@/lib/analytics";
 import { SummaryForm } from "@/components/summary-form";
 import { SkeletonTable } from "@/components/skeleton";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -302,6 +303,7 @@ export function AdminBookingsTable() {
                                 const idToken = await auth?.currentUser?.getIdToken();
                                 if (!idToken) throw new Error("Not signed in");
                                 await cancelCalBooking(item.calBookingUid, idToken);
+                                track("appointment_cancel", { source: "admin" });
                                 toast.show("Booking cancelled.", "success");
                               } catch {
                                 toast.show("Could not cancel this booking. Try again.", "error");
@@ -334,6 +336,7 @@ export function AdminBookingsTable() {
                             target="_blank" rel="noopener noreferrer"
                             className="button small"
                             aria-label={`Reschedule booking for ${item.fullName || item.patientName}`}
+                            onClick={() => track("appointment_reschedule", { source: "admin" })}
                             style={{ border: "1.5px solid var(--color-primary-dark)", color: "var(--color-primary-dark)", background: "none", padding: "0 10px", fontSize: "var(--text-xs)" }}
                           >Reschedule</a>
                         </>

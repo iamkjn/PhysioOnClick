@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { getPublicServices } from "@/lib/public-content";
 import { pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
+import { TrackedBookLink } from "@/components/tracked-book-link";
 
 export const metadata: Metadata = {
   title: "Services | PhysioOnClick",
@@ -84,10 +84,15 @@ export default function ServicesPage() {
                 </>
               ) : null}
               <div className="service-split-cta">
-                <Link className="button primary" href={`/book?service=initial-assessment`}>
+                <TrackedBookLink
+                  className="button primary"
+                  href={`/book?service=initial-assessment`}
+                  serviceSlug={service.slug}
+                  source="service_card"
+                >
                   Book Assessment
                   <span className="sr-only"> for {service.title}</span>
-                </Link>
+                </TrackedBookLink>
                 <p className="muted">From {formatCurrency(minOnlinePrice)} online</p>
               </div>
             </div>
@@ -102,9 +107,14 @@ export default function ServicesPage() {
           <span className="eyebrow">Not sure which service fits?</span>
           <h2>Start with an assessment</h2>
           <p>Book an initial assessment and we&apos;ll map out the right plan, delivered online across the UK.</p>
-          <Link className="button secondary cta-white" href="/book?service=initial-assessment">
+          <TrackedBookLink
+            className="button secondary cta-white"
+            href="/book?service=initial-assessment"
+            serviceSlug="cta_band"
+            source="services_cta_band"
+          >
             Book assessment
-          </Link>
+          </TrackedBookLink>
         </div>
       </section>
     </div>
