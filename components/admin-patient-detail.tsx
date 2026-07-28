@@ -21,6 +21,7 @@ import { RecoveryPercentCard } from "@/components/recovery-percent-card";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
+import { AdminAssessmentReview } from "@/components/admin-assessment-review";
 import { SummaryForm } from "@/components/summary-form";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Skeleton, SkeletonRow } from "@/components/skeleton";
@@ -390,12 +391,15 @@ export function AdminPatientDetail({ patientUid }: Props) {
         <AdminClinicalEntry patientUid={patientUid} personId={person.id} />
       </section>
 
-      {/* 5. Assigned exercises */}
+      {/* 5. Patient assessment forms and check-ups */}
+      <AdminAssessmentReview patientUid={patientUid} personId={person.id} />
+
+      {/* 6. Assigned exercises */}
       {adminUid && (
         <AdminExerciseAssigner adminUid={adminUid} patientUid={patientUid} personId={person.id} />
       )}
 
-      {/* 6. Session summaries */}
+      {/* 7. Session summaries */}
       <div className="panel stack">
         <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Session summaries</h2>
         {!bookings ? (

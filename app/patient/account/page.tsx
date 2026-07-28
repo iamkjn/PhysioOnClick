@@ -95,6 +95,10 @@ export default function AccountPage() {
             <ClipboardIcon className="pill-link-icon" />
             My Appointments
           </Link>
+          <Link href="/patient/assessment" className="pill-link">
+            <ClipboardIcon className="pill-link-icon" />
+            Assessment Form
+          </Link>
         </div>
       </section>
 

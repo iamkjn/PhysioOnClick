@@ -26,6 +26,17 @@ service firebase.storage {
         ];
     }
 
+    match /patient-assessment-videos/{userId}/{allPaths=**} {
+      allow read, delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, update: if (isAdmin() || (isSignedIn() && request.auth.uid == userId)) &&
+        request.resource.size <= 50 * 1024 * 1024 &&
+        request.resource.contentType in [
+          'video/webm',
+          'video/mp4',
+          'video/quicktime'
+        ];
+    }
+
     function isImageUpload() {
       return request.resource.size < 5 * 1024 * 1024 &&
         request.resource.contentType.matches('image/.*');

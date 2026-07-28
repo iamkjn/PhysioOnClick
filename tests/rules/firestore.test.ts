@@ -7,7 +7,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest'
 
 // Covers the two subcollections the mobile app writes through the client SDK
@@ -153,6 +153,233 @@ describe('patients/{uid}/uploads', () => {
   it('rejects an injected extra field', async () => {
     const db = testEnv.authenticatedContext(PATIENT).firestore()
     await assertFails(setDoc(ref(db), upload({ ownerId: OTHER })))
+  })
+})
+
+function assessmentForm(overrides: Record<string, unknown> = {}) {
+  return {
+    version: '2026-07-csp-hcpc-v2',
+    formType: 'initial',
+    consultationMode: 'online',
+    completedVia: 'online_form',
+    patientName: 'Patient One',
+    completedBy: 'Patient One',
+    relationshipToPatient: 'Self',
+    presentingComplaint: 'My knee has become painful when walking upstairs.',
+    bodyArea: 'Right knee',
+    symptomStartDate: '2026-07-20',
+    onsetPattern: 'gradual',
+    painScore: 5,
+    subjective: {
+      clinicalArea: 'lower_limb',
+      symptomBehaviour: 'Symptoms are worse on stairs and ease after resting for around 20 minutes.',
+      irritability: 5,
+      severity: 6,
+      yellowFlags: 'Worried about returning to running too early.',
+    },
+    outcomes: {
+      psfsActivity1: 'Walking upstairs',
+      psfsScore1: 4,
+      psfsActivity2: 'Walking to work',
+      psfsScore2: 5,
+      psfsActivity3: '',
+      psfsScore3: 5,
+      painBest: 2,
+      painWorst: 8,
+      confidenceScore: 6,
+      conditionMeasureName: 'LEFS',
+      conditionMeasureScore: 42,
+      conditionMeasureMax: 80,
+    },
+    objectiveVideo: {
+      consent: false,
+      taskId: 'lower-limb-sit-to-stand',
+      taskLabel: '30-second sit-to-stand or step-up clip',
+      metricName: 'Completed repetitions',
+      metricValue: 8,
+      metricUnit: 'reps',
+      reps: 8,
+      durationSeconds: 30,
+      qualityNotes: 'Uses hands lightly on the chair.',
+      videoUrl: '',
+      storagePath: '',
+      recordedAt: '',
+    },
+    goalsPlan: {
+      meaningfulGoal: 'Climb one flight of stairs',
+      baseline: 'Four stairs with pain 7/10',
+      target: 'One full flight with pain no higher than 3/10',
+      timeframeWeeks: 6,
+      confidenceScore: 6,
+      barriers: 'Work schedule and flare-ups',
+      supportPlan: 'Pacing plan and progressive strengthening',
+      reviewDate: '2026-09-06',
+    },
+    symptoms: 'Aching pain and stiffness around the front of the knee.',
+    aggravatingFactors: 'Stairs and longer walks',
+    easingFactors: 'Rest and gentle movement',
+    functionalImpact: 'Harder to use stairs at work',
+    goals: 'Walk upstairs comfortably',
+    medicalHistory: '',
+    medications: '',
+    allergies: '',
+    previousTreatment: '',
+    communicationNeeds: '',
+    emergencyContactName: 'Emergency Contact',
+    emergencyContactPhone: '07123456789',
+    redFlags: {
+      majorTrauma: false,
+      chestPainBreathlessness: false,
+      bladderBowelSaddle: false,
+      progressiveWeakness: false,
+      unexplainedFeverWeightLoss: false,
+      nightPain: false,
+      none: true,
+    },
+    onlineReadiness: {
+      privateSpace: true,
+      safeSpace: true,
+      cameraAvailable: true,
+      emergencyContactAvailable: true,
+    },
+    consent: {
+      careConsent: true,
+      dataConsent: true,
+      privacyConsent: true,
+      safetySharing: true,
+      videoConsent: false,
+    },
+    signature: 'Patient One',
+    completedAt: '2026-07-26T10:20:00.000Z',
+    submittedByUid: PATIENT,
+    reviewStatus: 'awaiting_review',
+    reviewedBy: '',
+    reviewedAt: '',
+    clinicianNotes: '',
+    riskPlan: '',
+    nextCheckupDate: '',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    ...overrides,
+  }
+}
+
+describe('patients/{uid}/people/{personId}/assessmentForms', () => {
+  const formDoc = (db: unknown, uid = PATIENT) =>
+    doc(db as never, `patients/${uid}/people/${PERSON}/assessmentForms/form-1`)
+
+  it('lets the owning patient create and read a submitted assessment form', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(formDoc(db), assessmentForm()))
+    await assertSucceeds(getDoc(formDoc(db)))
+  })
+
+  it('denies the patient amending a submitted assessment record', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(formDoc(owner), assessmentForm()))
+    await assertFails(updateDoc(formDoc(owner), { symptoms: 'Changed after submission.' }))
+  })
+
+  it('lets an admin review an assessment form', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(formDoc(owner), assessmentForm()))
+
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(updateDoc(formDoc(admin), {
+      reviewStatus: 'reviewed',
+      reviewedBy: 'Admin Physio',
+      reviewedAt: '2026-07-26T10:30:00.000Z',
+      clinicianNotes: 'Reviewed before the appointment.',
+      riskPlan: 'Proceed with online assessment and monitor symptoms.',
+      nextCheckupDate: '2026-08-02',
+      updatedAt: serverTimestamp(),
+    }))
+  })
+
+  it('denies another signed-in patient reading or writing the form', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(formDoc(owner), assessmentForm()))
+
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(getDoc(formDoc(other)))
+    await assertFails(setDoc(formDoc(other, PATIENT), assessmentForm({ submittedByUid: OTHER })))
+  })
+
+  it('rejects incomplete consent', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(formDoc(db), assessmentForm({
+      consent: {
+        careConsent: true,
+        dataConsent: true,
+        privacyConsent: false,
+        safetySharing: true,
+      },
+    })))
+  })
+
+  it('rejects invalid outcome measure scoring', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    const base = assessmentForm()
+    await assertFails(setDoc(formDoc(db), {
+      ...base,
+      outcomes: {
+        ...base.outcomes,
+        conditionMeasureScore: 120,
+        conditionMeasureMax: 80,
+      },
+    }))
+  })
+
+  it('rejects video evidence without video consent', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    const base = assessmentForm()
+    await assertFails(setDoc(formDoc(db), {
+      ...base,
+      objectiveVideo: {
+        ...base.objectiveVideo,
+        videoUrl: 'https://firebasestorage.googleapis.com/v0/b/physioonclick/o/patient-assessment-videos%2Fpatient-uid%2Fperson-1%2Fclip.webm?alt=media',
+        storagePath: 'patient-assessment-videos/patient-uid/person-1/clip.webm',
+        recordedAt: '2026-07-26T10:25:00.000Z',
+      },
+    }))
+  })
+
+  it('allows video evidence when consent and owner storage path match', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    const base = assessmentForm()
+    await assertSucceeds(setDoc(formDoc(db), {
+      ...base,
+      consent: {
+        ...base.consent,
+        videoConsent: true,
+      },
+      objectiveVideo: {
+        ...base.objectiveVideo,
+        consent: true,
+        videoUrl: 'https://firebasestorage.googleapis.com/v0/b/physioonclick/o/patient-assessment-videos%2Fpatient-uid%2Fperson-1%2Fclip.webm?alt=media',
+        storagePath: 'patient-assessment-videos/patient-uid/person-1/clip.webm',
+        recordedAt: '2026-07-26T10:25:00.000Z',
+      },
+    }))
+  })
+
+  it('rejects patient-created forged review fields', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(formDoc(db), assessmentForm({
+      reviewStatus: 'reviewed',
+      reviewedBy: 'Patient pretending to be a clinician',
+    })))
+  })
+
+  it('rejects oversized clinical review notes', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(formDoc(owner), assessmentForm()))
+
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(updateDoc(formDoc(admin), {
+      clinicianNotes: 'x'.repeat(2001),
+      updatedAt: serverTimestamp(),
+    }))
   })
 })
 

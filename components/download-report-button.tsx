@@ -11,6 +11,7 @@ import {
 } from "@/lib/recovery";
 import { getMotionSessions, type MotionSession } from "@/lib/motion";
 import { getStreakGoal } from "@/lib/goals";
+import { getPatientAssessmentForms, hasUrgentRedFlags, type PatientAssessmentFormRecord } from "@/lib/assessment-forms";
 import { exercises as allExercises } from "@/lib/site-data";
 
 interface Props {
@@ -50,6 +51,17 @@ function computeStreak(completedDates: Set<string>): number {
   return streak;
 }
 
+function assessmentPsfsAverage(form: PatientAssessmentFormRecord): string {
+  const scored = [
+    [form.outcomes.psfsActivity1, form.outcomes.psfsScore1] as const,
+    [form.outcomes.psfsActivity2, form.outcomes.psfsScore2] as const,
+    [form.outcomes.psfsActivity3, form.outcomes.psfsScore3] as const,
+  ].filter(([activity]) => activity.trim().length > 0);
+  if (scored.length === 0) return "not recorded";
+  const total = scored.reduce((sum, [, score]) => sum + score, 0);
+  return `${Math.round((total / scored.length) * 10) / 10}/10`;
+}
+
 export function DownloadReportButton({ uid, personId, personName, chartRef }: Props) {
   const [generating, setGenerating] = useState(false);
 
@@ -61,10 +73,11 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
         import("jspdf"),
       ]);
 
-      const [painLogs, assessments, assignedExercises, exerciseLogs, motionSessions, streakGoal] =
+      const [painLogs, assessments, assessmentForms, assignedExercises, exerciseLogs, motionSessions, streakGoal] =
         await Promise.all([
           getPainLogs(uid, personId, 56),
           getClinicalAssessments(uid, personId, 56),
+          getPatientAssessmentForms(uid, personId),
           getAssignedExercises(uid, personId),
           getExerciseLogs(uid, personId, 56),
           getMotionSessions(uid, personId, 60),
@@ -361,6 +374,71 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
           ]),
           [margin + 2, margin + 40, margin + 78]
         );
+      }
+
+      // ---- assessment forms and check-ups -----------------------------------
+      if (assessmentForms.length > 0) {
+        sectionHeader("Assessment Forms and Check-ups");
+        assessmentForms.slice(0, 8).forEach((form) => {
+          const completedAt = form.completedAt ? new Date(form.completedAt) : null;
+          const completedLabel = completedAt && !Number.isNaN(completedAt.getTime())
+            ? completedAt.toLocaleDateString("en-GB")
+            : form.createdAt
+              ? form.createdAt.toLocaleDateString("en-GB")
+              : "date not recorded";
+          ensureSpace(20);
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(9.5);
+          pdf.setTextColor(PALETTE.ink);
+          pdf.text(
+            `${form.formType === "checkup" ? "Review check-up" : "Initial assessment"} - ${completedLabel}`,
+            margin,
+            y
+          );
+          pdf.setFont("helvetica", "normal");
+          pdf.setTextColor(hasUrgentRedFlags(form.redFlags) ? PALETTE.warn : PALETTE.muted);
+          pdf.text(
+            `${form.consultationMode === "online" ? "Online" : "In-person/offline"}   Pain ${form.painScore}/10   ${form.reviewStatus.replaceAll("_", " ")}`,
+            margin + contentW,
+            y,
+            { align: "right" }
+          );
+          y += 5;
+          bodyText(`Concern: ${form.presentingComplaint}`, 8.5);
+          if (form.subjective.symptomBehaviour) {
+            bodyText(`Subjective behaviour: ${form.subjective.symptomBehaviour}`, 8.5);
+          }
+          bodyText(
+            `Outcomes: PSFS average ${assessmentPsfsAverage(form)}; pain best/current/worst ${form.outcomes.painBest}/${form.painScore}/${form.outcomes.painWorst}; confidence ${form.outcomes.confidenceScore}/10.`,
+            8.5
+          );
+          const psfsActivities = [
+            form.outcomes.psfsActivity1 ? `${form.outcomes.psfsActivity1} (${form.outcomes.psfsScore1}/10)` : "",
+            form.outcomes.psfsActivity2 ? `${form.outcomes.psfsActivity2} (${form.outcomes.psfsScore2}/10)` : "",
+            form.outcomes.psfsActivity3 ? `${form.outcomes.psfsActivity3} (${form.outcomes.psfsScore3}/10)` : "",
+          ].filter(Boolean).join("; ");
+          if (psfsActivities) bodyText(`PSFS activities: ${psfsActivities}`, 8.5);
+          if (form.outcomes.conditionMeasureName) {
+            bodyText(`Condition measure: ${form.outcomes.conditionMeasureName} ${form.outcomes.conditionMeasureScore}/${form.outcomes.conditionMeasureMax}`, 8.5);
+          }
+          if (form.objectiveVideo.taskLabel) {
+            bodyText(
+              `Objective task: ${form.objectiveVideo.taskLabel}. ${form.objectiveVideo.metricName || "Metric"} ${form.objectiveVideo.metricValue} ${form.objectiveVideo.metricUnit || ""}${form.objectiveVideo.reps ? `, ${form.objectiveVideo.reps} reps` : ""}${form.objectiveVideo.durationSeconds ? `, ${form.objectiveVideo.durationSeconds}s` : ""}.`,
+              8.5
+            );
+          }
+          if (form.objectiveVideo.qualityNotes) bodyText(`Objective notes: ${form.objectiveVideo.qualityNotes}`, 8.5);
+          if (form.objectiveVideo.videoUrl) bodyText("Objective video: attached in patient record.", 8.5);
+          if (form.goalsPlan.meaningfulGoal) {
+            bodyText(
+              `Goal: in ${form.goalsPlan.timeframeWeeks} weeks, ${form.goalsPlan.meaningfulGoal}. Baseline: ${form.goalsPlan.baseline || "not recorded"}. Target: ${form.goalsPlan.target || "not recorded"}. Confidence ${form.goalsPlan.confidenceScore}/10.`,
+              8.5
+            );
+          }
+          if (form.goals) bodyText(`Additional goal notes: ${form.goals}`, 8.5);
+          if (form.clinicianNotes) bodyText(`Physio review: ${form.clinicianNotes}`, 8.5, PALETTE.ink);
+          y += 2;
+        });
       }
 
       // ---- clinical assessments ---------------------------------------------
