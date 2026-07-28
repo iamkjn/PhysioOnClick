@@ -16,6 +16,9 @@ firestore-debug.log
 .claude-flow/
 .claude/.proven-config-version
 .claude/proven-config.json
+# Claude agent scratch/config anywhere in the tree (worktrees, proven-config)
+.claude/worktrees/
+mobile_app/.claude/
 sdd/
 .impeccable/
 
