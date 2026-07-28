@@ -361,6 +361,7 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
         avgQuality: summary.avgQuality,
         passed: summary.passed,
         durationSec,
+        direction: target.direction ?? 'extend',
       });
     } catch (err) {
       console.error('Failed to save motion session', err);
@@ -392,8 +393,17 @@ export function MotionCheck({ exercise, target, uid, personId, onClose }: Motion
   }, [phase]);
 
   const showCamera = phase === 'running' || phase === 'no-track' || phase === 'saving';
-  const romPct = Math.max(0, Math.min(100, Math.round((frame.angle / target.targetRomMax) * 100)));
-  const romBestPct = Math.max(0, Math.min(100, Math.round((frame.romMax / target.targetRomMax) * 100)));
+  // For "flex" exercises the effort deepens a bend (angle drops toward
+  // targetRomMin), so the meter fills as the angle gets SMALLER; for "extend"
+  // it fills as the angle grows toward targetRomMax.
+  const isFlex = (target.direction ?? 'extend') === 'flex';
+  const flexRange = Math.max(1, target.targetRomMax - target.targetRomMin);
+  const romPct = isFlex
+    ? Math.max(0, Math.min(100, Math.round(((target.targetRomMax - frame.angle) / flexRange) * 100)))
+    : Math.max(0, Math.min(100, Math.round((frame.angle / target.targetRomMax) * 100)));
+  const romBestPct = isFlex
+    ? Math.max(0, Math.min(100, Math.round(((target.targetRomMax - frame.romMin) / flexRange) * 100)))
+    : Math.max(0, Math.min(100, Math.round((frame.romMax / target.targetRomMax) * 100)));
 
   return (
     <div className="motion-check-overlay" role="dialog" aria-modal="true" aria-label={`Check your ${target.bodyPart} motion: ${exercise.title}`}>

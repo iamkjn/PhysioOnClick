@@ -45,20 +45,42 @@ export class MotionJudge {
     this.romMax = Math.max(this.romMax, angle);
 
     let cue = 'Keep going';
-    if (this.phase === 'down' && angle >= this.t.repEnterAngle) {
-      this.phase = 'up'; this.peakThisRep = angle;
-    } else if (this.phase === 'up') {
-      this.peakThisRep = Math.max(this.peakThisRep, angle);
-      if (angle <= this.t.repExitAngle) {
-        this.phase = 'down';
-        this.reps += 1;
-        const q = Math.min(100, Math.round((this.peakThisRep / this.t.targetRomMax) * 100));
-        this.qualities.push(q);
-        cue = q >= 90 ? 'Good rep' : 'Try for more range';
-        this.peakThisRep = -Infinity;
+    if ((this.t.direction ?? 'extend') === 'flex') {
+      // Effort DECREASES the angle (bend/lift): enter below repEnterAngle,
+      // complete a rep once the joint returns above repExitAngle, and grade on
+      // how deep the trough got toward targetRomMin.
+      if (this.phase === 'down' && angle <= this.t.repEnterAngle) {
+        this.phase = 'up'; this.peakThisRep = angle; // peakThisRep holds the trough here
+      } else if (this.phase === 'up') {
+        this.peakThisRep = Math.min(this.peakThisRep, angle);
+        if (angle >= this.t.repExitAngle) {
+          this.phase = 'down';
+          this.reps += 1;
+          const range = this.t.targetRomMax - this.t.targetRomMin || 1;
+          const q = Math.max(0, Math.min(100, Math.round(((this.t.targetRomMax - this.peakThisRep) / range) * 100)));
+          this.qualities.push(q);
+          cue = q >= 90 ? 'Good rep' : 'Try for more range';
+          this.peakThisRep = Infinity;
+        }
       }
+      if (this.phase === 'up' && angle > this.t.targetRomMin + 15) cue = 'Bend further';
+    } else {
+      // Effort INCREASES the angle (extend/raise): the original behaviour.
+      if (this.phase === 'down' && angle >= this.t.repEnterAngle) {
+        this.phase = 'up'; this.peakThisRep = angle;
+      } else if (this.phase === 'up') {
+        this.peakThisRep = Math.max(this.peakThisRep, angle);
+        if (angle <= this.t.repExitAngle) {
+          this.phase = 'down';
+          this.reps += 1;
+          const q = Math.min(100, Math.round((this.peakThisRep / this.t.targetRomMax) * 100));
+          this.qualities.push(q);
+          cue = q >= 90 ? 'Good rep' : 'Try for more range';
+          this.peakThisRep = -Infinity;
+        }
+      }
+      if (this.phase === 'up' && angle < this.t.targetRomMax - 15) cue = 'Go further';
     }
-    if (this.phase === 'up' && angle < this.t.targetRomMax - 15) cue = 'Go further';
     return { angle: Math.round(angle), reps: this.reps, romMin: Math.round(this.romMin), romMax: Math.round(this.romMax), phase: this.phase, cue };
   }
 

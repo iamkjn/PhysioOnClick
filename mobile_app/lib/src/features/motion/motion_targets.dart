@@ -24,6 +24,7 @@ class MotionTarget {
     required this.repEnterAngle,
     required this.repExitAngle,
     required this.repTarget,
+    this.direction = 'extend',
   });
 
   final String exerciseId;
@@ -34,6 +35,11 @@ class MotionTarget {
   final int repEnterAngle;
   final int repExitAngle;
   final int repTarget;
+
+  /// 'extend' (default): the tracked angle INCREASES to the peak of each rep.
+  /// 'flex': the effort DECREASES the angle (leg raise, heel slide). Mirrors
+  /// the web `MotionTarget.direction`.
+  final String direction;
 }
 
 // v1 defaults for the three rep-based exercises. Balance (ex-4) has none, so
@@ -95,6 +101,64 @@ const Map<String, MotionTarget> defaultMotionTargets = {
       vertex: PoseIndex.rHip,
       b: PoseIndex.rKnee,
     ),
+    targetRomMin: 120,
+    targetRomMax: 175,
+    repEnterAngle: 165,
+    repExitAngle: 135,
+    repTarget: 10,
+  ),
+  // Additional checks — mirror lib/motion-targets.ts. Keep values identical.
+  // Straight Leg Raise: hip flexes, trunk->hip->knee angle drops. Flex-type.
+  'ex-5': MotionTarget(
+    exerciseId: 'ex-5',
+    bodyPart: 'Knee',
+    direction: 'flex',
+    joint: MotionJoint(a: PoseIndex.rShoulder, vertex: PoseIndex.rHip, b: PoseIndex.rKnee),
+    targetRomMin: 110,
+    targetRomMax: 175,
+    repEnterAngle: 150,
+    repExitAngle: 165,
+    repTarget: 8,
+  ),
+  // Heel Slide: knee bends, angle drops from straight. Flex-type.
+  'ex-6': MotionTarget(
+    exerciseId: 'ex-6',
+    bodyPart: 'Knee',
+    direction: 'flex',
+    joint: MotionJoint(a: PoseIndex.rHip, vertex: PoseIndex.rKnee, b: PoseIndex.rAnkle),
+    targetRomMin: 95,
+    targetRomMax: 175,
+    repEnterAngle: 150,
+    repExitAngle: 165,
+    repTarget: 10,
+  ),
+  // Mini Squat: knee extends back to standing at the top. Extend-type.
+  'ex-7': MotionTarget(
+    exerciseId: 'ex-7',
+    bodyPart: 'Knee',
+    joint: MotionJoint(a: PoseIndex.rHip, vertex: PoseIndex.rKnee, b: PoseIndex.rAnkle),
+    targetRomMin: 120,
+    targetRomMax: 175,
+    repEnterAngle: 165,
+    repExitAngle: 130,
+    repTarget: 10,
+  ),
+  // Shoulder Flexion: raise the arm forward/overhead. Extend-type.
+  'ex-8': MotionTarget(
+    exerciseId: 'ex-8',
+    bodyPart: 'Shoulder',
+    joint: MotionJoint(a: PoseIndex.rHip, vertex: PoseIndex.rShoulder, b: PoseIndex.rElbow),
+    targetRomMin: 20,
+    targetRomMax: 160,
+    repEnterAngle: 135,
+    repExitAngle: 50,
+    repTarget: 10,
+  ),
+  // Hip Bridge: lift the hips into a straight line. Extend-type.
+  'ex-11': MotionTarget(
+    exerciseId: 'ex-11',
+    bodyPart: 'Hip',
+    joint: MotionJoint(a: PoseIndex.rShoulder, vertex: PoseIndex.rHip, b: PoseIndex.rKnee),
     targetRomMin: 120,
     targetRomMax: 175,
     repEnterAngle: 165,

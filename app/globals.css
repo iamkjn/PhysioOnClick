@@ -6000,16 +6000,20 @@ textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-4);
+  padding: 0;
 }
 
+/* Full-screen so the camera capture is large and easy to follow — a small
+   floating card made the pose/face output hard to see. Fills the viewport;
+   the stage flexes to take all space between the header and footer. */
 .motion-check-modal {
   width: 100%;
-  max-width: 440px;
-  max-height: 92vh;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
   background: var(--color-surface);
-  border-radius: var(--radius-panel);
-  box-shadow: var(--shadow-panel);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -6110,13 +6114,17 @@ textarea:focus {
 }
 
 .motion-check-stage {
-  padding: var(--space-4) var(--space-5);
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
 }
 
 .motion-check-camera {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  flex: 1;
+  min-height: 0;
   border-radius: var(--radius-card);
   overflow: hidden;
   background: #0b1f29;

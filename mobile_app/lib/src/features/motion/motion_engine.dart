@@ -118,25 +118,58 @@ class MotionJudge {
     _romMax = math.max(_romMax, angle);
 
     var cue = 'Keep going';
-    if (_phase == 'down' && angle >= _target.repEnterAngle) {
-      _phase = 'up';
-      _peakThisRep = angle;
-    } else if (_phase == 'up') {
-      _peakThisRep = math.max(_peakThisRep, angle);
-      if (angle <= _target.repExitAngle) {
-        _phase = 'down';
-        _reps += 1;
-        final q = math.min(
-          100,
-          ((_peakThisRep / _target.targetRomMax) * 100).round(),
-        );
-        _qualities.add(q);
-        cue = q >= 90 ? 'Good rep' : 'Try for more range';
-        _peakThisRep = double.negativeInfinity;
+    if (_target.direction == 'flex') {
+      // Effort DECREASES the angle (bend/lift): enter below repEnterAngle,
+      // complete a rep once the joint returns above repExitAngle, grade on how
+      // deep the trough (_peakThisRep holds the trough here) got.
+      if (_phase == 'down' && angle <= _target.repEnterAngle) {
+        _phase = 'up';
+        _peakThisRep = angle;
+      } else if (_phase == 'up') {
+        _peakThisRep = math.min(_peakThisRep, angle);
+        if (angle >= _target.repExitAngle) {
+          _phase = 'down';
+          _reps += 1;
+          final range = (_target.targetRomMax - _target.targetRomMin) == 0
+              ? 1
+              : _target.targetRomMax - _target.targetRomMin;
+          final q = math.max(
+            0,
+            math.min(
+              100,
+              (((_target.targetRomMax - _peakThisRep) / range) * 100).round(),
+            ),
+          );
+          _qualities.add(q);
+          cue = q >= 90 ? 'Good rep' : 'Try for more range';
+          _peakThisRep = double.infinity;
+        }
       }
-    }
-    if (_phase == 'up' && angle < _target.targetRomMax - 15) {
-      cue = 'Go further';
+      if (_phase == 'up' && angle > _target.targetRomMin + 15) {
+        cue = 'Bend further';
+      }
+    } else {
+      // Effort INCREASES the angle (extend/raise): the original behaviour.
+      if (_phase == 'down' && angle >= _target.repEnterAngle) {
+        _phase = 'up';
+        _peakThisRep = angle;
+      } else if (_phase == 'up') {
+        _peakThisRep = math.max(_peakThisRep, angle);
+        if (angle <= _target.repExitAngle) {
+          _phase = 'down';
+          _reps += 1;
+          final q = math.min(
+            100,
+            ((_peakThisRep / _target.targetRomMax) * 100).round(),
+          );
+          _qualities.add(q);
+          cue = q >= 90 ? 'Good rep' : 'Try for more range';
+          _peakThisRep = double.negativeInfinity;
+        }
+      }
+      if (_phase == 'up' && angle < _target.targetRomMax - 15) {
+        cue = 'Go further';
+      }
     }
 
     return FrameResult(

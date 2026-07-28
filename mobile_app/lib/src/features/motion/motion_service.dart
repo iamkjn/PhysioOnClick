@@ -51,6 +51,7 @@ class MotionService {
       repEnterAngle: (data['repEnterAngle'] as num).toInt(),
       repExitAngle: (data['repExitAngle'] as num).toInt(),
       repTarget: (data['repTarget'] as num).toInt(),
+      direction: (data['direction'] as String?) ?? 'extend',
     );
   }
 
@@ -90,6 +91,7 @@ class MotionService {
       'passed': summary.passed,
       'durationSec': durationSec,
       'source': 'mobile',
+      'direction': target.direction,
       'createdAt': FieldValue.serverTimestamp(),
     });
 

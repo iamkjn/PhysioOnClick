@@ -57,4 +57,33 @@ void main() {
       expect(j.summary().reps, 0); // never returned below exit
     });
   });
+
+  group('MotionJudge (flex direction — straight leg raise ex-5)', () {
+    // Hip angle (shoulder 12, hip 24, knee 26) drops during the lift.
+    List<Landmark> hipFlexFrame(double deg) {
+      final lm = List<Landmark>.generate(33, (_) => const Landmark(x: 0, y: 0));
+      final rad = (deg * math.pi) / 180;
+      lm[24] = const Landmark(x: 0, y: 0); // hip (vertex)
+      lm[12] = const Landmark(x: 0, y: -1); // shoulder up
+      lm[26] = Landmark(x: math.sin(rad), y: -math.cos(rad)); // knee at `deg`
+      return lm;
+    }
+
+    test('counts a rep on a bend-then-return cycle', () {
+      final j = MotionJudge(defaultMotionTargets['ex-5']!); // flex, enter 150, exit 165
+      j.update(hipFlexFrame(175));
+      j.update(hipFlexFrame(110));
+      final r = j.update(hipFlexFrame(175));
+      expect(r.reps, 1);
+      expect(r.romMin, lessThanOrEqualTo(111));
+    });
+
+    test('does not count while the leg stays lifted', () {
+      final j = MotionJudge(defaultMotionTargets['ex-5']!);
+      j.update(hipFlexFrame(175));
+      j.update(hipFlexFrame(110));
+      j.update(hipFlexFrame(115));
+      expect(j.summary().reps, 0);
+    });
+  });
 }

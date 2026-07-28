@@ -70,6 +70,36 @@ export const DEFAULT_FACE_TARGETS: Record<string, FaceTarget> = {
     repExitPct: 25,
     repTarget: 6,
   },
+  // Brow furrow / frown: pull the eyebrows down and together — the brow↔eye
+  // gap SHRINKS, so this inverts like eye-close. Complements brow-raise for
+  // full upper-face control after facial palsy.
+  'face-frown': {
+    exerciseId: 'face-frown',
+    label: 'Brow furrow (frown)',
+    bodyPart: 'Face',
+    leftPair: [FACE.L_BROW, FACE.L_EYE_UPPER],
+    rightPair: [FACE.R_BROW, FACE.R_EYE_UPPER],
+    invert: true,
+    restSignal: 0.12,
+    activeSignal: 0.07,
+    repEnterPct: 55,
+    repExitPct: 25,
+    repTarget: 6,
+  },
+  // Big smile: a wider progression of the gentle smile — same landmarks, a
+  // larger active target for patients ready to push the range further.
+  'face-big-smile': {
+    exerciseId: 'face-big-smile',
+    label: 'Big smile',
+    bodyPart: 'Face',
+    leftPair: [FACE.L_MOUTH_CORNER, FACE.NOSE_TIP],
+    rightPair: [FACE.R_MOUTH_CORNER, FACE.NOSE_TIP],
+    restSignal: 0.9,
+    activeSignal: 1.3,
+    repEnterPct: 55,
+    repExitPct: 25,
+    repTarget: 6,
+  },
 };
 
 export function getDefaultFaceTarget(exerciseId: string): FaceTarget | null {

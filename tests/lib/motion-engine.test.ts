@@ -44,3 +44,30 @@ describe('MotionJudge (sit-to-stand knee)', () => {
     expect(j.summary().reps).toBe(0) // never returned below exit
   })
 })
+
+// Straight-leg-raise style flex exercise: hip angle (shoulder 12, hip 24, knee
+// 26) DROPS during the lift, then returns. Build a frame resolving that angle.
+function hipFlexFrame(deg: number) {
+  const lm = Array.from({ length: 33 }, () => ({ x: 0, y: 0 }))
+  const rad = (deg * Math.PI) / 180
+  lm[24] = { x: 0, y: 0 }                          // hip (vertex)
+  lm[12] = { x: 0, y: -1 }                         // shoulder straight up
+  lm[26] = { x: Math.sin(rad), y: -Math.cos(rad) } // knee at `deg` from the trunk
+  return lm
+}
+
+describe('MotionJudge (flex direction — straight leg raise ex-5)', () => {
+  it('counts a rep on a bend-then-return cycle', () => {
+    const j = new MotionJudge(DEFAULT_MOTION_TARGETS['ex-5']) // flex, enter 150, exit 165
+    j.update(hipFlexFrame(175))       // extended rest (above exit)
+    j.update(hipFlexFrame(110))       // lifted (below enter) -> effort
+    const r = j.update(hipFlexFrame(175)) // returned (above exit) -> +1 rep
+    expect(r.reps).toBe(1)
+    expect(r.romMin).toBeLessThanOrEqual(111) // deepest lift captured
+  })
+  it('does not count while the leg stays lifted', () => {
+    const j = new MotionJudge(DEFAULT_MOTION_TARGETS['ex-5'])
+    j.update(hipFlexFrame(175)); j.update(hipFlexFrame(110)); j.update(hipFlexFrame(115))
+    expect(j.summary().reps).toBe(0) // never returned above exit
+  })
+})

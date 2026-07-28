@@ -306,8 +306,27 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
             if (s.weakerSide && s.weakerSide !== "even") {
               bodyText(`Focus area: strengthen the ${s.weakerSide} side to even out the movement.`, 8, PALETTE.warn);
             }
+          } else if (s.direction === "flex") {
+            // Flex exercises (leg raise, heel slide): the achievement is the
+            // DEEPEST bend (romMin) reaching down toward targetRomMin. Fill
+            // shows how close it got; no band overlay (a single "deeper is
+            // better" target reads clearer than a window here).
+            const range = Math.max(1, s.targetRomMax - s.targetRomMin);
+            const depthPct = ((s.targetRomMax - s.romMin) / range) * 100;
+            progressBar(
+              "Range of motion (deepest bend vs target)",
+              `${s.romMin}° (target ≤ ${s.targetRomMin}°)`,
+              depthPct,
+              PALETTE.brand
+            );
+            progressBar(
+              "Movement quality",
+              `${s.avgQuality}%`,
+              s.avgQuality,
+              s.avgQuality >= 60 ? PALETTE.good : PALETTE.warn
+            );
           } else {
-            // Body: achieved ROM against the target window.
+            // Extend exercises: achieved peak ROM against the target window.
             const denom = s.targetRomMax || 1;
             const achievedPct = (s.romMax / denom) * 100;
             const bandFrom = (s.targetRomMin / denom) * 100;

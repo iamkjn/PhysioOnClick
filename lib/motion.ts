@@ -30,6 +30,10 @@ export type MotionSession = {
   passed: boolean;
   durationSec: number;
   source: "web" | "mobile";
+  // "flex" for exercises whose effort DECREASES the joint angle (leg raise,
+  // heel slide); omitted/"extend" for the rest. Lets the report show the
+  // meaningful achieved angle (deepest bend vs peak reach).
+  direction?: "extend" | "flex";
   // Discriminates body-joint sessions ("body", the default for any legacy doc
   // written before facial tracking existed) from facial-symmetry sessions.
   kind?: "body" | "face";

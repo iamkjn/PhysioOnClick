@@ -500,6 +500,24 @@ export const exercises: Exercise[] = [
     stage: "Facial rehab",
     description: "Puff out both cheeks and hold, then release — building lip seal and cheek-muscle control.",
     videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "face-frown",
+    title: "Brow Furrow",
+    bodyPart: "Face",
+    condition: "Facial palsy / stroke recovery",
+    stage: "Facial rehab",
+    description: "Pull both eyebrows down and together into a frown, then relax — retraining even upper-face control.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "face-big-smile",
+    title: "Big Smile",
+    bodyPart: "Face",
+    condition: "Facial palsy / stroke recovery",
+    stage: "Facial rehab",
+    description: "A wider smile progression — push both mouth corners up and out as far as feels comfortable, keeping the sides even.",
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
   }
 ];
 
