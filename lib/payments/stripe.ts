@@ -17,13 +17,6 @@ export async function createStripeCheckout(
   form.set("cancel_url", input.cancelUrl);
   form.set("customer_email", input.intent.email);
   form.set("line_items[0][quantity]", "1");
-  // Stripe's documented field for ad-hoc pricing is the nested
-  // "line_items[0][price_data][currency]" / "[unit_amount]" path below; the flat
-  // "currency" / "unit_amount" pair is included alongside it purely so log/tests can
-  // grep the amount+currency without parsing the nested form key — Stripe ignores
-  // unrecognized top-level fields.
-  form.set("currency", "gbp");
-  form.set("unit_amount", String(input.amountPence));
   form.set("line_items[0][price_data][currency]", "gbp");
   form.set("line_items[0][price_data][unit_amount]", String(input.amountPence));
   form.set("line_items[0][price_data][product_data][name]", input.serviceLabel);

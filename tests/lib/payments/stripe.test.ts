@@ -36,8 +36,8 @@ describe("createStripeCheckout", () => {
     const headers = (init as RequestInit).headers as Record<string, string>;
     expect(headers.Authorization).toBe("Bearer sk_test_x");
     const body = (init as RequestInit).body as string;
-    expect(body).toContain("currency=gbp");
-    expect(body).toContain("unit_amount=5000");
+    expect(body).toContain("%5Bcurrency%5D=gbp");
+    expect(body).toContain("%5Bunit_amount%5D=5000");
     expect(body).toContain("mode=payment");
     expect(body).toContain(encodeURIComponent("metadata[email]"));
   });
