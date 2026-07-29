@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { intentToMetadata, type CreateCheckoutInput, type CreateCheckoutResult } from "@/lib/payments";
 
 /**
@@ -47,4 +48,33 @@ export async function createStripeCheckout(
   const json = (await response.json()) as { id?: string; url?: string };
   if (!json.id || !json.url) return { ok: false, error: "Unable to start payment." };
   return { ok: true, url: json.url, sessionId: json.id };
+}
+
+export function verifyStripeSignature(
+  rawBody: string,
+  signatureHeader: string,
+  secret: string,
+): boolean {
+  if (!secret || !signatureHeader) return false;
+  try {
+    const parts = Object.fromEntries(
+      signatureHeader.split(",").map((kv) => {
+        const [k, v] = kv.split("=");
+        return [k, v];
+      }),
+    ) as Record<string, string>;
+    const timestamp = parts.t;
+    const provided = parts.v1;
+    if (!timestamp || !provided) return false;
+    const expected = crypto
+      .createHmac("sha256", secret)
+      .update(`${timestamp}.${rawBody}`)
+      .digest("hex");
+    const a = Buffer.from(provided);
+    const b = Buffer.from(expected);
+    if (a.length !== b.length) return false;
+    return crypto.timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
 }
