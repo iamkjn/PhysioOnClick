@@ -83,6 +83,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
   }
 
+  // Reserve the idempotency doc BEFORE the slot check / booking. Any Stripe
+  // retry after this point will see this doc at the read above and no-op —
+  // it will never re-run the slot check or re-book. A doc stuck at
+  // status:"processing" is an intentional signal for admin follow-up.
+  await paymentRef.set({
+    provider: "stripe",
+    stripeSessionId: session.id,
+    calBookingUid: "",
+    amountPence: session.amount_total ?? 0,
+    currency: session.currency ?? "gbp",
+    status: "processing",
+    email: intent.email,
+    service: intent.service,
+    createdAt: FieldValue.serverTimestamp(),
+  });
+
   if (!(await slotStillFree(intent.service, intent.startISO))) {
     // Slot lost between checkout and webhook. Record for admin follow-up/refund.
     await paymentRef.set({

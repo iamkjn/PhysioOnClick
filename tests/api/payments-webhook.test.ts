@@ -83,8 +83,9 @@ describe("POST /api/payments/webhook", () => {
     const res = await POST(signedRequest(EVENT));
     expect(res.status).toBe(200);
     expect(createCalBooking).toHaveBeenCalledOnce();
-    expect(paymentDocRef.set).toHaveBeenCalledOnce();
-    const written = paymentDocRef.set.mock.calls[0][0];
+    // reservation write ("processing") + final write ("paid")
+    expect(paymentDocRef.set).toHaveBeenCalledTimes(2);
+    const written = paymentDocRef.set.mock.calls.at(-1)[0];
     expect(written.calBookingUid).toBe("cal_xyz");
     expect(written.amountPence).toBe(5000);
     expect(written.status).toBe("paid");
@@ -99,6 +100,7 @@ describe("POST /api/payments/webhook", () => {
     const res = await POST(bad);
     expect(res.status).toBe(400);
     expect(createCalBooking).not.toHaveBeenCalled();
+    expect(paymentDocRef.set).not.toHaveBeenCalled();
   });
 
   it("is idempotent when the event was already processed", async () => {
@@ -106,5 +108,30 @@ describe("POST /api/payments/webhook", () => {
     const res = await POST(signedRequest(EVENT));
     expect(res.status).toBe(200);
     expect(createCalBooking).not.toHaveBeenCalled();
+    expect(paymentDocRef.set).not.toHaveBeenCalled();
+  });
+
+  it("marks slot_unavailable when the slot was lost before the webhook arrived", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ data: { "2999-01-01": [{ start: "2999-01-01T11:00:00.000Z" }] } }), {
+          status: 200,
+        }),
+      ),
+    );
+    const res = await POST(signedRequest(EVENT));
+    expect(res.status).toBe(200);
+    expect(createCalBooking).not.toHaveBeenCalled();
+    const written = paymentDocRef.set.mock.calls.at(-1)[0];
+    expect(written.status).toBe("slot_unavailable");
+  });
+
+  it("marks booking_failed when Cal booking creation fails", async () => {
+    vi.mocked(createCalBooking).mockResolvedValueOnce({ ok: false, status: 502, error: "x" } as never);
+    const res = await POST(signedRequest(EVENT));
+    expect(res.status).toBe(200);
+    const written = paymentDocRef.set.mock.calls.at(-1)[0];
+    expect(written.status).toBe("booking_failed");
   });
 });
