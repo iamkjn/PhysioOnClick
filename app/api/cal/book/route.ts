@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { CAL_USERNAME, calServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { isBookServiceId } from "@/lib/cal-services";
+import { createCalBooking } from "@/lib/cal-booking";
 
 /**
  * Real Cal.com booking creation for the custom /book calendar.
@@ -41,25 +42,6 @@ function sanitizeFocusAreas(value: unknown): string[] | undefined {
   }
   const cleaned = value.map((entry) => entry.trim()).filter((entry) => entry.length > 0);
   return cleaned.length > 0 ? cleaned : undefined;
-}
-
-async function postToCal(payload: Record<string, unknown>): Promise<Response> {
-  return fetch("https://api.cal.com/v2/bookings", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "cal-api-version": "2024-08-13",
-    },
-    body: JSON.stringify(payload),
-  });
-}
-
-async function safeText(response: Response): Promise<string> {
-  try {
-    return await response.text();
-  } catch {
-    return "";
-  }
 }
 
 export async function POST(request: Request) {
@@ -107,83 +89,19 @@ export async function POST(request: Request) {
 
   const cleanedFocusAreas = sanitizeFocusAreas(focusAreas);
 
-  const calSlug = calServiceFor(service).calSlug;
-
-  if (!CAL_USERNAME) {
-    return NextResponse.json(
-      { ok: false, error: "Booking calendar is not configured. Please contact us to book an appointment." },
-      { status: 503 },
-    );
-  }
-
-  const basePayload: Record<string, unknown> = {
-    start: startDate.toISOString(),
-    attendee: {
-      name: trimmedName,
-      email: trimmedEmail,
-      timeZone: resolvedTimeZone,
-    },
-    eventTypeSlug: calSlug,
-    username: CAL_USERNAME,
-  };
-
-  const payloadWithMetadata = cleanedFocusAreas
-    ? { ...basePayload, metadata: { focusAreas: cleanedFocusAreas.join(", ") } }
-    : basePayload;
-
-  let response: Response;
-  try {
-    response = await postToCal(payloadWithMetadata);
-  } catch (error) {
-    console.error("Cal.com booking request failed", error);
+  const result = await createCalBooking({
+    service,
+    startISO: startDate.toISOString(),
+    name: trimmedName,
+    email: trimmedEmail,
+    timeZone: resolvedTimeZone,
+    focusAreas: cleanedFocusAreas,
+  });
+  if (!result.ok) {
     return NextResponse.json(
       { ok: false, error: "Unable to create booking. Please try again or contact us directly." },
-      { status: 502 },
+      { status: result.status },
     );
   }
-
-  // Best-effort metadata: if Cal rejects the request and we sent metadata,
-  // retry once without it rather than failing the whole booking.
-  if (!response.ok && payloadWithMetadata !== basePayload && response.status === 400) {
-    console.error("Cal.com booking rejected metadata, retrying without it", await safeText(response));
-    try {
-      response = await postToCal(basePayload);
-    } catch (error) {
-      console.error("Cal.com booking retry request failed", error);
-      return NextResponse.json(
-        { ok: false, error: "Unable to create booking. Please try again or contact us directly." },
-        { status: 502 },
-      );
-    }
-  }
-
-  if (!response.ok) {
-    console.error("Cal.com booking request returned an error status", response.status, await safeText(response));
-    return NextResponse.json(
-      { ok: false, error: "Unable to create booking. Please try again or contact us directly." },
-      { status: 502 },
-    );
-  }
-
-  let json: { data?: { uid?: unknown } };
-  try {
-    json = (await response.json()) as { data?: { uid?: unknown } };
-  } catch (error) {
-    console.error("Cal.com booking response was not valid JSON", error);
-    return NextResponse.json(
-      { ok: false, error: "Unable to create booking. Please try again or contact us directly." },
-      { status: 502 },
-    );
-  }
-
-  const uid = json?.data?.uid;
-  if (typeof uid !== "string" || !uid) {
-    console.error("Cal.com booking response missing uid", json);
-    return NextResponse.json(
-      { ok: false, error: "Unable to create booking. Please try again or contact us directly." },
-      { status: 502 },
-    );
-  }
-
-  return NextResponse.json({ ok: true, uid, start: startDate.toISOString(), service });
+  return NextResponse.json({ ok: true, uid: result.uid, start: startDate.toISOString(), service });
 }
