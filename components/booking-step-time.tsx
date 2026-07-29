@@ -92,6 +92,10 @@ export function BookingStepTime({
   bookingForName,
   onBookingForChange
 }: Props) {
+  // onConfirmed is kept in the prop signature for the parent's wiring and as
+  // a fallback path for a future £0 service, but the paid happy-path below
+  // redirects to Stripe Checkout instead of calling it directly.
+  void onConfirmed;
   const today = useMemo(() => new Date(), []);
   const [viewMonth, setViewMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [slots, setSlots] = useState<SlotMap>({});
@@ -354,7 +358,7 @@ export function BookingStepTime({
         }
       }
 
-      const res = await fetch("/api/cal/book", {
+      const res = await fetch("/api/checkout/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -367,16 +371,13 @@ export function BookingStepTime({
         })
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) {
-        setError("That time was just taken. Please choose another.");
+      if (!res.ok || !data.ok || !data.url) {
+        setError("We couldn't start payment. Please try again.");
         return;
       }
-      onConfirmed({
-        uid: data.uid,
-        start: selectedSlot,
-        serviceId: service.id,
-        name: attendeeName
-      });
+      // Redirect to Stripe's hosted Checkout (standard UK payment screen).
+      window.location.href = data.url as string;
+      return;
     } catch {
       setError("Something went wrong booking your session. Please try again.");
     } finally {
