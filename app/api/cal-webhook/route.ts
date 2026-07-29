@@ -108,6 +108,30 @@ export async function POST(request: NextRequest) {
           createdAt: FieldValue.serverTimestamp(),
         });
 
+        // Paid-booking reconciliation: if the payment webhook already recorded
+        // a payment for this Cal booking, stamp the booking as paid. If the
+        // payment webhook arrives later, it stamps the booking itself (see
+        // app/api/payments/webhook/route.ts).
+        try {
+          const paymentSnap = await db
+            .collection("payments")
+            .where("calBookingUid", "==", booking.uid)
+            .limit(1)
+            .get();
+          if (!paymentSnap.empty) {
+            const pay = paymentSnap.docs[0].data() as { amountPence?: number; status?: string };
+            if (pay.status === "paid") {
+              await bookingRef.update({
+                paid: true,
+                amountPaidPence: pay.amountPence ?? 0,
+                paymentProvider: "stripe",
+              });
+            }
+          }
+        } catch (error) {
+          console.error("cal-webhook paid reconciliation failed", error);
+        }
+
         // Link booking to Firebase user and merge dependent selection if present.
         // Mobile-only users are in the `patients` collection; web users are in `users`.
         // Check both so bookings link correctly regardless of which platform the patient used to sign up.
