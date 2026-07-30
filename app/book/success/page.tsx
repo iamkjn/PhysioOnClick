@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-type Status = "pending" | "paid" | "slot_unavailable" | "booking_failed";
+type Status = "pending" | "processing" | "paid" | "slot_unavailable" | "booking_failed";
 
 export default function BookingSuccessPage() {
   const params = useSearchParams();
@@ -22,7 +22,7 @@ export default function BookingSuccessPage() {
         const data = (await res.json()) as { status: Status };
         if (cancelled) return;
         setStatus(data.status);
-        if (data.status === "pending" && tries < 10) {
+        if ((data.status === "pending" || data.status === "processing") && tries < 10) {
           setTimeout(poll, 2000);
         }
       } catch {
@@ -44,7 +44,7 @@ export default function BookingSuccessPage() {
           <Link href="/patient/appointments">View my appointments</Link>
         </>
       )}
-      {status === "pending" && (
+      {(status === "pending" || status === "processing") && (
         <>
           <h1 className="book-panel-title">Confirming your booking…</h1>
           <p>Your payment went through. We&apos;re just confirming your slot — this takes a few seconds.</p>
