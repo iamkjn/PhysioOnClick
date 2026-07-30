@@ -10,7 +10,7 @@ import { getBooking, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { DownloadSummaryButton } from "@/components/download-summary-button";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
-import { CalendarIcon } from "@/components/icons";
+import { CalendarIcon, ClipboardIcon } from "@/components/icons";
 
 export default function AppointmentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -162,7 +162,9 @@ export default function AppointmentDetailPage() {
       ) : (
         <section className="page-section">
           <div className="panel" style={{ textAlign: "center" }}>
-            <div aria-hidden="true" style={{ fontSize: 36 }}>⏳</div>
+            <div aria-hidden="true" className="summary-empty-icon">
+              <ClipboardIcon />
+            </div>
             <h3>Summary coming soon</h3>
             <p className="muted">Your physio will add a session summary shortly.</p>
           </div>

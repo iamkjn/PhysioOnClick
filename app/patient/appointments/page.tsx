@@ -234,7 +234,9 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
               <ClipboardIcon className="inline-icon" />
             </span>
           ) : (
-            <span role="img" aria-label="Summary pending" style={{ fontSize: 20, opacity: 0.4 }}>⏳</span>
+            <span aria-label="Summary not added yet" title="Summary not added yet">
+              <ClipboardIcon className="inline-icon inline-icon--pending" />
+            </span>
           )
         ) : (
           <span

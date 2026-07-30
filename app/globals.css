@@ -1842,6 +1842,15 @@ label {
   font-weight: 600;
 }
 
+/* Checkbox / radio labels read as a row: control on the left, text beside it.
+   Overrides the column default above so the box never stacks over its text. */
+label:has(> input[type="checkbox"]),
+label:has(> input[type="radio"]) {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
 .field-error {
   color: var(--color-error);
   font-size: 0.88rem;
@@ -1849,7 +1858,7 @@ label {
   line-height: 1.4;
 }
 
-input,
+input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {
   width: 100%;
@@ -1948,6 +1957,26 @@ textarea:focus {
   height: 18px;
   flex-shrink: 0;
   vertical-align: -3px;
+}
+
+/* Muted clipboard = "session summary not added yet" (replaces the old ⏳,
+   which read as an appointment still pending on a past date). */
+.inline-icon--pending {
+  color: var(--color-text-secondary);
+  opacity: 0.4;
+}
+
+.summary-empty-icon {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+}
+
+.summary-empty-icon svg {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  display: block;
 }
 
 /* Matches the focus ring already used by bare input/select/textarea above —
@@ -5447,6 +5476,156 @@ textarea:focus {
 .book-consent a {
   color: var(--book-accent-dark);
   text-decoration: underline;
+}
+
+/* ─── Booking result screen (/book/success): centered card + animation ─── */
+.book-result {
+  min-height: calc(100vh - 124px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.25rem;
+}
+
+.book-result-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--book-paper);
+  border: 1px solid var(--book-paper-border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
+  padding: 2.75rem 2rem 2.5rem;
+  text-align: center;
+  color: var(--book-paper-ink);
+  animation: book-result-in 0.4s ease-out both;
+}
+
+@keyframes book-result-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.book-result-title {
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  line-height: 1.15;
+  margin: 1.25rem 0 0.6rem;
+}
+
+.book-result-text {
+  color: var(--book-paper-muted);
+  line-height: 1.55;
+  margin: 0 auto 1.6rem;
+  max-width: 36ch;
+}
+
+.book-result-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.book-result-btn {
+  display: inline-block;
+  padding: 0.85rem 2.2rem;
+  background: var(--book-accent-dark);
+  color: #fff;
+  border-radius: 14px;
+  font: 600 0.95rem var(--font-sans);
+  text-decoration: none;
+  transition: transform 0.12s ease, background 0.15s ease;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--book-accent-dark) 26%, transparent);
+}
+
+.book-result-btn:hover {
+  transform: translateY(-2px);
+  background: var(--book-accent);
+}
+
+.book-result-link {
+  color: var(--book-accent-dark);
+  font: 600 0.9rem var(--font-sans);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.book-result-icon {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto;
+}
+
+.book-result-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+}
+
+.book-result-icon--ok { color: var(--color-success); }
+.book-result-icon--warn { color: var(--color-error); }
+
+.book-result-icon .brc-circle {
+  stroke: currentColor;
+  stroke-width: 2.5;
+  opacity: 0.9;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: brc-draw 0.5s ease-out forwards;
+}
+
+.book-result-icon--ok .brc-check {
+  stroke: currentColor;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 44;
+  stroke-dashoffset: 44;
+  animation: brc-draw 0.35s 0.42s ease-out forwards;
+}
+
+.book-result-icon--warn .brc-bang {
+  stroke: currentColor;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 16;
+  stroke-dashoffset: 16;
+  animation: brc-draw 0.3s 0.4s ease-out forwards;
+}
+
+.book-result-icon--warn .brc-dot {
+  fill: currentColor;
+  opacity: 0;
+  animation: brc-fade 0.2s 0.68s ease-out forwards;
+}
+
+@keyframes brc-draw { to { stroke-dashoffset: 0; } }
+@keyframes brc-fade { to { opacity: 1; } }
+
+/* Loader for the "confirming payment" wait state (reuses app-spin) */
+.book-result-spinner {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 4px solid color-mix(in srgb, var(--book-accent) 20%, transparent);
+  border-top-color: var(--book-accent-dark);
+  animation: app-spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-result-card,
+  .book-result-icon .brc-circle,
+  .book-result-icon--ok .brc-check,
+  .book-result-icon--warn .brc-bang,
+  .book-result-icon--warn .brc-dot {
+    animation: none;
+  }
+  .book-result-icon .brc-circle,
+  .book-result-icon--ok .brc-check,
+  .book-result-icon--warn .brc-bang { stroke-dashoffset: 0; }
+  .book-result-icon--warn .brc-dot { opacity: 1; }
+  .book-result-spinner { animation-duration: 1.6s; }
 }
 
 /* ── Screen 3: confirmation ────────────────────────────────── */
