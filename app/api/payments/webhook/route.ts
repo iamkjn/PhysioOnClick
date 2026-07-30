@@ -33,7 +33,9 @@ async function slotStillFree(service: BookServiceId, startISO: string): Promise<
   url.searchParams.set("start", day);
   url.searchParams.set("end", day);
   try {
-    const res = await fetch(url.toString(), { headers: { "cal-api-version": "2024-08-13" } });
+    // Slots endpoint requires cal-api-version 2024-09-04 (2024-08-13 is the
+    // bookings version and returns an error here — see app/api/cal/slots).
+    const res = await fetch(url.toString(), { headers: { "cal-api-version": "2024-09-04" } });
     if (!res.ok) return false;
     const json = (await res.json()) as { data?: Record<string, Array<{ start?: string }>> };
     const wanted = new Date(startISO).getTime();

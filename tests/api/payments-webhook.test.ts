@@ -91,6 +91,22 @@ describe("POST /api/payments/webhook", () => {
     expect(written.status).toBe("paid");
   });
 
+  it("re-checks the slot against Cal.com's slots API using version 2024-09-04", async () => {
+    // Regression: the slots endpoint requires cal-api-version 2024-09-04. Using
+    // the bookings version (2024-08-13) makes Cal.com return an error, so the
+    // re-check returned false and every paid booking was wrongly recorded
+    // slot_unavailable.
+    await POST(signedRequest(EVENT));
+    const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>;
+    const slotsCall = fetchMock.mock.calls.find(([url]) =>
+      String(url).includes("api.cal.com/v2/slots"),
+    );
+    expect(slotsCall, "expected a call to the Cal.com slots endpoint").toBeTruthy();
+    expect((slotsCall![1] as RequestInit).headers).toMatchObject({
+      "cal-api-version": "2024-09-04",
+    });
+  });
+
   it("rejects an invalid signature", async () => {
     const bad = new Request("http://localhost/api/payments/webhook", {
       method: "POST",
