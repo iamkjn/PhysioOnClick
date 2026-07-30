@@ -37,7 +37,12 @@ Booking is a custom 3-step flow (`components/booking-flow.tsx`: service → time
 - `app/api/auth/magic-link/` + `app/api/auth/link-bookings/` — passwordless sign-in via Resend email, then links guest bookings to the account
 - `lib/patient-bookings.ts` — booking Firestore helpers; admin cancel calls Cal.com via `cancelCalBooking` in `app/admin/actions.ts` with server-only `CAL_API_KEY`
 
-Stripe is largely vestigial: `lib/stripe.ts` remains but there is no checkout route anymore.
+Payments: paid booking runs through Stripe hosted Checkout. `app/api/checkout/create/`
+creates a Checkout Session (amount derived server-side from `lib/site-data.ts`),
+`app/api/payments/webhook/` verifies the Stripe signature and creates the Cal.com booking
+after payment (pay-first), and `app/api/checkout/status/` backs the `/book/success` page.
+`lib/payments/` holds the provider interface + Stripe implementation (REST over `fetch`,
+Workers-safe). PayPal is a planned phase-2 provider behind the same interface.
 
 ### AI chat assistant
 
@@ -87,7 +92,7 @@ npm run cf-typegen  # regenerate cloudflare-env.d.ts from wrangler.jsonc
 
 ### Environment variables
 
-See `.env.example` for the full list. Key server-only vars: `CAL_WEBHOOK_SECRET`, `CAL_API_KEY`, `ADMIN_EMAIL`, `GEMINI_API_KEY`, `RESEND_API_KEY`, `ENQUIRY_EMAIL_TO`/`ENQUIRY_EMAIL_FROM`, `STRIPE_SECRET_KEY`, and Firebase admin credentials. Key client vars: `NEXT_PUBLIC_FIREBASE_*`, `NEXT_PUBLIC_CAL_USERNAME`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_USE_LIVE_CONTENT`. Local dev works without `RESEND_API_KEY` — magic links log to the console instead of emailing.
+See `.env.example` for the full list. Key server-only vars: `CAL_WEBHOOK_SECRET`, `CAL_API_KEY`, `ADMIN_EMAIL`, `GEMINI_API_KEY`, `RESEND_API_KEY`, `ENQUIRY_EMAIL_TO`/`ENQUIRY_EMAIL_FROM`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and Firebase admin credentials. Key client vars: `NEXT_PUBLIC_FIREBASE_*`, `NEXT_PUBLIC_CAL_USERNAME`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_USE_LIVE_CONTENT`. Local dev works without `RESEND_API_KEY` — magic links log to the console instead of emailing.
 
 ## Design Context
 
