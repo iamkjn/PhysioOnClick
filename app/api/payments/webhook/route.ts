@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { createCalBooking } from "@/lib/cal-booking";
+import { sendReceiptEmail } from "@/lib/emails/receipt-email";
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
-import { calServiceFor } from "@/lib/cal-services";
+import { bookServiceFor, calServiceFor } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
 
 type StripeEvent = {
@@ -166,6 +167,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true, warning: "booking_failed" }, { status: 200 });
   }
 
+  const invoiceNumber = makeInvoiceNumber(session.id);
+
   await paymentRef.set({
     provider: "stripe",
     stripeSessionId: session.id,
@@ -176,7 +179,7 @@ export async function POST(request: Request) {
     email: intent.email,
     service: intent.service,
     createdAt: FieldValue.serverTimestamp(),
-    invoiceNumber: makeInvoiceNumber(session.id),
+    invoiceNumber,
     paidAt: new Date().toISOString(),
   });
 
@@ -197,6 +200,21 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     console.error("Payment recorded but booking paid-flag update failed", error);
+  }
+
+  // Best-effort receipt email — must never break the 200 response.
+  try {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    await sendReceiptEmail({
+      to: intent.email,
+      patientName: intent.name,
+      invoiceNumber,
+      serviceLabel: bookServiceFor(intent.service).title,
+      amountPence: session.amount_total ?? 0,
+      receiptUrl: `${siteUrl}/book/receipt/${session.id}`,
+    });
+  } catch (error) {
+    console.error("Receipt email failed (non-blocking)", error);
   }
 
   return NextResponse.json({ received: true }, { status: 200 });

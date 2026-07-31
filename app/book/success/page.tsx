@@ -60,6 +60,9 @@ function BookingResult() {
             <div className="book-result-actions">
               <Link href="/" className="book-result-btn">Back to home</Link>
               <Link href="/patient/appointments" className="book-result-link">View my appointments</Link>
+              <Link href={`/book/receipt/${sessionId}`} className="book-result-link">
+                View / print your receipt
+              </Link>
             </div>
           </>
         )}
