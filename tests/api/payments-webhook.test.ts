@@ -143,6 +143,17 @@ describe("POST /api/payments/webhook", () => {
     expect(written.status).toBe("slot_unavailable");
   });
 
+  it("still attempts the booking when the slot check can't be verified (transient Cal error)", async () => {
+    // Cal.com unreachable during the webhook: we must NOT charge-then-record
+    // slot_unavailable — we let Cal.com be the authority and try to book.
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
+    const res = await POST(signedRequest(EVENT));
+    expect(res.status).toBe(200);
+    expect(createCalBooking).toHaveBeenCalledOnce();
+    const written = paymentDocRef.set.mock.calls.at(-1)[0];
+    expect(written.status).toBe("paid");
+  });
+
   it("marks booking_failed when Cal booking creation fails", async () => {
     vi.mocked(createCalBooking).mockResolvedValueOnce({ ok: false, status: 502, error: "x" } as never);
     const res = await POST(signedRequest(EVENT));

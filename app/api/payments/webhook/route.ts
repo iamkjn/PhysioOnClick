@@ -20,34 +20,54 @@ type StripeEvent = {
   };
 };
 
-/** Confirm the exact slot is still offered by Cal.com before we book it. */
-async function slotStillFree(service: BookServiceId, startISO: string): Promise<boolean> {
+type SlotState = "free" | "taken" | "unknown";
+
+/**
+ * Ask Cal.com whether the exact slot is still offered.
+ * - "free":    Cal answered and still offers the slot.
+ * - "taken":   Cal answered but the slot is no longer offered.
+ * - "unknown": we could NOT verify (network error, 5xx, 429, bad JSON).
+ *
+ * On "unknown" the caller should still attempt the booking and let Cal.com be
+ * the authority — a momentary Cal outage must not charge a customer and then
+ * record slot_unavailable for a slot that was actually free.
+ */
+async function checkSlot(service: BookServiceId, startISO: string): Promise<SlotState> {
   // Read live (not the module-level constant) so this route reacts to the
   // request-time env, matching how this handler is exercised in tests.
   const calUsername = process.env.NEXT_PUBLIC_CAL_USERNAME ?? "";
-  if (!calUsername) return false;
+  if (!calUsername) return "unknown";
   const day = startISO.slice(0, 10); // YYYY-MM-DD
   const url = new URL("https://api.cal.com/v2/slots");
   url.searchParams.set("eventTypeSlug", calServiceFor(service).calSlug);
   url.searchParams.set("username", calUsername);
   url.searchParams.set("start", day);
   url.searchParams.set("end", day);
+
+  let res: Response;
   try {
     // Slots endpoint requires cal-api-version 2024-09-04 (2024-08-13 is the
     // bookings version and returns an error here — see app/api/cal/slots).
-    const res = await fetch(url.toString(), { headers: { "cal-api-version": "2024-09-04" } });
-    if (!res.ok) return false;
-    const json = (await res.json()) as { data?: Record<string, Array<{ start?: string }>> };
-    const wanted = new Date(startISO).getTime();
-    for (const slots of Object.values(json.data ?? {})) {
-      for (const slot of slots ?? []) {
-        if (slot.start && new Date(slot.start).getTime() === wanted) return true;
-      }
-    }
-    return false;
+    res = await fetch(url.toString(), { headers: { "cal-api-version": "2024-09-04" } });
   } catch {
-    return false;
+    return "unknown";
   }
+  if (!res.ok) return "unknown";
+
+  let json: { data?: Record<string, Array<{ start?: string }>> };
+  try {
+    json = (await res.json()) as { data?: Record<string, Array<{ start?: string }>> };
+  } catch {
+    return "unknown";
+  }
+
+  const wanted = new Date(startISO).getTime();
+  for (const slots of Object.values(json.data ?? {})) {
+    for (const slot of slots ?? []) {
+      if (slot.start && new Date(slot.start).getTime() === wanted) return "free";
+    }
+  }
+  return "taken";
 }
 
 export async function POST(request: Request) {
@@ -101,8 +121,10 @@ export async function POST(request: Request) {
     createdAt: FieldValue.serverTimestamp(),
   });
 
-  if (!(await slotStillFree(intent.service, intent.startISO))) {
-    // Slot lost between checkout and webhook. Record for admin follow-up/refund.
+  if ((await checkSlot(intent.service, intent.startISO)) === "taken") {
+    // Cal confirmed the slot is gone between checkout and webhook. Record for
+    // admin follow-up/refund. ("unknown" falls through to the booking attempt
+    // below so a transient Cal error can't charge-without-booking.)
     await paymentRef.set({
       provider: "stripe",
       stripeSessionId: session.id,

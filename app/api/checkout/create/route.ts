@@ -53,7 +53,10 @@ export async function POST(request: Request) {
   }
 
   const cleanedFocus = Array.isArray(focusAreas)
-    ? focusAreas.filter((f): f is string => typeof f === "string" && f.trim().length > 0).slice(0, 10)
+    ? focusAreas
+        .filter((f): f is string => typeof f === "string" && f.trim().length > 0)
+        .map((f) => f.trim().slice(0, 40)) // cap each item so Stripe metadata can't overflow 500 chars
+        .slice(0, 10)
     : undefined;
 
   const svc = bookServiceFor(service);

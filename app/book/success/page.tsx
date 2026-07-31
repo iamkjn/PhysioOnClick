@@ -10,6 +10,7 @@ function BookingResult() {
   const params = useSearchParams();
   const sessionId = params.get("session_id") ?? "";
   const [status, setStatus] = useState<Status>("pending");
+  const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -22,11 +23,14 @@ function BookingResult() {
         const data = (await res.json()) as { status: Status };
         if (cancelled) return;
         setStatus(data.status);
-        if ((data.status === "pending" || data.status === "processing") && tries < 10) {
-          setTimeout(poll, 2000);
+        if (data.status === "pending" || data.status === "processing") {
+          if (tries < 10) setTimeout(poll, 2000);
+          else setTimedOut(true);
         }
       } catch {
-        if (!cancelled && tries < 10) setTimeout(poll, 2000);
+        if (cancelled) return;
+        if (tries < 10) setTimeout(poll, 2000);
+        else setTimedOut(true);
       }
     }
     poll();
@@ -35,7 +39,7 @@ function BookingResult() {
     };
   }, [sessionId]);
 
-  const isWaiting = status === "pending" || status === "processing";
+  const isWaiting = (status === "pending" || status === "processing") && !timedOut;
   const isFailed = status === "slot_unavailable" || status === "booking_failed";
 
   return (
@@ -67,6 +71,28 @@ function BookingResult() {
             <p className="book-result-text">
               Your payment went through. We&apos;re just confirming your slot — this only takes a few seconds.
             </p>
+          </>
+        )}
+
+        {(status === "pending" || status === "processing") && timedOut && (
+          <>
+            <div className="book-result-icon book-result-icon--warn" aria-hidden="true">
+              <svg viewBox="0 0 52 52">
+                <circle className="brc-circle" cx="26" cy="26" r="24" />
+                <path className="brc-bang" d="M26 15 L26 31" />
+                <circle className="brc-dot" cx="26" cy="38" r="1.7" />
+              </svg>
+            </div>
+            <h1 className="book-result-title">Still finishing up…</h1>
+            <p className="book-result-text">
+              Your payment went through and is safe. Your booking is taking a little longer than usual to
+              confirm — we&apos;ll email you the moment it&apos;s done. If you don&apos;t hear from us shortly,
+              please get in touch and we&apos;ll sort it right away.
+            </p>
+            <div className="book-result-actions">
+              <Link href="/" className="book-result-btn">Back to home</Link>
+              <Link href="/contact" className="book-result-link">Contact us</Link>
+            </div>
           </>
         )}
 

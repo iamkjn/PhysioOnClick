@@ -674,7 +674,7 @@ export function BookingStepTime({
                 : undefined
             }
           >
-            {submitting ? "Booking…" : `Confirm booking · £${service.price}`}
+            {submitting ? "Starting payment…" : `Continue to payment · £${service.price}`}
           </button>
         </div>
       </form>
