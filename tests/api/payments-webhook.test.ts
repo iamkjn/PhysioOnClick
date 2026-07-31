@@ -89,6 +89,9 @@ describe("POST /api/payments/webhook", () => {
     expect(written.calBookingUid).toBe("cal_xyz");
     expect(written.amountPence).toBe(5000);
     expect(written.status).toBe("paid");
+    expect(typeof written.invoiceNumber).toBe("string");
+    expect(written.invoiceNumber).toMatch(/^INV-\d{4}-[A-Z0-9]{6}$/);
+    expect(typeof written.paidAt).toBe("string");
   });
 
   it("re-checks the slot against Cal.com's slots API using version 2024-09-04", async () => {

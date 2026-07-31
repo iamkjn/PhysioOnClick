@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createCalBooking } from "@/lib/cal-booking";
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
+import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
 import { calServiceFor } from "@/lib/cal-services";
@@ -175,6 +176,8 @@ export async function POST(request: Request) {
     email: intent.email,
     service: intent.service,
     createdAt: FieldValue.serverTimestamp(),
+    invoiceNumber: makeInvoiceNumber(session.id),
+    paidAt: new Date().toISOString(),
   });
 
   // Reconcile: if cal-webhook already created the bookings doc, stamp it paid.
