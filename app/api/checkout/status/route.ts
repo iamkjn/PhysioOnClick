@@ -20,9 +20,17 @@ export async function GET(request: Request) {
     status?: string;
     service?: string;
     calBookingUid?: string;
+    invoiceNumber?: string;
+    paidAt?: string;
   };
   return NextResponse.json(
-    { status: pay.status ?? "pending", service: pay.service, calBookingUid: pay.calBookingUid },
+    {
+      status: pay.status ?? "pending",
+      service: pay.service,
+      calBookingUid: pay.calBookingUid,
+      invoiceNumber: pay.invoiceNumber,
+      paidAt: pay.paidAt,
+    },
     { status: 200 }
   );
 }
