@@ -43,6 +43,12 @@ creates a Checkout Session (amount derived server-side from `lib/site-data.ts`),
 after payment (pay-first), and `app/api/checkout/status/` backs the `/book/success` page.
 `lib/payments/` holds the provider interface + Stripe implementation (REST over `fetch`,
 Workers-safe). PayPal is a planned phase-2 provider behind the same interface.
+Paid bookings generate an insurance-ready receipt (pay-and-claim): `lib/patient-receipt.ts`
+assembles it, it is printable at `/book/receipt/[session]` (reachable by the unguessable
+Stripe session id, same trust model as Stripe's own hosted receipts), and it is emailed
+via Resend (`lib/emails/receipt-email.ts`). Issuer details live in `invoiceIssuer` in
+`lib/site-data.ts` — the `hcpcNumber`/`cspNumber`/street address are placeholders that
+MUST be filled before go-live (the receipt shows "[registration pending]" until then).
 
 ### AI chat assistant
 
