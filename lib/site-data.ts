@@ -57,6 +57,17 @@ export const founder = {
   location: "Glasgow, UK"
 };
 
+export const invoiceIssuer = {
+  legalName: "Shivaliba Zala", // from founder.name
+  tradingName: "PhysioOnClick",
+  hcpcNumber: "", // TODO: fill before go-live (e.g. "PH123456")
+  cspNumber: "", // TODO: fill before go-live
+  addressLines: ["", "Glasgow", "United Kingdom"], // TODO: street line
+  vatStatus: "Physiotherapy services are exempt from VAT (healthcare).",
+  contactEmail: "zalashivali1998@gmail.com",
+  contactPhone: "" // TODO optional
+};
+
 export const services: Service[] = [
   {
     slug: "musculoskeletal-physiotherapy",
