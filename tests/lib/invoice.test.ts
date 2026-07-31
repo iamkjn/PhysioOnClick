@@ -12,7 +12,7 @@ describe("invoice helpers", () => {
     const a = makeInvoiceNumber("cs_test_123", new Date("2026-07-31T10:00:00Z"));
     const b = makeInvoiceNumber("cs_test_123", new Date("2026-07-31T10:00:00Z"));
     expect(a).toBe(b);
-    expect(a).toMatch(/^INV-2026-[A-Z0-9]{6}$/);
+    expect(a).toMatch(/^INV-2026-[A-Z0-9]{8}$/);
   });
 
   it("produces different numbers for different seeds", () => {

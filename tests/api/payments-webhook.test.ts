@@ -90,7 +90,7 @@ describe("POST /api/payments/webhook", () => {
     expect(written.amountPence).toBe(5000);
     expect(written.status).toBe("paid");
     expect(typeof written.invoiceNumber).toBe("string");
-    expect(written.invoiceNumber).toMatch(/^INV-\d{4}-[A-Z0-9]{6}$/);
+    expect(written.invoiceNumber).toMatch(/^INV-\d{4}-[A-Z0-9]{8}$/);
     expect(typeof written.paidAt).toBe("string");
   });
 

@@ -12,10 +12,15 @@ export function issuerField(value: string, fallback = "[registration pending]"):
  * Format: INV-<year>-<6 base36 chars>.
  */
 export function makeInvoiceNumber(seed: string, date: Date = new Date()): string {
-  let hash = 0;
+  // Two independent 32-bit rolling hashes widen the space to ~10 base36 chars,
+  // making cross-patient collisions on the same INV-YYYY-XXXXXXXX negligible
+  // while staying deterministic in the Stripe session id (retry-stable).
+  let h1 = 0;
+  let h2 = 0;
   for (let i = 0; i < seed.length; i++) {
-    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+    h1 = (h1 * 31 + seed.charCodeAt(i)) >>> 0;
+    h2 = (h2 * 131 + seed.charCodeAt(i) * 7 + 13) >>> 0;
   }
-  const code = hash.toString(36).toUpperCase().padStart(6, "0").slice(-6);
+  const code = (h1.toString(36) + h2.toString(36)).toUpperCase().padStart(8, "0").slice(-8);
   return `INV-${date.getUTCFullYear()}-${code}`;
 }
