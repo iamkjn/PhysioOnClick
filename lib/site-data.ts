@@ -60,8 +60,8 @@ export const founder = {
 export const invoiceIssuer = {
   legalName: "Shivaliba Zala", // from founder.name
   tradingName: "PhysioOnClick",
-  hcpcNumber: "", // TODO: fill before go-live (e.g. "PH123456")
-  cspNumber: "", // TODO: fill before go-live
+  hcpcNumber: "PH155757",
+  cspNumber: "128230",
   addressLines: ["", "Glasgow", "United Kingdom"], // TODO: street line
   vatStatus: "Physiotherapy services are exempt from VAT (healthcare).",
   contactEmail: "zalashivali1998@gmail.com",
