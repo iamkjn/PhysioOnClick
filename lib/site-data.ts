@@ -62,7 +62,7 @@ export const invoiceIssuer = {
   tradingName: "PhysioOnClick",
   hcpcNumber: "PH155757",
   cspNumber: "128230",
-  addressLines: ["", "Glasgow", "United Kingdom"], // TODO: street line
+  addressLines: ["7 Springfield Gardens", "Glasgow", "United Kingdom"],
   vatStatus: "Physiotherapy services are exempt from VAT (healthcare).",
   contactEmail: "zalashivali1998@gmail.com",
   contactPhone: "" // TODO optional
