@@ -29,3 +29,5 @@ cloudflare-env.d.ts
 
 # TS incremental build artifact — should never have been tracked
 tsconfig.tsbuildinfo
+.env.prod
+.env.dev

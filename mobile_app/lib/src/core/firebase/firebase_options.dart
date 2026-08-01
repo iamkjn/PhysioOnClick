@@ -17,28 +17,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB2W4dHgl3mM8QEY5XYiQcSt9usFV35jSw',
-    appId: '1:119591358761:web:78643d985cc47c56baa738',
-    messagingSenderId: '119591358761',
-    projectId: 'physioonclick',
-    storageBucket: 'physioonclick.firebasestorage.app',
-    authDomain: 'physioonclick.firebaseapp.com',
+    apiKey: 'AIzaSyCphx8G8AAcuG_lrTyfTpZbiqW7E82s6OQ',
+    appId: '1:223916276926:web:124a98bd058b72e0b2b2ef',
+    messagingSenderId: '223916276926',
+    projectId: 'physioonclick-dev',
+    storageBucket: 'physioonclick-dev.firebasestorage.app',
+    authDomain: 'physioonclick-dev.firebaseapp.com',
+    measurementId: 'G-VWY5J78DDS',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBdmEnOoVjsuvZ2gRhZK8HUei-7fitv-OQ',
-    appId: '1:119591358761:android:fd98d96c7a5770d6baa738',
-    messagingSenderId: '119591358761',
-    projectId: 'physioonclick',
-    storageBucket: 'physioonclick.firebasestorage.app',
+    apiKey: 'AIzaSyC0_2Sb2Zl7mVYCEVaOGfTBIYpmA0LvAp0',
+    appId: '1:223916276926:android:3c9659c72194fc96b2b2ef',
+    messagingSenderId: '223916276926',
+    projectId: 'physioonclick-dev',
+    storageBucket: 'physioonclick-dev.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBOOtjri-M5t2JDvhf1Ho1kPrDRJaRGDco',
-    appId: '1:119591358761:ios:9cb54f3176ee84c2baa738',
-    messagingSenderId: '119591358761',
-    projectId: 'physioonclick',
-    storageBucket: 'physioonclick.firebasestorage.app',
-    iosBundleId: 'com.physioonclick.mobileApp',
+    apiKey: 'AIzaSyDyoYUTT5xnAAfrp8cqf65i2WDKc7k9aS0',
+    appId: '1:223916276926:ios:7e6776d45ad8dd36b2b2ef',
+    messagingSenderId: '223916276926',
+    projectId: 'physioonclick-dev',
+    storageBucket: 'physioonclick-dev.firebasestorage.app',
+    iosBundleId: 'com.iamkjn.physioonclick',
   );
 }
