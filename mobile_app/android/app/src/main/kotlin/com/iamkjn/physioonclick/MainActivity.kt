@@ -1,4 +1,4 @@
-package com.physioonclick.mobile_app
+package com.iamkjn.physioonclick
 
 import io.flutter.embedding.android.FlutterActivity
 

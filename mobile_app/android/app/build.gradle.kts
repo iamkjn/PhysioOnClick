@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.physioonclick.mobile_app"
+    namespace = "com.iamkjn.physioonclick"
     compileSdk = 36
     // ndkVersion = flutter.ndkVersion
 
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.physioonclick.mobile_app"
+        applicationId = "com.iamkjn.physioonclick"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
