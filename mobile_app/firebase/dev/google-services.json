@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "223916276926",
+    "project_id": "physioonclick-dev",
+    "storage_bucket": "physioonclick-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:223916276926:android:3c9659c72194fc96b2b2ef",
+        "android_client_info": {
+          "package_name": "com.iamkjn.physioonclick"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0_2Sb2Zl7mVYCEVaOGfTBIYpmA0LvAp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
