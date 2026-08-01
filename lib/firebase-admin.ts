@@ -65,6 +65,7 @@ const SCOPES = [
   "https://www.googleapis.com/auth/datastore",
   "https://www.googleapis.com/auth/firebase",
   "https://www.googleapis.com/auth/identitytoolkit",
+  "https://www.googleapis.com/auth/devstorage.read_write",
 ].join(" ");
 
 /* -------------------------------------------------------------------------- */
@@ -668,4 +669,54 @@ export function getAdminDb(): Firestore | null {
 export function getAdminAuth(): Auth | null {
   if (!authEmulator && !loadServiceAccount()) return null;
   return new Auth(getProjectId());
+}
+
+/* -------------------------------------------------------------------------- */
+/* Storage                                                                     */
+/* -------------------------------------------------------------------------- */
+
+/** Uploads bytes to Firebase/GCS Storage via the JSON API's simple media upload. */
+export async function uploadObject(
+  path: string,
+  bytes: Uint8Array,
+  contentType: string,
+): Promise<{ ok: boolean }> {
+  const bucket = process.env.FIREBASE_ADMIN_STORAGE_BUCKET;
+  if (!bucket) return { ok: false };
+  try {
+    const token = await getAccessToken();
+    const url = `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o?uploadType=media&name=${encodeURIComponent(path)}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": contentType },
+      // Cast needed: TS's DOM lib types BodyInit against ArrayBufferView<ArrayBuffer>,
+      // but @types/node's Uint8Array is generic over ArrayBufferLike, so a plain
+      // Uint8Array parameter doesn't structurally match. Uint8Array is a valid
+      // fetch body at runtime in both browsers and workerd/undici.
+      body: bytes as BodyInit,
+    });
+    if (!res.ok) {
+      console.error("Storage upload failed", res.status);
+      return { ok: false };
+    }
+    return { ok: true };
+  } catch (error) {
+    console.error("Storage upload error", error);
+    return { ok: false };
+  }
+}
+
+/** Downloads object bytes from Firebase/GCS Storage; returns null on any failure. */
+export async function downloadObject(path: string): Promise<Uint8Array | null> {
+  const bucket = process.env.FIREBASE_ADMIN_STORAGE_BUCKET;
+  if (!bucket) return null;
+  try {
+    const token = await getAccessToken();
+    const url = `https://storage.googleapis.com/storage/v1/b/${bucket}/o/${encodeURIComponent(path)}?alt=media`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) return null;
+    return new Uint8Array(await res.arrayBuffer());
+  } catch {
+    return null;
+  }
 }
