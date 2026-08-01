@@ -31,3 +31,5 @@ cloudflare-env.d.ts
 tsconfig.tsbuildinfo
 .env.prod
 .env.dev
+.env.development
+.env.production

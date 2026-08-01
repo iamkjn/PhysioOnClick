@@ -20,7 +20,7 @@ npm run seed:firestore -- --only=blogs,services   # seed specific collections
 
 Tests live in `tests/`, mirroring the source tree (`tests/lib/`, `tests/app/`, `tests/api/`, ...). Vitest uses jsdom, globals, and the `@/` alias to repo root; `.claude/worktrees/` is excluded from test discovery.
 
-**Local dev safety:** without a configured `.env.local`, dev can point at the live production Firebase project. Copy `.env.example` → `.env.local` before running anything locally.
+**Environments:** two Firebase projects — `physioonclick-dev` (dev) and `physioonclick-prod` (prod). Env config uses Next's auto-selected files (both gitignored): `.env.development` (loaded by `npm run dev` → dev project + Stripe **test** keys) and `.env.production` (loaded by `next build`/`npm run deploy` → prod project + Stripe **live** keys). Do NOT keep an `.env.local` — Next loads it last in every mode, so a stray `.env.local` would override `.env.production` and leak dev config into a prod build. Copy `.env.example` → `.env.development` to start locally. Mobile mirrors this via `mobile_app/firebase/{dev,prod}/` + `scripts/switch-firebase-env.sh`.
 
 ## Architecture
 
