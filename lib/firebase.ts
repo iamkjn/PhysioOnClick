@@ -3,13 +3,16 @@ import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
 
+// Prod-project (physioonclick-prod) fallback, used only when the NEXT_PUBLIC_*
+// build-time vars are absent. Dev runs override these via .env.local; the prod
+// build sets them via .env.prod (same values as here).
 const providedFirebaseConfig = {
-  apiKey: "AIzaSyB2W4dHgl3mM8QEY5XYiQcSt9usFV35jSw",
-  authDomain: "physioonclick.firebaseapp.com",
-  projectId: "physioonclick",
-  storageBucket: "physioonclick.firebasestorage.app",
-  messagingSenderId: "119591358761",
-  appId: "1:119591358761:web:78643d985cc47c56baa738"
+  apiKey: "AIzaSyB_CW6l9VKMCfcu3HHCVNtcy_BGU2TFQ7k",
+  authDomain: "physioonclick-prod.firebaseapp.com",
+  projectId: "physioonclick-prod",
+  storageBucket: "physioonclick-prod.firebasestorage.app",
+  messagingSenderId: "816942766820",
+  appId: "1:816942766820:web:a65bf3927bb1d65f1eaaf1"
 };
 
 // measurementId (the "G-XXXXXXX" id from Firebase console -> Project settings)
