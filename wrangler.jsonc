@@ -42,7 +42,7 @@
   // they must exist in the build environment, not here. Setting them at runtime
   // does nothing. See .env.example.
   "vars": {
-    "FIREBASE_ADMIN_PROJECT_ID": "physioonclick",
-    "FIREBASE_ADMIN_STORAGE_BUCKET": "physioonclick.firebasestorage.app"
+    "FIREBASE_ADMIN_PROJECT_ID": "physioonclick-prod",
+    "FIREBASE_ADMIN_STORAGE_BUCKET": "physioonclick-prod.firebasestorage.app"
   }
 }
