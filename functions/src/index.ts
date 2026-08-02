@@ -176,3 +176,130 @@ export const sendFollowUpReminders = onSchedule(
     }
   }
 );
+
+// Sends a "complete your assessment" reminder (email + push) ~1h before a
+// paid, upcoming session. Runs every 15 minutes and picks up bookings whose
+// sessionDate falls 55-65 minutes from now, so each booking is caught by
+// exactly one run under normal conditions.
+//
+// Required config (functions runtime env, e.g. via `firebase functions:config`
+// or `wrangler`/`.env` equivalent for this project's deploy target):
+//   SITE_URL     - e.g. "https://physioonclick.co.uk" (no trailing slash)
+//   CRON_SECRET  - shared secret checked by app/api/assessment/reminder-email
+//
+// Manual emulator smoke check (no functions test harness exists in this repo
+// as of writing):
+//   1. `npm run emulators` from repo root.
+//   2. Seed a `bookings` doc with status:"upcoming", paid:true, and
+//      sessionDate set to Timestamp.fromDate(new Date(Date.now()+60*60000)).
+//   3. Trigger the scheduled function locally, e.g.
+//      `curl -X POST http://localhost:5001/<project>/europe-west2/sendAssessmentReminders`
+//      (or use the Emulator UI's "Run now" on the scheduled function).
+//   4. Confirm: a `patients/{bookedBy}/notifications` doc was created, the
+//      booking doc now has `reminders.assessmentDueSent: true`, and (if
+//      SITE_URL/CRON_SECRET are set and the Next.js dev server is reachable)
+//      the reminder-email endpoint was called.
+export const sendAssessmentReminders = onSchedule(
+  { schedule: "*/15 * * * *", timeZone: "Europe/London" },
+  async () => {
+    const db = getFirestore();
+
+    const SITE_URL = process.env.SITE_URL;
+    const CRON_SECRET = process.env.CRON_SECRET;
+    if (!SITE_URL || !CRON_SECRET) {
+      console.error(
+        "sendAssessmentReminders: missing SITE_URL and/or CRON_SECRET env config; " +
+          "email reminders will be skipped this run"
+      );
+    }
+
+    const now = Date.now();
+    const lo = new Date(now + 55 * 60000);
+    const hi = new Date(now + 65 * 60000);
+
+    const snap = await db
+      .collection("bookings")
+      .where("status", "==", "upcoming")
+      .where("paid", "==", true)
+      .where("sessionDate", ">=", lo)
+      .where("sessionDate", "<=", hi)
+      .get();
+
+    for (const doc of snap.docs) {
+      try {
+        const booking = doc.data();
+
+        if (booking.assessmentCompletedAt) continue;
+        if (booking.reminders?.assessmentDueSent === true) continue;
+
+        if (SITE_URL && CRON_SECRET) {
+          try {
+            await fetch(`${SITE_URL}/api/assessment/reminder-email`, {
+              method: "POST",
+              headers: {
+                "x-cron-secret": CRON_SECRET,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ bookingId: doc.id }),
+            });
+          } catch (emailErr) {
+            console.error(
+              "sendAssessmentReminders: reminder-email fetch failed",
+              doc.ref.path,
+              emailErr
+            );
+          }
+        }
+
+        const bookedBy: string | undefined = booking.bookedBy;
+        if (bookedBy) {
+          try {
+            await db
+              .collection("patients")
+              .doc(bookedBy)
+              .collection("notifications")
+              .add({
+                title: "Assessment due",
+                body: `Please complete your pre-session assessment for your ${
+                  booking.service ?? "appointment"
+                } coming up in about an hour.`,
+                kind: "appointment",
+                read: false,
+                createdAt: FieldValue.serverTimestamp(),
+              });
+
+            const userSnap = await db.doc(`users/${bookedBy}`).get();
+            const fcmToken: string | undefined = userSnap.data()?.fcmToken;
+            if (fcmToken) {
+              await getMessaging().send({
+                token: fcmToken,
+                notification: {
+                  title: "📝 Assessment due",
+                  body: "Complete your pre-session assessment before your appointment in ~1h",
+                },
+                data: {
+                  type: "assessment_due",
+                  bookingId: doc.id,
+                },
+                apns: { payload: { aps: { sound: "default" } } },
+                android: { notification: { sound: "default" } },
+              });
+            }
+          } catch (pushErr) {
+            console.error(
+              "sendAssessmentReminders: FCM/notification write failed",
+              doc.ref.path,
+              pushErr
+            );
+          }
+        }
+
+        // Mark as sent even if email/push attempts above failed, so we don't
+        // spam retries every 15 minutes for the same booking.
+        await doc.ref.update({ "reminders.assessmentDueSent": true });
+      } catch (err) {
+        console.error("sendAssessmentReminders: failed to process doc", doc.ref.path, err);
+      }
+    }
+  }
+);
