@@ -17,6 +17,7 @@ import '../motion/face_engine.dart';
 import '../motion/motion_check_screen.dart';
 import '../motion/motion_service.dart';
 import '../motion/motion_targets.dart';
+import '../invoices/invoices_screen.dart';
 import '../people/people_screen.dart';
 import 'exercise_video.dart';
 import 'rehab_program.dart';
@@ -124,6 +125,16 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const AppointmentsScreen()),
+                ),
+              ),
+              const SizedBox(height: 10),
+              _QuickLinkTile(
+                icon: Icons.receipt_long_rounded,
+                label: 'Invoices & Payments',
+                subtitle: 'Receipts for you & your people',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const InvoicesScreen()),
                 ),
               ),
               const SizedBox(height: 18),

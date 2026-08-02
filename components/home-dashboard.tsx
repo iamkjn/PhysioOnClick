@@ -54,6 +54,17 @@ const SECONDARY_ACTIONS = [
       <path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3 20a6 6 0 0 1 12 0M17 11a3 3 0 1 0-1.5-5.6M16 20a6 6 0 0 0-1-3.3" />
     ),
   },
+  {
+    href: "/patient/invoices",
+    label: "Invoices & payments",
+    hint: "Receipts for you and your people",
+    icon: (
+      <>
+        <path d="M6 3h9l3 3v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+        <path d="M9 8h6M9 12h6M9 16h4" />
+      </>
+    ),
+  },
 ];
 
 export function HomeDashboard({ user }: { user: User }) {
