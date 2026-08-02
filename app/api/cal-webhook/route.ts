@@ -48,6 +48,8 @@ type CalBookingPayload = {
   eventType: { title: string };
   responses?: { notes?: { value?: string } };
   rescheduledFromUid?: string;
+  location?: string;
+  videoCallData?: { url?: string };
 };
 type CalWebhookBody = {
   triggerEvent: string;
@@ -91,6 +93,11 @@ export async function POST(request: NextRequest) {
         const { appointmentDate, appointmentTime, appointmentLabel } = toLondonParts(booking.startTime);
         const attendee = booking.attendees[0] ?? { name: "", email: "" };
         const attendeeEmail = attendee.email.trim().toLowerCase();
+        const meetingUrl =
+          booking.videoCallData?.url ||
+          (typeof booking.location === "string" && /^https?:/.test(booking.location)
+            ? booking.location
+            : undefined);
 
         const bookingRef = await db.collection("bookings").add({
           fullName: attendee.name,
@@ -106,6 +113,7 @@ export async function POST(request: NextRequest) {
           source: "cal-com",
           calBookingUid: booking.uid,
           createdAt: FieldValue.serverTimestamp(),
+          ...(meetingUrl ? { meetingUrl } : {}),
         });
 
         // Paid-booking reconciliation: if the payment webhook already recorded
