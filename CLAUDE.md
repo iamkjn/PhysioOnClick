@@ -47,8 +47,12 @@ Paid bookings generate an insurance-ready receipt (pay-and-claim): `lib/patient-
 assembles it, it is printable at `/book/receipt/[session]` (reachable by the unguessable
 Stripe session id, same trust model as Stripe's own hosted receipts), and it is emailed
 via Resend (`lib/emails/receipt-email.ts`). Issuer details live in `invoiceIssuer` in
-`lib/site-data.ts` — the `hcpcNumber`/`cspNumber`/street address are placeholders that
-MUST be filled before go-live (the receipt shows "[registration pending]" until then).
+`lib/site-data.ts` (HCPC/CSP/address filled). On payment the webhook also builds a real
+**PDF** invoice (`lib/invoice-pdf.ts`, pdf-lib — Workers-safe), attaches it to the receipt
+email, and stores it in Firebase Storage at `invoices/{invoiceNumber}.pdf` (client access
+denied in `storage.rules`; upload/download via the `uploadObject`/`downloadObject` helpers
+on the `firebase-admin` shim). Admins list paid invoices at `/admin/invoices` and download
+the stored PDF via `app/api/admin/invoice/[invoice]/` (admin-gated by `ADMIN_EMAIL`).
 
 ### AI chat assistant
 

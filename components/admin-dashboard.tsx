@@ -88,6 +88,12 @@ export function AdminDashboard() {
           >
             Patients <span aria-hidden="true">→</span>
           </Link>
+          <Link
+            href="/admin/invoices"
+            className="admin-dashboard-link"
+          >
+            Invoices <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </div>
 
