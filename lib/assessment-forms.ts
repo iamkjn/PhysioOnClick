@@ -175,6 +175,7 @@ export interface PatientAssessmentFormInput {
   signature: string;
   completedAt: string;
   submittedByUid: string;
+  bookingId?: string;
 }
 
 export interface PatientAssessmentFormRecord extends PatientAssessmentFormInput {
@@ -489,6 +490,7 @@ function mapAssessmentForm(snap: QueryDocumentSnapshot): PatientAssessmentFormRe
     signature: readString(data, "signature"),
     completedAt: readString(data, "completedAt"),
     submittedByUid: readString(data, "submittedByUid"),
+    bookingId: readString(data, "bookingId"),
     reviewStatus: asReviewStatus(data.reviewStatus),
     reviewedBy: readString(data, "reviewedBy"),
     reviewedAt: readString(data, "reviewedAt"),
@@ -516,6 +518,7 @@ export async function submitPatientAssessmentForm(
 ): Promise<string> {
   const ref = await addDoc(personBase(uid, personId), {
     ...input,
+    bookingId: input.bookingId ?? "",
     version: ASSESSMENT_FORM_VERSION,
     reviewStatus: "awaiting_review",
     reviewedBy: "",
