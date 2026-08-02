@@ -14,9 +14,17 @@ import { validateOptionalText } from "@/lib/validation";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 
+interface LinkedBooking {
+  id: string;
+  service: string;
+  sessionDate: Date;
+}
+
 interface Props {
   patientUid: string;
   personId: string;
+  bookings?: LinkedBooking[];
+  onFormsChange?: (bookingIds: string[]) => void;
 }
 
 const statusLabels: Record<AssessmentReviewStatus, string> = {
@@ -101,6 +109,7 @@ function ReviewItem({
   patientUid,
   personId,
   form,
+  bookings,
   onSaved,
 }: Props & { form: PatientAssessmentFormRecord; onSaved: (form: PatientAssessmentFormRecord) => void }) {
   const toast = useToast();
@@ -165,6 +174,7 @@ function ReviewItem({
     }
   }
 
+  const linkedBooking = form.bookingId ? bookings?.find((b) => b.id === form.bookingId) : undefined;
   const urgent = hasUrgentRedFlags(form.redFlags);
   const coreConsentComplete = form.consent.careConsent &&
     form.consent.dataConsent &&
@@ -176,8 +186,19 @@ function ReviewItem({
       <summary>
         <span>
           <strong>{form.formType === "checkup" ? "Review check-up" : "Initial assessment"}</strong>
-          <small>{formatCompletedDate(form)} - {modeLabel(form)} - Pain {form.painScore}/10</small>
+          <small>
+            {formatCompletedDate(form)} - {modeLabel(form)} - Pain {form.painScore}/10
+            {form.bookingId && (
+              <>
+                {" - "}
+                {linkedBooking
+                  ? `Linked to ${linkedBooking.service} appointment on ${formatDate(linkedBooking.sessionDate)}`
+                  : `Linked booking ${form.bookingId}`}
+              </>
+            )}
+          </small>
         </span>
+        <span className="dashboard-status-pill status-confirmed">Submitted</span>
         <span className={`assessment-status-pill status-${form.reviewStatus}`}>{statusLabels[form.reviewStatus]}</span>
       </summary>
 
@@ -279,7 +300,7 @@ function ReviewItem({
   );
 }
 
-export function AdminAssessmentReview({ patientUid, personId }: Props) {
+export function AdminAssessmentReview({ patientUid, personId, bookings, onFormsChange }: Props) {
   const [forms, setForms] = useState<PatientAssessmentFormRecord[] | null>(null);
   const [loadError, setLoadError] = useState(false);
 
@@ -301,6 +322,13 @@ export function AdminAssessmentReview({ patientUid, personId }: Props) {
       live = false;
     };
   }, [patientUid, personId]);
+
+  useEffect(() => {
+    if (forms) onFormsChange?.(forms.map((form) => form.bookingId).filter((id): id is string => !!id));
+    // onFormsChange is a setState wrapper from the parent; including it would
+    // re-run this on every parent render since it's a new closure each time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forms]);
 
   function handleSaved(updated: PatientAssessmentFormRecord) {
     setForms((current) => current?.map((form) => form.id === updated.id ? updated : form) ?? current);
@@ -331,6 +359,7 @@ export function AdminAssessmentReview({ patientUid, personId }: Props) {
               patientUid={patientUid}
               personId={personId}
               form={form}
+              bookings={bookings}
               onSaved={handleSaved}
             />
           ))}

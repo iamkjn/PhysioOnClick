@@ -213,6 +213,13 @@ export function AdminPatientDetail({ patientUid }: Props) {
     return unsub;
   }, [patientUid, person.id]);
 
+  // ── Assessment-form linkage, reported up by AdminAssessmentReview so we
+  // can flag bookings that are still awaiting a submitted assessment ──────
+  const [linkedBookingIds, setLinkedBookingIds] = useState<string[]>([]);
+  const awaitingAssessment = (bookings ?? []).some(
+    (b) => b.paid && displayStatus(b) === "upcoming" && !linkedBookingIds.includes(b.id)
+  );
+
   // ── Session summaries, one per booking ───────────────────────────────
   const [summaries, setSummaries] = useState<Record<string, SessionSummary | null>>({});
 
@@ -392,7 +399,17 @@ export function AdminPatientDetail({ patientUid }: Props) {
       </section>
 
       {/* 5. Patient assessment forms and check-ups */}
-      <AdminAssessmentReview patientUid={patientUid} personId={person.id} />
+      {awaitingAssessment && (
+        <span className="dashboard-status-pill status-pending" style={{ justifySelf: "start" }}>
+          Awaiting assessment
+        </span>
+      )}
+      <AdminAssessmentReview
+        patientUid={patientUid}
+        personId={person.id}
+        bookings={bookings?.map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate }))}
+        onFormsChange={setLinkedBookingIds}
+      />
 
       {/* 6. Assigned exercises */}
       {adminUid && (
