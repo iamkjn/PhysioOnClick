@@ -16,7 +16,7 @@ const rateLimitMap = new Map<string, number>();
 
 // Only these in-app destinations are legitimate post-sign-in landing spots.
 // Anything else (including protocol-relative URLs like //evil.com) falls back to "/patient".
-const ALLOWED_RETURN_PATHS = new Set<string>(["/book", "/patient"]);
+const ALLOWED_RETURN_PATHS = new Set<string>(["/book", "/patient", "/patient/assessment"]);
 
 function sanitizeReturnPath(value: unknown): string {
   return typeof value === "string" && ALLOWED_RETURN_PATHS.has(value) ? value : "/patient";

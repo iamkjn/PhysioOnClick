@@ -48,4 +48,18 @@ describe("POST /api/auth/magic-link", () => {
     const data = (await res.json()) as { error: string };
     expect(data.error).toBe("A valid email address is required.");
   });
+
+  it.each([
+    ["allowed path /patient/assessment", "/patient/assessment", "/patient/assessment"],
+    ["allowed path /book", "/book", "/book"],
+    ["disallowed protocol-relative URL", "//evil.com", "/patient"],
+    ["disallowed arbitrary path", "/some/other/path", "/patient"],
+  ])("returnTo %s ends up as %s in the verify URL", async (_label, returnTo, expected) => {
+    const email = `returnto-${expected.replace(/\W/g, "")}-${returnTo.replace(/\W/g, "")}@example.com`;
+    await POST(makeRequest({ email, returnTo }));
+
+    const generatedUrl = generateLinkMock.mock.calls[0][1].url as string;
+    const parsed = new URL(generatedUrl);
+    expect(parsed.searchParams.get("returnTo")).toBe(expected);
+  });
 });
