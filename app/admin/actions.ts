@@ -27,6 +27,44 @@ async function requireAdmin(idToken: string): Promise<DecodedIdToken> {
   return decoded;
 }
 
+export interface InvoiceRow {
+  invoiceNumber: string;
+  email: string;
+  service: string;
+  amountPence: number;
+  paidAt: string;
+  stripeSessionId: string;
+  hasPdf: boolean;
+}
+
+export async function listInvoices(
+  idToken: string
+): Promise<{ ok: true; invoices: InvoiceRow[] } | { ok: false; error: string }> {
+  await requireAdmin(idToken);
+  const db = getAdminDb();
+  if (!db) return { ok: false as const, error: "unavailable" };
+
+  // Plain `where` (no `orderBy`) avoids needing a composite Firestore index
+  // for a collection this small — sort client-side instead.
+  const snap = await db.collection("payments").where("status", "==", "paid").get();
+  const invoices = snap.docs
+    .map((d) => {
+      const p = d.data() as Record<string, unknown>;
+      return {
+        invoiceNumber: (p.invoiceNumber as string) ?? "",
+        email: (p.email as string) ?? "",
+        service: (p.service as string) ?? "",
+        amountPence: (p.amountPence as number) ?? 0,
+        paidAt: (p.paidAt as string) ?? "",
+        stripeSessionId: (p.stripeSessionId as string) ?? "",
+        hasPdf: Boolean(p.invoicePdfPath),
+      };
+    })
+    .sort((a, b) => (a.paidAt < b.paidAt ? 1 : a.paidAt > b.paidAt ? -1 : 0));
+
+  return { ok: true as const, invoices };
+}
+
 export interface PublishSummaryInput {
   bookingId: string;
   patientId: string;
