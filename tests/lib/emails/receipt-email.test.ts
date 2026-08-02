@@ -32,4 +32,19 @@ describe("sendReceiptEmail", () => {
     expect(JSON.stringify(body)).toContain("INV-2026-AB12CD");
     expect(JSON.stringify(body)).toContain("https://site.test/book/receipt/cs_1");
   });
+
+  it("includes the PDF attachment when provided", async () => {
+    vi.stubEnv("RESEND_API_KEY", "re_test");
+    const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    await sendReceiptEmail({
+      to: "ada@example.com", patientName: "Ada", invoiceNumber: "INV-2026-AB12CD34",
+      serviceLabel: "Initial Online Assessment", amountPence: 5000,
+      receiptUrl: "https://site.test/book/receipt/cs_1",
+      pdf: { filename: "invoice-INV-2026-AB12CD34.pdf", base64: "JVBERi0x" },
+    });
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.attachments[0].filename).toBe("invoice-INV-2026-AB12CD34.pdf");
+    expect(body.attachments[0].content).toBe("JVBERi0x");
+  });
 });

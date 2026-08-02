@@ -13,6 +13,7 @@ function escapeHtml(value: string): string {
 export async function sendReceiptEmail(input: {
   to: string; patientName: string; invoiceNumber: string;
   serviceLabel: string; amountPence: number; receiptUrl: string;
+  pdf?: { filename: string; base64: string };
 }): Promise<{ sent: boolean }> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -40,6 +41,7 @@ export async function sendReceiptEmail(input: {
         to: [input.to],
         subject: `Your payment receipt — ${input.invoiceNumber}`,
         html,
+        ...(input.pdf ? { attachments: [{ filename: input.pdf.filename, content: input.pdf.base64 }] } : {}),
       }),
     });
     if (!response.ok) {

@@ -202,19 +202,41 @@ export async function POST(request: Request) {
     console.error("Payment recorded but booking paid-flag update failed", error);
   }
 
-  // Best-effort receipt email — must never break the 200 response.
+  // Best-effort invoice PDF + receipt email — must never break the 200 response.
   try {
+    const { generateInvoicePdf } = await import("@/lib/invoice-pdf");
+    const { uploadObject } = await import("@/lib/firebase-admin");
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const serviceLabel = bookServiceFor(intent.service).title;
+    const pdfBytes = await generateInvoicePdf({
+      invoiceNumber,
+      paidAtISO: new Date().toISOString(),
+      amountPence: session.amount_total ?? 0,
+      serviceLabel,
+      patientName: intent.name,
+      patientEmail: intent.email,
+      sessionDateISO: intent.startISO,
+    });
+    const pdfPath = `invoices/${invoiceNumber}.pdf`;
+    const up = await uploadObject(pdfPath, pdfBytes, "application/pdf");
+    if (up.ok) {
+      try {
+        await paymentRef.set({ invoicePdfPath: pdfPath }, { merge: true });
+      } catch (error) {
+        console.error("Store invoice PDF path failed (non-blocking)", error);
+      }
+    }
     await sendReceiptEmail({
       to: intent.email,
       patientName: intent.name,
       invoiceNumber,
-      serviceLabel: bookServiceFor(intent.service).title,
+      serviceLabel,
       amountPence: session.amount_total ?? 0,
       receiptUrl: `${siteUrl}/book/receipt/${session.id}`,
+      pdf: { filename: `invoice-${invoiceNumber}.pdf`, base64: Buffer.from(pdfBytes).toString("base64") },
     });
   } catch (error) {
-    console.error("Receipt email failed (non-blocking)", error);
+    console.error("Invoice PDF/email step failed (non-blocking)", error);
   }
 
   return NextResponse.json({ received: true }, { status: 200 });

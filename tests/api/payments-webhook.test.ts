@@ -21,9 +21,13 @@ const db = {
 vi.mock("@/lib/firebase-admin", () => ({
   getAdminDb: () => db,
   FieldValue: { serverTimestamp: () => "TS" },
+  uploadObject: vi.fn().mockResolvedValue({ ok: true }),
 }));
 vi.mock("@/lib/cal-booking", () => ({
   createCalBooking: vi.fn().mockResolvedValue({ ok: true, uid: "cal_xyz" }),
+}));
+vi.mock("@/lib/invoice-pdf", () => ({
+  generateInvoicePdf: vi.fn().mockResolvedValue(new Uint8Array([37, 80, 68, 70])),
 }));
 // slot re-check helper lives in the route module's dependency; stub global fetch for /v2/slots
 import { createCalBooking } from "@/lib/cal-booking";
@@ -83,15 +87,17 @@ describe("POST /api/payments/webhook", () => {
     const res = await POST(signedRequest(EVENT));
     expect(res.status).toBe(200);
     expect(createCalBooking).toHaveBeenCalledOnce();
-    // reservation write ("processing") + final write ("paid")
-    expect(paymentDocRef.set).toHaveBeenCalledTimes(2);
-    const written = paymentDocRef.set.mock.calls.at(-1)[0];
+    // writes: reservation ("processing"), final ("paid"), then invoicePdfPath (merge)
+    const writes = paymentDocRef.set.mock.calls.map((c) => c[0]);
+    const written = writes.find((w) => w.status === "paid");
+    expect(written).toBeTruthy();
     expect(written.calBookingUid).toBe("cal_xyz");
     expect(written.amountPence).toBe(5000);
-    expect(written.status).toBe("paid");
     expect(typeof written.invoiceNumber).toBe("string");
     expect(written.invoiceNumber).toMatch(/^INV-\d{4}-[A-Z0-9]{8}$/);
     expect(typeof written.paidAt).toBe("string");
+    // invoice PDF stored + path recorded on the payment doc
+    expect(writes.some((w) => typeof w.invoicePdfPath === "string" && /^invoices\/INV-.*\.pdf$/.test(w.invoicePdfPath))).toBe(true);
   });
 
   it("re-checks the slot against Cal.com's slots API using version 2024-09-04", async () => {
@@ -153,8 +159,8 @@ describe("POST /api/payments/webhook", () => {
     const res = await POST(signedRequest(EVENT));
     expect(res.status).toBe(200);
     expect(createCalBooking).toHaveBeenCalledOnce();
-    const written = paymentDocRef.set.mock.calls.at(-1)[0];
-    expect(written.status).toBe("paid");
+    const written = paymentDocRef.set.mock.calls.map((c) => c[0]).find((w) => w.status === "paid");
+    expect(written).toBeTruthy();
   });
 
   it("marks booking_failed when Cal booking creation fails", async () => {
