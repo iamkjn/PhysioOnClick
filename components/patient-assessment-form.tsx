@@ -39,7 +39,8 @@ interface Props {
   personId: string;
   displayName: string;
   personName: string;
-  onSubmitted?: () => void;
+  bookingId?: string;
+  onSubmitted?: (formId: string) => void;
 }
 
 interface HistoryProps {
@@ -558,7 +559,7 @@ function validateForm(form: PatientAssessmentFormInput): FormErrors {
   return errors;
 }
 
-export function PatientAssessmentForm({ uid, personId, displayName, personName, onSubmitted }: Props) {
+export function PatientAssessmentForm({ uid, personId, displayName, personName, bookingId, onSubmitted }: Props) {
   const toast = useToast();
   const [form, setForm] = useState<PatientAssessmentFormInput>(() =>
     makeInitialForm(uid, displayName, personName)
@@ -642,10 +643,11 @@ export function PatientAssessmentForm({ uid, personId, displayName, personName, 
     syncingRef.current = true;
     setSyncing(true);
     const remaining: QueuedAssessment[] = [];
+    let lastFormId: string | null = null;
     try {
       for (const item of queue) {
         try {
-          await submitPatientAssessmentForm(uid, personId, {
+          lastFormId = await submitPatientAssessmentForm(uid, personId, {
             ...item.payload,
             submittedByUid: uid,
             completedAt: item.payload.completedAt || item.queuedAt,
@@ -659,7 +661,7 @@ export function PatientAssessmentForm({ uid, personId, displayName, personName, 
       setQueueCount(remaining.length);
       if (remaining.length === 0) {
         toast.show("Offline assessment synced.", "success");
-        onSubmitted?.();
+        if (lastFormId) onSubmitted?.(lastFormId);
       }
     } finally {
       syncingRef.current = false;
@@ -941,6 +943,7 @@ export function PatientAssessmentForm({ uid, personId, displayName, personName, 
       completedAt: form.completedAt || new Date().toISOString(),
       submittedByUid: uid,
       completedVia: navigator.onLine ? "online_form" : "offline_draft",
+      bookingId,
     };
 
     setSaving(true);
@@ -954,12 +957,12 @@ export function PatientAssessmentForm({ uid, personId, displayName, personName, 
         return;
       }
 
-      await submitPatientAssessmentForm(uid, personId, payload);
+      const formId = await submitPatientAssessmentForm(uid, personId, payload);
       window.localStorage.removeItem(keys.draft);
       setForm(makeInitialForm(uid, displayName, personName));
       setStatus("Assessment submitted for physio review.");
       toast.show("Assessment submitted.", "success");
-      onSubmitted?.();
+      onSubmitted?.(formId);
     } catch {
       queueForLater(payload);
       setStatus("We could not reach Firestore. The assessment is saved locally and will retry later.");

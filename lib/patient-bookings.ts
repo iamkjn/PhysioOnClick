@@ -18,6 +18,8 @@ export interface BookingRecord {
   sessionDate: Date;
   status: "upcoming" | "completed" | "cancelled";
   summaryId?: string;
+  paid: boolean;
+  assessmentCompletedAt: Date | null;
 }
 
 // Resolve the booking's start moment from whatever the writer stored. The
@@ -45,6 +47,15 @@ function resolveSessionDate(data: Record<string, unknown>): Date {
   return new Date(0);
 }
 
+function resolveAssessmentCompletedAt(data: Record<string, unknown>): Date | null {
+  const ts = data.assessmentCompletedAt as { toDate?: () => Date } | undefined;
+  if (ts?.toDate) {
+    const d = ts.toDate();
+    if (!Number.isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
 function toBookingRecord(id: string, data: Record<string, unknown>): BookingRecord {
   const date = resolveSessionDate(data);
   return {
@@ -55,6 +66,8 @@ function toBookingRecord(id: string, data: Record<string, unknown>): BookingReco
     sessionDate: date,
     status: (data.status as BookingRecord["status"]) ?? "upcoming",
     summaryId: data.summaryId as string | undefined,
+    paid: data.paid === true,
+    assessmentCompletedAt: resolveAssessmentCompletedAt(data),
   };
 }
 
