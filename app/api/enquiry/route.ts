@@ -27,7 +27,7 @@ async function sendNotificationEmail(payload: EnquiryPayload) {
     return { sent: false, reason: "missing-api-key" };
   }
 
-  const to = process.env.ENQUIRY_EMAIL_TO || "zalashivali1998@gmail.com";
+  const to = process.env.ENQUIRY_EMAIL_TO || "hello@physioonclick.co.uk";
   const from = process.env.ENQUIRY_EMAIL_FROM || "PhysioOnClick <onboarding@resend.dev>";
   const safeMessage = escapeHtml(payload.message).replaceAll("\n", "<br />");
 

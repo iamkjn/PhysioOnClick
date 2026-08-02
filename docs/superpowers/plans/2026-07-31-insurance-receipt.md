@@ -36,7 +36,7 @@
     cspNumber: "",                          // TODO: fill before go-live
     addressLines: ["", "Glasgow", "United Kingdom"], // TODO: street line
     vatStatus: "Physiotherapy services are exempt from VAT (healthcare).",
-    contactEmail: "zalashivali1998@gmail.com",
+    contactEmail: "hello@physioonclick.co.uk",
     contactPhone: "",                       // TODO optional
   };
   // lib/invoice.ts

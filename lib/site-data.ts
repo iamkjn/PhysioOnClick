@@ -64,7 +64,7 @@ export const invoiceIssuer = {
   cspNumber: "128230",
   addressLines: ["7 Springfield Gardens", "Glasgow", "G31 4HS", "United Kingdom"],
   vatStatus: "Physiotherapy services are exempt from VAT (healthcare).",
-  contactEmail: "zalashivali1998@gmail.com",
+  contactEmail: "hello@physioonclick.co.uk",
   contactPhone: "" // TODO optional
 };
 
