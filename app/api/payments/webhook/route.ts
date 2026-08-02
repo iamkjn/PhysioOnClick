@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { createCalBooking } from "@/lib/cal-booking";
+import { sendAssessmentLinkEmail } from "@/lib/emails/assessment-link-email";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
-import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
+import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
@@ -196,6 +197,7 @@ export async function POST(request: Request) {
         paid: true,
         amountPaidPence: session.amount_total ?? 0,
         paymentProvider: "stripe",
+        assessmentRequired: true,
       });
     }
   } catch (error) {
@@ -234,6 +236,28 @@ export async function POST(request: Request) {
       amountPence: session.amount_total ?? 0,
       receiptUrl: `${siteUrl}/book/receipt/${session.id}`,
       pdf: { filename: `invoice-${invoiceNumber}.pdf`, base64: Buffer.from(pdfBytes).toString("base64") },
+    });
+
+    let assessmentUrl = `${siteUrl}/patient/assessment`;
+    try {
+      const adminAuth = getAdminAuth();
+      if (adminAuth) {
+        const verifyUrl = new URL("/auth/verify", siteUrl);
+        verifyUrl.searchParams.set("email", intent.email);
+        verifyUrl.searchParams.set("returnTo", "/patient/assessment");
+        assessmentUrl = await adminAuth.generateSignInWithEmailLink(intent.email, {
+          url: verifyUrl.toString(),
+          handleCodeInApp: true,
+        });
+      }
+    } catch (error) {
+      console.error("Assessment magic-link generation failed; falling back to plain URL", error);
+    }
+    await sendAssessmentLinkEmail({
+      to: intent.email,
+      patientName: intent.name,
+      serviceLabel,
+      assessmentUrl,
     });
   } catch (error) {
     console.error("Invoice PDF/email step failed (non-blocking)", error);

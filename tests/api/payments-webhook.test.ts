@@ -18,8 +18,14 @@ const db = {
   }),
 };
 
+const adminAuth = {
+  generateSignInWithEmailLink: vi
+    .fn()
+    .mockResolvedValue("https://example.test/auth/verify?magic=1&returnTo=/patient/assessment"),
+};
 vi.mock("@/lib/firebase-admin", () => ({
   getAdminDb: () => db,
+  getAdminAuth: () => adminAuth,
   FieldValue: { serverTimestamp: () => "TS" },
   uploadObject: vi.fn().mockResolvedValue({ ok: true }),
 }));
@@ -29,8 +35,12 @@ vi.mock("@/lib/cal-booking", () => ({
 vi.mock("@/lib/invoice-pdf", () => ({
   generateInvoicePdf: vi.fn().mockResolvedValue(new Uint8Array([37, 80, 68, 70])),
 }));
+vi.mock("@/lib/emails/assessment-link-email", () => ({
+  sendAssessmentLinkEmail: vi.fn().mockResolvedValue({ sent: true }),
+}));
 // slot re-check helper lives in the route module's dependency; stub global fetch for /v2/slots
 import { createCalBooking } from "@/lib/cal-booking";
+import { sendAssessmentLinkEmail } from "@/lib/emails/assessment-link-email";
 import { POST } from "@/app/api/payments/webhook/route";
 
 const SECRET = "whsec_test";
@@ -98,6 +108,17 @@ describe("POST /api/payments/webhook", () => {
     expect(typeof written.paidAt).toBe("string");
     // invoice PDF stored + path recorded on the payment doc
     expect(writes.some((w) => typeof w.invoicePdfPath === "string" && /^invoices\/INV-.*\.pdf$/.test(w.invoicePdfPath))).toBe(true);
+    // booking doc marked as requiring an assessment
+    expect(bookingDoc.update).toHaveBeenCalledWith(
+      expect.objectContaining({ assessmentRequired: true }),
+    );
+    // assessment-link email sent with a magic-link URL landing on /patient/assessment
+    expect(sendAssessmentLinkEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "ada@example.com",
+        assessmentUrl: expect.stringContaining("/patient/assessment"),
+      }),
+    );
   });
 
   it("re-checks the slot against Cal.com's slots API using version 2024-09-04", async () => {
