@@ -184,8 +184,11 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
     month: "short",
     year: "numeric",
   });
+  const needsAssessment =
+    booking.paid && booking.assessmentCompletedAt === null && booking.displayStatus === "upcoming";
   return (
-    <Link href={`/patient/appointments/${booking.id}`} style={{ textDecoration: "none" }}>
+    <div>
+      <Link href={`/patient/appointments/${booking.id}`} style={{ textDecoration: "none" }}>
       <div
         style={{
           background: "var(--color-surface)",
@@ -195,7 +198,7 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
           alignItems: "center",
           gap: "1rem",
           boxShadow: "var(--shadow)",
-          marginBottom: "0.625rem",
+          marginBottom: needsAssessment ? 0 : "0.625rem",
           cursor: "pointer",
         }}
       >
@@ -253,6 +256,15 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
           </span>
         )}
       </div>
-    </Link>
+      </Link>
+      {needsAssessment && (
+        <Link
+          href={`/patient/assessment?booking=${booking.id}`}
+          className="pill-link assessment-cta"
+        >
+          Complete your assessment before this appointment →
+        </Link>
+      )}
+    </div>
   );
 }

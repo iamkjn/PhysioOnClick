@@ -1948,6 +1948,18 @@ textarea:focus {
   flex-shrink: 0;
 }
 
+/* .assessment-cta sits directly under an upcoming, paid booking row on
+   /patient/appointments — full width so it reads as attached to that row,
+   with rounded bottom corners only so it visually joins the card above it. */
+.assessment-cta {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  margin-bottom: 0.625rem;
+  font-size: var(--text-sm);
+}
+
 /* Generic small icon dropped inline next to a short label (booking-row status,
    the appointment follow-up banner) — not part of a bigger icon system, just
    enough to replace a decorative emoji with a crisp SVG at the same visual size. */
