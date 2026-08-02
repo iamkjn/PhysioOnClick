@@ -13,6 +13,7 @@ describe("buildAssessmentLinkEmailHtml", () => {
     expect(html).toContain("before your appointment");
     expect(html).toContain("helps us make the most of your session");
     expect(html).toContain("https://m/y");
+    expect(html).toContain("Join your appointment");
     expect(html).not.toContain("A <b>"); // escaped
   });
 
@@ -22,6 +23,6 @@ describe("buildAssessmentLinkEmailHtml", () => {
       serviceLabel: "Initial",
       assessmentUrl: "https://s/x",
     });
-    expect(html).not.toContain("meetingUrl");
+    expect(html).not.toContain("Join your appointment");
   });
 });
