@@ -16,17 +16,6 @@ function greeting() {
 
 const SECONDARY_ACTIONS = [
   {
-    href: "/patient/assessment",
-    label: "Assessment form",
-    hint: "Online and in-person check-ups",
-    icon: (
-      <>
-        <path d="M9 3h6l1.5 2H19a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2.5L9 3Z" />
-        <path d="M8 12h8M8 16h5" />
-      </>
-    ),
-  },
-  {
     href: "/patient/appointments",
     label: "My appointments",
     hint: "Upcoming and past sessions",
