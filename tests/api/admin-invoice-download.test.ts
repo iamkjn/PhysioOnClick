@@ -27,6 +27,12 @@ describe("GET /api/admin/invoice/[invoice]", () => {
     expect(res.status).toBe(401);
   });
 
+  it("403 for a valid but non-admin token (PII must not leak)", async () => {
+    verifyIdToken.mockResolvedValue({ email: "someone.else@example.com" });
+    const res = await GET(req("valid-but-not-admin"), ctx);
+    expect(res.status).toBe(403);
+  });
+
   it("returns the PDF for an admin", async () => {
     verifyIdToken.mockResolvedValue({ email: "admin@physioonclick.co.uk" });
     paymentsGet.mockResolvedValue({ empty: false, docs: [{ data: () => ({ invoicePdfPath: "invoices/INV-1.pdf", status: "paid" }) }] });
