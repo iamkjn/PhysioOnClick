@@ -71,6 +71,14 @@ service firebase.storage {
       allow read, write: if isAdmin();
     }
 
+    // Invoice PDFs are written and read only server-side via the service
+    // account (which bypasses these rules). Never allow client access — they
+    // contain patient PII. (The catch-all below would deny these anyway; this
+    // is explicit for intent.)
+    match /invoices/{allPaths=**} {
+      allow read, write: if false;
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }
