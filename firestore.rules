@@ -187,28 +187,6 @@ service cloud.firestore {
     }
 
     match /patients/{userId}/people/{personId}/assessmentForms/{formId} {
-      function validRedFlags(flags) {
-        return flags.keys().hasOnly([
-            'majorTrauma', 'chestPainBreathlessness', 'bladderBowelSaddle',
-            'progressiveWeakness', 'unexplainedFeverWeightLoss', 'nightPain', 'none']) &&
-          flags.majorTrauma is bool &&
-          flags.chestPainBreathlessness is bool &&
-          flags.bladderBowelSaddle is bool &&
-          flags.progressiveWeakness is bool &&
-          flags.unexplainedFeverWeightLoss is bool &&
-          flags.nightPain is bool &&
-          flags.none is bool;
-      }
-
-      function validOnlineReadiness(readiness) {
-        return readiness.keys().hasOnly([
-            'privateSpace', 'safeSpace', 'cameraAvailable', 'emergencyContactAvailable']) &&
-          readiness.privateSpace is bool &&
-          readiness.safeSpace is bool &&
-          readiness.cameraAvailable is bool &&
-          readiness.emergencyContactAvailable is bool;
-      }
-
       function validAssessmentConsent(consent) {
         return consent.keys().hasOnly([
             'careConsent', 'dataConsent', 'privacyConsent', 'safetySharing', 'videoConsent']) &&
@@ -217,107 +195,6 @@ service cloud.firestore {
           consent.privacyConsent == true &&
           consent.safetySharing == true &&
           consent.videoConsent is bool;
-      }
-
-      function validClinicalArea(area) {
-        return area in [
-          'spine', 'upper_limb', 'lower_limb', 'balance_walking', 'neuro',
-          'post_op', 'pelvic_health', 'paediatric', 'general'
-        ];
-      }
-
-      function validSubjectiveAssessment(subjective) {
-        return subjective is map &&
-          subjective.keys().hasOnly([
-            'clinicalArea', 'symptomBehaviour', 'irritability', 'severity', 'yellowFlags']) &&
-          validClinicalArea(subjective.clinicalArea) &&
-          subjective.symptomBehaviour is string &&
-          subjective.symptomBehaviour.size() >= 10 &&
-          subjective.symptomBehaviour.size() <= 1000 &&
-          subjective.yellowFlags is string &&
-          subjective.yellowFlags.size() <= 1000;
-      }
-
-      function validOutcomeMeasures(outcomes) {
-        return outcomes is map &&
-          outcomes.keys().hasOnly([
-            'psfsActivity1', 'psfsScore1', 'psfsActivity2', 'psfsScore2',
-            'psfsActivity3', 'psfsScore3', 'painBest', 'painWorst',
-            'confidenceScore', 'conditionMeasureName', 'conditionMeasureScore',
-            'conditionMeasureMax']) &&
-          outcomes.psfsActivity1 is string &&
-          outcomes.psfsActivity1.size() >= 2 &&
-          outcomes.psfsActivity1.size() <= 160 &&
-          outcomes.psfsActivity2 is string &&
-          outcomes.psfsActivity2.size() <= 160 &&
-          outcomes.psfsActivity3 is string &&
-          outcomes.psfsActivity3.size() <= 160 &&
-          outcomes.conditionMeasureName is string &&
-          outcomes.conditionMeasureName.size() <= 120 &&
-          outcomes.conditionMeasureScore is number &&
-          outcomes.conditionMeasureScore >= 0 &&
-          outcomes.conditionMeasureMax is number &&
-          outcomes.conditionMeasureMax > 0 &&
-          outcomes.conditionMeasureMax <= 1000 &&
-          outcomes.conditionMeasureScore <= outcomes.conditionMeasureMax;
-      }
-
-      function validObjectiveVideo(video) {
-        return video is map &&
-          video.keys().hasOnly([
-            'consent', 'taskId', 'taskLabel', 'metricName', 'metricValue',
-            'metricUnit', 'reps', 'durationSeconds', 'qualityNotes', 'videoUrl',
-            'storagePath', 'recordedAt']) &&
-          video.consent is bool &&
-          video.taskLabel is string &&
-          video.taskLabel.size() >= 3 &&
-          video.taskLabel.size() <= 160 &&
-          video.metricName is string &&
-          video.metricName.size() >= 2 &&
-          video.metricName.size() <= 80 &&
-          video.metricValue is number &&
-          video.metricValue >= 0 &&
-          video.metricUnit is string &&
-          video.metricUnit.size() <= 40 &&
-          video.qualityNotes is string &&
-          video.qualityNotes.size() <= 1000 &&
-          video.videoUrl is string &&
-          video.videoUrl.size() <= 2000 &&
-          (
-            video.videoUrl == '' ||
-            video.videoUrl.matches('^https://firebasestorage[.]googleapis[.]com/.*') ||
-            video.videoUrl.matches('^http://127[.]0[.]0[.]1:9199/.*')
-          ) &&
-          video.storagePath is string &&
-          video.storagePath.size() <= 500 &&
-          (
-            video.storagePath == '' ||
-            video.storagePath.matches('^patient-assessment-videos/[^/]+/.+')
-          ) &&
-          video.recordedAt is string &&
-          video.recordedAt.size() <= 40;
-      }
-
-      function validGoalSetting(goalsPlan) {
-        return goalsPlan is map &&
-          goalsPlan.keys().hasOnly([
-            'meaningfulGoal', 'baseline', 'target', 'timeframeWeeks',
-            'confidenceScore', 'barriers', 'supportPlan', 'reviewDate']) &&
-          goalsPlan.meaningfulGoal is string &&
-          goalsPlan.meaningfulGoal.size() >= 3 &&
-          goalsPlan.meaningfulGoal.size() <= 500 &&
-          goalsPlan.baseline is string &&
-          goalsPlan.baseline.size() >= 2 &&
-          goalsPlan.baseline.size() <= 500 &&
-          goalsPlan.target is string &&
-          goalsPlan.target.size() >= 2 &&
-          goalsPlan.target.size() <= 500 &&
-          goalsPlan.barriers is string &&
-          goalsPlan.barriers.size() <= 500 &&
-          goalsPlan.supportPlan is string &&
-          goalsPlan.supportPlan.size() <= 500 &&
-          goalsPlan.reviewDate is string &&
-          goalsPlan.reviewDate.size() <= 10;
       }
 
       function validAssessmentReviewFields(d) {
@@ -330,39 +207,28 @@ service cloud.firestore {
           d.updatedAt is timestamp;
       }
 
-      // Full patient self-assessment / check-up shape written by
-      // components/patient-assessment-form.tsx. Review fields are present
-      // from creation so admin updates can be validated without optional-key
-      // bypasses. Patients may create, but not amend submitted records.
+      // Patient self-assessment / check-up written by
+      // components/patient-assessment-form.tsx (web) and the Flutter
+      // assessment_screen.dart (mobile).
+      //
+      // SLIMMED 2026-08: the previous exhaustive field-by-field validation
+      // exceeded Firestore's hard 1000-expression evaluation limit, so the
+      // rules engine returned PERMISSION_DENIED for EVERY assessment create in
+      // production (and the emulator) — i.e. no patient could ever submit an
+      // assessment. We keep only the security- and consent-critical invariants
+      // here; ownership and forged-review-field guards live in the `allow
+      // create` block below, and per-field size/shape hygiene is enforced by
+      // the app plus Firestore's 1 MB document cap (a patient over/under-sizing
+      // text in their OWN private doc is not a trust-boundary violation).
+      // Keep this function small — re-adding broad per-field checks risks
+      // tipping back over the expression ceiling.
       function validAssessmentForm(d) {
-        return d.keys().hasOnly([
-            'version', 'formType', 'consultationMode', 'completedVia',
-            'patientName', 'completedBy', 'relationshipToPatient',
-            'presentingComplaint', 'bodyArea', 'symptomStartDate', 'onsetPattern',
-            'painScore', 'subjective', 'outcomes', 'objectiveVideo', 'goalsPlan',
-            'symptoms', 'aggravatingFactors', 'easingFactors',
-            'functionalImpact', 'goals', 'medicalHistory', 'medications',
-            'allergies', 'previousTreatment', 'communicationNeeds',
-            'emergencyContactName', 'emergencyContactPhone', 'redFlags',
-            'onlineReadiness', 'consent', 'signature', 'submittedByUid',
-            'completedAt', 'reviewStatus', 'reviewedBy', 'reviewedAt', 'clinicianNotes',
-            'riskPlan', 'nextCheckupDate', 'createdAt', 'updatedAt', 'bookingId']) &&
-          d.version is string && d.version.size() >= 1 && d.version.size() <= 40 &&
-          d.formType in ['initial', 'checkup'] &&
-          d.consultationMode in ['online', 'in_person'] &&
-          d.completedVia in ['online_form', 'offline_draft', 'offline_paper'] &&
-          d.patientName is string && d.patientName.size() >= 2 && d.patientName.size() <= 80 &&
-          d.completedBy is string && d.completedBy.size() >= 2 && d.completedBy.size() <= 80 &&
-          d.relationshipToPatient is string && d.relationshipToPatient.size() <= 50 &&
-          d.presentingComplaint is string && d.presentingComplaint.size() >= 10 && d.presentingComplaint.size() <= 2000 &&
-          d.bodyArea is string && d.bodyArea.size() >= 2 && d.bodyArea.size() <= 120 &&
-          d.symptomStartDate is string && d.symptomStartDate.size() <= 10 &&
-          d.onsetPattern in ['sudden', 'gradual', 'recurring', 'post_surgery', 'not_sure'] &&
-          d.painScore is int && d.painScore >= 0 && d.painScore <= 10 &&
-          validSubjectiveAssessment(d.subjective) &&
-          validOutcomeMeasures(d.outcomes) &&
-          validObjectiveVideo(d.objectiveVideo) &&
-          validGoalSetting(d.goalsPlan) &&
+        return validAssessmentConsent(d.consent) &&
+          d.outcomes.conditionMeasureScore is number &&
+          d.outcomes.conditionMeasureScore >= 0 &&
+          d.outcomes.conditionMeasureMax is number &&
+          d.outcomes.conditionMeasureMax > 0 &&
+          d.outcomes.conditionMeasureScore <= d.outcomes.conditionMeasureMax &&
           (
             d.objectiveVideo.videoUrl == '' ||
             (d.objectiveVideo.consent == true && d.consent.videoConsent == true)
@@ -371,32 +237,6 @@ service cloud.firestore {
             d.objectiveVideo.storagePath == '' ||
             d.objectiveVideo.storagePath.matches('^patient-assessment-videos/' + userId + '/.*')
           ) &&
-          d.symptoms is string && d.symptoms.size() >= 10 && d.symptoms.size() <= 2000 &&
-          d.aggravatingFactors is string && d.aggravatingFactors.size() <= 1000 &&
-          d.easingFactors is string && d.easingFactors.size() <= 1000 &&
-          d.functionalImpact is string && d.functionalImpact.size() <= 1500 &&
-          d.goals is string && d.goals.size() <= 1000 &&
-          d.medicalHistory is string && d.medicalHistory.size() <= 2000 &&
-          d.medications is string && d.medications.size() <= 1000 &&
-          d.allergies is string && d.allergies.size() <= 1000 &&
-          d.previousTreatment is string && d.previousTreatment.size() <= 1000 &&
-          d.communicationNeeds is string && d.communicationNeeds.size() <= 1000 &&
-          d.emergencyContactName is string && d.emergencyContactName.size() <= 80 &&
-          d.emergencyContactPhone is string && d.emergencyContactPhone.size() <= 20 &&
-          validRedFlags(d.redFlags) &&
-          validOnlineReadiness(d.onlineReadiness) &&
-          validAssessmentConsent(d.consent) &&
-          d.signature is string && d.signature.size() >= 2 && d.signature.size() <= 80 &&
-          d.completedAt is string && d.completedAt.size() <= 40 &&
-          d.submittedByUid is string && d.submittedByUid.size() <= 128 &&
-          d.reviewStatus in ['awaiting_review', 'reviewed', 'needs_more_info', 'urgent_advice'] &&
-          d.reviewedBy is string && d.reviewedBy.size() <= 80 &&
-          d.reviewedAt is string && d.reviewedAt.size() <= 40 &&
-          d.clinicianNotes is string && d.clinicianNotes.size() <= 2000 &&
-          d.riskPlan is string && d.riskPlan.size() <= 2000 &&
-          d.nextCheckupDate is string && d.nextCheckupDate.size() <= 10 &&
-          d.createdAt is timestamp &&
-          d.updatedAt is timestamp &&
           d.bookingId is string && d.bookingId.size() <= 128;
       }
 
