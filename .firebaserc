@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "physioonclick"
+    "default": "physioonclick",
+    "dev": "physioonclick-dev",
+    "prod": "physioonclick-prod"
   }
 }
