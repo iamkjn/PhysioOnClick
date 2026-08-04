@@ -108,9 +108,9 @@ describe("POST /api/payments/webhook", () => {
     expect(typeof written.paidAt).toBe("string");
     // invoice PDF stored + path recorded on the payment doc
     expect(writes.some((w) => typeof w.invoicePdfPath === "string" && /^invoices\/INV-.*\.pdf$/.test(w.invoicePdfPath))).toBe(true);
-    // booking doc marked as requiring an assessment
+    // booking doc marked as paid
     expect(bookingDoc.update).toHaveBeenCalledWith(
-      expect.objectContaining({ assessmentRequired: true }),
+      expect.objectContaining({ paid: true }),
     );
     // assessment-link email sent with a magic-link URL landing on /patient/assessment
     expect(sendAssessmentLinkEmail).toHaveBeenCalledWith(

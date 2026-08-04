@@ -197,7 +197,6 @@ export async function POST(request: Request) {
         paid: true,
         amountPaidPence: session.amount_total ?? 0,
         paymentProvider: "stripe",
-        assessmentRequired: true,
       });
     }
   } catch (error) {

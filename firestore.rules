@@ -346,7 +346,7 @@ service cloud.firestore {
             'emergencyContactName', 'emergencyContactPhone', 'redFlags',
             'onlineReadiness', 'consent', 'signature', 'submittedByUid',
             'completedAt', 'reviewStatus', 'reviewedBy', 'reviewedAt', 'clinicianNotes',
-            'riskPlan', 'nextCheckupDate', 'createdAt', 'updatedAt']) &&
+            'riskPlan', 'nextCheckupDate', 'createdAt', 'updatedAt', 'bookingId']) &&
           d.version is string && d.version.size() >= 1 && d.version.size() <= 40 &&
           d.formType in ['initial', 'checkup'] &&
           d.consultationMode in ['online', 'in_person'] &&
@@ -396,7 +396,8 @@ service cloud.firestore {
           d.riskPlan is string && d.riskPlan.size() <= 2000 &&
           d.nextCheckupDate is string && d.nextCheckupDate.size() <= 10 &&
           d.createdAt is timestamp &&
-          d.updatedAt is timestamp;
+          d.updatedAt is timestamp &&
+          d.bookingId is string && d.bookingId.size() <= 128;
       }
 
       allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);

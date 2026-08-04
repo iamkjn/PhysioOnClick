@@ -28,9 +28,26 @@ export async function POST(request: Request) {
   const snap = await ref.get();
   if (!snap.exists) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const booking = snap.data() as { bookedBy?: string } | undefined;
+  const booking = snap.data() as { bookedBy?: string; patientId?: string } | undefined;
   if (booking?.bookedBy !== decoded.uid) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const personId = booking?.patientId;
+  if (!personId) {
+    return NextResponse.json({ error: "Bad request" }, { status: 400 });
+  }
+
+  const assessmentRef = db
+    .collection("patients")
+    .doc(decoded.uid)
+    .collection("people")
+    .doc(personId)
+    .collection("assessmentForms")
+    .doc(assessmentFormId);
+  const assessmentSnap = await assessmentRef.get();
+  if (!assessmentSnap.exists) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   await ref.update({ assessmentFormId, assessmentCompletedAt: FieldValue.serverTimestamp() });

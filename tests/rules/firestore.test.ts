@@ -260,6 +260,7 @@ function assessmentForm(overrides: Record<string, unknown> = {}) {
     nextCheckupDate: '',
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
+    bookingId: '',
     ...overrides,
   }
 }

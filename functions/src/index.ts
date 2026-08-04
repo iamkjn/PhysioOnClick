@@ -214,7 +214,7 @@ export const sendAssessmentReminders = onSchedule(
     }
 
     const now = Date.now();
-    const lo = new Date(now + 55 * 60000);
+    const lo = new Date(now + 50 * 60000);
     const hi = new Date(now + 65 * 60000);
 
     const snap = await db

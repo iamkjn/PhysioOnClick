@@ -20,13 +20,13 @@ export function buildAssessmentLinkEmailHtml(input: {
     ? `<p><strong>Appointment:</strong> ${escapeHtml(input.appointmentLabel)}</p>`
     : "";
   const meetingLine = input.meetingUrl
-    ? `<p><a href="${input.meetingUrl}">Join your appointment</a></p>`
+    ? `<p><a href="${escapeHtml(input.meetingUrl)}">Join your appointment</a></p>`
     : "";
   return `
     <p>${greeting}</p>
     <p>Please complete your short assessment for <strong>${escapeHtml(input.serviceLabel)}</strong> before your appointment. Completing it helps us make the most of your session.</p>
     ${appointmentLine}
-    <p><a href="${input.assessmentUrl}">Complete your assessment</a></p>
+    <p><a href="${escapeHtml(input.assessmentUrl)}">Complete your assessment</a></p>
     ${meetingLine}
   `;
 }
