@@ -54,6 +54,17 @@ denied in `storage.rules`; upload/download via the `uploadObject`/`downloadObjec
 on the `firebase-admin` shim). Admins list paid invoices at `/admin/invoices` and download
 the stored PDF via `app/api/admin/invoice/[invoice]/` (admin-gated by `ADMIN_EMAIL`).
 
+Pre-appointment assessments are gated on a paid booking: only bookings with `paid: true`
+get `assessmentRequired`/`assessmentFormId` stamped, and `assessmentCompletedAt` is written
+server-only when the patient submits. The assessment link is emailed alongside the
+receipt/invoice via a magic-link sign-in (same passwordless flow as above), including the
+Cal.com `meetingUrl` when one exists. Admins only ever see submitted assessments — unsubmitted
+ones don't show up in the dashboard. A scheduled Cloud Function, `sendAssessmentReminders`
+(`functions/src/index.ts`), runs periodically and, for each paid booking whose appointment is
+~1h away and whose assessment isn't done, re-sends the link by calling
+`POST /api/assessment/reminder-email` (guarded by `CRON_SECRET`, see `.env.example`) and by
+pushing an FCM notification.
+
 ### AI chat assistant
 
 `app/api/chat/route.ts` runs a Gemini-powered assistant (`GEMINI_API_KEY`). `lib/chat-prompt.ts` holds the system prompt; `lib/chat-tools.ts` declares function-calling tools in two tiers — guest tools (get_services, redirect, open_booking) and authenticated tools that add get_appointments and cancel_appointment. Chat transcripts are viewable at `app/admin/chat-logs/`.
