@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/widgets/avatar_widget.dart';
+import '../assessment/assessment_screen.dart';
 import 'appointments_repository.dart';
 import 'booking_model.dart';
 
@@ -55,6 +56,37 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
             padding: const EdgeInsets.all(20),
             children: [
               _BookingHeader(booking: booking),
+              if (booking.paid &&
+                  booking.isUpcoming &&
+                  booking.assessmentCompletedAt == null) ...[
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => AssessmentScreen(
+                            bookingId: booking.id,
+                            personId: booking.patientId,
+                            personName: booking.patientName,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.assignment_turned_in_rounded),
+                    label: const Text('Complete assessment'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0891B2),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 20),
               if (summary != null) ...[
                 const Text(

@@ -4,11 +4,15 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'core/analytics/analytics_service.dart';
 import 'core/page_transitions.dart';
 import 'core/theme.dart';
 import 'core/widgets/connectivity_wrapper.dart';
 import 'features/appointments/appointment_detail_screen.dart';
+import 'features/appointments/booking_model.dart';
+import 'features/assessment/assessment_screen.dart';
 import 'features/auth/welcome_screen.dart';
 import 'features/blog/blog_detail_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
@@ -101,11 +105,45 @@ class _PhysioOnClickMobileAppState extends State<PhysioOnClickMobileApp> {
   void _handleNotificationTap(RemoteMessage message) {
     final bookingId = message.data['bookingId'] as String?;
     if (bookingId == null) return;
+
+    if (message.data['type'] == 'assessment_due') {
+      _openAssessment(bookingId);
+      return;
+    }
+
     navigatorKey.currentState?.push(
       PhysioPageRoute(
         builder: (_) => AppointmentDetailScreen(bookingId: bookingId),
       ),
     );
+  }
+
+  Future<void> _openAssessment(String bookingId) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .get();
+      final booking = doc.exists ? BookingRecord.fromDoc(doc) : null;
+      if (booking == null || booking.patientId.isEmpty) {
+        throw StateError('booking or patientId missing');
+      }
+      navigatorKey.currentState?.push(
+        PhysioPageRoute(
+          builder: (_) => AssessmentScreen(
+            bookingId: booking.id,
+            personId: booking.patientId,
+            personName: booking.patientName,
+          ),
+        ),
+      );
+    } catch (_) {
+      navigatorKey.currentState?.push(
+        PhysioPageRoute(
+          builder: (_) => AppointmentDetailScreen(bookingId: bookingId),
+        ),
+      );
+    }
   }
 
   Future<void> _initLinks() async {
