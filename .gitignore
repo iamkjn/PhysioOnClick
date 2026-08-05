@@ -33,3 +33,6 @@ tsconfig.tsbuildinfo
 .env.dev
 .env.development
 .env.production
+
+# Firebase Functions runtime config (contains CRON_SECRET)
+functions/.env.*
