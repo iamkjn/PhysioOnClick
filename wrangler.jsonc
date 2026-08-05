@@ -44,5 +44,39 @@
   "vars": {
     "FIREBASE_ADMIN_PROJECT_ID": "physioonclick-prod",
     "FIREBASE_ADMIN_STORAGE_BUCKET": "physioonclick-prod.firebasestorage.app"
+  },
+
+  // --- DEV environment -------------------------------------------------
+  // A SEPARATE worker (`physioonclick-dev`) on dev.physioonclick.co.uk, wired
+  // to the physioonclick-dev Firebase project and Stripe TEST keys. Deploy with:
+  //   npm run deploy:dev      (build injects dev NEXT_PUBLIC_* then deploys -e dev)
+  // `vars`, `services` and `routes` are NOT inherited by environments in
+  // wrangler, so they are repeated here on purpose — changing the top-level
+  // block alone would leave dev pointing at prod.
+  //
+  // BUILD HAZARD: NEXT_PUBLIC_* are inlined at build time, so the .open-next
+  // artifact is environment-specific. After deploying dev, ALWAYS rebuild before
+  // deploying prod (`npm run deploy` does a fresh build, so just never run a bare
+  // `opennextjs-cloudflare deploy` after a dev build).
+  "env": {
+    "dev": {
+      "name": "physioonclick-dev",
+      "services": [
+        {
+          "binding": "WORKER_SELF_REFERENCE",
+          "service": "physioonclick-dev"
+        }
+      ],
+      "routes": [
+        { "pattern": "dev.physioonclick.co.uk", "custom_domain": true }
+      ],
+      "observability": {
+        "enabled": true
+      },
+      "vars": {
+        "FIREBASE_ADMIN_PROJECT_ID": "physioonclick-dev",
+        "FIREBASE_ADMIN_STORAGE_BUCKET": "physioonclick-dev.firebasestorage.app"
+      }
+    }
   }
 }
