@@ -22,6 +22,12 @@ while IFS= read -r line; do
   export "${line?}"
 done < <(grep -E '^NEXT_PUBLIC_[A-Z0-9_]+=' .env.development)
 
+# .env.development carries http://localhost:3000 because it is ALSO used by
+# `npm run dev`. The deployed dev worker must use its real origin instead, or
+# Stripe success/cancel redirects and magic-link/assessment emails would send
+# testers to localhost.
+export NEXT_PUBLIC_SITE_URL="https://dev.physioonclick.co.uk"
+
 echo "Building DEV bundle:"
 echo "  firebase project : ${NEXT_PUBLIC_FIREBASE_PROJECT_ID}"
 echo "  site url         : ${NEXT_PUBLIC_SITE_URL}"
