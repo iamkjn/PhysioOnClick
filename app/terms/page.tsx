@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/terms" },
   title: "Terms & Conditions | PhysioOnClick",
   description: "Terms and conditions for using PhysioOnClick's online physiotherapy services."
 };

@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/pricing" },
   title: "Pricing | PhysioOnClick",
   description: "Transparent, online physiotherapy pricing with no hidden fees."
 };

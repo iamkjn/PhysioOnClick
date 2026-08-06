@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/professional-standards" },
   title: "Professional Standards | PhysioOnClick",
   description: "PhysioOnClick is delivered by an HCPC-registered physiotherapist and CSP member, working to UK professional standards for regulation, consent, confidentiality, safeguarding and complaints."
 };

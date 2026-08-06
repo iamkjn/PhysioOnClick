@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/privacy-policy" },
   title: "Privacy Policy | PhysioOnClick",
   description: "How PhysioOnClick collects, stores and uses your personal and clinical data in line with UK GDPR and the Data Protection Act 2018."
 };

@@ -6,8 +6,13 @@ import { fetchDynamicBlogs } from "@/lib/firestore-content";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/blog" },
+  // Kept out of the index alongside the articles themselves — see the note in
+  // app/blog/[slug]/page.tsx. `follow` stays on so the articles are still
+  // crawled and their own noindex is discovered.
+  robots: { index: false, follow: true },
   title: "Physiotherapy Blog | PhysioOnClick",
-  description: "100+ UK-focused physiotherapy articles on back pain, knee injuries, shoulder rehab and more."
+  description: "UK-focused physiotherapy articles on back pain, knee injuries, shoulder rehab and more."
 };
 
 export const dynamic = "force-static";

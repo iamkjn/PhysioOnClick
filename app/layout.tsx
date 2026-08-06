@@ -20,14 +20,26 @@ export const metadata: Metadata = {
     title: "PhysioOnClick",
     description: "Evidence-based online physiotherapy and rehabilitation across the UK.",
     type: "website",
+    siteName: "PhysioOnClick",
+    locale: "en_GB",
+    // Must stay a raster file at 1200x630. Facebook, LinkedIn, X, WhatsApp and
+    // Slack all refuse to render SVG previews — this used to point at
+    // /home-hero-premium.svg, so every share came out with no image.
+    // Regenerate with `node scripts/build-og-image.js`.
     images: [
       {
-        url: "/home-hero-premium.svg",
-        width: 1600,
-        height: 1000,
-        alt: "PhysioOnClick"
+        url: "/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "PhysioOnClick — online physiotherapy across the UK"
       }
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PhysioOnClick",
+    description: "Evidence-based online physiotherapy and rehabilitation across the UK.",
+    images: ["/og-default.png"]
   },
   // Signals to content classifiers / mobile-carrier filters that this is a
   // general-audience medical site, not adult content. Helps avoid being

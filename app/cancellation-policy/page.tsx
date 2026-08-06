@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/cancellation-policy" },
   title: "Cancellation Policy | PhysioOnClick",
   description: "Notice periods, late cancellation charges, and refund arrangements for PhysioOnClick physiotherapy appointments."
 };

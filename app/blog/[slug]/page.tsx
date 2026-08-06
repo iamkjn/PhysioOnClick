@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -8,13 +9,22 @@ import { fetchDynamicBlogBySlug } from "@/lib/firestore-content";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { Reveal } from "@/components/reveal";
 
+// Article bodies come from generateStaticParams at build time. Without this the
+// route stays dynamic and every request re-runs the content lookup inside the
+// Worker, which is what took the whole /blog segment down (500s and hangs).
+export const dynamic = "force-static";
+
+// generateMetadata and the page component both need the article. Sharing one
+// cached call per render means one lookup per request, not two.
+const getArticle = cache(async (slug: string) => fetchDynamicBlogBySlug(slug));
+
 export async function generateStaticParams() {
   return blogArticles.map((article) => ({ slug: article.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const article = await fetchDynamicBlogBySlug(slug);
+  const article = await getArticle(slug);
 
   if (!article) {
     return {};
@@ -24,6 +34,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: article.seoTitle,
     description: article.seoDescription,
     alternates: { canonical: `/blog/${slug}` },
+    // These 108 articles are template-generated: only 36 distinct bodies, and
+    // 78% of every article is text shared verbatim across all of them. Keeping
+    // them indexed is a site-level quality risk on a YMYL health domain, so
+    // they stay readable but out of the index until they are rewritten as
+    // genuine, individually authored articles.
+    robots: { index: false, follow: true },
     openGraph: {
       type: "article",
       title: article.seoTitle,
@@ -39,7 +55,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const article = await fetchDynamicBlogBySlug(slug);
+  const article = await getArticle(slug);
 
   if (!article) {
     notFound();

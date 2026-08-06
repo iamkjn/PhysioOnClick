@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
@@ -6,6 +7,12 @@ import { founder, testimonials } from "@/lib/site-data";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
 import { Reveal } from "@/components/reveal";
+
+// Title/description/openGraph are inherited from the root layout — metadata
+// merges per field, so declaring only `alternates` here leaves those intact.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" }
+};
 
 export default async function HomePage() {
   // Set by the header's auth observer on sign-in/out. Lets the hero render a

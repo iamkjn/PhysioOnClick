@@ -4,6 +4,11 @@ import { SearchExperience } from "@/components/search-experience";
 import { getPublicSearchIndex } from "@/lib/public-content";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/search" },
+  // Internal search results are a classic crawl trap: infinite ?q= permutations
+  // with no standalone value. Follow links out, but keep the page itself out of
+  // the index.
+  robots: { index: false, follow: true },
   title: "Search | PhysioOnClick",
   description: "Search services, pricing and physiotherapy blog content on PhysioOnClick."
 };

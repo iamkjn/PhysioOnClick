@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/medical-disclaimer" },
   title: "Medical Disclaimer | PhysioOnClick",
   description: "PhysioOnClick content is for general education only and does not replace individual medical advice, diagnosis or emergency care."
 };

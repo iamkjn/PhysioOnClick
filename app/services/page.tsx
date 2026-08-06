@@ -9,6 +9,7 @@ import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/services" },
   title: "Services | PhysioOnClick",
   description: "Physiotherapist Glasgow services, post knee replacement rehab UK and online physio UK support."
 };
@@ -44,6 +45,10 @@ export default function ServicesPage() {
                 width={900}
                 height={520}
                 unoptimized
+                // The first card's image is the LCP element on this page.
+                // next/image lazy-loads by default, which was costing ~2.6s of
+                // pure load delay on mobile before the paint could happen.
+                priority={i === 0}
                 placeholder="blur"
                 blurDataURL={medicalImagePlaceholder}
               />

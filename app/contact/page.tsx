@@ -19,6 +19,7 @@ const iconProps = {
 };
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Contact | PhysioOnClick",
   description: "Get in touch with PhysioOnClick to book an appointment, ask a question or enquire about our online physiotherapy services across the UK today."
 };

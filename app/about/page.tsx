@@ -7,6 +7,7 @@ import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
   title: "About Shivaliba Zala | PhysioOnClick",
   description: "Learn about Shivaliba Zala, HCPC registered physiotherapist and founder of PhysioOnClick."
 };

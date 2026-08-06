@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/glasgow-physiotherapist" },
   title: "Online Physiotherapist for Glasgow Patients | PhysioOnClick",
   description:
     "Online physiotherapy for patients in Glasgow — evidence-based rehab and assessments, booked securely online. No clinic visit required."
