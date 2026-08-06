@@ -8,6 +8,7 @@ import { blogArticles } from "@/lib/blog";
 import { fetchDynamicBlogBySlug } from "@/lib/firestore-content";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { Reveal } from "@/components/reveal";
+import { breadcrumbs, personRef, practiceRef } from "@/lib/structured-data";
 
 // Article bodies come from generateStaticParams at build time. Without this the
 // route stays dynamic and every request re-runs the content lookup inside the
@@ -73,9 +74,25 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             description: article.excerpt,
             image: article.image,
             datePublished: article.publishedAt,
-            author: { "@type": "Organization", name: "PhysioOnClick" },
-            publisher: { "@type": "Organization", name: "PhysioOnClick" }
+            // No separate "last edited" tracking exists for these articles
+            // (BlogArticle only carries publishedAt), so dateModified mirrors
+            // it rather than being omitted or guessed.
+            dateModified: article.publishedAt,
+            author: personRef(),
+            publisher: practiceRef()
           })
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbs([
+              { name: "Home", path: "/" },
+              { name: "Blog", path: "/blog" },
+              { name: article.title, path: `/blog/${slug}` }
+            ])
+          )
         }}
       />
       <section className="page-hero article-hero">

@@ -33,11 +33,12 @@ export function SiteFooter() {
         </div>
         <div>
           <h4>Services</h4>
-          <Link href="/services#musculoskeletal-physiotherapy">Musculoskeletal Physio</Link>
-          <Link href="/services#post-surgical-rehabilitation">Post-Surgical Rehab</Link>
-          <Link href="/services#neurological-rehabilitation">Neurological Rehab</Link>
-          <Link href="/services#paediatric-physiotherapy">Paediatric Physio</Link>
-          <Link href="/services#online-rehab-programmes">Online Consultations</Link>
+          <Link href="/services/musculoskeletal-physiotherapy">Musculoskeletal Physio</Link>
+          <Link href="/services/post-surgical-rehabilitation">Post-Surgical Rehab</Link>
+          <Link href="/services/neurological-rehabilitation">Neurological Rehab</Link>
+          <Link href="/services/paediatric-physiotherapy">Paediatric Physio</Link>
+          <Link href="/services/gait-and-mobility-assessment">Gait & Mobility Assessment</Link>
+          <Link href="/services/online-rehab-programmes">Online Consultations</Link>
         </div>
         <div>
           <h4>Contact</h4>

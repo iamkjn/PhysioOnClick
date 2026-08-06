@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { fetchDynamicBlogs } from "@/lib/firestore-content";
+import { services } from "@/lib/site-data";
 
 const routes = [
   "",
@@ -33,11 +34,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // lastmod is honest; a fabricated one trains Google to ignore the signal.
   const staticEntries = routes.map((route) => ({ url: `${base}${route}` }));
 
+  // Derived from the services array (not a hardcoded list) so a new/renamed
+  // service can't silently drift out of the sitemap.
+  const serviceEntries = services.map((service) => ({ url: `${base}/services/${service.slug}` }));
+
   // The blog articles are currently `noindex` (see app/blog/[slug]/page.tsx).
   // They stay listed here deliberately — Google has to crawl them to discover
   // the noindex. Expect "Submitted URL marked noindex" in Search Console until
   // they are rewritten; that is the intended state, not a regression.
   const blogEntries = blogArticles.map((a) => ({ url: `${base}/blog/${a.slug}`, lastModified: new Date(a.publishedAt) }));
 
-  return [...staticEntries, ...blogEntries];
+  return [...staticEntries, ...serviceEntries, ...blogEntries];
 }

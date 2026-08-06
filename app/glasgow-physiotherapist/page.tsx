@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { practiceRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/glasgow-physiotherapist" },
@@ -27,20 +28,18 @@ const faqItems = [
 ];
 
 export default function GlasgowPage() {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "MedicalOrganization",
-    name: "PhysioOnClick",
-    areaServed: "Glasgow, UK",
-    medicalSpecialty: "Physiotherapy"
-  };
-
   return (
     <div className="site-shell">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
+      {/* Was a standalone MedicalOrganization node with its own (inconsistent)
+          areaServed — that competed with the sitewide practice entity from
+          app/layout.tsx. Reference the same practice by @id instead of
+          declaring a second, unlinked organization for this page. */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        about: practiceRef()
+      }) }} />
+      {/* FAQPage left exactly as-is — untouched by this refactor. */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "FAQPage",

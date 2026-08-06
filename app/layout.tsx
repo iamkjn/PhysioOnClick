@@ -11,6 +11,7 @@ import { ScrollReset } from "@/components/scroll-reset";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ToastProvider } from "@/components/toast-provider";
+import { siteEntityGraph } from "@/lib/structured-data";
 
 // Self-hosted via next/font/google so the font CSS + files ship from our own
 // origin instead of a render-blocking fonts.googleapis.com/fonts.gstatic.com
@@ -81,16 +82,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en-GB" className={`${fraunces.variable} ${dmSans.variable}`}>
       <body>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "MedicalBusiness",
-          name: "PhysioOnClick",
-          description: "Evidence-based physiotherapy and rehabilitation in Glasgow and online across the UK.",
-          medicalSpecialty: "Physiotherapy",
-          areaServed: "United Kingdom",
-          url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-          address: { "@type": "PostalAddress", addressLocality: "Glasgow", addressCountry: "GB" }
-        }) }} />
+        {/* Sitewide entity graph: the practice + practitioner, keyed by stable
+            @id so every page-level JSON-LD block (about, blog, services, ...)
+            can reference them instead of redeclaring the data. See
+            lib/structured-data.ts for the single source of truth. */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteEntityGraph()) }} />
         <PersonProvider>
           <ToastProvider>
             <ScrollReset />

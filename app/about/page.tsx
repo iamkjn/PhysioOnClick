@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { founder } from "@/lib/site-data";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { Reveal } from "@/components/reveal";
+import { breadcrumbs, personRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/about" },
@@ -49,14 +50,22 @@ const highlights = [
 export default function AboutPage() {
   return (
     <div className="site-shell">
+      {/* The full Person entity now lives once in app/layout.tsx (see
+          lib/structured-data.ts); this page just points at it by @id so
+          Google's structured-data parser merges the two <script> blocks
+          instead of seeing two competing Person nodes. */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "Person",
-        name: founder.name,
-        jobTitle: "HCPC Registered Physiotherapist",
-        worksFor: { "@type": "MedicalBusiness", name: "PhysioOnClick" },
-        address: { "@type": "PostalAddress", addressLocality: "Glasgow", addressCountry: "GB" }
+        "@type": "ProfilePage",
+        mainEntity: personRef(),
+        about: personRef()
       }) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(
+        breadcrumbs([
+          { name: "Home", path: "/" },
+          { name: "About", path: "/about" }
+        ])
+      ) }} />
       <section className="simple-page-hero about-page-hero">
         <span>About Shivaliba</span>
         <h1>Clinical physiotherapy with calm communication, structured rehabilitation and evidence-based care.</h1>
