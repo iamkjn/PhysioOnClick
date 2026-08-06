@@ -14,10 +14,6 @@ import { TrackedBookLink } from "@/components/tracked-book-link";
 // route never re-runs the (static) content lookup per-request.
 export const dynamic = "force-static";
 
-// See the same pairing in app/blog/[slug]/page.tsx: without this, a slug that
-// isn't one of the six services renders an empty 200 shell rather than a 404.
-export const dynamicParams = false;
-
 export function generateStaticParams() {
   return services.map((service) => ({ slug: service.slug }));
 }

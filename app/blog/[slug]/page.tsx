@@ -15,14 +15,6 @@ import { breadcrumbs, personRef, practiceRef } from "@/lib/structured-data";
 // Worker, which is what took the whole /blog segment down (500s and hangs).
 export const dynamic = "force-static";
 
-// Required alongside force-static. `dynamicParams` defaults to true, which asks
-// Next to render slugs missing from generateStaticParams on demand — but
-// force-static leaves it no way to do that, so unknown slugs were served as an
-// empty 200 shell (a soft 404 Google will happily index) instead of reaching
-// the notFound() below. false makes anything outside the generated set a real
-// 404.
-export const dynamicParams = false;
-
 // generateMetadata and the page component both need the article. Sharing one
 // cached call per render means one lookup per request, not two.
 const getArticle = cache(async (slug: string) => fetchDynamicBlogBySlug(slug));
