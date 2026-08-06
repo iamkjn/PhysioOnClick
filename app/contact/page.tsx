@@ -5,6 +5,7 @@ import { Avatar } from "@/components/avatar";
 import { ContactForm } from "@/components/contact-form";
 import { Reveal } from "@/components/reveal";
 import { founder } from "@/lib/site-data";
+import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/structured-data";
 
 const iconProps = {
   width: 20,
@@ -62,8 +63,10 @@ export default function ContactPage() {
                   <svg {...iconProps}><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L20 13l2 5v1a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 1-2Z" /></svg>
                 </span>
                 <div>
-                  <strong>Callback</strong>
-                  <span>Leave your number in the form and we&apos;ll call you back.</span>
+                  <strong>Phone</strong>
+                  <a className="contact-info-link" href={PRACTICE_PHONE_HREF}>
+                    {PRACTICE_PHONE}
+                  </a>
                 </div>
               </li>
               <li>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/structured-data";
 
 export function SiteFooter() {
   // Hidden on the admin dashboard for the same reason as SiteHeader — the
@@ -43,6 +44,7 @@ export function SiteFooter() {
         <div>
           <h4>Contact</h4>
           <Link href="/glasgow-physiotherapist">Online physio for Glasgow patients</Link>
+          <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>
           <a href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a>
           <Link href="/contact">Contact form</Link>
         </div>
