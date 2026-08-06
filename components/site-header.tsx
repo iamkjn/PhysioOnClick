@@ -1,14 +1,20 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { onAuthStateChanged, signOut, type User } from "firebase/auth";
-import { auth } from "@/lib/firebase";
-import { NotificationBell } from "@/components/notification-bell";
+import type { Auth, User } from "firebase/auth";
 import { track } from "@/lib/analytics";
-import { useGSAP } from "@/hooks/use-gsap-timeline";
-import { gsap, prefersReducedMotion } from "@/lib/gsap";
+
+// notification-bell.tsx statically imports "@/lib/firebase" + "firebase/auth"
+// itself, so a plain top-level import here would silently re-introduce the
+// eager Firebase Auth bundle this file otherwise avoids. Loaded lazily and
+// only rendered once `user` is truthy (see JSX below).
+const NotificationBell = dynamic(
+  () => import("@/components/notification-bell").then((mod) => mod.NotificationBell),
+  { ssr: false }
+);
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -19,25 +25,48 @@ const navItems = [
   { href: "/contact", label: "Contact" },
 ];
 
+// GSAP is loaded as an async chunk instead of a top-level import — it's a
+// ~21KB gz cost that would otherwise ship on every marketing page just for
+// the header's scroll/underline/hamburger tweens. `motion` is null until the
+// chunk resolves; every effect below no-ops until then, so the header still
+// renders (unanimated) immediately on hydration.
+type GsapModule = typeof import("@/lib/gsap");
+
 export function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [motion, setMotion] = useState<GsapModule | null>(null);
 
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const underlineRefs = useRef<Record<string, HTMLSpanElement | null>>({});
+  // Set once the lazy-loaded firebase/auth listener resolves, so
+  // handleSignOut can reuse it without re-importing "@/lib/firebase".
+  const authRef = useRef<Auth | null>(null);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
-  useGSAP(() => {
+  useEffect(() => {
+    let cancelled = false;
+    import("@/lib/gsap").then((mod) => {
+      if (!cancelled) setMotion(mod);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!motion) return;
     const header = headerRef.current;
     if (!header) return;
+    const { gsap, prefersReducedMotion } = motion;
 
     const target = scrolled
       ? {
@@ -60,9 +89,12 @@ export function SiteHeader() {
       ease: "power2.out",
       overwrite: "auto",
     });
-  }, [scrolled]);
+  }, [motion, scrolled]);
 
-  useGSAP(() => {
+  useEffect(() => {
+    if (!motion) return;
+    const { gsap, prefersReducedMotion } = motion;
+
     navItems.forEach((item) => {
       const el = underlineRefs.current[item.href];
       if (!el) return;
@@ -76,25 +108,28 @@ export function SiteHeader() {
         overwrite: "auto",
       });
     });
-  }, [pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [motion, pathname]);
 
   function handleNavHoverStart(href: string) {
-    if (isActive(href) || prefersReducedMotion()) return;
+    if (!motion || isActive(href) || motion.prefersReducedMotion()) return;
     const el = underlineRefs.current[href];
-    if (el) gsap.to(el, { width: 16, opacity: 0.4, duration: 0.2, ease: "power2.out" });
+    if (el) motion.gsap.to(el, { width: 16, opacity: 0.4, duration: 0.2, ease: "power2.out" });
   }
 
   function handleNavHoverEnd(href: string) {
-    if (isActive(href) || prefersReducedMotion()) return;
+    if (!motion || isActive(href) || motion.prefersReducedMotion()) return;
     const el = underlineRefs.current[href];
-    if (el) gsap.to(el, { width: 0, opacity: 0, duration: 0.2, ease: "power2.out" });
+    if (el) motion.gsap.to(el, { width: 0, opacity: 0, duration: 0.2, ease: "power2.out" });
   }
 
-  useGSAP(() => {
+  useEffect(() => {
+    if (!motion) return;
     const button = hamburgerRef.current;
     if (!button) return;
     const bars = button.querySelectorAll("span");
     if (bars.length !== 3) return;
+    const { gsap, prefersReducedMotion } = motion;
 
     const [top, middle, bottom] = Array.from(bars);
     const duration = prefersReducedMotion() ? 0 : 0.25;
@@ -109,25 +144,46 @@ export function SiteHeader() {
       gsap.to(middle, { opacity: 1, duration, ease, overwrite: "auto" });
       gsap.to(bottom, { rotate: 0, y: 0, duration, ease, overwrite: "auto" });
     }
-  }, [menuOpen]);
+  }, [motion, menuOpen]);
 
+  // Firebase Auth (~306KB with the Google API iframe machinery) is loaded as
+  // an async chunk instead of a top-level import — every anonymous visitor to
+  // a marketing page was otherwise paying for it just so the header could
+  // observe sign-in state. The `poc-auth` cookie (read server-side) already
+  // covers the pre-hydration flash for returning patients on `/`; a signed-in
+  // visitor briefly sees the logged-out header here until this resolves.
   useEffect(() => {
-    if (!auth) return;
-    return onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      // Mirror auth state into a cookie the server can read, so the `/` home
-      // renders a dashboard loader (not the logged-out hero) for returning
-      // patients on their next load. Lax + 1-year; cleared on sign-out.
-      if (typeof document !== "undefined") {
-        document.cookie = u
-          ? "poc-auth=1; path=/; max-age=31536000; samesite=lax"
-          : "poc-auth=; path=/; max-age=0; samesite=lax";
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
+    Promise.all([import("@/lib/firebase"), import("firebase/auth")]).then(
+      ([{ auth }, { onAuthStateChanged }]) => {
+        if (cancelled || !auth) return;
+        authRef.current = auth;
+        unsubscribe = onAuthStateChanged(auth, (u) => {
+          setUser(u);
+          // Mirror auth state into a cookie the server can read, so the `/` home
+          // renders a dashboard loader (not the logged-out hero) for returning
+          // patients on their next load. Lax + 1-year; cleared on sign-out.
+          if (typeof document !== "undefined") {
+            document.cookie = u
+              ? "poc-auth=1; path=/; max-age=31536000; samesite=lax"
+              : "poc-auth=; path=/; max-age=0; samesite=lax";
+          }
+        });
       }
-    });
+    );
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   async function handleSignOut() {
+    const auth = authRef.current;
     if (!auth) return;
+    const { signOut } = await import("firebase/auth");
     await signOut(auth);
     setMenuOpen(false);
     router.push("/");

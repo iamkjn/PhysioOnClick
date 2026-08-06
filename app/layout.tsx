@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DM_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 
 import { Analytics } from "@/components/analytics";
@@ -10,6 +11,32 @@ import { ScrollReset } from "@/components/scroll-reset";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ToastProvider } from "@/components/toast-provider";
+
+// Self-hosted via next/font/google so the font CSS + files ship from our own
+// origin instead of a render-blocking fonts.googleapis.com/fonts.gstatic.com
+// round trip. `variable` exposes each family as a CSS custom property that
+// app/globals.css maps onto --font-serif / --font-sans.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  // Fraunces is a variable font; "variable" ships the single variable file
+  // (matching the old opsz,wght@9..144,300..900 request) instead of static
+  // weight files. `axes: ["opsz"]` keeps the optical-size axis the CSS relies
+  // on for headings — next/font drops non-weight axes unless named explicitly.
+  weight: "variable",
+  axes: ["opsz"],
+  display: "swap",
+  variable: "--font-fraunces",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: "variable",
+  // Italic is used for the "TBC" label in components/admin-bookings-table.tsx,
+  // so both styles must be requested or that row falls back to normal.
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-dm-sans",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
@@ -52,15 +79,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-GB">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en-GB" className={`${fraunces.variable} ${dmSans.variable}`}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",

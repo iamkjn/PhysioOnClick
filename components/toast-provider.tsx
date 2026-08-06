@@ -1,9 +1,14 @@
 'use client';
 
-import { createContext, useCallback, useContext, useRef, useState } from 'react';
-import { Toast, ToastType } from '@/components/toast';
-import { useGSAP } from '@/hooks/use-gsap-timeline';
-import { gsap } from '@/lib/gsap';
+import dynamic from 'next/dynamic';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import type { ToastType } from '@/components/toast';
+
+// components/toast.tsx pulls in GSAP (useGSAP + gsap) for its entrance
+// animation. Loading it via next/dynamic keeps that out of every route's
+// initial bundle — the chunk only fetches once a toast actually renders,
+// not merely when ToastProvider (root layout) mounts.
+const Toast = dynamic(() => import('@/components/toast').then((mod) => mod.Toast), { ssr: false });
 
 interface ToastItem {
   id: string;
@@ -38,7 +43,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  useGSAP(() => {
+  // Reflow already-visible cards when the array shifts (e.g. one dismissed).
+  // GSAP is loaded lazily here too, and skipped entirely when there's
+  // nothing to reflow, so a page that never shows more than one toast at a
+  // time never pays for it.
+  useEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
     const cards = Array.from(viewport.children) as HTMLElement[];
@@ -57,12 +66,17 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     // oldest id to keep the array at length 3.
     const prevIds = prevIdsRef.current;
     const cardsToReflow = cards.filter((_, i) => prevIds.includes(currentIds[i]));
-
-    if (cardsToReflow.length > 0) {
-      gsap.from(cardsToReflow, { y: 8, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
-    }
-
     prevIdsRef.current = currentIds;
+
+    if (cardsToReflow.length === 0) return;
+
+    let cancelled = false;
+    import('@/lib/gsap').then(({ gsap }) => {
+      if (!cancelled) gsap.from(cardsToReflow, { y: 8, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [toasts]);
 
   return (

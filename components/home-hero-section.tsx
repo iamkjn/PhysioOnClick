@@ -3,11 +3,24 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { onAuthStateChanged, type User } from "firebase/auth";
+import dynamic from "next/dynamic";
+import type { User } from "firebase/auth";
 
-import { auth } from "@/lib/firebase";
-import { HomeDashboard } from "@/components/home-dashboard";
 import { SkeletonStatGrid, SkeletonText } from "@/components/skeleton";
+
+// home-dashboard.tsx's own tree (person-switcher.tsx -> lib/dependents.ts,
+// recovery-percent-card.tsx -> lib/recovery.ts) does `import { db } from
+// "@/lib/firebase"` — a value import, not the type-only one below — which
+// pulls in the whole Firebase Auth/Firestore/Storage SDK at module scope. A
+// static import here would undo the lazy-auth work above for every visitor,
+// signed in or not, since it's evaluated regardless of which branch renders.
+// It's only ever rendered once `user` is confirmed truthy, so loading it as
+// an async chunk costs signed-out visitors (the vast majority on marketing
+// traffic) nothing.
+const HomeDashboard = dynamic(
+  () => import("@/components/home-dashboard").then((mod) => mod.HomeDashboard),
+  { ssr: false }
+);
 
 export function HomeHeroSection({
   founderName,
@@ -19,15 +32,32 @@ export function HomeHeroSection({
   const [user, setUser] = useState<User | null>(null);
   const [resolvedAuth, setResolvedAuth] = useState(false);
 
+  // Firebase Auth is loaded as an async chunk (not a top-level import) so it
+  // doesn't delay hydration of the hero — the LCP element on this page — for
+  // every anonymous visitor. See components/site-header.tsx for the same
+  // pattern and rationale.
   useEffect(() => {
-    if (!auth) {
-      setResolvedAuth(true);
-      return;
-    }
-    return onAuthStateChanged(auth, (u) => {
-      setResolvedAuth(true);
-      setUser(u);
-    });
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+
+    Promise.all([import("@/lib/firebase"), import("firebase/auth")]).then(
+      ([{ auth }, { onAuthStateChanged }]) => {
+        if (cancelled) return;
+        if (!auth) {
+          setResolvedAuth(true);
+          return;
+        }
+        unsubscribe = onAuthStateChanged(auth, (u) => {
+          setResolvedAuth(true);
+          setUser(u);
+        });
+      }
+    );
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   // Resolved and signed in → the dashboard.

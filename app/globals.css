@@ -58,8 +58,10 @@
   --color-spinner-track:  rgba(255, 255, 255, 0.15);
   --shadow-card:          0 12px 42px rgba(10, 22, 36, 0.16);
   --shadow-panel:         0 20px 46px -24px rgba(30, 45, 40, 0.34);
-  --font-serif: 'Fraunces', Georgia, serif;
-  --font-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
+  /* --font-fraunces / --font-dm-sans come from next/font/google (app/layout.tsx),
+     which self-hosts the font files instead of a render-blocking Google Fonts request. */
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans:  var(--font-dm-sans), system-ui, -apple-system, sans-serif;
 
   /* Radii — spec: panels 22, inner cards 15, inputs/chips 10–13, pills 999 */
   --radius-panel: 18px;
