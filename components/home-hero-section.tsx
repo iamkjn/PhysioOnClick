@@ -118,6 +118,16 @@ export function HomeHeroSection({
             Explore Services
           </Link>
         </div>
+        {/* Below the two primary CTAs rather than a third competing button —
+            answers "is this actually online?" for a visitor who isn't ready
+            to book yet, without diluting the hero's conversion hierarchy. */}
+        <Link
+          href="/how-online-physiotherapy-works"
+          className="home-hero-secondary-link"
+          style={{ color: "inherit", textDecoration: "underline", opacity: 0.85 }}
+        >
+          See how online physiotherapy works
+        </Link>
       </div>
     </section>
   );

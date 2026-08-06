@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { onAuthStateChanged, type User } from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
@@ -239,6 +240,9 @@ export function BookingFlow() {
           <span className="book-rail-total-price">£{service.price}</span>
         </div>
         <p className="book-rail-reassure">Free to reschedule up to 24 hours before your session.</p>
+        <Link href="/how-online-physiotherapy-works" className="book-rail-reassure" style={{ textDecoration: "underline" }}>
+          What happens after I book?
+        </Link>
       </aside>
 
       {step === 1 ? (

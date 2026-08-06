@@ -9,6 +9,7 @@ const routes = [
   "/services",
   "/pricing",
   "/book",
+  "/how-online-physiotherapy-works",
   "/blog",
   "/glasgow-physiotherapist",
   "/professional-standards",
