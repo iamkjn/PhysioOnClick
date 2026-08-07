@@ -229,7 +229,7 @@ async function main() {
     try {
       const bookingRef = await adminDb.collection("bookings").add({
         bookedBy: uid,
-        patientId: "self",
+        patientId: uid,
         patientName: "E2E Patient",
         email: "krunalnayak49@gmail.com",
         service: "Initial Assessment",
@@ -263,7 +263,7 @@ async function main() {
     }
 
     // Step 6: CRUX — rules ALLOW a valid submission
-    assessmentDocPath = `patients/${uid}/people/self/assessmentForms/e2e-form`;
+    assessmentDocPath = `patients/${uid}/people/${uid}/assessmentForms/e2e-form`;
     try {
       const form = assessmentForm({}, bookingId!, uid!);
       const body = toFirestoreFields(form);
@@ -298,7 +298,7 @@ async function main() {
         uid!
       );
       const body = toFirestoreFields(form);
-      const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/patients/${uid}/people/self/assessmentForms/e2e-form-reject`;
+      const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/patients/${uid}/people/${uid}/assessmentForms/e2e-form-reject`;
       const resp = await fetch(url, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${idToken}`, "Content-Type": "application/json" },
@@ -360,7 +360,7 @@ async function main() {
     // Step 10: CLEANUP
     try {
       if (assessmentDocPath) await adminDb.doc(assessmentDocPath).delete().catch(() => {});
-      await adminDb.doc(`patients/${uid}/people/self/assessmentForms/e2e-form-reject`).delete().catch(() => {});
+      await adminDb.doc(`patients/${uid}/people/${uid}/assessmentForms/e2e-form-reject`).delete().catch(() => {});
       if (bookingId) await adminDb.collection("bookings").doc(bookingId).delete().catch(() => {});
       if (uid) await adminAuth.deleteUser(uid).catch(() => {});
       record("10. cleanup", true, "assessment doc(s), booking, auth user deleted");

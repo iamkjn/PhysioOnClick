@@ -281,7 +281,8 @@ service cloud.firestore {
     }
 
     match /patients/{userId}/people/{personId}/assignedExercises/{exerciseId} {
-      allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow write: if isAdmin();
     }
 
     // Patient-added YouTube reference link per assigned exercise (lib/exercise-videos.ts).
