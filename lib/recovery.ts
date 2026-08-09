@@ -106,6 +106,22 @@ export function dateKeyDaysAgo(n: number): string {
   return localDateKey(d);
 }
 
+// Current daily streak = the run of consecutive days, counting back from today,
+// on which at least one assigned exercise was completed. Today not yet logged
+// doesn't break the streak — the run is allowed to start at "yesterday" so an
+// untouched today reads as "keep it going", not "streak lost". Shared by
+// streak-card.tsx and the pain-checkin UI/Cloud Function, which both need the
+// exact same number.
+export function computeStreakDays(completedDates: Set<string>): number {
+  let streak = 0;
+  const startOffset = completedDates.has(dateKeyDaysAgo(0)) ? 0 : 1;
+  for (let i = startOffset; i < 400; i += 1) {
+    if (completedDates.has(dateKeyDaysAgo(i))) streak += 1;
+    else break;
+  }
+  return streak;
+}
+
 function personBase(uid: string, personId: string) {
   if (!db) throw new Error("Firestore not available");
   return doc(db, "patients", uid, "people", personId);
