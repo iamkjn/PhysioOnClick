@@ -1,28 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getExerciseLogs, dateKeyDaysAgo } from "@/lib/recovery";
+import { getExerciseLogs, computeStreakDays } from "@/lib/recovery";
 import { getStreakGoal } from "@/lib/goals";
 import { Skeleton, SkeletonText } from "@/components/skeleton";
 
 interface Props {
   uid: string;
   personId: string;
-}
-
-// Current daily streak = the run of consecutive days, counting back from today,
-// on which at least one assigned exercise was completed. Mirrors the streak the
-// mobile app and the seed script (demoDailyCompletions) show. Today not yet
-// logged doesn't break the streak — we allow the run to start at "yesterday" so
-// an untouched today reads as "keep it going", not "streak lost".
-function computeStreak(completedDates: Set<string>): number {
-  let streak = 0;
-  const startOffset = completedDates.has(dateKeyDaysAgo(0)) ? 0 : 1;
-  for (let i = startOffset; i < 400; i += 1) {
-    if (completedDates.has(dateKeyDaysAgo(i))) streak += 1;
-    else break;
-  }
-  return streak;
 }
 
 export function StreakCard({ uid, personId }: Props) {
@@ -43,7 +28,7 @@ export function StreakCard({ uid, personId }: Props) {
         const done = new Set(
           logs.filter((log) => Object.values(log.completions).some(Boolean)).map((log) => log.date)
         );
-        setStreak(computeStreak(done));
+        setStreak(computeStreakDays(done));
       })
       .catch(() => {
         if (!cancelled) setError("Could not load your streak.");
