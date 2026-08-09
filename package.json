@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .next",
+    "clean": "rm -rf .next .open-next",
     "dev": "next dev",
     "emulators": "PATH=\"/opt/homebrew/opt/openjdk@21/bin:$PATH\" firebase emulators:start --import=./.firebase-emulator-data --export-on-exit",
     "build": "next build",
@@ -14,10 +14,10 @@
     "lint": "next lint",
     "test": "vitest",
     "test:run": "vitest run",
-    "preview": "npm run clean && opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "npm run clean && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "preview": "npm run clean && opennextjs-cloudflare build && node scripts/patch-opennext-worker.mjs && opennextjs-cloudflare preview",
+    "deploy": "npm run clean && opennextjs-cloudflare build && node scripts/patch-opennext-worker.mjs && opennextjs-cloudflare deploy",
     "deploy:dev": "bash scripts/deploy-dev.sh",
-    "upload": "npm run clean && opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "upload": "npm run clean && opennextjs-cloudflare build && node scripts/patch-opennext-worker.mjs && opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "test:rules": "vitest run --config vitest.rules.config.ts"
   },
