@@ -44,6 +44,17 @@ export const metadata: Metadata = {
   title: "PhysioOnClick | Online Physiotherapy Across the UK",
   description:
     "PhysioOnClick is a UK online physiotherapy and rehabilitation platform offering consultations across the UK.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-48x48.png", type: "image/png", sizes: "48x48" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: [{ url: "/favicon.ico" }],
+    apple: [{ url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
+  },
+  manifest: "/site.webmanifest",
   openGraph: {
     title: "PhysioOnClick",
     description: "Evidence-based online physiotherapy and rehabilitation across the UK.",
