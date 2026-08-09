@@ -560,6 +560,144 @@ describe('patients/{uid}/people/{personId}/goals (admin-set daily streak goal)',
     const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
     await assertSucceeds(setDoc(goalDoc(db), goal({ streakTarget: 7 })))
   })
+
+  it('allows an admin write that includes a valid painCheckinInterval', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(db), goal({ streakTarget: 18, painCheckinInterval: 3 })))
+  })
+
+  it('allows an admin write that explicitly clears painCheckinInterval to null', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(goalDoc(db), goal({ streakTarget: 18, painCheckinInterval: null })))
+  })
+
+  it('denies painCheckinInterval equal to 1', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(goalDoc(db), goal({ streakTarget: 18, painCheckinInterval: 1 })))
+  })
+
+  it('denies painCheckinInterval equal to streakTarget', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(goalDoc(db), goal({ streakTarget: 18, painCheckinInterval: 18 })))
+  })
+
+  it('denies painCheckinInterval that does not evenly divide streakTarget', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertFails(setDoc(goalDoc(db), goal({ streakTarget: 18, painCheckinInterval: 5 })))
+  })
+})
+
+describe('patients/{uid}/people/{personId}/painCheckins (doctor-interval pain checkpoints)', () => {
+  const PERSON = 'person-1'
+  const checkinDoc = (db: unknown, id = '0_3', uid = PATIENT) =>
+    doc(db as never, `patients/${uid}/people/${PERSON}/painCheckins/${id}`)
+  const pendingCheckin = (overrides: Record<string, unknown> = {}) => ({
+    runNumber: 0,
+    streakDay: 3,
+    status: 'pending',
+    createdAt: serverTimestamp(),
+    ...overrides,
+  })
+
+  it('lets an admin create a pending checkpoint', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(checkinDoc(db), pendingCheckin()))
+  })
+
+  it('denies a patient creating a checkpoint directly', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(checkinDoc(db), pendingCheckin()))
+  })
+
+  it('lets the owner read their own checkpoints', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(checkinDoc(admin), pendingCheckin()))
+
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(getDoc(checkinDoc(owner)))
+  })
+
+  it('denies a different signed-in user reading the checkpoint', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(checkinDoc(admin), pendingCheckin()))
+
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(getDoc(checkinDoc(other)))
+  })
+
+  it('lets the owner log a valid score against their own pending checkpoint', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(checkinDoc(admin), pendingCheckin()))
+
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(
+      updateDoc(checkinDoc(owner), {
+        status: 'logged',
+        score: 4,
+        note: 'sharp twinge',
+        loggedAt: serverTimestamp(),
+      })
+    )
+  })
+
+  it('denies the owner logging a score outside 0-10', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(checkinDoc(admin), pendingCheckin()))
+
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(
+      updateDoc(checkinDoc(owner), {
+        status: 'logged',
+        score: 11,
+        note: '',
+        loggedAt: serverTimestamp(),
+      })
+    )
+  })
+
+  it('denies the owner updating a checkpoint that is already logged', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(
+      setDoc(checkinDoc(admin), pendingCheckin({ status: 'logged', score: 2, note: '', loggedAt: serverTimestamp() }))
+    )
+
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(
+      updateDoc(checkinDoc(owner), { status: 'logged', score: 9, note: '', loggedAt: serverTimestamp() })
+    )
+  })
+
+  it('denies the owner updating a checkpoint that is already missed', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(checkinDoc(admin), pendingCheckin({ status: 'missed' })))
+
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(
+      updateDoc(checkinDoc(owner), { status: 'logged', score: 5, note: '', loggedAt: serverTimestamp() })
+    )
+  })
+
+  it('denies the owner writing extra fields not in the allowed set', async () => {
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(checkinDoc(admin), pendingCheckin()))
+
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(
+      updateDoc(checkinDoc(owner), {
+        status: 'logged',
+        score: 4,
+        note: '',
+        loggedAt: serverTimestamp(),
+        runNumber: 99,
+      })
+    )
+  })
+
+  it('lets an admin delete a checkpoint', async () => {
+    const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(setDoc(checkinDoc(db), pendingCheckin()))
+    await assertSucceeds(deleteDoc(checkinDoc(db)))
+  })
 })
 
 describe('patients/{uid}/people/{personId}/patientExerciseVideos (patient-added YouTube link)', () => {

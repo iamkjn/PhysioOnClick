@@ -321,6 +321,30 @@ service cloud.firestore {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
+    // Doctor-interval pain checkpoints (lib/pain-checkins.ts). Docs are only
+    // ever created (as status:'pending') or expired (to 'missed') server-side
+    // by the sendPainCheckinReminders Cloud Function via the Admin SDK, which
+    // bypasses these rules entirely. The one client write path is the patient
+    // logging a score against their own still-pending checkpoint — they can
+    // never create, delete, or touch a checkpoint that's already logged/missed,
+    // and can't write any field this rule doesn't explicitly allow.
+    match /patients/{userId}/people/{personId}/painCheckins/{checkinId} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        isSignedIn() && request.auth.uid == userId &&
+        resource.data.status == 'pending' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'score', 'note', 'loggedAt']) &&
+        request.resource.data.status == 'logged' &&
+        request.resource.data.score is int &&
+        request.resource.data.score >= 0 &&
+        request.resource.data.score <= 10 &&
+        request.resource.data.note is string &&
+        request.resource.data.note.size() <= 500 &&
+        request.resource.data.loggedAt is timestamp
+      );
+    }
+
     // "Check your motion" feature: captured motion-check sessions, scored against
     // exerciseMotionTargets above. Explicit block (the read-only patients/** catch-all
     // below would already cover reads, but not writes) mirroring exerciseLogs' owner
@@ -350,11 +374,23 @@ service cloud.firestore {
     // the owner may only read their own goal, never write it directly.
     match /patients/{userId}/people/{personId}/goals/{goalId} {
       allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
-      // Defense in depth on top of the client-side check in lib/goals.ts
-      // setStreakGoal — the target must be a whole number of at least 1 day.
+      // Defense in depth on top of the client-side checks in lib/goals.ts
+      // setStreakGoal: streakTarget must be a whole number of at least 1 day;
+      // painCheckinInterval (optional) must be null, or a whole-number divisor
+      // of streakTarget that is neither 1 nor streakTarget itself.
       allow create, update: if isAdmin() &&
         request.resource.data.streakTarget is int &&
-        request.resource.data.streakTarget >= 1;
+        request.resource.data.streakTarget >= 1 &&
+        (
+          !('painCheckinInterval' in request.resource.data) ||
+          request.resource.data.painCheckinInterval == null ||
+          (
+            request.resource.data.painCheckinInterval is int &&
+            request.resource.data.painCheckinInterval > 1 &&
+            request.resource.data.painCheckinInterval < request.resource.data.streakTarget &&
+            request.resource.data.streakTarget % request.resource.data.painCheckinInterval == 0
+          )
+        );
       allow delete: if isAdmin();
     }
 
