@@ -26,7 +26,7 @@ const routes = [
 export const dynamic = "force-static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://physioonclick.co.uk";
   const blogArticles = await fetchDynamicBlogs();
 
   // No `lastModified` on the static routes: there is no real content-change

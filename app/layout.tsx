@@ -13,6 +13,8 @@ import { SiteHeader } from "@/components/site-header";
 import { ToastProvider } from "@/components/toast-provider";
 import { siteEntityGraph } from "@/lib/structured-data";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://physioonclick.co.uk";
+
 // Self-hosted via next/font/google so the font CSS + files ship from our own
 // origin instead of a render-blocking fonts.googleapis.com/fonts.gstatic.com
 // round trip. `variable` exposes each family as a CSS custom property that
@@ -40,7 +42,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
   title: "PhysioOnClick | Online Physiotherapy Across the UK",
   description:
     "PhysioOnClick is a UK online physiotherapy and rehabilitation platform offering consultations across the UK.",
