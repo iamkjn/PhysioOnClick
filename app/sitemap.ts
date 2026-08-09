@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 
-import { fetchDynamicBlogs } from "@/lib/firestore-content";
 import { services } from "@/lib/site-data";
 
 const routes = [
@@ -10,7 +9,6 @@ const routes = [
   "/pricing",
   "/book",
   "/how-online-physiotherapy-works",
-  "/blog",
   "/glasgow-physiotherapist",
   "/professional-standards",
   "/privacy-policy",
@@ -27,7 +25,6 @@ export const dynamic = "force-static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "https://physioonclick.co.uk";
-  const blogArticles = await fetchDynamicBlogs();
 
   // No `lastModified` on the static routes: there is no real content-change
   // date to report, and stamping `new Date()` on every build told crawlers that
@@ -39,11 +36,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // service can't silently drift out of the sitemap.
   const serviceEntries = services.map((service) => ({ url: `${base}/services/${service.slug}` }));
 
-  // The blog articles are currently `noindex` (see app/blog/[slug]/page.tsx).
-  // They stay listed here deliberately — Google has to crawl them to discover
-  // the noindex. Expect "Submitted URL marked noindex" in Search Console until
-  // they are rewritten; that is the intended state, not a regression.
-  const blogEntries = blogArticles.map((a) => ({ url: `${base}/blog/${a.slug}`, lastModified: new Date(a.publishedAt) }));
-
-  return [...staticEntries, ...serviceEntries, ...blogEntries];
+  // Blog is hidden for now (nav link removed) and its pages are noindex, so
+  // they are deliberately not submitted here — that's what triggered the
+  // "Excluded by noindex tag" Search Console alert in the first place.
+  return [...staticEntries, ...serviceEntries];
 }

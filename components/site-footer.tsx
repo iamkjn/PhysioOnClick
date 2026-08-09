@@ -24,7 +24,6 @@ export function SiteFooter() {
           <Link href="/about">About</Link>
           <Link href="/services">Services</Link>
           <Link href="/pricing">Pricing</Link>
-          <Link href="/blog">Blog</Link>
           <Link href="/contact">Contact</Link>
           <Link href="/terms">Terms</Link>
           <Link href="/privacy-policy">Privacy Policy</Link>
