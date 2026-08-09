@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getStreakGoal, setStreakGoal } from "@/lib/goals";
+import { getStreakGoal, setStreakGoal, getPainCheckinInterval, getValidCheckinIntervals } from "@/lib/goals";
 import { SkeletonForm } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 
@@ -15,6 +15,7 @@ interface Props {
 export function AdminStreakGoal({ adminUid, patientUid, personId }: Props) {
   const [loaded, setLoaded] = useState(false);
   const [value, setValue] = useState("");
+  const [intervalValue, setIntervalValue] = useState(""); // "" = none
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
@@ -23,10 +24,11 @@ export function AdminStreakGoal({ adminUid, patientUid, personId }: Props) {
     let cancelled = false;
     setLoaded(false);
     setError(null);
-    getStreakGoal(patientUid, personId)
-      .then((goal) => {
+    Promise.all([getStreakGoal(patientUid, personId), getPainCheckinInterval(patientUid, personId)])
+      .then(([goal, interval]) => {
         if (cancelled) return;
         setValue(goal !== null ? String(goal) : "");
+        setIntervalValue(interval !== null ? String(interval) : "");
         setLoaded(true);
       })
       .catch(() => {
@@ -41,9 +43,11 @@ export function AdminStreakGoal({ adminUid, patientUid, personId }: Props) {
     };
   }, [patientUid, personId]);
 
+  const target = Number(value);
+  const validIntervals = Number.isInteger(target) && target >= 1 ? getValidCheckinIntervals(target) : [];
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    const target = Number(value);
     if (!Number.isInteger(target) || target < 1) {
       setError("Enter a whole number of at least 1 day.");
       return;
@@ -51,7 +55,8 @@ export function AdminStreakGoal({ adminUid, patientUid, personId }: Props) {
     setError(null);
     setSaving(true);
     try {
-      await setStreakGoal(patientUid, personId, target, adminUid);
+      const interval = intervalValue === "" ? null : Number(intervalValue);
+      await setStreakGoal(patientUid, personId, target, adminUid, interval);
       toast.show("Streak goal saved.", "success");
     } catch {
       toast.show("Could not save the streak goal. Try again.", "error");
@@ -64,7 +69,7 @@ export function AdminStreakGoal({ adminUid, patientUid, personId }: Props) {
     return (
       <div className="panel stack">
         <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Daily streak goal</h2>
-        <SkeletonForm fields={1} />
+        <SkeletonForm fields={2} />
       </div>
     );
   }
@@ -92,13 +97,31 @@ export function AdminStreakGoal({ adminUid, patientUid, personId }: Props) {
             value={value}
             onChange={(e) => {
               setValue(e.target.value);
+              setIntervalValue("");
               setError(null);
             }}
-            placeholder="e.g. 14"
+            placeholder="e.g. 18"
             style={{ marginTop: "var(--space-1)", maxWidth: "10rem" }}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? "err-streak-goal" : undefined}
           />
+        </label>
+        <label style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
+          Pain check-in every
+          <select
+            className="input"
+            value={intervalValue}
+            onChange={(e) => setIntervalValue(e.target.value)}
+            disabled={validIntervals.length === 0}
+            style={{ marginTop: "var(--space-1)", maxWidth: "12rem" }}
+          >
+            <option value="">None (off)</option>
+            {validIntervals.map((n) => (
+              <option key={n} value={n}>
+                {n} days
+              </option>
+            ))}
+          </select>
         </label>
         <button
           type="submit"
@@ -109,6 +132,11 @@ export function AdminStreakGoal({ adminUid, patientUid, personId }: Props) {
           {saving ? "Saving…" : "Save goal"}
         </button>
       </form>
+      {validIntervals.length === 0 && Number.isInteger(target) && target >= 1 && (
+        <p className="muted" style={{ margin: 0, fontSize: "var(--text-xs)" }}>
+          No pain check-in interval evenly divides a {target}-day goal — pick a different goal length to enable one.
+        </p>
+      )}
       {error && (
         <span className="field-error" id="err-streak-goal" role="alert">
           {error}

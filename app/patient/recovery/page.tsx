@@ -7,6 +7,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { PainCheckIn } from "@/components/pain-check-in";
+import { PainCheckinCard } from "@/components/pain-checkin-card";
+import { PainCheckinTimeline } from "@/components/pain-checkin-timeline";
 import { RecoveryChart } from "@/components/recovery-chart";
 import { AssignedExercises } from "@/components/assigned-exercises";
 import { AdherenceBar } from "@/components/adherence-bar";
@@ -89,6 +91,11 @@ export default function RecoveryPage() {
       <section className="page-section dashboard-grid">
         <PainCheckIn uid={uid} personId={personId} />
         <AdherenceBar uid={uid} personId={personId} />
+        <PainCheckinCard uid={uid} personId={personId} />
+      </section>
+
+      <section className="page-section">
+        <PainCheckinTimeline uid={uid} personId={personId} />
       </section>
 
       <section className="page-section">

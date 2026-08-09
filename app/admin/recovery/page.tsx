@@ -11,6 +11,7 @@ import { AdminPatientSelector } from "@/components/admin-patient-selector";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
 import { AdminStreakGoal } from "@/components/admin-streak-goal";
+import { PainCheckinTimeline } from "@/components/pain-checkin-timeline";
 import { AdminFollowUp } from "@/components/admin-follow-up";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { AdminMotionTargets } from "@/components/admin-motion-targets";
@@ -113,6 +114,7 @@ export default function AdminRecoveryPage() {
               patientUid={selection.patientUid}
               personId={selection.personId}
             />
+            <PainCheckinTimeline uid={selection.patientUid} personId={selection.personId} readOnly />
             <AdminFollowUp
               adminUid={adminUid}
               patientUid={selection.patientUid}
