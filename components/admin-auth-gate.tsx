@@ -14,8 +14,17 @@ export function AdminAuthGate() {
     if (!auth) { setStatus("out"); return; }
     return onAuthStateChanged(auth, async (user) => {
       if (!user) { setStatus("out"); return; }
-      const isAdmin = await isAdminUser(user);
-      setStatus(isAdmin ? "in" : "forbidden");
+      try {
+        const isAdmin = await isAdminUser(user);
+        setStatus(isAdmin ? "in" : "forbidden");
+      } catch (error) {
+        // getIdTokenResult() does a network round-trip to refresh the token.
+        // Without this catch, any failure here (flaky network, a slow cold
+        // start) leaves `status` stuck at "loading" forever — the sign-in
+        // screen is the only recoverable state to fall back to.
+        console.error("admin auth check failed", error);
+        setStatus("out");
+      }
     });
   }, []);
 

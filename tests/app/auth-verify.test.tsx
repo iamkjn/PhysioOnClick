@@ -27,7 +27,12 @@ vi.mock('firebase/auth', () => ({
   FirebaseError,
 }))
 
-vi.mock('@/lib/firebase', () => ({ auth: {} }))
+vi.mock('@/lib/firebase', () => ({
+  auth: {},
+  db: null,
+  firebaseApp: null,
+  firebaseMeasurementId: '',
+}))
 
 vi.mock('@/lib/patient-account', () => ({
   ensurePatientRecord: vi.fn().mockResolvedValue(undefined),
@@ -45,6 +50,8 @@ import VerifyPageWrapper from '@/app/auth/verify/page'
 
 describe('Auth verify page', () => {
   beforeEach(() => {
+    vi.mocked(isSignInWithEmailLink).mockReset()
+    vi.mocked(signInWithEmailLink).mockReset()
     global.fetch = vi.fn().mockResolvedValue(new Response('{}', { status: 200 }))
     searchParamsMap = { email: 'jane@example.com' }
     push.mockClear()
@@ -126,6 +133,27 @@ describe('Auth verify page', () => {
       await waitFor(
         () => {
           expect(push).toHaveBeenCalledWith('/book')
+        },
+        { timeout: 3000 },
+      )
+    })
+
+    it('redirects to /patient/assessment when the link carries an allowlisted returnTo of /patient/assessment', async () => {
+      // Regression test: the assessment-link email (app/api/payments/webhook and
+      // app/api/assessment/reminder-email) sets returnTo=/patient/assessment, but
+      // this page's allowlist had drifted out of sync with the server-side one in
+      // app/api/auth/magic-link/route.ts and silently dropped patients onto the
+      // generic /patient dashboard instead of the assessment form.
+      searchParamsMap = { email: 'jane@example.com', returnTo: '/patient/assessment' }
+      render(<VerifyPageWrapper />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/you are in/i)).toBeInTheDocument()
+      })
+
+      await waitFor(
+        () => {
+          expect(push).toHaveBeenCalledWith('/patient/assessment')
         },
         { timeout: 3000 },
       )

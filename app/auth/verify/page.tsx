@@ -15,7 +15,7 @@ type Stage = "verifying" | "needs-email" | "signing-in" | "success" | "error";
 // Only these in-app destinations are legitimate post-sign-in landing spots.
 // The emailed link (and its query string) is attacker-editable once it sits in an
 // inbox, so this is validated here too, not just server-side when the link is issued.
-const ALLOWED_RETURN_PATHS = new Set<string>(["/book", "/patient"]);
+const ALLOWED_RETURN_PATHS = new Set<string>(["/book", "/patient", "/patient/assessment"]);
 
 function sanitizeReturnPath(value: string | null): string {
   return value && ALLOWED_RETURN_PATHS.has(value) ? value : "/patient";

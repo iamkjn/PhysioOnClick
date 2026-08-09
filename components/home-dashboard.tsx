@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { User } from "firebase/auth";
@@ -8,6 +9,8 @@ import { PersonSwitcher } from "@/components/person-switcher";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
 import { PatientDashboard } from "@/components/patient-dashboard";
 import { usePerson } from "@/components/person-provider";
+import { getAssignedExercises } from "@/lib/recovery";
+import { getPatientBookings } from "@/lib/patient-bookings";
 
 function greeting() {
   const h = new Date().getHours();
@@ -67,6 +70,44 @@ export function HomeDashboard({ user }: { user: User }) {
   const personName = personCtx?.personId ? personCtx.personName : displayName;
   const viewingOther = personId !== user.uid;
 
+  // Recovery-tracking UI ("Your recovery at a glance", "My recovery", "My
+  // exercises") only means anything once a physio has assessed the patient
+  // and assigned a recovery plan — before that every chart is empty/zeroed,
+  // which reads as broken rather than "nothing yet". Gate all three on having
+  // at least one active assigned exercise for the person in view.
+  const [hasRecoveryPlan, setHasRecoveryPlan] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    getAssignedExercises(user.uid, personId)
+      .then((exercises) => {
+        if (!cancelled) setHasRecoveryPlan(exercises.length > 0);
+      })
+      .catch(() => {
+        if (!cancelled) setHasRecoveryPlan(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user.uid, personId]);
+
+  // "Invoices & payments" has nothing to show until the first appointment is
+  // booked (paid or not — an invoice only exists once a booking does), so
+  // it's hidden rather than linking to a permanently empty list.
+  const [hasBooked, setHasBooked] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    getPatientBookings(user.uid, personId)
+      .then((bookings) => {
+        if (!cancelled) setHasBooked(bookings.length > 0);
+      })
+      .catch(() => {
+        if (!cancelled) setHasBooked(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user.uid, personId]);
+
   return (
     <section className="home-dashboard">
       <div className="home-dashboard-glow" aria-hidden />
@@ -96,14 +137,24 @@ export function HomeDashboard({ user }: { user: User }) {
           />
         </header>
 
-        <div className="home-dashboard-grid">
-          <RecoveryPercentCard uid={user.uid} personId={personId} />
+        <div className={hasRecoveryPlan ? "home-dashboard-grid" : "home-dashboard-grid home-dashboard-grid--full"}>
+          {/* The recovery ring is meaningless (and always empty) before a
+              physio has assigned a plan, so it's dropped entirely rather than
+              shown blank — the quick-links nav below expands to fill the
+              width it would have used (--full) instead of leaving it bare. */}
+          {hasRecoveryPlan ? <RecoveryPercentCard uid={user.uid} personId={personId} /> : null}
 
           {/* "Book a session" intentionally omitted — the header's persistent
               "Book Now" button already covers booking, so repeating it here was
               redundant. */}
           <nav className="home-dashboard-actions" aria-label="Quick links">
-            {SECONDARY_ACTIONS.map((action) => (
+            {SECONDARY_ACTIONS.filter((action) => {
+              if (!hasRecoveryPlan && (action.href === "/patient/recovery" || action.href === "/patient/exercises")) {
+                return false;
+              }
+              if (!hasBooked && action.href === "/patient/invoices") return false;
+              return true;
+            }).map((action) => (
               <Link key={action.href} className="home-action" href={action.href} prefetch>
                 <span className="home-action-icon" aria-hidden>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
@@ -120,10 +171,12 @@ export function HomeDashboard({ user }: { user: User }) {
           </nav>
         </div>
 
-        <div className="home-dashboard-charts">
-          <h3 className="home-dashboard-charts-title">Your recovery at a glance</h3>
-          <PatientDashboard uid={user.uid} personId={personId} />
-        </div>
+        {hasRecoveryPlan ? (
+          <div className="home-dashboard-charts">
+            <h3 className="home-dashboard-charts-title">Your recovery at a glance</h3>
+            <PatientDashboard uid={user.uid} personId={personId} />
+          </div>
+        ) : null}
       </div>
     </section>
   );

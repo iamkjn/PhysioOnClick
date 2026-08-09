@@ -17,6 +17,7 @@ import type { CalService, FocusArea } from "@/lib/cal-services";
 import type { PricingItem } from "@/lib/site-data";
 import type { BookingConfirmation } from "@/components/booking-flow";
 import { LIMITS, validateEmail, validateName } from "@/lib/validation";
+import { PasswordInput } from "@/components/password-input";
 
 type Props = {
   service: CalService & PricingItem;
@@ -614,10 +615,9 @@ export function BookingStepTime({
                   <label className="book-label" htmlFor="book-password">
                     {signingIn ? "Password" : "Create a password"}
                   </label>
-                  <input
+                  <PasswordInput
                     id="book-password"
                     className="book-input"
-                    type="password"
                     required
                     minLength={signingIn ? undefined : 6}
                     autoComplete={signingIn ? "current-password" : "new-password"}

@@ -47,7 +47,7 @@ function bodyWith(payloadExtra: Record<string, unknown>) {
       uid: "cal_meeting_1",
       startTime: "2999-01-01T10:00:00.000Z",
       attendees: [{ name: "Ada", email: "ada@example.com" }],
-      eventType: { title: "Initial Assessment" },
+      title: "Initial Assessment",
       ...payloadExtra,
     },
   });

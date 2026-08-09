@@ -56,7 +56,7 @@ import { AuthPanel } from "@/components/auth-panel";
 async function signInWithPassword() {
   const user = userEvent.setup();
   await user.type(screen.getByLabelText(/email/i), "jane@example.com");
-  await user.type(screen.getByLabelText(/password/i), "supersecret1");
+  await user.type(screen.getByLabelText(/^password$/i), "supersecret1");
   await user.click(screen.getByRole("button", { name: /^continue$/i }));
   return user;
 }

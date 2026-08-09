@@ -1,4 +1,5 @@
 import { formatGbp } from "@/lib/invoice";
+import { renderEmailLayout, toPlainText } from "@/lib/emails/email-layout";
 
 /** Escape user-controlled values before interpolating into email HTML. */
 function escapeHtml(value: string): string {
@@ -22,16 +23,27 @@ export async function sendReceiptEmail(input: {
   }
   const from = process.env.ENQUIRY_EMAIL_FROM || "PhysioOnClick <onboarding@resend.dev>";
   const greeting = input.patientName ? `Hi ${escapeHtml(input.patientName)},` : "Hello,";
-  const html = `
-    <p>${greeting}</p>
-    <p>Thank you for your payment. Here is your receipt for insurance or your records.</p>
-    <ul>
-      <li><strong>Invoice:</strong> ${input.invoiceNumber}</li>
-      <li><strong>Service:</strong> ${input.serviceLabel}</li>
-      <li><strong>Amount paid:</strong> ${formatGbp(input.amountPence)}</li>
-    </ul>
-    <p><a href="${input.receiptUrl}">View or print your full receipt (PDF)</a></p>
-  `;
+  const amount = formatGbp(input.amountPence);
+  const html = renderEmailLayout({
+    preheader: `Your receipt for ${input.serviceLabel} — ${amount}`,
+    bodyHtml: `
+      <p style="margin:0 0 16px;">${greeting}</p>
+      <p style="margin:0 0 16px;">Thank you for your payment. Here is your receipt for insurance or your records.</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px; background:#F7F4ED; border-radius:10px;">
+        <tr><td style="padding:16px 20px; font-size:14px;">
+          <p style="margin:0 0 6px;"><strong>Invoice:</strong> ${input.invoiceNumber}</p>
+          <p style="margin:0 0 6px;"><strong>Service:</strong> ${escapeHtml(input.serviceLabel)}</p>
+          <p style="margin:0;"><strong>Amount paid:</strong> ${amount}</p>
+        </td></tr>
+      </table>
+      <p style="margin:0;">
+        <a href="${input.receiptUrl}" style="display:inline-block; background:#0EA5E9; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:8px; font-weight:700; font-size:14px;">View or print your full receipt (PDF)</a>
+      </p>
+    `,
+  });
+  const text = toPlainText(
+    `${greeting}\n\nThank you for your payment. Here is your receipt for insurance or your records.\n\nInvoice: ${input.invoiceNumber}\nService: ${input.serviceLabel}\nAmount paid: ${amount}\n\nView or print your full receipt: ${input.receiptUrl}`
+  );
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -41,6 +53,7 @@ export async function sendReceiptEmail(input: {
         to: [input.to],
         subject: `Your payment receipt — ${input.invoiceNumber}`,
         html,
+        text,
         ...(input.pdf ? { attachments: [{ filename: input.pdf.filename, content: input.pdf.base64 }] } : {}),
       }),
     });

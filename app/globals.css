@@ -4024,6 +4024,19 @@ textarea:focus {
   align-items: stretch;
 }
 
+/* Before a physio assigns a plan the recovery ring is omitted entirely (it
+   has nothing to show), so the quick-links nav takes the full row and
+   reflows into tiles instead of one narrow full-width column of bars. */
+.home-dashboard-grid--full {
+  grid-template-columns: 1fr;
+}
+
+.home-dashboard-grid--full .home-dashboard-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+}
+
 /* Recovery card: ring + copy side by side, one calm height across states. */
 .recovery-percent-card {
   display: flex;

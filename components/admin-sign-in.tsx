@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { FormEvent, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { validateEmail, LIMITS } from "@/lib/validation";
+import { PasswordInput } from "@/components/password-input";
 
 export function AdminSignIn() {
   const [email, setEmail] = useState("");
@@ -53,7 +54,7 @@ export function AdminSignIn() {
           <label htmlFor="admin-email" className="sr-only">Email address</label>
           <input id="admin-email" type="email" className="input" placeholder="Email address" autoComplete="email" required maxLength={LIMITS.email} value={email} onChange={(e) => setEmail(e.target.value)} />
           <label htmlFor="admin-password" className="sr-only">Password</label>
-          <input id="admin-password" type="password" className="input" placeholder="Password" autoComplete="current-password" required maxLength={LIMITS.password} value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordInput id="admin-password" className="input" placeholder="Password" autoComplete="current-password" required maxLength={LIMITS.password} value={password} onChange={(e) => setPassword(e.target.value)} />
           {error && <p role="alert" aria-live="assertive" style={{ color: "var(--color-error)", fontSize: "var(--text-sm)", margin: 0, fontFamily: "var(--font-sans)" }}>{error}</p>}
           <button
             type="submit"

@@ -17,6 +17,7 @@ import { auth, firebaseEnabled } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
 import { ensureAppUserRecord, ensurePatientRecord } from "@/lib/patient-account";
 import { LIMITS, validateEmail, validateName } from "@/lib/validation";
+import { PasswordInput } from "@/components/password-input";
 
 export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" | "admin"; redirectTo?: string | null }) {
   const router = useRouter();
@@ -292,7 +293,7 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
           </label>
           <label>
             Password
-            <input type="password" name="password" required minLength={8} maxLength={LIMITS.password} autoComplete={isSignup ? "new-password" : "current-password"} />
+            <PasswordInput name="password" required minLength={8} maxLength={LIMITS.password} autoComplete={isSignup ? "new-password" : "current-password"} />
           </label>
           <button
             className="button primary"

@@ -68,7 +68,12 @@ export function PatientHome() {
         </div>
       </section>
       <section className="page-section patient-auth-layout">
-        <AuthPanel role="patient" redirectTo="/" />
+        {/* redirectTo={null}: this component's own onAuthStateChanged effect
+            above already redirects to "/" once uid resolves. Letting AuthPanel
+            also push/refresh to the same destination raced with that redirect
+            and could abort the in-flight RSC fetch, leaving <main> empty until
+            a manual reload. */}
+        <AuthPanel role="patient" redirectTo={null} />
         <aside className="panel auth-context-panel" aria-label="Patient portal benefits">
           <span className="eyebrow">What you can do</span>
           <h2>Pick up your care plan without hunting through emails.</h2>

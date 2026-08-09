@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getAdminAuth } from "@/lib/firebase-admin";
 import { validateEmail } from "@/lib/validation";
+import { renderEmailLayout, toPlainText } from "@/lib/emails/email-layout";
 
 function escapeHtml(value: string) {
   return value
@@ -76,32 +77,20 @@ export async function POST(request: Request) {
 
   const from = process.env.ENQUIRY_EMAIL_FROM || "PhysioOnClick <onboarding@resend.dev>";
 
-  const emailHtml = `
-    <div style="font-family: Arial, Helvetica, sans-serif; color: #10233A; line-height: 1.6; max-width: 600px;">
-      <div style="background: linear-gradient(135deg, #0891B2, #0E7490); padding: 28px 32px; border-radius: 12px 12px 0 0;">
-        <h1 style="margin: 0; color: white; font-size: 22px;">PhysioOnClick</h1>
-        <p style="margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 14px;">Your sign-in link</p>
-      </div>
-      <div style="padding: 28px 32px; background: white; border: 1px solid #E8F6FA; border-top: none; border-radius: 0 0 12px 12px;">
-        <p>Here is your sign-in link for PhysioOnClick. Click the button below to access your patient portal.</p>
-        <div style="margin: 24px 0; text-align: center;">
-          <a href="${escapeHtml(portalLink)}"
-             style="display: inline-block; background: linear-gradient(135deg, #0891B2, #0E7490);
-                    color: white; text-decoration: none; padding: 14px 32px;
-                    border-radius: 8px; font-weight: bold; font-size: 15px;">
-            Access your patient portal →
-          </a>
-          <p style="margin: 10px 0 0; font-size: 12px; color: #6B8FA0;">
-            This link expires after 24 hours and can only be used once.
-          </p>
-        </div>
-        <p style="color: #6B8FA0; font-size: 13px;">
-          If you did not request this link, you can safely ignore this email.<br /><br />
-          — The PhysioOnClick Team
-        </p>
-      </div>
-    </div>
-  `;
+  const emailHtml = renderEmailLayout({
+    preheader: "Your PhysioOnClick sign-in link — expires in 24 hours",
+    bodyHtml: `
+      <p style="margin:0 0 16px;">Here is your sign-in link for PhysioOnClick. Click the button below to access your patient portal.</p>
+      <p style="margin:0 0 8px;">
+        <a href="${escapeHtml(portalLink)}" style="display:inline-block; background:#0EA5E9; color:#ffffff; text-decoration:none; padding:14px 32px; border-radius:8px; font-weight:700; font-size:15px;">Access your patient portal →</a>
+      </p>
+      <p style="margin:8px 0 20px; font-size:12.5px; color:#7C8FA0;">This link expires after 24 hours and can only be used once.</p>
+      <p style="margin:0; font-size:13px; color:#7C8FA0;">If you did not request this link, you can safely ignore this email.</p>
+    `,
+  });
+  const emailText = toPlainText(
+    `Here is your sign-in link for PhysioOnClick.\n\nAccess your patient portal: ${portalLink}\n\nThis link expires after 24 hours and can only be used once. If you did not request this link, you can safely ignore this email.`
+  );
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -114,6 +103,7 @@ export async function POST(request: Request) {
       to: [email],
       subject: "Your PhysioOnClick sign-in link",
       html: emailHtml,
+      text: emailText,
     }),
   });
 

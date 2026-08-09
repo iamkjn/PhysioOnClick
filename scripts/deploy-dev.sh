@@ -28,10 +28,24 @@ done < <(grep -E '^NEXT_PUBLIC_[A-Z0-9_]+=' .env.development)
 # testers to localhost.
 export NEXT_PUBLIC_SITE_URL="https://dev.physioonclick.co.uk"
 
+# .env.development also carries NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true for
+# `npm run dev` + `npm run emulators`. Left as-is, the deployed worker would
+# tell every visitor's browser to connect to 127.0.0.1:9099 for auth — which
+# only exists on a developer's own machine — breaking all client-side sign-in
+# (admin, patient login, patient signup) on the deployed site. The deployed
+# dev worker must always talk to the real physioonclick-dev Firebase project.
+export NEXT_PUBLIC_USE_FIREBASE_EMULATOR="false"
+
 echo "Building DEV bundle:"
 echo "  firebase project : ${NEXT_PUBLIC_FIREBASE_PROJECT_ID}"
 echo "  site url         : ${NEXT_PUBLIC_SITE_URL}"
 echo "  cal username     : ${NEXT_PUBLIC_CAL_USERNAME}"
+
+# Next's webpack cache in .next/cache does not reliably invalidate when only
+# NEXT_PUBLIC_* values change between builds (as opposed to source files) —
+# a prod build's cache reused here would silently re-inline PROD values (or
+# vice versa for a dev build feeding a later prod build). Always start clean.
+rm -rf .next
 
 npx opennextjs-cloudflare build
 npx opennextjs-cloudflare deploy -e dev

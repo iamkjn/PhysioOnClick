@@ -53,7 +53,7 @@ const BODY = JSON.stringify({
     uid: "cal_xyz",
     startTime: "2999-01-01T10:00:00.000Z",
     attendees: [{ name: "Ada", email: "ada@example.com" }],
-    eventType: { title: "Initial Assessment" },
+    title: "Initial Assessment",
   },
 });
 

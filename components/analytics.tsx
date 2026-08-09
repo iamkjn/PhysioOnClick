@@ -1,6 +1,7 @@
 import Script from "next/script";
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
+const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
 
 // Google Consent Mode v2. Default everything to "denied" BEFORE gtag.js loads,
 // so Analytics sets no cookies until the visitor accepts via the cookie banner
@@ -37,6 +38,7 @@ export function Analytics() {
         {`
           gtag('js', new Date());
           gtag('config', '${gaId}');
+          ${googleAdsId ? `gtag('config', '${googleAdsId}');` : ""}
         `}
       </Script>
     </>

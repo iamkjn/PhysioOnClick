@@ -45,7 +45,11 @@ type CalBookingPayload = {
   uid: string;
   startTime: string;
   attendees: CalAttendee[];
-  eventType: { title: string };
+  // Cal.com's actual webhook payload puts the event title at the top level
+  // (`payload.title`), not nested under an `eventType` object — see
+  // https://cal.com/docs/core-features/webhooks. There is no `eventType` in
+  // the real payload at all.
+  title: string;
   responses?: { notes?: { value?: string } };
   rescheduledFromUid?: string;
   location?: string;
@@ -103,7 +107,7 @@ export async function POST(request: NextRequest) {
           fullName: attendee.name,
           email: attendeeEmail,
           phone: attendee.phoneNumber ?? "",
-          service: booking.eventType.title,
+          service: booking.title,
           appointmentDate,
           appointmentTime,
           appointmentLabel,

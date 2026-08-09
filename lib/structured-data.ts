@@ -6,16 +6,15 @@
 // appear together in one page's rendered HTML into a single graph instead of
 // treating them as unrelated, duplicate entities.
 //
-// The practice is ONLINE-ONLY: no face-to-face appointments anywhere, so it is
-// not eligible for a Google Business Profile and must not be modelled as a
-// walk-in clinic. `areaServed` is the whole UK on purpose, and the address
-// below is a registered business address, not a place patients attend.
+// The practice is online-first, with online physiotherapy across the UK and
+// in-person care available in Glasgow. `areaServed` is the whole UK on purpose,
+// while the address below represents the Glasgow business location.
 //
 // OWNER TODO — still missing from the public graph. Do not guess these:
 //   - geo (latitude/longitude — deliberately omitted; publishing precise
 //     coordinates for a non-visitable address invites map pins patients
 //     would turn up to)
-//   - sameAs (LinkedIn / CSP directory / other profile URLs)
+//   - sameAs for Facebook once the page is created
 
 import { absoluteUrl } from "@/lib/utils";
 import { founder, services } from "@/lib/site-data";
@@ -97,10 +96,13 @@ export function practiceNode() {
         closes: "13:00"
       }
     ],
-    // og-default.png is the real committed 1200x630 social-share image; reused
-    // here rather than inventing a separate logo asset.
-    logo: absoluteUrl("/og-default.png"),
+    logo: absoluteUrl("/social/physioonclick-avatar.png"),
     image: absoluteUrl("/og-default.png"),
+    sameAs: [
+      "https://www.instagram.com/physioonclick/",
+      "https://www.tiktok.com/@physioonclick",
+      "https://www.youtube.com/@PhysioOnclick"
+    ],
     founder: personRef()
   };
 }

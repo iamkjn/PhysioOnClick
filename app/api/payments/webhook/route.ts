@@ -203,13 +203,20 @@ export async function POST(request: Request) {
     console.error("Payment recorded but booking paid-flag update failed", error);
   }
 
-  // Best-effort invoice PDF + receipt email — must never break the 200 response.
+  // Invoice PDF, receipt email and assessment email are three independent
+  // best-effort steps that must never break the 200 response to Stripe —
+  // but they used to share one try/catch, so a PDF/upload failure silently
+  // skipped BOTH emails even though neither depends on the PDF succeeding.
+  // Each step now has its own try/catch so one failure can't take the others
+  // down with it.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const serviceLabel = bookServiceFor(intent.service).title;
+
+  let pdfBytes: Uint8Array | undefined;
   try {
     const { generateInvoicePdf } = await import("@/lib/invoice-pdf");
     const { uploadObject } = await import("@/lib/firebase-admin");
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-    const serviceLabel = bookServiceFor(intent.service).title;
-    const pdfBytes = await generateInvoicePdf({
+    pdfBytes = await generateInvoicePdf({
       invoiceNumber,
       paidAtISO: new Date().toISOString(),
       amountPence: session.amount_total ?? 0,
@@ -221,12 +228,13 @@ export async function POST(request: Request) {
     const pdfPath = `invoices/${invoiceNumber}.pdf`;
     const up = await uploadObject(pdfPath, pdfBytes, "application/pdf");
     if (up.ok) {
-      try {
-        await paymentRef.set({ invoicePdfPath: pdfPath }, { merge: true });
-      } catch (error) {
-        console.error("Store invoice PDF path failed (non-blocking)", error);
-      }
+      await paymentRef.set({ invoicePdfPath: pdfPath }, { merge: true });
     }
+  } catch (error) {
+    console.error("Invoice PDF generation/upload failed (non-blocking)", error);
+  }
+
+  try {
     await sendReceiptEmail({
       to: intent.email,
       patientName: intent.name,
@@ -234,9 +242,15 @@ export async function POST(request: Request) {
       serviceLabel,
       amountPence: session.amount_total ?? 0,
       receiptUrl: `${siteUrl}/book/receipt/${session.id}`,
-      pdf: { filename: `invoice-${invoiceNumber}.pdf`, base64: Buffer.from(pdfBytes).toString("base64") },
+      ...(pdfBytes
+        ? { pdf: { filename: `invoice-${invoiceNumber}.pdf`, base64: Buffer.from(pdfBytes).toString("base64") } }
+        : {}),
     });
+  } catch (error) {
+    console.error("Receipt email failed (non-blocking)", error);
+  }
 
+  try {
     let assessmentUrl = `${siteUrl}/patient/assessment`;
     try {
       const adminAuth = getAdminAuth();
@@ -259,7 +273,7 @@ export async function POST(request: Request) {
       assessmentUrl,
     });
   } catch (error) {
-    console.error("Invoice PDF/email step failed (non-blocking)", error);
+    console.error("Assessment email failed (non-blocking)", error);
   }
 
   return NextResponse.json({ received: true }, { status: 200 });
