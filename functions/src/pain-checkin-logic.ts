@@ -22,30 +22,38 @@ export interface ExistingCheckin {
 //   - interval: the doctor-set check-in cadence (divides the streak goal)
 //   - currentRun: which streak "attempt" the pain-checkin cycle is on
 //   - existingCheckins: every checkpoint doc that belongs to currentRun
+//   - lastStreak: the streak value observed on the PREVIOUS cron run (0 if
+//     never observed / no prior data)
 //
 // Rules (mirrors the design spec):
-//   1. If the streak has broken (streak === 0) and there's a pending
-//      checkpoint for this run, expire it and bump the run counter so the
-//      next cycle starts clean at runNumber + 1.
-//   2. Otherwise, any pending checkpoint whose grace day has passed (the live
-//      streak has moved more than one day beyond it) is expired — logging is
-//      only allowed the day a checkpoint becomes due or the following day.
+//   1. A reset is detected as `streak < lastStreak` — not merely
+//      `streak === 0` — because computeStreakDays' one-day grace (today not
+//      yet logged still counts as unbroken) means a real reset can drop the
+//      count without ever touching exactly 0 (e.g. 3 -> 1 when a day was
+//      skipped and today was just logged). On a detected reset, expire every
+//      still-pending checkpoint for the current run AND unconditionally bump
+//      the run counter — even when nothing happened to be pending — so the
+//      run counter never gets stuck and a stale run can't collide with a new
+//      attempt's doc IDs.
+//   2. Otherwise (streak >= lastStreak, i.e. not a reset), any pending
+//      checkpoint whose grace day has passed (the live streak has moved more
+//      than one day beyond it) is expired — logging is only allowed the day a
+//      checkpoint becomes due or the following day.
 //   3. If the streak just landed on a fresh multiple of the interval with no
 //      existing checkpoint doc for that streakDay, create one as pending.
 export function computeCheckinActions(
   streak: number,
   interval: number,
   currentRun: number,
-  existingCheckins: ExistingCheckin[]
+  existingCheckins: ExistingCheckin[],
+  lastStreak: number
 ): PainCheckinAction[] {
   const actions: PainCheckinAction[] = [];
   const pending = existingCheckins.filter((c) => c.status === "pending");
 
-  if (streak === 0) {
-    if (pending.length > 0) {
-      for (const c of pending) actions.push({ type: "expire", streakDay: c.streakDay });
-      actions.push({ type: "bumpRun" });
-    }
+  if (streak < lastStreak) {
+    for (const c of pending) actions.push({ type: "expire", streakDay: c.streakDay });
+    actions.push({ type: "bumpRun" });
     return actions;
   }
 

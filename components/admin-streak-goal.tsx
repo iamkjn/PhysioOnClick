@@ -96,8 +96,12 @@ export function AdminStreakGoal({ adminUid, patientUid, personId }: Props) {
             inputMode="numeric"
             value={value}
             onChange={(e) => {
-              setValue(e.target.value);
-              setIntervalValue("");
+              const newValue = e.target.value;
+              setValue(newValue);
+              const newTarget = Number(newValue);
+              const newValidIntervals =
+                Number.isInteger(newTarget) && newTarget >= 1 ? getValidCheckinIntervals(newTarget) : [];
+              setIntervalValue((prev) => (prev !== "" && !newValidIntervals.includes(Number(prev)) ? "" : prev));
               setError(null);
             }}
             placeholder="e.g. 18"

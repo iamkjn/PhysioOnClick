@@ -347,6 +347,7 @@ export const sendPainCheckinReminders = onSchedule(
         const goal = goalDoc.data();
         const interval = goal.painCheckinInterval as number;
         const currentRun = typeof goal.currentRun === "number" ? goal.currentRun : 0;
+        const lastStreak = typeof goal.lastStreak === "number" ? goal.lastStreak : 0;
 
         const personRef = goalDoc.ref.parent.parent;
         const patientRef = personRef?.parent.parent;
@@ -357,9 +358,17 @@ export const sendPainCheckinReminders = onSchedule(
         // Live streak: consecutive days (counting back from today, allowing
         // today itself to be un-logged) with at least one exercise completion.
         // Mirrors computeStreakDays in lib/recovery.ts exactly.
-        const exerciseLogsSnap = await personRef.collection("exerciseLogs").get();
+        // Bound to the most recent 60 days, same window as getExerciseLogs in
+        // lib/recovery.ts. orderBy("__name__") + take-last-N-in-memory instead
+        // of a descending key-scan because the Firestore emulator rejects
+        // orderBy("__name__", "desc") (see recentByDateKey in lib/recovery.ts).
+        const exerciseLogsSnap = await personRef
+          .collection("exerciseLogs")
+          .orderBy("__name__")
+          .get();
+        const recentExerciseLogs = exerciseLogsSnap.docs.slice(-60);
         const completedDates = new Set<string>();
-        exerciseLogsSnap.forEach((d) => {
+        recentExerciseLogs.forEach((d) => {
           const completions = d.data().completions as Record<string, boolean> | undefined;
           if (completions && Object.values(completions).some(Boolean)) completedDates.add(d.id);
         });
@@ -370,12 +379,23 @@ export const sendPainCheckinReminders = onSchedule(
           else break;
         }
 
-        const checkinsSnap = await personRef.collection("painCheckins").get();
-        const existingForRun: ExistingCheckin[] = checkinsSnap.docs
-          .filter((d) => d.data().runNumber === currentRun)
-          .map((d) => ({ streakDay: d.data().streakDay as number, status: d.data().status as ExistingCheckin["status"] }));
+        // Bounded to the current run — that's genuinely all this function
+        // needs to look at (unlike exerciseLogs, which needs a fixed window).
+        const checkinsSnap = await personRef
+          .collection("painCheckins")
+          .where("runNumber", "==", currentRun)
+          .get();
+        const existingForRun: ExistingCheckin[] = checkinsSnap.docs.map((d) => ({
+          streakDay: d.data().streakDay as number,
+          status: d.data().status as ExistingCheckin["status"],
+        }));
 
-        const actions = computeCheckinActions(streak, interval, currentRun, existingForRun);
+        const actions = computeCheckinActions(streak, interval, currentRun, existingForRun, lastStreak);
+
+        // Always persist the newly observed streak so the next day's run has
+        // an accurate lastStreak, regardless of whether any other action fired.
+        await goalDoc.ref.set({ lastStreak: streak }, { merge: true });
+
         if (actions.length === 0) continue;
 
         let fcmToken: string | undefined;
