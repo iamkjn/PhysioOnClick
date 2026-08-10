@@ -359,16 +359,18 @@ export const sendPainCheckinReminders = onSchedule(
         // today itself to be un-logged) with at least one exercise completion.
         // Mirrors computeStreakDays in lib/recovery.ts exactly.
         // Bound to the most recent 60 days, same window as getExerciseLogs in
-        // lib/recovery.ts. orderBy("__name__") + take-last-N-in-memory instead
-        // of a descending key-scan because the Firestore emulator rejects
-        // orderBy("__name__", "desc") (see recentByDateKey in lib/recovery.ts).
+        // lib/recovery.ts. orderBy("__name__") + limitToLast(60) is a genuine
+        // query-level bound (not a read-everything-then-slice-in-memory one) —
+        // ascending + limitToLast instead of a descending key-scan because the
+        // Firestore emulator rejects orderBy("__name__", "desc") (see
+        // recentByDateKey in lib/recovery.ts).
         const exerciseLogsSnap = await personRef
           .collection("exerciseLogs")
           .orderBy("__name__")
+          .limitToLast(60)
           .get();
-        const recentExerciseLogs = exerciseLogsSnap.docs.slice(-60);
         const completedDates = new Set<string>();
-        recentExerciseLogs.forEach((d) => {
+        exerciseLogsSnap.docs.forEach((d) => {
           const completions = d.data().completions as Record<string, boolean> | undefined;
           if (completions && Object.values(completions).some(Boolean)) completedDates.add(d.id);
         });
