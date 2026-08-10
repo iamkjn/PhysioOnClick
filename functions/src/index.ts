@@ -1,7 +1,7 @@
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { initializeApp } from "firebase-admin/app";
-import { getFirestore, FieldValue } from "firebase-admin/firestore";
+import { getFirestore, FieldValue, FieldPath } from "firebase-admin/firestore";
 import { getMessaging } from "firebase-admin/messaging";
 import { computeCheckinActions, type ExistingCheckin } from "./pain-checkin-logic";
 
@@ -359,15 +359,17 @@ export const sendPainCheckinReminders = onSchedule(
         // today itself to be un-logged) with at least one exercise completion.
         // Mirrors computeStreakDays in lib/recovery.ts exactly.
         // Bound to the most recent 60 days, same window as getExerciseLogs in
-        // lib/recovery.ts. orderBy("__name__") + limitToLast(60) is a genuine
-        // query-level bound (not a read-everything-then-slice-in-memory one) —
-        // ascending + limitToLast instead of a descending key-scan because the
-        // Firestore emulator rejects orderBy("__name__", "desc") (see
-        // recentByDateKey in lib/recovery.ts).
+        // lib/recovery.ts. A >= cutoff filter on the document ID, ascending, is
+        // a genuine query-level bound (Firestore only returns matching docs) —
+        // NOT limitToLast/orderBy(...).desc(), which the Firestore emulator
+        // rejects as "does not support descending key scans" (confirmed
+        // against a running emulator; also why recentByDateKey in
+        // lib/recovery.ts reads ascending and slices in memory instead).
+        // Ascending + a documentId() lower bound has no such restriction.
         const exerciseLogsSnap = await personRef
           .collection("exerciseLogs")
-          .orderBy("__name__")
-          .limitToLast(60)
+          .where(FieldPath.documentId(), ">=", dateKeyDaysAgo(59))
+          .orderBy(FieldPath.documentId())
           .get();
         const completedDates = new Set<string>();
         exerciseLogsSnap.docs.forEach((d) => {
