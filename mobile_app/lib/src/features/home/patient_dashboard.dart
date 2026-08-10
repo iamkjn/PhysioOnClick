@@ -280,18 +280,25 @@ class _PainCheckinCardState extends State<_PainCheckinCard> {
   bool _saving = false;
   bool _loggedJustNow = false;
 
+  late final Future<int?> _intervalFuture =
+      RecoveryService.getPainCheckinInterval(widget.uid, widget.personId);
+  late final Stream<List<Map<String, dynamic>>> _checkinsStream =
+      RecoveryService.watchPainCheckins(widget.uid, widget.personId);
+  late final Future<int> _runFuture =
+      RecoveryService.getCurrentRun(widget.uid, widget.personId);
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<int?>(
-      future: RecoveryService.getPainCheckinInterval(widget.uid, widget.personId),
+      future: _intervalFuture,
       builder: (context, intervalSnap) {
         if (intervalSnap.data == null) return const SizedBox.shrink();
         return StreamBuilder<List<Map<String, dynamic>>>(
-          stream: RecoveryService.watchPainCheckins(widget.uid, widget.personId),
+          stream: _checkinsStream,
           builder: (context, checkinsSnap) {
             final checkins = checkinsSnap.data ?? const [];
             return FutureBuilder<int>(
-              future: RecoveryService.getCurrentRun(widget.uid, widget.personId),
+              future: _runFuture,
               builder: (context, runSnap) {
                 if (!runSnap.hasData) return const SizedBox.shrink();
                 final currentRun = runSnap.data!;
