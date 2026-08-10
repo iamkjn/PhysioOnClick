@@ -78,6 +78,57 @@ class RecoveryService {
         .snapshots();
   }
 
+  static Stream<List<Map<String, dynamic>>> watchPainCheckins(
+      String uid, String personId) {
+    return _personBase(uid, personId)
+        .collection('painCheckins')
+        .orderBy('streakDay')
+        .snapshots()
+        .map((snap) => snap.docs
+            .map((d) => {
+                  'id': d.id,
+                  'runNumber': d.data()['runNumber'] ?? 0,
+                  'streakDay': d.data()['streakDay'] ?? 0,
+                  'status': d.data()['status'] ?? 'pending',
+                  'score': d.data()['score'],
+                  'note': d.data()['note'] ?? '',
+                })
+            .toList());
+  }
+
+  static Future<int> getCurrentRun(String uid, String personId) async {
+    final snap = await _personBase(uid, personId).collection('goals').doc('current').get();
+    final run = snap.data()?['currentRun'];
+    return run is int ? run : 0;
+  }
+
+  static Future<int?> getPainCheckinInterval(String uid, String personId) async {
+    final snap = await _personBase(uid, personId).collection('goals').doc('current').get();
+    final interval = snap.data()?['painCheckinInterval'];
+    return interval is int ? interval : null;
+  }
+
+  static Future<void> logPainCheckinScore(
+    String uid,
+    String personId,
+    String checkinId,
+    int score, {
+    String note = '',
+  }) async {
+    if (score < 0 || score > 10) {
+      throw ArgumentError('Pain score must be between 0 and 10.');
+    }
+    await _personBase(uid, personId)
+        .collection('painCheckins')
+        .doc(checkinId)
+        .update({
+      'status': 'logged',
+      'score': score,
+      'note': note,
+      'loggedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   /// Computes the recovery improvement percentage relative to [baselineScore].
   ///
   /// **Windowing responsibility:** callers must pass the correct window of

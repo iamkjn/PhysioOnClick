@@ -79,6 +79,7 @@ class _PatientDashboardState extends State<PatientDashboard> {
           ),
           const SizedBox(height: 16),
           _RecoveryPercentTile(uid: widget.user.uid, personId: _personId),
+          _PainCheckinCard(uid: widget.user.uid, personId: _personId),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -260,6 +261,105 @@ class _RecoveryPercentTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: child,
+    );
+  }
+}
+
+class _PainCheckinCard extends StatefulWidget {
+  const _PainCheckinCard({required this.uid, required this.personId});
+
+  final String uid;
+  final String personId;
+
+  @override
+  State<_PainCheckinCard> createState() => _PainCheckinCardState();
+}
+
+class _PainCheckinCardState extends State<_PainCheckinCard> {
+  int _score = 5;
+  bool _saving = false;
+  bool _loggedJustNow = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<int?>(
+      future: RecoveryService.getPainCheckinInterval(widget.uid, widget.personId),
+      builder: (context, intervalSnap) {
+        if (intervalSnap.data == null) return const SizedBox.shrink();
+        return StreamBuilder<List<Map<String, dynamic>>>(
+          stream: RecoveryService.watchPainCheckins(widget.uid, widget.personId),
+          builder: (context, checkinsSnap) {
+            final checkins = checkinsSnap.data ?? const [];
+            return FutureBuilder<int>(
+              future: RecoveryService.getCurrentRun(widget.uid, widget.personId),
+              builder: (context, runSnap) {
+                if (!runSnap.hasData) return const SizedBox.shrink();
+                final currentRun = runSnap.data!;
+                final due = checkins.firstWhere(
+                  (c) => c['runNumber'] == currentRun && c['status'] == 'pending',
+                  orElse: () => const {},
+                );
+                if (due.isEmpty) return const SizedBox.shrink();
+
+                if (_loggedJustNow) {
+                  return const Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text('Thanks — logged. Your physio will see this ahead of your follow-up.'),
+                    ),
+                  );
+                }
+
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Day ${due['streakDay']} check-in',
+                            style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 4),
+                        const Text(
+                            'Optional: your physio likes a check-in every few days. How\'s your pain right now?'),
+                        Slider(
+                          value: _score.toDouble(),
+                          min: 0,
+                          max: 10,
+                          divisions: 10,
+                          label: '$_score',
+                          onChanged: (v) => setState(() => _score = v.round()),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FilledButton(
+                            onPressed: _saving
+                                ? null
+                                : () async {
+                                    setState(() => _saving = true);
+                                    try {
+                                      await RecoveryService.logPainCheckinScore(
+                                        widget.uid,
+                                        widget.personId,
+                                        due['id'] as String,
+                                        _score,
+                                      );
+                                      if (mounted) setState(() => _loggedJustNow = true);
+                                    } finally {
+                                      if (mounted) setState(() => _saving = false);
+                                    }
+                                  },
+                            child: Text(_saving ? 'Saving…' : 'Log check-in'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
     );
   }
 }
