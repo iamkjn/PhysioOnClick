@@ -34,7 +34,11 @@ export interface ExistingCheckin {
 //      still-pending checkpoint for the current run AND unconditionally bump
 //      the run counter — even when nothing happened to be pending — so the
 //      run counter never gets stuck and a stale run can't collide with a new
-//      attempt's doc IDs.
+//      attempt's doc IDs. If the post-reset streak itself already lands on a
+//      fresh interval multiple (e.g. a reset straight from 6 to 3 with
+//      interval 3), create that checkpoint under the NEW run number right
+//      away — otherwise the new run's first checkpoint would be silently
+//      skipped, since nothing revisits this streakDay once it's passed.
 //   2. Otherwise (streak >= lastStreak, i.e. not a reset), any pending
 //      checkpoint whose grace day has passed (the live streak has moved more
 //      than one day beyond it) is expired — logging is only allowed the day a
@@ -54,6 +58,9 @@ export function computeCheckinActions(
   if (streak < lastStreak) {
     for (const c of pending) actions.push({ type: "expire", streakDay: c.streakDay });
     actions.push({ type: "bumpRun" });
+    if (streak > 0 && interval > 1 && streak % interval === 0) {
+      actions.push({ type: "create", runNumber: currentRun + 1, streakDay: streak });
+    }
     return actions;
   }
 
