@@ -13,6 +13,9 @@ import {
 import { validateOptionalText } from "@/lib/validation";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
+import { suggestExercises } from "@/lib/exercise-suggestions";
+import { SuggestedExercises } from "@/components/suggested-exercises";
+import { assignExercise, getAssignedExercises } from "@/lib/recovery";
 
 interface LinkedBooking {
   id: string;
@@ -121,6 +124,8 @@ function ReviewItem({
   const [nextCheckupDate, setNextCheckupDate] = useState(form.nextCheckupDate);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [assignedIds, setAssignedIds] = useState<string[]>([]);
+  const [assigningId, setAssigningId] = useState<string | null>(null);
 
   useEffect(() => {
     setReviewStatus(form.reviewStatus === "awaiting_review" ? "reviewed" : form.reviewStatus);
@@ -128,6 +133,16 @@ function ReviewItem({
     setRiskPlan(form.riskPlan);
     setNextCheckupDate(form.nextCheckupDate);
   }, [form]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getAssignedExercises(patientUid, personId).then((list) => {
+      if (!cancelled) setAssignedIds(list.map((a) => a.exerciseId));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [patientUid, personId]);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -244,6 +259,31 @@ function ReviewItem({
           <div><dt>Emergency contact</dt><dd>{form.emergencyContactName || "Not recorded"} {form.emergencyContactPhone ? `- ${form.emergencyContactPhone}` : ""}</dd></div>
           <div><dt>Consent</dt><dd>{coreConsentComplete ? "Core consent confirmed" : "Consent incomplete"}; video {form.consent.videoConsent ? "confirmed" : "not confirmed"}</dd></div>
         </dl>
+
+        <SuggestedExercises
+          suggestions={suggestExercises(
+            {
+              clinicalArea: form.subjective.clinicalArea,
+              freeText: [form.presentingComplaint, form.symptoms, form.functionalImpact, form.goals]
+                .filter(Boolean)
+                .join(" "),
+              alreadyAssignedIds: assignedIds,
+            },
+            5
+          )}
+          assigning={assigningId}
+          onAssign={async (exerciseId) => {
+            const adminUid = auth?.currentUser?.uid;
+            if (!adminUid) return;
+            setAssigningId(exerciseId);
+            try {
+              await assignExercise(patientUid, personId, exerciseId, adminUid);
+              setAssignedIds((prev) => [...prev, exerciseId]);
+            } finally {
+              setAssigningId(null);
+            }
+          }}
+        />
 
         <form className="assessment-review-form" onSubmit={(event) => void handleSave(event)}>
           <label>
