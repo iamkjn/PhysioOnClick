@@ -1,38 +1,35 @@
-import { describe, it, expect } from 'vitest'
-import { exercises } from '@/lib/site-data'
+import { describe, it, expect } from "vitest";
+import { exercises } from "@/lib/site-data";
 
-describe('exercises catalogue', () => {
-  it('has unique ids', () => {
-    const ids = exercises.map((e) => e.id)
-    expect(new Set(ids).size).toBe(ids.length)
-  })
+const VALID_AREAS = new Set([
+  "spine", "upper_limb", "lower_limb", "balance_walking",
+  "neuro", "post_op", "pelvic_health", "paediatric", "general",
+]);
 
-  it('has at least 12 exercises', () => {
-    expect(exercises.length).toBeGreaterThanOrEqual(12)
-  })
-
-  it('keeps ex-1..ex-4 unchanged with their known bodyParts', () => {
-    const byId = new Map(exercises.map((e) => [e.id, e]))
-    expect(byId.get('ex-1')?.bodyPart).toBe('Lower limb')
-    expect(byId.get('ex-2')?.bodyPart).toBe('Shoulder')
-    expect(byId.get('ex-3')?.bodyPart).toBe('Lumbar spine')
-    expect(byId.get('ex-4')?.bodyPart).toBe('Balance')
-  })
-
-  it('spans at least 5 distinct bodyPart categories', () => {
-    const categories = new Set(exercises.map((e) => e.bodyPart))
-    expect(categories.size).toBeGreaterThanOrEqual(5)
-  })
-
-  it('gives every exercise the required fields, non-empty', () => {
-    for (const e of exercises) {
-      expect(e.id).toBeTruthy()
-      expect(e.title).toBeTruthy()
-      expect(e.bodyPart).toBeTruthy()
-      expect(e.condition).toBeTruthy()
-      expect(e.stage).toBeTruthy()
-      expect(e.description).toBeTruthy()
-      expect(e.videoUrl).toMatch(/^https:\/\/www\.youtube\.com\/embed\//)
+describe("exercises library", () => {
+  it("every exercise has a valid clinicalArea and non-empty tags", () => {
+    for (const ex of exercises) {
+      expect(VALID_AREAS.has(ex.clinicalArea)).toBe(true);
+      expect(Array.isArray(ex.tags)).toBe(true);
+      expect(ex.tags.length).toBeGreaterThan(0);
     }
-  })
-})
+  });
+
+  it("has no duplicate ids", () => {
+    const ids = exercises.map((e) => e.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("keeps existing exercise ids unchanged", () => {
+    const ids = new Set(exercises.map((e) => e.id));
+    for (let i = 1; i <= 16; i++) expect(ids.has(`ex-${i}`)).toBe(true);
+    for (const id of [
+      "face-smile", "face-brow-raise", "face-eye-close", "face-cheek-puff",
+      "face-frown", "face-big-smile", "face-eye-wide", "face-pucker",
+    ]) expect(ids.has(id)).toBe(true);
+  });
+
+  it("has grown the library to 150 or more exercises", () => {
+    expect(exercises.length).toBeGreaterThanOrEqual(150);
+  });
+});
