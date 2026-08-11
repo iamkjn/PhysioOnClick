@@ -7,6 +7,10 @@ import { validateRequiredText, validateIntInRange, LIMITS } from "@/lib/validati
 import { ClipboardIcon } from "@/components/icons";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { getStreakGoal, setStreakGoal } from "@/lib/goals";
+import { suggestExercises } from "@/lib/exercise-suggestions";
+import { SuggestedExercises } from "@/components/suggested-exercises";
+import { assignExercise, getAssignedExercises } from "@/lib/recovery";
+import { getPatientAssessmentForms, type PatientAssessmentFormRecord } from "@/lib/assessment-forms";
 
 interface SummaryFormProps {
   booking: {
@@ -50,6 +54,11 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   const adminUid = auth?.currentUser?.uid;
   const patientUid = booking.bookedBy || booking.patientId;
   const [streakGoal, setStreakGoalState] = useState(0);
+  const [assignedIds, setAssignedIds] = useState<string[]>([]);
+  const [latestClinicalArea, setLatestClinicalArea] = useState<
+    PatientAssessmentFormRecord["subjective"]["clinicalArea"] | undefined
+  >(undefined);
+  const [assigningId, setAssigningId] = useState<string | null>(null);
   const [form, setForm] = useState({
     painScore: 5,
     recoveryPercent: 50,
@@ -79,6 +88,12 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
     let cancelled = false;
     getStreakGoal(patientUid, booking.patientId)
       .then((g) => { if (!cancelled) setStreakGoalState(g ?? 0); })
+      .catch(() => {});
+    getAssignedExercises(patientUid, booking.patientId)
+      .then((list) => { if (!cancelled) setAssignedIds(list.map((a) => a.exerciseId)); })
+      .catch(() => {});
+    getPatientAssessmentForms(patientUid, booking.patientId)
+      .then((forms) => { if (!cancelled && forms.length > 0) setLatestClinicalArea(forms[0].subjective.clinicalArea); })
       .catch(() => {});
     return () => { cancelled = true; };
   }, [open, patientUid, booking.patientId]);
@@ -253,6 +268,27 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
             <p className="summary-section-hint" style={{ marginBottom: "var(--space-2)" }}>
               Adds exercises to their program instantly (separate from publishing this summary). Exercises marked 🎯 also enable the patient&apos;s motion check.
             </p>
+            <SuggestedExercises
+              suggestions={suggestExercises(
+                {
+                  clinicalArea: latestClinicalArea,
+                  freeText: `${form.workedOn} ${form.nextSteps}`,
+                  alreadyAssignedIds: assignedIds,
+                },
+                5
+              )}
+              assigning={assigningId}
+              onAssign={async (exerciseId) => {
+                if (!adminUid || !patientUid) return;
+                setAssigningId(exerciseId);
+                try {
+                  await assignExercise(patientUid, booking.patientId, exerciseId, adminUid);
+                  setAssignedIds((prev) => [...prev, exerciseId]);
+                } finally {
+                  setAssigningId(null);
+                }
+              }}
+            />
             {adminUid && patientUid && (
               <AdminExerciseAssigner adminUid={adminUid} patientUid={patientUid} personId={booking.patientId} />
             )}
