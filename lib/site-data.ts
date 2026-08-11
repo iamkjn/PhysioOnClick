@@ -599,6 +599,114 @@ export const exercises: Exercise[] = [
     stage: "Facial rehab",
     description: "Draw both lips forward into a pucker, as if to kiss or whistle, then relax — building lip-rounding control for speech and drinking.",
     videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+  },
+  {
+    id: "ex-17", title: "McKenzie Press-Up", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "disc", "extension-bias", "early-rehab"],
+    condition: "Lumbar disc-related back pain", stage: "Early rehab",
+    description: "Gentle repeated lower-back extension to centralise leg symptoms toward the spine, following the McKenzie extension principle."
+  },
+  {
+    id: "ex-18", title: "Standing Extension", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "disc", "extension-bias", "mobility"],
+    condition: "Lumbar disc-related back pain", stage: "Mobility phase",
+    description: "An upright version of the press-up, hands on hips, easing the spine backward for symptom relief between exercise sessions."
+  },
+  {
+    id: "ex-19", title: "Cat-Cow Stretch", bodyPart: "Thoracic spine",
+    clinicalArea: "spine", tags: ["mid-back", "mobility", "early-rehab"],
+    condition: "Thoracic stiffness", stage: "Early rehab",
+    description: "Alternates gentle spinal flexion and extension on hands and knees to restore comfortable segmental movement."
+  },
+  {
+    id: "ex-20", title: "Thoracic Rotation (Open Book)", bodyPart: "Thoracic spine",
+    clinicalArea: "spine", tags: ["mid-back", "rotation", "mobility"],
+    condition: "Thoracic stiffness", stage: "Mobility phase",
+    description: "Side-lying rotation opening the chest toward the ceiling, restoring rotation range often lost with prolonged sitting."
+  },
+  {
+    id: "ex-21", title: "Neck Rotation Range", bodyPart: "Cervical spine",
+    clinicalArea: "spine", tags: ["neck", "range-of-motion", "early-rehab"],
+    condition: "Neck pain", stage: "Early rehab",
+    description: "Slow, controlled turning of the head side to side within a comfortable range to restore rotation."
+  },
+  {
+    id: "ex-22", title: "Neck Side Flexion Stretch", bodyPart: "Cervical spine",
+    clinicalArea: "spine", tags: ["neck", "flexibility", "early-rehab"],
+    condition: "Neck pain", stage: "Early rehab",
+    description: "A gentle ear-to-shoulder stretch, held briefly, to ease tight upper trapezius and neck muscles."
+  },
+  {
+    id: "ex-23", title: "Isometric Neck Hold", bodyPart: "Cervical spine",
+    clinicalArea: "spine", tags: ["neck", "whiplash", "strength-phase"],
+    condition: "Whiplash-associated disorder", stage: "Strength phase",
+    description: "Gentle resistance pushing the head into a supporting hand without movement, rebuilding neck muscle endurance safely."
+  },
+  {
+    id: "ex-24", title: "Prone Cobra", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "postural-control", "strength-phase"],
+    condition: "Postural low back pain", stage: "Strength phase",
+    description: "Lying face down, lifting the chest slightly using back extensors to build postural endurance for desk-based pain."
+  },
+  {
+    id: "ex-25", title: "Side Plank (Modified)", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "core-control", "strength-phase"],
+    condition: "Low back pain", stage: "Strength phase",
+    description: "A knee-supported side plank building lateral trunk stability, progressing spinal load tolerance safely."
+  },
+  {
+    id: "ex-26", title: "Segmental Rolling", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "mobility", "early-rehab"],
+    condition: "Acute low back pain", stage: "Early rehab",
+    description: "Rolling from back to side in a controlled, segmental way to reintroduce comfortable movement after an acute flare."
+  },
+  {
+    id: "ex-27", title: "Pelvic Tilt", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "pregnancy", "early-rehab"],
+    condition: "Pregnancy-related back pain", stage: "Early rehab",
+    description: "A small rocking of the pelvis to ease lumbar tension, safe and gentle enough for antenatal and postnatal back pain."
+  },
+  {
+    id: "ex-28", title: "Quadruped Arm/Leg Reach", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "spinal-stability", "strength-phase"],
+    condition: "Chronic low back pain", stage: "Return to function",
+    description: "An advanced bird-dog progression adding controlled reach, challenging balance and trunk control together."
+  },
+  {
+    id: "ex-29", title: "Standing Chin Retraction", bodyPart: "Cervical spine",
+    clinicalArea: "spine", tags: ["neck", "postural-control", "early-rehab"],
+    condition: "Cervicogenic headache", stage: "Early rehab",
+    description: "Drawing the chin straight back to correct forward-head posture, a common driver of tension-type headaches."
+  },
+  {
+    id: "ex-30", title: "Levator Scapulae Stretch", bodyPart: "Cervical spine",
+    clinicalArea: "spine", tags: ["neck", "flexibility", "mobility"],
+    condition: "Neck and upper trap tightness", stage: "Mobility phase",
+    description: "A diagonal neck stretch looking down and away to lengthen a commonly tight muscle behind the shoulder blade."
+  },
+  {
+    id: "ex-31", title: "Lumbar Flexion in Lying", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "stenosis", "flexion-bias", "early-rehab"],
+    condition: "Lumbar spinal stenosis", stage: "Early rehab",
+    description: "Gently drawing both knees toward the chest to ease stenosis-related symptoms, which typically prefer flexion over extension."
+  },
+  {
+    id: "ex-32", title: "Sciatic Nerve Glide", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "sciatica", "neural-mobility", "early-rehab"],
+    condition: "Sciatica", stage: "Early rehab",
+    description: "A gentle sliding nerve mobilisation of the leg and ankle to ease nerve-related sensitivity down the leg."
+  },
+  {
+    id: "ex-33", title: "Wall Angels", bodyPart: "Thoracic spine",
+    clinicalArea: "spine", tags: ["mid-back", "posture", "strength-phase"],
+    condition: "Postural thoracic pain", stage: "Strength phase",
+    description: "Sliding the arms up and down a wall while keeping contact, retraining shoulder-blade control and upright posture."
+  },
+  {
+    id: "ex-34", title: "Functional Lifting Pattern", bodyPart: "Lumbar spine",
+    clinicalArea: "spine", tags: ["low-back", "return-to-work", "return-to-function"],
+    condition: "Chronic low back pain", stage: "Return to function",
+    description: "Practising a hip-hinge lifting technique with a light load, building confidence for safe lifting at work or home."
   }
 ];
 
