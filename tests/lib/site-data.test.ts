@@ -32,4 +32,18 @@ describe("exercises library", () => {
   it("has grown the library to 150 or more exercises", () => {
     expect(exercises.length).toBeGreaterThanOrEqual(150);
   });
+
+  it("has non-empty required fields and well-formed videoUrl for every exercise", () => {
+    const EMBED_URL_PATTERN = /^https:\/\/www\.youtube\.com\/embed\//;
+    for (const ex of exercises) {
+      expect(ex.title?.trim()).toBeTruthy();
+      expect(ex.bodyPart?.trim()).toBeTruthy();
+      expect(ex.condition?.trim()).toBeTruthy();
+      expect(ex.stage?.trim()).toBeTruthy();
+      expect(ex.description?.trim()).toBeTruthy();
+      if (ex.videoUrl) {
+        expect(ex.videoUrl).toMatch(EMBED_URL_PATTERN);
+      }
+    }
+  });
 });

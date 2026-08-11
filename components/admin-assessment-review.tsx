@@ -274,11 +274,16 @@ function ReviewItem({
           assigning={assigningId}
           onAssign={async (exerciseId) => {
             const adminUid = auth?.currentUser?.uid;
-            if (!adminUid) return;
+            if (!adminUid) {
+              toast.show("Not signed in — please refresh and try again.", "error");
+              return;
+            }
             setAssigningId(exerciseId);
             try {
               await assignExercise(patientUid, personId, exerciseId, adminUid);
               setAssignedIds((prev) => [...prev, exerciseId]);
+            } catch {
+              toast.show("Could not assign exercise. Try again.", "error");
             } finally {
               setAssigningId(null);
             }

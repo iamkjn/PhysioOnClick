@@ -279,11 +279,16 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
               )}
               assigning={assigningId}
               onAssign={async (exerciseId) => {
-                if (!adminUid || !patientUid) return;
+                if (!adminUid || !patientUid) {
+                  toast.show("Not signed in — please refresh and try again.", "error");
+                  return;
+                }
                 setAssigningId(exerciseId);
                 try {
                   await assignExercise(patientUid, booking.patientId, exerciseId, adminUid);
                   setAssignedIds((prev) => [...prev, exerciseId]);
+                } catch {
+                  toast.show("Could not assign exercise. Try again.", "error");
                 } finally {
                   setAssigningId(null);
                 }
