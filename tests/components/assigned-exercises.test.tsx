@@ -56,7 +56,7 @@ describe('AssignedExercises', () => {
     expect(screen.queryByText('+ Add video link')).not.toBeInTheDocument()
     // The physio's demo video is watchable (embed url converted to a watch url).
     const demo = screen.getByText('▶ Watch demo') as HTMLAnchorElement
-    expect(demo.href).toBe(EXERCISE.videoUrl.replace('/embed/', '/watch?v='))
+    expect(demo.href).toBe(EXERCISE.videoUrl!.replace('/embed/', '/watch?v='))
     expect(demo.target).toBe('_blank')
     expect(demo.rel).toContain('noopener')
   })

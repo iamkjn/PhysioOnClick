@@ -3,7 +3,8 @@
 // same 64×56 viewBox, 2.4px round-capped strokes, and pose specs, on a rounded
 // accent-soft tile. Pose is inferred from the exercise name; unknown → standing.
 
-type Pose = "legRaise" | "kneeExt" | "heelSlide" | "balance" | "bike" | "squat" | "pendulum" | "standing";
+type Pose = "legRaise" | "kneeExt" | "heelSlide" | "balance" | "bike" | "squat" | "pendulum" | "standing"
+  | "neckTurn" | "hipStretch" | "anklePump" | "pelvicTilt" | "overheadReach" | "catCow" | "gripSqueeze";
 
 type Spec = {
   circles: [number, number, number][]; // cx, cy, r
@@ -44,6 +45,34 @@ const SPECS: Record<Pose, Spec> = {
     circles: [[32, 12, 5]],
     segments: [[32, 17, 32, 34], [32, 22, 22, 30], [32, 22, 42, 30], [32, 34, 24, 48], [32, 34, 40, 48]],
   },
+  neckTurn: {
+    circles: [[32, 11, 5]],
+    segments: [[32, 16, 32, 34], [32, 21, 22, 29], [32, 21, 42, 29], [32, 34, 24, 48], [32, 34, 40, 48], [28, 9, 36, 13]],
+  },
+  hipStretch: {
+    circles: [[24, 13, 5]],
+    segments: [[24, 18, 30, 33], [30, 33, 44, 30], [44, 30, 48, 46], [30, 33, 22, 46], [16, 40, 30, 33], [20, 48, 52, 48]],
+  },
+  anklePump: {
+    circles: [[18, 40, 4.5]],
+    segments: [[18, 40, 34, 41], [34, 41, 34, 46], [34, 46, 48, 44], [12, 48, 54, 48]],
+  },
+  pelvicTilt: {
+    circles: [[32, 12, 5]],
+    segments: [[32, 17, 30, 33], [30, 33, 22, 48], [30, 33, 38, 48], [24, 32, 38, 34]],
+  },
+  overheadReach: {
+    circles: [[32, 10, 5]],
+    segments: [[32, 15, 32, 33], [32, 18, 20, 6], [32, 18, 44, 6], [32, 33, 24, 48], [32, 33, 40, 48]],
+  },
+  catCow: {
+    circles: [[16, 30, 4]],
+    segments: [[16, 34, 32, 26], [32, 26, 50, 32], [16, 34, 12, 46], [50, 32, 54, 46], [24, 20, 40, 22]],
+  },
+  gripSqueeze: {
+    circles: [[30, 30, 6]],
+    segments: [[24, 30, 20, 24], [36, 30, 40, 24], [24, 32, 20, 38], [36, 32, 40, 38]],
+  },
 };
 
 // Mirrors the mobile _poseFor keyword inference, with two extra keys for the
@@ -55,7 +84,14 @@ function poseForName(name: string): Pose {
   if (n.includes("heel slide")) return "heelSlide";
   if (n.includes("balance")) return "balance";
   if (n.includes("bike") || n.includes("cycl")) return "bike";
-  if (n.includes("squat") || n.includes("sit to stand")) return "squat";
+  if (n.includes("squat") || n.includes("sit to stand") || n.includes("sit-to-stand")) return "squat";
+  if (n.includes("neck") && (n.includes("rotation") || n.includes("turn"))) return "neckTurn";
+  if (n.includes("hip flexor") || n.includes("hip stretch") || n.includes("hamstring stretch")) return "hipStretch";
+  if (n.includes("ankle pump") || n.includes("ankle alphabet")) return "anklePump";
+  if (n.includes("pelvic tilt")) return "pelvicTilt";
+  if (n.includes("overhead") || n.includes("press-up") || n.includes("press up")) return "overheadReach";
+  if (n.includes("cat-cow") || n.includes("cat cow") || n.includes("thoracic rotation")) return "catCow";
+  if (n.includes("grip") || n.includes("tendon glide")) return "gripSqueeze";
   if (n.includes("pendulum") || n.includes("flexion") || n.includes("shoulder") || n.includes("scapular")) return "pendulum";
   return "standing";
 }
