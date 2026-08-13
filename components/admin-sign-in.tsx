@@ -1,5 +1,5 @@
 "use client";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { FormEvent, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { validateEmail, LIMITS } from "@/lib/validation";
@@ -9,11 +9,14 @@ export function AdminSignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
+    setResetMessage("");
 
     const emailErr = validateEmail(email);
     if (emailErr) {
@@ -33,6 +36,29 @@ export function AdminSignIn() {
       setError("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleForgotPassword() {
+    setError("");
+    setResetMessage("");
+
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setError("Enter your email address above first, then click “Forgot password?”.");
+      return;
+    }
+
+    setResetting(true);
+    try {
+      await sendPasswordResetEmail(auth!, email.trim());
+    } catch {
+      // Firebase's own error (e.g. malformed email) is rare here since we
+      // already validated the format; swallow it and show the same
+      // account-enumeration-safe message as the success path.
+    } finally {
+      setResetting(false);
+      setResetMessage("If an account exists for that email, a password reset link has been sent.");
     }
   }
 
@@ -56,6 +82,7 @@ export function AdminSignIn() {
           <label htmlFor="admin-password" className="sr-only">Password</label>
           <PasswordInput id="admin-password" className="input" placeholder="Password" autoComplete="current-password" required maxLength={LIMITS.password} value={password} onChange={(e) => setPassword(e.target.value)} />
           {error && <p role="alert" aria-live="assertive" style={{ color: "var(--color-error)", fontSize: "var(--text-sm)", margin: 0, fontFamily: "var(--font-sans)" }}>{error}</p>}
+          {resetMessage && <p role="status" aria-live="polite" style={{ color: "var(--color-success)", fontSize: "var(--text-sm)", margin: 0, fontFamily: "var(--font-sans)" }}>{resetMessage}</p>}
           <button
             type="submit"
             className="button primary full-width"
@@ -63,6 +90,24 @@ export function AdminSignIn() {
             style={{ marginTop: "var(--space-1)", opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
           >
             {loading ? "Signing in…" : "Sign in"}
+          </button>
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            disabled={resetting}
+            style={{
+              background: "none",
+              border: 0,
+              padding: 0,
+              color: "var(--color-primary)",
+              fontSize: "var(--text-sm)",
+              fontFamily: "var(--font-sans)",
+              textAlign: "center",
+              cursor: resetting ? "not-allowed" : "pointer",
+              opacity: resetting ? 0.7 : 1,
+            }}
+          >
+            {resetting ? "Sending reset link…" : "Forgot password?"}
           </button>
         </form>
       </div>
