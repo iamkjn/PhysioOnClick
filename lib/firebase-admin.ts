@@ -18,7 +18,7 @@ import { SignJWT, createRemoteJWKSet, decodeJwt, importPKCS8, jwtVerify } from "
  *   .where() .orderBy() .limit() .get() .add() .set() .update() .delete()
  *   snapshot.docs/.empty/.size, doc.data()/.exists/.id/.ref
  *   FieldValue.serverTimestamp() / FieldValue.arrayUnion()
- *   auth.verifyIdToken() / auth.generateSignInWithEmailLink()
+ *   auth.verifyIdToken() / auth.generateSignInWithEmailLink() / auth.generatePasswordResetLink()
  *
  * ponytail: this is not a general Firestore client. Anything outside the list
  * above (transactions, collectionGroup, aggregates, streaming) is unimplemented
@@ -645,6 +645,32 @@ export class Auth {
         canHandleCodeInApp: settings.handleCodeInApp ?? true,
         // Returns the link instead of having Google email it, so we can send
         // it through Resend with our own template.
+        returnOobLink: true,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`sendOobCode failed (${res.status}): ${await res.text()}`);
+    }
+    const json = (await res.json()) as { oobLink?: string };
+    if (!json.oobLink) throw new Error("sendOobCode returned no link");
+    return json.oobLink;
+  }
+
+  /**
+   * Firebase's own default sender (noreply@<project>.firebaseapp.com) is a
+   * shared, unverified-for-our-domain address that mail providers routinely
+   * spam-filter or silently drop — hit in production 2026-08-13, no bounce,
+   * no error, the recipient just never saw it. This mirrors
+   * generateSignInWithEmailLink: request the raw reset link with
+   * returnOobLink so the caller can send it through our own verified Resend
+   * sender instead of letting Google's mailer handle it.
+   */
+  async generatePasswordResetLink(email: string): Promise<string> {
+    const res = await apiFetch(`${IDENTITY_HOST}/accounts:sendOobCode`, {
+      method: "POST",
+      body: JSON.stringify({
+        requestType: "PASSWORD_RESET",
+        email,
         returnOobLink: true,
       }),
     });

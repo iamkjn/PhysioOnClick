@@ -509,4 +509,28 @@ describe("auth", () => {
       getAdminAuth()!.generateSignInWithEmailLink("a@b.com", { url: "https://site" }),
     ).rejects.toThrow(/no link/);
   });
+
+  it("requests a password reset link and returns the oobLink", async () => {
+    const { calls } = mockFetch({ oobLink: "https://example.com/reset?oob=xyz" });
+    const { getAdminAuth } = await loadModule();
+
+    const link = await getAdminAuth()!.generatePasswordResetLink("a@b.com");
+
+    expect(link).toBe("https://example.com/reset?oob=xyz");
+    expect(calls[0].url).toContain("accounts:sendOobCode");
+    expect(calls[0].body).toMatchObject({
+      requestType: "PASSWORD_RESET",
+      email: "a@b.com",
+      // Without returnOobLink Google emails the link itself and we get nothing back.
+      returnOobLink: true,
+    });
+  });
+
+  it("throws when password reset sendOobCode returns no link", async () => {
+    mockFetch({});
+    const { getAdminAuth } = await loadModule();
+    await expect(
+      getAdminAuth()!.generatePasswordResetLink("a@b.com"),
+    ).rejects.toThrow(/no link/);
+  });
 });

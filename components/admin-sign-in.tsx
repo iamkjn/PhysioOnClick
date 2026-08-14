@@ -1,5 +1,5 @@
 "use client";
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { FormEvent, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { validateEmail, LIMITS } from "@/lib/validation";
@@ -51,11 +51,20 @@ export function AdminSignIn() {
 
     setResetting(true);
     try {
-      await sendPasswordResetEmail(auth!, email.trim());
+      // Routed through our own Resend-sent email (app/api/admin/forgot-password)
+      // rather than Firebase's client-side sendPasswordResetEmail: Firebase's
+      // default sender is silently spam-filtered/dropped by several mail
+      // providers for a custom domain — hit in production 2026-08-13, no
+      // error, the email just never arrived. Our own sender is already
+      // proven to deliver (booking confirmations, magic links).
+      await fetch("/api/admin/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
     } catch {
-      // Firebase's own error (e.g. malformed email) is rare here since we
-      // already validated the format; swallow it and show the same
-      // account-enumeration-safe message as the success path.
+      // Network failure — still show the generic message; nothing here should
+      // reveal whether the account exists.
     } finally {
       setResetting(false);
       setResetMessage("If an account exists for that email, a password reset link has been sent.");
