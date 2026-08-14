@@ -52,18 +52,33 @@ export async function POST(request: Request) {
   const adminAuth = getAdminAuth();
   if (!adminAuth) return GENERIC_OK;
 
-  let resetLink: string;
+  let oobLink: string;
   try {
-    resetLink = await adminAuth.generatePasswordResetLink(email);
+    oobLink = await adminAuth.generatePasswordResetLink(email);
   } catch (error) {
     console.error("generatePasswordResetLink failed:", error);
     return GENERIC_OK;
   }
 
+  // Firebase's own hosted reset page (physioonclick-prod.firebaseapp.com/__/auth/action)
+  // is blocked by this project's API key HTTP-referrer restrictions — it
+  // always shows a generic "expired or already used" error, regardless of
+  // the code's real state (hit in production 2026-08-14). Extract the raw
+  // oobCode and point the email at our own /admin/reset-password page
+  // instead, which the key's referrer restrictions do allow.
+  const oobCode = new URL(oobLink).searchParams.get("oobCode");
+  if (!oobCode) {
+    console.error("generatePasswordResetLink returned a link with no oobCode:", oobLink);
+    return GENERIC_OK;
+  }
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const resetLink = new URL("/admin/reset-password", siteUrl);
+  resetLink.searchParams.set("oobCode", oobCode);
+
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     if (process.env.NODE_ENV !== "production") {
-      console.log(`[dev] admin password reset link for ${email}: ${resetLink}`);
+      console.log(`[dev] admin password reset link for ${email}: ${resetLink.toString()}`);
       return GENERIC_OK;
     }
     console.error("RESEND_API_KEY not configured; admin password reset email not sent.");
@@ -72,19 +87,20 @@ export async function POST(request: Request) {
 
   const from = process.env.ENQUIRY_EMAIL_FROM || "PhysioOnClick <onboarding@resend.dev>";
 
+  const resetLinkStr = resetLink.toString();
   const emailHtml = renderEmailLayout({
     preheader: "Reset your PhysioOnClick admin password — link expires in 1 hour",
     bodyHtml: `
       <p style="margin:0 0 16px;">A password reset was requested for the PhysioOnClick admin portal.</p>
       <p style="margin:0 0 8px;">
-        <a href="${escapeHtml(resetLink)}" style="display:inline-block; background:#0EA5E9; color:#ffffff; text-decoration:none; padding:14px 32px; border-radius:8px; font-weight:700; font-size:15px;">Reset your password →</a>
+        <a href="${escapeHtml(resetLinkStr)}" style="display:inline-block; background:#0EA5E9; color:#ffffff; text-decoration:none; padding:14px 32px; border-radius:8px; font-weight:700; font-size:15px;">Reset your password →</a>
       </p>
       <p style="margin:8px 0 20px; font-size:12.5px; color:#7C8FA0;">This link expires after 1 hour and can only be used once.</p>
       <p style="margin:0; font-size:13px; color:#7C8FA0;">If you did not request this, you can safely ignore this email — your password will not be changed.</p>
     `,
   });
   const emailText = toPlainText(
-    `A password reset was requested for the PhysioOnClick admin portal.\n\nReset your password: ${resetLink}\n\nThis link expires after 1 hour and can only be used once. If you did not request this, you can safely ignore this email.`
+    `A password reset was requested for the PhysioOnClick admin portal.\n\nReset your password: ${resetLinkStr}\n\nThis link expires after 1 hour and can only be used once. If you did not request this, you can safely ignore this email.`
   );
 
   const res = await fetch("https://api.resend.com/emails", {

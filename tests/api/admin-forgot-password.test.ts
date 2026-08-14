@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const generateLinkMock = vi.fn().mockResolvedValue("https://example.com/reset");
+const generateLinkMock = vi.fn().mockResolvedValue(
+  "https://physioonclick-prod.firebaseapp.com/__/auth/action?mode=resetPassword&oobCode=test-oob-code-123&apiKey=fake"
+);
 
 vi.mock("@/lib/firebase-admin", () => ({
   getAdminAuth: () => ({
@@ -43,6 +45,17 @@ describe("POST /api/admin/forgot-password", () => {
     const data = (await res.json()) as { ok: boolean };
     expect(data.ok).toBe(true);
     expect(generateLinkMock).toHaveBeenCalledWith("hello@physioonclick.co.uk");
+  });
+
+  it("builds a link to our own /admin/reset-password page, not Firebase's blocked hosted page", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const POST = await freshPost();
+    await POST(makeRequest({ email: "hello@physioonclick.co.uk" }));
+
+    const logged = logSpy.mock.calls.map((call) => call.join(" ")).join("\n");
+    expect(logged).toContain("/admin/reset-password?oobCode=test-oob-code-123");
+    expect(logged).not.toContain("firebaseapp.com/__/auth/action");
+    logSpy.mockRestore();
   });
 
   it("returns the same generic ok for a non-admin email, without generating a link", async () => {
