@@ -14,6 +14,13 @@ import { ToastProvider } from "@/components/toast-provider";
 import { siteEntityGraph } from "@/lib/structured-data";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://physioonclick.co.uk";
+// The dev worker (dev.physioonclick.co.uk, see wrangler.jsonc's `env.dev` and
+// scripts/deploy-dev.sh, which is the only place NEXT_PUBLIC_SITE_URL is set
+// to this host) got indexed by Google — it's a testing environment, never
+// meant to be crawled. `robots: { index: false }` below emits a noindex meta
+// tag; the matching HTTP header lives in next.config.mjs, and app/robots.ts
+// disallows the whole site for this host too, so all three signals agree.
+const isDevWorker = siteUrl.includes("dev.physioonclick.co.uk");
 
 // Self-hosted via next/font/google so the font CSS + files ship from our own
 // origin instead of a render-blocking fonts.googleapis.com/fonts.gstatic.com
@@ -89,6 +96,7 @@ export const metadata: Metadata = {
     rating: "general",
     classification: "Health, Medical, Physiotherapy",
   },
+  ...(isDevWorker ? { robots: { index: false, follow: false } } : {}),
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

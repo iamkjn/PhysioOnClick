@@ -40,7 +40,23 @@ const nextConfig = {
   // honoured exactly as documented — verified below against `npm run
   // preview`, which runs the actual workerd runtime locally.
   async headers() {
+    // dev.physioonclick.co.uk (see wrangler.jsonc's env.dev + scripts/deploy-dev.sh,
+    // the only place NEXT_PUBLIC_SITE_URL is set to this host) got indexed by
+    // Google — it's a testing environment, never meant to be crawled. This
+    // header is the belt to app/layout.tsx's noindex meta tag and
+    // app/robots.ts's full disallow (braces since headers() only sees the env
+    // this specific build was run with — dev and prod are separate builds).
+    const isDevWorker = (process.env.NEXT_PUBLIC_SITE_URL || "").includes("dev.physioonclick.co.uk");
+    const devNoIndexHeaders = isDevWorker
+      ? [
+          {
+            source: "/:path*",
+            headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+          },
+        ]
+      : [];
     return [
+      ...devNoIndexHeaders,
       // --- Security headers (every route) ---------------------------------
       {
         source: "/:path*",
