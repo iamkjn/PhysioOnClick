@@ -12,7 +12,26 @@ export default function robots(): MetadataRoute.Robots {
   }
 
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/patient", "/api", "/auth"] },
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: [
+        "/admin",
+        "/patient",
+        "/api",
+        "/auth",
+        // Bare SVG cover-image routes (no HTML page structure, no <title>) —
+        // Googlebot discovers them via <img src> on /services, /blog etc.,
+        // tries to index them as pages, and flags them "Soft 404" in Search
+        // Console since a raw image response looks error-like as a page.
+        // These aren't in the sitemap and were never meant to be crawled
+        // directly; blocking here moves them to "Excluded by robots.txt"
+        // instead of a false-positive error.
+        "/service-images",
+        "/blog-images",
+        "/specialism-images",
+      ],
+    },
     sitemap: `${base}/sitemap.xml`
   };
 }
