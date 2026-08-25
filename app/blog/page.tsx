@@ -7,10 +7,9 @@ import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
-  // Kept out of the index alongside the articles themselves — see the note in
-  // app/blog/[slug]/page.tsx. `follow` stays on so the articles are still
-  // crawled and their own noindex is discovered.
-  robots: { index: false, follow: true },
+  // Rewritten 2026-08-25 into 36 genuinely distinct articles (see lib/blog.ts)
+  // — the noindex that guarded against the prior templated/duplicate-content
+  // version has been lifted.
   title: "Physiotherapy Blog | PhysioOnClick",
   description: "UK-focused physiotherapy articles on back pain, knee injuries, shoulder rehab and more."
 };

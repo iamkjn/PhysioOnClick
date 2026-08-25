@@ -47,11 +47,12 @@ export default function GlasgowPage() {
       }) }} />
       <section className="page-hero page-hero-split">
         <div className="stack">
-          <span className="eyebrow">Physiotherapy in Glasgow</span>
+          <span className="eyebrow">Online Physiotherapy for Glasgow</span>
           <h1>Online Physiotherapist for Glasgow Patients</h1>
           <p className="lead">
-            PhysioOnClick provides calm, clinical physiotherapy for Glasgow patients — fully online, with
-            transparent pricing, evidence-based rehabilitation and secure booking.
+            PhysioOnClick gives Glasgow patients convenient access to a UK-registered physiotherapist —
+            video physiotherapy consultations with transparent pricing, evidence-based rehabilitation and
+            secure online booking, with no clinic visit required.
           </p>
           <div className="button-row">
             <Link className="button primary" href="/book">
@@ -60,12 +61,12 @@ export default function GlasgowPage() {
           </div>
         </div>
         <div className="page-hero-aside checklist-panel">
-          <h2>Local patient benefits</h2>
+          <h2>Why Glasgow patients choose online physio</h2>
           <ul className="clean-list">
             <li>Glasgow-based, HCPC registered physiotherapist</li>
-            <li>Every session delivered online</li>
+            <li>Every session delivered by secure video call</li>
             <li>Clear pricing and secure booking</li>
-            <li>Same-week appointments</li>
+            <li>Same-week appointments, no travel required</li>
           </ul>
         </div>
       </section>
@@ -111,8 +112,8 @@ export default function GlasgowPage() {
         <section className="simple-cta-band" id="book">
           <div className="site-shell simple-cta-inner">
             <span className="eyebrow">Ready to book?</span>
-            <h2>Book physiotherapy in Glasgow</h2>
-            <p>Schedule your online appointment now, or get in touch if you have a question first.</p>
+            <h2>Book online physiotherapy for Glasgow patients</h2>
+            <p>Schedule your video appointment now, or get in touch if you have a question first.</p>
             <div className="button-row" style={{ justifyContent: "center" }}>
               <Link className="button secondary cta-white" href="/book">
                 Book your session

@@ -184,6 +184,21 @@ const nextConfig = {
       // for this file.
     ];
   },
+  async redirects() {
+    // wrangler.jsonc routes both physioonclick.co.uk and www.physioonclick.co.uk
+    // to this Worker with no redirect between them, so both currently serve
+    // identical 200s — Google Search Console only recognizes the apex as
+    // indexed/canonical (see the 2026-08-25 SEO audit). Force www -> apex here
+    // since there's no Cloudflare dashboard Bulk Redirect doing this already.
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.physioonclick.co.uk" }],
+        destination: "https://physioonclick.co.uk/:path*",
+        permanent: true,
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     if (isServer) {
       // The Firebase *client* SDK ships two builds. Its "node" build talks gRPC

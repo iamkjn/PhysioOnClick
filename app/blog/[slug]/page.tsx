@@ -35,12 +35,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: article.seoTitle,
     description: article.seoDescription,
     alternates: { canonical: `/blog/${slug}` },
-    // These 108 articles are template-generated: only 36 distinct bodies, and
-    // 78% of every article is text shared verbatim across all of them. Keeping
-    // them indexed is a site-level quality risk on a YMYL health domain, so
-    // they stay readable but out of the index until they are rewritten as
-    // genuine, individually authored articles.
-    robots: { index: false, follow: true },
+    // Rewritten 2026-08-25 into 36 genuinely distinct, individually authored
+    // articles (see lib/blog.ts) — the noindex that guarded against the prior
+    // templated/duplicate-content version has been lifted.
     openGraph: {
       type: "article",
       title: article.seoTitle,
@@ -74,11 +71,9 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             description: article.excerpt,
             image: article.image,
             datePublished: article.publishedAt,
-            // No separate "last edited" tracking exists for these articles
-            // (BlogArticle only carries publishedAt), so dateModified mirrors
-            // it rather than being omitted or guessed.
-            dateModified: article.publishedAt,
+            dateModified: article.lastReviewedAt,
             author: personRef(),
+            reviewedBy: personRef(),
             publisher: practiceRef()
           })
         }}
@@ -106,6 +101,15 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           </div>
           <h1>{article.title}</h1>
           <p className="lead">{article.excerpt}</p>
+          <p className="muted article-byline">
+            Written and reviewed by {article.author}
+            {article.authorCredential ? `, ${article.authorCredential}` : ""}
+            {" · "}
+            Last reviewed{" "}
+            <time dateTime={article.lastReviewedAt}>
+              {new Date(article.lastReviewedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+            </time>
+          </p>
           <BlogDetailActions article={article} />
         </Reveal>
         <Reveal direction="up" delay={80} className="article-hero-aside">

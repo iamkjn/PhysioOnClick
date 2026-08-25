@@ -36,3 +36,6 @@ tsconfig.tsbuildinfo
 
 # Firebase Functions runtime config (contains CRON_SECRET)
 functions/.env.*
+
+# Google Business Profile OAuth token (ad hoc credential, never commit)
+.google-business-token.json

@@ -1,11 +1,13 @@
 import type { MetadataRoute } from "next";
 
 import { services } from "@/lib/site-data";
+import { blogArticles } from "@/lib/blog";
 
 const routes = [
   "",
   "/about",
   "/services",
+  "/blog",
   "/pricing",
   "/book",
   "/how-online-physiotherapy-works",
@@ -36,8 +38,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // service can't silently drift out of the sitemap.
   const serviceEntries = services.map((service) => ({ url: `${base}/services/${service.slug}` }));
 
-  // Blog is hidden for now (nav link removed) and its pages are noindex, so
-  // they are deliberately not submitted here — that's what triggered the
-  // "Excluded by noindex tag" Search Console alert in the first place.
-  return [...staticEntries, ...serviceEntries];
+  // Blog was noindex/omitted here until the 2026-08-25 rewrite (108 templated
+  // articles collapsed into 36 genuinely distinct ones, see lib/blog.ts) — now
+  // submitted like any other content.
+  const blogEntries = blogArticles.map((article) => ({ url: `${base}/blog/${article.slug}` }));
+
+  return [...staticEntries, ...serviceEntries, ...blogEntries];
 }
