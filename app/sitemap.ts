@@ -40,8 +40,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Blog was noindex/omitted here until the 2026-08-25 rewrite (108 templated
   // articles collapsed into 36 genuinely distinct ones, see lib/blog.ts) — now
-  // submitted like any other content.
-  const blogEntries = blogArticles.map((article) => ({ url: `${base}/blog/${article.slug}` }));
+  // submitted like any other content. Unlike the static routes, blog posts have
+  // a real content date, so a truthful `lastModified` (last review, else publish
+  // date) is a signal worth sending rather than a fabricated one.
+  const blogEntries = blogArticles.map((article) => ({
+    url: `${base}/blog/${article.slug}`,
+    lastModified: new Date(article.lastReviewedAt || article.publishedAt),
+  }));
 
   return [...staticEntries, ...serviceEntries, ...blogEntries];
 }

@@ -50,9 +50,11 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "PhysioOnClick | Online Physiotherapy Across the UK",
+  // Query-first: the brand has no search equity yet, so lead with what people
+  // actually type ("online physiotherapy UK") and keep the brand as the suffix.
+  title: "Online Physiotherapy Across the UK | PhysioOnClick",
   description:
-    "PhysioOnClick is a UK online physiotherapy and rehabilitation platform offering consultations across the UK.",
+    "Book online physiotherapy with an HCPC-registered physiotherapist — the same clinician every session, evidence-based rehab plans, video consultations anywhere in the UK.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },

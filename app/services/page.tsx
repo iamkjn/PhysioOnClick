@@ -11,8 +11,8 @@ import { TrackedBookLink } from "@/components/tracked-book-link";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/services" },
-  title: "Services | PhysioOnClick",
-  description: "Physiotherapist Glasgow services, post knee replacement rehab UK and online physio UK support."
+  title: "Physiotherapy Services | PhysioOnClick",
+  description: "Online physiotherapy for musculoskeletal pain, post-surgical rehab, neurological and paediatric care — assessment and a personalised recovery plan from an HCPC-registered physiotherapist."
 };
 
 export const dynamic = "force-static";
