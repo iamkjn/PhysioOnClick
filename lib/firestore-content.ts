@@ -43,6 +43,9 @@ function toService(doc: Record<string, unknown>, fallback?: Service): Service {
     summary: String(doc.summary || fallback?.summary || ""),
     conditions: Array.isArray(doc.conditions) ? doc.conditions.map(String) : fallback?.conditions || [],
     approach: Array.isArray(doc.approach) ? doc.approach.map(String) : fallback?.approach || [],
+    firstSession: String(doc.firstSession || fallback?.firstSession || ""),
+    typicalOutcomes: String(doc.typicalOutcomes || fallback?.typicalOutcomes || ""),
+    whenInPersonInstead: String(doc.whenInPersonInstead || fallback?.whenInPersonInstead || ""),
     faqs: faqs.map((item) => ({
       question: String((item as { question?: unknown }).question || ""),
       answer: String((item as { answer?: unknown }).answer || "")

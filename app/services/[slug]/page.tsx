@@ -120,7 +120,8 @@ export default async function ServiceDetailPage({
                   <li key={step}>{step}</li>
                 ))}
               </ul>
-              {/* TODO(shivaliba): expand — what a first session involves, typical timeline */}
+              <h3 className="service-subhead">Your First Session</h3>
+              <p>{service.firstSession}</p>
             </div>
             <div className="service-split-right">
               <h3 className="service-subhead">Conditions Treated</h3>
@@ -136,7 +137,10 @@ export default async function ServiceDetailPage({
                   ))}
                 </div>
               </div>
-              {/* TODO(shivaliba): expand — typical outcomes / what progress looks like for this condition group */}
+              <h3 className="service-subhead">What Progress Looks Like</h3>
+              <p>{service.typicalOutcomes}</p>
+              <h3 className="service-subhead">When In-Person Care Is a Better Fit</h3>
+              <p>{service.whenInPersonInstead}</p>
               {service.faqs?.length ? (
                 <>
                   <h3 className="service-subhead">Common Questions</h3>
