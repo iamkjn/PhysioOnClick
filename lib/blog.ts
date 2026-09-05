@@ -407,3 +407,30 @@ export function getArticle(slug: string) {
 }
 
 export const blogCategories = [...categories];
+
+// Each blog category maps to the one service page it should funnel readers to.
+// Used for the "related service" link on articles and the "related reading"
+// list on service pages, so the 36 articles pass authority to the commercial
+// pages instead of sitting in a disconnected island.
+const categoryToServiceSlug: Record<Category, string> = {
+  "Back pain": "musculoskeletal-physiotherapy",
+  "Knee injuries": "musculoskeletal-physiotherapy",
+  "Shoulder rehab": "musculoskeletal-physiotherapy",
+  Sciatica: "musculoskeletal-physiotherapy",
+  "Sports injuries": "musculoskeletal-physiotherapy",
+  "Neurological conditions": "neurological-rehabilitation",
+  "Post-surgery recovery": "post-surgical-rehabilitation",
+  "Home exercise advice": "online-rehab-programmes",
+  "Workplace ergonomics": "musculoskeletal-physiotherapy"
+};
+
+export function serviceSlugForCategory(category: string): string | undefined {
+  return categoryToServiceSlug[category as Category];
+}
+
+/** Up to `limit` articles that funnel to the given service slug. */
+export function articlesForServiceSlug(serviceSlug: string, limit = 4): BlogArticle[] {
+  return blogArticles
+    .filter((article) => categoryToServiceSlug[article.category] === serviceSlug)
+    .slice(0, limit);
+}

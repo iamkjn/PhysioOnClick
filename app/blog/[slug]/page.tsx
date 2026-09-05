@@ -3,8 +3,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+import Link from "next/link";
+
 import { BlogDetailActions } from "@/components/blog-detail-actions";
-import { blogArticles } from "@/lib/blog";
+import { blogArticles, serviceSlugForCategory } from "@/lib/blog";
+import { services } from "@/lib/site-data";
 import { fetchDynamicBlogBySlug } from "@/lib/firestore-content";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { Reveal } from "@/components/reveal";
@@ -42,11 +45,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: "article",
       title: article.seoTitle,
       description: article.seoDescription,
-      images: [article.image]
+      // article.image is an SVG cover route — Facebook/LinkedIn/X/WhatsApp/Slack
+      // all refuse to render SVG previews, so a per-article SVG here means every
+      // share comes out imageless. Fall back to the raster site OG image until a
+      // per-article raster pipeline exists.
+      images: ["/og-default.png"]
     },
     twitter: {
       card: "summary_large_image",
-      images: [article.image]
+      images: ["/og-default.png"]
     }
   };
 }
@@ -58,6 +65,11 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
   if (!article) {
     notFound();
   }
+
+  const relatedServiceSlug = serviceSlugForCategory(article.category);
+  const relatedService = relatedServiceSlug
+    ? services.find((s) => s.slug === relatedServiceSlug)
+    : undefined;
 
   return (
     <article className="site-shell">
@@ -143,6 +155,23 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           ))}
         </div>
       </section>
+
+      {relatedService ? (
+        <section className="page-section simple-section">
+          <Reveal direction="up">
+            <div className="site-shell sessions-include-card">
+              <h3>Need help with this in person?</h3>
+              <p>
+                {relatedService.summary} Every session is delivered by {article.author}, the same
+                HCPC-registered physiotherapist, online across the UK.
+              </p>
+              <Link className="button primary" href={`/services/${relatedService.slug}`} prefetch>
+                Explore {relatedService.title}
+              </Link>
+            </div>
+          </Reveal>
+        </section>
+      ) : null}
     </article>
   );
 }

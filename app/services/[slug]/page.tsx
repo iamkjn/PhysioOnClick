@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { articlesForServiceSlug } from "@/lib/blog";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
-import { pricing, services } from "@/lib/site-data";
+import { founder, pricing, services } from "@/lib/site-data";
 import { breadcrumbs, serviceSchema } from "@/lib/structured-data";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
@@ -33,7 +34,13 @@ export async function generateMetadata({
   return {
     title: service.seoTitle,
     description: service.seoDescription,
-    alternates: { canonical: `/services/${slug}` }
+    alternates: { canonical: `/services/${slug}` },
+    openGraph: {
+      type: "website",
+      title: service.seoTitle,
+      description: service.seoDescription,
+      url: `/services/${slug}`
+    }
   };
 }
 
@@ -49,6 +56,7 @@ export default async function ServiceDetailPage({
     notFound();
   }
 
+  const relatedArticles = articlesForServiceSlug(service.slug, 4);
   const half = Math.ceil(service.conditions.length / 2);
   const minOnlinePrice = Math.min(
     ...pricing.filter((item) => item.mode === "Online").map((item) => item.price)
@@ -170,6 +178,26 @@ export default async function ServiceDetailPage({
           </article>
         </Reveal>
       </section>
+
+      {relatedArticles.length ? (
+        <section className="page-section stack simple-services-list">
+          <Reveal direction="up">
+            <div className="section-heading">
+              <h2>Related reading</h2>
+              <p>Evidence-based guides from {founder.name.split(" ")[0]} on conditions treated in this service.</p>
+            </div>
+          </Reveal>
+          <ul className="service-approach-list">
+            {relatedArticles.map((article) => (
+              <li key={article.slug}>
+                <Link href={`/blog/${article.slug}`} prefetch>
+                  {article.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
