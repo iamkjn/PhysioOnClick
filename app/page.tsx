@@ -120,6 +120,78 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
+      <section className="page-section simple-section">
+        <Reveal direction="up">
+          <div className="site-shell section-heading">
+            <span className="eyebrow">No clinic visit required</span>
+            <h2>How online physiotherapy works</h2>
+            <p>
+              A full assessment, a real diagnosis and a plan you can act on the same day &mdash; all
+              over video, with the same physiotherapist reviewing your progress every session.
+            </p>
+          </div>
+        </Reveal>
+        <div className="site-shell simple-card-grid">
+          <Reveal direction="up" delay={0}>
+            <article className="simple-service-card">
+              <h3>1. Book online</h3>
+              <p>Choose a time that suits you and complete a short pre-session assessment so the first call starts with useful context, not a blank slate.</p>
+            </article>
+          </Reveal>
+          <Reveal direction="up" delay={75}>
+            <article className="simple-service-card">
+              <h3>2. Video assessment</h3>
+              <p>A 60-minute guided assessment: history, a movement or functional screen talked through over video, and red-flag screening to confirm online care is the right fit.</p>
+            </article>
+          </Reveal>
+          <Reveal direction="up" delay={150}>
+            <article className="simple-service-card">
+              <h3>3. Personalised plan</h3>
+              <p>You leave with a working diagnosis, a written explanation of what&rsquo;s going on, and exercises to start immediately &mdash; not a wait-and-see appointment.</p>
+            </article>
+          </Reveal>
+          <Reveal direction="up" delay={225}>
+            <article className="simple-service-card">
+              <h3>4. Ongoing review</h3>
+              <p>Follow-up sessions track progress and adjust loading and exercises &mdash; the same clinician throughout, so nothing gets lost between appointments.</p>
+            </article>
+          </Reveal>
+        </div>
+        <Reveal direction="up" delay={100}>
+          <div className="site-shell section-button-center">
+            <Link className="button secondary" href="/how-online-physiotherapy-works" prefetch>
+              See the full process
+            </Link>
+          </div>
+        </Reveal>
+      </section>
+
+      <section className="page-section simple-section">
+        <Reveal direction="up">
+          <div className="site-shell section-heading">
+            <h2>Common questions</h2>
+          </div>
+        </Reveal>
+        <div className="site-shell service-faqs">
+          <details>
+            <summary>Do I need a GP referral for online physiotherapy?</summary>
+            <p>No. You can self-refer for private physiotherapy directly &mdash; book an initial assessment whenever you&rsquo;re ready.</p>
+          </details>
+          <details>
+            <summary>Is online physiotherapy actually effective?</summary>
+            <p>For the large majority of musculoskeletal and rehab concerns &mdash; back, neck, shoulder, tendon pain, and post-surgical recovery &mdash; a guided video assessment reaches an accurate working diagnosis and produces the same structured exercise-based treatment that in-person care would. See <Link href="/glasgow-physiotherapist" prefetch>how this works for Glasgow patients specifically</Link>.</p>
+          </details>
+          <details>
+            <summary>What if online care isn&rsquo;t right for my situation?</summary>
+            <p>You&rsquo;ll be told plainly at triage. Red-flag symptoms, suspected fractures, or conditions needing hands-on treatment as the primary intervention are pointed toward an in-person clinician or your GP rather than kept in an online plan that isn&rsquo;t the right fit.</p>
+          </details>
+          <details>
+            <summary>Can I claim this back through insurance?</summary>
+            <p>Yes &mdash; every paid session generates an insurance-ready receipt and invoice automatically, emailed to you and available any time from your account.</p>
+          </details>
+        </div>
+      </section>
+
       <section className="simple-cta-band" id="book">
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Ready when you are</span>

@@ -106,6 +106,32 @@ export default function PricingPage() {
         </Reveal>
       </section>
 
+      <section className="page-section simple-section">
+        <Reveal direction="up">
+          <div className="site-shell section-heading">
+            <h2>Pricing questions</h2>
+          </div>
+        </Reveal>
+        <div className="site-shell service-faqs">
+          <details>
+            <summary>Can I claim this back on health insurance?</summary>
+            <p>Yes. Every paid session generates an insurance-ready receipt and a proper PDF invoice automatically, emailed to you and available in your account any time you need to submit a claim.</p>
+          </details>
+          <details>
+            <summary>Is online physiotherapy cheaper than an in-person clinic?</summary>
+            <p>Sessions are priced comparably to private in-person physiotherapy in the UK, but without travel time or clinic overheads passed on to you &mdash; and the rehab packages above reduce the per-session cost further for anyone committing to a structured plan.</p>
+          </details>
+          <details>
+            <summary>What&rsquo;s the cancellation policy?</summary>
+            <p>Free to reschedule or cancel with 24 hours&rsquo; notice, no charge. Inside 24 hours, see the full <Link href="/cancellation-policy" prefetch>cancellation policy</Link> for details.</p>
+          </details>
+          <details>
+            <summary>Do I pay before or after the session?</summary>
+            <p>Payment is taken securely at booking through Stripe, and your appointment is confirmed immediately once payment goes through &mdash; no separate invoicing step required.</p>
+          </details>
+        </div>
+      </section>
+
       <section className="simple-cta-band" id="book">
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Ready to book?</span>
