@@ -57,6 +57,14 @@
         { "fieldPath": "paid", "order": "ASCENDING" },
         { "fieldPath": "sessionDate", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "bookings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "paid", "order": "ASCENDING" },
+        { "fieldPath": "sessionDate", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": [

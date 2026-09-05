@@ -305,6 +305,65 @@ export const sendAssessmentReminders = onSchedule(
   }
 );
 
+// Post-session Google review request: runs hourly and looks a day back, since
+// (unlike the pre-appointment reminders above) there's no useful narrower
+// window — sessionDate is only stamped once, and any run that lands 23-25h
+// after it is equally "the day after" from the patient's perspective.
+export const sendReviewRequests = onSchedule(
+  { schedule: "0 * * * *", timeZone: "Europe/London" },
+  async () => {
+    const db = getFirestore();
+
+    const SITE_URL = process.env.SITE_URL;
+    const CRON_SECRET = process.env.CRON_SECRET;
+    if (!SITE_URL || !CRON_SECRET) {
+      console.error(
+        "sendReviewRequests: missing SITE_URL and/or CRON_SECRET env config; skipping this run"
+      );
+      return;
+    }
+
+    const now = Date.now();
+    const lo = new Date(now - 25 * 60 * 60000);
+    const hi = new Date(now - 23 * 60 * 60000);
+
+    const snap = await db
+      .collection("bookings")
+      .where("paid", "==", true)
+      .where("sessionDate", ">=", lo)
+      .where("sessionDate", "<=", hi)
+      .get();
+
+    for (const doc of snap.docs) {
+      try {
+        const booking = doc.data();
+
+        if (booking.status === "cancelled") continue;
+        if (booking.reminders?.reviewRequestSent === true) continue;
+
+        try {
+          await fetch(`${SITE_URL}/api/reviews/request-email`, {
+            method: "POST",
+            headers: {
+              "x-cron-secret": CRON_SECRET,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ bookingId: doc.id }),
+          });
+        } catch (emailErr) {
+          console.error("sendReviewRequests: request-email fetch failed", doc.ref.path, emailErr);
+        }
+
+        // Mark as sent even if the email attempt above failed, so we don't
+        // retry every hour for the same booking.
+        await doc.ref.update({ "reminders.reviewRequestSent": true });
+      } catch (err) {
+        console.error("sendReviewRequests: failed to process doc", doc.ref.path, err);
+      }
+    }
+  }
+);
+
 // Doctor-interval pain check-ins: a low-pressure, FCM-only nudge (no email —
 // this is an engagement nicety, not a clinical gate; the doctor follows up on
 // pain trends in person after the streak completes). Runs daily, mirrors the
