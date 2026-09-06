@@ -235,6 +235,7 @@ export function AssignedExercises({ uid, personId }: Props) {
                   type="button"
                   className={`exercise-done-toggle${done ? " done" : ""}`}
                   aria-pressed={done}
+                  aria-label={done ? `${ex.title}: done today, tap to undo` : `${ex.title}: mark as done`}
                   onClick={() => void handleToggle(ae.exerciseId, !done)}
                 >
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

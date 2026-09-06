@@ -7,6 +7,7 @@ vi.mock('@/lib/recovery', () => ({
   getAssignedExercises: (...args: unknown[]) => getAssignedExercisesMock(...args),
   getTodayExerciseLog: (...args: unknown[]) => getTodayExerciseLogMock(...args),
   toggleExerciseCompletion: vi.fn(),
+  setExercisesCompletion: vi.fn(),
   todayKey: () => '2026-07-25',
 }))
 
@@ -80,9 +81,21 @@ describe('AssignedExercises', () => {
     render(<AssignedExercises uid="u1" personId="p1" />)
 
     await waitFor(() => expect(screen.getByText(EXERCISE.title)).toBeInTheDocument())
-    fireEvent.click(screen.getByLabelText(`Mark ${EXERCISE.title} done`))
+    fireEvent.click(screen.getByRole('button', { name: `${EXERCISE.title}: mark as done` }))
     await waitFor(() => {
-      expect(screen.getByLabelText(`Mark ${EXERCISE.title} not done`)).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: `${EXERCISE.title}: done today, tap to undo` }),
+      ).toBeInTheDocument()
     })
+  })
+
+  it('renders the exercise description and a "mark all as done" shortcut', async () => {
+    getAssignedExercisesMock.mockResolvedValue([assignedExercise()])
+    getTodayExerciseLogMock.mockResolvedValue(null)
+    render(<AssignedExercises uid="u1" personId="p1" />)
+
+    await waitFor(() => expect(screen.getByText(EXERCISE.title)).toBeInTheDocument())
+    expect(screen.getByText(EXERCISE.description)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Mark all as done' })).toBeInTheDocument()
   })
 })
