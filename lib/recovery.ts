@@ -13,6 +13,7 @@ import {
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import type { ExerciseDosage } from "@/lib/exercises";
 
 export interface PainLog {
   date: string;
@@ -81,6 +82,7 @@ export interface AssignedExercise {
   assignedAt: Date;
   assignedBy: string;
   active: boolean;
+  dosage?: ExerciseDosage;
 }
 
 export interface ExerciseLog {
@@ -209,6 +211,7 @@ export async function getAssignedExercises(
       assignedAt: (d.data().assignedAt as { toDate(): Date })?.toDate() ?? new Date(),
       assignedBy: (d.data().assignedBy as string) ?? "",
       active: (d.data().active as boolean) ?? true,
+      dosage: (d.data().dosage as ExerciseDosage | undefined),
     }))
     .filter((e) => e.active);
 }
@@ -271,7 +274,8 @@ export async function assignExercise(
   uid: string,
   personId: string,
   exerciseId: string,
-  physioUid: string
+  physioUid: string,
+  dosage?: ExerciseDosage,
 ): Promise<void> {
   const ref = doc(personBase(uid, personId), "assignedExercises", exerciseId);
   await setDoc(ref, {
@@ -279,6 +283,7 @@ export async function assignExercise(
     assignedAt: serverTimestamp(),
     assignedBy: physioUid,
     active: true,
+    ...(dosage ? { dosage } : {}),
   });
 }
 
@@ -289,6 +294,17 @@ export async function removeExercise(
 ): Promise<void> {
   const ref = doc(personBase(uid, personId), "assignedExercises", exerciseId);
   await updateDoc(ref, { active: false });
+}
+
+// Set (or replace) the per-patient dosage override on one assigned exercise.
+export async function setAssignedDosage(
+  uid: string,
+  personId: string,
+  exerciseId: string,
+  dosage: ExerciseDosage,
+): Promise<void> {
+  const ref = doc(personBase(uid, personId), "assignedExercises", exerciseId);
+  await setDoc(ref, { dosage }, { merge: true });
 }
 
 export async function addClinicalAssessment(
