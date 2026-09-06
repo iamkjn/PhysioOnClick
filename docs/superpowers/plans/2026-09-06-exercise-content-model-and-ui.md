@@ -390,22 +390,29 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `tests/components/assigned-exercises.test.tsx`. First extend the fixture and mock:
+The component (Step 3) is changed to import `exercises` from `@/lib/exercises` directly (not the `@/lib/site-data` re-export), so the test mocks `@/lib/exercises` with a **fixture catalogue + the real pure helpers** via `importActual`. Add near the top of `tests/components/assigned-exercises.test.tsx`:
 
 ```ts
-// in the vi.mock('@/lib/recovery', …) factory add:  resolveDosageArgs passthrough not needed — resolveDosage/formatDosage come from @/lib/exercises, mock that:
-vi.mock('@/lib/exercises', async (orig) => {
-  const actual = await orig<typeof import('@/lib/exercises')>()
-  return actual // use the real pure helpers
+const FIXTURE_EX = {
+  id: 'ex-fix', title: 'Fixture Raise', bodyPart: 'Ankle', clinicalArea: 'lower_limb',
+  tags: [], condition: '', stage: 'Strength phase',
+  description: 'A fixture exercise.', videoUrl: 'https://www.youtube.com/embed/abc',
+  setup: 'Stand tall.', steps: ['Rise onto your toes', 'Lower slowly'],
+  cues: ['Keep knees soft'], mistakes: ['Do not rush'],
+  defaultDosage: { sets: 3, reps: 12, perDay: 1 },
+}
+vi.mock('@/lib/exercises', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/exercises')>()
+  return { ...actual, exercises: [FIXTURE_EX] }
 })
 ```
 
-Then add tests:
+The existing tests reference `exercises[0]` as `EXERCISE` via `import { exercises } from '@/lib/site-data'` — change that import to `'@/lib/exercises'` so all tests in the file see the fixture (`EXERCISE` becomes `FIXTURE_EX`). Adjust the existing assertions that used the old `exercises[0]` (`EXERCISE.title` → `'Fixture Raise'`, `EXERCISE.videoUrl` → the fixture's) accordingly.
+
+Then add:
 
 ```ts
 it('shows the effective dose line', async () => {
-  const ex = { ...EXERCISE, defaultDosage: { sets: 3, reps: 12, perDay: 1 } }
-  vi.spyOn(await import('@/lib/exercises'), 'exercises', 'get').mockReturnValue([ex] as never)
   getAssignedExercisesMock.mockResolvedValue([{ ...assignedExercise(), dosage: { reps: 15 } }])
   getTodayExerciseLogMock.mockResolvedValue(null)
   render(<AssignedExercises uid="u1" personId="p1" />)
@@ -413,12 +420,10 @@ it('shows the effective dose line', async () => {
 })
 
 it('reveals setup / steps / cues / mistakes on "How to do it"', async () => {
-  const ex = { ...EXERCISE, setup: 'Stand tall.', steps: ['Rise onto your toes', 'Lower slowly'], cues: ['Keep knees soft'], mistakes: ['Do not rush'] }
-  vi.spyOn(await import('@/lib/exercises'), 'exercises', 'get').mockReturnValue([ex] as never)
   getAssignedExercisesMock.mockResolvedValue([assignedExercise()])
   getTodayExerciseLogMock.mockResolvedValue(null)
   render(<AssignedExercises uid="u1" personId="p1" />)
-  await waitFor(() => expect(screen.getByText(EXERCISE.title)).toBeInTheDocument())
+  await waitFor(() => expect(screen.getByText('Fixture Raise')).toBeInTheDocument())
   expect(screen.queryByText('Rise onto your toes')).not.toBeInTheDocument()
   fireEvent.click(screen.getByRole('button', { name: /how to do it/i }))
   expect(screen.getByText('Stand tall.')).toBeInTheDocument()
@@ -428,7 +433,7 @@ it('reveals setup / steps / cues / mistakes on "How to do it"', async () => {
 })
 ```
 
-*(Note: if `vi.spyOn(module, 'exercises', 'get')` proves awkward with the current bundler, instead export a test-only `__setExercisesForTest` from `lib/exercises.ts` guarded by `process.env.NODE_ENV === 'test'`, or restructure the component to accept an injected catalogue map. Pick the lightest that works; document the choice in the commit.)*
+`assignedExercise()` must be updated to `{ exerciseId: FIXTURE_EX.id, … }`.
 
 - [ ] **Step 2: Run test to verify it fails**
 
@@ -439,7 +444,7 @@ Expected: FAIL — no dose line text; "How to do it" button absent.
 
 In `components/assigned-exercises.tsx`:
 
-1. Import: `import { exercises, resolveDosage, formatDosage } from "@/lib/site-data";` → change to pull `resolveDosage, formatDosage` from `@/lib/exercises` (keep `exercises` wherever it currently comes from).
+1. Import: change `import { exercises } from "@/lib/site-data";` to `import { exercises, resolveDosage, formatDosage } from "@/lib/exercises";` (import the catalogue directly from `@/lib/exercises`, not the `@/lib/site-data` re-export — this is what lets the test mock a fixture catalogue).
 
 2. Add per-card expand state: `const [expanded, setExpanded] = useState<Set<string>>(new Set());` with a toggle helper.
 
@@ -810,7 +815,10 @@ describe('exercise catalogue shape', () => {
         }
       })
       it('has 2–8 steps when steps are present', () => {
-        if (ex.steps) expect(ex.steps.length).toBeGreaterThanOrEqual(2), expect(ex.steps.length).toBeLessThanOrEqual(8)
+        if (ex.steps) {
+          expect(ex.steps.length).toBeGreaterThanOrEqual(2)
+          expect(ex.steps.length).toBeLessThanOrEqual(8)
+        }
       })
       it('has 1–5 cues / mistakes when present', () => {
         if (ex.cues) expect(ex.cues.length).toBeLessThanOrEqual(5)
