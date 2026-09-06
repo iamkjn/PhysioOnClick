@@ -37,6 +37,7 @@ describe('formatDosage', () => {
   it('appends tempo after the frequency clause', () =>
     expect(formatDosage({ reps: 10, perDay: 2, tempo: 'slow' })).toBe('10 reps · twice a day · slow'))
   it('ignores a blank tempo', () => expect(formatDosage({ reps: 10, tempo: '  ' })).toBe('10 reps'))
+  it('drops a zero frequency', () => expect(formatDosage({ reps: 10, perDay: 0 })).toBe('10 reps'))
   it('empty → As advised by your physio', () => expect(formatDosage({})).toBe('As advised by your physio'))
 })
 

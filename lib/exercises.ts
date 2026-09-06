@@ -532,12 +532,12 @@ export function resolveDosage(
 }
 
 function frequencyClause(d: ExerciseDosage): string | null {
-  if (d.perDay != null) {
+  if (d.perDay != null && d.perDay >= 1) {
     if (d.perDay === 1) return "once a day";
     if (d.perDay === 2) return "twice a day";
     return `${d.perDay} times a day`;
   }
-  if (d.perWeek != null) return `${d.perWeek} days a week`;
+  if (d.perWeek != null && d.perWeek >= 1) return `${d.perWeek} days a week`;
   return null;
 }
 

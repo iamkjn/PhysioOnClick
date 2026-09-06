@@ -304,7 +304,7 @@ export async function setAssignedDosage(
   dosage: ExerciseDosage,
 ): Promise<void> {
   const ref = doc(personBase(uid, personId), "assignedExercises", exerciseId);
-  await setDoc(ref, { dosage }, { merge: true });
+  await updateDoc(ref, { dosage });
 }
 
 export async function addClinicalAssessment(
