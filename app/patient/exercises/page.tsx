@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { PersonSwitcher } from "@/components/person-switcher";
+import { usePerson } from "@/components/person-provider";
 import { AssignedExercises } from "@/components/assigned-exercises";
 import { SkeletonRow } from "@/components/skeleton";
 
@@ -12,8 +13,14 @@ export default function ExercisesPage() {
   // undefined = auth still resolving, null = signed out, string = signed in.
   const [uid, setUid] = useState<string | null | undefined>(undefined);
   const [displayName, setDisplayName] = useState("");
-  const [personId, setPersonId] = useState<string | null>(null);
   const router = useRouter();
+
+  // The active person is shared (and persisted) via PersonProvider, so a
+  // dependent picked on the home dashboard / recovery page carries over here.
+  // Deriving it from context — rather than local state seeded to `uid` — is
+  // what keeps the PersonSwitcher's selection and the list below in sync.
+  const personCtx = usePerson();
+  const personId = uid ? (personCtx?.personId ?? uid) : null;
 
   useEffect(() => {
     if (!auth) {
@@ -23,11 +30,9 @@ export default function ExercisesPage() {
     return onAuthStateChanged(auth, (user) => {
       if (user) {
         setUid(user.uid);
-        setPersonId(user.uid);
         setDisplayName(user.displayName || user.email || "Patient");
       } else {
         setUid(null);
-        setPersonId(null);
       }
     });
   }, []);
@@ -62,7 +67,10 @@ export default function ExercisesPage() {
         <PersonSwitcher
           uid={uid}
           displayName={displayName}
-          onSelect={(id) => setPersonId(id)}
+          onSelect={() => {
+            // PersonSwitcher persists the selection via the shared
+            // PersonProvider context; `personId` above already reads from it.
+          }}
         />
       </section>
 

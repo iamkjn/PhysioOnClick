@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { PersonSwitcher } from "@/components/person-switcher";
+import { usePerson } from "@/components/person-provider";
 import { PainCheckIn } from "@/components/pain-check-in";
 import { PainCheckinCard } from "@/components/pain-checkin-card";
 import { PainCheckinTimeline } from "@/components/pain-checkin-timeline";
@@ -20,23 +21,25 @@ export default function RecoveryPage() {
   // undefined = auth still resolving, null = confirmed signed out, string = signed in.
   const [uid, setUid] = useState<string | null | undefined>(undefined);
   const [displayName, setDisplayName] = useState("");
-  const [personId, setPersonId] = useState<string | null>(null);
-  const [personName, setPersonName] = useState("");
   const chartRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  // The active person is shared (and persisted) via PersonProvider, so a
+  // dependent picked on the home dashboard / exercises page carries over here.
+  // Deriving it from context — rather than local state seeded to `uid` — keeps
+  // the PersonSwitcher's selection and every chart below in sync.
+  const personCtx = usePerson();
+  const personId = uid ? (personCtx?.personId ?? uid) : null;
+  const personName = personCtx?.personId ? personCtx.personName : displayName;
 
   useEffect(() => {
     if (!auth) return;
     return onAuthStateChanged(auth, (user) => {
       if (user) {
         setUid(user.uid);
-        setPersonId(user.uid);
-        const name = user.displayName || user.email || "Patient";
-        setDisplayName(name);
-        setPersonName(name);
+        setDisplayName(user.displayName || user.email || "Patient");
       } else {
         setUid(null);
-        setPersonId(null);
       }
     });
   }, []);
@@ -75,9 +78,10 @@ export default function RecoveryPage() {
         <PersonSwitcher
           uid={uid}
           displayName={displayName}
-          onSelect={(id, name) => {
-            setPersonId(id);
-            setPersonName(name);
+          onSelect={() => {
+            // PersonSwitcher persists the selection via the shared
+            // PersonProvider context; `personId` / `personName` above already
+            // read from it.
           }}
         />
         <DownloadReportButton
