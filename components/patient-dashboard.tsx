@@ -8,6 +8,10 @@ import { StreakCard } from "@/components/streak-card";
 interface Props {
   uid: string;
   personId: string;
+  // The pain-trend card needs at least one check-in to plot; before that it's a
+  // flat "no data yet" panel. Adherence and streak are exercise-driven and stay
+  // useful from day one, so the caller can hide just the chart.
+  showPainChart?: boolean;
 }
 
 // A chart card plus a caption link that deep-links into the full recovery
@@ -27,15 +31,17 @@ function DashboardCard({ children, caption, href }: { children: React.ReactNode;
 // The signed-in patient's home dashboard, styled after the mobile app's home
 // tab: at-a-glance pain trend, weekly adherence and daily streak, each linking
 // through to the full recovery view.
-export function PatientDashboard({ uid, personId }: Props) {
+export function PatientDashboard({ uid, personId, showPainChart = true }: Props) {
   return (
     <div className="patient-dashboard-grid">
-      <DashboardCard caption="My pain recovery" href="/patient/recovery">
-        <div className="panel stack" style={{ gap: "var(--space-3)" }}>
-          <h3 style={{ margin: 0 }}>Pain score</h3>
-          <RecoveryChart uid={uid} personId={personId} />
-        </div>
-      </DashboardCard>
+      {showPainChart && (
+        <DashboardCard caption="My pain recovery" href="/patient/recovery">
+          <div className="panel stack" style={{ gap: "var(--space-3)" }}>
+            <h3 style={{ margin: 0 }}>Pain score</h3>
+            <RecoveryChart uid={uid} personId={personId} />
+          </div>
+        </DashboardCard>
+      )}
 
       <DashboardCard caption="My adherence" href="/patient/recovery">
         <AdherenceBar uid={uid} personId={personId} />

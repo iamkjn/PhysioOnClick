@@ -9,7 +9,7 @@ import { PersonSwitcher } from "@/components/person-switcher";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
 import { PatientDashboard } from "@/components/patient-dashboard";
 import { usePerson } from "@/components/person-provider";
-import { getAssignedExercises } from "@/lib/recovery";
+import { getAssignedExercises, getRecoveryScoreSeries } from "@/lib/recovery";
 import { getPatientBookings } from "@/lib/patient-bookings";
 
 function greeting() {
@@ -90,6 +90,30 @@ export function HomeDashboard({ user }: { user: User }) {
     };
   }, [user.uid, personId]);
 
+  // The recovery ring and "Your recovery at a glance" charts stay hidden until
+  // there's at least one pain check-in / assessment to plot — an empty ring and
+  // a flat "no data yet" chart read as broken. The "My recovery" quick link
+  // still shows (gated on the plan above) so the patient can go log their first
+  // check-in.
+  const [hasRecoveryData, setHasRecoveryData] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    getRecoveryScoreSeries(user.uid, personId, 9999)
+      .then((series) => {
+        if (!cancelled) setHasRecoveryData(series.length > 0);
+      })
+      .catch(() => {
+        if (!cancelled) setHasRecoveryData(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user.uid, personId]);
+
+  // The ring needs a check-in to mean anything; adherence + streak (inside
+  // PatientDashboard) are exercise-driven and shown whenever there's a plan.
+  const showRecoveryRing = hasRecoveryPlan && hasRecoveryData;
+
   // "Invoices & payments" has nothing to show until the first appointment is
   // booked (paid or not — an invoice only exists once a booking does), so
   // it's hidden rather than linking to a permanently empty list.
@@ -137,12 +161,13 @@ export function HomeDashboard({ user }: { user: User }) {
           />
         </header>
 
-        <div className={hasRecoveryPlan ? "home-dashboard-grid" : "home-dashboard-grid home-dashboard-grid--full"}>
+        <div className={showRecoveryRing ? "home-dashboard-grid" : "home-dashboard-grid home-dashboard-grid--full"}>
           {/* The recovery ring is meaningless (and always empty) before a
-              physio has assigned a plan, so it's dropped entirely rather than
-              shown blank — the quick-links nav below expands to fill the
-              width it would have used (--full) instead of leaving it bare. */}
-          {hasRecoveryPlan ? <RecoveryPercentCard uid={user.uid} personId={personId} /> : null}
+              physio has assigned a plan AND the patient has logged a check-in,
+              so it's dropped entirely rather than shown blank — the quick-links
+              nav below expands to fill the width it would have used (--full)
+              instead of leaving it bare. */}
+          {showRecoveryRing ? <RecoveryPercentCard uid={user.uid} personId={personId} /> : null}
 
           {/* "Book a session" intentionally omitted — the header's persistent
               "Book Now" button already covers booking, so repeating it here was
@@ -174,7 +199,7 @@ export function HomeDashboard({ user }: { user: User }) {
         {hasRecoveryPlan ? (
           <div className="home-dashboard-charts">
             <h3 className="home-dashboard-charts-title">Your recovery at a glance</h3>
-            <PatientDashboard uid={user.uid} personId={personId} />
+            <PatientDashboard uid={user.uid} personId={personId} showPainChart={hasRecoveryData} />
           </div>
         ) : null}
       </div>

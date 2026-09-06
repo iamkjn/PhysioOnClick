@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { getRecoveryScoreSeries } from "@/lib/recovery";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { usePerson } from "@/components/person-provider";
 import { PainCheckIn } from "@/components/pain-check-in";
@@ -31,6 +32,27 @@ export default function RecoveryPage() {
   const personCtx = usePerson();
   const personId = uid ? (personCtx?.personId ?? uid) : null;
   const personName = personCtx?.personId ? personCtx.personName : displayName;
+
+  // The recovery score ring and the pain-trend chart are only meaningful once
+  // there's at least one pain check-in (or physio-entered assessment) to show.
+  // Before that they render as apologetic empty cards that read as broken, so
+  // hide both sections entirely until data exists. On a fetch error, err
+  // toward showing them (their own error/empty copy then takes over).
+  const [hasRecoveryData, setHasRecoveryData] = useState(false);
+  useEffect(() => {
+    if (!uid || !personId) return;
+    let cancelled = false;
+    getRecoveryScoreSeries(uid, personId, 9999)
+      .then((series) => {
+        if (!cancelled) setHasRecoveryData(series.length > 0);
+      })
+      .catch(() => {
+        if (!cancelled) setHasRecoveryData(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [uid, personId]);
 
   useEffect(() => {
     if (!auth) return;
@@ -102,13 +124,17 @@ export default function RecoveryPage() {
         <PainCheckinTimeline uid={uid} personId={personId} />
       </section>
 
-      <section className="page-section">
-        <RecoveryPercentCard uid={uid} personId={personId} />
-      </section>
+      {hasRecoveryData && (
+        <>
+          <section className="page-section">
+            <RecoveryPercentCard uid={uid} personId={personId} />
+          </section>
 
-      <section className="page-section">
-        <RecoveryChart ref={chartRef} uid={uid} personId={personId} showMobility />
-      </section>
+          <section className="page-section">
+            <RecoveryChart ref={chartRef} uid={uid} personId={personId} showMobility />
+          </section>
+        </>
+      )}
 
       <section className="page-section">
         <AssignedExercises uid={uid} personId={personId} />
