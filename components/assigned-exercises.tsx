@@ -13,7 +13,7 @@ import {
 } from "@/lib/recovery";
 import { getMotionSessions, type MotionSession } from "@/lib/motion";
 import { track } from "@/lib/analytics";
-import { exercises } from "@/lib/site-data";
+import { exercises, resolveDosage, formatDosage } from "@/lib/exercises";
 import { SkeletonRow } from "@/components/skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { ExerciseFigure } from "@/components/exercise-figure";
@@ -41,6 +41,16 @@ export function AssignedExercises({ uid, personId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("All");
   const [savingAll, setSavingAll] = useState(false);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  function toggleExpanded(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -220,6 +230,8 @@ export function AssignedExercises({ uid, personId }: Props) {
                 <div className="exercise-card-body">
                   <strong>{ex.title}</strong>
                   <span>{ex.bodyPart} · {ex.stage}</span>
+                  <span className="exercise-dose-line">{formatDosage(resolveDosage(ex, ae))}</span>
+                  {ae.dosage?.notes && <span className="exercise-physio-note">Physio note: {ae.dosage.notes}</span>}
                   {motion && (
                     <span className="exercise-motion-result">
                       Last motion check: {motion.romMax}° range · {motion.avgQuality}% ({motion.reps} reps)
@@ -231,6 +243,16 @@ export function AssignedExercises({ uid, personId }: Props) {
               {ex.description && <p className="exercise-card-desc">{ex.description}</p>}
 
               <div className="exercise-card-actions">
+                {(ex.setup || ex.steps?.length || ex.cues?.length || ex.mistakes?.length || ex.equipment?.length) && (
+                  <button
+                    type="button"
+                    className="exercise-howto-toggle"
+                    aria-expanded={expanded.has(ae.exerciseId)}
+                    onClick={() => toggleExpanded(ae.exerciseId)}
+                  >
+                    {expanded.has(ae.exerciseId) ? "Hide how-to ▴" : "How to do it ▾"}
+                  </button>
+                )}
                 <button
                   type="button"
                   className={`exercise-done-toggle${done ? " done" : ""}`}
@@ -256,6 +278,25 @@ export function AssignedExercises({ uid, personId }: Props) {
                   </a>
                 )}
               </div>
+
+              {expanded.has(ae.exerciseId) && (
+                <div className="exercise-howto">
+                  {ex.equipment && ex.equipment.length > 0 && (
+                    <p><strong>You&apos;ll need:</strong> {ex.equipment.join(", ")}</p>
+                  )}
+                  {ex.setup && <p><strong>Get set up:</strong> {ex.setup}</p>}
+                  {ex.steps && ex.steps.length > 0 && (
+                    <div><strong>The movement</strong><ol>{ex.steps.map((s, i) => <li key={i}>{s}</li>)}</ol></div>
+                  )}
+                  {ex.cues && ex.cues.length > 0 && (
+                    <div><strong>Good form</strong><ul className="exercise-howto-cues">{ex.cues.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
+                  )}
+                  {ex.mistakes && ex.mistakes.length > 0 && (
+                    <div><strong>Ease off or stop if</strong><ul className="exercise-howto-mistakes">{ex.mistakes.map((m, i) => <li key={i}>{m}</li>)}</ul></div>
+                  )}
+                  <p className="exercise-howto-foot muted">Your physio set this dose — tell her at your next session if it&apos;s too easy or too hard.</p>
+                </div>
+              )}
             </div>
           );
         })}

@@ -2523,6 +2523,24 @@ textarea:focus {
   font-size: var(--text-xs);
 }
 
+/* Effective dose line + physio's per-patient note under the exercise title,
+   and the "How to do it" expander panel. */
+.exercise-dose-line { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-top: 2px; }
+.exercise-physio-note { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.exercise-howto-toggle {
+  flex: 0 0 auto; min-height: 42px; padding: 0 0.85rem; border-radius: var(--radius-input);
+  border: 1.5px solid var(--color-border); background: transparent; color: var(--color-navy);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.exercise-howto-toggle:hover { background: var(--surface-alt); }
+.exercise-howto { display: grid; gap: 0.6rem; padding-top: 0.4rem; font-size: 13px; line-height: 1.55; color: var(--color-text-secondary); }
+.exercise-howto p, .exercise-howto div { margin: 0; }
+.exercise-howto strong { color: var(--color-navy); }
+.exercise-howto ol, .exercise-howto ul { margin: 0.25rem 0 0; padding-left: 1.2rem; display: grid; gap: 0.2rem; }
+.exercise-howto-mistakes { list-style: none; padding-left: 0; }
+.exercise-howto-mistakes li::before { content: "⚠ "; color: var(--color-warning); }
+.exercise-howto-foot { font-size: 12px; margin-top: 0.2rem; }
+
 /* Three at-a-glance cards that fill the shell width and wrap to one
    column on narrow screens — the fix for the empty side gutters. */
 .patient-dashboard-grid {

@@ -1,6 +1,23 @@
 import { render, waitFor, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// Hoisted so the vi.mock factory below (which vitest lifts to the top of the
+// file) can reference it without a temporal-dead-zone error.
+const { FIXTURE_EX } = vi.hoisted(() => ({
+  FIXTURE_EX: {
+    id: 'ex-fix', title: 'Fixture Raise', bodyPart: 'Ankle', clinicalArea: 'lower_limb',
+    tags: [] as string[], condition: '', stage: 'Strength phase',
+    description: 'A fixture exercise.', videoUrl: 'https://www.youtube.com/embed/abc',
+    setup: 'Stand tall.', steps: ['Rise onto your toes', 'Lower slowly'],
+    cues: ['Keep knees soft'], mistakes: ['Do not rush'],
+    defaultDosage: { sets: 3, reps: 12, perDay: 1 },
+  },
+}))
+vi.mock('@/lib/exercises', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/exercises')>()
+  return { ...actual, exercises: [FIXTURE_EX] }
+})
+
 const getAssignedExercisesMock = vi.fn()
 const getTodayExerciseLogMock = vi.fn()
 vi.mock('@/lib/recovery', () => ({
@@ -20,12 +37,12 @@ vi.mock('@/lib/motion', () => ({
 }))
 
 import { AssignedExercises } from '@/components/assigned-exercises'
-import { exercises } from '@/lib/site-data'
+import { exercises } from '@/lib/exercises'
 
 const EXERCISE = exercises[0]
 
 function assignedExercise() {
-  return { exerciseId: EXERCISE.id, assignedAt: new Date(), assignedBy: 'admin-1', active: true }
+  return { exerciseId: FIXTURE_EX.id, assignedAt: new Date(), assignedBy: 'admin-1', active: true }
 }
 
 describe('AssignedExercises', () => {
@@ -97,5 +114,25 @@ describe('AssignedExercises', () => {
     await waitFor(() => expect(screen.getByText(EXERCISE.title)).toBeInTheDocument())
     expect(screen.getByText(EXERCISE.description)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Mark all as done' })).toBeInTheDocument()
+  })
+
+  it('shows the effective dose line', async () => {
+    getAssignedExercisesMock.mockResolvedValue([{ ...assignedExercise(), dosage: { reps: 15 } }])
+    getTodayExerciseLogMock.mockResolvedValue(null)
+    render(<AssignedExercises uid="u1" personId="p1" />)
+    await waitFor(() => expect(screen.getByText('3 sets × 15 reps · once a day')).toBeInTheDocument())
+  })
+
+  it('reveals setup / steps / cues / mistakes on "How to do it"', async () => {
+    getAssignedExercisesMock.mockResolvedValue([assignedExercise()])
+    getTodayExerciseLogMock.mockResolvedValue(null)
+    render(<AssignedExercises uid="u1" personId="p1" />)
+    await waitFor(() => expect(screen.getByText('Fixture Raise')).toBeInTheDocument())
+    expect(screen.queryByText('Rise onto your toes')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /how to do it/i }))
+    expect(screen.getByText('Stand tall.')).toBeInTheDocument()
+    expect(screen.getByText('Rise onto your toes')).toBeInTheDocument()
+    expect(screen.getByText('Keep knees soft')).toBeInTheDocument()
+    expect(screen.getByText('Do not rush')).toBeInTheDocument()
   })
 })
