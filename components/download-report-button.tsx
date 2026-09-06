@@ -478,8 +478,13 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
           assignedExercises
             .map((ae) => { const ex = exerciseMap.get(ae.exerciseId); return ex ? { ex, ae } : null; })
             .filter((r): r is { ex: NonNullable<ReturnType<typeof exerciseMap.get>>; ae: typeof assignedExercises[number] } => !!r)
-            .map(({ ex, ae }) => [ex.title, formatDosage(resolveDosage(ex, ae)), ex.description]),
-          [margin + 2, margin + 70, margin + 120]
+            .map(({ ex, ae }) => {
+              pdf.setFontSize(8.5);
+              const descCol = contentW - 104; // column x is margin + 104
+              const desc = pdf.splitTextToSize(ex.description, descCol)[0] ?? "";
+              return [ex.title, formatDosage(resolveDosage(ex, ae)), desc];
+            }),
+          [margin + 2, margin + 62, margin + 104]
         );
       }
 
