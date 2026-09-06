@@ -33,3 +33,20 @@ describe("ExerciseFigure new poses", () => {
     }
   });
 });
+
+describe("ExerciseFigure explicit pose", () => {
+  it("uses the explicit pose when given, ignoring the name", () => {
+    const { container } = render(<ExerciseFigure name="totally unknown movement" pose="squat" />);
+    // squat spec has 1 circle + >=5 segments (see SPECS); standing differs.
+    const squat = render(<ExerciseFigure name="Sit to Stand Control" />).container;
+    expect(container.querySelectorAll("line").length).toBe(squat.querySelectorAll("line").length);
+  });
+  it("falls back to name-guessing when no pose is given", () => {
+    const { container } = render(<ExerciseFigure name="Single Leg Balance" />);
+    expect(container.querySelector("svg")).toBeInTheDocument();
+  });
+  it("falls back to standing for an unknown explicit pose value", () => {
+    const { container } = render(<ExerciseFigure name="x" pose="not-a-pose" />);
+    expect(container.querySelector("svg")).toBeInTheDocument();
+  });
+});

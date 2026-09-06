@@ -6,6 +6,8 @@
 type Pose = "legRaise" | "kneeExt" | "heelSlide" | "balance" | "bike" | "squat" | "pendulum" | "standing"
   | "neckTurn" | "hipStretch" | "anklePump" | "pelvicTilt" | "overheadReach" | "catCow" | "gripSqueeze";
 
+export type PoseName = Pose;
+
 type Spec = {
   circles: [number, number, number][]; // cx, cy, r
   segments: [number, number, number, number][]; // x1, y1, x2, y2
@@ -75,6 +77,8 @@ const SPECS: Record<Pose, Spec> = {
   },
 };
 
+export const POSE_NAMES = Object.keys(SPECS) as PoseName[];
+
 // Mirrors the mobile _poseFor keyword inference, with two extra keys for the
 // web catalogue's names (sit-to-stand ≈ squat, scapular ≈ shoulder/pendulum).
 function poseForName(name: string): Pose {
@@ -96,8 +100,9 @@ function poseForName(name: string): Pose {
   return "standing";
 }
 
-export function ExerciseFigure({ name, size = 56 }: { name: string; size?: number }) {
-  const spec = SPECS[poseForName(name)];
+export function ExerciseFigure({ name, size = 56, pose }: { name: string; size?: number; pose?: string }) {
+  const chosen: Pose = pose && (pose in SPECS) ? (pose as Pose) : poseForName(name);
+  const spec = SPECS[chosen];
   return (
     <span className="exercise-figure-tile" style={{ width: size, height: size }} aria-hidden="true">
       <svg viewBox="0 0 64 56" width="78%" height="78%" fill="none" stroke="var(--primary)" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
