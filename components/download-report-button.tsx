@@ -13,6 +13,7 @@ import { getMotionSessions, type MotionSession } from "@/lib/motion";
 import { getStreakGoal } from "@/lib/goals";
 import { getPatientAssessmentForms, hasUrgentRedFlags, type PatientAssessmentFormRecord } from "@/lib/assessment-forms";
 import { exercises as allExercises } from "@/lib/site-data";
+import { resolveDosage, formatDosage } from "@/lib/exercises";
 
 interface Props {
   uid: string;
@@ -475,10 +476,10 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
         const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
         tableRows(
           assignedExercises
-            .map((ae) => exerciseMap.get(ae.exerciseId))
-            .filter((ex): ex is NonNullable<typeof ex> => !!ex)
-            .map((ex) => [ex.title, ex.bodyPart, ex.stage]),
-          [margin + 2, margin + 78, margin + 130]
+            .map((ae) => { const ex = exerciseMap.get(ae.exerciseId); return ex ? { ex, ae } : null; })
+            .filter((r): r is { ex: NonNullable<ReturnType<typeof exerciseMap.get>>; ae: typeof assignedExercises[number] } => !!r)
+            .map(({ ex, ae }) => [ex.title, formatDosage(resolveDosage(ex, ae)), ex.description]),
+          [margin + 2, margin + 70, margin + 120]
         );
       }
 
