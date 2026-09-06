@@ -48,6 +48,18 @@ export function SiteFooter() {
           <Link href="/contact">Contact form</Link>
         </div>
       </div>
+      <div className="site-shell footer-fineprint">
+        <span>&copy; {new Date().getFullYear()} PhysioOnClick</span>
+        {/* Required reciprocal link for the UK Health Centre directory listing.
+            nofollow: it's a listing requirement, not an editorial endorsement. */}
+        <a
+          href="https://www.healthcentre.org.uk/"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          UK Health Centre Registered
+        </a>
+      </div>
     </footer>
   );
 }
