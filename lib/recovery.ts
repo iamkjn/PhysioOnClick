@@ -241,6 +241,20 @@ export async function toggleExerciseCompletion(
   );
 }
 
+// Set the same done/not-done state for many exercises in one write — backs the
+// "Mark all as done" action on the patient exercise list.
+export async function setExercisesCompletion(
+  uid: string,
+  personId: string,
+  exerciseIds: string[],
+  done: boolean
+): Promise<void> {
+  const ref = doc(personBase(uid, personId), "exerciseLogs", todayKey());
+  const completions: Record<string, boolean> = {};
+  for (const id of exerciseIds) completions[id] = done;
+  await setDoc(ref, { completions, loggedAt: serverTimestamp() }, { merge: true });
+}
+
 export async function getExerciseLogs(
   uid: string,
   personId: string,

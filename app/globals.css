@@ -2344,6 +2344,73 @@ textarea:focus {
   color: #fff;
 }
 
+/* "Your program" header: title/progress copy on the left, "Mark all as done"
+   on the right, stacking on narrow cards. */
+.exercise-program-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.exercise-program-head .exercise-mark-all {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 0.9rem;
+  font-size: 13px;
+}
+
+/* Slim "done today" progress track above the exercise cards. */
+.exercise-progress-bar {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-light);
+  overflow: hidden;
+}
+.exercise-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+
+/* One-line how-to under the exercise title. */
+.exercise-card-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+/* Labelled "done today" toggle — the primary action on each card. Full-width
+   inside .exercise-card-actions so it never reads as a passive status dot.
+   (Selector carries .exercise-card-actions to beat its generic `button` rule.) */
+.exercise-card-actions .exercise-done-toggle {
+  flex: 1 1 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 42px;
+  padding: 0 0.85rem;
+  border-radius: var(--radius-input);
+  border: 1.5px solid var(--primary);
+  background: transparent;
+  color: var(--primary-dark);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.exercise-done-toggle:hover {
+  background: var(--color-primary-light);
+}
+.exercise-done-toggle.done {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
 /* Camera-gated "Check your motion" trigger — components/motion-check-button.tsx.
    Sits between the exercise body and the completion checkbox; only rendered
    at all when a motion target + camera are both available, so it stays a

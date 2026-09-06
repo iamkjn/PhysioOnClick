@@ -6,6 +6,7 @@ import {
   getAssignedExercises,
   getTodayExerciseLog,
   toggleExerciseCompletion,
+  setExercisesCompletion,
   todayKey,
   type AssignedExercise,
   type ExerciseLog,
@@ -28,9 +29,10 @@ function watchUrl(embed: string): string {
   return embed.replace("/embed/", "/watch?v=");
 }
 
-// "Your program" — the exercises the physio assigned, each with the physio's
-// demo video (read-only for the patient), a "Check your motion" button where a
-// motion target exists, the latest motion result, and a completion tick.
+// "Your program" — the exercises the physio assigned, each with a short how-to,
+// the physio's demo video where one exists, a "Check your motion" button where a
+// motion target exists, the latest motion result, and a per-exercise "done
+// today" toggle plus a "mark all as done" shortcut for the daily check-off.
 export function AssignedExercises({ uid, personId }: Props) {
   const [assigned, setAssigned] = useState<AssignedExercise[]>([]);
   const [todayLog, setTodayLog] = useState<ExerciseLog | null>(null);
@@ -38,6 +40,7 @@ export function AssignedExercises({ uid, personId }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("All");
+  const [savingAll, setSavingAll] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,8 +84,11 @@ export function AssignedExercises({ uid, personId }: Props) {
 
   const visible = filter === "All" ? resolved : resolved.filter((r) => r.ex.bodyPart === filter);
   const completedCount = resolved.filter((r) => todayLog?.completions?.[r.ae.exerciseId]).length;
+  const allDone = resolved.length > 0 && completedCount === resolved.length;
+  const progressPct = resolved.length === 0 ? 0 : Math.round((completedCount / resolved.length) * 100);
 
   async function handleToggle(exerciseId: string, done: boolean) {
+    setError(null);
     setTodayLog((prev) => ({
       date: todayKey(),
       completions: { ...(prev?.completions ?? {}), [exerciseId]: done },
@@ -97,6 +103,28 @@ export function AssignedExercises({ uid, personId }: Props) {
         loggedAt: new Date(),
       }));
       setError("Could not save. Please try again.");
+    }
+  }
+
+  async function handleMarkAll() {
+    const ids = resolved.map((r) => r.ae.exerciseId);
+    if (ids.length === 0) return;
+    const previous = todayLog;
+    setError(null);
+    setSavingAll(true);
+    setTodayLog({
+      date: todayKey(),
+      completions: { ...(previous?.completions ?? {}), ...Object.fromEntries(ids.map((id) => [id, true])) },
+      loggedAt: new Date(),
+    });
+    try {
+      await setExercisesCompletion(uid, personId, ids, true);
+      track("exercises_marked_all_done", { count: ids.length });
+    } catch {
+      setTodayLog(previous);
+      setError("Could not save. Please try again.");
+    } finally {
+      setSavingAll(false);
     }
   }
 
@@ -130,11 +158,36 @@ export function AssignedExercises({ uid, personId }: Props) {
 
   return (
     <div className="panel stack">
-      <div>
-        <h3 style={{ margin: 0 }}>Your program</h3>
-        <p className="muted" style={{ margin: "var(--space-1) 0 0" }}>
-          {completedCount} of {resolved.length} completed today
-        </p>
+      <div className="exercise-program-head">
+        <div>
+          <h3 style={{ margin: 0 }}>Your program</h3>
+          <p className="muted" style={{ margin: "var(--space-1) 0 0" }}>
+            {allDone
+              ? `All ${resolved.length} done today — great work.`
+              : `${completedCount} of ${resolved.length} done today. Tick each one off as you go.`}
+          </p>
+        </div>
+        {!allDone && (
+          <button
+            type="button"
+            className="button secondary exercise-mark-all"
+            onClick={() => void handleMarkAll()}
+            disabled={savingAll}
+          >
+            {savingAll ? "Saving…" : "Mark all as done"}
+          </button>
+        )}
+      </div>
+
+      <div
+        className="exercise-progress-bar"
+        role="progressbar"
+        aria-label="Exercises completed today"
+        aria-valuenow={progressPct}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
+        <div className="exercise-progress-fill" style={{ width: `${progressPct}%` }} />
       </div>
 
       {categories.length > 2 && (
@@ -173,20 +226,22 @@ export function AssignedExercises({ uid, personId }: Props) {
                     </span>
                   )}
                 </div>
-                <button
-                  type="button"
-                  className={`exercise-check${done ? " done" : ""}`}
-                  aria-pressed={done}
-                  aria-label={`Mark ${ex.title} ${done ? "not done" : "done"}`}
-                  onClick={() => void handleToggle(ae.exerciseId, !done)}
-                >
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12l5 5 9-11" />
-                  </svg>
-                </button>
               </div>
 
+              {ex.description && <p className="exercise-card-desc">{ex.description}</p>}
+
               <div className="exercise-card-actions">
+                <button
+                  type="button"
+                  className={`exercise-done-toggle${done ? " done" : ""}`}
+                  aria-pressed={done}
+                  onClick={() => void handleToggle(ae.exerciseId, !done)}
+                >
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M5 12l5 5 9-11" />
+                  </svg>
+                  {done ? "Done today" : "Mark done"}
+                </button>
                 <MotionCheckButton exerciseId={ex.id} exercise={ex} uid={uid} personId={personId} />
                 {ex.videoUrl && (
                   <a
