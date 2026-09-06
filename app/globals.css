@@ -2525,8 +2525,8 @@ textarea:focus {
 
 /* Effective dose line + physio's per-patient note under the exercise title,
    and the "How to do it" expander panel. */
-.exercise-dose-line { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-top: 2px; }
-.exercise-physio-note { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.exercise-card-body .exercise-dose-line { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-top: 2px; }
+.exercise-card-body .exercise-physio-note { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
 .exercise-howto-toggle {
   flex: 0 0 auto; min-height: 42px; padding: 0 0.85rem; border-radius: var(--radius-input);
   border: 1.5px solid var(--color-border); background: transparent; color: var(--color-navy);

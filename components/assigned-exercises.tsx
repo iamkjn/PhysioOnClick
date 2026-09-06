@@ -243,7 +243,7 @@ export function AssignedExercises({ uid, personId }: Props) {
               {ex.description && <p className="exercise-card-desc">{ex.description}</p>}
 
               <div className="exercise-card-actions">
-                {(ex.setup || ex.steps?.length || ex.cues?.length || ex.mistakes?.length || ex.equipment?.length) && (
+                {[ex.setup, ex.steps?.length, ex.cues?.length, ex.mistakes?.length, ex.equipment?.length].some(Boolean) && (
                   <button
                     type="button"
                     className="exercise-howto-toggle"
