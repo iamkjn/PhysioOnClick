@@ -13,7 +13,7 @@ import {
 } from "@/lib/recovery";
 import { getMotionSessions, type MotionSession } from "@/lib/motion";
 import { track } from "@/lib/analytics";
-import { exercises, resolveDosage, formatDosage } from "@/lib/exercises";
+import { exercises, resolveDosage, formatDosage, hasPrescribedDose } from "@/lib/exercises";
 import { SkeletonRow } from "@/components/skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { ExerciseFigure } from "@/components/exercise-figure";
@@ -223,6 +223,8 @@ export function AssignedExercises({ uid, personId }: Props) {
         {visible.map(({ ae, ex }) => {
           const done = todayLog?.completions?.[ae.exerciseId] ?? false;
           const motion = motionByExercise[ae.exerciseId];
+          const dose = resolveDosage(ex, ae);
+          const doseText = formatDosage(dose);
           return (
             <div key={ae.exerciseId} className={`exercise-card${done ? " done" : ""}`}>
               <div className="exercise-card-head">
@@ -230,8 +232,8 @@ export function AssignedExercises({ uid, personId }: Props) {
                 <div className="exercise-card-body">
                   <strong>{ex.title}</strong>
                   <span>{ex.bodyPart} · {ex.stage}</span>
-                  <span className="exercise-dose-line">{formatDosage(resolveDosage(ex, ae))}</span>
-                  {ae.dosage?.notes && <span className="exercise-physio-note">Physio note: {ae.dosage.notes}</span>}
+                  <span className={hasPrescribedDose(dose) ? "exercise-dose-line" : "exercise-dose-line exercise-dose-line--pending"}>{doseText}</span>
+                  {dose.notes && <span className="exercise-physio-note">Physio note: {dose.notes}</span>}
                   {motion && (
                     <span className="exercise-motion-result">
                       Last motion check: {motion.romMax}° range · {motion.avgQuality}% ({motion.reps} reps)
@@ -243,16 +245,6 @@ export function AssignedExercises({ uid, personId }: Props) {
               {ex.description && <p className="exercise-card-desc">{ex.description}</p>}
 
               <div className="exercise-card-actions">
-                {[ex.setup, ex.steps?.length, ex.cues?.length, ex.mistakes?.length, ex.equipment?.length].some(Boolean) && (
-                  <button
-                    type="button"
-                    className="exercise-howto-toggle"
-                    aria-expanded={expanded.has(ae.exerciseId)}
-                    onClick={() => toggleExpanded(ae.exerciseId)}
-                  >
-                    {expanded.has(ae.exerciseId) ? "Hide how-to ▴" : "How to do it ▾"}
-                  </button>
-                )}
                 <button
                   type="button"
                   className={`exercise-done-toggle${done ? " done" : ""}`}
@@ -265,6 +257,17 @@ export function AssignedExercises({ uid, personId }: Props) {
                   </svg>
                   {done ? "Done today" : "Mark done"}
                 </button>
+                {[ex.setup, ex.steps?.length, ex.cues?.length, ex.mistakes?.length, ex.equipment?.length].some(Boolean) && (
+                  <button
+                    type="button"
+                    className="exercise-howto-toggle"
+                    aria-expanded={expanded.has(ae.exerciseId)}
+                    aria-controls={`howto-${ae.exerciseId}`}
+                    onClick={() => toggleExpanded(ae.exerciseId)}
+                  >
+                    {expanded.has(ae.exerciseId) ? "Hide how-to ▴" : "How to do it ▾"}
+                  </button>
+                )}
                 <MotionCheckButton exerciseId={ex.id} exercise={ex} uid={uid} personId={personId} />
                 {ex.videoUrl && (
                   <a
@@ -280,7 +283,7 @@ export function AssignedExercises({ uid, personId }: Props) {
               </div>
 
               {expanded.has(ae.exerciseId) && (
-                <div className="exercise-howto">
+                <div className="exercise-howto" id={`howto-${ae.exerciseId}`}>
                   {ex.equipment && ex.equipment.length > 0 && (
                     <p><strong>You&apos;ll need:</strong> {ex.equipment.join(", ")}</p>
                   )}
@@ -289,7 +292,7 @@ export function AssignedExercises({ uid, personId }: Props) {
                     <div><strong>The movement</strong><ol>{ex.steps.map((s, i) => <li key={i}>{s}</li>)}</ol></div>
                   )}
                   {ex.cues && ex.cues.length > 0 && (
-                    <div><strong>Good form</strong><ul className="exercise-howto-cues">{ex.cues.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
+                    <div><strong>Good form</strong><ul>{ex.cues.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
                   )}
                   {ex.mistakes && ex.mistakes.length > 0 && (
                     <div><strong>Ease off or stop if</strong><ul className="exercise-howto-mistakes">{ex.mistakes.map((m, i) => <li key={i}>{m}</li>)}</ul></div>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { resolveDosage, formatDosage, validateDosage, exercises, type Exercise } from '@/lib/exercises'
+import { resolveDosage, formatDosage, hasPrescribedDose, validateDosage, exercises, type Exercise } from '@/lib/exercises'
 
 const base = (over: Partial<Exercise> = {}): Exercise => ({
   id: 'ex-test', title: 'Test', bodyPart: 'Knee', clinicalArea: 'lower_limb',
@@ -32,7 +32,24 @@ describe('formatDosage', () => {
   it('adds twice a day', () => expect(formatDosage({ reps: 10, perDay: 2 })).toBe('10 reps · twice a day'))
   it('adds N times a day', () => expect(formatDosage({ reps: 10, perDay: 3 })).toBe('10 reps · 3 times a day'))
   it('adds days a week', () => expect(formatDosage({ reps: 10, perWeek: 4 })).toBe('10 reps · 4 days a week'))
+  it('appends tempo after the core clause', () =>
+    expect(formatDosage({ sets: 3, reps: 12, tempo: '3s down, 1s up' })).toBe('3 sets × 12 reps · 3s down, 1s up'))
+  it('appends tempo after the frequency clause', () =>
+    expect(formatDosage({ reps: 10, perDay: 2, tempo: 'slow' })).toBe('10 reps · twice a day · slow'))
+  it('ignores a blank tempo', () => expect(formatDosage({ reps: 10, tempo: '  ' })).toBe('10 reps'))
   it('empty → As advised by your physio', () => expect(formatDosage({})).toBe('As advised by your physio'))
+})
+
+describe('hasPrescribedDose', () => {
+  it('true when sets / reps / hold are set', () => {
+    expect(hasPrescribedDose({ sets: 3 })).toBe(true)
+    expect(hasPrescribedDose({ reps: 10 })).toBe(true)
+    expect(hasPrescribedDose({ holdSeconds: 30 })).toBe(true)
+  })
+  it('false for the "as advised" placeholder (no load specified)', () => {
+    expect(hasPrescribedDose({})).toBe(false)
+    expect(hasPrescribedDose({ perDay: 2, tempo: 'slow', notes: 'go gently' })).toBe(false)
+  })
 })
 
 describe('validateDosage', () => {
@@ -45,6 +62,12 @@ describe('validateDosage', () => {
   it('rejects negative', () => expect(validateDosage({ reps: -1 })).toMatch(/whole number|negative/i))
   it('rejects non-integer', () => expect(validateDosage({ reps: 2.5 })).toMatch(/whole number/i))
   it('rejects a 301-char note', () => expect(validateDosage({ notes: 'a'.repeat(301) })).toMatch(/note/i))
+  it('rejects a non-string tempo', () =>
+    // @ts-expect-error — exercising the runtime type-guard against non-form data
+    expect(validateDosage({ tempo: 42 })).toMatch(/tempo/i))
+  it('rejects a non-string note', () =>
+    // @ts-expect-error — exercising the runtime type-guard against non-form data
+    expect(validateDosage({ notes: 123 })).toMatch(/note/i))
 })
 
 describe('catalogue move', () => {

@@ -101,6 +101,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
 
   async function handleRemove(exerciseId: string) {
     setSaving(exerciseId);
+    setEditing((cur) => (cur === exerciseId ? null : cur));
     try {
       await removeExercise(patientUid, personId, exerciseId);
       const updated = await getAssignedExercises(patientUid, personId);
@@ -116,8 +117,21 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
     // Only ever runs for a row already in `assigned` — the Edit-dose control
     // lives on assigned rows, never on the "Add exercise from library" picker.
     // A bare `{merge:true}` write on an unassigned id would create a partial doc.
+    //
+    // Persist ONLY the fields that differ from the catalogue default. Saving the
+    // full effective dose would freeze this patient's dose against future
+    // `defaultDosage` revisions (Plan 2). "Reset to default" passes `{}` →
+    // `override` stays `{}` → resolves back to the catalogue default.
+    const ex = exerciseMap.get(exerciseId);
+    const baseline = ex ? resolveDosage(ex, {}) : ({} as ExerciseDosage);
+    const override: ExerciseDosage = {};
+    for (const [k, v] of Object.entries(dose)) {
+      if (v !== undefined && v !== (baseline as Record<string, unknown>)[k]) {
+        (override as Record<string, unknown>)[k] = v;
+      }
+    }
     try {
-      await setAssignedDosage(patientUid, personId, exerciseId, dose);
+      await setAssignedDosage(patientUid, personId, exerciseId, override);
       const updated = await getAssignedExercises(patientUid, personId);
       setAssigned(updated);
       setEditing(null);
@@ -151,6 +165,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
                     type="button"
                     onClick={() => setEditing(isEditing ? null : ae.exerciseId)}
                     aria-expanded={isEditing}
+                    aria-controls={`dose-${ae.exerciseId}`}
                     className="assign-edit-dose"
                   >
                     {isEditing ? "Close" : "Edit dose"}
@@ -168,6 +183,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
             </div>
             {ex && isEditing && (
               <DoseForm
+                id={`dose-${ae.exerciseId}`}
                 initial={resolveDosage(ex, ae)}
                 onSave={(d) => handleSaveDose(ae.exerciseId, d)}
                 onCancel={() => setEditing(null)}
@@ -250,8 +266,9 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
 }
 
 function DoseForm({
-  initial, onSave, onCancel,
+  id, initial, onSave, onCancel,
 }: {
+  id: string;
   initial: ExerciseDosage;
   onSave: (d: ExerciseDosage) => Promise<void>;
   onCancel: () => void;
@@ -267,11 +284,12 @@ function DoseForm({
     e.preventDefault();
     const v = validateDosage(d);
     if (v) { setErr(v); return; }
+    setErr(null);
     setSaving(true);
     try { await onSave(d); } finally { setSaving(false); }
   }
   return (
-    <form className="dose-form" onSubmit={(e) => void submit(e)}>
+    <form className="dose-form" id={id} onSubmit={(e) => void submit(e)}>
       <label>Sets <input type="number" min={0} value={d.sets ?? ""} onChange={num("sets")} /></label>
       <label>Reps <input type="number" min={0} value={d.reps ?? ""} onChange={num("reps")} /></label>
       <label>Hold (s) <input type="number" min={0} value={d.holdSeconds ?? ""} onChange={num("holdSeconds")} /></label>

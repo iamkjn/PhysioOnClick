@@ -35,6 +35,7 @@ export function suggestExercises(input: SuggestionInput, limit = 6): Suggestion[
   const scored: Suggestion[] = [];
 
   for (const exercise of exercises) {
+    if (exercise.retired) continue;
     if (assigned.has(exercise.id)) continue;
 
     let score = 0;

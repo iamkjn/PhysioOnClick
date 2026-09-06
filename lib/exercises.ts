@@ -551,8 +551,17 @@ export function formatDosage(d: ExerciseDosage): string {
     core = `${d.sets} sets`;
   }
   if (core == null) return "As advised by your physio";
+  const parts = [core];
   const freq = frequencyClause(d);
-  return freq ? `${core} · ${freq}` : core;
+  if (freq) parts.push(freq);
+  if (d.tempo && d.tempo.trim()) parts.push(d.tempo.trim());
+  return parts.join(" · ");
+}
+
+// True when the dose specifies actual load — as opposed to the "ask your
+// physio" placeholder formatDosage falls back to.
+export function hasPrescribedDose(d: ExerciseDosage): boolean {
+  return d.sets != null || d.reps != null || d.holdSeconds != null;
 }
 
 const CAPS: { key: keyof ExerciseDosage; max: number; label: string }[] = [
@@ -575,6 +584,9 @@ export function validateDosage(d: ExerciseDosage): string | null {
       return "Days per week must be between 1 and 7.";
     }
   }
-  if (d.notes != null && d.notes.length > 300) return "Keep the patient note to 300 characters or fewer.";
+  if (d.tempo != null && typeof d.tempo !== "string") return "Tempo must be text.";
+  if (d.notes != null && (typeof d.notes !== "string" || d.notes.length > 300)) {
+    return "Keep the patient note to 300 characters or fewer.";
+  }
   return null;
 }

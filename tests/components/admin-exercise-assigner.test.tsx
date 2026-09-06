@@ -72,6 +72,25 @@ describe('AdminExerciseAssigner', () => {
     )
   })
 
+  it('persists only the fields that differ from the catalogue default', async () => {
+    // Only @/lib/recovery is mocked — resolveDosage / formatDosage run for real.
+    // ex-1 has no catalogue defaultDosage, so a { reps: 15 } dose left unchanged
+    // must be saved verbatim, not as the full effective object.
+    getAssignedExercisesMock.mockResolvedValue([
+      { exerciseId: 'ex-1', assignedAt: new Date(), assignedBy: 'a1', active: true, dosage: { reps: 15 } },
+    ])
+    const { getByRole, findByLabelText } = render(
+      <AdminExerciseAssigner adminUid="a1" patientUid="p1" personId="p1" />
+    )
+    await waitFor(() => expect(getByRole('button', { name: /edit dose/i })).toBeInTheDocument())
+    fireEvent.click(getByRole('button', { name: /edit dose/i }))
+    await findByLabelText(/reps/i)
+    fireEvent.click(getByRole('button', { name: /save dose/i }))
+    await waitFor(() =>
+      expect(setAssignedDosageMock).toHaveBeenCalledWith('p1', 'p1', 'ex-1', { reps: 15 }),
+    )
+  })
+
   it('blocks a save that fails validation', async () => {
     getAssignedExercisesMock.mockResolvedValue([
       { exerciseId: 'ex-1', assignedAt: new Date(), assignedBy: 'a1', active: true },

@@ -1,4 +1,20 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+// Inject one retired exercise into the catalogue the picker reads. The live
+// catalogue has none, so retired-filtering can only be exercised with a fixture.
+const { RETIRED_EX } = vi.hoisted(() => ({
+  RETIRED_EX: {
+    id: "ex-retired-fixture", title: "Retired Move", bodyPart: "Knee",
+    clinicalArea: "lower_limb", tags: ["knee", "quad-strength"],
+    condition: "Test condition", stage: "Early rehab",
+    description: "A retired fixture exercise.", retired: true,
+  },
+}));
+vi.mock("@/lib/site-data", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/site-data")>();
+  return { ...actual, exercises: [...actual.exercises, RETIRED_EX] };
+});
+
 import { suggestExercises } from "@/lib/exercise-suggestions";
 
 describe("suggestExercises", () => {
@@ -50,5 +66,13 @@ describe("suggestExercises", () => {
   it("returns an empty array when clinicalArea and freeText are both absent", () => {
     const results = suggestExercises({ alreadyAssignedIds: [] });
     expect(results).toEqual([]);
+  });
+
+  it("never suggests a retired exercise even when its area and tags match strongly", () => {
+    const results = suggestExercises(
+      { clinicalArea: "lower_limb", freeText: "knee quad-strength", alreadyAssignedIds: [] },
+      200,
+    );
+    expect(results.map((r) => r.exercise.id)).not.toContain("ex-retired-fixture");
   });
 });

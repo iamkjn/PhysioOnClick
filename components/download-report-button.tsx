@@ -479,12 +479,23 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
             .map((ae) => { const ex = exerciseMap.get(ae.exerciseId); return ex ? { ex, ae } : null; })
             .filter((r): r is { ex: NonNullable<ReturnType<typeof exerciseMap.get>>; ae: typeof assignedExercises[number] } => !!r)
             .map(({ ex, ae }) => {
+              pdf.setFont("helvetica", "normal");
               pdf.setFontSize(8.5);
-              const descCol = contentW - 104; // column x is margin + 104
-              const desc = pdf.splitTextToSize(ex.description, descCol)[0] ?? "";
-              return [ex.title, formatDosage(resolveDosage(ex, ae)), desc];
+              // Clip to the column width and signal the cut with an ellipsis —
+              // splitTextToSize()[0] alone drops the rest of the string silently
+              // (and mid-word). Applied to the title too, which can otherwise
+              // overflow into the dose column.
+              const clip = (text: string, widthMm: number) => {
+                const lines = pdf.splitTextToSize(text, widthMm);
+                return lines.length > 1 ? String(lines[0]).replace(/\s+\S*$/, "") + "…" : (lines[0] ?? "");
+              };
+              return [
+                clip(ex.title, 54),
+                formatDosage(resolveDosage(ex, ae)),
+                clip(ex.description, contentW - 112),
+              ];
             }),
-          [margin + 2, margin + 62, margin + 104]
+          [margin + 2, margin + 60, margin + 112]
         );
       }
 

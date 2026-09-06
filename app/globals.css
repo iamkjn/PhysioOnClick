@@ -367,6 +367,14 @@ p {
   width: 100%;
 }
 
+/* Inline text-style button — used for low-emphasis actions like "Reset to
+   default" / "Cancel" that sit beside a real .button. */
+.text-button {
+  background: none; border: 0; padding: 0; font: inherit;
+  color: var(--primary); font-weight: 600; cursor: pointer;
+}
+.text-button:hover { text-decoration: underline; }
+
 /* No global disabled affordance existed: plain .button submit controls showed
    no state change while busy/disabled. Cover both native :disabled and
    aria-disabled, and cancel the hover lift so a disabled control never rises. */
@@ -2526,8 +2534,9 @@ textarea:focus {
 /* Effective dose line + physio's per-patient note under the exercise title,
    and the "How to do it" expander panel. */
 .exercise-card-body .exercise-dose-line { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-top: 2px; }
+.exercise-card-body .exercise-dose-line--pending { font-weight: 400; color: var(--color-text-secondary); }
 .exercise-card-body .exercise-physio-note { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
-.exercise-howto-toggle {
+.exercise-card-actions .exercise-howto-toggle {
   flex: 0 0 auto; min-height: 42px; padding: 0 0.85rem; border-radius: var(--radius-input);
   border: 1.5px solid var(--color-border); background: transparent; color: var(--color-navy);
   font-size: 13px; font-weight: 600; cursor: pointer;
@@ -2805,9 +2814,9 @@ textarea:focus {
   font-size: var(--text-sm); font-weight: 600; min-height: 44px;
   padding: 0 var(--space-2); cursor: pointer;
 }
-.dose-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem 0.75rem; padding: 0.6rem 0; }
-.dose-form label { display: grid; gap: 2px; font-size: 12px; color: var(--color-text-secondary); }
-.dose-form input, .dose-form textarea { border: 1px solid var(--color-border); border-radius: 8px; padding: 0.35rem 0.5rem; font: inherit; }
+.dose-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2) 0.75rem; padding: 0.6rem 0; }
+.dose-form label { display: grid; gap: 2px; font-size: var(--text-xs); color: var(--color-text-secondary); }
+.dose-form input, .dose-form textarea { border: 1px solid var(--color-border); border-radius: 8px; padding: 0.35rem var(--space-2); font: inherit; }
 .dose-form-note { grid-column: 1 / -1; }
 .dose-form-actions { grid-column: 1 / -1; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
 .notifications-head {
