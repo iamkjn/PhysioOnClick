@@ -6,9 +6,11 @@ import {
   assignExercise,
   removeExercise,
   getAssignedExercises,
+  setAssignedDosage,
   type AssignedExercise,
 } from "@/lib/recovery";
 import { exercises as allExercises } from "@/lib/site-data";
+import { resolveDosage, formatDosage, validateDosage, type ExerciseDosage } from "@/lib/exercises";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -34,6 +36,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
   const [removeTarget, setRemoveTarget] = useState<{ exerciseId: string; title: string } | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("All");
   const toast = useToast();
@@ -60,6 +63,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
   const unassigned = allExercises.filter(
     (e) =>
       !assignedIds.has(e.id) &&
+      !e.retired &&
       (catFilter === "All" || e.bodyPart === catFilter) &&
       (q === "" || e.title.toLowerCase().includes(q) || e.bodyPart.toLowerCase().includes(q)),
   );
@@ -108,6 +112,20 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
     }
   }
 
+  async function handleSaveDose(exerciseId: string, dose: ExerciseDosage) {
+    // Only ever runs for a row already in `assigned` — the Edit-dose control
+    // lives on assigned rows, never on the "Add exercise from library" picker.
+    // A bare `{merge:true}` write on an unassigned id would create a partial doc.
+    try {
+      await setAssignedDosage(patientUid, personId, exerciseId, dose);
+      const updated = await getAssignedExercises(patientUid, personId);
+      setAssigned(updated);
+      setEditing(null);
+    } catch {
+      toast.show("Could not save the dose. Try again.", "error");
+    }
+  }
+
   return (
     <div className="panel stack">
       {/* h2, not h3 — sibling of AdminPatientSelector/AdminClinicalEntry
@@ -119,19 +137,42 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
       {assigned.map((ae) => {
         const ex = exerciseMap.get(ae.exerciseId);
         const title = ex?.title ?? ae.exerciseId;
+        const doseLabel = ex ? formatDosage(resolveDosage(ex, ae)) : null;
+        const isEditing = editing === ae.exerciseId;
         return (
-          <div key={ae.exerciseId} className="assign-row">
-            <span className="assign-row-label">
-              {title} <MotionBadge exerciseId={ae.exerciseId} />
-            </span>
-            <button
-              onClick={() => setRemoveTarget({ exerciseId: ae.exerciseId, title })}
-              disabled={saving === ae.exerciseId}
-              aria-label={`Remove ${title} from assigned exercises`}
-              className="assign-remove"
-            >
-              {saving === ae.exerciseId ? "…" : "Remove"}
-            </button>
+          <div key={ae.exerciseId}>
+            <div className="assign-row">
+              <span className="assign-row-label">
+                {doseLabel ? `${title} · ${doseLabel}` : title} <MotionBadge exerciseId={ae.exerciseId} />
+              </span>
+              <span className="assign-row-actions">
+                {ex && (
+                  <button
+                    type="button"
+                    onClick={() => setEditing(isEditing ? null : ae.exerciseId)}
+                    aria-expanded={isEditing}
+                    className="assign-edit-dose"
+                  >
+                    {isEditing ? "Close" : "Edit dose"}
+                  </button>
+                )}
+                <button
+                  onClick={() => setRemoveTarget({ exerciseId: ae.exerciseId, title })}
+                  disabled={saving === ae.exerciseId}
+                  aria-label={`Remove ${title} from assigned exercises`}
+                  className="assign-remove"
+                >
+                  {saving === ae.exerciseId ? "…" : "Remove"}
+                </button>
+              </span>
+            </div>
+            {ex && isEditing && (
+              <DoseForm
+                initial={resolveDosage(ex, ae)}
+                onSave={(d) => handleSaveDose(ae.exerciseId, d)}
+                onCancel={() => setEditing(null)}
+              />
+            )}
           </div>
         );
       })}
@@ -205,5 +246,47 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
         }}
       />
     </div>
+  );
+}
+
+function DoseForm({
+  initial, onSave, onCancel,
+}: {
+  initial: ExerciseDosage;
+  onSave: (d: ExerciseDosage) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const [d, setD] = useState<ExerciseDosage>(initial);
+  const [err, setErr] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const num = (k: keyof ExerciseDosage) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value.trim();
+    setD((p) => ({ ...p, [k]: v === "" ? undefined : Number(v) }));
+  };
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const v = validateDosage(d);
+    if (v) { setErr(v); return; }
+    setSaving(true);
+    try { await onSave(d); } finally { setSaving(false); }
+  }
+  return (
+    <form className="dose-form" onSubmit={(e) => void submit(e)}>
+      <label>Sets <input type="number" min={0} value={d.sets ?? ""} onChange={num("sets")} /></label>
+      <label>Reps <input type="number" min={0} value={d.reps ?? ""} onChange={num("reps")} /></label>
+      <label>Hold (s) <input type="number" min={0} value={d.holdSeconds ?? ""} onChange={num("holdSeconds")} /></label>
+      <label>Times/day <input type="number" min={0} value={d.perDay ?? ""} onChange={num("perDay")} /></label>
+      <label>Days/week <input type="number" min={1} max={7} value={d.perWeek ?? ""} onChange={num("perWeek")} /></label>
+      <label>Tempo <input type="text" value={d.tempo ?? ""} onChange={(e) => setD((p) => ({ ...p, tempo: e.target.value || undefined }))} /></label>
+      <label className="dose-form-note">Note to patient
+        <textarea rows={2} maxLength={300} value={d.notes ?? ""} onChange={(e) => setD((p) => ({ ...p, notes: e.target.value || undefined }))} />
+      </label>
+      {err && <p className="field-error">{err}</p>}
+      <div className="dose-form-actions">
+        <button type="submit" className="button primary" disabled={saving}>{saving ? "Saving…" : "Save dose"}</button>
+        <button type="button" className="text-button" onClick={() => onSave({})}>Reset to default</button>
+        <button type="button" className="text-button" onClick={onCancel}>Cancel</button>
+      </div>
+    </form>
   );
 }
