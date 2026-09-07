@@ -2,16 +2,17 @@
 import { useState } from "react";
 import { ExerciseFigure } from "@/components/exercise-figure";
 import { exerciseImageUrl } from "@/lib/exercise-images";
-import { hasImagePrompt } from "@/lib/exercise-image-prompts";
+import { hasUploadedImage } from "@/lib/exercise-image-prompts";
 
 export function ExerciseImage({
   exerciseId, name, pose, size = 52,
 }: { exerciseId: string; name: string; pose?: string; size?: number }) {
   const [failed, setFailed] = useState(false);
   // The image route serves a placeholder SVG with HTTP 200 on a miss, so
-  // <img onError> never fires. Only reach for an <img> when a pose-specific
-  // illustration has actually been authored for this exercise.
-  if (failed || !hasImagePrompt(exerciseId)) {
+  // <img onError> never fires. Only reach for an <img> when the real
+  // illustration has actually been generated and uploaded for this exercise
+  // (an authored prompt alone is not enough).
+  if (failed || !hasUploadedImage(exerciseId)) {
     return <ExerciseFigure name={name} pose={pose} size={size} />;
   }
   return (

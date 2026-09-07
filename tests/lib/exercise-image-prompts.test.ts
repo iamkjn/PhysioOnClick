@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { fullImagePrompt, hasImagePrompt, exerciseImagePrompts, IMAGE_STYLE_PREFIX } from '@/lib/exercise-image-prompts'
+import { fullImagePrompt, hasImagePrompt, hasUploadedImage, uploadedImageIds, exerciseImagePrompts, IMAGE_STYLE_PREFIX } from '@/lib/exercise-image-prompts'
 import { exercises } from '@/lib/exercises'
 
 describe('exercise image prompts', () => {
@@ -24,5 +24,23 @@ describe('exercise image prompts', () => {
     for (const id of ['ex-3','ex-14','ex-15','ex-17','ex-18','ex-24','ex-25','ex-26','ex-27','ex-28','ex-31','ex-32','ex-34']) {
       expect(hasImagePrompt(id)).toBe(true)
     }
+  })
+  it('covers batch A (the 14 ankle/shoulder/neck exercises in the George test plan)', () => {
+    for (const id of ['ex-2','ex-8','ex-12','ex-13','ex-35','ex-36','ex-37','ex-52','ex-59','ex-60','ex-61','ex-62','ex-63','ex-64']) {
+      expect(hasImagePrompt(id)).toBe(true)
+    }
+  })
+
+  it('hasUploadedImage is a strict subset of authored prompts (no image without a prompt)', () => {
+    for (const id of uploadedImageIds) {
+      expect(hasImagePrompt(id)).toBe(true)
+      expect(hasUploadedImage(id)).toBe(true)
+    }
+  })
+
+  it('does not claim an uploaded image before generation is unblocked', () => {
+    // Guard: an authored prompt must NOT flip the web/PDF to expect a real
+    // image until scripts/upload-exercise-images.ts has actually run for it.
+    expect(hasUploadedImage('ex-12')).toBe(false)
   })
 })

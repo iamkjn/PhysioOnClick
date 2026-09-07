@@ -5,7 +5,7 @@
  *
  * Usage:
  *   npx tsx --env-file=.env.development scripts/upload-exercise-images.ts --only=ex-3,ex-14
- *   npx tsx --env-file=.env.development scripts/upload-exercise-images.ts --batch=1
+ *   npx tsx --env-file=.env.development scripts/upload-exercise-images.ts --all
  *
  * Reads PNG files from exercise-images-src/{id}.png and uploads them to
  * exercise-images/{id}.png in Firebase Storage.
@@ -18,28 +18,12 @@
  */
 
 import { readFileSync } from "node:fs";
+import { exerciseImagePrompts } from "../lib/exercise-image-prompts";
 import { uploadObject } from "../lib/firebase-admin";
-
-// List of all exercise ids for batch upload (from task brief)
-const BATCH_1_IDS = [
-  "ex-3",
-  "ex-14",
-  "ex-15",
-  "ex-17",
-  "ex-18",
-  "ex-24",
-  "ex-25",
-  "ex-26",
-  "ex-27",
-  "ex-28",
-  "ex-31",
-  "ex-32",
-  "ex-34"
-];
 
 interface UploadArgs {
   only?: string[];
-  batch?: number;
+  all?: boolean;
 }
 
 function parseArgs(args: string[]): UploadArgs {
@@ -48,9 +32,8 @@ function parseArgs(args: string[]): UploadArgs {
   for (const arg of args) {
     if (arg.startsWith("--only=")) {
       result.only = arg.slice(7).split(",");
-    } else if (arg.startsWith("--batch=")) {
-      const batch = parseInt(arg.slice(8), 10);
-      if (!isNaN(batch)) result.batch = batch;
+    } else if (arg === "--all") {
+      result.all = true;
     }
   }
 
@@ -61,13 +44,13 @@ function getIdsToUpload(args: UploadArgs): string[] {
   if (args.only) {
     return args.only;
   }
-  if (args.batch === 1) {
-    return BATCH_1_IDS;
+  if (args.all) {
+    return Object.keys(exerciseImagePrompts);
   }
 
   console.error("Usage:");
   console.error("  npx tsx --env-file=.env.development scripts/upload-exercise-images.ts --only=ex-3,ex-14");
-  console.error("  npx tsx --env-file=.env.development scripts/upload-exercise-images.ts --batch=1");
+  console.error("  npx tsx --env-file=.env.development scripts/upload-exercise-images.ts --all");
   process.exit(1);
 }
 
@@ -101,6 +84,12 @@ async function main() {
   for (const id of ids) {
     await uploadImage(id);
   }
+
+  console.log(
+    `\nDone. Now add these ids to \`uploadedImageIds\` in lib/exercise-image-prompts.ts\n` +
+      `and commit — that is the gate the web card and PDF use to switch from the\n` +
+      `stick figure to the real illustration:\n  ${ids.join(", ")}`,
+  );
 }
 
 main().catch((error) => {

@@ -33,10 +33,11 @@ vi.mock('@/lib/exercise-images', () => ({
   EXERCISE_IMAGE_PLACEHOLDER_SVG: '<svg/>',
 }))
 
-// <ExerciseImage> only reaches for an <img> when a pose-specific illustration
-// has been authored — mock the registry so exactly one fixture qualifies.
+// <ExerciseImage> only reaches for an <img> when the real illustration has
+// been generated + uploaded — mock the registry so exactly one fixture qualifies.
 vi.mock('@/lib/exercise-image-prompts', () => ({
   hasImagePrompt: (id: string) => id === 'ex-fix',
+  hasUploadedImage: (id: string) => id === 'ex-fix',
 }))
 
 const getAssignedExercisesMock = vi.fn()

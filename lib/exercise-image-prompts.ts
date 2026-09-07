@@ -17,6 +17,23 @@ export const exerciseImagePrompts: Record<string, string> = {
   "ex-31": "a person lying on their back gently drawing both bent knees up towards the chest, hands behind the thighs (lumbar flexion in lying)",
   "ex-32": "a person sitting upright on a chair, straightening one leg forward while lifting the head to look up, then bending the knee while tucking the chin (seated nerve glide)",
   "ex-34": "a person hinging at the hips with a flat back and slightly bent knees to lift a small box from the floor, keeping it close to the body",
+
+  // Batch A — ankle / shoulder / neck (Anish George's plan). Ankle range
+  // movements are drawn as a two-panel start/end pair per the style spec.
+  "ex-2": "a person seen from behind sitting upright, shoulders relaxed, gently drawing both shoulder blades down and slightly together",
+  "ex-8": "a person standing tall, raising one straight arm forwards and up overhead as far as is comfortable, thumb leading the movement",
+  "ex-12": "a person standing tall with fingertips resting lightly on a kitchen counter for balance, rising up onto the balls of both feet with the heels lifted high",
+  "ex-13": "a person seated upright in profile, keeping the face vertical while gliding the head and chin straight backwards to make a gentle double chin",
+  "ex-35": "a person standing side-on holding a short resistance band, the working elbow tucked against the side over a small rolled towel, rotating the forearm outward away from the body",
+  "ex-36": "a person standing side-on holding a short resistance band, the working elbow tucked against the side over a small rolled towel, rotating the forearm inward across the stomach",
+  "ex-37": "a person facing a wall with both forearms and hands flat against it in a goalpost shape, sliding the arms slowly upward while keeping contact with the wall",
+  "ex-52": "a person in a straight-bodied push-up position at the top of the movement, pushing a little further so the upper back rounds gently and the shoulder blades spread apart",
+  "ex-59": "two side-by-side panels of the same person seated with the injured leg raised on a cushion: left panel pointing the foot away, right panel pulling the toes and foot back up towards the shin",
+  "ex-60": "a person seated with one foot lifted off the floor, tracing a large letter shape in the air with the big toe, the movement coming only from the ankle",
+  "ex-61": "two side-by-side panels of the same person seated with the leg out straight and a resistance band looped around the outside of the foot and anchored to the opposite side: left panel foot relaxed inward, right panel turning the sole of the foot outward against the band",
+  "ex-62": "a person balancing on one leg on a soft cushion or wobble pad, the other foot lifted clear, fingertips hovering near a wall for safety, the standing knee slightly bent",
+  "ex-63": "a person standing facing a wall with both hands on it, one leg stepped straight back with the heel flat on the floor and the front knee bent, leaning the hips towards the wall",
+  "ex-64": "a person standing on the edge of a step with the balls of both feet on the step and the heels hanging off the back, holding a handrail, slowly lowering one heel down below the level of the step",
 };
 
 export function hasImagePrompt(id: string): boolean {
@@ -25,4 +42,21 @@ export function hasImagePrompt(id: string): boolean {
 export function fullImagePrompt(id: string): string | null {
   const core = exerciseImagePrompts[id];
   return core ? `${IMAGE_STYLE_PREFIX}${core}${IMAGE_STYLE_SUFFIX}` : null;
+}
+
+/**
+ * Exercise ids whose illustration has actually been generated, clinically
+ * reviewed, and uploaded to Storage (`exercise-images/{id}.png`). This is the
+ * gate the web card and the PDF use to decide "show the real image" vs "fall
+ * back to the stick figure" — it is deliberately NOT `hasImagePrompt`, because
+ * a prompt can be authored (this file) long before the image is live. Add an
+ * id here in the same commit that runs `scripts/upload-exercise-images.ts`
+ * for it.
+ */
+export const uploadedImageIds: ReadonlySet<string> = new Set<string>([
+  // batch 1 + batch A: prompts authored, generation blocked on image-gen API
+]);
+
+export function hasUploadedImage(id: string): boolean {
+  return uploadedImageIds.has(id);
 }

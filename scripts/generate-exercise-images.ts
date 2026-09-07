@@ -5,7 +5,7 @@
  *
  * Usage:
  *   npx tsx --env-file=.env.development scripts/generate-exercise-images.ts --only=ex-3,ex-14
- *   npx tsx --env-file=.env.development scripts/generate-exercise-images.ts --batch=1
+ *   npx tsx --env-file=.env.development scripts/generate-exercise-images.ts --all   (every authored prompt)
  *
  * The first run must be verified:
  *   If the Imagen endpoint (imagen-3.0-generate-002) returns 403/404 for this key,
@@ -17,28 +17,11 @@
  */
 
 import { writeFileSync, mkdirSync } from "node:fs";
-import { fullImagePrompt } from "../lib/exercise-image-prompts";
-
-// List of all exercise ids for batch generation (from task brief)
-const BATCH_1_IDS = [
-  "ex-3",
-  "ex-14",
-  "ex-15",
-  "ex-17",
-  "ex-18",
-  "ex-24",
-  "ex-25",
-  "ex-26",
-  "ex-27",
-  "ex-28",
-  "ex-31",
-  "ex-32",
-  "ex-34"
-];
+import { exerciseImagePrompts, fullImagePrompt } from "../lib/exercise-image-prompts";
 
 interface GenerateArgs {
   only?: string[];
-  batch?: number;
+  all?: boolean;
 }
 
 function parseArgs(args: string[]): GenerateArgs {
@@ -47,9 +30,8 @@ function parseArgs(args: string[]): GenerateArgs {
   for (const arg of args) {
     if (arg.startsWith("--only=")) {
       result.only = arg.slice(7).split(",");
-    } else if (arg.startsWith("--batch=")) {
-      const batch = parseInt(arg.slice(8), 10);
-      if (!isNaN(batch)) result.batch = batch;
+    } else if (arg === "--all") {
+      result.all = true;
     }
   }
 
@@ -60,13 +42,13 @@ function getIdsToGenerate(args: GenerateArgs): string[] {
   if (args.only) {
     return args.only;
   }
-  if (args.batch === 1) {
-    return BATCH_1_IDS;
+  if (args.all) {
+    return Object.keys(exerciseImagePrompts);
   }
 
   console.error("Usage:");
   console.error("  npx tsx --env-file=.env.development scripts/generate-exercise-images.ts --only=ex-3,ex-14");
-  console.error("  npx tsx --env-file=.env.development scripts/generate-exercise-images.ts --batch=1");
+  console.error("  npx tsx --env-file=.env.development scripts/generate-exercise-images.ts --all");
   process.exit(1);
 }
 
