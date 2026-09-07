@@ -18,6 +18,13 @@ vi.mock('@/lib/exercises', async (importOriginal) => {
   return { ...actual, exercises: [FIXTURE_EX] }
 })
 
+// Keep the card's <ExerciseImage> off a real network fetch and give it a
+// predictable src to assert on.
+vi.mock('@/lib/exercise-images', () => ({
+  exerciseImageUrl: (id: string) => '/exercise-images/' + id,
+  EXERCISE_IMAGE_PLACEHOLDER_SVG: '<svg/>',
+}))
+
 const getAssignedExercisesMock = vi.fn()
 const getTodayExerciseLogMock = vi.fn()
 vi.mock('@/lib/recovery', () => ({
@@ -121,6 +128,17 @@ describe('AssignedExercises', () => {
     getTodayExerciseLogMock.mockResolvedValue(null)
     render(<AssignedExercises uid="u1" personId="p1" />)
     await waitFor(() => expect(screen.getByText('3 sets × 15 reps · once a day')).toBeInTheDocument())
+  })
+
+  it('renders the exercise illustration as an <img> pointing at the image route', async () => {
+    getAssignedExercisesMock.mockResolvedValue([assignedExercise()])
+    getTodayExerciseLogMock.mockResolvedValue(null)
+    const { container } = render(<AssignedExercises uid="u1" personId="p1" />)
+
+    await waitFor(() => expect(screen.getByText(FIXTURE_EX.title)).toBeInTheDocument())
+    const img = container.querySelector('.exercise-card-head img') as HTMLImageElement
+    expect(img).toBeInTheDocument()
+    expect(img.getAttribute('src')).toBe('/exercise-images/' + FIXTURE_EX.id)
   })
 
   it('reveals setup / steps / cues / mistakes on "How to do it"', async () => {

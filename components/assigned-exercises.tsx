@@ -16,7 +16,7 @@ import { track } from "@/lib/analytics";
 import { exercises, resolveDosage, formatDosage, hasPrescribedDose } from "@/lib/exercises";
 import { SkeletonRow } from "@/components/skeleton";
 import { EmptyState } from "@/components/empty-state";
-import { ExerciseFigure } from "@/components/exercise-figure";
+import { ExerciseImage } from "@/components/exercise-image";
 import { MotionCheckButton } from "@/components/motion-check-button";
 
 interface Props {
@@ -228,7 +228,7 @@ export function AssignedExercises({ uid, personId }: Props) {
           return (
             <div key={ae.exerciseId} className={`exercise-card${done ? " done" : ""}`}>
               <div className="exercise-card-head">
-                <ExerciseFigure name={ex.title} size={52} pose={ex.pose} />
+                <ExerciseImage exerciseId={ex.id} name={ex.title} pose={ex.pose} size={52} />
                 <div className="exercise-card-body">
                   <strong>{ex.title}</strong>
                   <span>{ex.bodyPart} · {ex.stage}</span>
