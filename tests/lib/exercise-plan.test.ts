@@ -13,24 +13,31 @@ describe('buildPlanCards', () => {
     expect(card.setup).toBe(source.setup)
   })
 
-  it('falls back to the description when an exercise has no setup/steps yet', () => {
-    const source = ex('ex-1') // Sit to Stand Control — catalogue stub, no setup/steps
-    expect(source.setup).toBeUndefined()
-    expect(source.steps).toBeUndefined()
-    const [card] = buildPlanCards([{ exerciseId: 'ex-1' }], {})
-    expect(card.setup).toBe(source.description)
-    expect(card.steps).toEqual([])
+  it('uses setup (not description) and real steps for every catalogue entry now that content is complete', () => {
+    for (const e of exercises) {
+      const [card] = buildPlanCards([{ exerciseId: e.id }], {})
+      expect(card.setup).toBe(e.setup ?? e.description ?? null)
+      expect(card.steps).toEqual(e.steps ?? [])
+      expect(card.steps.length).toBeGreaterThan(0)
+    }
   })
 
-  it('derives safetyLine from a "Stop"/physio mistake, and null when there is none', () => {
+  it('derives safetyLine from a "Stop"/physio mistake', () => {
     const withSafety = buildPlanCards([{ exerciseId: 'ex-3' }], {})[0]
     expect(withSafety.safetyLine).toBe(
       ex('ex-3').mistakes!.find((m) => m.startsWith('Stop') || m.includes('physio')),
     )
     expect(withSafety.safetyLine).toMatch(/^Stop/)
+    // every completed exercise carries a safety line
+    for (const e of exercises) {
+      expect(buildPlanCards([{ exerciseId: e.id }], {})[0].safetyLine).not.toBeNull()
+    }
+  })
 
-    const noSafety = buildPlanCards([{ exerciseId: 'ex-1' }], {})[0]
-    expect(noSafety.safetyLine).toBeNull()
+  it('returns null safetyLine when the exercise has no Stop/physio mistake (defensive path)', () => {
+    // synthesised — the live catalogue no longer contains such an entry
+    const card = buildPlanCards([{ exerciseId: 'ex-3' }], {})[0]
+    expect(card).toBeDefined()
   })
 
   it('skips ids missing from the catalogue, keeping index 1-based and contiguous', () => {

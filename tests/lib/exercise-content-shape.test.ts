@@ -22,8 +22,19 @@ describe('exercise catalogue shape', () => {
     expect(bad).toEqual([])
   })
 
-  it('has a usable defaultDosage (reps or holdSeconds) wherever one is set', () => {
-    const bad = exercises.filter((e) => e.defaultDosage && e.defaultDosage.reps == null && e.defaultDosage.holdSeconds == null).map((e) => e.id)
+  it('has a usable defaultDosage (reps, holdSeconds, minutes, or a note) wherever one is set', () => {
+    const bad = exercises
+      .filter((e) => {
+        const d = e.defaultDosage
+        if (!d) return false
+        return (
+          d.reps == null &&
+          d.holdSeconds == null &&
+          d.minutes == null &&
+          !(typeof d.notes === 'string' && d.notes.trim().length > 0)
+        )
+      })
+      .map((e) => e.id)
     expect(bad).toEqual([])
   })
 
@@ -35,5 +46,28 @@ describe('exercise catalogue shape', () => {
   it('has stable unique ids', () => {
     const ids = exercises.map((e) => e.id)
     expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it('every non-retired exercise has a complete write-up (setup + steps + cues + mistakes + defaultDosage)', () => {
+    const incomplete = exercises
+      .filter((e) => !e.retired)
+      .filter(
+        (e) =>
+          !e.setup ||
+          !(e.steps && e.steps.length) ||
+          !(e.cues && e.cues.length) ||
+          !(e.mistakes && e.mistakes.length) ||
+          !e.defaultDosage,
+      )
+      .map((e) => e.id)
+    expect(incomplete).toEqual([])
+  })
+
+  it('every exercise carries a safety line in its mistakes', () => {
+    const noSafety = exercises
+      .filter((e) => !e.retired)
+      .filter((e) => !(e.mistakes ?? []).some((m) => m.startsWith('Stop') || m.includes('physio')))
+      .map((e) => e.id)
+    expect(noSafety).toEqual([])
   })
 })
