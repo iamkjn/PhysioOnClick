@@ -62,7 +62,27 @@ export const exercises: Exercise[] = [
     condition: "Back pain",
     stage: "Strength phase",
     description: "Targets hip and trunk strength to improve movement tolerance.",
-    videoUrl: "https://www.youtube.com/embed/wPM8icPu6H8"
+    videoUrl: "https://www.youtube.com/embed/wPM8icPu6H8",
+    equipment: ["Exercise mat"],
+    setup: "Lie on your back on a mat with your knees bent and your feet flat on the floor, hip-width apart. Rest your arms by your sides.",
+    steps: [
+      "Gently tighten your lower tummy and squeeze your buttocks.",
+      "Lift your hips off the floor until your body makes a straight line from your shoulders to your knees.",
+      "Hold for a moment, keeping your tummy gently engaged.",
+      "Lower your hips back down slowly, one part of your spine at a time."
+    ],
+    cues: [
+      "Your hips stay level with each other, not dropping to one side.",
+      "The effort is felt in your buttocks and the backs of your thighs.",
+      "Your lower back stays long and comfortable, not pinched."
+    ],
+    mistakes: [
+      "Lifting so high that your lower back arches and feels squeezed.",
+      "Pushing through your toes instead of through your whole foot.",
+      "Holding your breath — keep breathing steadily throughout.",
+      "Stop and message your physio if the pain spreads into your buttock or down your leg, or you notice new numbness, pins and needles, or weakness."
+    ],
+    defaultDosage: { sets: 2, reps: 10, perDay: 1, perWeek: 5 }
   },
   {
     id: "ex-4",
@@ -183,7 +203,27 @@ export const exercises: Exercise[] = [
     condition: "Low back pain",
     stage: "Strength phase",
     description: "Builds core control by moving the arms and legs slowly while keeping the trunk steady.",
-    videoUrl: "https://www.youtube.com/embed/uKYLJ3f6QBA"
+    videoUrl: "https://www.youtube.com/embed/uKYLJ3f6QBA",
+    equipment: ["Exercise mat"],
+    setup: "Lie on your back on a mat. Reach both arms straight up over your shoulders, and lift your feet so your hips and knees are bent at right angles.",
+    steps: [
+      "Gently flatten your lower back towards the floor by tightening your lower tummy.",
+      "Slowly lower one arm back overhead and straighten the opposite leg towards the floor.",
+      "Stop before your lower back starts to arch up away from the floor.",
+      "Bring the arm and leg back to the start, then repeat with the other pair."
+    ],
+    cues: [
+      "Your lower back stays gently pressed towards the floor the whole time.",
+      "Only your arms and legs move — your hips and ribs stay still.",
+      "The movement is slow and controlled, not rushed."
+    ],
+    mistakes: [
+      "Letting your lower back lift into an arch as the leg lowers.",
+      "Moving so fast that your trunk wobbles or twists.",
+      "Holding your breath — breathe out gently as your arm and leg move away.",
+      "Stop and message your physio if the pain spreads further down your leg, or you notice new numbness, pins and needles, or weakness."
+    ],
+    defaultDosage: { sets: 2, reps: 8, perDay: 1, perWeek: 5, notes: "Count 1 repetition as one movement to each side." }
   },
   {
     id: "ex-15",
@@ -194,7 +234,28 @@ export const exercises: Exercise[] = [
     condition: "Back pain",
     stage: "Strength phase",
     description: "Improves spinal stability by extending opposite arm and leg in a slow, controlled pattern.",
-    videoUrl: "https://www.youtube.com/embed/wPM8icPu6H8"
+    videoUrl: "https://www.youtube.com/embed/wPM8icPu6H8",
+    equipment: ["Exercise mat"],
+    setup: "Kneel on all fours on a mat, with your hands under your shoulders and your knees under your hips. Keep your back flat and your head in line with your spine.",
+    steps: [
+      "Gently tighten your lower tummy to steady your back.",
+      "Slowly reach one arm forwards while straightening the opposite leg out behind you.",
+      "Stretch them out only until they are level with your body, no higher.",
+      "Hold briefly, then lower back to all fours with control.",
+      "Repeat with the other arm and leg."
+    ],
+    cues: [
+      "Your back stays flat and level, like a table top.",
+      "Your hips stay square to the floor and do not tip.",
+      "The reaching arm and leg stop at body height, not lifted above it."
+    ],
+    mistakes: [
+      "Arching your lower back or letting your tummy sag towards the floor.",
+      "Twisting your hips or shoulders as you reach.",
+      "Rushing — each reach should be slow and steady.",
+      "Stop and message your physio if the pain spreads into your buttock or leg, or you notice new numbness, pins and needles, or weakness."
+    ],
+    defaultDosage: { sets: 2, reps: 10, perDay: 1, perWeek: 5, notes: "Count 1 repetition as one reach to each side." }
   },
   {
     id: "ex-16",
@@ -302,13 +363,50 @@ export const exercises: Exercise[] = [
     id: "ex-17", title: "McKenzie Press-Up", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "disc", "extension-bias", "early-rehab"],
     condition: "Lumbar disc-related back pain", stage: "Early rehab",
-    description: "Gentle repeated lower-back extension to centralise leg symptoms toward the spine, following the McKenzie extension principle."
+    description: "Gentle repeated lower-back extension to centralise leg symptoms toward the spine, following the McKenzie extension principle.",
+    equipment: ["Exercise mat"],
+    setup: "Lie face down on a mat with your hands flat on the floor under your shoulders, as if you were about to push up. Let your hips and legs stay relaxed.",
+    steps: [
+      "Push through your hands to lift your chest and upper body off the floor.",
+      "Let your lower back and tummy sag towards the floor as you come up.",
+      "Rise only as far as feels comfortable, keeping your hips on the mat.",
+      "Lower back down slowly to the starting position."
+    ],
+    cues: [
+      "Your hips, buttocks and legs stay loose and resting on the mat.",
+      "Any symptoms in your leg move up towards your back, or stay the same — this is the direction you want.",
+      "The movement is a slow, repeated rock rather than a long held stretch at first."
+    ],
+    mistakes: [
+      "Tensing your buttocks or legs as you lift.",
+      "Pushing up hard and fast into a big arch straight away — build the range up gradually.",
+      "Stop and message your physio if the pain spreads further down your leg, or you notice new or worse numbness, pins and needles, or weakness in your leg or foot."
+    ],
+    defaultDosage: { sets: 1, reps: 10, perDay: 3, perWeek: 7, tempo: "slow and controlled" }
   },
   {
     id: "ex-18", title: "Standing Extension", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "disc", "extension-bias", "mobility"],
     condition: "Lumbar disc-related back pain", stage: "Mobility phase",
-    description: "An upright version of the press-up, hands on hips, easing the spine backward for symptom relief between exercise sessions."
+    description: "An upright version of the press-up, hands on hips, easing the spine backward for symptom relief between exercise sessions.",
+    equipment: [],
+    setup: "Stand tall with your feet about shoulder-width apart. Place your hands on your lower back or hips, with your fingers pointing downwards.",
+    steps: [
+      "Use your hands as a support and gently lean your upper body backwards.",
+      "Let the bend come from your lower back, keeping your knees straight.",
+      "Go only as far as feels comfortable, then return to standing upright."
+    ],
+    cues: [
+      "The bend comes from your lower back, not from your knees.",
+      "You feel a gentle easing in your back, not a sharp pinch.",
+      "Any symptoms in your leg move up towards your back, or stay the same."
+    ],
+    mistakes: [
+      "Forcing the movement or bouncing at the end of the range.",
+      "Leaning back so far that you feel unsteady — stand near a wall or worktop if your balance is uncertain.",
+      "Stop and message your physio if the pain spreads further down your leg, or you notice new or worse numbness, pins and needles, or weakness."
+    ],
+    defaultDosage: { sets: 1, reps: 10, perDay: 3, perWeek: 7, tempo: "slow and controlled" }
   },
   {
     id: "ex-19", title: "Cat-Cow Stretch", bodyPart: "Thoracic spine",
@@ -344,31 +442,132 @@ export const exercises: Exercise[] = [
     id: "ex-24", title: "Prone Cobra", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "postural-control", "strength-phase"],
     condition: "Postural low back pain", stage: "Strength phase",
-    description: "Lying face down, lifting the chest slightly using back extensors to build postural endurance for desk-based pain."
+    description: "Lying face down, lifting the chest slightly using back extensors to build postural endurance for desk-based pain.",
+    equipment: ["Exercise mat"],
+    setup: "Lie face down on a mat with your arms by your sides, palms facing down. Rest your forehead lightly on the floor.",
+    steps: [
+      "Gently draw your shoulder blades down and together.",
+      "Lift your chest and forehead a small way off the floor.",
+      "Turn your palms to face outwards as you lift.",
+      "Hold, keeping your neck long, then lower slowly to the mat."
+    ],
+    cues: [
+      "The lift is small — your lower ribs and hips stay on the mat.",
+      "Your gaze stays down at the floor so your neck stays in line.",
+      "The effort is felt between your shoulder blades and across your upper back."
+    ],
+    mistakes: [
+      "Lifting so high that your lower back cramps or pinches.",
+      "Tipping your head back to look forwards.",
+      "Holding your breath during the hold.",
+      "Stop and message your physio if the pain spreads into your buttock or leg, or you notice new numbness, pins and needles, or weakness."
+    ],
+    defaultDosage: { sets: 3, holdSeconds: 20, perDay: 1, perWeek: 5 }
   },
   {
     id: "ex-25", title: "Side Plank (Modified)", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "core-control", "strength-phase"],
     condition: "Low back pain", stage: "Strength phase",
-    description: "A knee-supported side plank building lateral trunk stability, progressing spinal load tolerance safely."
+    description: "A knee-supported side plank building lateral trunk stability, progressing spinal load tolerance safely.",
+    equipment: ["Exercise mat"],
+    setup: "Lie on your side on a mat, resting on your forearm with your elbow directly under your shoulder. Bend your knees so your lower legs trail behind you.",
+    steps: [
+      "Stack your hips and shoulders so your body faces forwards.",
+      "Gently tighten your tummy.",
+      "Lift your hips off the floor until your body makes a straight line from your head to your knees.",
+      "Hold, then lower your hips back down with control."
+    ],
+    cues: [
+      "Your body stays in one straight line, not sagging or folding forwards.",
+      "Your supporting shoulder stays away from your ear.",
+      "You feel the work down the side of your trunk that is nearest the floor."
+    ],
+    mistakes: [
+      "Letting your hips drift down towards the floor during the hold.",
+      "Rolling forwards or backwards out of the side-on position.",
+      "Pressing hard through your neck or the point of your elbow.",
+      "Stop and message your physio if the pain spreads into your buttock or leg, or you notice new numbness, pins and needles, or weakness."
+    ],
+    defaultDosage: { sets: 3, holdSeconds: 20, perDay: 1, perWeek: 5, notes: "Do the holds on each side." }
   },
   {
     id: "ex-26", title: "Segmental Rolling", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "mobility", "early-rehab"],
     condition: "Acute low back pain", stage: "Early rehab",
-    description: "Rolling from back to side in a controlled, segmental way to reintroduce comfortable movement after an acute flare."
+    description: "Rolling from back to side in a controlled, segmental way to reintroduce comfortable movement after an acute flare.",
+    equipment: ["Exercise mat"],
+    setup: "Lie on your back on a mat or a firm bed, with your legs straight and your arms by your sides.",
+    steps: [
+      "Turn your head to look towards the side you are rolling to.",
+      "Reach that arm across your body and let your shoulder follow it.",
+      "Let your ribs, then your hips, then your legs roll one after the other until you are on your side.",
+      "Pause, then roll back to lying in the same unhurried order."
+    ],
+    cues: [
+      "The roll happens one body part at a time, not all in one go.",
+      "You keep breathing and stay as relaxed as you can.",
+      "You find a way to move that feels manageable, even if it is slow."
+    ],
+    mistakes: [
+      "Bracing hard and rolling like a single stiff log if that increases the pain.",
+      "Rushing or throwing yourself over with one big effort.",
+      "Stop and message your physio if the pain spreads further down your leg, or you notice new numbness, pins and needles, or weakness. Seek urgent medical help if you develop numbness around your back passage or problems controlling your bladder or bowels."
+    ],
+    defaultDosage: { sets: 1, reps: 6, perDay: 4, perWeek: 7, notes: "Practise rolling to each side." }
   },
   {
     id: "ex-27", title: "Pelvic Tilt", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "pregnancy", "early-rehab"],
     condition: "Pregnancy-related back pain", stage: "Early rehab",
-    description: "A small rocking of the pelvis to ease lumbar tension, safe and gentle enough for antenatal and postnatal back pain."
+    description: "A small rocking of the pelvis to ease lumbar tension, safe and gentle enough for antenatal and postnatal back pain.",
+    equipment: ["Exercise mat"],
+    setup: "Lie on your back on a mat with your knees bent and your feet flat on the floor. In later pregnancy, do this sitting on a chair or on all fours instead of lying flat.",
+    steps: [
+      "Gently tighten your lower tummy muscles.",
+      "Roll the top of your pelvis backwards so your lower back flattens towards the floor.",
+      "Hold for a few seconds, still breathing normally.",
+      "Relax back to the starting position."
+    ],
+    cues: [
+      "The movement is small and comes from your pelvis.",
+      "Your buttocks and legs stay relaxed.",
+      "You feel your lower back gently flatten and then release."
+    ],
+    mistakes: [
+      "Making the movement big or forceful.",
+      "Pushing through your feet to lift your hips — this is a small tilt, not a bridge.",
+      "Lying flat on your back for long spells in later pregnancy — use the sitting or all-fours version instead.",
+      "Stop and check with your physio or midwife if this brings on pain, and stop straight away if you feel dizzy or unwell."
+    ],
+    pose: "pelvicTilt",
+    defaultDosage: { sets: 1, reps: 10, perDay: 3, perWeek: 7, tempo: "slow and controlled" }
   },
   {
     id: "ex-28", title: "Quadruped Arm/Leg Reach", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "spinal-stability", "strength-phase"],
     condition: "Chronic low back pain", stage: "Return to function",
-    description: "An advanced bird-dog progression adding controlled reach, challenging balance and trunk control together."
+    description: "An advanced bird-dog progression adding controlled reach, challenging balance and trunk control together.",
+    equipment: ["Exercise mat"],
+    setup: "Kneel on all fours on a mat, with your hands under your shoulders and your knees under your hips, and your back flat.",
+    steps: [
+      "Tighten your lower tummy to keep your back steady.",
+      "Reach one arm forwards and the opposite leg back until both are level with your body.",
+      "Slowly draw that elbow and knee in towards each other under your body.",
+      "Reach back out to the long position without letting your back move.",
+      "Return to all fours, then repeat on the other side."
+    ],
+    cues: [
+      "Your back stays flat and still while only your arm and leg move.",
+      "Your hips stay level and square to the floor.",
+      "You move slowly enough to stay balanced throughout."
+    ],
+    mistakes: [
+      "Letting your back arch or sag as you reach out or draw in.",
+      "Twisting or tipping your hips to keep your balance.",
+      "Rushing the reach so it turns into a swing.",
+      "Stop and message your physio if the pain spreads down your leg, or you notice new numbness, pins and needles, or weakness."
+    ],
+    defaultDosage: { sets: 2, reps: 10, perDay: 1, perWeek: 5, notes: "Count 1 repetition as one reach to each side." }
   },
   {
     id: "ex-29", title: "Standing Chin Retraction", bodyPart: "Cervical spine",
@@ -386,13 +585,51 @@ export const exercises: Exercise[] = [
     id: "ex-31", title: "Lumbar Flexion in Lying", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "stenosis", "flexion-bias", "early-rehab"],
     condition: "Lumbar spinal stenosis", stage: "Early rehab",
-    description: "Gently drawing both knees toward the chest to ease stenosis-related symptoms, which typically prefer flexion over extension."
+    description: "Gently drawing both knees toward the chest to ease stenosis-related symptoms, which typically prefer flexion over extension.",
+    equipment: ["Exercise mat"],
+    setup: "Lie on your back on a mat with your knees bent and your feet flat on the floor.",
+    steps: [
+      "Bring one knee up towards your chest, then the other.",
+      "Hold gently behind your thighs and draw both knees a little closer.",
+      "Feel a comfortable stretch in your lower back and hold it briefly.",
+      "Lower one leg back down at a time to the starting position."
+    ],
+    cues: [
+      "You hold behind your thighs, not over the front of your knees.",
+      "The stretch is felt in your lower back and feels like relief.",
+      "Your head and shoulders stay resting on the mat."
+    ],
+    mistakes: [
+      "Pulling hard and fast into the stretch.",
+      "Lifting your head and neck up towards your knees.",
+      "Lowering both legs together, which can strain your back — bring them down one at a time.",
+      "Stop and message your physio if the pain spreads further down your leg, or you notice new numbness, pins and needles, or weakness."
+    ],
+    defaultDosage: { sets: 1, reps: 10, perDay: 3, perWeek: 7, tempo: "slow and controlled" }
   },
   {
     id: "ex-32", title: "Sciatic Nerve Glide", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "sciatica", "neural-mobility", "early-rehab"],
     condition: "Sciatica", stage: "Early rehab",
-    description: "A gentle sliding nerve mobilisation of the leg and ankle to ease nerve-related sensitivity down the leg."
+    description: "A gentle sliding nerve mobilisation of the leg and ankle to ease nerve-related sensitivity down the leg.",
+    equipment: ["Chair"],
+    setup: "Sit tall on a firm chair with both feet flat on the floor and your hands resting on your thighs.",
+    steps: [
+      "Straighten the affected leg out in front of you until the knee is nearly straight, and at the same time lift your head to look up.",
+      "As you bend that knee down and lower your foot, tuck your chin and look down.",
+      "Move smoothly between the two positions, like a gentle see-saw."
+    ],
+    cues: [
+      "The movement is smooth and rhythmic, never forced or held at the end.",
+      "You feel a light pull or gentle stretch that eases off as you return.",
+      "You keep the movement small if your symptoms are easily stirred up, and larger only if it stays comfortable."
+    ],
+    mistakes: [
+      "Pushing into a strong stretch or holding the end position.",
+      "Doing lots of fast repetitions and flaring your symptoms afterwards.",
+      "Stop and message your physio if the pain spreads further down your leg, or you notice new or worse numbness, pins and needles, or weakness in your leg or foot."
+    ],
+    defaultDosage: { sets: 1, reps: 8, perDay: 2, perWeek: 7, tempo: "slow, no forcing" }
   },
   {
     id: "ex-33", title: "Wall Angels", bodyPart: "Thoracic spine",
@@ -404,7 +641,28 @@ export const exercises: Exercise[] = [
     id: "ex-34", title: "Functional Lifting Pattern", bodyPart: "Lumbar spine",
     clinicalArea: "spine", tags: ["low-back", "return-to-work", "return-to-function"],
     condition: "Chronic low back pain", stage: "Return to function",
-    description: "Practising a hip-hinge lifting technique with a light load, building confidence for safe lifting at work or home."
+    description: "Practising a hip-hinge lifting technique with a light load, building confidence for safe lifting at work or home.",
+    equipment: ["A light box or household object"],
+    setup: "Stand with your feet about shoulder-width apart, with a light object on the floor just in front of you.",
+    steps: [
+      "Step in close so the object is between or just in front of your feet.",
+      "Push your hips back and bend your knees to lower towards it, keeping your back in its natural line.",
+      "Take a firm hold and gently brace your tummy.",
+      "Push through your feet and straighten your hips and knees to stand up, keeping the object close to your body.",
+      "Lower it back down the same way, hips back and knees bending."
+    ],
+    cues: [
+      "Your back keeps its natural curve — it does not round or over-arch.",
+      "The object stays close to your body throughout the lift.",
+      "The power comes from your hips and legs, and you breathe out as you lift."
+    ],
+    mistakes: [
+      "Reaching for the load with straight legs and a rounded back.",
+      "Twisting your body while holding the object — turn by stepping your feet instead.",
+      "Adding weight too quickly or trying too heavy a load too soon.",
+      "Stop and message your physio if the pain spreads down your leg, or you notice new numbness, pins and needles, or weakness."
+    ],
+    defaultDosage: { sets: 2, reps: 10, perDay: 1, perWeek: 5 }
   },
   { id: "ex-35", title: "Shoulder External Rotation (Band)", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "rotator-cuff", "strength-phase"], condition: "Rotator cuff tendinopathy", stage: "Strength phase", description: "Elbow tucked to the side, rotating the forearm outward against light resistance to strengthen the rotator cuff." },
   { id: "ex-36", title: "Shoulder Internal Rotation (Band)", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "rotator-cuff", "strength-phase"], condition: "Rotator cuff tendinopathy", stage: "Strength phase", description: "The mirrored inward rotation movement, balancing strength around the shoulder joint." },
