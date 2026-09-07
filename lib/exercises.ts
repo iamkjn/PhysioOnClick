@@ -51,7 +51,26 @@ export const exercises: Exercise[] = [
     condition: "Shoulder pain",
     stage: "Early rehab",
     description: "Promotes shoulder control and reduces overload through gentle activation.",
-    videoUrl: "https://www.youtube.com/embed/uKYLJ3f6QBA"
+    videoUrl: "https://www.youtube.com/embed/uKYLJ3f6QBA",
+    pose: "scapularSet",
+    setup: "Sit or stand tall with your arms relaxed by your sides and your shoulders dropped away from your ears.",
+    steps: [
+      "Gently draw your shoulder blades down and slightly together, as if sliding them into your back pockets.",
+      "Hold the position lightly - this is a soft setting, not a hard squeeze.",
+      "Relax back to the start."
+    ],
+    cues: [
+      "The effort is small - around 10 percent. If you are straining, ease off.",
+      "Your shoulders move down and back, not up towards your ears.",
+      "Keep breathing normally throughout the hold."
+    ],
+    mistakes: [
+      "Over-squeezing hard enough to create tension in the neck.",
+      "Shrugging the shoulders up instead of setting them down and back.",
+      "Arching the lower back to make the movement look bigger.",
+      "Stop and message your physio if this brings on pain down the arm, or new pins and needles or weakness in the hand."
+    ],
+    defaultDosage: { sets: 3, reps: 10, perDay: 2, notes: "Hold each gentle set for about 5 seconds." }
   },
   {
     id: "ex-3",
@@ -137,7 +156,28 @@ export const exercises: Exercise[] = [
     condition: "Shoulder impingement",
     stage: "Mobility phase",
     description: "Encourages a comfortable overhead reaching range, moving only as far as feels controlled.",
-    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o",
+    pose: "overheadReach",
+    equipment: ["Optional: a light stick or broom handle"],
+    setup: "Stand or sit tall. You can do this with the sore arm on its own, or hold a light stick in both hands so the good arm helps guide the sore one.",
+    steps: [
+      "Keeping your elbow straight, raise your arm forwards and up towards the ceiling.",
+      "Go only as far as you can with control and without sharp pain.",
+      "Lower the arm back down slowly to your side.",
+      "Each day, aim to reach a little higher than the day before."
+    ],
+    cues: [
+      "Lead with your thumb pointing up.",
+      "Keep your shoulder relaxed - try not to hitch it up towards your ear as you lift.",
+      "Move at a slow, even pace in both directions."
+    ],
+    mistakes: [
+      "Leaning backwards or arching the back to get the arm higher.",
+      "Forcing through a sharp or catching pain.",
+      "Shrugging the shoulder up to cheat the movement.",
+      "Stop and message your physio if the shoulder becomes locked, or the pain is present at rest and at night and getting worse."
+    ],
+    defaultDosage: { sets: 3, reps: 10, perDay: 2, perWeek: 7, tempo: "slow and controlled" }
   },
   {
     id: "ex-9",
@@ -181,7 +221,28 @@ export const exercises: Exercise[] = [
     condition: "Ankle sprain",
     stage: "Strength phase",
     description: "Builds calf and ankle strength by rising onto the toes in a slow, controlled way.",
-    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o"
+    videoUrl: "https://www.youtube.com/embed/qri3WcM6L4o",
+    pose: "heelRaise",
+    equipment: ["A kitchen counter or sturdy chair for light balance support"],
+    setup: "Stand tall behind a kitchen counter or a sturdy chair, feet hip-width apart. Rest your fingertips on it for balance only - not to pull up with.",
+    steps: [
+      "Slowly rise up onto the balls of both feet, lifting your heels as high as feels comfortable.",
+      "Pause at the top for a second, keeping your ankles steady and pointing straight ahead.",
+      "Lower your heels back down slowly, taking about three seconds.",
+      "Once two-legged raises feel easy, progress to rising and lowering on the injured leg only."
+    ],
+    cues: [
+      "Push evenly through your big toe and second toe, not rolling out towards the little-toe side.",
+      "Keep your knees straight but soft, and your body upright.",
+      "The slow lowering is where the strength is built - control it all the way down."
+    ],
+    mistakes: [
+      "Bouncing quickly through the reps instead of controlling them.",
+      "Leaning your body weight onto your hands through the counter.",
+      "Letting your ankles roll outward at the top.",
+      "Stop and message your physio if you get sharp pain in the ankle or heel, or the ankle gives way."
+    ],
+    defaultDosage: { sets: 3, reps: 12, perDay: 1, perWeek: 5, tempo: "3 seconds to lower" }
   },
   {
     id: "ex-13",
@@ -192,7 +253,26 @@ export const exercises: Exercise[] = [
     condition: "Neck pain",
     stage: "Early rehab",
     description: "Encourages gentle neck alignment through a small, comfortable tucking motion.",
-    videoUrl: "https://www.youtube.com/embed/1iQvKfV5fCE"
+    videoUrl: "https://www.youtube.com/embed/1iQvKfV5fCE",
+    pose: "chinTuck",
+    setup: "Sit or stand tall, looking straight ahead. Keep your face vertical and your eyes level.",
+    steps: [
+      "Without tipping your head down, gently glide your chin straight backwards to make a light 'double chin'.",
+      "You should feel a mild stretch at the base of your skull and the back of your neck.",
+      "Hold briefly, then release forwards to the start - do not push the head forwards past neutral."
+    ],
+    cues: [
+      "The movement is horizontal - like a drawer sliding back, not a nod.",
+      "Your eyes and jaw stay level throughout.",
+      "Gentle and small; you are not trying to press hard."
+    ],
+    mistakes: [
+      "Nodding the chin down towards the chest instead of gliding it back.",
+      "Holding your breath or clenching your jaw.",
+      "Pushing into pain - this should feel like a gentle stretch at most.",
+      "Stop and message your physio if it brings on dizziness, pins and needles in the arms or hands, or a severe headache."
+    ],
+    defaultDosage: { reps: 10, perDay: 5, notes: "Hold each tuck for about 5 seconds. Easy to fit in through the day at a desk." }
   },
   {
     id: "ex-14",
@@ -664,9 +744,95 @@ export const exercises: Exercise[] = [
     ],
     defaultDosage: { sets: 2, reps: 10, perDay: 1, perWeek: 5 }
   },
-  { id: "ex-35", title: "Shoulder External Rotation (Band)", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "rotator-cuff", "strength-phase"], condition: "Rotator cuff tendinopathy", stage: "Strength phase", description: "Elbow tucked to the side, rotating the forearm outward against light resistance to strengthen the rotator cuff." },
-  { id: "ex-36", title: "Shoulder Internal Rotation (Band)", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "rotator-cuff", "strength-phase"], condition: "Rotator cuff tendinopathy", stage: "Strength phase", description: "The mirrored inward rotation movement, balancing strength around the shoulder joint." },
-  { id: "ex-37", title: "Wall Slide", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "impingement", "mobility"], condition: "Shoulder impingement", stage: "Mobility phase", description: "Sliding the arms up a wall keeping contact throughout, restoring overhead range without excess strain." },
+  {
+    id: "ex-35",
+    title: "Shoulder External Rotation (Band)",
+    bodyPart: "Shoulder",
+    clinicalArea: "upper_limb",
+    tags: ["shoulder", "rotator-cuff", "strength-phase"],
+    condition: "Rotator cuff tendinopathy",
+    stage: "Strength phase",
+    description: "Elbow tucked to the side, rotating the forearm outward against light resistance to strengthen the rotator cuff.",
+    pose: "bandRotation",
+    equipment: ["A resistance band", "A rolled hand towel"],
+    setup: "Anchor a resistance band at about elbow height, such as in a closed door. Stand side-on and hold the band in the hand furthest from the anchor. Tuck that elbow into your side, bent to 90 degrees, with a rolled towel held between your elbow and your ribs.",
+    steps: [
+      "Start with your forearm across your tummy and the band under light tension.",
+      "Keeping your elbow pinned to your side, rotate your forearm outwards, away from your body.",
+      "Rotate to a comfortable end point, then return slowly to the start against the band."
+    ],
+    cues: [
+      "The towel stays gently squeezed against your side the whole time.",
+      "Only your forearm moves - like a gate swinging on a hinge.",
+      "Keep your wrist straight and your shoulder relaxed down."
+    ],
+    mistakes: [
+      "Letting the elbow drift away from your body.",
+      "Twisting your whole torso to move the band instead of rotating the shoulder.",
+      "Using a band so strong the movement becomes a struggle.",
+      "Stop and message your physio if you get sharp pain in the shoulder or a painful catching sensation."
+    ],
+    defaultDosage: { sets: 3, reps: 12, perDay: 1, perWeek: 4, tempo: "2 seconds out, 3 seconds back" }
+  },
+  {
+    id: "ex-36",
+    title: "Shoulder Internal Rotation (Band)",
+    bodyPart: "Shoulder",
+    clinicalArea: "upper_limb",
+    tags: ["shoulder", "rotator-cuff", "strength-phase"],
+    condition: "Rotator cuff tendinopathy",
+    stage: "Strength phase",
+    description: "The mirrored inward rotation movement, balancing strength around the shoulder joint.",
+    pose: "bandRotation",
+    equipment: ["A resistance band", "A rolled hand towel"],
+    setup: "Anchor a resistance band at about elbow height. Stand side-on so the anchor is on the same side as the arm you are working. Hold the band in that hand, tuck your elbow into your side bent to 90 degrees, with a rolled towel between your elbow and your ribs.",
+    steps: [
+      "Start with your forearm turned slightly outwards and the band under light tension.",
+      "Keeping your elbow tucked in, rotate your forearm inwards across your tummy.",
+      "Return slowly to the start, controlling the band all the way back."
+    ],
+    cues: [
+      "The towel stays tucked against your side throughout.",
+      "The movement comes from the shoulder rotating, not from leaning your body.",
+      "Slow and controlled in both directions."
+    ],
+    mistakes: [
+      "Letting the elbow lift away from the ribs.",
+      "Rotating the trunk instead of the shoulder.",
+      "Snapping back to the start rather than controlling the return.",
+      "Stop and message your physio if the movement becomes sharply painful or the shoulder feels unstable."
+    ],
+    defaultDosage: { sets: 3, reps: 12, perDay: 1, perWeek: 4, tempo: "2 seconds in, 3 seconds back" }
+  },
+  {
+    id: "ex-37",
+    title: "Wall Slide",
+    bodyPart: "Shoulder",
+    clinicalArea: "upper_limb",
+    tags: ["shoulder", "impingement", "mobility"],
+    condition: "Shoulder impingement",
+    stage: "Mobility phase",
+    description: "Sliding the arms up a wall keeping contact throughout, restoring overhead range without excess strain.",
+    pose: "wallSlide",
+    setup: "Stand facing a wall, about a forearm's length away. Place the little-finger edge of both hands and forearms flat against the wall, elbows bent, roughly in a goalpost shape.",
+    steps: [
+      "Keeping your forearms and hands in contact with the wall, slide them slowly upwards.",
+      "Go as high as you can while keeping contact and without pain or shrugging.",
+      "Slide slowly back down to the start, gently drawing your shoulder blades down as you lower."
+    ],
+    cues: [
+      "Keep your ribs down and your lower back flat - do not arch to reach higher.",
+      "Forearms stay on the wall the whole way up and down.",
+      "Shoulders stay away from your ears."
+    ],
+    mistakes: [
+      "Arching the back to gain height.",
+      "Letting the forearms peel off the wall.",
+      "Forcing past a painful or pinching point.",
+      "Stop and message your physio if the shoulder pinches sharply or catches each time you lift."
+    ],
+    defaultDosage: { sets: 3, reps: 10, perDay: 1, perWeek: 5, tempo: "slow" }
+  },
   { id: "ex-38", title: "Sleeper Stretch", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "internal-rotation", "mobility"], condition: "Shoulder stiffness", stage: "Mobility phase", description: "Side-lying gentle pressure on the forearm to restore internal rotation range, common after overhead sports." },
   { id: "ex-39", title: "Prone Y-T-W Raises", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "scapular-control", "strength-phase"], condition: "Scapular dyskinesis", stage: "Strength phase", description: "Lying face down, lifting the arms into Y, T and W positions to retrain scapular muscle balance." },
   { id: "ex-40", title: "Elbow Flexion/Extension", bodyPart: "Elbow", clinicalArea: "upper_limb", tags: ["elbow", "range-of-motion", "early-rehab"], condition: "Post-elbow fracture", stage: "Early rehab", description: "Slow bending and straightening of the elbow through the available range to prevent stiffness after immobilisation." },
@@ -681,19 +847,217 @@ export const exercises: Exercise[] = [
   { id: "ex-49", title: "Weight-Bearing Through Extended Wrist", bodyPart: "Wrist", clinicalArea: "upper_limb", tags: ["wrist", "post-fracture", "return-to-function"], condition: "Post-wrist fracture", stage: "Return to function", description: "Gradually loading body weight through a flat, extended hand to rebuild wrist tolerance for daily tasks." },
   { id: "ex-50", title: "Pendulum with Light Weight", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "frozen-shoulder", "early-rehab"], condition: "Frozen shoulder", stage: "Early rehab", description: "A weighted pendulum swing using gravity to gently distract and mobilise a stiff, painful shoulder joint." },
   { id: "ex-51", title: "Cross-Body Stretch", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "posterior-capsule", "mobility"], condition: "Posterior shoulder tightness", stage: "Mobility phase", description: "Pulling the arm across the chest to stretch the back of the shoulder, often tight after throwing or racquet sports." },
-  { id: "ex-52", title: "Push-Up Plus (Wall or Floor)", bodyPart: "Shoulder", clinicalArea: "upper_limb", tags: ["shoulder", "scapular-control", "return-to-function"], condition: "Scapular dyskinesis", stage: "Return to function", description: "A standard push-up with an extra protraction at the top to fully engage the serratus anterior for scapular control." },
+  {
+    id: "ex-52",
+    title: "Push-Up Plus (Wall or Floor)",
+    bodyPart: "Shoulder",
+    clinicalArea: "upper_limb",
+    tags: ["shoulder", "scapular-control", "return-to-function"],
+    condition: "Scapular dyskinesis",
+    stage: "Return to function",
+    description: "A standard push-up with an extra protraction at the top to fully engage the serratus anterior for scapular control.",
+    pose: "pushUpPlus",
+    setup: "Start against a wall (easiest), on your knees on the floor (harder), or in a full push-up position (hardest). Hands about shoulder-width apart.",
+    steps: [
+      "Lower yourself towards the wall or floor by bending your elbows, keeping your body in a straight line.",
+      "Push back up until your elbows are straight.",
+      "At the top, add the 'plus': push a little further so your upper back rounds gently and your shoulder blades spread apart.",
+      "Let the shoulder blades draw back together as you start the next repetition."
+    ],
+    cues: [
+      "Keep your neck long and your body straight from head to heels, or head to knees.",
+      "The 'plus' is a small extra push from the shoulder blades, not a big shrug.",
+      "Move smoothly and do not let your lower back sag."
+    ],
+    mistakes: [
+      "Letting the hips drop so the back arches.",
+      "Skipping the 'plus' at the top - that is the part that trains scapular control.",
+      "Shrugging the shoulders towards the ears.",
+      "Stop and message your physio if you get sharp shoulder pain or painful clicking."
+    ],
+    defaultDosage: { sets: 3, reps: 10, perDay: 1, perWeek: 4 }
+  },
   { id: "ex-53", title: "Terminal Knee Extension (Band)", bodyPart: "Knee", clinicalArea: "lower_limb", tags: ["knee", "quad-strength", "strength-phase"], condition: "Anterior knee pain", stage: "Strength phase", description: "A resisted band pulling the knee into slight flexion while the quad straightens it, targeting the final degrees of extension." },
   { id: "ex-54", title: "Step-Up", bodyPart: "Knee", clinicalArea: "lower_limb", tags: ["knee", "functional", "strength-phase"], condition: "Patellofemoral pain", stage: "Strength phase", description: "Stepping up onto a low step with control, building single-leg strength for stairs and functional movement." },
   { id: "ex-55", title: "Clam Shell", bodyPart: "Hip", clinicalArea: "lower_limb", tags: ["hip", "glute-strength", "early-rehab"], condition: "Hip and knee pain (gluteal weakness)", stage: "Early rehab", description: "Lying on the side with knees bent, lifting the top knee while keeping feet together to activate the gluteus medius." },
   { id: "ex-56", title: "Side-Lying Hip Abduction", bodyPart: "Hip", clinicalArea: "lower_limb", tags: ["hip", "glute-strength", "strength-phase"], condition: "Gluteal tendinopathy", stage: "Strength phase", description: "Lifting the top leg straight out to the side, building hip abductor strength important for pelvic control." },
   { id: "ex-57", title: "Standing Hip Flexor Stretch", bodyPart: "Hip", clinicalArea: "lower_limb", tags: ["hip", "flexibility", "mobility"], condition: "Hip flexor tightness", stage: "Mobility phase", description: "A lunge-position stretch lengthening the front of the hip, often tight from prolonged sitting." },
   { id: "ex-58", title: "Deep Squat Mobility", bodyPart: "Hip", clinicalArea: "lower_limb", tags: ["hip", "mobility", "return-to-function"], condition: "Hip osteoarthritis", stage: "Return to function", description: "A supported deep squat hold to maintain functional hip and knee range for daily activities like gardening." },
-  { id: "ex-59", title: "Ankle Pump", bodyPart: "Ankle", clinicalArea: "lower_limb", tags: ["ankle", "swelling", "early-rehab"], condition: "Ankle sprain (acute)", stage: "Early rehab", description: "Pointing and flexing the foot repeatedly to reduce swelling and maintain ankle mobility soon after injury." },
-  { id: "ex-60", title: "Ankle Alphabet", bodyPart: "Ankle", clinicalArea: "lower_limb", tags: ["ankle", "range-of-motion", "early-rehab"], condition: "Ankle sprain", stage: "Early rehab", description: "Tracing letters of the alphabet with the foot in the air to gently restore ankle range in every direction." },
-  { id: "ex-61", title: "Resisted Ankle Eversion", bodyPart: "Ankle", clinicalArea: "lower_limb", tags: ["ankle", "instability", "strength-phase"], condition: "Chronic ankle instability", stage: "Strength phase", description: "A band pulling the foot inward while the peroneal muscles resist, key for lateral ankle stability." },
-  { id: "ex-62", title: "Single Leg Balance on Foam", bodyPart: "Ankle", clinicalArea: "lower_limb", tags: ["ankle", "balance", "instability", "return-to-function"], condition: "Chronic ankle instability", stage: "Return to function", description: "Standing on one leg on an unstable surface, retraining ankle proprioception for sport and uneven ground." },
-  { id: "ex-63", title: "Calf Stretch (Gastrocnemius)", bodyPart: "Ankle", clinicalArea: "lower_limb", tags: ["ankle", "achilles", "flexibility", "mobility"], condition: "Achilles tendinopathy", stage: "Mobility phase", description: "A straight-knee wall stretch lengthening the calf, easing tightness that loads the Achilles tendon." },
-  { id: "ex-64", title: "Eccentric Heel Drop", bodyPart: "Ankle", clinicalArea: "lower_limb", tags: ["ankle", "achilles", "strength-phase"], condition: "Achilles tendinopathy", stage: "Strength phase", description: "Slowly lowering the heel below step level, the standard evidence-based loading exercise for Achilles tendon pain." },
+  {
+    id: "ex-59",
+    title: "Ankle Pump",
+    bodyPart: "Ankle",
+    clinicalArea: "lower_limb",
+    tags: ["ankle", "swelling", "early-rehab"],
+    condition: "Ankle sprain (acute)",
+    stage: "Early rehab",
+    description: "Pointing and flexing the foot repeatedly to reduce swelling and maintain ankle mobility soon after injury.",
+    pose: "anklePump",
+    setup: "Sit or lie down with your injured leg supported straight out in front of you, ideally raised on a cushion so your foot is above hip height.",
+    steps: [
+      "Slowly point your foot away from you, as if pressing down a car pedal.",
+      "Then pull your toes and foot back up towards your shin, as far as is comfortable.",
+      "Move smoothly between the two positions, keeping the movement at the ankle only."
+    ],
+    cues: [
+      "Your knee and thigh stay still - only the ankle and foot move.",
+      "Work through as much range as you can without sharp pain.",
+      "Keeping the leg raised while you do this helps drain the swelling."
+    ],
+    mistakes: [
+      "Rushing - slow, full movements shift more fluid than fast tiny ones.",
+      "Doing it with the leg hanging down, which lets swelling pool.",
+      "Stop and message your physio if the ankle becomes much more swollen, hot, or painful, or you cannot put any weight through it."
+    ],
+    defaultDosage: { reps: 20, perDay: 5, notes: "In the first few days after injury, do a set every hour or two while you are awake, with the leg raised." }
+  },
+  {
+    id: "ex-60",
+    title: "Ankle Alphabet",
+    bodyPart: "Ankle",
+    clinicalArea: "lower_limb",
+    tags: ["ankle", "range-of-motion", "early-rehab"],
+    condition: "Ankle sprain",
+    stage: "Early rehab",
+    description: "Tracing letters of the alphabet with the foot in the air to gently restore ankle range in every direction.",
+    pose: "anklePump",
+    setup: "Sit on a chair with your injured foot lifted slightly off the floor, or sit on the floor with the leg out in front of you.",
+    steps: [
+      "Imagine your big toe is a pencil.",
+      "Slowly 'write' each letter of the alphabet in the air, from A to Z, making the letters as large as you comfortably can.",
+      "Move from the ankle, keeping the rest of your leg still."
+    ],
+    cues: [
+      "Big, slow letters - the aim is full range in every direction.",
+      "Only your foot and ankle move; your knee stays quiet.",
+      "A little discomfort at the end of range is fine; sharp pain is not."
+    ],
+    mistakes: [
+      "Making tiny letters that barely move the ankle.",
+      "Swinging the whole leg to form the letters.",
+      "Stop and message your physio if pain sharply increases, or the ankle locks or gives way."
+    ],
+    defaultDosage: { reps: 2, perDay: 3, notes: "One repetition is tracing the whole alphabet A to Z once through." }
+  },
+  {
+    id: "ex-61",
+    title: "Resisted Ankle Eversion",
+    bodyPart: "Ankle",
+    clinicalArea: "lower_limb",
+    tags: ["ankle", "instability", "strength-phase"],
+    condition: "Chronic ankle instability",
+    stage: "Strength phase",
+    description: "A band pulling the foot inward while the peroneal muscles resist, key for lateral ankle stability.",
+    pose: "bandRotation",
+    equipment: ["A resistance band"],
+    setup: "Sit with your injured leg out straight. Loop a resistance band around the outside edge of your foot and anchor the other end to something solid on the opposite side, so the band pulls your foot inwards.",
+    steps: [
+      "Start with your foot relaxed, letting the band pull it gently inwards.",
+      "Slowly turn the sole of your foot outwards against the band, leading with the outside edge of the foot.",
+      "Pause briefly at the end, then let the foot return slowly to the start."
+    ],
+    cues: [
+      "Keep your knee and shin pointing straight up - the movement is at the ankle, not by rotating the whole leg.",
+      "Control the return; do not let the band snap your foot back.",
+      "You should feel the muscles on the outside of your shin and ankle working."
+    ],
+    mistakes: [
+      "Turning the whole leg outwards from the hip instead of moving the ankle.",
+      "Using a band so heavy the movement becomes jerky.",
+      "Stop and message your physio if you feel sharp pain on the outside of the ankle, or it feels like it is giving way."
+    ],
+    defaultDosage: { sets: 3, reps: 15, perDay: 1, perWeek: 4, tempo: "slow and controlled" }
+  },
+  {
+    id: "ex-62",
+    title: "Single Leg Balance on Foam",
+    bodyPart: "Ankle",
+    clinicalArea: "lower_limb",
+    tags: ["ankle", "balance", "instability", "return-to-function"],
+    condition: "Chronic ankle instability",
+    stage: "Return to function",
+    description: "Standing on one leg on an unstable surface, retraining ankle proprioception for sport and uneven ground.",
+    pose: "balance",
+    equipment: ["A cushion, folded towel, or balance pad"],
+    setup: "Place a firm cushion or folded towel on the floor next to a wall or worktop you can reach out and touch. Stand on it with your injured leg.",
+    steps: [
+      "Lift your other foot just off the surface so you are balancing on the injured leg.",
+      "Hold as steady as you can, keeping your standing knee slightly bent.",
+      "When it feels easy, progress by folding your arms, then by turning your head slowly side to side, then by closing your eyes - only with support right next to you."
+    ],
+    cues: [
+      "Fix your eyes on a point ahead to help you steady (until you progress to eyes closed).",
+      "Let your ankle make small corrections rather than gripping hard with your toes.",
+      "Keep your hips level, not dropping to one side."
+    ],
+    mistakes: [
+      "Standing with a locked, straight knee.",
+      "Holding the wall the whole time instead of using it only to catch yourself.",
+      "Stop and message your physio if the ankle gives way sharply or becomes painful."
+    ],
+    defaultDosage: { sets: 3, holdSeconds: 30, perDay: 1, perWeek: 5 }
+  },
+  {
+    id: "ex-63",
+    title: "Calf Stretch (Gastrocnemius)",
+    bodyPart: "Ankle",
+    clinicalArea: "lower_limb",
+    tags: ["ankle", "achilles", "flexibility", "mobility"],
+    condition: "Achilles tendinopathy",
+    stage: "Mobility phase",
+    description: "A straight-knee wall stretch lengthening the calf, easing tightness that loads the Achilles tendon.",
+    pose: "calfStretch",
+    setup: "Stand facing a wall, an arm's length away, with both hands on the wall at shoulder height. Step the leg you want to stretch straight back, keeping that heel flat on the floor and that knee straight.",
+    steps: [
+      "Keep your back leg straight, heel down, and toes pointing forwards.",
+      "Bend your front knee and lean your hips towards the wall until you feel a gentle stretch in the calf of the back leg.",
+      "Hold the stretch still - do not bounce.",
+      "Ease out slowly, and swap legs if both need it."
+    ],
+    cues: [
+      "The stretch is felt in the middle of the calf, not behind the knee or in the Achilles tendon.",
+      "Keep your back heel glued to the floor throughout.",
+      "A steady pulling feeling is right; sharp or pinching pain is not."
+    ],
+    mistakes: [
+      "Letting the back heel lift, which loses the stretch.",
+      "Turning the back foot outwards.",
+      "Bouncing to push further into range.",
+      "Stop and message your physio if you get sharp pain in the Achilles tendon or the heel."
+    ],
+    defaultDosage: { sets: 3, holdSeconds: 30, perDay: 2, perWeek: 7 }
+  },
+  {
+    id: "ex-64",
+    title: "Eccentric Heel Drop",
+    bodyPart: "Ankle",
+    clinicalArea: "lower_limb",
+    tags: ["ankle", "achilles", "strength-phase"],
+    condition: "Achilles tendinopathy",
+    stage: "Strength phase",
+    description: "Slowly lowering the heel below step level, the standard evidence-based loading exercise for Achilles tendon pain.",
+    pose: "heelRaise",
+    equipment: ["A step or stair with a handrail"],
+    setup: "Stand on the edge of a step with the balls of both feet on the step and your heels hanging off the back. Hold the handrail for balance.",
+    steps: [
+      "Using both feet, rise up onto your toes.",
+      "Shift your weight onto the injured leg and lift the other foot off the step.",
+      "Slowly lower the heel of the injured leg down below the level of the step, taking about three to four seconds.",
+      "Place the other foot back down and use both legs to return to the top. Only the lowering is done on one leg."
+    ],
+    cues: [
+      "The lift back up is with both legs; the slow lower on one leg is the working part.",
+      "Keep the movement smooth and controlled all the way to the bottom.",
+      "Some ache in the tendon during and after is expected, as long as it settles within 24 hours."
+    ],
+    mistakes: [
+      "Lowering quickly or 'dropping' rather than controlling the descent.",
+      "Rising back up on the injured leg alone.",
+      "Stopping the moment you feel any ache - mild tendon ache is part of this exercise.",
+      "Stop and message your physio if the pain is sharp, clearly worse day to day, or the tendon is very swollen."
+    ],
+    defaultDosage: { sets: 3, reps: 15, perDay: 2, perWeek: 7, tempo: "3 to 4 seconds to lower", notes: "Expect some tendon ache during and after - this is a loading exercise and the ache should settle within 24 hours." }
+  },
   { id: "ex-65", title: "Wall Squat Hold", bodyPart: "Knee", clinicalArea: "lower_limb", tags: ["knee", "isometric", "early-rehab"], condition: "Patellar tendinopathy (flare-up)", stage: "Early rehab", description: "An isometric squat against a wall, held steady — a low-irritability way to load a painful tendon early on." },
   { id: "ex-66", title: "Split Squat", bodyPart: "Knee", clinicalArea: "lower_limb", tags: ["knee", "functional", "return-to-function"], condition: "ACL rehabilitation", stage: "Return to function", description: "A staggered-stance squat building single-leg strength and control, a key step before returning to sport." },
   { id: "ex-67", title: "Lateral Band Walk", bodyPart: "Hip", clinicalArea: "lower_limb", tags: ["hip", "glute-strength", "return-to-function"], condition: "Patellofemoral pain", stage: "Return to function", description: "Sidestepping against band resistance around the knees, building hip strength that controls knee alignment." },
@@ -790,13 +1154,19 @@ export function resolveDosage(
 }
 
 function frequencyClause(d: ExerciseDosage): string | null {
+  let daily: string | null = null;
   if (d.perDay != null && d.perDay >= 1) {
-    if (d.perDay === 1) return "once a day";
-    if (d.perDay === 2) return "twice a day";
-    return `${d.perDay} times a day`;
+    daily =
+      d.perDay === 1 ? "once a day" : d.perDay === 2 ? "twice a day" : `${d.perDay} times a day`;
   }
-  if (d.perWeek != null && d.perWeek >= 1) return `${d.perWeek} days a week`;
-  return null;
+  let weekly: string | null = null;
+  if (d.perWeek != null && d.perWeek >= 1) {
+    weekly = d.perWeek >= 7 ? "every day" : `${d.perWeek} days a week`;
+  }
+  // Show both when they add information: "once a day, 5 days a week". A daily
+  // count already implies "every day", so drop a redundant perWeek: 7.
+  if (daily && weekly) return weekly === "every day" ? daily : `${daily}, ${weekly}`;
+  return daily ?? weekly;
 }
 
 export function formatDosage(d: ExerciseDosage): string {

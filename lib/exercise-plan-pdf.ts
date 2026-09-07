@@ -1,11 +1,16 @@
 import { PDFDocument, rgb, StandardFonts, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
 import { invoiceIssuer, founder } from "@/lib/site-data";
+import { POSE_SPECS, POSE_VIEWBOX, resolvePose } from "@/lib/exercise-poses";
 import { PRACTICE_PHONE } from "@/lib/structured-data";
 
 export type ExercisePlanCard = {
   index: number;
   title: string;
   imageBytes: Uint8Array | null;
+  /** Stick-figure pose key (or a hint resolved by name) drawn when no
+   * illustration is available. Every card gets a figure, so this is only
+   * null when the caller has no title to infer from. */
+  pose: string | null;
   setup: string | null;
   steps: string[];
   cues: string[];
@@ -35,18 +40,20 @@ const SAFETY_FILL = rgb(0xff / 255, 0xf4 / 255, 0xf2 / 255);
 const SAFETY_BORDER = rgb(0xf3 / 255, 0xd6 / 255, 0xd0 / 255);
 const SAFETY_INK = rgb(0xa8 / 255, 0x3a / 255, 0x2c / 255);
 const FOOTER_RULE = rgb(0xe6 / 255, 0xee / 255, 0xf2 / 255);
+const FIGURE_TILE = rgb(0xe8 / 255, 0xf4 / 255, 0xfb / 255); // accent-soft, matches the web figure tile
+const FIGURE_STROKE = rgb(0x0c / 255, 0x7c / 255, 0xb0 / 255); // primary-dark, legible on the tile
 const WHITE = rgb(1, 1, 1);
 
 const PAGE: [number, number] = [595.28, 841.89]; // A4 portrait (pt)
 const MARGIN = 40;
-const PAD = 18; // card inner padding
+const PAD = 16; // card inner padding
 const BADGE = 24; // number-badge diameter
-const IMG = 120; // embedded illustration box (square)
+const IMG = 108; // embedded illustration box (square)
 const IMG_GAP = 16;
-const CARD_GAP = 16;
-const COVER_H = 176;
-const BOTTOM_MARGIN = 78; // clearance above the footer band
-const TOP_MARGIN = 46; // top of content on continuation pages
+const CARD_GAP = 13;
+const COVER_H = 128;
+const BOTTOM_MARGIN = 58; // clearance above the footer band
+const TOP_MARGIN = 42; // top of content on continuation pages
 
 // Text sizes
 const T_TITLE = 13.5;
@@ -58,7 +65,7 @@ const T_DOSE = 11.5;
 const T_NOTE = 9;
 const T_FOOTER = 7.5;
 
-const leading = (size: number): number => size * 1.34;
+const leading = (size: number): number => size * 1.3;
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "";
@@ -111,85 +118,129 @@ function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): 
   return lines;
 }
 
+/** One laid-out text line, positioned relative to the card's body top. */
+type Row = {
+  text: string;
+  x: number; // absolute x of the text
+  top: number; // distance below the body's top edge to this line's top
+  size: number;
+  font: PDFFont;
+  color: ReturnType<typeof rgb>;
+  check?: boolean; // draw a cue checkmark in the left margin of this row
+};
+
 type CardLayout = {
   height: number;
-  hasImage: boolean;
+  hasVisual: boolean;
   titleLines: string[];
-  setupLines: string[];
-  stepLines: string[][];
-  cueLines: string[][];
-  safetyLines: string[];
-  doseLines: string[];
-  noteLines: string[];
+  preRows: Row[]; // setup + numbered steps + cues, flowing around the figure
+  safety: { lines: string[]; top: number; height: number } | null;
+  tailRows: Row[]; // dose + physio note, always full width
+  bodyHeight: number;
 };
+
+const GAP_TITLE_BODY = 8;
+const CHECK_INDENT = T_CUE + 4;
 
 function layoutCard(
   card: ExercisePlanCard,
   font: PDFFont,
   bold: PDFFont,
   pageWidth: number,
-  withImage: boolean
+  withVisual: boolean
 ): CardLayout {
   const innerLeft = MARGIN + PAD;
   const innerRight = pageWidth - MARGIN - PAD;
   const titleX = innerLeft + BADGE + 10;
   const titleWidth = innerRight - titleX;
 
-  const bodyX = withImage ? innerLeft + IMG + IMG_GAP : innerLeft;
-  const bodyWidth = innerRight - bodyX;
+  // Two zones: text sits in the narrow column beside the figure until it has
+  // flowed past the figure's height, then reclaims the full card width.
+  const narrowX = withVisual ? innerLeft + IMG + IMG_GAP : innerLeft;
+  const narrowW = innerRight - narrowX;
+  const fullW = innerRight - innerLeft;
+  const figureZone = withVisual ? IMG + 2 : 0;
 
   const titleLines = wrapText(pdfSafe(card.title) || "Exercise", bold, T_TITLE, titleWidth);
-  const setupLines = card.setup ? wrapText(pdfSafe(card.setup), font, T_SETUP, bodyWidth) : [];
-  const stepLines = card.steps
-    .map((s) => pdfSafe(s))
-    .filter(Boolean)
-    .map((s, i) => wrapText(`${i + 1}. ${s}`, font, T_STEP, bodyWidth));
-  const cueLines = card.cues
-    .map((c) => pdfSafe(c))
-    .filter(Boolean)
-    .map((c) => wrapText(c, font, T_CUE, bodyWidth - (T_CUE + 4)));
-  const safetyLines = card.safetyLine
-    ? wrapText(pdfSafe(card.safetyLine), font, T_SAFETY, bodyWidth - 16)
-    : [];
-  const doseLines = wrapText(
+
+  const preRows: Row[] = [];
+  let y = 0;
+
+  // A whole block (setup, the step list, the cue list) takes one width, chosen
+  // by where the block *starts*: narrow beside the figure, full once the text
+  // has flowed past it. Keeping each list at one width keeps it visually
+  // aligned rather than stair-stepping across the figure's bottom edge.
+  const addBlock = (
+    paragraphs: string[],
+    size: number,
+    f: PDFFont,
+    color: ReturnType<typeof rgb>,
+    opts: { check?: boolean; gapBetween: number; gapAfter: number },
+  ): void => {
+    if (paragraphs.length === 0) return;
+    const inZone = y < figureZone;
+    const baseX = inZone ? narrowX : innerLeft;
+    const indent = opts.check ? CHECK_INDENT : 0;
+    const width = (inZone ? narrowW : fullW) - indent;
+    paragraphs.forEach((raw, i) => {
+      if (i > 0) y += opts.gapBetween;
+      for (const line of wrapText(raw, f, size, width)) {
+        preRows.push({ text: line, x: baseX + indent, top: y, size, font: f, color, check: opts.check });
+        y += leading(size);
+      }
+    });
+    y += opts.gapAfter;
+  };
+
+  if (card.setup) {
+    addBlock([pdfSafe(card.setup)], T_SETUP, font, MUTED, { gapBetween: 0, gapAfter: 7 });
+  }
+  addBlock(
+    card.steps.map((s, i) => `${i + 1}. ${pdfSafe(s)}`).filter((s) => s.length > 3),
+    T_STEP,
+    font,
+    INK,
+    { gapBetween: 3, gapAfter: 6 },
+  );
+  addBlock(
+    card.cues.map((c) => pdfSafe(c)).filter(Boolean),
+    T_CUE,
+    font,
+    INK,
+    { check: true, gapBetween: 3, gapAfter: 6 },
+  );
+
+  let safety: CardLayout["safety"] = null;
+  if (card.safetyLine) {
+    const lines = wrapText(pdfSafe(card.safetyLine), font, T_SAFETY, fullW - 16);
+    const height = lines.length * leading(T_SAFETY) + 13;
+    safety = { lines, top: y, height };
+    y += height + 9;
+  }
+
+  const tailRows: Row[] = [];
+  for (const line of wrapText(
     pdfSafe(card.doseText) || "As advised by your physio",
     bold,
     T_DOSE,
-    bodyWidth,
-  );
-  const noteLines = card.physioNote
-    ? wrapText(`Physio note: ${pdfSafe(card.physioNote)}`, font, T_NOTE, bodyWidth)
-    : [];
-
-  let body = 0;
-  if (setupLines.length) body += setupLines.length * leading(T_SETUP) + 8;
-  if (stepLines.length) {
-    for (const s of stepLines) body += s.length * leading(T_STEP) + 3;
-    body += 5;
+    fullW,
+  )) {
+    tailRows.push({ text: line, x: innerLeft, top: y, size: T_DOSE, font: bold, color: INK });
+    y += leading(T_DOSE);
   }
-  if (cueLines.length) {
-    for (const c of cueLines) body += c.length * leading(T_CUE) + 3;
-    body += 5;
+  if (card.physioNote) {
+    y += 4;
+    for (const line of wrapText(`Physio note: ${pdfSafe(card.physioNote)}`, font, T_NOTE, fullW)) {
+      tailRows.push({ text: line, x: innerLeft, top: y, size: T_NOTE, font, color: MUTED });
+      y += leading(T_NOTE);
+    }
   }
-  if (safetyLines.length) body += safetyLines.length * leading(T_SAFETY) + 14 + 10;
-  body += doseLines.length * leading(T_DOSE) + 6;
-  if (noteLines.length) body += noteLines.length * leading(T_NOTE) + 4;
 
+  const bodyHeight = Math.max(y, figureZone);
   const titleRowH = Math.max(BADGE, titleLines.length * leading(T_TITLE));
-  const contentH = withImage ? Math.max(body, IMG) : body;
-  const height = PAD + titleRowH + 12 + contentH + PAD;
+  const height = PAD + titleRowH + GAP_TITLE_BODY + bodyHeight + PAD;
 
-  return {
-    height,
-    hasImage: withImage,
-    titleLines,
-    setupLines,
-    stepLines,
-    cueLines,
-    safetyLines,
-    doseLines,
-    noteLines,
-  };
+  return { height, hasVisual: withVisual, titleLines, preRows, safety, tailRows, bodyHeight };
 }
 
 /** A checkmark drawn as two strokes — WinAnsi has no glyph for one. `(x, y)` is
@@ -197,6 +248,56 @@ function layoutCard(
 function drawCheck(page: PDFPage, x: number, y: number, s: number, color: ReturnType<typeof rgb>): void {
   page.drawLine({ start: { x, y: y + s * 0.34 }, end: { x: x + s * 0.38, y }, thickness: 1.3, color });
   page.drawLine({ start: { x: x + s * 0.38, y }, end: { x: x + s, y: y + s * 0.92 }, thickness: 1.3, color });
+}
+
+/** Draw the stick-figure diagram for `poseHint` (an explicit pose key or a name
+ * to infer from) inside a rounded tile. `(boxX, boxTopY)` is the tile's
+ * top-left in pdf-lib coordinates (y up); `box` is its side length. The pose
+ * specs use a 64×56 viewBox with y increasing downward, so y is flipped here.
+ * Mirrors components/exercise-figure.tsx — same coordinates, ~78% inset. */
+function drawPoseFigure(
+  page: PDFPage,
+  poseHint: string | null,
+  title: string,
+  boxX: number,
+  boxTopY: number,
+  box: number,
+): void {
+  page.drawSvgPath(roundedRectPath(box, box, 10), {
+    x: boxX,
+    y: boxTopY,
+    color: FIGURE_TILE,
+    borderColor: CARD_BORDER,
+    borderWidth: 1,
+  });
+
+  const spec = POSE_SPECS[resolvePose(poseHint, title)];
+  const inset = box * 0.11; // ~78% of the tile, centred
+  const draw = box - inset * 2;
+  const sx = draw / POSE_VIEWBOX.w;
+  const sy = draw / POSE_VIEWBOX.h;
+  const px = (vx: number): number => boxX + inset + vx * sx;
+  const py = (vy: number): number => boxTopY - inset - vy * sy; // flip: viewBox y-down → pdf y-up
+  const stroke = Math.max(1.4, box * 0.033);
+
+  for (const [cx, cy, r] of spec.circles) {
+    page.drawCircle({
+      x: px(cx),
+      y: py(cy),
+      size: r * ((sx + sy) / 2),
+      borderColor: FIGURE_STROKE,
+      borderWidth: stroke,
+    });
+  }
+  for (const [x1, y1, x2, y2] of spec.segments) {
+    page.drawLine({
+      start: { x: px(x1), y: py(y1) },
+      end: { x: px(x2), y: py(y2) },
+      thickness: stroke,
+      color: FIGURE_STROKE,
+      lineCap: 1, // round
+    });
+  }
 }
 
 function drawCard(
@@ -213,8 +314,6 @@ function drawCard(
   const cardWidth = pageWidth - MARGIN * 2;
   const innerLeft = cardLeft + PAD;
   const innerRight = pageWidth - MARGIN - PAD;
-  const bodyX = layout.hasImage ? innerLeft + IMG + IMG_GAP : innerLeft;
-  const bodyWidth = innerRight - bodyX;
 
   // Card background
   page.drawSvgPath(roundedRectPath(cardWidth, layout.height, 12), {
@@ -247,71 +346,49 @@ function drawCard(
   }
 
   const titleRowH = Math.max(BADGE, layout.titleLines.length * leading(T_TITLE));
-  let bodyCursor = topY - PAD - titleRowH - 12;
+  const bodyTop = topY - PAD - titleRowH - GAP_TITLE_BODY;
 
-  // Illustration in the left gutter
-  if (image) {
-    page.drawImage(image, { x: innerLeft, y: bodyCursor - IMG, width: IMG, height: IMG });
+  // Left gutter: the real illustration if we have one, else the stick-figure.
+  if (layout.hasVisual) {
+    if (image) {
+      page.drawImage(image, { x: innerLeft, y: bodyTop - IMG, width: IMG, height: IMG });
+    } else {
+      drawPoseFigure(page, card.pose, card.title, innerLeft, bodyTop, IMG);
+    }
   }
 
-  const drawBlock = (
-    lines: string[],
-    x: number,
-    size: number,
-    f: PDFFont,
-    color: ReturnType<typeof rgb>
-  ): void => {
-    for (const line of lines) {
-      page.drawText(line, { x, y: bodyCursor - size, size, font: f, color });
-      bodyCursor -= leading(size);
+  const drawRow = (row: Row): void => {
+    if (row.check) {
+      drawCheck(page, row.x - CHECK_INDENT, bodyTop - row.top - T_CUE + 1, T_CUE - 2, SKY);
     }
+    page.drawText(row.text, {
+      x: row.x,
+      y: bodyTop - row.top - row.size,
+      size: row.size,
+      font: row.font,
+      color: row.color,
+    });
   };
 
-  if (layout.setupLines.length) {
-    drawBlock(layout.setupLines, bodyX, T_SETUP, font, MUTED);
-    bodyCursor -= 8;
-  }
+  for (const row of layout.preRows) drawRow(row);
 
-  if (layout.stepLines.length) {
-    for (const step of layout.stepLines) {
-      drawBlock(step, bodyX, T_STEP, font, INK);
-      bodyCursor -= 3;
-    }
-    bodyCursor -= 2;
-  }
-
-  if (layout.cueLines.length) {
-    for (const cue of layout.cueLines) {
-      drawCheck(page, bodyX, bodyCursor - T_CUE + 1, T_CUE - 2, SKY);
-      drawBlock(cue, bodyX + T_CUE + 4, T_CUE, font, INK);
-      bodyCursor -= 3;
-    }
-    bodyCursor -= 2;
-  }
-
-  if (layout.safetyLines.length) {
-    const boxH = layout.safetyLines.length * leading(T_SAFETY) + 14;
-    page.drawSvgPath(roundedRectPath(bodyWidth, boxH, 6), {
-      x: bodyX,
-      y: bodyCursor,
+  if (layout.safety) {
+    const boxTop = bodyTop - layout.safety.top;
+    page.drawSvgPath(roundedRectPath(innerRight - innerLeft, layout.safety.height, 6), {
+      x: innerLeft,
+      y: boxTop,
       color: SAFETY_FILL,
       borderColor: SAFETY_BORDER,
       borderWidth: 1,
     });
-    let inner = bodyCursor - 7;
-    for (const line of layout.safetyLines) {
-      page.drawText(line, { x: bodyX + 8, y: inner - T_SAFETY, size: T_SAFETY, font, color: SAFETY_INK });
+    let inner = boxTop - 7;
+    for (const line of layout.safety.lines) {
+      page.drawText(line, { x: innerLeft + 8, y: inner - T_SAFETY, size: T_SAFETY, font, color: SAFETY_INK });
       inner -= leading(T_SAFETY);
     }
-    bodyCursor -= boxH + 10;
   }
 
-  drawBlock(layout.doseLines, bodyX, T_DOSE, bold, INK);
-  bodyCursor -= 6;
-
-  if (layout.noteLines.length) {
-    drawBlock(layout.noteLines, bodyX, T_NOTE, font, MUTED);
-  }
+  for (const row of layout.tailRows) drawRow(row);
 }
 
 function drawCover(page: PDFPage, input: ExercisePlanPdfInput, font: PDFFont, bold: PDFFont): void {
@@ -320,40 +397,32 @@ function drawCover(page: PDFPage, input: ExercisePlanPdfInput, font: PDFFont, bo
   page.drawRectangle({ x: 0, y: height - COVER_H, width, height: 4, color: SKY });
 
   // "P" mark + wordmark
-  const markCX = MARGIN + 15;
-  const markCY = height - 34;
-  page.drawCircle({ x: markCX, y: markCY, size: 15, color: SKY });
+  const markCX = MARGIN + 12;
+  const markCY = height - 25;
+  page.drawCircle({ x: markCX, y: markCY, size: 12, color: SKY });
   page.drawText("P", {
-    x: markCX - bold.widthOfTextAtSize("P", 16) / 2,
-    y: markCY - 6,
-    size: 16,
+    x: markCX - bold.widthOfTextAtSize("P", 13) / 2,
+    y: markCY - 4.5,
+    size: 13,
     font: bold,
     color: WHITE,
   });
-  page.drawText("PhysioOnClick", { x: markCX + 26, y: markCY - 6, size: 15, font: bold, color: WHITE });
+  page.drawText("PhysioOnClick", { x: markCX + 21, y: markCY - 4.5, size: 12, font: bold, color: WHITE });
 
-  page.drawText("Your Exercise Plan", { x: MARGIN, y: height - 80, size: 26, font: bold, color: WHITE });
+  page.drawText("Your Exercise Plan", { x: MARGIN, y: height - 60, size: 22, font: bold, color: WHITE });
 
   const patient = pdfSafe(input.patientName) || "you";
-  page.drawText(`For ${patient}`, { x: MARGIN, y: height - 106, size: 12, font, color: TAGLINE });
-
   const physio = pdfSafe(input.physioName) || "your physiotherapist";
   const dstr = fmtDate(input.sessionDateISO);
   const sessionLine = dstr
-    ? `From your session on ${dstr} with ${physio}`
-    : `From your session with ${physio}`;
-  page.drawText(sessionLine, { x: MARGIN, y: height - 123, size: 10, font, color: TAGLINE });
+    ? `For ${patient} ${DOT} from your session on ${dstr} with ${physio}`
+    : `For ${patient} ${DOT} from your session with ${physio}`;
+  page.drawText(pdfSafe(sessionLine), { x: MARGIN, y: height - 80, size: 10, font, color: TAGLINE });
 
-  const creds = pdfSafe(`${founder.credentials[0]} ${DOT} ${founder.credentials[1]}`);
-  page.drawText(creds, { x: MARGIN, y: height - 139, size: 8.5, font, color: COVER_META });
-
-  page.drawText(`Move Better ${DOT} Live Brighter`, {
-    x: MARGIN,
-    y: height - 160,
-    size: 9,
-    font: bold,
-    color: SKY,
-  });
+  const creds = pdfSafe(
+    `${founder.credentials[0]} ${DOT} ${founder.credentials[1]} ${DOT} Move Better ${DOT} Live Brighter`,
+  );
+  page.drawText(creds, { x: MARGIN, y: height - 96, size: 8.5, font, color: COVER_META });
 }
 
 function drawFooters(pdf: PDFDocument, font: PDFFont): void {
@@ -393,7 +462,7 @@ export async function buildExercisePlanPdf(input: ExercisePlanPdfInput): Promise
   const { width, height } = page.getSize();
 
   drawCover(page, input, font, bold);
-  let y = height - COVER_H - 22;
+  let y = height - COVER_H - 12;
 
   for (const card of input.cards) {
     // Embed the illustration, tolerating a corrupt PNG (render as if no image).
@@ -406,7 +475,9 @@ export async function buildExercisePlanPdf(input: ExercisePlanPdfInput): Promise
       }
     }
 
-    const layout = layoutCard(card, font, bold, width, image != null);
+    // Every card carries a visual: the illustration if present, else the
+    // stick-figure diagram.
+    const layout = layoutCard(card, font, bold, width, true);
 
     // A card taller than a whole page still gets drawn (overflowing the
     // footer) — it only triggers one page break, never an infinite loop.

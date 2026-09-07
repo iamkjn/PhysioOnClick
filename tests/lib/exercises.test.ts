@@ -32,6 +32,14 @@ describe('formatDosage', () => {
   it('adds twice a day', () => expect(formatDosage({ reps: 10, perDay: 2 })).toBe('10 reps · twice a day'))
   it('adds N times a day', () => expect(formatDosage({ reps: 10, perDay: 3 })).toBe('10 reps · 3 times a day'))
   it('adds days a week', () => expect(formatDosage({ reps: 10, perWeek: 4 })).toBe('10 reps · 4 days a week'))
+  it('combines per-day and per-week', () =>
+    expect(formatDosage({ sets: 3, reps: 12, perDay: 1, perWeek: 5 })).toBe(
+      '3 sets × 12 reps · once a day, 5 days a week',
+    ))
+  it('drops a redundant perWeek 7 when there is a daily count', () =>
+    expect(formatDosage({ reps: 10, perDay: 2, perWeek: 7 })).toBe('10 reps · twice a day'))
+  it('renders perWeek 7 alone as every day', () =>
+    expect(formatDosage({ reps: 10, perWeek: 7 })).toBe('10 reps · every day'))
   it('appends tempo after the core clause', () =>
     expect(formatDosage({ sets: 3, reps: 12, tempo: '3s down, 1s up' })).toBe('3 sets × 12 reps · 3s down, 1s up'))
   it('appends tempo after the frequency clause', () =>

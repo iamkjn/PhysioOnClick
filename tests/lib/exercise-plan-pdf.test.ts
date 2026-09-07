@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { buildExercisePlanPdf, type ExercisePlanCard } from '@/lib/exercise-plan-pdf'
 
 const card = (over: Partial<ExercisePlanCard> = {}): ExercisePlanCard => ({
-  index: 1, title: 'Bridge Progression', imageBytes: null,
+  index: 1, title: 'Bridge Progression', imageBytes: null, pose: 'pelvicTilt',
   setup: 'Lie on your back, knees bent.', steps: ['Tighten your tummy', 'Lift your hips'],
   cues: ['Hips stay level'], safetyLine: 'Stop if pain spreads down your leg.',
   doseText: '2 sets × 10 reps · once a day', physioNote: null, ...over,
@@ -32,5 +32,19 @@ describe('buildExercisePlanPdf', () => {
       cards: [card({ setup: null, steps: [], cues: [], safetyLine: null })],
     })
     expect(bytes.byteLength).toBeGreaterThan(1000)
+  })
+  it('draws a stick-figure diagram when a card has no image (pose key or name hint)', async () => {
+    const withKey = await buildExercisePlanPdf({
+      patientName: 'X', physioName: 'Y', sessionDateISO: null,
+      cards: [card({ imageBytes: null, pose: 'heelRaise' })],
+    })
+    const byName = await buildExercisePlanPdf({
+      patientName: 'X', physioName: 'Y', sessionDateISO: null,
+      cards: [card({ imageBytes: null, pose: null, title: 'Calf Stretch (Gastrocnemius)' })],
+    })
+    for (const bytes of [withKey, byName]) {
+      expect(new TextDecoder().decode(bytes.slice(0, 5))).toBe('%PDF-')
+      expect(bytes.byteLength).toBeGreaterThan(1000)
+    }
   })
 })
