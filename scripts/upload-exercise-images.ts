@@ -17,7 +17,7 @@
  * Must run via firebase-admin's authentication layer; uses lib/firebase-admin.ts uploadObject().
  */
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { exerciseImagePrompts } from "../lib/exercise-image-prompts";
 import { uploadObject } from "../lib/firebase-admin";
 
@@ -55,13 +55,18 @@ function getIdsToUpload(args: UploadArgs): string[] {
 }
 
 async function uploadImage(id: string): Promise<void> {
-  const localPath = `exercise-images-src/${id}.png`;
+  // Prefer the brand-footer version (scripts/brand-exercise-images.ts) so the
+  // asset that ships is unmistakably ours; fall back to the raw generation.
+  const brandedPath = `exercise-images-src/${id}.branded.png`;
+  const rawPath = `exercise-images-src/${id}.png`;
 
   let buf: Buffer;
+  let localPath: string;
   try {
+    localPath = existsSync(brandedPath) ? brandedPath : rawPath;
     buf = readFileSync(localPath);
-  } catch (error) {
-    console.warn(`Skipping ${id}: file not found at ${localPath}`);
+  } catch {
+    console.warn(`Skipping ${id}: no file at ${brandedPath} or ${rawPath}`);
     return;
   }
 
