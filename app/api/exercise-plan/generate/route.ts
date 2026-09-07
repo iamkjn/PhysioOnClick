@@ -75,6 +75,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true, skipped: "incomplete" });
     }
 
+    // The firebase-admin REST shim's `.collection()` is plain path concatenation
+    // (no segment-count validation), so a single multi-segment string resolves
+    // identically to a `.doc().collection()` chain and to the same runQuery call.
     const assignedSnap = await db
       .collection("patients")
       .doc(booking.bookedBy)
@@ -127,7 +130,7 @@ export async function POST(request: Request) {
     pdf.forEach((b) => (bin += String.fromCharCode(b)));
     const base64 = btoa(bin);
 
-    await sendExercisePlanEmail({
+    const { sent } = await sendExercisePlanEmail({
       to: booking.email,
       patientName: summary.patientName ?? "",
       planUrl: `${siteUrl}/patient/exercises`,
@@ -135,12 +138,15 @@ export async function POST(request: Request) {
       pdf: { filename: "exercise-plan.pdf", base64 },
     });
 
+    // Always record the stored PDF; only stamp `planEmailedAt` when the email
+    // actually went out, so a Resend failure doesn't get idempotency-locked
+    // out of a later resend.
     await summarySnap.ref.update({
-      planEmailedAt: FieldValue.serverTimestamp(),
       planPdfPath: `exercise-plans/${summaryId}.pdf`,
+      ...(sent ? { planEmailedAt: FieldValue.serverTimestamp() } : {}),
     });
 
-    return NextResponse.json({ ok: true, exercises: cards.length });
+    return NextResponse.json({ ok: true, exercises: cards.length, emailed: sent });
   } catch (err) {
     console.error("exercise-plan/generate failed", err);
     return NextResponse.json({ ok: false }, { status: 200 });

@@ -23,6 +23,8 @@ beforeEach(() => {
   vi.clearAllMocks()
   vi.stubEnv('CRON_SECRET', 'sekret')
   vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://dev.example')
+  // Keep the suite hermetic — the route fetches each exercise image by URL.
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 404 })))
   // summary -> booking -> assignedExercises
   summaryDoc = makeDoc({ bookingId: 'b1', patientName: 'Anish', patientId: 'p1' })
   const bookingDoc = makeDoc({ bookedBy: 'u1', patientId: 'p1', email: 'a@b.com', sessionDate: { toDate: () => new Date('2026-09-06') } })
@@ -48,13 +50,23 @@ describe('POST /api/exercise-plan/generate', () => {
   it('builds, uploads, emails and stamps on the happy path', async () => {
     const res = await POST(req({ summaryId: 's1' }))
     expect(res.status).toBe(200)
-    expect(await res.json()).toEqual({ ok: true, exercises: 1 })
+    expect(await res.json()).toEqual({ ok: true, exercises: 1, emailed: true })
     expect(buildExercisePlanPdf).toHaveBeenCalledOnce()
     expect(uploadObject).toHaveBeenCalledWith('exercise-plans/s1.pdf', expect.any(Uint8Array), 'application/pdf')
     expect(sendExercisePlanEmail).toHaveBeenCalledOnce()
     expect(summaryDoc.ref.update).toHaveBeenCalledWith(
       expect.objectContaining({ planEmailedAt: 'server-ts', planPdfPath: 'exercise-plans/s1.pdf' }),
     )
+  })
+
+  it('records the PDF path but does NOT stamp planEmailedAt when the email fails', async () => {
+    sendExercisePlanEmail.mockResolvedValueOnce({ sent: false })
+    const res = await POST(req({ summaryId: 's1' }))
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ ok: true, exercises: 1, emailed: false })
+    const updateArg = summaryDoc.ref.update.mock.calls[0][0]
+    expect(updateArg).toEqual({ planPdfPath: 'exercise-plans/s1.pdf' })
+    expect(updateArg).not.toHaveProperty('planEmailedAt')
   })
   it('skips a summary already emailed unless force', async () => {
     summaryDoc = makeDoc({ bookingId: 'b1', patientName: 'A', patientId: 'p1', planEmailedAt: 'yes' })
