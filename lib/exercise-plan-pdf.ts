@@ -184,10 +184,18 @@ function layoutCard(
     const width = (inZone ? narrowW : fullW) - indent;
     paragraphs.forEach((raw, i) => {
       if (i > 0) y += opts.gapBetween;
-      for (const line of wrapText(raw, f, size, width)) {
-        preRows.push({ text: line, x: baseX + indent, top: y, size, font: f, color, check: opts.check });
+      wrapText(raw, f, size, width).forEach((line, li) => {
+        preRows.push({
+          text: line,
+          x: baseX + indent,
+          top: y,
+          size,
+          font: f,
+          color,
+          check: opts.check && li === 0, // one tick per cue, on its first line
+        });
         y += leading(size);
-      }
+      });
     });
     y += opts.gapAfter;
   };
