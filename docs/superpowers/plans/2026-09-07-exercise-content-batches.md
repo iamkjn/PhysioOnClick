@@ -28,7 +28,7 @@ Fill the structured how-to + `defaultDosage` for all 158 catalogue exercises in 
 
 | # | Region (`bodyPart`) | ids | Draft | In review | Approved | Live dev | Live prod |
 |---|---|---|---|---|---|---|---|
-| 1 | Lumbar spine + Core | ex-3, 14, 15, 17, 18, 24, 25, 26, 27, 28, 31, 32, 34 (13) | | | | | |
+| 1 | Lumbar spine + Core | ex-3, 14, 15, 17, 18, 24, 25, 26, 27, 28, 31, 32, 34 (13) | ✅ ef5febd | ⏳ Shivaliba | | ⏳ deploy | |
 | 2 | Cervical + Thoracic spine + Neck | ex-19, 20, 21, 22, 23, 29, 30, 33 + neck (9) | | | | | |
 | 3 | Shoulder + Elbow | (14) | | | | | |
 | 4 | Wrist + Hand | (9) | | | | | |
