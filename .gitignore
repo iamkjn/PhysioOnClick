@@ -39,3 +39,6 @@ functions/.env.*
 
 # Google Business Profile OAuth token (ad hoc credential, never commit)
 .google-business-token.json
+
+# Generated exercise illustrations (Imagen API output, uploaded to Storage)
+exercise-images-src/
