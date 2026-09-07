@@ -16,7 +16,7 @@
  * Writes PNG files to exercise-images-src/{id}.png.
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync } from "node:fs";
 import { fullImagePrompt } from "../lib/exercise-image-prompts";
 
 // List of all exercise ids for batch generation (from task brief)
@@ -83,8 +83,15 @@ async function generateImage(id: string): Promise<void> {
     throw new Error("Missing GEMINI_API_KEY env var");
   }
 
+  // The Imagen `:predict` models are not exposed on the Generative Language
+  // API for a standard Gemini key (404). The available image model is
+  // `gemini-2.5-flash-image` ("Nano Banana") via `generateContent` with an
+  // IMAGE response modality. NOTE: image generation needs **billing enabled**
+  // on the key's Google AI project — a free-tier key returns HTTP 429
+  // "You exceeded your current quota". Set `EXERCISE_IMAGE_MODEL` to override.
+  const model = process.env.EXERCISE_IMAGE_MODEL || "gemini-2.5-flash-image";
   const url = new URL(
-    `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict`
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
   );
   url.searchParams.set("key", apiKey);
 
@@ -93,22 +100,24 @@ async function generateImage(id: string): Promise<void> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        instances: [{ prompt }],
-        parameters: { sampleCount: 1, aspectRatio: "1:1" }
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseModalities: ["IMAGE"] }
       })
     });
 
     if (!response.ok) {
       const text = await response.text();
-      console.error(`[${id}] Imagen API returned ${response.status}: ${text}`);
+      console.error(`[${id}] image API (${model}) returned ${response.status}: ${text}`);
       return;
     }
 
-    const json = (await response.json()) as { predictions?: Array<{ bytesBase64Encoded?: string }> };
-    const base64 = json.predictions?.[0]?.bytesBase64Encoded;
+    const json = (await response.json()) as {
+      candidates?: Array<{ content?: { parts?: Array<{ inlineData?: { data?: string; mimeType?: string } }> } }>;
+    };
+    const base64 = json.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data)?.inlineData?.data;
 
     if (!base64) {
-      console.error(`[${id}] Imagen API response missing bytesBase64Encoded`);
+      console.error(`[${id}] image API response contained no inline image data`);
       return;
     }
 
