@@ -1,5 +1,6 @@
 import { collection, getDocs, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { getPatientBookings } from "@/lib/patient-bookings";
 
 export interface SessionSummary {
   id: string;
@@ -38,4 +39,18 @@ export async function getSessionSummary(bookingId: string): Promise<SessionSumma
     recoveryPercent: (data.recoveryPercent as number) ?? 0,
     publishedAt: ts?.toDate ? ts.toDate() : new Date(),
   };
+}
+
+/**
+ * The id of the most recent session summary for a patient (or one of their
+ * dependents), or null when they have none yet. `getPatientBookings` already
+ * returns bookings newest-first, so this is the first one carrying a
+ * `summaryId`. Used to point "Download my plan" at the latest handout.
+ */
+export async function getLatestSummaryId(
+  uid: string,
+  personId?: string,
+): Promise<string | null> {
+  const bookings = await getPatientBookings(uid, personId);
+  return bookings.find((b) => b.summaryId)?.summaryId ?? null;
 }

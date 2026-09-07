@@ -7,7 +7,9 @@ import { auth } from "@/lib/firebase";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { usePerson } from "@/components/person-provider";
 import { AssignedExercises } from "@/components/assigned-exercises";
+import { PatientExercisePlanButton } from "@/components/patient-exercise-plan-button";
 import { SkeletonRow } from "@/components/skeleton";
+import { getLatestSummaryId } from "@/lib/session-summaries";
 
 export default function ExercisesPage() {
   // undefined = auth still resolving, null = signed out, string = signed in.
@@ -21,6 +23,11 @@ export default function ExercisesPage() {
   // what keeps the PersonSwitcher's selection and the list below in sync.
   const personCtx = usePerson();
   const personId = uid ? (personCtx?.personId ?? uid) : null;
+
+  // Newest published session summary for the active person — the "Download my
+  // plan" button points at its stored handout PDF. undefined while resolving
+  // (or when there's no summary yet), which hides the button.
+  const [planSummaryId, setPlanSummaryId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (!auth) {
@@ -40,6 +47,22 @@ export default function ExercisesPage() {
   useEffect(() => {
     if (uid === null) router.push("/patient");
   }, [uid, router]);
+
+  useEffect(() => {
+    if (!uid || !personId) return;
+    let cancelled = false;
+    setPlanSummaryId(undefined);
+    getLatestSummaryId(uid, personId)
+      .then((id) => {
+        if (!cancelled) setPlanSummaryId(id ?? undefined);
+      })
+      .catch(() => {
+        if (!cancelled) setPlanSummaryId(undefined);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [uid, personId]);
 
   if (uid === undefined) {
     return (
@@ -63,7 +86,16 @@ export default function ExercisesPage() {
         </div>
       </section>
 
-      <section className="page-section stack" style={{ gap: "var(--space-2)" }}>
+      <section
+        className="page-section"
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "var(--space-2)",
+        }}
+      >
         <PersonSwitcher
           uid={uid}
           displayName={displayName}
@@ -72,6 +104,7 @@ export default function ExercisesPage() {
             // PersonProvider context; `personId` above already reads from it.
           }}
         />
+        <PatientExercisePlanButton summaryId={planSummaryId} />
       </section>
 
       <section className="page-section">
