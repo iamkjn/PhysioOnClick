@@ -34,9 +34,11 @@ export function PatientExercisePlanButton({ summaryId }: { summaryId?: string })
       if (!res.ok) throw new Error(`Download failed (${res.status})`);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-      window.open(url, "_blank", "noopener,noreferrer");
-      // Revoke after the new tab has had a chance to load the resource.
-      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "exercise-plan.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
     } catch {
       toast.show("Could not download your plan. Try again.", "error");
     } finally {
