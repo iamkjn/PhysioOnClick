@@ -44,6 +44,13 @@ describe("POST /api/admin/exercise-plan/resend", () => {
     expect(res.status).toBe(403);
   });
 
+  it("accepts an admin custom claim even without the admin email", async () => {
+    verifyIdToken.mockResolvedValue({ admin: true, email: "claim.only@example.com" });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 })));
+    const res = await POST(req("claim-admin"));
+    expect(res.status).toBe(200);
+  });
+
   it("200 and forwards force:true to the generate route for an admin", async () => {
     verifyIdToken.mockResolvedValue({ email: "admin@physioonclick.co.uk" });
     const fetchMock = vi.fn().mockResolvedValue(

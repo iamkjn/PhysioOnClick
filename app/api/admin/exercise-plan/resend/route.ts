@@ -23,15 +23,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let email = "";
+  let isAdmin = false;
   try {
     const decoded = await auth.verifyIdToken(token);
-    email = decoded.email ?? "";
+    const adminEmail = process.env.ADMIN_EMAIL || "hello@physioonclick.co.uk";
+    isAdmin = decoded.admin === true || (!!decoded.email && decoded.email === adminEmail);
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (email !== (process.env.ADMIN_EMAIL ?? "hello@physioonclick.co.uk")) {
+  if (!isAdmin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
