@@ -18,7 +18,6 @@
  */
 
 import { readFileSync } from "node:fs";
-import { getApps, initializeApp, cert } from "firebase-admin/app";
 import { uploadObject } from "../lib/firebase-admin";
 
 // List of all exercise ids for batch upload (from task brief)
@@ -72,25 +71,6 @@ function getIdsToUpload(args: UploadArgs): string[] {
   process.exit(1);
 }
 
-function initializeFirebase(): void {
-  if (!getApps().length) {
-    const rawServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-    const storageBucket = process.env.FIREBASE_ADMIN_STORAGE_BUCKET || "physioonclick.firebasestorage.app";
-
-    if (rawServiceAccount) {
-      initializeApp({
-        credential: cert(JSON.parse(rawServiceAccount)),
-        projectId: process.env.FIREBASE_ADMIN_PROJECT_ID || "physioonclick",
-        storageBucket
-      });
-    } else {
-      throw new Error(
-        "FIREBASE_SERVICE_ACCOUNT_JSON not set. Upload requires firebase-admin credentials."
-      );
-    }
-  }
-}
-
 async function uploadImage(id: string): Promise<void> {
   const localPath = `exercise-images-src/${id}.png`;
 
@@ -113,8 +93,6 @@ async function uploadImage(id: string): Promise<void> {
 }
 
 async function main() {
-  initializeFirebase();
-
   const args = parseArgs(process.argv.slice(2));
   const ids = getIdsToUpload(args);
 

@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Hoisted so the vi.mock factory below (which vitest lifts to the top of the
 // file) can reference it without a temporal-dead-zone error.
-const { FIXTURE_EX } = vi.hoisted(() => ({
+const { FIXTURE_EX, FIXTURE_EX_NOIMG } = vi.hoisted(() => ({
   FIXTURE_EX: {
     id: 'ex-fix', title: 'Fixture Raise', bodyPart: 'Ankle', clinicalArea: 'lower_limb',
     tags: [] as string[], condition: '', stage: 'Strength phase',
@@ -12,10 +12,18 @@ const { FIXTURE_EX } = vi.hoisted(() => ({
     cues: ['Keep knees soft'], mistakes: ['Do not rush'],
     defaultDosage: { sets: 3, reps: 12, perDay: 1 },
   },
+  FIXTURE_EX_NOIMG: {
+    id: 'ex-noimg', title: 'Unillustrated Move', bodyPart: 'Ankle', clinicalArea: 'lower_limb',
+    tags: [] as string[], condition: '', stage: 'Strength phase',
+    description: 'A fixture with no authored image prompt.',
+    videoUrl: 'https://www.youtube.com/embed/def',
+    setup: 'Sit tall.', steps: ['Press down'], cues: ['Breathe'], mistakes: ['Do not hold breath'],
+    defaultDosage: { sets: 2, reps: 10, perDay: 1 },
+  },
 }))
 vi.mock('@/lib/exercises', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/exercises')>()
-  return { ...actual, exercises: [FIXTURE_EX] }
+  return { ...actual, exercises: [FIXTURE_EX, FIXTURE_EX_NOIMG] }
 })
 
 // Keep the card's <ExerciseImage> off a real network fetch and give it a
@@ -23,6 +31,12 @@ vi.mock('@/lib/exercises', async (importOriginal) => {
 vi.mock('@/lib/exercise-images', () => ({
   exerciseImageUrl: (id: string) => '/exercise-images/' + id,
   EXERCISE_IMAGE_PLACEHOLDER_SVG: '<svg/>',
+}))
+
+// <ExerciseImage> only reaches for an <img> when a pose-specific illustration
+// has been authored — mock the registry so exactly one fixture qualifies.
+vi.mock('@/lib/exercise-image-prompts', () => ({
+  hasImagePrompt: (id: string) => id === 'ex-fix',
 }))
 
 const getAssignedExercisesMock = vi.fn()
@@ -139,6 +153,18 @@ describe('AssignedExercises', () => {
     const img = container.querySelector('.exercise-card-head img') as HTMLImageElement
     expect(img).toBeInTheDocument()
     expect(img.getAttribute('src')).toBe('/exercise-images/' + FIXTURE_EX.id)
+  })
+
+  it('falls back to the <ExerciseFigure> stick figure when no image prompt is authored', async () => {
+    getAssignedExercisesMock.mockResolvedValue([
+      { exerciseId: FIXTURE_EX_NOIMG.id, assignedAt: new Date(), assignedBy: 'admin-1', active: true },
+    ])
+    getTodayExerciseLogMock.mockResolvedValue(null)
+    const { container } = render(<AssignedExercises uid="u1" personId="p1" />)
+
+    await waitFor(() => expect(screen.getByText(FIXTURE_EX_NOIMG.title)).toBeInTheDocument())
+    expect(container.querySelector('.exercise-card-head .exercise-figure-tile svg')).toBeInTheDocument()
+    expect(container.querySelector('.exercise-card-head img')).not.toBeInTheDocument()
   })
 
   it('reveals setup / steps / cues / mistakes on "How to do it"', async () => {

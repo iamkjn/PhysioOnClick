@@ -2,11 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const db = { collection: vi.fn() }
 const uploadObject = vi.fn().mockResolvedValue({ ok: true })
+const downloadObject = vi.fn().mockResolvedValue(null)
 const sendExercisePlanEmail = vi.fn().mockResolvedValue({ sent: true })
 const buildExercisePlanPdf = vi.fn().mockResolvedValue(new Uint8Array([0x25,0x50,0x44,0x46]))
 
 vi.mock('@/lib/firebase-admin', () => ({
-  getAdminDb: () => db, getAdminAuth: () => null, uploadObject: (...a: unknown[]) => uploadObject(...a),
+  getAdminDb: () => db, getAdminAuth: () => null,
+  uploadObject: (...a: unknown[]) => uploadObject(...a),
+  downloadObject: (...a: unknown[]) => downloadObject(...a),
   FieldValue: { serverTimestamp: () => 'server-ts', arrayUnion: (...v: unknown[]) => v },
 }))
 vi.mock('@/lib/exercise-plan-pdf', () => ({ buildExercisePlanPdf: (...a: unknown[]) => buildExercisePlanPdf(...a) }))
@@ -23,8 +26,6 @@ beforeEach(() => {
   vi.clearAllMocks()
   vi.stubEnv('CRON_SECRET', 'sekret')
   vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://dev.example')
-  // Keep the suite hermetic — the route fetches each exercise image by URL.
-  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 404 })))
   // summary -> booking -> assignedExercises
   summaryDoc = makeDoc({ bookingId: 'b1', patientName: 'Anish', patientId: 'p1' })
   const bookingDoc = makeDoc({ bookedBy: 'u1', patientId: 'p1', email: 'a@b.com', sessionDate: { toDate: () => new Date('2026-09-06') } })

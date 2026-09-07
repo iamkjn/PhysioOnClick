@@ -151,7 +151,12 @@ function layoutCard(
   const safetyLines = card.safetyLine
     ? wrapText(pdfSafe(card.safetyLine), font, T_SAFETY, bodyWidth - 16)
     : [];
-  const doseLines = wrapText(pdfSafe(card.doseText) || "As advised", bold, T_DOSE, bodyWidth);
+  const doseLines = wrapText(
+    pdfSafe(card.doseText) || "As advised by your physio",
+    bold,
+    T_DOSE,
+    bodyWidth,
+  );
   const noteLines = card.physioNote
     ? wrapText(`Physio note: ${pdfSafe(card.physioNote)}`, font, T_NOTE, bodyWidth)
     : [];

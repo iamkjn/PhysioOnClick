@@ -67,7 +67,7 @@ service firebase.storage {
       allow write: if isAdmin();
     }
 
-    match /exercise-images/{file} {
+    match /exercise-images/{allPaths=**} {
       allow read: if true;
       allow write: if false; // uploaded only via the admin REST shim
     }
@@ -81,6 +81,12 @@ service firebase.storage {
     // contain patient PII. (The catch-all below would deny these anyway; this
     // is explicit for intent.)
     match /invoices/{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Exercise-plan PDFs — written and read only server-side (service account
+    // bypasses rules). Contain patient data. Explicit for intent.
+    match /exercise-plans/{allPaths=**} {
       allow read, write: if false;
     }
 

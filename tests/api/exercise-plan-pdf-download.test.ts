@@ -76,6 +76,14 @@ describe("GET /api/exercise-plan/[summaryId]/pdf", () => {
     expect(res.headers.get("content-type")).toBe("application/pdf");
   });
 
+  it("honours the admin custom claim even without the admin email", async () => {
+    verifyIdToken.mockResolvedValue({ uid: "claim-admin", admin: true, email: "claim.only@example.com" });
+    const res = await GET(authReq(), ctx("s1"));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("application/pdf");
+    expect(downloadObject).toHaveBeenCalledWith("exercise-plans/s1.pdf");
+  });
+
   it("404 when the PDF has not been generated", async () => {
     downloadObject.mockResolvedValue(null);
     expect((await GET(authReq(), ctx("s1"))).status).toBe(404);

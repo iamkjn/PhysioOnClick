@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { downloadObject, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import {
+  downloadObject,
+  getAdminAuth,
+  getAdminDb,
+  type DecodedIdToken,
+} from "@/lib/firebase-admin";
 
 /**
  * Patient (or admin) download of the stored exercise-plan handout PDF.
@@ -11,7 +16,8 @@ import { downloadObject, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
  *
  * Auth is `Authorization: Bearer <Firebase idToken>`. The caller is authorised
  * when their uid matches the session's booking `bookedBy`, or when their token
- * email is the configured `ADMIN_EMAIL`.
+ * carries the `admin` custom claim / the configured `ADMIN_EMAIL` (matching
+ * `app/admin/actions.ts` and the resend route).
  *
  * Workers-safe: no Buffer, the `Uint8Array` from `downloadObject` is handed to
  * `NextResponse` as a `BodyInit`.
@@ -29,15 +35,13 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let uid: string;
-  let email = "";
+  let decoded: DecodedIdToken;
   try {
-    const decoded = await auth.verifyIdToken(token);
-    uid = decoded.uid;
-    email = decoded.email ?? "";
+    decoded = await auth.verifyIdToken(token);
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const uid = decoded.uid;
 
   const summarySnap = await db.collection("sessionSummaries").doc(summaryId).get();
   if (!summarySnap.exists) {
@@ -53,7 +57,9 @@ export async function GET(
     }
   }
 
-  const isAdmin = !!email && email === (process.env.ADMIN_EMAIL ?? "hello@physioonclick.co.uk");
+  const adminEmail = process.env.ADMIN_EMAIL || "hello@physioonclick.co.uk";
+  const isAdmin =
+    decoded.admin === true || (!!decoded.email && decoded.email === adminEmail);
   if (uid !== bookedBy && !isAdmin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

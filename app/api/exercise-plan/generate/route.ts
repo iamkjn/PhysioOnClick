@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { sendExercisePlanEmail } from "@/lib/emails/exercise-plan-email";
-import { exerciseImageUrl } from "@/lib/exercise-images";
 import { buildPlanCards } from "@/lib/exercise-plan";
 import { buildExercisePlanPdf } from "@/lib/exercise-plan-pdf";
 import { type ExerciseDosage } from "@/lib/exercises";
-import { FieldValue, getAdminDb, uploadObject } from "@/lib/firebase-admin";
+import { downloadObject, FieldValue, getAdminDb, uploadObject } from "@/lib/firebase-admin";
 import { founder } from "@/lib/site-data";
 
 type SummaryDoc = {
@@ -95,20 +94,16 @@ export async function POST(request: Request) {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-    // Fetch each illustration. Task 1's route serves a placeholder SVG on a
-    // miss, so keep the bytes only when the response is an actual PNG.
+    // Read each illustration straight from Storage through the admin shim. A
+    // Worker calling its own public hostname can be blocked by Cloudflare, and
+    // this side-steps the brittle content-type sniff too — a missing object
+    // just gives a text-only card.
     const imageByExerciseId: Record<string, Uint8Array | null> = {};
     await Promise.all(
       assigned.map(async (a) => {
-        try {
-          const r = await fetch(`${siteUrl}${exerciseImageUrl(a.exerciseId)}`);
-          imageByExerciseId[a.exerciseId] =
-            r.ok && r.headers.get("content-type") === "image/png"
-              ? new Uint8Array(await r.arrayBuffer())
-              : null;
-        } catch {
-          imageByExerciseId[a.exerciseId] = null;
-        }
+        imageByExerciseId[a.exerciseId] = await downloadObject(
+          `exercise-images/${a.exerciseId}.png`,
+        ).catch(() => null);
       }),
     );
 
