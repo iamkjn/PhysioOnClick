@@ -19,34 +19,63 @@ export const onSummaryPublished = onDocumentCreated(
     if (!bookingSnap.exists) return;
     const booking = bookingSnap.data()!;
 
-    const userSnap = await db.doc(`users/${booking.bookedBy}`).get();
-    if (!userSnap.exists) return;
-    const fcmToken: string | undefined = userSnap.data()?.fcmToken;
-    if (!fcmToken) return;
+    // 1. FCM push — best-effort and guarded by a token check, so a patient
+    //    with no registered device no longer aborts the plan-email step below.
+    try {
+      const userSnap = await db.doc(`users/${booking.bookedBy}`).get();
+      const fcmToken: string | undefined = userSnap.data()?.fcmToken;
+      if (fcmToken) {
+        const date = booking.sessionDate?.toDate
+          ? (booking.sessionDate.toDate() as Date).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+            })
+          : "your session";
 
-    const date = booking.sessionDate?.toDate
-      ? (booking.sessionDate.toDate() as Date).toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "short",
-        })
-      : "your session";
+        await getMessaging().send({
+          token: fcmToken,
+          notification: {
+            title: "📋 Session summary ready",
+            body: `${summary.patientName}'s ${booking.service ?? "session"} summary from ${date} is now available`,
+          },
+          data: {
+            type: "summary",
+            bookingId: summary.bookingId as string,
+            summaryId: event.params.summaryId,
+          },
+          apns: { payload: { aps: { sound: "default" } } },
+          android: { notification: { sound: "default" } },
+        });
 
-    await getMessaging().send({
-      token: fcmToken,
-      notification: {
-        title: "📋 Session summary ready",
-        body: `${summary.patientName}'s ${booking.service ?? "session"} summary from ${date} is now available`,
-      },
-      data: {
-        type: "summary",
-        bookingId: summary.bookingId as string,
-        summaryId: event.params.summaryId,
-      },
-      apns: { payload: { aps: { sound: "default" } } },
-      android: { notification: { sound: "default" } },
-    });
+        await event.data!.ref.update({
+          notificationSent: FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (err) {
+      console.error("onSummaryPublished: push failed", err);
+    }
 
-    await event.data!.ref.update({ notificationSent: FieldValue.serverTimestamp() });
+    // 2. Exercise-plan handout: fire the cron-guarded generate route, which
+    //    builds the illustrated PDF, stores it, emails it and stamps
+    //    `planEmailedAt` (best-effort, idempotent on its own side).
+    try {
+      const SITE_URL = process.env.SITE_URL;
+      const CRON_SECRET = process.env.CRON_SECRET;
+      if (SITE_URL && CRON_SECRET) {
+        await fetch(`${SITE_URL}/api/exercise-plan/generate`, {
+          method: "POST",
+          headers: { "x-cron-secret": CRON_SECRET, "content-type": "application/json" },
+          body: JSON.stringify({ summaryId: event.params.summaryId }),
+        });
+      } else {
+        console.error(
+          "onSummaryPublished: missing SITE_URL and/or CRON_SECRET env config; " +
+            "exercise-plan email will be skipped"
+        );
+      }
+    } catch (err) {
+      console.error("onSummaryPublished: plan generate failed", err);
+    }
   }
 );
 

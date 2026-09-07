@@ -49,6 +49,8 @@ function RecoveryRing({ percent }: { percent: number }) {
 export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [publishedSummaryId, setPublishedSummaryId] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const toast = useToast();
   const adminUid = auth?.currentUser?.uid;
@@ -142,7 +144,8 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
       };
       const idToken = await auth?.currentUser?.getIdToken();
       if (!idToken) throw new Error("Not signed in");
-      await publishSummary(input, idToken);
+      const { summaryId } = await publishSummary(input, idToken);
+      setPublishedSummaryId(summaryId);
       if (onPublished) onPublished();
       setErrors({});
       toast.show("Summary published.", "success");
@@ -151,6 +154,37 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
       toast.show("Could not publish. Please try again.", "error");
     } finally {
       setSaving(false);
+    }
+  }
+
+  // Re-trigger the exercise-plan handout email for the summary just published.
+  // Goes through the admin route so the browser never holds CRON_SECRET; that
+  // route verifies the Firebase idToken, checks the admin email, and forwards
+  // to /api/exercise-plan/generate with force:true.
+  async function handleResendPlan() {
+    if (!publishedSummaryId) return;
+    setResending(true);
+    try {
+      const idToken = await auth?.currentUser?.getIdToken();
+      if (!idToken) throw new Error("Not signed in");
+      const res = await fetch("/api/admin/exercise-plan/resend", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${idToken}`, "content-type": "application/json" },
+        body: JSON.stringify({ summaryId: publishedSummaryId }),
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const data = (await res.json()) as { emailed?: boolean; skipped?: string; ok?: boolean };
+      if (data.skipped) {
+        toast.show(`Plan email skipped: ${data.skipped}.`, "warning");
+      } else if (data.emailed === false || data.ok === false) {
+        toast.show("Plan rebuilt, but the email did not send. Try again.", "error");
+      } else {
+        toast.show("Exercise plan email resent.", "success");
+      }
+    } catch {
+      toast.show("Could not resend the plan email. Try again.", "error");
+    } finally {
+      setResending(false);
     }
   }
 
@@ -164,9 +198,21 @@ export function SummaryForm({ booking, onPublished }: SummaryFormProps) {
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="summary-trigger">
-        <ClipboardIcon className="inline-icon" /> Write summary
-      </button>
+      <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", alignItems: "center" }}>
+        <button onClick={() => setOpen(true)} className="summary-trigger">
+          <ClipboardIcon className="inline-icon" /> Write summary
+        </button>
+        {publishedSummaryId && (
+          <button
+            type="button"
+            onClick={() => void handleResendPlan()}
+            disabled={resending}
+            className="summary-cancel"
+          >
+            {resending ? "Sending…" : "Resend plan email"}
+          </button>
+        )}
+      </div>
     );
   }
 
