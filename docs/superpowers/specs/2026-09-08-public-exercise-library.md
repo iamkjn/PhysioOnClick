@@ -207,7 +207,8 @@ The SEO and conversion workhorse. Layout: main column + sticky right rail at
 7. **How to progress** + **Recovery timeline** — two side-by-side bordered
    cards (`progressGuidance`, `recoveryTimeline`); stack on mobile.
 8. **FAQ** — an accordion (`<details>`/`<summary>`, works without JS, keyboard
-   accessible). Renders `FAQPage` schema from `condition.faqs`.
+   accessible). Semantic HTML only — Google retired FAQ rich results (May
+   2026), matching the existing `/services` decision, so no `FAQPage` JSON-LD.
 9. **Related** — inline links: related conditions, the mapped
    `/services/[serviceSlug]`, `relatedBlogSlugs`.
 10. **Footer CTA band** — "Want this tailored to you? Book an online
@@ -237,8 +238,8 @@ Canonical, condition-independent. Reuses 100% of existing catalogue content.
 3. **How to do it** — a bordered card. "Set up" (bold lead-in + `ex.setup`),
    "Steps" (numbered `<ol>`), then two columns: "Good form" (`ex.cues`, green
    ticks) and "Common mistakes" (`ex.mistakes` minus the safety line, warning
-   marks). Renders `HowTo` schema (`step`, `tool` = `ex.equipment`,
-   `totalTime` derived from the dose where sensible, `image`).
+   marks). Semantic `<ol>` for the steps; Google retired `HowTo` rich results,
+   so no `HowTo` JSON-LD (see §8).
 4. **Safety callout** — error-tint (`#FEE2E2`-ish per system) box: the "Stop
    and message your physio if…" line from `ex.mistakes`.
 5. **Video slot** — hidden in Phase 1; a `VideoObject`-ready component that
@@ -329,8 +330,11 @@ $15–20 monthly limit on the key.
   unique, clinically reviewed, first-party content — so it is indexed. State
   this in the spec so no one "consistency-fixes" it to noindex later.
 - **Structured data** (`lib/structured-data.ts` gains builders):
-  - exercise page: `HowTo` + (when present) `VideoObject`
-  - condition hub: `MedicalWebPage` + `FAQPage` + `BreadcrumbList`
+  - exercise page: `MedicalWebPage` + (when present) `VideoObject`
+  - condition hub: `MedicalWebPage` + `BreadcrumbList`
+  - **Not** `HowTo` or `FAQPage` — Google retired both rich results; clean
+    semantic HTML (`<ol>` steps, `<details>` FAQ) is what carries them now.
+    This matches the existing `/services/[slug]` decision.
   - author: `Person` with `hasCredential` (HCPC registration) + page
     `lastReviewed` / `reviewedBy`
 - **`<title>` / meta**: `condition.seoTitle` / `seoDescription`;
