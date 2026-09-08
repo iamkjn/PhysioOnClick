@@ -19,6 +19,16 @@ export type { Exercise } from "@/lib/exercises";
 import type { Condition, ConditionStage } from "@/lib/conditions";
 import type { Exercise } from "@/lib/exercises";
 
+/**
+ * Clinical review date shown on every public exercise page's by-line. Phase 1
+ * has no per-exercise review date, so the library shares this one constant.
+ *
+ * Note: `lib/structured-data.ts` keeps a parallel private `REVIEW_DATE` for the
+ * JSON-LD `lastReviewed` value - a deliberate near-duplicate that the
+ * final-review wave will reconcile. Do not refactor it into this export now.
+ */
+export const EXERCISE_LIBRARY_REVIEWED_ON = "2026-09-08";
+
 /** One stage of a condition programme with its `exerciseSlugs` resolved to
  * concrete `Exercise` records (in source order, unresolved slugs dropped). */
 export type ProgramStage = {
