@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { resolveDosage, formatDosage, hasPrescribedDose, validateDosage, exercises, type Exercise } from '@/lib/exercises'
 
 const base = (over: Partial<Exercise> = {}): Exercise => ({
-  id: 'ex-test', title: 'Test', bodyPart: 'Knee', clinicalArea: 'lower_limb',
+  id: 'ex-test', slug: 'ex-test', title: 'Test', bodyPart: 'Knee', clinicalArea: 'lower_limb',
   tags: [], condition: '', stage: 'Early rehab', description: 'x', ...over,
 })
 
@@ -96,5 +96,22 @@ describe('catalogue move', () => {
     // The brief's draft said 150; the live catalogue is 158 (verified against lib/site-data.ts).
     expect(exercises.length).toBe(158)
     expect(exercises[0].id).toBe('ex-1')
+  })
+})
+
+describe('exercise slugs', () => {
+  it('every exercise has a non-empty kebab-case slug', () => {
+    for (const e of exercises) {
+      expect(e.slug, e.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    }
+  })
+  it('slugs are unique', () => {
+    const slugs = exercises.map((e) => e.slug)
+    expect(new Set(slugs).size).toBe(slugs.length)
+  })
+  it('aka entries, when present, are non-empty strings', () => {
+    for (const e of exercises) {
+      for (const a of e.aka ?? []) expect(a.trim().length).toBeGreaterThan(0)
+    }
   })
 })

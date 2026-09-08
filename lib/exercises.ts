@@ -15,6 +15,9 @@ export type ExerciseDosage = {
 
 export type Exercise = {
   id: string;
+  /** Stable kebab-case identifier, unique across the catalogue, derived from
+   * `title`. Used in public URLs — do not change once published. */
+  slug: string;
   title: string;
   bodyPart: string;
   clinicalArea: ClinicalArea;
@@ -31,11 +34,16 @@ export type Exercise = {
   defaultDosage?: ExerciseDosage;
   pose?: string; // one of the SPECS keys in components/exercise-figure.tsx; validated by Task 7's test
   retired?: boolean;
+  /** Common alternative names patients or clinicians might search for. */
+  aka?: string[];
+  /** Plain-language conditions/goals this exercise commonly helps with. */
+  helpsWith?: string[];
 };
 
 export const exercises: Exercise[] = [
   {
     id: "ex-1",
+    slug: "sit-to-stand-control",
     title: "Sit to Stand Control",
     bodyPart: "Lower limb",
     clinicalArea: "lower_limb",
@@ -75,6 +83,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-2",
+    slug: "scapular-setting",
     title: "Scapular Setting",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -105,6 +114,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-3",
+    slug: "bridge-progression",
     title: "Bridge Progression",
     bodyPart: "Lumbar spine",
     clinicalArea: "spine",
@@ -136,6 +146,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-4",
+    slug: "tandem-balance-hold",
     title: "Tandem Balance Hold",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -173,6 +184,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-5",
+    slug: "straight-leg-raise",
     title: "Straight Leg Raise",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
@@ -211,6 +223,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-6",
+    slug: "heel-slide",
     title: "Heel Slide",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
@@ -248,6 +261,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-7",
+    slug: "mini-squat",
     title: "Mini Squat",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
@@ -286,6 +300,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-8",
+    slug: "shoulder-flexion",
     title: "Shoulder Flexion",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -318,6 +333,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-9",
+    slug: "pendulum-swing",
     title: "Pendulum Swing",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -357,6 +373,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-10",
+    slug: "single-leg-balance",
     title: "Single Leg Balance",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -395,6 +412,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-11",
+    slug: "hip-bridge",
     title: "Hip Bridge",
     bodyPart: "Hip",
     clinicalArea: "lower_limb",
@@ -426,6 +444,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-12",
+    slug: "heel-raises",
     title: "Heel Raises",
     bodyPart: "Ankle",
     clinicalArea: "lower_limb",
@@ -458,6 +477,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-13",
+    slug: "chin-tuck",
     title: "Chin Tuck",
     bodyPart: "Neck",
     clinicalArea: "spine",
@@ -488,6 +508,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-14",
+    slug: "dead-bug",
     title: "Dead Bug",
     bodyPart: "Core",
     clinicalArea: "spine",
@@ -519,6 +540,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-15",
+    slug: "bird-dog",
     title: "Bird Dog",
     bodyPart: "Lumbar spine",
     clinicalArea: "spine",
@@ -551,6 +573,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-16",
+    slug: "stationary-bike",
     title: "Stationary Bike",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
@@ -591,6 +614,7 @@ export const exercises: Exercise[] = [
   // not the body pose engine — see lib/face-targets.ts (face-* ids).
   {
     id: "face-smile",
+    slug: "smile-mouth-raise",
     title: "Smile / Mouth Raise",
     bodyPart: "Face",
     clinicalArea: "neuro",
@@ -628,6 +652,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "face-brow-raise",
+    slug: "eyebrow-raise",
     title: "Eyebrow Raise",
     bodyPart: "Face",
     clinicalArea: "neuro",
@@ -665,6 +690,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "face-eye-close",
+    slug: "gentle-eye-close",
     title: "Gentle Eye Close",
     bodyPart: "Face",
     clinicalArea: "neuro",
@@ -702,6 +728,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "face-cheek-puff",
+    slug: "cheek-puff",
     title: "Cheek Puff",
     bodyPart: "Face",
     clinicalArea: "neuro",
@@ -739,6 +766,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "face-frown",
+    slug: "brow-furrow",
     title: "Brow Furrow",
     bodyPart: "Face",
     clinicalArea: "neuro",
@@ -776,6 +804,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "face-big-smile",
+    slug: "big-smile",
     title: "Big Smile",
     bodyPart: "Face",
     clinicalArea: "neuro",
@@ -813,6 +842,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "face-eye-wide",
+    slug: "open-eyes-wide",
     title: "Open Eyes Wide",
     bodyPart: "Face",
     clinicalArea: "neuro",
@@ -850,6 +880,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "face-pucker",
+    slug: "lip-pucker",
     title: "Lip Pucker",
     bodyPart: "Face",
     clinicalArea: "neuro",
@@ -887,6 +918,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-17", title: "McKenzie Press-Up", bodyPart: "Lumbar spine",
+    slug: "mckenzie-press-up",
     clinicalArea: "spine", tags: ["low-back", "disc", "extension-bias", "early-rehab"],
     condition: "Lumbar disc-related back pain", stage: "Early rehab",
     description: "Gentle repeated lower-back extension to centralise leg symptoms toward the spine, following the McKenzie extension principle.",
@@ -912,6 +944,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-18", title: "Standing Extension", bodyPart: "Lumbar spine",
+    slug: "standing-extension",
     clinicalArea: "spine", tags: ["low-back", "disc", "extension-bias", "mobility"],
     condition: "Lumbar disc-related back pain", stage: "Mobility phase",
     description: "An upright version of the press-up, hands on hips, easing the spine backward for symptom relief between exercise sessions.",
@@ -936,6 +969,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-19",
+    slug: "cat-cow-stretch",
     title: "Cat-Cow Stretch",
     bodyPart: "Thoracic spine",
     clinicalArea: "spine",
@@ -974,6 +1008,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-20",
+    slug: "thoracic-rotation-open-book",
     title: "Thoracic Rotation (Open Book)",
     bodyPart: "Thoracic spine",
     clinicalArea: "spine",
@@ -1011,6 +1046,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-21",
+    slug: "neck-rotation-range",
     title: "Neck Rotation Range",
     bodyPart: "Cervical spine",
     clinicalArea: "spine",
@@ -1049,6 +1085,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-22",
+    slug: "neck-side-flexion-stretch",
     title: "Neck Side Flexion Stretch",
     bodyPart: "Cervical spine",
     clinicalArea: "spine",
@@ -1086,6 +1123,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-23",
+    slug: "isometric-neck-hold",
     title: "Isometric Neck Hold",
     bodyPart: "Cervical spine",
     clinicalArea: "spine",
@@ -1122,6 +1160,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-24", title: "Prone Cobra", bodyPart: "Lumbar spine",
+    slug: "prone-cobra",
     clinicalArea: "spine", tags: ["low-back", "postural-control", "strength-phase"],
     condition: "Postural low back pain", stage: "Strength phase",
     description: "Lying face down, lifting the chest slightly using back extensors to build postural endurance for desk-based pain.",
@@ -1148,6 +1187,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-25", title: "Side Plank (Modified)", bodyPart: "Lumbar spine",
+    slug: "side-plank-modified",
     clinicalArea: "spine", tags: ["low-back", "core-control", "strength-phase"],
     condition: "Low back pain", stage: "Strength phase",
     description: "A knee-supported side plank building lateral trunk stability, progressing spinal load tolerance safely.",
@@ -1174,6 +1214,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-26", title: "Segmental Rolling", bodyPart: "Lumbar spine",
+    slug: "segmental-rolling",
     clinicalArea: "spine", tags: ["low-back", "mobility", "early-rehab"],
     condition: "Acute low back pain", stage: "Early rehab",
     description: "Rolling from back to side in a controlled, segmental way to reintroduce comfortable movement after an acute flare.",
@@ -1199,6 +1240,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-27", title: "Pelvic Tilt", bodyPart: "Lumbar spine",
+    slug: "pelvic-tilt",
     clinicalArea: "spine", tags: ["low-back", "pregnancy", "early-rehab"],
     condition: "Pregnancy-related back pain", stage: "Early rehab",
     description: "A small rocking of the pelvis to ease lumbar tension, safe and gentle enough for antenatal and postnatal back pain.",
@@ -1226,6 +1268,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-28", title: "Quadruped Arm/Leg Reach", bodyPart: "Lumbar spine",
+    slug: "quadruped-arm-leg-reach",
     clinicalArea: "spine", tags: ["low-back", "spinal-stability", "strength-phase"],
     condition: "Chronic low back pain", stage: "Return to function",
     description: "An advanced bird-dog progression adding controlled reach, challenging balance and trunk control together.",
@@ -1253,6 +1296,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-29",
+    slug: "standing-chin-retraction",
     title: "Standing Chin Retraction",
     bodyPart: "Cervical spine",
     clinicalArea: "spine",
@@ -1291,6 +1335,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-30",
+    slug: "levator-scapulae-stretch",
     title: "Levator Scapulae Stretch",
     bodyPart: "Cervical spine",
     clinicalArea: "spine",
@@ -1328,6 +1373,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-31", title: "Lumbar Flexion in Lying", bodyPart: "Lumbar spine",
+    slug: "lumbar-flexion-in-lying",
     clinicalArea: "spine", tags: ["low-back", "stenosis", "flexion-bias", "early-rehab"],
     condition: "Lumbar spinal stenosis", stage: "Early rehab",
     description: "Gently drawing both knees toward the chest to ease stenosis-related symptoms, which typically prefer flexion over extension.",
@@ -1354,6 +1400,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-32", title: "Sciatic Nerve Glide", bodyPart: "Lumbar spine",
+    slug: "sciatic-nerve-glide",
     clinicalArea: "spine", tags: ["low-back", "sciatica", "neural-mobility", "early-rehab"],
     condition: "Sciatica", stage: "Early rehab",
     description: "A gentle sliding nerve mobilisation of the leg and ankle to ease nerve-related sensitivity down the leg.",
@@ -1378,6 +1425,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-33",
+    slug: "wall-angels",
     title: "Wall Angels",
     bodyPart: "Thoracic spine",
     clinicalArea: "spine",
@@ -1409,6 +1457,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-34", title: "Functional Lifting Pattern", bodyPart: "Lumbar spine",
+    slug: "functional-lifting-pattern",
     clinicalArea: "spine", tags: ["low-back", "return-to-work", "return-to-function"],
     condition: "Chronic low back pain", stage: "Return to function",
     description: "Practising a hip-hinge lifting technique with a light load, building confidence for safe lifting at work or home.",
@@ -1436,6 +1485,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-35",
+    slug: "shoulder-external-rotation-band",
     title: "Shoulder External Rotation (Band)",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -1466,6 +1516,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-36",
+    slug: "shoulder-internal-rotation-band",
     title: "Shoulder Internal Rotation (Band)",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -1496,6 +1547,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-37",
+    slug: "wall-slide",
     title: "Wall Slide",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -1525,6 +1577,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-38",
+    slug: "sleeper-stretch",
     title: "Sleeper Stretch",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -1555,6 +1608,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-39",
+    slug: "prone-y-t-w-raises",
     title: "Prone Y-T-W Raises",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -1592,6 +1646,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-40",
+    slug: "elbow-flexion-extension",
     title: "Elbow Flexion/Extension",
     bodyPart: "Elbow",
     clinicalArea: "upper_limb",
@@ -1628,6 +1683,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-41",
+    slug: "wrist-extensor-stretch",
     title: "Wrist Extensor Stretch",
     bodyPart: "Wrist",
     clinicalArea: "upper_limb",
@@ -1658,6 +1714,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-42",
+    slug: "eccentric-wrist-extension",
     title: "Eccentric Wrist Extension",
     bodyPart: "Wrist",
     clinicalArea: "upper_limb",
@@ -1695,6 +1752,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-43",
+    slug: "wrist-flexor-stretch",
     title: "Wrist Flexor Stretch",
     bodyPart: "Wrist",
     clinicalArea: "upper_limb",
@@ -1724,6 +1782,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-44",
+    slug: "grip-strengthening",
     title: "Grip Strengthening",
     bodyPart: "Hand",
     clinicalArea: "upper_limb",
@@ -1762,6 +1821,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-45",
+    slug: "tendon-glide-exercises",
     title: "Tendon Glide Exercises",
     bodyPart: "Hand",
     clinicalArea: "upper_limb",
@@ -1800,6 +1860,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-46",
+    slug: "median-nerve-glide",
     title: "Median Nerve Glide",
     bodyPart: "Wrist",
     clinicalArea: "upper_limb",
@@ -1829,6 +1890,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-47",
+    slug: "scapular-retraction-band-row",
     title: "Scapular Retraction (Band Row)",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -1861,6 +1923,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-48",
+    slug: "overhead-press-progression",
     title: "Overhead Press Progression",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -1899,6 +1962,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-49",
+    slug: "weight-bearing-through-extended-wrist",
     title: "Weight-Bearing Through Extended Wrist",
     bodyPart: "Wrist",
     clinicalArea: "upper_limb",
@@ -1935,6 +1999,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-50",
+    slug: "pendulum-with-light-weight",
     title: "Pendulum with Light Weight",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -1976,6 +2041,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-51",
+    slug: "cross-body-stretch",
     title: "Cross-Body Stretch",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -2006,6 +2072,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-52",
+    slug: "push-up-plus-wall-or-floor",
     title: "Push-Up Plus (Wall or Floor)",
     bodyPart: "Shoulder",
     clinicalArea: "upper_limb",
@@ -2036,6 +2103,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-53",
+    slug: "terminal-knee-extension-band",
     title: "Terminal Knee Extension (Band)",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
@@ -2073,6 +2141,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-54",
+    slug: "step-up",
     title: "Step-Up",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
@@ -2109,6 +2178,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-55",
+    slug: "clam-shell",
     title: "Clam Shell",
     bodyPart: "Hip",
     clinicalArea: "lower_limb",
@@ -2139,6 +2209,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-56",
+    slug: "side-lying-hip-abduction",
     title: "Side-Lying Hip Abduction",
     bodyPart: "Hip",
     clinicalArea: "lower_limb",
@@ -2175,6 +2246,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-57",
+    slug: "standing-hip-flexor-stretch",
     title: "Standing Hip Flexor Stretch",
     bodyPart: "Hip",
     clinicalArea: "lower_limb",
@@ -2213,6 +2285,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-58",
+    slug: "deep-squat-mobility",
     title: "Deep Squat Mobility",
     bodyPart: "Hip",
     clinicalArea: "lower_limb",
@@ -2251,6 +2324,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-59",
+    slug: "ankle-pump",
     title: "Ankle Pump",
     bodyPart: "Ankle",
     clinicalArea: "lower_limb",
@@ -2279,6 +2353,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-60",
+    slug: "ankle-alphabet",
     title: "Ankle Alphabet",
     bodyPart: "Ankle",
     clinicalArea: "lower_limb",
@@ -2307,6 +2382,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-61",
+    slug: "resisted-ankle-eversion",
     title: "Resisted Ankle Eversion",
     bodyPart: "Ankle",
     clinicalArea: "lower_limb",
@@ -2336,6 +2412,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-62",
+    slug: "single-leg-balance-on-foam",
     title: "Single Leg Balance on Foam",
     bodyPart: "Ankle",
     clinicalArea: "lower_limb",
@@ -2365,6 +2442,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-63",
+    slug: "calf-stretch-gastrocnemius",
     title: "Calf Stretch (Gastrocnemius)",
     bodyPart: "Ankle",
     clinicalArea: "lower_limb",
@@ -2395,6 +2473,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-64",
+    slug: "eccentric-heel-drop",
     title: "Eccentric Heel Drop",
     bodyPart: "Ankle",
     clinicalArea: "lower_limb",
@@ -2426,6 +2505,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-65",
+    slug: "wall-squat-hold",
     title: "Wall Squat Hold",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
@@ -2464,6 +2544,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-66",
+    slug: "split-squat",
     title: "Split Squat",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
@@ -2500,6 +2581,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-67",
+    slug: "lateral-band-walk",
     title: "Lateral Band Walk",
     bodyPart: "Hip",
     clinicalArea: "lower_limb",
@@ -2536,6 +2618,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-68",
+    slug: "nordic-hamstring-curl-assisted",
     title: "Nordic Hamstring Curl (Assisted)",
     bodyPart: "Hamstring",
     clinicalArea: "lower_limb",
@@ -2576,6 +2659,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-69",
+    slug: "standing-hamstring-stretch",
     title: "Standing Hamstring Stretch",
     bodyPart: "Hamstring",
     clinicalArea: "lower_limb",
@@ -2614,6 +2698,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-70",
+    slug: "box-step-down",
     title: "Box Step-Down",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
@@ -2652,6 +2737,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-71",
+    slug: "static-standing-balance-eyes-open",
     title: "Static Standing Balance (Eyes Open)",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -2688,6 +2774,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-72",
+    slug: "static-standing-balance-eyes-closed",
     title: "Static Standing Balance (Eyes Closed)",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -2724,6 +2811,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-73",
+    slug: "weight-shifting",
     title: "Weight Shifting",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -2761,6 +2849,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-74",
+    slug: "sideways-walking",
     title: "Sideways Walking",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -2797,6 +2886,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-75",
+    slug: "heel-to-toe-walking-tandem-gait",
     title: "Heel-to-Toe Walking (Tandem Gait)",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -2833,6 +2923,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-76",
+    slug: "marching-on-the-spot",
     title: "Marching on the Spot",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -2869,6 +2960,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-77",
+    slug: "backward-walking",
     title: "Backward Walking",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -2905,6 +2997,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-78",
+    slug: "sit-to-stand-repetitions",
     title: "Sit-to-Stand Repetitions",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -2945,6 +3038,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-79",
+    slug: "obstacle-stepping",
     title: "Obstacle Stepping",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -2984,6 +3078,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-80",
+    slug: "stair-negotiation-practice",
     title: "Stair Negotiation Practice",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -3020,6 +3115,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-81",
+    slug: "single-leg-stance-with-arm-reach",
     title: "Single Leg Stance with Arm Reach",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -3057,6 +3153,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-82",
+    slug: "treadmill-or-level-ground-gait-practice",
     title: "Treadmill or Level Ground Gait Practice",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -3092,6 +3189,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-83",
+    slug: "standing-on-one-leg-hand-support",
     title: "Standing on One Leg (Hand Support)",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -3129,6 +3227,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-84",
+    slug: "turning-practice",
     title: "Turning Practice",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -3165,6 +3264,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-85",
+    slug: "dual-task-walking",
     title: "Dual-Task Walking",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -3200,6 +3300,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-86",
+    slug: "uneven-surface-walking",
     title: "Uneven Surface Walking",
     bodyPart: "Balance",
     clinicalArea: "balance_walking",
@@ -3235,6 +3336,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-87",
+    slug: "bed-mobility-rolling",
     title: "Bed Mobility Rolling",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3272,6 +3374,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-88",
+    slug: "bridging-for-transfers",
     title: "Bridging for Transfers",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3309,6 +3412,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-89",
+    slug: "sit-to-stand-with-support",
     title: "Sit-to-Stand with Support",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3348,6 +3452,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-90",
+    slug: "weight-bearing-through-affected-leg",
     title: "Weight-Bearing Through Affected Leg",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3384,6 +3489,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-91",
+    slug: "reaching-tasks-affected-arm",
     title: "Reaching Tasks (Affected Arm)",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3421,6 +3527,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-92",
+    slug: "parkinsons-big-movements-lsvt-style",
     title: "Parkinson's Big Movements (LSVT-style)",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3458,6 +3565,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-93",
+    slug: "rhythmic-stepping-to-a-beat",
     title: "Rhythmic Stepping to a Beat",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3495,6 +3603,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-94",
+    slug: "multiple-sclerosis-fatigue-paced-circuit",
     title: "Multiple Sclerosis Fatigue-Paced Circuit",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3532,6 +3641,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-95",
+    slug: "coordination-drills-finger-to-nose",
     title: "Coordination Drills (Finger to Nose)",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3569,6 +3679,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-96",
+    slug: "heel-shin-slide-coordination",
     title: "Heel-Shin Slide (Coordination)",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3607,6 +3718,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-97",
+    slug: "standing-balance-with-visual-feedback",
     title: "Standing Balance with Visual Feedback",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3644,6 +3756,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-98",
+    slug: "functional-grasp-and-release",
     title: "Functional Grasp and Release",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3685,6 +3798,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-99",
+    slug: "gait-re-education-with-cueing",
     title: "Gait Re-Education with Cueing",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3725,6 +3839,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-100",
+    slug: "trunk-rotation-in-sitting",
     title: "Trunk Rotation in Sitting",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3762,6 +3877,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-101",
+    slug: "standing-frame-or-supported-standing",
     title: "Standing Frame or Supported Standing",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3797,6 +3913,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-102",
+    slug: "dual-task-cognitive-motor-training",
     title: "Dual-Task Cognitive-Motor Training",
     bodyPart: "Neuro",
     clinicalArea: "neuro",
@@ -3834,6 +3951,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-103",
+    slug: "ankle-pumps-post-surgery",
     title: "Ankle Pumps (Post-Surgery)",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -3870,6 +3988,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-104",
+    slug: "quad-sets",
     title: "Quad Sets",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -3906,6 +4025,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-105",
+    slug: "assisted-knee-flexion",
     title: "Assisted Knee Flexion",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -3944,6 +4064,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-106",
+    slug: "hip-abduction-in-lying-post-op",
     title: "Hip Abduction in Lying (Post-Op)",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -3981,6 +4102,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-107",
+    slug: "supported-standing-post-hip",
     title: "Supported Standing (Post-Hip)",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4018,6 +4140,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-108",
+    slug: "shoulder-pendulum-post-rotator-cuff",
     title: "Shoulder Pendulum (Post-Rotator Cuff)",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4055,6 +4178,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-109",
+    slug: "passive-shoulder-flexion-assisted",
     title: "Passive Shoulder Flexion (Assisted)",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4093,6 +4217,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-110",
+    slug: "incision-site-scar-mobilisation",
     title: "Incision Site Scar Mobilisation",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4130,6 +4255,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-111",
+    slug: "graduated-weight-bearing",
     title: "Graduated Weight-Bearing",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4167,6 +4293,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-112",
+    slug: "core-bracing-post-abdominal-surgery",
     title: "Core Bracing (Post-Abdominal Surgery)",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4204,6 +4331,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-113",
+    slug: "post-op-walking-programme",
     title: "Post-Op Walking Programme",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4239,6 +4367,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-114",
+    slug: "resisted-knee-extension-post-acl",
     title: "Resisted Knee Extension (Post-ACL)",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4277,6 +4406,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-115",
+    slug: "proprioception-board-post-ankle-surgery",
     title: "Proprioception Board (Post-Ankle Surgery)",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4314,6 +4444,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-116",
+    slug: "return-to-function-strength-circuit",
     title: "Return-to-Function Strength Circuit",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4350,6 +4481,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-117",
+    slug: "breathing-exercises-post-thoracic-surgery",
     title: "Breathing Exercises (Post-Thoracic Surgery)",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4386,6 +4518,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-118",
+    slug: "graduated-return-to-driving-readiness",
     title: "Graduated Return to Driving Readiness",
     bodyPart: "Post-op",
     clinicalArea: "post_op",
@@ -4422,6 +4555,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-119",
+    slug: "pelvic-floor-activation-basic",
     title: "Pelvic Floor Activation (Basic)",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4459,6 +4593,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-120",
+    slug: "pelvic-floor-endurance-hold",
     title: "Pelvic Floor Endurance Hold",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4497,6 +4632,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-121",
+    slug: "fast-twitch-pelvic-floor-the-knack",
     title: "Fast-Twitch Pelvic Floor 'The Knack'",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4534,6 +4670,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-122",
+    slug: "deep-core-and-pelvic-floor-co-activation",
     title: "Deep Core and Pelvic Floor Co-Activation",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4571,6 +4708,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-123",
+    slug: "diastasis-safe-curl-up",
     title: "Diastasis-Safe Curl-Up",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4608,6 +4746,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-124",
+    slug: "pelvic-floor-relaxation-drop",
     title: "Pelvic Floor Relaxation / Drop",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4646,6 +4785,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-125",
+    slug: "diaphragmatic-breathing-for-pelvic-floor",
     title: "Diaphragmatic Breathing for Pelvic Floor",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4683,6 +4823,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-126",
+    slug: "bridge-with-pelvic-floor-engagement",
     title: "Bridge with Pelvic Floor Engagement",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4720,6 +4861,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-127",
+    slug: "squat-with-pelvic-floor-control",
     title: "Squat with Pelvic Floor Control",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4758,6 +4900,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-128",
+    slug: "standing-pelvic-tilt-pregnancy",
     title: "Standing Pelvic Tilt (Pregnancy)",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4789,6 +4932,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-129",
+    slug: "side-lying-hip-abduction-pregnancy-safe",
     title: "Side-Lying Hip Abduction (Pregnancy-Safe)",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4826,6 +4970,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-130",
+    slug: "return-to-running-pelvic-floor-check",
     title: "Return-to-Running Pelvic Floor Check",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4860,6 +5005,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-131",
+    slug: "bowel-emptying-positioning",
     title: "Bowel Emptying Positioning",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4893,6 +5039,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-132",
+    slug: "reverse-kegel-pelvic-floor-lengthening",
     title: "Reverse Kegel (Pelvic Floor Lengthening)",
     bodyPart: "Pelvic health",
     clinicalArea: "pelvic_health",
@@ -4931,6 +5078,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-133",
+    slug: "animal-walk-circuit",
     title: "Animal Walk Circuit",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -4968,6 +5116,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-134",
+    slug: "balance-beam-walk-tape-line",
     title: "Balance Beam Walk (Tape Line)",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -5005,6 +5154,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-135",
+    slug: "ball-catch-and-throw",
     title: "Ball Catch and Throw",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -5042,6 +5192,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-136",
+    slug: "obstacle-course-crawl-through",
     title: "Obstacle Course Crawl-Through",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -5082,6 +5233,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-137",
+    slug: "toe-walking-heel-walking-game",
     title: "Toe Walking / Heel Walking Game",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -5119,6 +5271,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-138",
+    slug: "trampette-bouncing-supervised",
     title: "Trampette Bouncing (Supervised)",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -5156,6 +5309,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-139",
+    slug: "prone-extension-play-superman",
     title: "Prone Extension Play ('Superman')",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -5194,6 +5348,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-140",
+    slug: "scooter-board-propulsion",
     title: "Scooter Board Propulsion",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -5231,6 +5386,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-141",
+    slug: "single-leg-hop-game",
     title: "Single-Leg Hop Game",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -5268,6 +5424,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-142",
+    slug: "sensory-motor-circuit-multi-station",
     title: "Sensory-Motor Circuit (Multi-Station)",
     bodyPart: "Paediatric",
     clinicalArea: "paediatric",
@@ -5305,6 +5462,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-143",
+    slug: "general-mobility-warm-up",
     title: "General Mobility Warm-Up",
     bodyPart: "General",
     clinicalArea: "general",
@@ -5344,6 +5502,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-144",
+    slug: "graded-walking-programme",
     title: "Graded Walking Programme",
     bodyPart: "General",
     clinicalArea: "general",
@@ -5380,6 +5539,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-145",
+    slug: "full-body-stretch-routine",
     title: "Full-Body Stretch Routine",
     bodyPart: "General",
     clinicalArea: "general",
@@ -5418,6 +5578,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-146",
+    slug: "basic-bodyweight-circuit",
     title: "Basic Bodyweight Circuit",
     bodyPart: "General",
     clinicalArea: "general",
@@ -5454,6 +5615,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-147",
+    slug: "pain-pacing-activity-plan",
     title: "Pain Pacing Activity Plan",
     bodyPart: "General",
     clinicalArea: "general",
@@ -5489,6 +5651,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-148",
+    slug: "graded-exposure-to-feared-movement",
     title: "Graded Exposure to Feared Movement",
     bodyPart: "General",
     clinicalArea: "general",
@@ -5528,6 +5691,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-149",
+    slug: "return-to-sport-readiness-circuit",
     title: "Return-to-Sport Readiness Circuit",
     bodyPart: "General",
     clinicalArea: "general",
@@ -5565,6 +5729,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "ex-150",
+    slug: "relaxation-and-breathing-for-pain-management",
     title: "Relaxation and Breathing for Pain Management",
     bodyPart: "General",
     clinicalArea: "general",

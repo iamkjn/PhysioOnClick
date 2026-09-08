@@ -7,6 +7,7 @@ import type { Exercise } from "@/lib/site-data";
 function makeExercise(overrides: Partial<Exercise> = {}): Exercise {
   return {
     id: "ex-test-1",
+    slug: "ex-test-1",
     title: "Test Exercise",
     bodyPart: "Knee",
     clinicalArea: "lower_limb",
