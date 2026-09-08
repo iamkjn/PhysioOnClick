@@ -8281,3 +8281,106 @@ textarea:focus {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────
+   Public exercise library — index, body-area browse, methodology
+   (.exlib-index-*, .exlib-cond-grid, .exlib-chip*, .exlib-prose)
+   Clarity System: warm paper, navy ink, one graded sky accent.
+   Accent as a text/border colour is always --color-primary-dark.
+   ────────────────────────────────────────────────────────────── */
+
+.exlib-index-section {
+  margin-top: var(--space-8);
+}
+
+.exlib-index-section > .section-heading {
+  margin-bottom: var(--space-5);
+}
+
+.exlib-index-section--links {
+  margin-top: var(--space-6);
+}
+
+.exlib-index-section--links a {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* Condition-card grid — a touch wider than the exercise grid so the longer
+   description text has room to breathe. */
+.exlib-cond-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+/* Body-area chip row */
+.exlib-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exlib-chip {
+  display: inline-block;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.exlib-chip:hover,
+.exlib-chip:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(22, 34, 50, 0.1);
+  border-color: var(--color-primary-dark);
+}
+
+/* Methodology prose */
+.exlib-prose {
+  max-width: 42rem;
+}
+
+.exlib-prose h2 {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-2);
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--color-navy);
+}
+
+.exlib-prose p {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  color: var(--color-text-primary);
+}
+
+.exlib-prose a {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.exlib-prose .exlib-byline {
+  margin-bottom: var(--space-5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exlib-chip {
+    transition: none;
+  }
+
+  .exlib-chip:hover,
+  .exlib-chip:focus-visible {
+    transform: none;
+  }
+}
+

@@ -194,3 +194,32 @@ export function searchLibrary(query: string): {
 
   return { exercises: matchedExercises, conditions: matchedConditions };
 }
+
+/**
+ * The slim, serialisable search index the `<LibrarySearch>` client component
+ * filters in memory: every catalogue exercise as `{slug, title, aka?}` and
+ * every condition as `{slug, name, aka?}`, with `aka` omitted entirely when it
+ * is absent or empty. The library index page (a server component) builds this
+ * once at build time and hands it to the client component as a prop - there is
+ * no runtime fetch.
+ */
+export function librarySearchIndex(): {
+  exercises: { slug: string; title: string; aka?: string[] }[];
+  conditions: { slug: string; name: string; aka?: string[] }[];
+} {
+  return {
+    exercises: exercises.map((exercise) => ({
+      slug: exercise.slug,
+      title: exercise.title,
+      ...(exercise.aka && exercise.aka.length > 0 ? { aka: exercise.aka } : {}),
+    })),
+    conditions: conditions.map((condition) => ({
+      slug: condition.slug,
+      name: condition.name,
+      ...(condition.aka && condition.aka.length > 0 ? { aka: condition.aka } : {}),
+    })),
+  };
+}
+
+/** The shape returned by `librarySearchIndex()`, for prop typing at call sites. */
+export type LibrarySearchIndex = ReturnType<typeof librarySearchIndex>;
