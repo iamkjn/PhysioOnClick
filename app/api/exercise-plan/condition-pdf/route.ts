@@ -35,6 +35,13 @@ function isRateLimited(ip: string): boolean {
   const recent = (rateHits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
   recent.push(now);
   rateHits.set(ip, recent);
+  // Bound the map: `x-forwarded-for` is caller-controlled, so evict IPs whose
+  // window has fully expired rather than letting keys accumulate forever.
+  if (rateHits.size > 5000) {
+    for (const [key, hits] of rateHits) {
+      if (hits.every((t) => now - t >= RATE_WINDOW_MS)) rateHits.delete(key);
+    }
+  }
   return recent.length > RATE_MAX;
 }
 
@@ -94,7 +101,7 @@ export async function POST(request: Request) {
       to: email,
       conditionName: condition.name,
       exerciseCount: cards.length,
-      libraryUrl: absoluteUrl(`/exercise-library/${slug}`),
+      libraryUrl: absoluteUrl(`/exercises/for/${slug}`),
       pdf: { filename: `${slug}-exercise-plan.pdf`, base64: b64 },
     });
 

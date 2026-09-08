@@ -81,6 +81,10 @@ describe('POST /api/exercise-plan/condition-pdf', () => {
     expect(pdfArg.cards).toHaveLength(3) // every stage: ex-1 + ex-2 + ex-3
     expect(sendConditionPlanEmail).toHaveBeenCalledOnce()
     expect(sendConditionPlanEmail.mock.calls[0][0]).toMatchObject({ to: 'patient@example.com' })
+    // The email's "see the full hub" link must point at the real route
+    // (/exercises/for/<slug>), not the non-existent /exercise-library/<slug>.
+    const emailArg = sendConditionPlanEmail.mock.calls[0][0] as { libraryUrl: string }
+    expect(emailArg.libraryUrl).toMatch(/\/exercises\/for\/rotator-cuff-tendinopathy$/)
   })
 
   it('a downstream failure still returns 200 { ok: false } with no unhandled rejection', async () => {
