@@ -77,6 +77,13 @@ describe('exercise-library: programForCondition', () => {
       .map((s) => getExerciseBySlug(s))
       .filter((e) => e !== null)
     expect(resolved.map((e) => e!.slug)).toEqual([real[0], real[1]])
+
+    // Through programForCondition itself: real data resolves every slug, so no
+    // stage loses any - each stage keeps exactly its intended exerciseSlugs count.
+    for (const entry of programForCondition('rotator-cuff-tendinopathy')) {
+      expect(entry.exercises.length).toBe(entry.stage.exerciseSlugs.length)
+      expect(entry.exercises.length).toBeGreaterThan(0)
+    }
   })
 
   it('returns [] for an unknown condition slug', () => {
@@ -193,10 +200,14 @@ describe('exercise-library: searchLibrary', () => {
     expect(found.map((c) => c.slug)).toContain('rotator-cuff-tendinopathy')
   })
 
-  it('matches condition aka as well as name', () => {
-    // "shoulder impingement" is an aka of rotator-cuff-tendinopathy
-    const { conditions: found } = searchLibrary('impingement')
-    expect(found.map((c) => c.slug)).toContain('shoulder-impingement')
+  it('matches a condition on aka only (not just name)', () => {
+    // "lumbago" is in low-back-pain's `aka` array, never in any condition name,
+    // so this only passes if aka-matching actually works. Anchored: it is the
+    // sole match.
+    const { conditions: found } = searchLibrary('lumbago')
+    expect(found.map((c) => c.slug)).toEqual(['low-back-pain'])
+    // Exercises carry no `aka` data yet (0 entries in lib/exercises.ts), so the
+    // symmetrical exercise-aka path can't be exercised with real data.
   })
 
   it('is case-insensitive and trims whitespace', () => {
