@@ -1,0 +1,455 @@
+# Public Exercise Library — Design Spec (Phase 1)
+
+**Date:** 2026-09-08
+**Status:** Design approved (brainstorming), pending written review
+**Sub-project 1 of 4** — see "Roadmap" below.
+
+## 1. Goal
+
+Publish a free, professional, search-indexed exercise resource on
+`physioonclick.co.uk/exercises` that ranks for "[condition] exercises" queries,
+establishes PhysioOnClick as a credible clinical authority, and funnels
+visitors to an online physiotherapy assessment.
+
+Payoff: organic traffic (the site currently gets ~none — see the 2026-08-25 SEO
+audit) and trust. This is the NHS model (a great free public resource), not the
+Wibbi model (a B2B program-builder sold to clinics).
+
+## 2. Scope
+
+**Phase 1 (this spec):** the public library, built on the **158 exercises that
+already exist** in `lib/exercises.ts` (all now carry `setup` / `steps` / `cues`
+/ `mistakes` / `defaultDosage` / `pose` — see the 2026-09-06 and 2026-09-07
+content work). Content stays in `lib/` for Phase 1, read through helper
+functions so the Phase 2 Firestore swap is a drop-in — the same static-array +
+live-layer + `NEXT_PUBLIC_USE_LIVE_CONTENT` pattern the blog already uses
+(`lib/firestore-content.ts`).
+
+### Roadmap (later sub-projects, each its own spec)
+
+| # | Sub-project | Depends on |
+|---|---|---|
+| 1 | **Public Exercise Library** (this spec) | images generated; Shivaliba sign-off |
+| — | **Anatomical illustration set** (cross-cutting) | OpenAI API key |
+| 2 | **Content system + admin authoring** — catalogue → Firestore, admin UI for Shivaliba to create/edit/illustrate/set review dates/publish; no developer, no deploy | Phase 1 shipped |
+| 3 | **Catalogue expansion** — grow to ~300–400 exercises + more condition hubs, prioritised by what ranks and converts | Phase 2 |
+| 4 | **Professional video** — filmed demonstrations, top traffic-pullers first | Phase 1 live long enough to see the winners |
+
+## 3. Decisions locked (brainstorming)
+
+| Decision | Choice |
+|---|---|
+| Primary purpose | Public authority + patient acquisition (SEO + trust → booking) |
+| Media | AI illustrations now; professional video for the traffic-winners later (Phase 4) |
+| Image style | **Detailed anatomical illustration** — realistic human figure, working muscles/joint highlighted, physio-textbook / Muscle & Motion look |
+| Content system | Firestore + admin authoring UI — but that is **Phase 2**; Phase 1 stays in `lib/` behind an abstraction |
+| Library structure | **Condition-led hubs**; canonical exercise pages hang off them |
+| Phase 1 first milestone | Ship the public library fast on the existing 158; CMS follows |
+
+## 4. Architecture
+
+### 4.1 Routes
+
+All under `/exercises`, all statically generated at build (`force-static` +
+`generateStaticParams`, matching `/services/[slug]` and `/blog/[slug]`), all in
+`sitemap.xml`.
+
+| Route | Page | Count | Indexed |
+|---|---|---|---|
+| `/exercises` | Library index — browse by condition, browse by body area, search, featured | 1 | yes |
+| `/exercises/for/[condition]` | **Condition hub** | ~15–18 | yes |
+| `/exercises/[slug]` | Canonical single-exercise page | 158 | yes |
+| `/exercises/area/[bodyArea]` | Body-area browse (secondary nav) | ~9 | crawled, but `canonical` → `/exercises` (not a ranking target) |
+| `/exercises/how-we-make-this` | Methodology / clinical-governance page | 1 | yes |
+
+The `for/` segment namespaces conditions so a condition slug and an exercise
+slug can never collide. `area/` is a thin filtered view — it exists for human
+navigation and internal linking, not as its own ranking target, hence the
+self-referential canonical points back to the index.
+
+### 4.2 Data model (Phase 1 — in `lib/`)
+
+**`lib/exercises.ts` — `Exercise` gains:**
+
+```ts
+slug: string;          // "clamshell" — stable, unique, kebab-case, never changes once published
+aka?: string[];        // ["clam", "clamshell hip"] — alt names for search + "also known as"
+helpsWith?: string[];  // condition slugs this exercise appears in, beyond its primary `condition`
+```
+
+`slug` is **required** and enforced unique by a test. The existing `condition`
+field stays as the exercise's *primary* condition.
+
+**`lib/conditions.ts` — new. One `Condition` per hub:**
+
+```ts
+export type ConditionStage = {
+  stage: string;            // "Settle the pain" | "Build strength" | "Return to activity"
+  blurb: string;            // what this stage is for + how you know you're ready to progress
+  exerciseSlugs: string[];  // curated by Shivaliba from the catalogue
+};
+
+export type Condition = {
+  slug: string;              // "rotator-cuff-tendinopathy"
+  name: string;              // "Rotator cuff tendinopathy"
+  aka?: string[];            // ["rotator cuff tendinitis", "rotator cuff related shoulder pain"]
+  serviceSlug?: string;      // maps to a /services/[slug] for cross-linking
+  bodyArea: string;          // "Shoulder" — for the area browse pages
+  seoTitle: string;          // "Rotator cuff tendinopathy exercises | PhysioOnClick"
+  seoDescription: string;
+  intro: string;             // 2–3 short paragraphs, plain language: what it is, why it happens
+  whoItHelps: string;        // when these exercises are the right thing; when to get assessed first
+  program: ConditionStage[];
+  redFlags: string[];        // condition-specific "see a doctor first if…"
+  recoveryTimeline: string;  // realistic, evidence-informed
+  progressGuidance: string;  // stepping up, easing off, what a normal flare feels like
+  faqs: { q: string; a: string }[];   // 3–5
+  relatedConditionSlugs?: string[];
+  relatedBlogSlugs?: string[];
+  reviewedBy: string;        // "Shivaliba Zala"
+  reviewedOn: string;        // ISO date
+};
+```
+
+**`lib/exercise-library.ts` — new. Read helpers (the abstraction layer):**
+
+```ts
+getCondition(slug): Condition | null
+allConditionSlugs(): string[]
+getExerciseBySlug(slug): Exercise | null
+exercisesForCondition(slug): { stage: ConditionStage; exercises: Exercise[] }[]
+conditionsForExercise(slug): Condition[]        // primary + helpsWith, resolved
+relatedExercises(slug, limit): Exercise[]       // same bodyArea / shared conditions
+exercisesByBodyArea(area): Exercise[]
+searchLibrary(query): { exercises: Exercise[]; conditions: Condition[] }
+```
+
+Every public page imports **only** from `lib/exercise-library.ts`, never from
+`lib/exercises.ts` / `lib/conditions.ts` directly. Phase 2 reimplements these
+helpers against Firestore with the static arrays as the fallback — no page
+changes.
+
+### 4.3 Content-source abstraction
+
+Mirror `lib/firestore-content.ts`: the helpers return static data in Phase 1;
+in Phase 2 they check `NEXT_PUBLIC_USE_LIVE_CONTENT` and layer Firestore
+documents on top, falling back to the static array per-item. The public pages
+never know which source answered.
+
+## 5. Page designs
+
+Design language: **The Clarity System** (`DESIGN.md`). Warm paper `#F6F3EC`
+ground, navy `#043246` ink, single working accent `#0A77A8` (never raw
+`#0EA5E9` on light backgrounds — 2.77:1). Fraunces for headings/authority, DM
+Sans for everything functional. Flat + bordered at rest; elevation only on
+hover/focus/overlay. Selected state = tint + border, never a solid fill.
+Register: `brand` (these are public marketing pages, like `/services`).
+
+All pages: responsive single-column from ~360px; a right rail appears at
+`≥960px` on the hub. Every interactive element has a visible focus ring.
+Headings form a strict `h1 → h2 → h3` outline (SEO + a11y). Images carry
+descriptive `alt`. Prefers-reduced-motion respected (the system has almost no
+motion anyway).
+
+### 5.1 Library index — `/exercises`
+
+- **Hero** (`brand` register): Fraunces `h1` "Exercise library", one-line
+  standfirst, a short paragraph — what it is, who it's for, and the standing
+  line "Always worth getting assessed if you're not sure — [book an
+  assessment]".
+- **Search** — a single text input (client-side; filters exercise titles +
+  `aka` + condition names). Instant results list; Enter goes to a results
+  view. No server round-trip.
+- **Browse by condition** — a card grid of the ~15–18 hubs. Each card: body
+  area label (DM Sans `label` style), condition name (Fraunces `title`),
+  one-line `seoDescription`, exercise count. Hover = lift + shadow.
+- **Browse by body area** — a compact chip row (Shoulder, Knee, Back, …) →
+  `/exercises/area/[bodyArea]`.
+- **Featured** — 4–6 hand-picked exercises or hubs (Phase 1: hard-coded;
+  Phase 2: editable). 
+- **Footer CTA band** — "Not sure where to start? Book an online assessment."
+
+Empty/again-loading: search shows a skeleton row (existing `SkeletonRow`); no
+results shows an `EmptyState` ("Nothing matches '…' — try a body part or
+condition name").
+
+### 5.2 Condition hub — `/exercises/for/[condition]`
+
+The SEO and conversion workhorse. Layout: main column + sticky right rail at
+`≥960px`; rail collapses inline above the program on mobile.
+
+**Order of blocks (top to bottom):**
+
+1. **Breadcrumb** — `Exercises › [Condition]` (`BreadcrumbList` schema).
+2. **`h1`** — `[Condition] exercises` (Fraunces headline). The keyword is in
+   the `h1` and the `<title>`, not forced into the URL slug.
+3. **Byline** — 28px initials avatar (accent tint bg), "Shivaliba Zala,
+   HCPC-registered physiotherapist · #[number]", "Clinically reviewed
+   [reviewedOn]" with a `ti-shield-check`-style tick. Renders `Person` +
+   `lastReviewed` schema.
+4. **Intro** — `condition.intro`, DM Sans body, ~2–3 short paragraphs.
+5. **Red-flag box** — coral-tint background (`#FFF1EC`), coral border, warning
+   icon, heading "See a doctor first if", `condition.redFlags` as a short
+   inline list. Sits high, before the exercises, deliberately.
+6. **The staged program** — one bordered container, a stacked sequence of
+   stages:
+   - Stage header: a tint+border pill "Stage 1", stage name (Fraunces title),
+     `stage.blurb` (DM Sans, muted).
+   - Exercise cards in a responsive grid (`repeat(auto-fit, minmax(180px,
+     1fr))`): the **anatomical illustration thumbnail** (or stick-figure
+     fallback), title, `formatDosage(resolveDosage(ex))` one-liner, "Full
+     instructions →" linking to `/exercises/[slug]`. Hover = lift.
+   - Cards are `<a>` wrapping the whole tile (large tap target); the inner
+     "Full instructions" is a visual affordance, not a nested link.
+7. **How to progress** + **Recovery timeline** — two side-by-side bordered
+   cards (`progressGuidance`, `recoveryTimeline`); stack on mobile.
+8. **FAQ** — an accordion (`<details>`/`<summary>`, works without JS, keyboard
+   accessible). Renders `FAQPage` schema from `condition.faqs`.
+9. **Related** — inline links: related conditions, the mapped
+   `/services/[serviceSlug]`, `relatedBlogSlugs`.
+10. **Footer CTA band** — "Want this tailored to you? Book an online
+    assessment" → `/book`.
+
+**Right rail (`≥960px`, sticky):** accent-tint card — "Get a version tailored
+to you by a physiotherapist" → primary button "Book an online assessment"
+(shows the price from `lib/site-data.ts`), secondary text link "or get this
+plan as a PDF" → the email-capture flow (§7).
+
+### 5.3 Single exercise page — `/exercises/[slug]`
+
+Canonical, condition-independent. Reuses 100% of existing catalogue content.
+
+1. **Breadcrumb** — `Exercises › [Exercise]`.
+2. **Hero**: two columns at `≥720px` (illustration left ~40%, text right),
+   stacked below.
+   - Illustration: the anatomical image at a large size, `alt` = a plain
+     description of the position.
+   - `h1` "[Title] exercise"; if `aka`, a muted "Also known as: …" line.
+   - "What it's for" — tint chips linking to each condition hub
+     (`conditionsForExercise`).
+   - "Starting dose" — `formatDosage(resolveDosage(ex))`, prefixed with a
+     repeat icon, plus the muted line "Your physiotherapist may adjust this."
+   - CTAs: primary "Add to my plan" (§7 soft hook), secondary "Book an
+     assessment".
+3. **How to do it** — a bordered card. "Set up" (bold lead-in + `ex.setup`),
+   "Steps" (numbered `<ol>`), then two columns: "Good form" (`ex.cues`, green
+   ticks) and "Common mistakes" (`ex.mistakes` minus the safety line, warning
+   marks). Renders `HowTo` schema (`step`, `tool` = `ex.equipment`,
+   `totalTime` derived from the dose where sensible, `image`).
+4. **Safety callout** — error-tint (`#FEE2E2`-ish per system) box: the "Stop
+   and message your physio if…" line from `ex.mistakes`.
+5. **Video slot** — hidden in Phase 1; a `VideoObject`-ready component that
+   renders only when `ex.videoObject` is present (Phase 4).
+6. **Conditions this helps** — links to every hub in `conditionsForExercise`.
+7. **Related exercises** — `relatedExercises(slug, 4)` as small cards.
+8. **Byline** — same author + review-date treatment as the hub.
+9. **Footer CTA band**.
+
+### 5.4 Body-area browse — `/exercises/area/[bodyArea]`
+
+A filtered list of `exercisesByBodyArea(area)` as small cards, plus links to
+the condition hubs in that area. `canonical` → `/exercises`. Minimal.
+
+### 5.5 Methodology — `/exercises/how-we-make-this`
+
+Prose page: how exercises are drafted, that a HCPC-registered physiotherapist
+clinically reviews every one before publication, the re-review cadence (every
+12 months or when clinical guidance changes), the evidence basis, and how to
+report a concern. Links from the byline on every library page.
+
+## 6. Images — anatomical illustration set (cross-cutting workstream)
+
+Blocking dependency: a working image-generation API. `OPENAI_API_KEY` (a
+`platform.openai.com` key with billing — **not** ChatGPT Plus) in
+`.env.development`; the generate script auto-detects it (`gpt-image-1`).
+
+### 6.1 Style contract change
+
+`docs/exercise-image-style.md` and the `IMAGE_STYLE_PREFIX` / `IMAGE_STYLE_SUFFIX`
+constants in `lib/exercise-image-prompts.ts` change from "flat 2D vector, no
+facial features, sky-blue motion arrow" to:
+
+> Detailed medical illustration of a human figure performing the exercise,
+> realistic proportions and joint positions, the primary working muscles
+> subtly highlighted/shaded, clean textbook style, neutral studio background,
+> a single sky-blue (#0EA5E9) motion arrow, PhysioOnClick navy line accents,
+> no text, [consistent camera angle per body region].
+
+All 158 prompt cores are (re)written to this style — the 27 existing ones
+revised, 131 new. Prompt authoring is a Claude task (drafted into
+`lib/exercise-image-prompts.ts`), free.
+
+### 6.2 Pipeline (unchanged)
+
+`generate-exercise-images.ts --all` → `brand-exercise-images.ts --all`
+(composites the PhysioOnClick footer) → **Shivaliba reviews every image for
+clinical accuracy** → `upload-exercise-images.ts --all` → add ids to
+`uploadedImageIds` in `lib/exercise-image-prompts.ts` and commit. Until an id
+is in `uploadedImageIds`, the web and PDF fall back to the stick figure — so
+the library can ship progressively.
+
+### 6.3 Cost
+
+`gpt-image-1` medium quality ≈ $0.042 / 1024px image. 158 + ~40% regeneration
+buffer ≈ **$10–15 one-time**. Ongoing ~$1–3/month as the catalogue grows. Set a
+$15–20 monthly limit on the key.
+
+## 7. Conversion funnel
+
+- **Primary CTA** on every hub and exercise page: "Book an online assessment"
+  → `/book`. Uses the existing `TrackedBookLink` component.
+- **PDF capture** (hubs): "Get this plan as a PDF" → a lightweight form (email
+  only) → server route builds the branded plan PDF for that condition's
+  program (reuse `lib/exercise-plan-pdf.ts` with generic header values — no
+  patient name; physio = `founder.name`; date = today), emails it via Resend,
+  and records the lead. New route `app/api/exercise-plan/condition-pdf/`.
+  Rate-limited and behind a simple bot check (honeypot field) since it is a
+  public, email-sending endpoint.
+- **"Add to my plan"** (exercise pages): appends the exercise to a
+  `localStorage` list; a floating "N exercises · view plan" affordance;
+  "view plan" shows the list with a "Save to your account" prompt (existing
+  magic-link auth) and, for signed-in users, "Book to have a physio tailor
+  this".
+- **Chatbot**: `lib/chat-prompt.ts` / `lib/chat-tools.ts` gain awareness of
+  library URLs so the assistant can link to a hub or exercise.
+- **Analytics** (extends `lib/analytics.ts`): `library_hub_view`,
+  `library_exercise_view`, `library_add_to_plan`, `library_pdf_request`,
+  `library_cta_click` (with the condition/exercise slug). This data selects
+  Phase 3 conditions and Phase 4 video priorities.
+
+## 8. SEO & indexing
+
+- **`sitemap.xml`** (`app/sitemap.ts`): add every `/exercises/**` URL. It
+  currently has none.
+- **Indexed, not noindex.** The blog is `noindex` (templated/duplicate risk,
+  see `project_blog_noindex_deliberate`). The library is the opposite —
+  unique, clinically reviewed, first-party content — so it is indexed. State
+  this in the spec so no one "consistency-fixes" it to noindex later.
+- **Structured data** (`lib/structured-data.ts` gains builders):
+  - exercise page: `HowTo` + (when present) `VideoObject`
+  - condition hub: `MedicalWebPage` + `FAQPage` + `BreadcrumbList`
+  - author: `Person` with `hasCredential` (HCPC registration) + page
+    `lastReviewed` / `reviewedBy`
+- **`<title>` / meta**: `condition.seoTitle` / `seoDescription`;
+  exercise pages `"[Title] exercise | PhysioOnClick"` + a generated
+  description from `ex.setup`.
+- **Canonicals**: exercise + hub pages self-canonical; `area/*` → `/exercises`.
+- **OG images**: `app/exercise-og/[slug]/route.ts` and
+  `app/condition-og/[slug]/route.ts` — SVG routes exactly like
+  `app/blog-images/[slug]/route.ts` and `app/service-images/[slug]/route.ts`.
+  Title + (for exercises) the illustration + the PhysioOnClick mark.
+- **Internal linking**: hub ↔ exercise ↔ mapped service ↔ related conditions ↔
+  relevant blog posts. Add reciprocal links from the six `/services/[slug]`
+  pages and from relevant blog articles to their condition hubs.
+
+## 9. Governance & E-E-A-T
+
+- Every library page: author byline + HCPC number, "Clinically reviewed
+  [date]", and a one-line disclaimer linking to `/medical-disclaimer`.
+- `/exercises/how-we-make-this` (§5.5).
+- `reviewedOn` per exercise and per condition. Surfaced on-page now; drives a
+  "needs re-review" admin view in Phase 2.
+- No exercise or hub is publishable (added to the live arrays / removed from a
+  `draft` state) until Shivaliba has signed it off. Phase 1: tracked in the
+  review docs. Phase 2: a status field in Firestore.
+
+## 10. Content plan
+
+### 10.1 Condition hubs for launch (~15–18)
+
+Curated from the ~35 distinct `condition` values in the catalogue, chosen for
+UK search demand + mapping to the six services. Shivaliba confirms and
+prioritises; anything not ready at launch is simply omitted (no broken links).
+
+Candidate set:
+
+| Body area | Conditions |
+|---|---|
+| Back / neck | Low back pain · Sciatica · Neck pain |
+| Shoulder | Rotator cuff tendinopathy · Frozen shoulder · Shoulder impingement |
+| Elbow / wrist | Tennis elbow |
+| Hip / knee | Knee osteoarthritis · Patellofemoral pain · Gluteal tendinopathy |
+| Ankle / foot | Achilles tendinopathy · Ankle sprain |
+| Post-surgical | After knee replacement · After hip replacement · After ACL reconstruction |
+| Other services | Falls prevention · Pelvic floor / stress incontinence · Pregnancy-related pelvic girdle pain |
+
+### 10.2 Per-hub copy (new — AI-drafted, Shivaliba reviews)
+
+~250–400 words each: `intro`, `whoItHelps`, three `stage.blurb`s, `redFlags`,
+`recoveryTimeline`, `progressGuidance`, 3–5 `faqs`, and the
+`stage.exerciseSlugs` grouping (she curates from the catalogue — the existing
+`condition` + `stage` fields give the starting split).
+
+Delivered as one review document (`docs/exercises-review/condition-hubs.md`),
+same pipeline as the exercise write-ups.
+
+### 10.3 The critical path is clinical review
+
+Shivaliba must sign off, before launch:
+- the 158 exercise write-ups (`docs/exercises-review/full-catalogue.md` — she
+  needs to anyway)
+- the 158 anatomical images
+- the ~18 condition-hub docs
+
+Realistically a week or two of her part-time attention. This gates the launch,
+not the build. The build (§11) proceeds against placeholder hub copy and the
+stick-figure fallback so it is ready the moment sign-off lands.
+
+## 11. Build order
+
+1. **Images**: rewrite the style contract + all 158 prompt cores; once the
+   OpenAI key is in place, `generate --all` → `brand --all`. (Needs the key.)
+2. **Data + helpers**: add `slug`/`aka`/`helpsWith` to `Exercise`; create
+   `lib/conditions.ts` (with placeholder copy) and `lib/exercise-library.ts`;
+   slug-uniqueness test.
+3. **Pages**: `/exercises`, `/exercises/for/[condition]`, `/exercises/[slug]`,
+   `/exercises/area/[bodyArea]`, `/exercises/how-we-make-this` — built against
+   the existing 158 + placeholder hubs.
+4. **SEO plumbing**: sitemap entries, schema builders, OG-image routes,
+   canonicals, `<title>`/meta, service ↔ hub reciprocal links.
+5. **Funnel**: `TrackedBookLink` CTAs, the condition-PDF capture route,
+   "Add to my plan", chatbot URL awareness, analytics events.
+6. **Content**: AI-draft the ~18 hubs → Shivaliba review → integrate (parallel
+   with 3–5).
+7. **Sign-off**: Shivaliba approves write-ups + images + hubs.
+8. **Ship**: fill real hub copy, confirm every generated image is uploaded (or
+   accept the stick-figure fallback for stragglers), submit the sitemap in
+   Search Console, announce.
+
+Deploy: `npm run deploy:dev` throughout; `npm run deploy` for production once
+signed off.
+
+## 12. Non-goals (Phase 1)
+
+- The Firestore content system / admin authoring UI (Phase 2).
+- Any new exercises beyond the existing 158 (Phase 3).
+- Professional video (Phase 4).
+- B2B / multi-clinic / selling access.
+- User accounts beyond the existing magic-link auth ("Add to my plan" is
+  `localStorage` until a user opts to save).
+- Personalised programs generated on the public side (that's what booking is
+  for).
+- Non-English content.
+
+## 13. Open questions for Shivaliba
+
+1. The final condition list and launch priority order (§10.1).
+2. Per-condition red flags and realistic recovery timelines.
+3. The stage grouping of exercises per condition — does the catalogue's
+   `stage` field map cleanly, or does she want to regroup?
+4. Whether any exercise needs a title change (kept from the earlier review).
+5. Sign-off cadence — can she review in batches (e.g. one body region per
+   sitting) to unblock a partial launch?
+
+## 14. Success metrics (review at 60 and 120 days post-launch)
+
+- `/exercises/**` pages indexed in Search Console (target: >90% within 30 days)
+- Organic impressions and clicks to `/exercises/**` (baseline ~0)
+- `library_cta_click` → `/book` starts → completed bookings attributed to a
+  library entry page
+- `library_pdf_request` volume (email leads)
+- Which condition hubs drive the above — feeds Phase 3 and Phase 4 priority
+
+---
+
+*Roadmap sub-projects 2–4 each get their own spec when Phase 1 is live.*
