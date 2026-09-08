@@ -12,6 +12,13 @@ export type Service = {
   /** Honest scope boundary — when this should be in-person or another clinician instead. */
   whenInPersonInstead: string;
   faqs: { question: string; answer: string }[];
+  /**
+   * Condition-hub slugs (from `lib/conditions.ts`) this service should link to
+   * as "Exercises for these conditions". Optional; every slug must resolve via
+   * `getCondition` in `@/lib/exercise-library`. Omit (or `[]`) when there is no
+   * meaningful exercise-library overlap.
+   */
+  relatedConditionSlugs?: string[];
   seoTitle: string;
   seoDescription: string;
 };
@@ -112,6 +119,18 @@ export const services: Service[] = [
           "It depends on how long the pain has been present and how it responds to the first phase of loading, but most plans run 4-8 sessions across 6-10 weeks, with exercises to do independently in between."
       }
     ],
+    relatedConditionSlugs: [
+      "low-back-pain",
+      "sciatica",
+      "neck-pain",
+      "rotator-cuff-tendinopathy",
+      "frozen-shoulder",
+      "shoulder-impingement",
+      "tennis-elbow",
+      "knee-osteoarthritis",
+      "patellofemoral-pain",
+      "achilles-tendinopathy"
+    ],
     seoTitle: "Physiotherapist Glasgow for Back, Neck and Joint Pain",
     seoDescription:
       "Evidence-based musculoskeletal physiotherapy in Glasgow and online across the UK."
@@ -160,6 +179,12 @@ export const services: Service[] = [
         answer:
           "With your consent, yes — a written summary of your rehab plan and progress can be shared so your wider care team stays informed, particularly around any milestone check-ups."
       }
+    ],
+    relatedConditionSlugs: [
+      "after-knee-replacement",
+      "after-hip-replacement",
+      "after-acl-reconstruction",
+      "acl-rehabilitation"
     ],
     seoTitle: "Post Knee Replacement Rehab UK | PhysioOnClick",
     seoDescription:
@@ -308,6 +333,7 @@ export const services: Service[] = [
           "You'll position your device so your full stride is visible and walk a short, safe distance indoors while being observed and guided — most homes have enough space for this."
       }
     ],
+    relatedConditionSlugs: ["falls-prevention"],
     seoTitle: "Gait Assessment Glasgow | PhysioOnClick",
     seoDescription:
       "Walking and mobility assessments designed to improve confidence, function and independence."
@@ -356,6 +382,14 @@ export const services: Service[] = [
         answer:
           "That's exactly what the first call establishes — if you're a better fit for one of the specific services (post-surgical, neurological, paediatric, gait), you'll be moved there at no extra cost."
       }
+    ],
+    relatedConditionSlugs: [
+      "low-back-pain",
+      "neck-pain",
+      "rotator-cuff-tendinopathy",
+      "knee-osteoarthritis",
+      "gluteal-tendinopathy",
+      "achilles-tendinopathy"
     ],
     seoTitle: "Online Physio UK | PhysioOnClick",
     seoDescription:

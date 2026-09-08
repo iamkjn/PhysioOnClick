@@ -2,6 +2,12 @@ import type { MetadataRoute } from "next";
 
 import { services } from "@/lib/site-data";
 import { blogArticles } from "@/lib/blog";
+import {
+  allConditionSlugs,
+  allExerciseSlugs,
+  bodyAreas,
+  getCondition,
+} from "@/lib/exercise-library";
 
 const routes = [
   "",
@@ -48,5 +54,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(article.lastReviewedAt || article.publishedAt),
   }));
 
-  return [...staticEntries, ...serviceEntries, ...blogEntries];
+  // Public exercise library (Phase 1). Every URL is derived from
+  // lib/exercise-library.ts — the same read helpers the pages themselves use —
+  // so a new condition, exercise or body area can't silently drift out of the
+  // sitemap, and the encoding here matches the route params exactly.
+  const exerciseLibraryEntries = [
+    { url: `${base}/exercises` },
+    { url: `${base}/exercises/how-we-make-this` },
+  ];
+
+  // Condition hubs carry a truthful `lastModified`: `reviewedOn` is a real
+  // clinical-review date stamped on the record, not a build timestamp.
+  const conditionEntries = allConditionSlugs().map((slug) => ({
+    url: `${base}/exercises/for/${slug}`,
+    lastModified: new Date(getCondition(slug)!.reviewedOn),
+  }));
+
+  // No `lastModified` on the individual exercise or body-area pages: there is
+  // no per-item review date to report yet (Phase 2 tracks those), and stamping
+  // the build date would be exactly the fabricated signal the static routes
+  // above deliberately avoid.
+  const exerciseEntries = allExerciseSlugs().map((slug) => ({
+    url: `${base}/exercises/${slug}`,
+  }));
+
+  const bodyAreaEntries = bodyAreas().map((area) => ({
+    url: `${base}/exercises/area/${encodeURIComponent(area)}`,
+  }));
+
+  return [
+    ...staticEntries,
+    ...serviceEntries,
+    ...blogEntries,
+    ...exerciseLibraryEntries,
+    ...conditionEntries,
+    ...exerciseEntries,
+    ...bodyAreaEntries,
+  ];
 }

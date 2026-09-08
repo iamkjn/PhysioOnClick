@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { articlesForServiceSlug } from "@/lib/blog";
+import { getCondition } from "@/lib/exercise-library";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { founder, pricing, services } from "@/lib/site-data";
 import { breadcrumbs, serviceSchema } from "@/lib/structured-data";
@@ -178,6 +179,26 @@ export default async function ServiceDetailPage({
           </article>
         </Reveal>
       </section>
+
+      {service.relatedConditionSlugs?.length ? (
+        <section className="page-section stack simple-services-list">
+          <Reveal direction="up">
+            <div className="section-heading">
+              <h2>Exercises for these conditions</h2>
+              <p>Staged home-exercise programmes from the PhysioOnClick library for conditions treated in this service.</p>
+            </div>
+          </Reveal>
+          <ul className="service-approach-list">
+            {service.relatedConditionSlugs.map((conditionSlug) => (
+              <li key={conditionSlug}>
+                <Link href={`/exercises/for/${conditionSlug}`} prefetch>
+                  {getCondition(conditionSlug)?.name} exercises
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {relatedArticles.length ? (
         <section className="page-section stack simple-services-list">
