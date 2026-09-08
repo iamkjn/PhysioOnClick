@@ -456,6 +456,96 @@ stick-figure fallback so it is ready the moment sign-off lands.
 Deploy: `npm run deploy:dev` throughout; `npm run deploy` for production once
 signed off.
 
+## 11a. Self-check tests (Phase 1 — Part B)
+
+A second public content type alongside exercises: **self-check tests** — plain,
+safe, illustrated movement tests a person can try at home to see what their
+symptoms might point towards, each mapping to one or more condition hubs. The
+sample provided (a branded "Full Can Test" card) sets the format.
+
+**Positioning.** These are *informational triage*, not diagnosis. Every test
+page and card carries: "This is a guide, not a diagnosis. It cannot rule a
+problem in or out — a physiotherapist can. If you have [red flags], see a
+doctor." A positive result funnels straight to "book an online assessment"
+(the natural next step — someone who just reproduced their pain wants it
+looked at). This is a high-intent SEO surface: "full can test", "hawkins
+kennedy test", "slump test for sciatica", "how to tell if I have a rotator
+cuff tear".
+
+**Route:** `/exercises/tests` (index) + `/exercises/tests/[slug]` (one test).
+Statically generated, indexed, in the sitemap, with OG images.
+
+**Data model — `lib/self-tests.ts`:**
+
+```ts
+export type SelfTestStep = {
+  label: string;          // "Lift to 90 degrees"
+  instruction: string[];  // 1-3 bullet points
+  imageId: string;        // -> /exercise-images/{imageId}.png  (e.g. "test-full-can-3")
+};
+export type SelfTest = {
+  slug: string;              // "full-can-test"
+  name: string;              // "Full Can Test"
+  aka?: string[];            // "full can", "supraspinatus test"
+  assesses: string;          // "The supraspinatus muscle (part of the rotator cuff)"
+  bodyArea: string;          // reuses the exercise bodyArea vocabulary
+  conditionSlugs: string[];  // hubs this test points towards
+  whatItChecks: string;      // 1-2 plain sentences
+  whoShouldNotDoThis: string;// e.g. "a recent injury, you cannot lift the arm at all, or it is very painful at rest"
+  steps: SelfTestStep[];     // 3-5
+  negativeResult: string[];  // "normal / negative" bullets (green box)
+  positiveResult: string[];  // "positive" bullets (red box)
+  tips: string[];            // (blue box)
+  interpretation: string;    // "A positive result may point towards ... It does not confirm it."
+  reviewedBy: string;
+  reviewedOn: string;
+};
+export const selfTests: SelfTest[];
+```
+
+**Helpers (extend `lib/exercise-library.ts`):** `getSelfTest(slug)`,
+`allSelfTestSlugs()`, `selfTestsForCondition(conditionSlug)`,
+`selfTestsByBodyArea(area)`.
+
+**Page layout** (mirrors the sample card): breadcrumb → `h1` "[Name]" + a
+sub-line "Checks: [assesses]" → byline → "what this checks" → a **"do not do
+this test if"** callout (coral) → the numbered photo steps (photo left / label
++ bullets right, stack on mobile) → three result panels: **Normal / negative**
+(success tint), **Positive** (error tint), **Tips** (accent tint) → the
+interpretation + disclaimer → "Points towards" links to the mapped condition
+hubs → **primary CTA "Book an online assessment"** → footer band. A
+"Download this as a card (PDF)" secondary action reuses the plan-PDF /
+infographic pipeline.
+
+**Images:** photo-style (the sample uses photos), same `gpt-image-1` pipeline
+and brand-footer compositing as the exercise illustrations but a distinct
+`SELF_TEST_IMAGE_STYLE` contract (realistic photo of a person demonstrating the
+position, consistent model/wardrobe/background, the sky-blue angle arrow where
+the sample has one). Prompts in `lib/self-test-image-prompts.ts`. Same
+`uploadedImageIds` go-live gate; until an image exists the step shows a
+labelled placeholder, the page still ships. (Note: a concurrent workstream has
+`scripts/build-numbered-exercise-photo-cards.mjs` + `generated-assets/` for a
+similar photo-card renderer — reconcile before building the downloadable card,
+don't duplicate.)
+
+**Launch set (~10–14, one to two per region, all mapping to a hub):** Full Can
+Test + Hawkins-Kennedy (shoulder), Painful Arc self-check, resisted wrist
+extension / Cozen's self-version (tennis elbow), Slump / Straight Leg Raise
+self-check (sciatica), single-leg decline squat quality (patellofemoral),
+Trendelenburg mirror check (gluteal tendinopathy), single-leg calf-raise +
+hop (Achilles / ankle), active knee-extension (hamstring), FABER-style hip
+check, chin-tuck + rotation range (neck). Shivaliba confirms the list and
+every result-interpretation line — clinical review is the same gate as the
+exercises and hubs.
+
+**Schema:** `MedicalWebPage` + `about: MedicalCondition` + `BreadcrumbList` +
+author `Person`. Deliberately NOT `MedicalTest` / `MedicalGuideline` — those
+assert clinical validity this content does not claim.
+
+**Non-goals for Part B:** no scored symptom questionnaire / triage algorithm
+(that is a bigger medico-legal build); no "your result is X" persistence; the
+tests are static informational pages, not an interactive assessment.
+
 ## 12. Non-goals (Phase 1)
 
 - The Firestore content system / admin authoring UI (Phase 2).
@@ -477,6 +567,10 @@ signed off.
 4. Whether any exercise needs a title change (kept from the earlier review).
 5. Sign-off cadence — can she review in batches (e.g. one body region per
    sitting) to unblock a partial launch?
+6. Self-check tests (§11a): the launch list, and — the important one — the
+   exact wording of every "positive result" and "interpretation" line, plus
+   the "who should not do this test" line per test. This is the highest
+   medico-legal sensitivity in the whole library.
 
 ## 14. Success metrics (review at 60 and 120 days post-launch)
 

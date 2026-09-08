@@ -595,6 +595,49 @@ git commit -m "feat(exercises): condition-hub content model + records (draft, pe
 
 ---
 
+## Part B — Self-check tests (added 2026-09-08, spec §11a)
+
+Runs after Tasks 1–14 land. Same TDD + review discipline. Shivaliba's review of every result/interpretation line is the launch gate (highest medico-legal sensitivity in the library).
+
+### Task 15: `lib/self-tests.ts` model + records + helpers
+
+- **Create** `lib/self-tests.ts` — `SelfTestStep` / `SelfTest` types (verbatim from spec §11a) + `selfTests: SelfTest[]` with ~10–14 records (draft copy, review-gated; model the Full Can Test record on the user's sample card exactly). **Extend** `lib/exercise-library.ts`: `getSelfTest(slug)`, `allSelfTestSlugs()`, `selfTestsForCondition(conditionSlug)`, `selfTestsByBodyArea(area)` — re-export `SelfTest`.
+- **Test** `tests/lib/self-tests.test.ts`: ≥8 tests; unique kebab slugs; every `conditionSlugs` entry resolves to a real `lib/conditions.ts` slug; 3–5 `steps` each with `label` + ≥1 `instruction` + an `imageId` matching `/^test-[a-z0-9-]+-\d+$/`; non-empty `negativeResult`/`positiveResult`/`tips`/`whoShouldNotDoThis`/`interpretation`; `reviewedBy` === "Shivaliba Zala"; ISO `reviewedOn`; Latin-1 only.
+- **Review doc** `docs/exercises-review/self-tests.md` — one section per test, every field, `- [ ] Approved` + Notes, header stressing the medico-legal review need.
+- Commit: `feat(exercises): self-check test content model + records (draft, pending clinical review)`.
+
+### Task 16: `lib/self-test-image-prompts.ts` — photo-style prompts
+
+- **Create** `lib/self-test-image-prompts.ts`: `SELF_TEST_IMAGE_STYLE_PREFIX`/`SUFFIX` (realistic photo of a person demonstrating the position, consistent model/wardrobe/plain background, sky-blue angle arrow where relevant, no text), `selfTestImagePrompts: Record<string,string>` keyed by every `step.imageId` across all records, `hasSelfTestImagePrompt(id)`, `fullSelfTestImagePrompt(id)`, `uploadedSelfTestImageIds` (empty Set) + `hasUploadedSelfTestImage(id)`.
+- **Test** `tests/lib/self-test-image-prompts.test.ts`: every `step.imageId` in `selfTests` has a prompt; style contract mentions "photo"/"photograph"; cores are one Latin-1 line.
+- **Update** `docs/exercise-image-style.md` with a "Self-check test photos" section.
+- Commit: `feat(exercises): self-check test photo prompts`.
+
+### Task 17: `/exercises/tests/[slug]` + `/exercises/tests` index
+
+- **Create** `app/exercises/tests/[slug]/page.tsx` (layout per spec §11a — steps as photo+label+bullets, the three result panels, the "do not do this if" callout, interpretation + disclaimer, "points towards" hub links, primary "Book an online assessment" CTA), `app/exercises/tests/page.tsx` (index grouped by body area), and shared components `components/exercise-library/self-test-steps.tsx` + `self-test-results.tsx`.
+- **Extend** `lib/structured-data.ts`: `selfTestWebPage(t, path)` — `MedicalWebPage` + `about: MedicalCondition` + author `personRef()` + `lastReviewed`. NOT `MedicalTest`.
+- **Reuse** existing `ExerciseImage`-style component or a new `SelfTestImage` that renders the uploaded photo or a labelled placeholder; `TrackedBookLink`; `ByLine`.
+- **Test** `tests/app/self-test-page.test.tsx`: `generateStaticParams` returns one per record; renders the steps, all three result panels, the disclaimer text, a link to each mapped hub, a `TrackedBookLink`, the `MedicalWebPage` JSON-LD; unknown slug → `notFound()`; `generateMetadata` title + canonical + OG `/self-test-og/[slug]`.
+- Commit: `feat(exercises): public self-check test pages`.
+
+### Task 18: wire self-tests into the library
+
+- **Condition hub** (`app/exercises/for/[condition]/page.tsx`): add a "Not sure it's this? Try a self-check" block listing `selfTestsForCondition(slug)` when non-empty, above the program.
+- **Library index** (`app/exercises/page.tsx`): a "Self-checks" section.
+- **Sitemap** (`app/sitemap.ts`): `/exercises/tests` + one `/exercises/tests/[slug]` per record.
+- **OG**: `app/self-test-og/[slug]/route.ts` + `generateSelfTestOgSvg` in `lib/exercise-library-svg.ts`.
+- **Analytics** (`lib/analytics.ts`): `library_selftest_view`, `library_selftest_cta_click`.
+- **Test**: extend `tests/app/sitemap.test.ts` for the new URLs; a hub test asserts the self-check block renders when `selfTestsForCondition` is non-empty.
+- Commit: `feat(exercises): wire self-check tests into hubs, index, sitemap, OG`.
+
+### Task 19 (optional): downloadable self-check card PDF
+
+- **Reconcile first** with the concurrent workstream's `scripts/build-numbered-exercise-photo-cards.mjs` + `generated-assets/` — do not duplicate. If that renderer already produces the branded infographic card, wire a "Download this as a card" action to it; otherwise a `buildSelfTestCardPdf` in the `lib/exercise-plan-pdf.ts` style (cover band + numbered photo steps + the three result panels + NAP footer) and a `GET /exercises/tests/[slug]/card` route.
+- Commit: `feat(exercises): downloadable self-check test card`.
+
+---
+
 ## Self-Review
 
 **Spec coverage:** routes §4.1 → Tasks 7–11; data model §4.2 → Tasks 1–3; page designs §5 → Tasks 5–9; images §6 → Task 14 (+ manual run); funnel §7 → Tasks 6, 8, 12, 13; SEO §8 → Tasks 4, 10, 11; governance §9 → Tasks 2 (`reviewedOn`), 5 (`ByLine`), 9 (methodology); content plan §10 → Task 2 + the review doc; sports §10.1a → Task 2 (hubs + 4-stage), Task 3 (`bodyAreas` category), Task 9 (chip). Build order §11 ≈ task order. Non-goals §12 respected (no Firestore, no new exercises, no video component beyond a null stub, magic-link auth only).
