@@ -170,7 +170,9 @@ export default async function ConditionHubPage({
           </div>
         </aside>
 
-        <main className="exlib-hub__main">
+        {/* A plain <div>, not <main>: app/layout.tsx already wraps every page
+            in the single <main id="main-content"> landmark. */}
+        <div className="exlib-hub__main">
           <ByLine reviewedOn={condition.reviewedOn} />
 
           <h1 className="exlib-hub__title">{condition.name} exercises</h1>
@@ -248,7 +250,7 @@ export default async function ConditionHubPage({
               ) : null}
             </section>
           ) : null}
-        </main>
+        </div>
       </div>
 
       <section className="simple-cta-band">

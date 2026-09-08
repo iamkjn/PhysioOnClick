@@ -70,13 +70,25 @@ describe("app/exercises/for/[condition] page", () => {
     ).toBeTruthy();
   });
 
-  it("renders one stage block per program entry, each carrying its blurb", async () => {
+  it("renders one stage block per program entry, each carrying its blurb and its exercise cards", async () => {
     const { container } = await renderPage(SLUG);
     const stages = container.querySelectorAll(".exlib-stage");
     expect(stages).toHaveLength(condition.program.length);
+    const program = programForCondition(SLUG);
     condition.program.forEach((stage, index) => {
       expect(stages[index]).toHaveTextContent(stage.blurb);
+      // every exercise in the stage renders as a card linking to its page
+      for (const exercise of program[index].exercises) {
+        expect(
+          stages[index].querySelector(`a[href="/exercises/${exercise.slug}"]`),
+        ).not.toBeNull();
+      }
     });
+  });
+
+  it("does not render its own <main> landmark (the layout owns the only one)", async () => {
+    const { container } = await renderPage(SLUG);
+    expect(container.querySelectorAll("main")).toHaveLength(0);
   });
 
   it("shows the recovery-timeline and progress-guidance copy", async () => {
