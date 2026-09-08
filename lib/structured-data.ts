@@ -203,13 +203,14 @@ const REVIEW_DATE = "2026-09-08";
 
 /** Trim `text` to a single, tidy ~155-character sentence fragment for use as a
  *  meta-style `description`. Cuts on a word boundary and adds an ellipsis only
- *  when it actually truncated. */
-function shortDescription(text: string, max = 155): string {
+ *  when it actually truncated. Uses "..." not the U+2026 glyph — house style
+ *  keeps this content ASCII/Latin-1 (see tests/lib/conditions.test.ts). */
+function shortDescription(text: string, max = 152): string {
   const clean = text.replace(/\s+/g, " ").trim();
   if (clean.length <= max) return clean;
   const slice = clean.slice(0, max);
   const cut = slice.slice(0, slice.lastIndexOf(" ")).trimEnd().replace(/[.,;:]$/, "");
-  return `${cut || slice.trimEnd()}…`;
+  return `${cut || slice.trimEnd()}...`;
 }
 
 /** `MedicalWebPage` for a single exercise page. Reuses the sitewide
