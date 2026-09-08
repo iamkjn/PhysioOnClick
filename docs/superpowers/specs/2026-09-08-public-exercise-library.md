@@ -56,10 +56,10 @@ All under `/exercises`, all statically generated at build (`force-static` +
 
 | Route | Page | Count | Indexed |
 |---|---|---|---|
-| `/exercises` | Library index — browse by condition, browse by body area, search, featured | 1 | yes |
-| `/exercises/for/[condition]` | **Condition hub** | ~15–18 | yes |
+| `/exercises` | Library index — browse by condition, browse by body area / category, search, featured | 1 | yes |
+| `/exercises/for/[condition]` | **Condition hub** (incl. the sports hubs — §10.1a) | ~18–22 | yes |
 | `/exercises/[slug]` | Canonical single-exercise page | 158 | yes |
-| `/exercises/area/[bodyArea]` | Body-area browse (secondary nav) | ~9 | crawled, but `canonical` → `/exercises` (not a ranking target) |
+| `/exercises/area/[bodyArea]` | Body-area / category browse (secondary nav) | ~10 | crawled, but `canonical` → `/exercises` (not a ranking target) |
 | `/exercises/how-we-make-this` | Methodology / clinical-governance page | 1 | yes |
 
 The `for/` segment namespaces conditions so a condition slug and an exercise
@@ -84,7 +84,8 @@ field stays as the exercise's *primary* condition.
 
 ```ts
 export type ConditionStage = {
-  stage: string;            // "Settle the pain" | "Build strength" | "Return to activity"
+  stage: string;            // e.g. "Settle the pain" / "Build strength" / "Return to activity".
+                            // Most conditions have 3 stages; sports hubs have 4 (adds "Power & change of direction").
   blurb: string;            // what this stage is for + how you know you're ready to progress
   exerciseSlugs: string[];  // curated by Shivaliba from the catalogue
 };
@@ -160,11 +161,13 @@ motion anyway).
 - **Search** — a single text input (client-side; filters exercise titles +
   `aka` + condition names). Instant results list; Enter goes to a results
   view. No server round-trip.
-- **Browse by condition** — a card grid of the ~15–18 hubs. Each card: body
+- **Browse by condition** — a card grid of the ~18–22 hubs. Each card: body
   area label (DM Sans `label` style), condition name (Fraunces `title`),
   one-line `seoDescription`, exercise count. Hover = lift + shadow.
-- **Browse by body area** — a compact chip row (Shoulder, Knee, Back, …) →
-  `/exercises/area/[bodyArea]`.
+- **Browse by body area / category** — a compact chip row (Shoulder, Knee,
+  Back, Ankle & foot, **Sports & return to activity**, …) →
+  `/exercises/area/[bodyArea]`. "Sports & return to activity" is a category
+  chip alongside the body-region chips (§10.1a).
 - **Featured** — 4–6 hand-picked exercises or hubs (Phase 1: hard-coded;
   Phase 2: editable). 
 - **Footer CTA band** — "Not sure where to start? Book an online assessment."
@@ -355,11 +358,11 @@ $15–20 monthly limit on the key.
 
 ## 10. Content plan
 
-### 10.1 Condition hubs for launch (~15–18)
+### 10.1 Condition hubs for launch (~18–22)
 
-Curated from the ~35 distinct `condition` values in the catalogue, chosen for
-UK search demand + mapping to the six services. Shivaliba confirms and
-prioritises; anything not ready at launch is simply omitted (no broken links).
+Curated from the ~100 distinct `condition` values in the catalogue, chosen for
+UK search demand + mapping to the services. Shivaliba confirms and prioritises;
+anything not ready at launch is simply omitted (no broken links).
 
 Candidate set:
 
@@ -367,18 +370,48 @@ Candidate set:
 |---|---|
 | Back / neck | Low back pain · Sciatica · Neck pain |
 | Shoulder | Rotator cuff tendinopathy · Frozen shoulder · Shoulder impingement |
-| Elbow / wrist | Tennis elbow |
+| Elbow / wrist | Tennis elbow · Golfer's elbow |
 | Hip / knee | Knee osteoarthritis · Patellofemoral pain · Gluteal tendinopathy |
 | Ankle / foot | Achilles tendinopathy · Ankle sprain |
+| **Sports & return to activity** | **Hamstring strain · Chronic ankle instability · Patellar tendinopathy (jumper's knee) · ACL rehabilitation · Return to running · Return to sport readiness** |
 | Post-surgical | After knee replacement · After hip replacement · After ACL reconstruction |
-| Other services | Falls prevention · Pelvic floor / stress incontinence · Pregnancy-related pelvic girdle pain |
+| Women's health / older adults | Falls prevention · Pelvic floor / stress incontinence · Pregnancy-related pelvic girdle pain |
+
+### 10.1a Sports therapy & exercises
+
+Sports rehabilitation is a first-class part of the library, not an afterthought:
+
+- **"Sports & return to activity" is one of the browse categories** on
+  `/exercises` and a `bodyArea`-style grouping (its `area/` page lists the
+  sports condition hubs + the load-management, plyometric, balance and
+  return-to-play exercises already in the catalogue: eccentric heel drop,
+  Nordic hamstring curl, split squat, box step-down, lateral band walk,
+  single-leg balance with arm reach, return-to-sport readiness circuit,
+  wall-squat isometric, etc.).
+- The sports condition hubs follow the same staged model — **load / settle →
+  progressive strength → power & change-of-direction → return-to-play
+  criteria** — with the last stage giving explicit, testable readiness
+  markers (e.g. limb symmetry, pain-free hopping, sport-specific drills) and
+  a strong "get assessed before you go back" message.
+- These hubs map to the **Musculoskeletal Physiotherapy** and **Online Rehab
+  Programmes** services; the spec assumes the MSK service page gains a short
+  "sports & athletic rehabilitation" paragraph + reciprocal links (a small
+  service-page edit, tracked in the plan).
+- **Catalogue gaps for Phase 3** (flagged, not built now): calf strain,
+  adductor/groin strain, MCL sprain, medial tibial stress syndrome
+  (shin splints), plantar fasciitis, proximal hamstring tendinopathy,
+  shoulder instability, hip flexor strain. The taxonomy anticipates them so
+  adding them later is additive, not a restructure.
 
 ### 10.2 Per-hub copy (new — AI-drafted, Shivaliba reviews)
 
-~250–400 words each: `intro`, `whoItHelps`, three `stage.blurb`s, `redFlags`,
-`recoveryTimeline`, `progressGuidance`, 3–5 `faqs`, and the
-`stage.exerciseSlugs` grouping (she curates from the catalogue — the existing
-`condition` + `stage` fields give the starting split).
+~250–400 words each: `intro`, `whoItHelps`, the `stage.blurb`s (three for most
+conditions; the sports hubs use four — load/settle, strength, power &
+change-of-direction, return-to-play), `redFlags`, `recoveryTimeline`,
+`progressGuidance`, 3–5 `faqs`, and the `stage.exerciseSlugs` grouping (she
+curates from the catalogue — the existing `condition` + `stage` fields give the
+starting split). Sports hubs additionally carry explicit return-to-play
+readiness markers in the final stage blurb.
 
 Delivered as one review document (`docs/exercises-review/condition-hubs.md`),
 same pipeline as the exercise write-ups.
