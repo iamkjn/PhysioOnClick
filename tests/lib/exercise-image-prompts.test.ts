@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { fullImagePrompt, hasImagePrompt, hasUploadedImage, uploadedImageIds, exerciseImagePrompts, IMAGE_STYLE_PREFIX } from '@/lib/exercise-image-prompts'
+import { fullImagePrompt, hasImagePrompt, hasUploadedImage, uploadedImageIds, exerciseImagePrompts, IMAGE_STYLE_PREFIX, IMAGE_STYLE_SUFFIX } from '@/lib/exercise-image-prompts'
 import { exercises } from '@/lib/exercises'
 
 describe('exercise image prompts', () => {
@@ -28,6 +28,24 @@ describe('exercise image prompts', () => {
   it('covers batch A (the 14 ankle/shoulder/neck exercises in the George test plan)', () => {
     for (const id of ['ex-2','ex-8','ex-12','ex-13','ex-35','ex-36','ex-37','ex-52','ex-59','ex-60','ex-61','ex-62','ex-63','ex-64']) {
       expect(hasImagePrompt(id)).toBe(true)
+    }
+  })
+
+  it('has an image prompt for every one of the 158 catalogue exercises', () => {
+    const missing = exercises.filter((e) => !hasImagePrompt(e.id)).map((e) => e.id)
+    expect(missing).toEqual([])
+  })
+  it('style contract is the anatomical illustration style', () => {
+    expect(IMAGE_STYLE_PREFIX.toLowerCase()).toContain('medical illustration')
+    expect((IMAGE_STYLE_PREFIX + IMAGE_STYLE_SUFFIX).toLowerCase()).toContain('muscle')
+    expect(IMAGE_STYLE_PREFIX.toLowerCase()).not.toContain('flat 2d vector')
+    expect(IMAGE_STYLE_PREFIX.toLowerCase()).not.toContain('no facial features')
+  })
+  it('every core is a non-empty single line with no smart punctuation', () => {
+    for (const [id, core] of Object.entries(exerciseImagePrompts)) {
+      expect(core.trim().length, id).toBeGreaterThan(10)
+      expect(core).not.toMatch(/\n/)
+      expect(core).not.toMatch(/[‘’“”–—…]/)
     }
   })
 
