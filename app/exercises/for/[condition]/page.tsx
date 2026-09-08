@@ -15,6 +15,7 @@ import { ConditionPdfForm } from "@/components/exercise-library/condition-pdf-fo
 import { FaqAccordion } from "@/components/exercise-library/faq-accordion";
 import { StagedProgram } from "@/components/exercise-library/staged-program";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { TrackView } from "@/components/track-view";
 
 // One statically-exported page per condition record. Same reasoning as the
 // exercise/service/blog detail routes: without force-static the route re-runs
@@ -99,6 +100,7 @@ export default async function ConditionHubPage({
 
   return (
     <div className="site-shell">
+      <TrackView event="library_hub_view" slug={condition.slug} />
       {/* Google retired HowTo and FAQPage rich results, so the FAQ rides along
           inside MedicalWebPage as bare Question/Answer nodes and renders as
           plain <details> HTML below. Practitioner node is shared sitewide by
@@ -157,6 +159,8 @@ export default async function ConditionHubPage({
               href="/book"
               serviceSlug={condition.serviceSlug ?? "musculoskeletal-physiotherapy"}
               source="condition-hub"
+              event="library_cta_click"
+              params={{ slug: condition.slug }}
             >
               Book an assessment
             </TrackedBookLink>

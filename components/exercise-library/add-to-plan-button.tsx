@@ -11,6 +11,7 @@ import {
   onPlanChange,
   removeFromPlan,
 } from "@/lib/exercise-plan-store";
+import { trackLibraryEvent } from "@/lib/analytics";
 
 export function AddToPlanButton({
   exerciseSlug,
@@ -27,10 +28,12 @@ export function AddToPlanButton({
   }, [exerciseSlug]);
 
   function toggle() {
-    const next = inPlan
-      ? removeFromPlan(exerciseSlug)
-      : addToPlan(exerciseSlug);
-    setInPlan(next.includes(exerciseSlug));
+    if (inPlan) {
+      setInPlan(removeFromPlan(exerciseSlug).includes(exerciseSlug));
+      return;
+    }
+    setInPlan(addToPlan(exerciseSlug).includes(exerciseSlug));
+    trackLibraryEvent("library_add_to_plan", exerciseSlug);
   }
 
   return (

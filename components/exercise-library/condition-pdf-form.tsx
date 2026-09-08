@@ -9,6 +9,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 
+import { trackLibraryEvent } from "@/lib/analytics";
+
 type Status = "idle" | "submitting" | "success" | "error";
 
 const SUCCESS = "Check your inbox - the plan is on its way.";
@@ -70,6 +72,7 @@ export function ConditionPdfForm({
       setStatus("success");
       setMessage(SUCCESS);
       setEmail("");
+      trackLibraryEvent("library_pdf_request", conditionSlug);
     } catch {
       setStatus("error");
       setMessage(GENERIC_ERROR);

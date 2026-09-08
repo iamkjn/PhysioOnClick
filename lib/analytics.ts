@@ -95,6 +95,26 @@ export function track(eventName: string, params?: Record<string, unknown>): void
 }
 
 /**
+ * Public exercise-library analytics events. The library fires exactly these five
+ * (each with a single `slug` param -- the condition or exercise slug), so they
+ * get a typed surface even though `track()` itself still accepts any string.
+ */
+export type LibraryEvent =
+  | "library_hub_view"
+  | "library_exercise_view"
+  | "library_add_to_plan"
+  | "library_pdf_request"
+  | "library_cta_click";
+
+/**
+ * Fire a public exercise-library analytics event. Thin typed wrapper over
+ * track() -- same fire-and-forget / consent-gated / SSR-safe guarantees.
+ */
+export function trackLibraryEvent(event: LibraryEvent, slug: string): void {
+  track(event, { slug });
+}
+
+/**
  * Log a single-page-app page view on route change.
  *
  * Only the pathname is logged (no query string): magic-link and other flows can

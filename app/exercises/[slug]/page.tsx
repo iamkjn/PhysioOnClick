@@ -18,6 +18,7 @@ import { ExerciseImage } from "@/components/exercise-image";
 import { ExerciseVideo } from "@/components/exercise-library/exercise-video";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { TrackView } from "@/components/track-view";
 
 // One statically-exported page per catalogue exercise. Same reasoning as the
 // service and blog detail routes: without force-static the route re-runs the
@@ -103,6 +104,7 @@ export default async function ExerciseDetailPage({
 
   return (
     <div className="site-shell">
+      <TrackView event="library_exercise_view" slug={exercise.slug} />
       {/* Google retired HowTo and FAQPage rich results, so the step list rides
           along inside MedicalWebPage and is rendered as plain semantic HTML
           below. The practitioner node is shared sitewide by @id. */}
@@ -189,6 +191,8 @@ export default async function ExerciseDetailPage({
             href="/book"
             serviceSlug={exercise.slug}
             source="exercise-page"
+            event="library_cta_click"
+            params={{ slug: exercise.slug }}
           >
             Book a physiotherapy assessment
           </TrackedBookLink>
