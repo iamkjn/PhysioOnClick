@@ -92,9 +92,11 @@ export async function POST(request: Request) {
     pdf.forEach((b) => (bin += String.fromCharCode(b)));
     const b64 = btoa(bin);
 
-    // Lead line for now; a Firestore `leads` collection is Phase 2.
+    // Lead line for now; a Firestore `leads` collection is Phase 2. Logs only
+    // the non-identifying facts - never the requester email next to a named
+    // medical condition (PII in Worker logs).
     console.info(
-      `[condition-pdf] ${email} requested the "${condition.name}" plan (${cards.length} exercises)`,
+      `[condition-pdf] plan requested: ${slug} (${cards.length} exercises)`,
     );
 
     await sendConditionPlanEmail({

@@ -43,6 +43,23 @@ describe("app/exercises/for/[condition] page", () => {
     );
   });
 
+  it("puts the <h1> before the CTA rail's <h2> in the heading outline", async () => {
+    const { container } = await renderPage(SLUG);
+
+    // The first heading anywhere in the hub must be the page <h1>, not the
+    // rail's "Want this checked by a physiotherapist?" <h2>.
+    const firstHeading = container.querySelector("h1, h2, h3");
+    expect(firstHeading?.tagName).toBe("H1");
+
+    const h1 = container.querySelector("h1")!;
+    const railHeading = container.querySelector(".exlib-hub__rail h2")!;
+    expect(railHeading).not.toBeNull();
+    expect(
+      h1.compareDocumentPosition(railHeading) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it("renders the intro and who-it-helps copy as paragraphs", async () => {
     const { container } = await renderPage(SLUG);
     for (const source of [condition.intro, condition.whoItHelps]) {

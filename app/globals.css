@@ -8027,8 +8027,9 @@ textarea:focus {
    Condition hub — /exercises/for/[condition]  (.exlib-hub, .exlib-cta-card,
    .exlib-redflags, .exlib-guidance, .exlib-pdf-form)
    Clarity System: warm paper, navy ink, one graded sky accent, coral for the
-   red-flags callout. Single-column on mobile with the CTA rail stacked on top;
-   a sticky right rail from 960px up. Pure CSS, no JS.
+   red-flags callout. Single-column on mobile with the CTA rail below the
+   programme; a sticky right rail from 960px up (grid-placed, so source order
+   stays h1 -> h2 -> h3). Pure CSS, no JS.
    ────────────────────────────────────────────────────────────── */
 
 .exlib-hub {
@@ -8384,3 +8385,81 @@ textarea:focus {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────
+   Public exercise library — saved-plan list (#my-plan section)
+   Client component; the localStorage plan rendered as a plain list.
+   Clarity System: warm paper, navy ink, one graded sky accent.
+   ────────────────────────────────────────────────────────────── */
+
+.exlib-saved__empty {
+  margin-top: var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.exlib-saved {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.exlib-saved__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exlib-saved__item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+}
+
+.exlib-saved__link {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  text-decoration: none;
+}
+
+.exlib-saved__link:hover,
+.exlib-saved__link:focus-visible {
+  text-decoration: underline;
+}
+
+.exlib-saved__remove {
+  flex-shrink: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.exlib-saved__remove:hover,
+.exlib-saved__remove:focus-visible {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+}
+
+.exlib-saved__cta {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.exlib-saved__cta a {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}

@@ -141,39 +141,11 @@ export default async function ConditionHubPage({
       </nav>
 
       <div className="exlib-hub">
-        {/* Rail is first in source order so it stacks above the programme on
-            mobile; on desktop the grid rules below pin it into column 2 and
-            make it sticky. Pure CSS, no JS. */}
-        <aside className="exlib-hub__rail">
-          <div className="exlib-cta-card">
-            <h2 className="exlib-cta-card__title">
-              Want this checked by a physiotherapist?
-            </h2>
-            <p className="exlib-cta-card__body">
-              Book an online assessment with an HCPC-registered physiotherapist
-              and get a plan matched to your shoulder, knee or back - wherever
-              you are in the UK.
-            </p>
-            <TrackedBookLink
-              className="button primary"
-              href="/book"
-              serviceSlug={condition.serviceSlug ?? "musculoskeletal-physiotherapy"}
-              source="condition-hub"
-              event="library_cta_click"
-              params={{ slug: condition.slug }}
-            >
-              Book an assessment
-            </TrackedBookLink>
-            <p className="exlib-cta-card__price">
-              Online physiotherapy {priceLabel} a session.
-            </p>
-            <ConditionPdfForm
-              conditionSlug={condition.slug}
-              conditionName={condition.name}
-            />
-          </div>
-        </aside>
-
+        {/* Main column first in source order so the heading outline is a strict
+            h1 -> h2 -> h3 and, on mobile (single column), the title/intro/
+            programme come before the CTA card + PDF form. On desktop the grid
+            rules below pin main into column 1 and the rail into a sticky
+            column 2 regardless of source order. Pure CSS, no JS. */}
         {/* A plain <div>, not <main>: app/layout.tsx already wraps every page
             in the single <main id="main-content"> landmark. */}
         <div className="exlib-hub__main">
@@ -182,15 +154,15 @@ export default async function ConditionHubPage({
           <h1 className="exlib-hub__title">{condition.name} exercises</h1>
 
           <div className="exlib-hub__prose">
-            {paragraphsOf(condition.intro).map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+            {paragraphsOf(condition.intro).map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
             ))}
           </div>
 
           <div className="exlib-hub__prose">
             <h2>Who this programme is for</h2>
-            {paragraphsOf(condition.whoItHelps).map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+            {paragraphsOf(condition.whoItHelps).map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
             ))}
           </div>
 
@@ -201,8 +173,8 @@ export default async function ConditionHubPage({
               Get checked by a clinician first if
             </h2>
             <ul className="exlib-redflags__list">
-              {condition.redFlags.map((flag) => (
-                <li key={flag}>{flag}</li>
+              {condition.redFlags.map((flag, i) => (
+                <li key={i}>{flag}</li>
               ))}
             </ul>
           </div>
@@ -255,6 +227,38 @@ export default async function ConditionHubPage({
             </section>
           ) : null}
         </div>
+
+        {/* Rail second in source order: it sits after the programme on mobile
+            and is pinned into the sticky right column on desktop. */}
+        <aside className="exlib-hub__rail">
+          <div className="exlib-cta-card">
+            <h2 className="exlib-cta-card__title">
+              Want this checked by a physiotherapist?
+            </h2>
+            <p className="exlib-cta-card__body">
+              Book an online assessment with an HCPC-registered physiotherapist
+              and get a plan matched to your shoulder, knee or back - wherever
+              you are in the UK.
+            </p>
+            <TrackedBookLink
+              className="button primary"
+              href="/book"
+              serviceSlug={condition.serviceSlug ?? "musculoskeletal-physiotherapy"}
+              source="condition-hub"
+              event="library_cta_click"
+              params={{ slug: condition.slug }}
+            >
+              Book an assessment
+            </TrackedBookLink>
+            <p className="exlib-cta-card__price">
+              Online physiotherapy {priceLabel} a session.
+            </p>
+            <ConditionPdfForm
+              conditionSlug={condition.slug}
+              conditionName={condition.name}
+            />
+          </div>
+        </aside>
       </div>
 
       <section className="simple-cta-band">

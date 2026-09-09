@@ -13,6 +13,7 @@ import { breadcrumbs } from "@/lib/structured-data";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { LibrarySearch } from "@/components/exercise-library/library-search";
+import { SavedPlanList } from "@/components/exercise-library/saved-plan-list";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 
 // The library index is one static page: it reads only the static catalogue, so
@@ -123,10 +124,11 @@ export default function ExerciseLibraryIndexPage() {
       <section className="exlib-index-section" id="my-plan">
         <h2>Your saved exercises</h2>
         <p className="muted">
-          Exercises you save while browsing the library show up here and in the
-          plan tray at the bottom of the screen, so you can open them again in
-          one place.
+          Exercises you save while browsing show up here. This list lives in
+          this browser - sign in and book to turn it into a plan your
+          physiotherapist can see.
         </p>
+        <SavedPlanList items={librarySearchIndex().exercises} />
       </section>
 
       <section className="exlib-index-section">

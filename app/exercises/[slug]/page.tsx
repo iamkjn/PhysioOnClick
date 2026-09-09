@@ -211,8 +211,8 @@ export default async function ExerciseDetailPage({
 
             {exercise.steps?.length ? (
               <ol data-steps>
-                {exercise.steps.map((step) => (
-                  <li key={step}>{step}</li>
+                {exercise.steps.map((step, i) => (
+                  <li key={i}>{step}</li>
                 ))}
               </ol>
             ) : null}
@@ -221,8 +221,8 @@ export default async function ExerciseDetailPage({
               <>
                 <h3>Form cues</h3>
                 <ul data-cues>
-                  {exercise.cues.map((cue) => (
-                    <li key={cue}>{cue}</li>
+                  {exercise.cues.map((cue, i) => (
+                    <li key={i}>{cue}</li>
                   ))}
                 </ul>
               </>
@@ -232,8 +232,8 @@ export default async function ExerciseDetailPage({
               <>
                 <h3>Common mistakes</h3>
                 <ul data-mistakes>
-                  {ordinaryMistakes.map((mistake) => (
-                    <li key={mistake}>{mistake}</li>
+                  {ordinaryMistakes.map((mistake, i) => (
+                    <li key={i}>{mistake}</li>
                   ))}
                 </ul>
               </>

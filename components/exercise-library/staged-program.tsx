@@ -13,7 +13,7 @@ export function StagedProgram({
   return (
     <div className="exlib-program">
       {program.map(({ stage, exercises }, index) => (
-        <section key={stage.stage} className="exlib-stage">
+        <section key={`${index}-${stage.stage}`} className="exlib-stage">
           <div className="exlib-stage__head">
             <span className="exlib-stage__pill">Stage {index + 1}</span>
             <h3 className="exlib-stage__name">{stage.stage}</h3>
