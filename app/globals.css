@@ -8753,3 +8753,68 @@ textarea:focus {
     align-items: start;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Self-check cross-links (.exlib-selfcheck-*)
+   The "try a self-check" block on a condition hub, and the
+   "See all self-check tests" link on the library index.
+   Clarity System: warm paper, navy ink, accent text is
+   --color-primary-dark (never raw --color-primary).
+   ────────────────────────────────────────────────────────────── */
+
+.exlib-selfcheck__lead {
+  margin: 0;
+  max-width: 60ch;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.exlib-selfcheck__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exlib-selfcheck__list > li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-light);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  border-radius: var(--radius-panel);
+}
+
+.exlib-selfcheck__list a {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.exlib-selfcheck__hint {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.exlib-selfcheck__index-link {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.exlib-selfcheck__index-link a {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

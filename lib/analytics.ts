@@ -95,16 +95,19 @@ export function track(eventName: string, params?: Record<string, unknown>): void
 }
 
 /**
- * Public exercise-library analytics events. The library fires exactly these five
- * (each with a single `slug` param -- the condition or exercise slug), so they
- * get a typed surface even though `track()` itself still accepts any string.
+ * Public exercise-library analytics events. The library fires exactly these
+ * (each with a single `slug` param -- the condition, exercise or self-check-test
+ * slug), so they get a typed surface even though `track()` itself still accepts
+ * any string.
  */
 export type LibraryEvent =
   | "library_hub_view"
   | "library_exercise_view"
   | "library_add_to_plan"
   | "library_pdf_request"
-  | "library_cta_click";
+  | "library_cta_click"
+  | "library_selftest_view"
+  | "library_selftest_cta_click";
 
 /**
  * Fire a public exercise-library analytics event. Thin typed wrapper over

@@ -7,8 +7,10 @@ import { services } from "@/lib/site-data";
 import {
   allConditionSlugs,
   allExerciseSlugs,
+  allSelfTestSlugs,
   bodyAreas,
   getCondition,
+  getSelfTest,
 } from "@/lib/exercise-library";
 
 const BASE = "https://physioonclick.co.uk";
@@ -70,11 +72,35 @@ describe("app/sitemap.ts", () => {
     }
   });
 
+  it("lists the self-check index and one URL per self-check test, stamped with its review date", async () => {
+    const all = await entries();
+
+    const indexEntry = all.find((item) => item.url === `${BASE}/exercises/tests`);
+    expect(indexEntry, "missing /exercises/tests index").toBeDefined();
+    // The index has no single content-change date, same rule as /exercises.
+    expect(indexEntry?.lastModified).toBeUndefined();
+
+    for (const slug of allSelfTestSlugs()) {
+      const entry = all.find(
+        (item) => item.url === `${BASE}/exercises/tests/${slug}`,
+      );
+      expect(entry, `missing self-check test ${slug}`).toBeDefined();
+      expect(entry?.lastModified).toEqual(
+        new Date(getSelfTest(slug)!.reviewedOn),
+      );
+    }
+  });
+
   it("adds exactly the exercise-library entries and nothing else", async () => {
     const all = await entries();
 
     const exerciseLibCount =
-      2 + allConditionSlugs().length + allExerciseSlugs().length + bodyAreas().length;
+      2 +
+      1 +
+      allSelfTestSlugs().length +
+      allConditionSlugs().length +
+      allExerciseSlugs().length +
+      bodyAreas().length;
 
     const exerciseLibEntries = all.filter((item) =>
       item.url.slice(BASE.length).startsWith("/exercises"),

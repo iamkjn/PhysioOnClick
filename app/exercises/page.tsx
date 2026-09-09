@@ -3,9 +3,11 @@ import Link from "next/link";
 
 import {
   allConditionSlugs,
+  allSelfTestSlugs,
   bodyAreas,
   getCondition,
   getExerciseBySlug,
+  getSelfTest,
   librarySearchIndex,
   programForCondition,
 } from "@/lib/exercise-library";
@@ -67,6 +69,9 @@ export default function ExerciseLibraryIndexPage() {
   const featured = FEATURED_SLUGS.map((slug) => getExerciseBySlug(slug)).filter(
     (exercise): exercise is NonNullable<typeof exercise> => exercise !== null,
   );
+  const selfTests = allSelfTestSlugs()
+    .map((slug) => getSelfTest(slug))
+    .filter((test): test is NonNullable<typeof test> => test !== null);
 
   return (
     <div className="site-shell">
@@ -168,6 +173,33 @@ export default function ExerciseLibraryIndexPage() {
           ))}
         </ul>
       </section>
+
+      {selfTests.length ? (
+        <section className="exlib-index-section">
+          <div className="section-heading">
+            <h2>Self-checks</h2>
+            <p>
+              Quick movement tests you can try at home to see what your symptoms
+              might point towards - a guide, not a diagnosis.
+            </p>
+          </div>
+          <ul className="exlib-chip-row">
+            {selfTests.map((test) => (
+              <li key={test.slug}>
+                <Link
+                  className="exlib-chip"
+                  href={`/exercises/tests/${test.slug}`}
+                >
+                  {test.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="exlib-selfcheck__index-link">
+            <Link href="/exercises/tests">See all self-check tests</Link>
+          </p>
+        </section>
+      ) : null}
 
       <section className="exlib-index-section">
         <div className="section-heading">

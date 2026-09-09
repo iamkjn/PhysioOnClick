@@ -12,6 +12,7 @@ import { ByLine } from "@/components/exercise-library/by-line";
 import { SelfTestResults } from "@/components/exercise-library/self-test-results";
 import { SelfTestSteps } from "@/components/exercise-library/self-test-steps";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { TrackView } from "@/components/track-view";
 
 // One statically-exported page per self-check test record. Same reasoning as the
 // exercise/condition detail routes: without force-static the Worker re-runs the
@@ -105,6 +106,7 @@ export default async function SelfTestPage({
 
   return (
     <div className="site-shell">
+      <TrackView event="library_selftest_view" slug={test.slug} />
       {/* MedicalWebPage + BreadcrumbList only. NOT MedicalTest / Medical
           Guideline / HowTo - this content is triage, not a validated clinical
           instrument (spec 11a "Schema"). */}

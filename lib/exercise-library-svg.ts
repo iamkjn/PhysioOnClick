@@ -13,6 +13,7 @@
  */
 
 import type { Condition, Exercise } from "@/lib/exercise-library";
+import type { SelfTest } from "@/lib/self-tests";
 
 const PAPER = "#F6F3EC";
 const INK = "#043246";
@@ -120,5 +121,29 @@ export function generateConditionOgSvg(c: Condition): string {
     kicker("Exercise library · PhysioOnClick") +
       titleBlock(lines, startY) +
       (c.bodyArea ? chip(c.bodyArea, chipY) : ""),
+  );
+}
+
+/** A muted sub-line under the title (e.g. what a self-check test assesses). */
+function subline(lines: string[], startY: number): string {
+  const lineHeight = 42;
+  const tspans = lines
+    .map(
+      (line, index) =>
+        `<tspan x="72" dy="${index === 0 ? 0 : lineHeight}">${escapeXml(line)}</tspan>`,
+    )
+    .join("");
+  return `<text x="72" y="${startY}" font-family="${SANS}" font-size="30" fill="${MUTED}">${tspans}</text>`;
+}
+
+/** OG card for a self-check test page: the test name + a "SELF-CHECK TEST" kicker + what it assesses. */
+export function generateSelfTestOgSvg(t: SelfTest): string {
+  const lines = wrapLines(t.name, 22, 3);
+  const startY = lines.length >= 3 ? 288 : 324;
+  const subY = startY + (lines.length - 1) * 84 + 62;
+  return frame(
+    kicker("SELF-CHECK TEST · PhysioOnClick") +
+      titleBlock(lines, startY) +
+      subline(wrapLines(`Checks: ${t.assesses}`, 44, 2), subY),
   );
 }

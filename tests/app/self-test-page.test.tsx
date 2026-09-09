@@ -1,5 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/react";
+
+// Stub TrackView (a client component that renders null) with a marker element so
+// the page's mount-time analytics wiring is assertable in the DOM.
+vi.mock("@/components/track-view", () => ({
+  TrackView: ({ event, slug }: { event: string; slug: string }) => (
+    <span data-testid="track-view" data-event={event} data-slug={slug} />
+  ),
+}));
 
 // Next.js <Link> renders as a plain <a> in tests - no mock needed.
 import SelfTestPage, {
@@ -97,6 +105,14 @@ describe("app/exercises/tests/[slug] page", () => {
   it("renders a TrackedBookLink to /book", async () => {
     const { container } = await renderPage(SLUG);
     expect(container.querySelector('a[href="/book"]')).not.toBeNull();
+  });
+
+  it("fires a library_selftest_view TrackView for this test on mount", async () => {
+    const { container } = await renderPage(SLUG);
+    const tracker = container.querySelector('[data-testid="track-view"]');
+    expect(tracker).not.toBeNull();
+    expect(tracker).toHaveAttribute("data-event", "library_selftest_view");
+    expect(tracker).toHaveAttribute("data-slug", SLUG);
   });
 
   it("emits MedicalWebPage + BreadcrumbList JSON-LD and never a MedicalTest node", async () => {

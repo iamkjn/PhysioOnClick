@@ -10,6 +10,7 @@ import {
   allConditionSlugs,
   getCondition,
   programForCondition,
+  selfTestsForCondition,
 } from "@/lib/exercise-library";
 
 // rotator-cuff-tendinopathy is the first catalogue record: a full multi-stage
@@ -85,6 +86,41 @@ describe("app/exercises/for/[condition] page", () => {
       redFlags!.compareDocumentPosition(firstStage!) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+  });
+
+  it("renders a [data-self-checks] block, before the first stage, for a condition with self-tests", async () => {
+    // rotator-cuff-tendinopathy maps to Full Can + Hawkins-Kennedy + Painful Arc.
+    const tests = selfTestsForCondition(SLUG);
+    expect(tests.length).toBeGreaterThan(0);
+
+    const { container } = await renderPage(SLUG);
+    const block = container.querySelector("[data-self-checks]");
+    expect(block).not.toBeNull();
+
+    for (const test of tests) {
+      expect(
+        block!.querySelector(`a[href="/exercises/tests/${test.slug}"]`),
+        `missing self-check link for ${test.slug}`,
+      ).not.toBeNull();
+    }
+    expect(
+      block!.querySelector('a[href="/exercises/tests/full-can-test"]'),
+    ).not.toBeNull();
+
+    const firstStage = container.querySelector(".exlib-stage");
+    expect(firstStage).not.toBeNull();
+    expect(
+      block!.compareDocumentPosition(firstStage!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("omits the [data-self-checks] block for a condition with no self-tests", async () => {
+    const noTestsSlug = "after-hip-replacement";
+    expect(selfTestsForCondition(noTestsSlug)).toHaveLength(0);
+
+    const { container } = await renderPage(noTestsSlug);
+    expect(container.querySelector("[data-self-checks]")).toBeNull();
   });
 
   it("renders one stage block per program entry, each carrying its blurb and its exercise cards", async () => {

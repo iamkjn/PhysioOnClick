@@ -5,8 +5,10 @@ import { blogArticles } from "@/lib/blog";
 import {
   allConditionSlugs,
   allExerciseSlugs,
+  allSelfTestSlugs,
   bodyAreas,
   getCondition,
+  getSelfTest,
 } from "@/lib/exercise-library";
 
 const routes = [
@@ -82,6 +84,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${base}/exercises/area/${encodeURIComponent(area)}`,
   }));
 
+  // Self-check tests (Phase 1 - Part B). The index carries no `lastModified`
+  // (same rule as /exercises: no single content-change date), but each test
+  // record has a real `reviewedOn` clinical-review date, so a truthful
+  // `lastModified` is a signal worth sending - same as the condition hubs.
+  const selfTestEntries = [
+    { url: `${base}/exercises/tests` },
+    ...allSelfTestSlugs().map((slug) => ({
+      url: `${base}/exercises/tests/${slug}`,
+      lastModified: new Date(getSelfTest(slug)!.reviewedOn),
+    })),
+  ];
+
   return [
     ...staticEntries,
     ...serviceEntries,
@@ -90,5 +104,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...conditionEntries,
     ...exerciseEntries,
     ...bodyAreaEntries,
+    ...selfTestEntries,
   ];
 }

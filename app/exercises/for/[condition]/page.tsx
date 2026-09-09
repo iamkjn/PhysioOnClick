@@ -6,6 +6,7 @@ import {
   allConditionSlugs,
   getCondition,
   programForCondition,
+  selfTestsForCondition,
 } from "@/lib/exercise-library";
 import { pricing } from "@/lib/site-data";
 import { breadcrumbs, conditionWebPage } from "@/lib/structured-data";
@@ -93,6 +94,7 @@ export default async function ConditionHubPage({
 
   const path = `/exercises/for/${slug}`;
   const program = programForCondition(slug);
+  const selfChecks = selfTestsForCondition(slug);
   const related = (condition.relatedConditionSlugs ?? [])
     .map((relatedSlug) => getCondition(relatedSlug))
     .filter((item): item is NonNullable<typeof item> => item !== null);
@@ -178,6 +180,27 @@ export default async function ConditionHubPage({
               ))}
             </ul>
           </div>
+
+          {/* Informational triage, above the programme: someone unsure of the
+              diagnosis meets a self-check before committing to the exercises.
+              Rendered only when a test actually maps to this hub. */}
+          {selfChecks.length ? (
+            <section className="exlib-hub__section exlib-selfcheck" data-self-checks>
+              <h2>Not sure it&apos;s this? Try a self-check</h2>
+              <p className="exlib-selfcheck__lead">
+                Quick movement tests you can try at home to see what your
+                symptoms might point towards. A guide, not a diagnosis.
+              </p>
+              <ul className="exlib-selfcheck__list">
+                {selfChecks.map((test) => (
+                  <li key={test.slug}>
+                    <Link href={`/exercises/tests/${test.slug}`}>{test.name}</Link>
+                    <span className="exlib-selfcheck__hint">{test.assesses}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           <section className="exlib-hub__section">
             <h2>The staged programme</h2>
