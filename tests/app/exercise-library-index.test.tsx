@@ -10,9 +10,11 @@ import AreaPage, {
   generateStaticParams as areaStaticParams,
 } from "@/app/exercises/area/[bodyArea]/page";
 import HowWeMakeThisPage from "@/app/exercises/how-we-make-this/page";
-import { allConditionSlugs, bodyAreas } from "@/lib/exercise-library";
-
-const SPORTS_AREA = "Sports & return to activity";
+import {
+  allConditionSlugs,
+  BODY_AREAS,
+  bodyAreas,
+} from "@/lib/exercise-library";
 
 describe("app/exercises index page", () => {
   it("renders 'Exercise library' as the h1", () => {
@@ -43,21 +45,26 @@ describe("app/exercises index page", () => {
     expect(cards.length).toBe(allConditionSlugs().length);
   });
 
-  it("renders a body-area chip row including the sports area", () => {
+  it("renders one plain-language chip per curated body area, no sports chip", () => {
     const { container } = render(<ExerciseLibraryIndexPage />);
-    const href = `/exercises/area/${encodeURIComponent(SPORTS_AREA)}`;
-    const chip = [...container.querySelectorAll("a")].find(
-      (a) => a.getAttribute("href") === href,
-    );
-    expect(chip, "missing chip for the sports area").toBeTruthy();
-    expect(chip?.textContent).toContain(SPORTS_AREA);
-    // Every body area gets a chip.
     const chipHrefs = new Set(
       [...container.querySelectorAll('a[href^="/exercises/area/"]')].map((a) =>
         a.getAttribute("href"),
       ),
     );
     expect(chipHrefs.size).toBe(bodyAreas().length);
+    for (const area of BODY_AREAS) {
+      const chip = [...container.querySelectorAll("a")].find(
+        (a) => a.getAttribute("href") === `/exercises/area/${area.key}`,
+      );
+      expect(chip, `missing chip for ${area.key}`).toBeTruthy();
+      expect(chip?.textContent).toContain(area.label);
+    }
+    // Sports is condition-led only - no area page, no chip.
+    expect([...chipHrefs].some((h) => h?.includes("sport"))).toBe(false);
+    for (const href of chipHrefs) {
+      expect(href).toMatch(/^\/exercises\/area\/[a-z][a-z-]*[a-z]$/);
+    }
   });
 
   it("renders a featured section with at least 4 exercise-card links", () => {
@@ -87,16 +94,16 @@ describe("app/exercises index page", () => {
 });
 
 describe("app/exercises/area/[bodyArea] page", () => {
-  it("generateStaticParams emits one entry per body area", () => {
+  it("generateStaticParams emits one kebab-key entry per curated body area", () => {
     expect(areaStaticParams()).toHaveLength(bodyAreas().length);
     expect(areaStaticParams()).toEqual(
       bodyAreas().map((bodyArea) => ({ bodyArea })),
     );
   });
 
-  it("lists exercises and condition hubs for 'Shoulder'", async () => {
+  it("lists exercises and condition hubs for the shoulder area", async () => {
     const ui = await AreaPage({
-      params: Promise.resolve({ bodyArea: "Shoulder" }),
+      params: Promise.resolve({ bodyArea: "shoulder" }),
     });
     const { container } = render(ui);
     expect(container.querySelector("h1")?.textContent).toContain("Shoulder");
@@ -108,20 +115,29 @@ describe("app/exercises/area/[bodyArea] page", () => {
     ).toBeGreaterThanOrEqual(1);
   });
 
-  it("renders the sports area (condition hubs, no direct exercises) without crashing", async () => {
+  it("renders an area with no condition hubs (upper-back) without crashing", async () => {
     const ui = await AreaPage({
-      params: Promise.resolve({ bodyArea: SPORTS_AREA }),
+      params: Promise.resolve({ bodyArea: "upper-back" }),
     });
     const { container } = render(ui);
+    expect(container.querySelector("h1")?.textContent).toContain(
+      "Upper back & shoulder blades",
+    );
     expect(
-      container.querySelectorAll("a.exlib-cond-card").length,
+      container.querySelectorAll("a.exlib-ex-card").length,
     ).toBeGreaterThanOrEqual(1);
-    expect(container.querySelector("a.exlib-ex-card")).toBeNull();
+    expect(container.querySelector("a.exlib-cond-card")).toBeNull();
+  });
+
+  it("does not emit a sports area page (sports stays condition-led)", async () => {
+    await expect(
+      AreaPage({ params: Promise.resolve({ bodyArea: "sports" }) }),
+    ).rejects.toThrow(/NEXT_HTTP_ERROR_FALLBACK;404/);
   });
 
   it("generateMetadata canonical points to /exercises, not the area URL", async () => {
     const meta = await areaMetadata({
-      params: Promise.resolve({ bodyArea: "Shoulder" }),
+      params: Promise.resolve({ bodyArea: "shoulder" }),
     });
     expect(meta.title).toBe("Shoulder exercises | PhysioOnClick");
     expect(meta.alternates?.canonical).toBe("/exercises");

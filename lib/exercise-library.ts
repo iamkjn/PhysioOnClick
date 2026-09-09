@@ -13,10 +13,17 @@
 import { conditions } from "@/lib/conditions";
 import { exercises } from "@/lib/exercises";
 import { selfTests } from "@/lib/self-tests";
+import { getBodyArea, allBodyAreaKeys } from "@/lib/body-areas";
 
 export type { Condition, ConditionStage } from "@/lib/conditions";
 export type { Exercise } from "@/lib/exercises";
 export type { SelfTest, SelfTestStep } from "@/lib/self-tests";
+export type { BodyArea, BodyAreaKey } from "@/lib/body-areas";
+
+// Public pages import only from this barrel; re-export the curated body-area
+// taxonomy so `lib/body-areas.ts` stays an internal detail. `app/sitemap.ts` is
+// the one allowed direct importer (it already reaches past the barrel).
+export { BODY_AREAS, getBodyArea, allBodyAreaKeys } from "@/lib/body-areas";
 
 import type { Condition, ConditionStage } from "@/lib/conditions";
 import type { Exercise } from "@/lib/exercises";
@@ -138,32 +145,41 @@ export function relatedExercises(exerciseSlug: string, limit: number): Exercise[
 }
 
 /**
- * The sorted, de-duplicated union of every `Exercise.bodyPart`, every
- * `Condition.bodyArea`, and the literal `"Sports & return to activity"` (kept
- * explicit so it survives even if the sports hubs are ever removed).
+ * Every curated public body-area key, in display order (`"shoulder"`,
+ * `"lower-back"`, ...). This is what `generateStaticParams` and the sitemap
+ * enumerate, and what the "browse by body area" row links to. The full
+ * `BodyArea` objects (label, blurb, ...) are the re-exported `BODY_AREAS`.
+ *
+ * Deliberately no longer the raw union of `Exercise.bodyPart` +
+ * `Condition.bodyArea`: that leaked internal clinical codes as public chips and
+ * emitted a zero-exercise `/exercises/area/Sports & return to activity` page.
  */
 export function bodyAreas(): string[] {
-  const areas = new Set<string>();
-  for (const exercise of exercises) areas.add(exercise.bodyPart);
-  for (const condition of conditions) areas.add(condition.bodyArea);
-  areas.add("Sports & return to activity");
-  return [...areas].sort((a, b) => a.localeCompare(b));
+  return allBodyAreaKeys();
 }
 
-/** Every exercise whose `bodyPart` matches `area` (case-insensitive). */
-export function exercisesByBodyArea(area: string): Exercise[] {
-  const target = area.trim().toLowerCase();
-  return exercises.filter(
-    (exercise) => exercise.bodyPart.trim().toLowerCase() === target,
-  );
+/**
+ * Every exercise that rolls up into the curated area `key`: those whose
+ * `bodyPart` is one of the area's `bodyParts`, in source order. Returns `[]`
+ * for an unknown key.
+ */
+export function exercisesByBodyArea(key: string): Exercise[] {
+  const area = getBodyArea(key);
+  if (!area) return [];
+  return exercises.filter((exercise) => area.bodyParts.includes(exercise.bodyPart));
 }
 
-/** Every condition whose `bodyArea` matches `area` (case-insensitive). */
-export function conditionsByBodyArea(area: string): Condition[] {
-  const target = area.trim().toLowerCase();
-  return conditions.filter(
-    (condition) => condition.bodyArea.trim().toLowerCase() === target,
-  );
+/**
+ * Every condition hub for the curated area `key`: those whose `bodyArea`
+ * equals the area's `conditionArea`, in source order. Returns `[]` when the
+ * area has no `conditionArea` (e.g. `neuro`, `upper-back`) or the key is
+ * unknown. Sports hubs (`bodyArea: "Sports & return to activity"`) map to no
+ * area and are surfaced on the condition grid instead.
+ */
+export function conditionsByBodyArea(key: string): Condition[] {
+  const conditionArea = getBodyArea(key)?.conditionArea;
+  if (!conditionArea) return [];
+  return conditions.filter((condition) => condition.bodyArea === conditionArea);
 }
 
 /**

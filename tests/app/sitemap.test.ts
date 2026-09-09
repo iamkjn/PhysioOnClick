@@ -5,10 +5,10 @@ import ServiceDetailPage from "@/app/services/[slug]/page";
 import { blogArticles } from "@/lib/blog";
 import { services } from "@/lib/site-data";
 import {
+  allBodyAreaKeys,
   allConditionSlugs,
   allExerciseSlugs,
   allSelfTestSlugs,
-  bodyAreas,
   getCondition,
   getSelfTest,
 } from "@/lib/exercise-library";
@@ -61,13 +61,13 @@ describe("app/sitemap.ts", () => {
     }
   });
 
-  it("lists one encoded URL per body area, with no lastModified", async () => {
+  it("lists one kebab-key URL per curated body area, with no lastModified", async () => {
     const all = await entries();
-    for (const area of bodyAreas()) {
+    for (const key of allBodyAreaKeys()) {
       const entry = all.find(
-        (item) => item.url === `${BASE}/exercises/area/${encodeURIComponent(area)}`,
+        (item) => item.url === `${BASE}/exercises/area/${key}`,
       );
-      expect(entry, `missing body area ${area}`).toBeDefined();
+      expect(entry, `missing body area ${key}`).toBeDefined();
       expect(entry?.lastModified).toBeUndefined();
     }
   });
@@ -100,7 +100,7 @@ describe("app/sitemap.ts", () => {
       allSelfTestSlugs().length +
       allConditionSlugs().length +
       allExerciseSlugs().length +
-      bodyAreas().length;
+      allBodyAreaKeys().length;
 
     const exerciseLibEntries = all.filter((item) =>
       item.url.slice(BASE.length).startsWith("/exercises"),

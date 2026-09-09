@@ -160,32 +160,44 @@ describe('exercise-library: relatedExercises', () => {
   })
 })
 
-describe('exercise-library: bodyAreas / *ByBodyArea', () => {
-  it('is a sorted, de-duplicated union that always includes the sports category', () => {
+describe('exercise-library: bodyAreas / *ByBodyArea (curated taxonomy)', () => {
+  it('bodyAreas() returns the curated kebab keys, not the raw jargon union', () => {
     const areas = bodyAreas()
-    expect(areas).toContain('Sports & return to activity')
     expect(new Set(areas).size).toBe(areas.length)
-    expect([...areas].sort((a, b) => a.localeCompare(b))).toEqual(areas)
-    // union of both sources
-    expect(areas).toContain('Shoulder') // Exercise.bodyPart and Condition.bodyArea
-    expect(areas).toContain('Knee')
+    // No internal clinical codes, no sports page.
+    expect(areas).not.toContain('Sports & return to activity')
+    expect(areas).not.toContain('Neuro')
+    expect(areas).not.toContain('Shoulder')
+    expect(areas).toContain('shoulder')
+    expect(areas).toContain('knee')
+    expect(areas.every((k) => /^[a-z][a-z-]*[a-z]$/.test(k))).toBe(true)
   })
 
-  it('exercisesByBodyArea exact-matches Exercise.bodyPart', () => {
-    const hip = exercisesByBodyArea('Hip')
+  it('exercisesByBodyArea rolls every mapped bodyPart into the area', () => {
+    const hip = exercisesByBodyArea('hip')
     expect(hip.length).toBeGreaterThan(0)
     expect(hip.every((e) => e.bodyPart === 'Hip')).toBe(true)
     expect(hip.map((e) => e.slug)).toContain('clam-shell')
-    // case-insensitive
-    expect(exercisesByBodyArea('hip').length).toBe(hip.length)
+    // The knee area rolls up both Knee and Hamstring exercises.
+    const kneeParts = new Set(exercisesByBodyArea('knee').map((e) => e.bodyPart))
+    expect(kneeParts.has('Knee')).toBe(true)
+    expect(kneeParts.has('Hamstring')).toBe(true)
+    // Unknown key -> [].
+    expect(exercisesByBodyArea('Hip')).toEqual([])
     expect(exercisesByBodyArea('nonsense')).toEqual([])
   })
 
-  it('conditionsByBodyArea exact-matches Condition.bodyArea', () => {
-    const shoulder = conditionsByBodyArea('Shoulder')
+  it('conditionsByBodyArea resolves the area conditionArea, else []', () => {
+    const shoulder = conditionsByBodyArea('shoulder')
     expect(shoulder.length).toBeGreaterThan(0)
     expect(shoulder.every((c) => c.bodyArea === 'Shoulder')).toBe(true)
     expect(shoulder.map((c) => c.slug)).toContain('rotator-cuff-tendinopathy')
+    // `Back & neck` is attached to lower-back only, not neck.
+    expect(conditionsByBodyArea('lower-back').every((c) => c.bodyArea === 'Back & neck')).toBe(true)
+    expect(conditionsByBodyArea('neck')).toEqual([])
+    // Areas with no conditionArea, and unknown keys.
+    expect(conditionsByBodyArea('neuro')).toEqual([])
+    expect(conditionsByBodyArea('nonsense')).toEqual([])
   })
 })
 

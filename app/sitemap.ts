@@ -3,10 +3,10 @@ import type { MetadataRoute } from "next";
 import { services } from "@/lib/site-data";
 import { blogArticles } from "@/lib/blog";
 import {
+  allBodyAreaKeys,
   allConditionSlugs,
   allExerciseSlugs,
   allSelfTestSlugs,
-  bodyAreas,
   getCondition,
   getSelfTest,
 } from "@/lib/exercise-library";
@@ -80,8 +80,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${base}/exercises/${slug}`,
   }));
 
-  const bodyAreaEntries = bodyAreas().map((area) => ({
-    url: `${base}/exercises/area/${encodeURIComponent(area)}`,
+  const bodyAreaEntries = allBodyAreaKeys().map((key) => ({
+    url: `${base}/exercises/area/${key}`,
   }));
 
   // Self-check tests (Phase 1 - Part B). The index carries no `lastModified`

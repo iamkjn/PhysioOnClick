@@ -3,34 +3,37 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import {
-  bodyAreas,
+  allBodyAreaKeys,
+  getBodyArea,
   conditionsByBodyArea,
   exercisesByBodyArea,
   programForCondition,
+  type BodyArea,
 } from "@/lib/exercise-library";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 
-// One statically-exported page per body area. Same reasoning as the exercise and
-// condition detail routes: without force-static the Worker re-runs the (static)
-// catalogue lookup on every request. Deliberately no `dynamicParams = false` -
-// on OpenNext that 404s every path on deploy (known repo hazard).
+// One statically-exported page per curated body area. Same reasoning as the
+// exercise and condition detail routes: without force-static the Worker re-runs
+// the (static) catalogue lookup on every request. Deliberately no
+// `dynamicParams = false` - on OpenNext that 404s every path on deploy (known
+// repo hazard).
 export const dynamic = "force-static";
 
 export function generateStaticParams() {
-  return bodyAreas().map((bodyArea) => ({ bodyArea }));
+  return allBodyAreaKeys().map((bodyArea) => ({ bodyArea }));
 }
 
-/** The decoded body area for `params`, or `null` when it is not a known area. */
-function resolveArea(bodyArea: string): string | null {
+/** The curated area for `params`, or `null` when the key is not known. */
+function resolveArea(bodyArea: string): BodyArea | null {
   let decoded: string;
   try {
     decoded = decodeURIComponent(bodyArea);
   } catch {
     return null;
   }
-  return bodyAreas().includes(decoded) ? decoded : null;
+  return getBodyArea(decoded);
 }
 
 function countExercises(slug: string): number {
@@ -52,8 +55,8 @@ export async function generateMetadata({
     return {};
   }
 
-  const title = `${area} exercises | PhysioOnClick`;
-  const description = `Physiotherapy exercises and staged recovery programmes for the ${area.toLowerCase()} area, drafted and clinically reviewed by an HCPC-registered physiotherapist.`;
+  const title = `${area.label} exercises | PhysioOnClick`;
+  const description = area.blurb;
 
   return {
     title,
@@ -82,8 +85,8 @@ export default async function ExerciseAreaPage({
     notFound();
   }
 
-  const areaExercises = exercisesByBodyArea(area);
-  const areaConditions = conditionsByBodyArea(area);
+  const areaExercises = exercisesByBodyArea(area.key);
+  const areaConditions = conditionsByBodyArea(area.key);
 
   return (
     <div className="site-shell">
@@ -99,17 +102,18 @@ export default async function ExerciseAreaPage({
           /{" "}
         </span>
         <span className="muted" aria-current="page">
-          {area}
+          {area.label}
         </span>
       </nav>
 
       <section className="simple-page-hero">
         <span className="eyebrow">Exercise library</span>
-        <h1>{area} exercises</h1>
+        <h1>{area.label} exercises</h1>
+        <p>{area.blurb}</p>
         <p>
-          Single-exercise guides and staged recovery programmes for the{" "}
-          {area.toLowerCase()} area. Every one is clinically reviewed by an
-          HCPC-registered physiotherapist.
+          Single-exercise guides and staged recovery programmes, each drafted to
+          a shared house style and clinically reviewed by an HCPC-registered
+          physiotherapist.
         </p>
       </section>
 
@@ -125,8 +129,8 @@ export default async function ExerciseAreaPage({
           </div>
         ) : (
           <p className="muted">
-            No individual exercises listed for this area yet - see the condition
-            programmes below.
+            We are adding illustrated guides for this area - the staged
+            programmes below cover it in the meantime.
           </p>
         )}
       </section>

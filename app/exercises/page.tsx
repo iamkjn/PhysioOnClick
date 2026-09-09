@@ -4,7 +4,7 @@ import Link from "next/link";
 import {
   allConditionSlugs,
   allSelfTestSlugs,
-  bodyAreas,
+  BODY_AREAS,
   getCondition,
   getExerciseBySlug,
   getSelfTest,
@@ -65,7 +65,6 @@ export default function ExerciseLibraryIndexPage() {
     .filter((condition): condition is NonNullable<typeof condition> =>
       condition !== null,
     );
-  const areas = bodyAreas();
   const featured = FEATURED_SLUGS.map((slug) => getExerciseBySlug(slug)).filter(
     (exercise): exercise is NonNullable<typeof exercise> => exercise !== null,
   );
@@ -161,13 +160,10 @@ export default function ExerciseLibraryIndexPage() {
           <p>Jump straight to the exercises and programmes for one part of the body.</p>
         </div>
         <ul className="exlib-chip-row">
-          {areas.map((area) => (
-            <li key={area}>
-              <Link
-                className="exlib-chip"
-                href={`/exercises/area/${encodeURIComponent(area)}`}
-              >
-                {area}
+          {BODY_AREAS.map((area) => (
+            <li key={area.key}>
+              <Link className="exlib-chip" href={`/exercises/area/${area.key}`}>
+                {area.label}
               </Link>
             </li>
           ))}
