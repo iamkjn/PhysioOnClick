@@ -55,7 +55,8 @@ describe('AdminRecoverySummary', () => {
     await waitFor(() => {
       expect(screen.getByText(/2 of 7 days/i)).toBeInTheDocument()
     })
-    expect(screen.getByText(/Last 4 weeks — 2 of 28 days/i)).toBeInTheDocument()
+    expect(screen.getByText(/Last 7 days:/i)).toBeInTheDocument()
+    expect(screen.queryByText(/28 days/i)).not.toBeInTheDocument()
     expect(screen.getByText(/14-day goal/)).toBeInTheDocument()
     expect(screen.getByText(/4\/10/)).toBeInTheDocument()
   })

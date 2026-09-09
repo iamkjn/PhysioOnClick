@@ -19,18 +19,22 @@ interface Props {
   personId: string;
 }
 
-const ADHERENCE_DAYS = 28;
 const WEEK_DAYS = 7;
+
+interface DayCell {
+  date: string;
+  label: string; // weekday initial
+  done: boolean;
+  isToday: boolean;
+}
 
 interface Loaded {
   streak: number;
   goal: number | null;
   assignedCount: number;
-  // newest last — one bool per calendar day over the last ADHERENCE_DAYS
-  completedByDay: boolean[];
-  // days with ≥1 exercise done in the last 7 / last 28 calendar days
+  // oldest → newest, exactly the last 7 calendar days
+  week: DayCell[];
   weekCount: number;
-  monthCount: number;
   latestPain: PainLog | null;
 }
 
@@ -41,7 +45,9 @@ export function AdminRecoverySummary({ patientUid, personId }: Props) {
     let cancelled = false;
     setData(undefined);
     Promise.all([
-      getExerciseLogs(patientUid, personId, ADHERENCE_DAYS),
+      // A little more than 7 log docs in case recent days have no log at all;
+      // computeStreakDays still needs enough history to count a long run.
+      getExerciseLogs(patientUid, personId, 60),
       getAssignedExercises(patientUid, personId),
       getPainLogs(patientUid, personId, 1),
       getStreakGoal(patientUid, personId).catch(() => null),
@@ -53,17 +59,22 @@ export function AdminRecoverySummary({ patientUid, personId }: Props) {
             .filter((l) => Object.values(l.completions).some(Boolean))
             .map((l) => l.date)
         );
-        const completedByDay: boolean[] = [];
-        for (let i = ADHERENCE_DAYS - 1; i >= 0; i -= 1) {
-          completedByDay.push(doneDates.has(dateKeyDaysAgo(i)));
+        const week: DayCell[] = [];
+        for (let i = WEEK_DAYS - 1; i >= 0; i -= 1) {
+          const date = dateKeyDaysAgo(i);
+          week.push({
+            date,
+            label: new Date(date).toLocaleDateString("en-GB", { weekday: "narrow" }),
+            done: doneDates.has(date),
+            isToday: i === 0,
+          });
         }
         setData({
           streak: computeStreakDays(doneDates),
           goal,
           assignedCount: assigned.length,
-          completedByDay,
-          weekCount: completedByDay.slice(-WEEK_DAYS).filter(Boolean).length,
-          monthCount: completedByDay.filter(Boolean).length,
+          week,
+          weekCount: week.filter((d) => d.done).length,
           latestPain: pain[0] ?? null,
         });
       })
@@ -118,46 +129,33 @@ export function AdminRecoverySummary({ patientUid, personId }: Props) {
             ) : (
               <>
                 <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>
-                  This week:{" "}
+                  Last 7 days:{" "}
                   <strong style={{ color: "var(--color-text-primary)" }}>
                     {data.weekCount} of 7 days
                   </strong>{" "}
                   with exercises done ({Math.round((data.weekCount / WEEK_DAYS) * 100)}%).
                 </p>
-                <div style={{ marginTop: "var(--space-1)" }}>
-                  <p className="muted" style={{ margin: 0, fontSize: "var(--text-xs)" }}>
-                    Last 4 weeks — {data.monthCount} of {ADHERENCE_DAYS} days
-                  </p>
-                  <div
-                    role="img"
-                    aria-label={`Exercise completed on ${data.weekCount} of the last 7 days, and ${data.monthCount} of the last ${ADHERENCE_DAYS} days`}
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(14, 1fr)",
-                      gap: 4,
-                      maxWidth: 320,
-                      marginTop: 4,
-                    }}
-                  >
-                    {data.completedByDay.map((done, i) => {
-                      const inThisWeek = i >= ADHERENCE_DAYS - WEEK_DAYS;
-                      return (
-                        <span
-                          key={i}
-                          title={dateKeyDaysAgo(ADHERENCE_DAYS - 1 - i)}
-                          style={{
-                            aspectRatio: "1",
-                            borderRadius: 3,
-                            background: done
-                              ? "var(--color-primary)"
-                              : "var(--color-border)",
-                            outline: inThisWeek ? "1px solid var(--color-primary-dark)" : "none",
-                            outlineOffset: -1,
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
+                <div
+                  role="img"
+                  aria-label={`Exercises completed on ${data.weekCount} of the last 7 days`}
+                  style={{ display: "flex", gap: 6, marginTop: 2 }}
+                >
+                  {data.week.map((d) => (
+                    <div key={d.date} style={{ display: "grid", gap: 3, justifyItems: "center" }}>
+                      <span style={{ fontSize: 10, color: "var(--color-text-secondary)" }}>{d.label}</span>
+                      <span
+                        title={`${d.date}${d.done ? " — done" : " — not done"}`}
+                        style={{
+                          width: 26,
+                          height: 26,
+                          borderRadius: 6,
+                          background: d.done ? "var(--color-primary)" : "var(--color-border)",
+                          outline: d.isToday ? "2px solid var(--color-primary-dark)" : "none",
+                          outlineOffset: 1,
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
               </>
             )}
