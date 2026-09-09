@@ -5,6 +5,7 @@ import { services } from '@/lib/site-data'
 
 const slugSet = new Set(exercises.map((e) => e.slug))
 const condSlugs = new Set(conditions.map((c) => c.slug))
+const words = (s: string) => s.split(/\s+/).filter(Boolean)
 
 describe('conditions', () => {
   it('has 12+ conditions, all with unique kebab-case slugs', () => {
@@ -38,9 +39,45 @@ describe('conditions', () => {
       expect(c.reviewedOn).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     }
   })
+  it('every intro has the depth a condition hub needs', () => {
+    for (const c of conditions) {
+      expect(words(c.intro).length, `${c.slug} intro word count`).toBeGreaterThanOrEqual(200)
+      expect(words(c.intro).length, `${c.slug} intro word count`).toBeLessThanOrEqual(340)
+      // 3+ paragraphs, split on a blank line, as the hub page renders them.
+      const paras = c.intro.split('\n\n').filter((p) => p.trim().length > 0)
+      expect(paras.length, `${c.slug} intro paragraphs`).toBeGreaterThanOrEqual(3)
+      expect(words(c.whoItHelps).length, `${c.slug} whoItHelps word count`).toBeGreaterThanOrEqual(40)
+    }
+  })
+  it('every seoTitle fits the SERP and keeps the brand suffix', () => {
+    for (const c of conditions) {
+      expect(c.seoTitle.length, `${c.slug} seoTitle length`).toBeLessThanOrEqual(60)
+      expect(c.seoTitle.endsWith(' | PhysioOnClick'), `${c.slug} seoTitle suffix`).toBe(true)
+    }
+  })
+  it('every seoDescription fits the SERP snippet', () => {
+    for (const c of conditions) {
+      expect(c.seoDescription.length, `${c.slug} seoDescription length`).toBeGreaterThanOrEqual(120)
+      expect(c.seoDescription.length, `${c.slug} seoDescription length`).toBeLessThanOrEqual(158)
+    }
+  })
+  it('the programmes are untouched by copy passes', () => {
+    // Snapshot of the Task 6 programme wiring - copy edits must not disturb it.
+    expect(conditions.length).toBe(25)
+    expect(conditions.reduce((n, c) => n + c.program.length, 0)).toBe(82)
+    expect(
+      conditions.reduce((n, c) => n + c.program.reduce((m, s) => m + s.exerciseSlugs.length, 0), 0),
+    ).toBe(289)
+  })
   it('no smart punctuation or non-Latin-1 characters', () => {
     const blob = JSON.stringify(conditions)
     expect(blob).not.toMatch(/[‘’“”–—…]/)
     expect(blob).not.toMatch(/[^\x00-\xFF]/)
+    for (const c of conditions) {
+      for (const field of [c.intro, c.seoTitle, c.seoDescription, c.whoItHelps]) {
+        expect(field, c.slug).not.toMatch(/[‘’“”–—…]/)
+        expect(field, c.slug).not.toMatch(/[^\x00-\xFF]/)
+      }
+    }
   })
 })
