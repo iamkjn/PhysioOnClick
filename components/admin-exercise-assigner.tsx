@@ -29,9 +29,15 @@ interface Props {
   adminUid: string;
   patientUid: string;
   personId: string;
+  // When true, the panel is a plain read-only list of what's currently
+  // assigned — no add / remove / edit-dose. The patient detail screen uses
+  // this: assigning is only editable there while an online assessment has
+  // been submitted and a session summary is still pending.
+  readOnly?: boolean;
+  readOnlyReason?: string;
 }
 
-export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props) {
+export function AdminExerciseAssigner({ adminUid, patientUid, personId, readOnly = false, readOnlyReason }: Props) {
   const [assigned, setAssigned] = useState<AssignedExercise[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
@@ -82,6 +88,33 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId }: Props)
       <div className="panel stack">
         <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Assigned exercises</h2>
         <SkeletonRow count={2} />
+      </div>
+    );
+  }
+
+  if (readOnly) {
+    return (
+      <div className="panel stack">
+        <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Assigned exercises</h2>
+        {readOnlyReason && (
+          <p className="muted" style={{ margin: 0, fontSize: "var(--text-xs)" }}>{readOnlyReason}</p>
+        )}
+        {assigned.length === 0 ? (
+          <p className="muted" style={{ margin: 0 }}>None assigned yet.</p>
+        ) : (
+          assigned.map((ae) => {
+            const ex = exerciseMap.get(ae.exerciseId);
+            const title = ex?.title ?? ae.exerciseId;
+            const doseLabel = ex ? formatDosage(resolveDosage(ex, ae)) : null;
+            return (
+              <div key={ae.exerciseId} className="assign-row">
+                <span className="assign-row-label">
+                  {doseLabel ? `${title} · ${doseLabel}` : title} <MotionBadge exerciseId={ae.exerciseId} />
+                </span>
+              </div>
+            );
+          })
+        )}
       </div>
     );
   }

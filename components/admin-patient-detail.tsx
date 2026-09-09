@@ -243,6 +243,19 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
 
   const adminUid = auth?.currentUser?.uid ?? "";
 
+  // Exercises can only be *assigned* from this screen while the patient has a
+  // submitted online assessment AND a completed session whose summary is still
+  // to be written — assigning belongs to that write-up step. Otherwise the
+  // panel is a read-only view of the current plan (edit it on /admin/recovery).
+  const hasSubmittedAssessment = linkedBookingIds.length > 0;
+  const hasPendingSummary = (bookings ?? []).some(
+    (b) => displayStatus(b) === "completed" && summaries[b.id] === null
+  );
+  const canAssignExercises = hasSubmittedAssessment && hasPendingSummary;
+  const assignReadOnlyReason = !hasSubmittedAssessment
+    ? "Read-only — no online assessment has been submitted yet. Assign exercises on the Recovery management screen if needed."
+    : "Read-only — every completed session has a summary. Assign exercises while writing a session summary, or on the Recovery management screen.";
+
   // ── Render ────────────────────────────────────────────────────────────
   if (patient === undefined) {
     return (
@@ -396,7 +409,13 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
 
       {/* 6. Assigned exercises */}
       {adminUid && (
-        <AdminExerciseAssigner adminUid={adminUid} patientUid={patientUid} personId={person.id} />
+        <AdminExerciseAssigner
+          adminUid={adminUid}
+          patientUid={patientUid}
+          personId={person.id}
+          readOnly={!canAssignExercises}
+          readOnlyReason={assignReadOnlyReason}
+        />
       )}
 
       {/* 7. Session summaries */}

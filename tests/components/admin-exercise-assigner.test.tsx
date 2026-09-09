@@ -91,6 +91,27 @@ describe('AdminExerciseAssigner', () => {
     )
   })
 
+  it('readOnly mode lists assigned exercises with no add / remove / edit controls', async () => {
+    getAssignedExercisesMock.mockResolvedValue([
+      { exerciseId: 'ex-1', assignedAt: new Date(), assignedBy: 'a1', active: true },
+    ])
+    const { container, queryByRole, queryByText, findByText } = render(
+      <AdminExerciseAssigner
+        adminUid="a1"
+        patientUid="p1"
+        personId="p1"
+        readOnly
+        readOnlyReason="Read-only — no online assessment has been submitted yet."
+      />
+    )
+    await waitFor(() => expect(container.querySelector('.skeleton-row-group')).not.toBeInTheDocument())
+    await findByText(/Read-only — no online assessment/i)
+    expect(queryByRole('button', { name: /assign/i })).not.toBeInTheDocument()
+    expect(queryByRole('button', { name: /remove/i })).not.toBeInTheDocument()
+    expect(queryByRole('button', { name: /edit dose/i })).not.toBeInTheDocument()
+    expect(queryByText(/Add exercise from library/i)).not.toBeInTheDocument()
+  })
+
   it('blocks a save that fails validation', async () => {
     getAssignedExercisesMock.mockResolvedValue([
       { exerciseId: 'ex-1', assignedAt: new Date(), assignedBy: 'a1', active: true },
