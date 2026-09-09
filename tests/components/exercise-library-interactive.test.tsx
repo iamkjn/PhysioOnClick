@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { AddToPlanButton } from "@/components/exercise-library/add-to-plan-button";
 import { PlanTray } from "@/components/exercise-library/plan-tray";
 import { LibrarySearch } from "@/components/exercise-library/library-search";
+import type { SearchItem } from "@/lib/exercise-library";
 
 beforeEach(() => {
   try {
@@ -98,15 +99,26 @@ describe("PlanTray", () => {
 });
 
 describe("LibrarySearch", () => {
-  const items = {
-    exercises: [
-      { slug: "clam-shell", title: "Clam Shell", aka: ["clamshell"] },
-      { slug: "glute-bridge", title: "Glute Bridge" },
-    ],
-    conditions: [
-      { slug: "hip-oa", name: "Hip osteoarthritis", aka: ["hip arthritis"] },
-    ],
-  };
+  const items: SearchItem[] = [
+    {
+      kind: "exercise",
+      slug: "clam-shell",
+      title: "Clam Shell",
+      terms: "clam shell clamshell gluteal weakness hip and groin",
+    },
+    {
+      kind: "exercise",
+      slug: "glute-bridge",
+      title: "Glute Bridge",
+      terms: "glute bridge hip and groin",
+    },
+    {
+      kind: "condition",
+      slug: "hip-oa",
+      name: "Hip osteoarthritis",
+      terms: "hip osteoarthritis hip arthritis wear and tear hip and groin",
+    },
+  ];
 
   it("shows a link to a matching exercise while typing", async () => {
     const user = userEvent.setup();
@@ -119,7 +131,7 @@ describe("LibrarySearch", () => {
     ).toHaveAttribute("href", "/exercises/clam-shell");
   });
 
-  it("matches conditions on their aka list too", async () => {
+  it("matches conditions on their synonym terms too", async () => {
     const user = userEvent.setup();
     render(<LibrarySearch items={items} />);
 

@@ -14,6 +14,7 @@ import { conditions } from "@/lib/conditions";
 import { exercises } from "@/lib/exercises";
 import { selfTests } from "@/lib/self-tests";
 import { getBodyArea, allBodyAreaKeys } from "@/lib/body-areas";
+import { buildSearchItems, searchItems } from "@/lib/library-search";
 
 export type { Condition, ConditionStage } from "@/lib/conditions";
 export type { Exercise } from "@/lib/exercises";
@@ -24,6 +25,16 @@ export type { BodyArea, BodyAreaKey } from "@/lib/body-areas";
 // taxonomy so `lib/body-areas.ts` stays an internal detail. `app/sitemap.ts` is
 // the one allowed direct importer (it already reaches past the barrel).
 export { BODY_AREAS, getBodyArea, allBodyAreaKeys } from "@/lib/body-areas";
+
+// Symptom-aware search lives in its own pure module (no import cycle: it reads
+// the static arrays directly). Public pages and the client search box import the
+// matcher + types from this barrel, never from `lib/library-search.ts`.
+export {
+  buildSearchItems,
+  searchItems,
+  SEARCH_SYNONYMS,
+  type SearchItem,
+} from "@/lib/library-search";
 
 import type { Condition, ConditionStage } from "@/lib/conditions";
 import type { Exercise } from "@/lib/exercises";
@@ -183,35 +194,45 @@ export function conditionsByBodyArea(key: string): Condition[] {
 }
 
 /**
- * Free-text search across the library. Matches exercises on `title` and each
- * `aka` entry, and conditions on `name` and each `aka` entry, all as
- * case-insensitive substrings. An empty or whitespace-only query returns empty
- * lists. Each list is capped at 20 results, in source order.
+ * Symptom-aware free-text search across the library. Delegates to the ranking +
+ * synonym logic in `lib/library-search.ts` (so "kneecap pain", "sore shoulder at
+ * night", "trapped nerve" resolve to the right hub), then maps the ranked hits
+ * back to concrete `Exercise` / `Condition` records, preserving rank order and
+ * keeping the split shape. An empty / whitespace-only / all-stopword query
+ * returns empty lists. Each list is capped at 20 (the ranked matcher already
+ * caps the combined list at 12).
  */
 export function searchLibrary(query: string): {
   exercises: Exercise[];
   conditions: Condition[];
 } {
-  const needle = query.trim().toLowerCase();
-  if (!needle) return { exercises: [], conditions: [] };
+  const matchedExercises: Exercise[] = [];
+  const matchedConditions: Condition[] = [];
 
-  const matchedExercises = exercises
-    .filter((exercise) =>
-      [exercise.title, ...(exercise.aka ?? [])].some((value) =>
-        value.toLowerCase().includes(needle),
-      ),
-    )
-    .slice(0, 20);
+  for (const hit of searchItems(buildSearchItems(), query)) {
+    if (hit.kind === "exercise") {
+      const exercise = getExerciseBySlug(hit.slug);
+      if (exercise) matchedExercises.push(exercise);
+    } else {
+      const condition = getCondition(hit.slug);
+      if (condition) matchedConditions.push(condition);
+    }
+  }
 
-  const matchedConditions = conditions
-    .filter((condition) =>
-      [condition.name, ...(condition.aka ?? [])].some((value) =>
-        value.toLowerCase().includes(needle),
-      ),
-    )
-    .slice(0, 20);
+  return {
+    exercises: matchedExercises.slice(0, 20),
+    conditions: matchedConditions.slice(0, 20),
+  };
+}
 
-  return { exercises: matchedExercises, conditions: matchedConditions };
+/**
+ * The flat `SearchItem[]` the `<LibrarySearch>` client component filters in
+ * memory - built once at build time on the (force-static) index page and handed
+ * over as a prop, no runtime fetch. Named to read like the other `library*`
+ * helpers; a thin pass-through to `buildSearchItems()`.
+ */
+export function librarySearchItems() {
+  return buildSearchItems();
 }
 
 /**

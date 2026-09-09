@@ -8,6 +8,7 @@ import {
   getExerciseBySlug,
   getSelfTest,
   librarySearchIndex,
+  librarySearchItems,
   programForCondition,
 } from "@/lib/exercise-library";
 import { breadcrumbs } from "@/lib/structured-data";
@@ -124,7 +125,7 @@ export default function ExerciseLibraryIndexPage() {
       <BodyMap />
 
       <section className="exlib-index-section">
-        <LibrarySearch items={librarySearchIndex()} />
+        <LibrarySearch items={librarySearchItems()} />
       </section>
 
       <section className="exlib-index-section" id="my-plan">

@@ -232,8 +232,13 @@ describe('exercise-library: searchLibrary', () => {
     expect(searchLibrary('   ')).toEqual({ exercises: [], conditions: [] })
   })
 
-  it('caps each list at 20 results', () => {
-    const { exercises: found } = searchLibrary('e') // ~148 titles contain "e"
-    expect(found.length).toBe(20)
+  it('never returns more than the ranked-matcher cap', () => {
+    // searchLibrary now delegates to the symptom-aware ranker, which caps the
+    // combined list at 12; each split list is additionally sliced at 20.
+    const { exercises: ex, conditions: co } = searchLibrary('knee pain')
+    expect(ex.length + co.length).toBeGreaterThan(0)
+    expect(ex.length + co.length).toBeLessThanOrEqual(12)
+    expect(ex.length).toBeLessThanOrEqual(20)
+    expect(co.length).toBeLessThanOrEqual(20)
   })
 })

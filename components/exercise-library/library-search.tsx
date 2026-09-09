@@ -1,40 +1,19 @@
 "use client";
 
-// In-memory type-ahead over the exercise library. The server page (Task 9)
-// passes the whole searchable index as a serialisable `items` prop — a slim
-// {slug,title,aka} / {slug,name,aka} shape — and this filters it client-side
-// with no fetch. Up to 8 exercise + 8 condition results.
+// Symptom-aware type-ahead over the exercise library. The server index page
+// passes the whole catalogue as a serialisable `SearchItem[]` prop (title/name
+// plus a pre-joined `terms` string per item) and this ranks it client-side with
+// the shared pure matcher - no fetch. Up to 12 ranked results, exercises and
+// conditions interleaved by score.
 
 import { useState } from "react";
 
-type ExerciseItem = { slug: string; title: string; aka?: string[] };
-type ConditionItem = { slug: string; name: string; aka?: string[] };
+import { searchItems, type SearchItem } from "@/lib/exercise-library";
 
-const LIMIT = 8;
-
-export function LibrarySearch({
-  items,
-}: {
-  items: { exercises: ExerciseItem[]; conditions: ConditionItem[] };
-}) {
+export function LibrarySearch({ items }: { items: SearchItem[] }) {
   const [query, setQuery] = useState("");
-  const needle = query.trim().toLowerCase();
-
-  const matches = (haystack: string[]) =>
-    haystack.some((value) => value.toLowerCase().includes(needle));
-
-  const exerciseHits = needle
-    ? items.exercises
-        .filter((item) => matches([item.title, ...(item.aka ?? [])]))
-        .slice(0, LIMIT)
-    : [];
-  const conditionHits = needle
-    ? items.conditions
-        .filter((item) => matches([item.name, ...(item.aka ?? [])]))
-        .slice(0, LIMIT)
-    : [];
-
-  const total = exerciseHits.length + conditionHits.length;
+  const trimmed = query.trim();
+  const results = trimmed ? searchItems(items, query) : [];
 
   return (
     <div className="exlib-search">
@@ -47,39 +26,34 @@ export function LibrarySearch({
         onChange={(event) => setQuery(event.target.value)}
       />
 
-      {needle !== "" && total > 0 && (
+      {trimmed !== "" && results.length > 0 && (
         <ul className="exlib-search__results">
-          {exerciseHits.map((item) => (
-            <li key={`exercise-${item.slug}`}>
+          {results.map((item) => (
+            <li key={`${item.kind}-${item.slug}`}>
               <a
-                href={`/exercises/${item.slug}`}
+                href={
+                  item.kind === "exercise"
+                    ? `/exercises/${item.slug}`
+                    : `/exercises/for/${item.slug}`
+                }
                 className="exlib-search__result"
               >
                 <span className="exlib-search__kind" aria-hidden="true">
-                  Exercise
+                  {item.kind === "exercise" ? "Exercise" : "Condition"}
                 </span>
-                <span className="exlib-search__label">{item.title}</span>
-              </a>
-            </li>
-          ))}
-          {conditionHits.map((item) => (
-            <li key={`condition-${item.slug}`}>
-              <a
-                href={`/exercises/for/${item.slug}`}
-                className="exlib-search__result"
-              >
-                <span className="exlib-search__kind" aria-hidden="true">
-                  Condition
+                <span className="exlib-search__label">
+                  {item.kind === "exercise" ? item.title : item.name}
                 </span>
-                <span className="exlib-search__label">{item.name}</span>
               </a>
             </li>
           ))}
         </ul>
       )}
 
-      {needle !== "" && total === 0 && (
-        <p className="exlib-search__empty">No matches. Try a different word.</p>
+      {trimmed !== "" && results.length === 0 && (
+        <p className="exlib-search__empty">
+          No matches - try a body part, a condition name, or how it feels.
+        </p>
       )}
     </div>
   );
