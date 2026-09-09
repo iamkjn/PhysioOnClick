@@ -371,7 +371,7 @@ export const conditions: Condition[] = [
         stage: "Build strength",
         blurb:
           "Add these as range improves. Train the deep neck flexors and the muscles around the shoulder blades most days, keeping the effort light to moderate and the neck relaxed.",
-        exerciseSlugs: ["deep-neck-flexor-hold", "banded-neck-isometrics", "standing-chin-retraction", "scapular-retraction-band-row", "wall-angels"],
+        exerciseSlugs: ["deep-neck-flexor-hold", "isometric-neck-hold", "standing-chin-retraction", "scapular-retraction-band-row", "wall-angels"],
       },
       {
         stage: "Return to activity",

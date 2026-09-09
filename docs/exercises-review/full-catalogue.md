@@ -2,11 +2,11 @@
 
 **For Shivaliba (registered physiotherapist).**
 
-All 175 catalogue exercises now carry a structured write-up: `setup`, `steps`,
+All 174 catalogue exercises now carry a structured write-up: `setup`, `steps`,
 `cues` (good form), `mistakes` (ease off / stop), an evidence-informed
 **starting** `defaultDosage`, and a stick-figure `pose`. The one-line
 `description` (used elsewhere on the site) is unchanged and shown for context.
-The 17 exercises added in the competitive pass (2026-09-09) are listed in their
+The 16 exercises added in the competitive pass (2026-09-09) are listed in their
 own section at the end of this document.
 
 These are AI-drafted starting points, written to a shared house style and
@@ -3196,7 +3196,7 @@ Concerns for Shivaliba:
 
 ## New exercises (competitive pass 2026-09-09) - PENDING CLINICAL REVIEW
 
-Seventeen MSK loading exercises added to fill the thin regions of the library (golfer's and tennis elbow forearm loading, lateral-hip strength, deep neck endurance, heavy-slow calf and knee tendon loading). Drafted to the same house style and safety standard as the existing 158; every last `Ease off / stop if` entry is a "Stop and message your physio if ..." line. A proposed `isometric-quad-wall-sit` was dropped as a duplicate of the existing `wall-squat-hold` (ex-65), which is now wired into the patellar-tendinopathy hub. Nothing here is on production; it goes to dev for testing after this pass.
+Sixteen MSK loading exercises added to fill the thin regions of the library (golfer's and tennis elbow forearm loading, lateral-hip strength, deep neck endurance, heavy-slow calf and knee tendon loading). Drafted to the same house style and safety standard as the existing 158; every last `Ease off / stop if` entry is a "Stop and message your physio if ..." line. Two proposals were dropped along the way: `isometric-quad-wall-sit`, a duplicate of the existing `wall-squat-hold` (ex-65), which was already wired into the patellar-tendinopathy hub (only `spanish-squat` was newly added there); and `banded-neck-isometrics` (ex-162), a duplicate of the already-reviewed `isometric-neck-hold` (ex-23), which stays in the neck-pain hub. The ex-162 id is left as a deliberate gap rather than renumbering, so this section runs ex-151..ex-167 minus ex-162. Nothing here is on production; it goes to dev for testing after this pass.
 
 ---
 #### ex-151 - Eccentric Wrist Flexion
@@ -3222,7 +3222,7 @@ _Medial epicondylalgia (golfer's elbow) / Strength phase_ &nbsp; · &nbsp; summa
 
 ---
 #### ex-152 - Resisted Wrist Flexion
-_Medial epicondylalgia (golfer's elbow) / Build strength_ &nbsp; · &nbsp; summary: Curling the wrist up against a light weight or band through its full range to strengthen the forearm flexor muscles.
+_Medial epicondylalgia (golfer's elbow) / Strength phase_ &nbsp; · &nbsp; summary: Curling the wrist up against a light weight or band through its full range to strengthen the forearm flexor muscles.
 
 - **Body part / area:** Wrist / upper_limb
 - **Tags:** wrist, golfers-elbow, strength-phase
@@ -3244,7 +3244,7 @@ _Medial epicondylalgia (golfer's elbow) / Build strength_ &nbsp; · &nbsp; summa
 
 ---
 #### ex-153 - Forearm Rotation with Weight
-_Elbow tendinopathy (tennis or golfer's elbow) / Build strength_ &nbsp; · &nbsp; summary: Slowly rotating the forearm palm-up and palm-down against a light off-centre weight, loading the muscles that twist the forearm.
+_Elbow tendinopathy (tennis or golfer's elbow) / Strength phase_ &nbsp; · &nbsp; summary: Slowly rotating the forearm palm-up and palm-down against a light off-centre weight, loading the muscles that twist the forearm.
 
 - **Body part / area:** Wrist / upper_limb
 - **Tags:** wrist, tennis-elbow, golfers-elbow, strength-phase
@@ -3266,7 +3266,7 @@ _Elbow tendinopathy (tennis or golfer's elbow) / Build strength_ &nbsp; · &nbsp
 
 ---
 #### ex-154 - Wrist Extension with Weight
-_Lateral epicondylalgia (tennis elbow) / Build strength_ &nbsp; · &nbsp; summary: Lifting and lowering a light weight through wrist extension using both phases of the movement, progressing the load on the wrist extensor tendon.
+_Lateral epicondylalgia (tennis elbow) / Strength phase_ &nbsp; · &nbsp; summary: Lifting and lowering a light weight through wrist extension using both phases of the movement, progressing the load on the wrist extensor tendon.
 
 - **Body part / area:** Wrist / upper_limb
 - **Tags:** wrist, tennis-elbow, strength-phase
@@ -3288,7 +3288,7 @@ _Lateral epicondylalgia (tennis elbow) / Build strength_ &nbsp; · &nbsp; summar
 
 ---
 #### ex-155 - Tyler Twist (Resistance Bar)
-_Lateral epicondylalgia (tennis elbow) / Build strength_ &nbsp; · &nbsp; summary: A twisting exercise with a flexible rubber bar that loads the wrist extensor tendon through a controlled release, a well-studied approach for tennis elbow.
+_Lateral epicondylalgia (tennis elbow) / Strength phase_ &nbsp; · &nbsp; summary: A twisting exercise with a flexible rubber bar that loads the wrist extensor tendon through a controlled release, a well-studied approach for tennis elbow.
 
 - **Body part / area:** Elbow / upper_limb
 - **Tags:** elbow, tennis-elbow, strength-phase
@@ -3310,7 +3310,7 @@ _Lateral epicondylalgia (tennis elbow) / Build strength_ &nbsp; · &nbsp; summar
 
 ---
 #### ex-156 - Hip Hitch (Pelvic Drop)
-_Gluteal tendinopathy / Build strength_ &nbsp; · &nbsp; summary: Standing on one leg on a step and slowly lowering then lifting the opposite side of the pelvis, training the outer-hip muscles that keep the pelvis level.
+_Gluteal tendinopathy / Strength phase_ &nbsp; · &nbsp; summary: Standing on one leg on a step and slowly lowering then lifting the opposite side of the pelvis, training the outer-hip muscles that keep the pelvis level.
 
 - **Body part / area:** Hip / lower_limb
 - **Tags:** hip, glute-strength, strength-phase
@@ -3332,7 +3332,7 @@ _Gluteal tendinopathy / Build strength_ &nbsp; · &nbsp; summary: Standing on on
 
 ---
 #### ex-157 - Banded Hip External Rotation
-_Gluteal tendinopathy / Build strength_ &nbsp; · &nbsp; summary: Pressing the thighs apart against a resistance band while seated or side-lying, targeting the deep outer-hip rotators and the gluteal muscles.
+_Gluteal tendinopathy / Strength phase_ &nbsp; · &nbsp; summary: Pressing the thighs apart against a resistance band while seated or side-lying, targeting the deep outer-hip rotators and the gluteal muscles.
 
 - **Body part / area:** Hip / lower_limb
 - **Tags:** hip, glute-strength, band, strength-phase
@@ -3354,7 +3354,7 @@ _Gluteal tendinopathy / Build strength_ &nbsp; · &nbsp; summary: Pressing the t
 
 ---
 #### ex-158 - Copenhagen Adductor Hold
-_Groin and adductor loading for sport / Return to activity_ &nbsp; · &nbsp; summary: A side-lying hold with the top leg supported on a bench, building strength through the inner-thigh adductor muscles and the side of the supporting hip.
+_Groin and adductor loading for sport / Return to function_ &nbsp; · &nbsp; summary: A side-lying hold with the top leg supported on a bench, building strength through the inner-thigh adductor muscles and the side of the supporting hip.
 
 - **Body part / area:** Hip / lower_limb
 - **Tags:** hip, adductor-strength, return-to-sport
@@ -3376,7 +3376,7 @@ _Groin and adductor loading for sport / Return to activity_ &nbsp; · &nbsp; sum
 
 ---
 #### ex-159 - Single-Leg Glute Bridge
-_Gluteal weakness and hip or knee pain / Build strength_ &nbsp; · &nbsp; summary: Lifting the hips into a bridge while holding one leg off the floor, roughly doubling the load through the gluteal muscles of the standing leg.
+_Gluteal weakness and hip or knee pain / Strength phase_ &nbsp; · &nbsp; summary: Lifting the hips into a bridge while holding one leg off the floor, roughly doubling the load through the gluteal muscles of the standing leg.
 
 - **Body part / area:** Hip / lower_limb
 - **Tags:** hip, glute-strength, strength-phase
@@ -3398,7 +3398,7 @@ _Gluteal weakness and hip or knee pain / Build strength_ &nbsp; · &nbsp; summar
 
 ---
 #### ex-160 - Standing Banded Hip Abduction
-_Gluteal tendinopathy / Build strength_ &nbsp; · &nbsp; summary: Standing on one leg and moving the other leg out to the side against a resistance band, strengthening the outer-hip muscles in an upright, functional position.
+_Gluteal tendinopathy / Strength phase_ &nbsp; · &nbsp; summary: Standing on one leg and moving the other leg out to the side against a resistance band, strengthening the outer-hip muscles in an upright, functional position.
 
 - **Body part / area:** Hip / lower_limb
 - **Tags:** hip, glute-strength, band, strength-phase
@@ -3420,7 +3420,7 @@ _Gluteal tendinopathy / Build strength_ &nbsp; · &nbsp; summary: Standing on on
 
 ---
 #### ex-161 - Deep Neck Flexor Endurance Hold
-_Non-specific neck pain / Build strength_ &nbsp; · &nbsp; summary: A gentle sustained chin-nod that holds the deep muscles at the front of the neck in a light contraction to build their endurance.
+_Non-specific neck pain / Strength phase_ &nbsp; · &nbsp; summary: A gentle sustained chin-nod that holds the deep muscles at the front of the neck in a light contraction to build their endurance.
 
 - **Body part / area:** Cervical spine / spine
 - **Tags:** neck, deep-neck-flexors, strength-phase
@@ -3441,30 +3441,8 @@ _Non-specific neck pain / Build strength_ &nbsp; · &nbsp; summary: A gentle sus
 - [ ] **Approved** &nbsp;&nbsp; Notes:
 
 ---
-#### ex-162 - Banded Neck Isometrics (4-Way)
-_Non-specific neck pain / Build strength_ &nbsp; · &nbsp; summary: Gentle press-and-hold contractions of the neck muscles in four directions with no movement, using a hand for light resistance.
-
-- **Body part / area:** Cervical spine / spine
-- **Tags:** neck, isometric, strength-phase
-- **Equipment:** none
-- **Get set up:** Sit or stand tall with your head balanced level over your shoulders and your chin very slightly tucked.
-- **Steps:**
-  1. Place a palm flat against your forehead and press your head gently forwards into it - the head does not move.
-  2. Hold, then relax. Repeat with the palm on the back of the head, pressing gently backwards.
-  3. Repeat with a palm on each side in turn, pressing the head gently sideways into the hand.
-  4. Keep each press light, around a quarter of your full effort.
-- **Good form:** Your head stays completely still - only the effort changes. / The chin stays gently tucked and level, not poking forward or tipping up. / Build each press up slowly over two seconds and ease off slowly.
-- **Ease off / stop if:** Pressing so hard the neck actually moves or the shoulders hunch up. / Holding your breath through the contraction. / Letting the chin poke forward as you press. / Stop and message your physio if the pressing brings on dizziness, visual changes, or pain or tingling spreading into the arm.
-- **Starting dose:** 2 sets × 4 reps, 6s hold · once a day, 6 days a week
-- **Dose note:** One rep is one press in one direction; work through forwards, backwards and each side. Keep the effort light and the neck pain-free.
-- **Figure pose:** `chinTuck`
-- **Helps with:** Building all-round neck strength / Making the neck feel steadier and less fragile / Coping with longer spells of sitting and driving
-
-- [ ] **Approved** &nbsp;&nbsp; Notes:
-
----
 #### ex-163 - Prone Neck Extension
-_Non-specific neck pain / Return to activity_ &nbsp; · &nbsp; summary: Lying face down over the edge of a bed and slowly lifting the head against gravity to strengthen the muscles at the back of the neck.
+_Non-specific neck pain / Return to function_ &nbsp; · &nbsp; summary: Lying face down over the edge of a bed and slowly lifting the head against gravity to strengthen the muscles at the back of the neck.
 
 - **Body part / area:** Cervical spine / spine
 - **Tags:** neck, extensor-strength, return-to-activity
@@ -3573,3 +3551,44 @@ _Patellar tendinopathy / Strength phase_ &nbsp; · &nbsp; summary: Kneeling upri
 - [ ] **Approved** &nbsp;&nbsp; Notes:
 
 ---
+
+### Notes for clinical review (competitive-pass exercises)
+
+Specific points the drafting pass wants a clinical decision on, beyond the
+per-exercise **Approved** ticks above.
+
+1. **`spanish-squat` staging in patellofemoral pain.** It sits in the
+   `patellofemoral-pain` hub's "Settle the pain" stage, but sustained loaded knee
+   flexion (5 x 45s at roughly 90 degrees) is a classic PFP aggravator, and the
+   evidence for it is in patellar tendinopathy - where it also sits. Consider
+   dropping it from the PFP hub, or moving it to that hub's "Build strength"
+   stage.
+2. **`reverse-nordic` staging.** It is in patellar tendinopathy "Build strength"
+   (stage 2 of 4), but its own dose note describes a demanding quad eccentric.
+   Consider moving it to stage 3.
+3. **`prone-neck-extension` entry gate.** The "only add once lighter neck work is
+   easy and pain-free" gate lives only in the dose `notes` - the least prominent
+   field - and sits next to a 2x10 starting dose while the note says "start with
+   very few reps". Consider promoting the gate into `setup` or the first cue, and
+   lowering the printed reps.
+4. **`hip-hitch` wording and volume.** Step 2 ("let the free-side hip drop") and
+   its dose note ("letting the standing hip drop can compress a sore tendon")
+   read against each other to a patient. Separately, 3x12 daily, 5 days a week
+   may be a lot for an irritable lateral hip - it is in "Return to activity".
+5. **`spanish-squat` anchoring safety.** The setup relies on a heavy table leg or
+   door anchor, a strong band under tension, and leaning back into it. No cue or
+   mistake covers the anchor pulling free or the band snapping back.
+6. **`heavy-slow-calf-raise` pain threshold.** Its dose note publishes "3 to 5 out
+   of 10" as acceptable tendon pain. That is standard monitoring guidance, but it
+   is a specific number going out under your registration - please confirm.
+7. **Daily vs 5-day frequency in the wrist flexors.** `eccentric-wrist-flexion`
+   (ex-151) and `tyler-twist-flexbar` (ex-155) are prescribed daily (perWeek 7),
+   while the other two wrist-flexor exercises are 5 days a week. Confirm the
+   daily frequency in the patient-facing copy.
+8. **`copenhagen-adductor` hub placement.** It was deliberately kept OUT of
+   `gluteal-tendinopathy` - side-lying compresses the bottom trochanter, which
+   that hub tells patients to avoid - and wired only into
+   `return-to-sport-readiness`. Please confirm.
+9. **`tyler-twist-flexbar` brand name.** The equipment string names "a red or
+   green rubber FlexBar", a Thera-Band trademark. A generic "flexible resistance
+   bar" is also in the string, so the brand can be dropped if you prefer.
