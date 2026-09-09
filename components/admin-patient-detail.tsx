@@ -18,7 +18,6 @@ import { Avatar } from "@/components/avatar";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { AdminRecoverySummary } from "@/components/admin-recovery-summary";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
-import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminAssessmentReview } from "@/components/admin-assessment-review";
 import { SummaryForm } from "@/components/summary-form";
@@ -337,8 +336,9 @@ export function AdminPatientDetail({ patientUid }: Props) {
         )}
       </div>
 
-      {/* 4. Clinical assessments */}
-      <section className="dashboard-grid">
+      {/* 4. Clinical assessments (history only — recording an assessment lives
+          on /admin/recovery, not on this screen) */}
+      <section>
         <div className="panel stack">
           <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Clinical assessments</h2>
           {!assessments ? (
@@ -361,7 +361,6 @@ export function AdminPatientDetail({ patientUid }: Props) {
             </div>
           )}
         </div>
-        <AdminClinicalEntry patientUid={patientUid} personId={person.id} />
       </section>
 
       {/* 5. Patient assessment forms and check-ups */}
