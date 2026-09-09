@@ -128,6 +128,8 @@ describe("app/exercises/tests/[slug] page", () => {
     for (const node of scripts) {
       expect(node.textContent).not.toContain("MedicalTest");
       expect(node.textContent).not.toContain("MedicalGuideline");
+      expect(node.textContent).not.toContain("HowTo");
+      expect(node.textContent).not.toContain("FAQPage");
     }
   });
 

@@ -70,7 +70,7 @@ export default function SelfTestsIndexPage() {
             breadcrumbs([
               { name: "Home", path: "/" },
               { name: "Exercises", path: "/exercises" },
-              { name: "Self-checks", path: "/exercises/tests" },
+              { name: "Self-check tests", path: "/exercises/tests" },
             ]),
           ),
         }}
@@ -88,7 +88,7 @@ export default function SelfTestsIndexPage() {
           /{" "}
         </span>
         <span className="muted" aria-current="page">
-          Self-checks
+          Self-check tests
         </span>
       </nav>
 

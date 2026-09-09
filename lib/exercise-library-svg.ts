@@ -52,7 +52,9 @@ function wrapLines(text: string, maxChars: number, maxLines: number): string[] {
 
   if (lines.length <= maxLines) return lines;
   const kept = lines.slice(0, maxLines);
-  kept[maxLines - 1] = `${kept[maxLines - 1]}…`;
+  // "..." not U+2026: the whole library keeps this content ASCII/Latin-1, and
+  // an em-ellipsis in the generated SVG would be a forbidden codepoint.
+  kept[maxLines - 1] = `${kept[maxLines - 1]}...`;
   return kept;
 }
 

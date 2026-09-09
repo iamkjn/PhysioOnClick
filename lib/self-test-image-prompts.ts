@@ -34,11 +34,11 @@ export const selfTestImagePrompts: Record<string, string> = {
   "test-full-can-1":
     "the person standing tall and relaxed with both arms hanging straight down by the sides and the shoulders level, seen from the front",
   "test-full-can-2":
-    "the person holding one arm out straight at shoulder height and about thirty degrees forward of straight out to the side so it lines up with the shoulder blade, elbow straight, seen from the front",
+    "the person raising one straight arm from the side up to shoulder height and about thirty degrees forward of straight out to the side so it lines up with the shoulder blade, elbow straight, a sky-blue (#0EA5E9) arrow curving upward to show the arm lifting, seen from the front",
   "test-full-can-3":
-    "the person holding one arm out at shoulder height and about thirty degrees forward of the body with the whole arm turned so the thumb points up to the ceiling as if holding a full can of drink, seen from the front",
+    "the person holding one arm out at shoulder height and about thirty degrees forward of the body, rotating the whole arm so the thumb points up to the ceiling as if holding a full can of drink, a short curved sky-blue (#0EA5E9) arrow at the wrist showing the arm turning thumb-up, seen from the front",
   "test-full-can-4":
-    "the person holding the arm out at shoulder height with the thumb up while a helper presses gently down on the forearm and the person holds it still, seen from the front",
+    "the person holding the arm out at shoulder height with the thumb up, pressing the back of the wrist gently up against the underside of a table edge, a short sky-blue (#0EA5E9) arrow pointing up at the wrist to show the light upward effort, seen from the front",
 
   // Hawkins-Kennedy Test - rotator cuff pinch (shoulder)
   "test-hawkins-kennedy-1":

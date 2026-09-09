@@ -123,7 +123,7 @@ export default async function SelfTestPage({
             breadcrumbs([
               { name: "Home", path: "/" },
               { name: "Exercises", path: "/exercises" },
-              { name: "Self-checks", path: "/exercises/tests" },
+              { name: "Self-check tests", path: "/exercises/tests" },
               { name: test.name, path },
             ]),
           ),
@@ -141,7 +141,7 @@ export default async function SelfTestPage({
           {" "}
           /{" "}
         </span>
-        <Link href="/exercises/tests">Self-checks</Link>
+        <Link href="/exercises/tests">Self-check tests</Link>
         <span className="muted" aria-hidden="true">
           {" "}
           /{" "}
