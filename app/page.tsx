@@ -7,6 +7,7 @@ import { founder, testimonials } from "@/lib/site-data";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
 import { Reveal } from "@/components/reveal";
+import { TrustpilotReviews } from "@/components/trustpilot-reviews";
 
 // Title/description/openGraph are inherited from the root layout — metadata
 // merges per field, so declaring only `alternates` here leaves those intact.
@@ -25,7 +26,6 @@ export default async function HomePage() {
     .split(" ")
     .map((part) => part[0])
     .join("");
-  const homeTestimonials = testimonials.slice(0, 2);
 
   return (
     <>
@@ -67,21 +67,7 @@ export default async function HomePage() {
               </Link>
             </article>
           </Reveal>
-          <div className="home-testimonial-stack">
-            {homeTestimonials.map((testimonial, i) => (
-              <Reveal key={testimonial.name} direction="up" delay={75 + i * 75}>
-                <blockquote className="card home-testimonial-card">
-                  <p>&ldquo;{testimonial.quote}&rdquo;</p>
-                  <footer>
-                    <strong>{testimonial.name}</strong>
-                    <span>
-                      {testimonial.location} &middot; {testimonial.focus}
-                    </span>
-                  </footer>
-                </blockquote>
-              </Reveal>
-            ))}
-          </div>
+          <TrustpilotReviews fallback={testimonials} />
         </div>
       </section>
 

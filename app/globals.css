@@ -702,6 +702,54 @@ p {
   font-size: 0.88rem;
 }
 
+/* Trustpilot reviews (components/trustpilot-reviews.tsx) */
+.tp-stars {
+  display: inline-flex;
+  gap: 1px;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.tp-star {
+  color: var(--line);
+}
+.tp-star.is-on {
+  color: #00b67a;
+}
+.tp-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-decoration: none;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card, 12px);
+  background: var(--surface-alt, transparent);
+}
+.tp-summary:hover {
+  border-color: var(--primary);
+}
+.tp-summary-score {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tp-summary-score strong {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--ink);
+}
+.tp-summary-meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.tp-summary-meta strong {
+  color: var(--ink);
+}
+.tp-review-title {
+  font-weight: 600 !important;
+  font-size: 1.05rem !important;
+}
+
 .section-heading {
   text-align: center;
   max-width: 720px;
