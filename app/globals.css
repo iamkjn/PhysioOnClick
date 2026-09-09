@@ -8818,3 +8818,74 @@ textarea:focus {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Public exercise library — "Where does it hurt?" body-area map
+   (.exlib-bodymap*) — the primary way into the library, sat high
+   on /exercises directly under the hero.
+   Clarity System: warm paper, navy ink, one graded sky accent.
+   Accent as a text/border colour is always --color-primary-dark.
+   Flat at rest; lift + shadow on hover/focus only.
+   ────────────────────────────────────────────────────────────── */
+
+.exlib-bodymap__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: var(--space-4);
+}
+
+.exlib-bodymap__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  text-decoration: none;
+  color: var(--color-text-primary);
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.exlib-bodymap__card:hover,
+.exlib-bodymap__card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(22, 34, 50, 0.1);
+  border-color: var(--color-primary-dark);
+}
+
+.exlib-bodymap__label {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: 1.25;
+  color: var(--color-navy);
+}
+
+.exlib-bodymap__blurb {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 600px) {
+  .exlib-bodymap__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .exlib-bodymap__card {
+    padding: var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exlib-bodymap__card {
+    transition: none;
+  }
+
+  .exlib-bodymap__card:hover,
+  .exlib-bodymap__card:focus-visible {
+    transform: none;
+  }
+}

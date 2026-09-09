@@ -67,6 +67,54 @@ describe("app/exercises index page", () => {
     }
   });
 
+  it("renders a prominent [data-body-map] entry point with a link per body area", () => {
+    const { container } = render(<ExerciseLibraryIndexPage />);
+    const bodyMap = container.querySelector("[data-body-map]");
+    expect(bodyMap).not.toBeNull();
+    expect(bodyMap?.textContent).toContain("Where does it hurt?");
+
+    const areaLinks = [
+      ...bodyMap!.querySelectorAll('a[href^="/exercises/area/"]'),
+    ];
+    expect(areaLinks.length).toBe(BODY_AREAS.length);
+
+    for (const area of BODY_AREAS) {
+      const link = areaLinks.find(
+        (a) => a.getAttribute("href") === `/exercises/area/${area.key}`,
+      );
+      expect(link, `missing body-map link for ${area.key}`).toBeTruthy();
+      expect(link?.textContent).toContain(area.label);
+    }
+
+    const shoulder = areaLinks.find(
+      (a) => a.getAttribute("href") === "/exercises/area/shoulder",
+    );
+    expect(shoulder?.textContent).toContain("Shoulder");
+  });
+
+  it("renders the body map before the LibrarySearch input", () => {
+    const { container } = render(<ExerciseLibraryIndexPage />);
+    const bodyMap = container.querySelector("[data-body-map]");
+    const search = container.querySelector(
+      'input[aria-label="Search exercises and conditions"]',
+    );
+    expect(bodyMap).not.toBeNull();
+    expect(search).not.toBeNull();
+    expect(
+      bodyMap!.compareDocumentPosition(search!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("has no duplicate body-area listing - every area link lives in the body map", () => {
+    const { container } = render(<ExerciseLibraryIndexPage />);
+    const allAreaLinks = container.querySelectorAll(
+      'a[href^="/exercises/area/"]',
+    );
+    expect(allAreaLinks.length).toBe(BODY_AREAS.length);
+    expect(container.querySelectorAll("ul.exlib-chip-row").length).toBeLessThanOrEqual(1);
+  });
+
   it("renders a featured section with at least 4 exercise-card links", () => {
     const { container } = render(<ExerciseLibraryIndexPage />);
     const featured = [...container.querySelectorAll("a.exlib-ex-card")];

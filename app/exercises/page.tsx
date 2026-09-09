@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   allConditionSlugs,
   allSelfTestSlugs,
-  BODY_AREAS,
   getCondition,
   getExerciseBySlug,
   getSelfTest,
@@ -12,6 +11,7 @@ import {
   programForCondition,
 } from "@/lib/exercise-library";
 import { breadcrumbs } from "@/lib/structured-data";
+import { BodyMap } from "@/components/exercise-library/body-map";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { LibrarySearch } from "@/components/exercise-library/library-search";
@@ -121,6 +121,8 @@ export default function ExerciseLibraryIndexPage() {
         </p>
       </section>
 
+      <BodyMap />
+
       <section className="exlib-index-section">
         <LibrarySearch items={librarySearchIndex()} />
       </section>
@@ -152,22 +154,6 @@ export default function ExerciseLibraryIndexPage() {
             />
           ))}
         </div>
-      </section>
-
-      <section className="exlib-index-section">
-        <div className="section-heading">
-          <h2>Browse by body area</h2>
-          <p>Jump straight to the exercises and programmes for one part of the body.</p>
-        </div>
-        <ul className="exlib-chip-row">
-          {BODY_AREAS.map((area) => (
-            <li key={area.key}>
-              <Link className="exlib-chip" href={`/exercises/area/${area.key}`}>
-                {area.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
       </section>
 
       {selfTests.length ? (
