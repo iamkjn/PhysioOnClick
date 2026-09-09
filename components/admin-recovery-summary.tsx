@@ -20,6 +20,7 @@ interface Props {
 }
 
 const ADHERENCE_DAYS = 28;
+const WEEK_DAYS = 7;
 
 interface Loaded {
   streak: number;
@@ -27,7 +28,9 @@ interface Loaded {
   assignedCount: number;
   // newest last — one bool per calendar day over the last ADHERENCE_DAYS
   completedByDay: boolean[];
-  completedCount: number;
+  // days with ≥1 exercise done in the last 7 / last 28 calendar days
+  weekCount: number;
+  monthCount: number;
   latestPain: PainLog | null;
 }
 
@@ -59,7 +62,8 @@ export function AdminRecoverySummary({ patientUid, personId }: Props) {
           goal,
           assignedCount: assigned.length,
           completedByDay,
-          completedCount: completedByDay.filter(Boolean).length,
+          weekCount: completedByDay.slice(-WEEK_DAYS).filter(Boolean).length,
+          monthCount: completedByDay.filter(Boolean).length,
           latestPain: pain[0] ?? null,
         });
       })
@@ -114,33 +118,46 @@ export function AdminRecoverySummary({ patientUid, personId }: Props) {
             ) : (
               <>
                 <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>
-                  Exercises done on{" "}
+                  This week:{" "}
                   <strong style={{ color: "var(--color-text-primary)" }}>
-                    {data.completedCount} of the last {ADHERENCE_DAYS} days
+                    {data.weekCount} of 7 days
                   </strong>{" "}
-                  ({Math.round((data.completedCount / ADHERENCE_DAYS) * 100)}%).
+                  with exercises done ({Math.round((data.weekCount / WEEK_DAYS) * 100)}%).
                 </p>
-                <div
-                  role="img"
-                  aria-label={`Exercise completed on ${data.completedCount} of the last ${ADHERENCE_DAYS} days`}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(14, 1fr)",
-                    gap: 4,
-                    maxWidth: 320,
-                  }}
-                >
-                  {data.completedByDay.map((done, i) => (
-                    <span
-                      key={i}
-                      title={dateKeyDaysAgo(ADHERENCE_DAYS - 1 - i)}
-                      style={{
-                        aspectRatio: "1",
-                        borderRadius: 3,
-                        background: done ? "var(--color-primary)" : "var(--color-border)",
-                      }}
-                    />
-                  ))}
+                <div style={{ marginTop: "var(--space-1)" }}>
+                  <p className="muted" style={{ margin: 0, fontSize: "var(--text-xs)" }}>
+                    Last 4 weeks — {data.monthCount} of {ADHERENCE_DAYS} days
+                  </p>
+                  <div
+                    role="img"
+                    aria-label={`Exercise completed on ${data.weekCount} of the last 7 days, and ${data.monthCount} of the last ${ADHERENCE_DAYS} days`}
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(14, 1fr)",
+                      gap: 4,
+                      maxWidth: 320,
+                      marginTop: 4,
+                    }}
+                  >
+                    {data.completedByDay.map((done, i) => {
+                      const inThisWeek = i >= ADHERENCE_DAYS - WEEK_DAYS;
+                      return (
+                        <span
+                          key={i}
+                          title={dateKeyDaysAgo(ADHERENCE_DAYS - 1 - i)}
+                          style={{
+                            aspectRatio: "1",
+                            borderRadius: 3,
+                            background: done
+                              ? "var(--color-primary)"
+                              : "var(--color-border)",
+                            outline: inThisWeek ? "1px solid var(--color-primary-dark)" : "none",
+                            outlineOffset: -1,
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
               </>
             )}

@@ -53,8 +53,9 @@ describe('AdminRecoverySummary', () => {
     render(<AdminRecoverySummary patientUid="u1" personId="p1" />)
 
     await waitFor(() => {
-      expect(screen.getByText(/2 of the last 28 days/i)).toBeInTheDocument()
+      expect(screen.getByText(/2 of 7 days/i)).toBeInTheDocument()
     })
+    expect(screen.getByText(/Last 4 weeks — 2 of 28 days/i)).toBeInTheDocument()
     expect(screen.getByText(/14-day goal/)).toBeInTheDocument()
     expect(screen.getByText(/4\/10/)).toBeInTheDocument()
   })
