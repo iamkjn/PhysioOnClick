@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { Analytics } from "@/components/analytics";
 import { AnalyticsTracker } from "@/components/analytics-tracker";
+import { TrustpilotInviteScript } from "@/components/trustpilot-invite-script";
 import { ConnectivityOverlay } from "@/components/connectivity-overlay";
 import { CookieConsent } from "@/components/cookie-consent";
 import { PersonProvider } from "@/components/person-provider";
@@ -121,6 +122,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <SiteFooter />
             <Analytics />
             <AnalyticsTracker />
+            <TrustpilotInviteScript />
             {/* ChatWidget is disabled until GEMINI_API_KEY is set on the Worker.
                 Without the key /api/chat 500s on every message, so showing the
                 launcher would advertise a broken feature. Re-enable by restoring

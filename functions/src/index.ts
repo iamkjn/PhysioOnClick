@@ -356,9 +356,9 @@ export const sendReviewRequests = onSchedule(
     const lo = new Date(now - 25 * 60 * 60000);
     const hi = new Date(now - 23 * 60 * 60000);
 
+    // Every session — free or paid — gets a review request ~24h after.
     const snap = await db
       .collection("bookings")
-      .where("paid", "==", true)
       .where("sessionDate", ">=", lo)
       .where("sessionDate", "<=", hi)
       .get();

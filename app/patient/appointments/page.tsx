@@ -9,6 +9,7 @@ import { PersonSwitcher } from "@/components/person-switcher";
 import { usePerson } from "@/components/person-provider";
 import { SkeletonRow } from "@/components/skeleton";
 import { ClipboardIcon } from "@/components/icons";
+import { TrustpilotInvitations } from "@/components/trustpilot-invitations";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 import { getFollowUps, type FollowUp } from "@/lib/follow-ups";
 
@@ -93,6 +94,9 @@ export default function AppointmentsPage() {
 
   return (
     <div className="site-shell patient-page">
+      <TrustpilotInvitations
+        bookings={past.map((b) => ({ id: b.id, patientName: b.patientName, sessionDate: b.sessionDate }))}
+      />
       <section className="page-hero">
         <div className="stack">
           <span className="eyebrow">Appointments</span>
