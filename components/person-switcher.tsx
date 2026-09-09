@@ -50,6 +50,17 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
     // eslint-disable-next-line react-hooks/exhaustive-deps -- personCtx.reconcile has a stable identity (useCallback); only re-run when uid changes
   }, [uid]);
 
+  // Admin deep link: `initialPersonId` is read in an effect on the page, so it
+  // arrives a tick after mount — after the useState initializer above has
+  // already run with `undefined`. Sync to it when it lands.
+  useEffect(() => {
+    if (!initialPersonId || initialPersonId === uid || initialPersonId === selected) return;
+    setSelected(initialPersonId);
+    const dep = dependents?.find((d) => d.id === initialPersonId);
+    onSelect(initialPersonId, dep?.name ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- react only to initialPersonId changing; the getDependents .then above fills the name in once deps load
+  }, [initialPersonId]);
+
   // Keep local selection (and the caller, via onSelect) in sync with the
   // shared context — e.g. another switcher instance on the same page
   // changed it, or the reconcile guard above just reset it to self.

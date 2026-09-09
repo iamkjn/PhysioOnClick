@@ -16,13 +16,15 @@ export default function AdminPatientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [checkedAdmin, setCheckedAdmin] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  // `?person=<dependentId>` deep link from the patients list. Read straight from
-  // the URL in a lazy initializer (client-only) to avoid a useSearchParams
-  // Suspense boundary and any first-render flash of the primary's records.
-  const [initialPersonId] = useState<string | undefined>(() => {
-    if (typeof window === "undefined") return undefined;
-    return new URLSearchParams(window.location.search).get("person") || undefined;
-  });
+  // `?person=<dependentId>` deep link from the patients list. Read in an effect
+  // (not a useState initializer — that runs during SSR with no `window` and the
+  // value would then stick through hydration) so it actually arrives on the
+  // client. Avoids a useSearchParams Suspense boundary.
+  const [initialPersonId, setInitialPersonId] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get("person");
+    setInitialPersonId(p || undefined);
+  }, []);
 
   useEffect(() => {
     if (!auth) { setCheckedAdmin(true); return; }

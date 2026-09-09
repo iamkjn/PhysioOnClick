@@ -92,6 +92,15 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
     name: "",
   }));
 
+  // `initialPersonId` arrives from the page a tick after mount (it's read in an
+  // effect there). Re-target to the deep-linked dependent when it does; the
+  // PersonSwitcher fills the name in once its dependents load.
+  useEffect(() => {
+    if (initialPersonId && initialPersonId !== patientUid) {
+      setPerson((prev) => (prev.id === initialPersonId ? prev : { id: initialPersonId, name: "" }));
+    }
+  }, [initialPersonId, patientUid]);
+
   useEffect(() => {
     let live = true;
     setPatient(undefined);
