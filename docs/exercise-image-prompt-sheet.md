@@ -1,6 +1,6 @@
 # PhysioOnClick -- exercise & self-check image prompt sheet
 
-_Generated 2026-09-09. 158 exercise illustrations + 49 self-check test photos._
+_Generated 2026-09-09. 175 exercise illustrations + 49 self-check test photos._
 
 ## How to use this
 
@@ -17,7 +17,7 @@ _Generated 2026-09-09. 158 exercise illustrations + 49 self-check test photos._
 
 _Style: detailed medical illustration, single clothed figure, realistic proportions and joint angles, the working muscles lightly shaded, one sky-blue (#0EA5E9) movement arrow, navy (#043246) outlines, no text._
 
-## Spine (lower back / neck / mid-back) (22)
+## Spine (lower back / neck / mid-back) (25)
 
 ### `ex-3` -- Bridge Progression
 
@@ -151,7 +151,25 @@ Detailed medical illustration of a single human figure performing the exercise, 
 Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person hinging at the hips with a flat back and slightly bent knees to lift a light box from the floor and keep it close to the body, the gluteals and thigh muscles doing the work, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
 ```
 
-## Upper limb (shoulder / elbow / wrist) (21)
+### `ex-161` -- Deep Neck Flexor Endurance Hold
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person lying on their back with knees bent making a small gentle chin nod that flattens the neck towards the floor and holding it, the deep muscles at the front of the neck working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-162` -- Banded Neck Isometrics (4-Way)
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a seated person pressing one palm against the forehead and resisting so the head does not move, then repeating against the back and each side of the head, the neck muscles working without movement, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-163` -- Prone Neck Extension
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person lying face down on a bench with the head and neck past the edge, slowly lifting the head until it is level with the body with the chin tucked, the muscles at the back of the neck working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+## Upper limb (shoulder / elbow / wrist) (26)
 
 ### `ex-2` -- Scapular Setting
 
@@ -279,7 +297,37 @@ Detailed medical illustration of a single human figure performing the exercise, 
 Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person at the top of a straight-bodied push-up position pushing a little further so the upper back rounds and the shoulder blades spread apart, the serratus muscles along the ribs under the shoulder blades working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
 ```
 
-## Lower limb (knee / hip / ankle / calf) (25)
+### `ex-151` -- Eccentric Wrist Flexion
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a seated person with the forearm resting on a table palm up holding a light dumbbell, slowly lowering the weight by letting the wrist bend back, the muscles on the underside of the forearm under load, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-152` -- Resisted Wrist Flexion
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a seated person with the forearm resting on a table palm up holding a light dumbbell, curling the wrist up towards the body against the weight, the forearm flexor muscles on the underside of the forearm working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-153` -- Forearm Rotation with Weight
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a seated person with the forearm resting on a table and the elbow bent to a right angle holding a hammer by one end, slowly rotating the forearm to turn the palm up then down, the muscles that twist the forearm working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-154` -- Wrist Extension with Weight
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a seated person with the forearm resting on a table palm down holding a light dumbbell, lifting the back of the hand up and lowering it slowly, the muscles on the top of the forearm under load, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-155` -- Tyler Twist (Resistance Bar)
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a standing person holding a flexible rubber exercise bar in both hands, one wrist bent back holding a twist while the other hand slowly releases it, the wrist extensor muscles on the top of the forearm working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+## Lower limb (knee / hip / ankle / calf) (34)
 
 ### `ex-1` -- Sit to Stand Control
 
@@ -429,6 +477,60 @@ Detailed medical illustration of a single human figure performing the exercise, 
 
 ```
 Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person standing on a low box slowly lowering the opposite foot towards the floor by bending the standing knee, the quadriceps and gluteals of the standing leg controlling the descent, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-156` -- Hip Hitch (Pelvic Drop)
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person standing sideways on a step on one leg with the other foot hanging free, slowly dropping and then lifting the free-side hip to level the pelvis, the gluteus medius on the side of the standing hip working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-157` -- Banded Hip External Rotation
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person seated on a chair with a loop band around both thighs above the knees, slowly pressing the knees apart against the band, the deep outer-hip rotators and gluteal muscles working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-158` -- Copenhagen Adductor Hold
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person lying on their side propped on one forearm with the top ankle and shin resting on a bench, lifting the hips into a straight line, the inner-thigh adductor muscles of the top leg and the side of the lower hip working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-159` -- Single-Leg Glute Bridge
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person lying on their back with one knee bent and foot flat and the other knee hugged towards the chest, lifting the hips into a bridge on the single supporting leg, the gluteal muscles of that leg working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-160` -- Standing Banded Hip Abduction
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person standing tall beside a worktop with a loop band around both ankles, moving one straight leg out to the side against the band while balancing on the other, the outer-hip muscles of both legs working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-164` -- Heavy Slow Calf Raise
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person standing with the balls of both feet on the edge of a step holding a rail and wearing a loaded rucksack, slowly lowering the heels below the step and rising onto the toes, the calf muscles and Achilles tendon under heavy load, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-165` -- Seated Calf Raise (Soleus)
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a seated person with the knees bent to a right angle and a weight resting across the thighs, raising and lowering the heels with the balls of the feet on a low block, the deep soleus calf muscle low on the lower leg working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-166` -- Spanish Squat (Isometric)
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person in a held squat with a strong band looped behind both knees and anchored in front, the shins kept vertical and the knees bent to a right angle, the quadriceps at the front of both thighs under sustained load, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
+```
+
+### `ex-167` -- Reverse Nordic (Quad Eccentric)
+
+```
+Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person kneeling upright on a mat with the body in a straight line from knees to head, leaning slowly backwards from the knees under control, the quadriceps along the front of the thighs under lengthening load, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
 ```
 
 ## Balance & walking (18)
@@ -1351,7 +1453,7 @@ Realistic clean photograph of a single person demonstrating a physiotherapy self
 
 ## Checklist for handing images back
 
-- [ ] 158 exercise illustrations, each named `ex-N.png` / `face-*.png`
+- [ ] 175 exercise illustrations, each named `ex-N.png` / `face-*.png`
 - [ ] 49 self-check test photos, each named `test-*.png`
 - [ ] All square, ~1024px, plain pale background, no text or logo
 - [ ] One folder, shared back
