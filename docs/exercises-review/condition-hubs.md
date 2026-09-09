@@ -1875,9 +1875,9 @@ Keeping two short strength and control sessions a week through the season mainta
 
 A knee replacement resurfaces a worn knee joint, capping the ends of the bones with metal and adding a smooth plastic bearing between them. It is one of the most successful operations there is for pain and function, but the surgery is only half of it: the result depends heavily on the rehabilitation you do in the weeks and months afterwards.
 
-Two things matter most early on. The first is movement, especially getting the knee fully straight and gaining enough bend to walk, sit, climb stairs and get in and out of a car. The second is switching the thigh muscle back on, because the quadriceps becomes very weak very quickly after surgery. Swelling and warmth around the knee are normal for weeks to months and are managed with elevation, movement and pacing.
+Two things matter most early on. The first is movement, especially getting the knee fully straight and gaining enough bend to walk, sit, climb stairs and get in and out of a car. The second is switching the thigh muscle back on, because the quadriceps becomes very weak very quickly after surgery. Some swelling and mild warmth around the knee are normal for weeks to months, as long as they are settling week by week and eased by elevation, movement and pacing. A knee that becomes hotter, redder or more painful rather than less is different, and is a reason to contact your surgical team.
 
-Expect the first two weeks to be hard work, with sleep often disturbed. Most people are walking comfortably indoors within a few weeks, off walking aids by around six weeks, and back to most daily activities by three months. Improvement usually continues for a full year. The knee often still feels different from a natural one - tight at the end of range, occasionally warm, sometimes clicky - which is expected rather than a problem.
+Expect the first two weeks to be hard work, with sleep often disturbed. Most people are walking comfortably indoors within a few weeks, off walking aids by around six weeks, and back to most daily activities by three months. Improvement usually continues for a full year. The knee often still feels different from a natural one - tight at the end of range, mildly warm, sometimes clicky - which is expected rather than a problem.
 
 This programme follows that usual arc: gentle range and muscle activation in the first weeks, progressive strengthening through the middle phase, then a return to walking distance, stairs and daily activities. Always follow the specific instructions from your surgical team, which take priority over any general guidance, and contact them if the knee becomes hot, increasingly swollen or suddenly much more painful.
 
@@ -1971,7 +1971,7 @@ A hip replacement swaps a worn hip joint for an artificial ball and socket. It r
 
 Depending on the surgical approach you may be given hip precautions: movements to avoid for the first six to twelve weeks to protect against dislocation, such as bending the hip past 90 degrees, crossing the legs, or turning the leg inwards. Some approaches need no precautions at all. Follow the specific advice from your surgical team, which always takes priority over general guidance.
 
-The typical picture in the early weeks is a hip that is sore around the wound and along the outside of the thigh, tires quickly, and is stiff first thing in the morning. A limp is common at first and usually reflects weak buttock muscles rather than anything wrong with the joint, and it improves as strength returns. Swelling in the thigh, and sometimes down at the ankle, is normal for several weeks.
+The typical picture in the early weeks is a hip that is sore around the wound and along the outside of the thigh, tires quickly, and is stiff first thing in the morning. A limp is common at first and usually reflects weak buttock muscles rather than anything wrong with the joint, and it improves as strength returns. Some puffy swelling in the thigh, and sometimes down at the ankle, is normal for several weeks when it is soft, painless and eases overnight or with the leg up. Calf pain or tightness, a warm or red calf on one side, or sudden breathlessness are not part of normal recovery and need urgent medical attention to rule out a clot.
 
 Most people are walking with a stick or unaided within two to six weeks, back to most daily activities by around three months, and still gaining strength and stamina at a year. This programme moves from gentle early activation and standing work, through progressive strengthening, into walking distance and daily function. Contact your surgical team if the hip becomes hot, increasingly painful, or gives way.
 
@@ -2451,3 +2451,22 @@ A pelvic support belt worn low, around the hips, reduces pain for many women dur
 - [ ] **Approved** &nbsp;&nbsp; Notes:
 
 ---
+
+---
+
+## Clinical-review notes from the 2026-09-09 competitive pass (intro rewrite)
+
+The 25 intros were rewritten to full depth. `recoveryTimeline`, `progressGuidance`, `redFlags`, `faqs` and the staged programmes were NOT changed. Code review found several places where the new intro copy and the (unchanged, already-reviewed) `recoveryTimeline` give different numbers or emphasis. These are for you to reconcile before ticking Approved - decide which figure the reader should hold and adjust the intro (not the timeline) if needed.
+
+- **gluteal-tendinopathy** - intro says "night pain often improves within a few weeks with simple positioning changes"; `recoveryTimeline` says "night pain and the ability to lie on the side are usually the last things to improve". Direct contradiction - pick one.
+- **tennis-elbow / golfers-elbow** - intros say "6 to 12 weeks to feel meaningfully better"; timelines say "3 to 6 months to settle, sometimes up to a year". Reconcilable (improve vs settle) but reads as a mismatch.
+- **ankle-sprain** - intro "sport typically takes six to twelve weeks"; timeline "mild sprain: sport in 2 to 6 weeks; more severe: 6 to 12 weeks". The intro quotes the severe-case number as typical.
+- **chronic-ankle-instability** - intro "steadier ground feel within four to six weeks"; timeline "noticeable improvement in stability within 6 to 12 weeks".
+- **return-to-running** - intro "a graded return takes six to twelve weeks"; timeline "usually 4 to 8 weeks" plus "several more weeks" for mileage.
+- **falls-prevention** - intro's dose "two or three times a week over several months"; timeline's evidence base "at least 3 hours of balance-challenging exercise a week". Also new and unsourced in the intro: "including into the nineties".
+- **frozen-shoulder** - intro states flatly "it does resolve"; timeline notes "a small number are left with some lasting stiffness".
+
+**New quantified / epidemiological claims introduced by the rewrite** - each needs your sign-off as it goes out under your registration:
+one in five pregnancies affected by PGP; a rehabbed limb "ten to thirty per cent weaker than the other"; running load "two to three times body weight through one leg, several hundred times a mile"; tennis elbow "most common between the ages of 35 and 55"; frozen shoulder "affects women slightly more often"; "quadriceps strength is the single best predictor" after ACL reconstruction; hip replacement recovery "often faster than after a knee replacement"; "using the knee does not wear it out faster" (knee OA); "many disc bulges are completely painless" (sciatica); the several "from the forties onwards, tendons tolerate less" statements.
+
+**Post-op warmth / swelling wording** (fixed 2026-09-09 after review): the `after-knee-replacement` and `after-hip-replacement` intros were edited so that "normal warmth/swelling" now carries an explicit qualifier (settling, mild, eased by elevation) and points at the infection / DVT exception. Confirm the wording matches how you would phrase it.

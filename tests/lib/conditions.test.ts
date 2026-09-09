@@ -41,8 +41,8 @@ describe('conditions', () => {
   })
   it('every intro has the depth a condition hub needs', () => {
     for (const c of conditions) {
-      expect(words(c.intro).length, `${c.slug} intro word count`).toBeGreaterThanOrEqual(200)
-      expect(words(c.intro).length, `${c.slug} intro word count`).toBeLessThanOrEqual(340)
+      expect(words(c.intro).length, `${c.slug} intro word count`).toBeGreaterThanOrEqual(220)
+      expect(words(c.intro).length, `${c.slug} intro word count`).toBeLessThanOrEqual(320)
       // 3+ paragraphs, split on a blank line, as the hub page renders them.
       const paras = c.intro.split('\n\n').filter((p) => p.trim().length > 0)
       expect(paras.length, `${c.slug} intro paragraphs`).toBeGreaterThanOrEqual(3)
