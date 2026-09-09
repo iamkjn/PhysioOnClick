@@ -30,10 +30,14 @@ interface Props {
   // pre-existing two-prop call signature (e.g. AdminRecoveryChart) render
   // exactly as before. app/patient/recovery/page.tsx opts in explicitly.
   showMobility?: boolean;
+  // Clinician view: turns on the mobility line and rephrases the empty state
+  // so it doesn't tell the doctor to "log a check-in above".
+  adminView?: boolean;
 }
 
 export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
-  function RecoveryChart({ uid, personId, showMobility = false }, ref) {
+  function RecoveryChart({ uid, personId, showMobility: showMobilityProp = false, adminView = false }, ref) {
+    const showMobility = showMobilityProp || adminView;
     const [data, setData] = useState<ChartPoint[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -87,7 +91,11 @@ export const RecoveryChart = forwardRef<HTMLDivElement, Props>(
         ) : error ? (
           <p className="field-error">{error}</p>
         ) : data.length === 0 ? (
-          <p className="muted">No data yet. Log your first pain check-in above.</p>
+          <p className="muted">
+            {adminView
+              ? "No pain or assessment data recorded yet."
+              : "No data yet. Log your first pain check-in above."}
+          </p>
         ) : (
           <div
             className="chart-wrap"

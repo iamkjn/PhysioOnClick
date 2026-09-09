@@ -9,5 +9,5 @@ interface Props {
 }
 
 export function AdminRecoveryChart({ patientUid, personId }: Props) {
-  return <RecoveryChart uid={patientUid} personId={personId} />;
+  return <RecoveryChart uid={patientUid} personId={personId} adminView />;
 }

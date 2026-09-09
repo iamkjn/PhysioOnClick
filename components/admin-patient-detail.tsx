@@ -13,18 +13,17 @@ import {
 import { auth, db } from "@/lib/firebase";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
-import { getPainLogs, type PainLog } from "@/lib/recovery";
 import { cancelCalBooking } from "@/app/admin/actions";
 import { Avatar } from "@/components/avatar";
 import { PersonSwitcher } from "@/components/person-switcher";
-import { RecoveryPercentCard } from "@/components/recovery-percent-card";
+import { AdminRecoverySummary } from "@/components/admin-recovery-summary";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { AdminClinicalEntry } from "@/components/admin-clinical-entry";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminAssessmentReview } from "@/components/admin-assessment-review";
 import { SummaryForm } from "@/components/summary-form";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { Skeleton, SkeletonRow } from "@/components/skeleton";
+import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 
 interface Props {
@@ -108,18 +107,6 @@ export function AdminPatientDetail({ patientUid }: Props) {
       .catch(() => { if (live) setPatient(null); });
     return () => { live = false; };
   }, [patientUid]);
-
-  // ── Current pain number (most recent self-reported log) ─────────────
-  const [latestPain, setLatestPain] = useState<PainLog | null | undefined>(undefined);
-
-  useEffect(() => {
-    let live = true;
-    setLatestPain(undefined);
-    getPainLogs(patientUid, person.id, 1)
-      .then((logs) => { if (live) setLatestPain(logs[0] ?? null); })
-      .catch(() => { if (live) setLatestPain(null); });
-    return () => { live = false; };
-  }, [patientUid, person.id]);
 
   // ── Bookings ──────────────────────────────────────────────────────────
   const [bookings, setBookings] = useState<AdminBookingRow[] | null>(null);
@@ -285,29 +272,8 @@ export function AdminPatientDetail({ patientUid }: Props) {
         />
       </div>
 
-      {/* 1. Recovery summary */}
-      <section className="dashboard-grid">
-        <RecoveryPercentCard uid={patientUid} personId={person.id} />
-        <div className="panel stack" style={{ justifyContent: "center" }}>
-          <h3 style={{ margin: 0, fontSize: "var(--text-lg)" }}>Current pain</h3>
-          {latestPain === undefined ? (
-            <Skeleton height="2rem" width="60%" />
-          ) : latestPain === null ? (
-            <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No pain check-ins logged yet.</p>
-          ) : (
-            <>
-              <p style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 32, fontWeight: 800, color: "var(--color-navy)" }}>
-                {latestPain.score}
-                <span style={{ fontSize: "var(--text-base)", fontWeight: 400, color: "var(--color-text-secondary)" }}>/10</span>
-              </p>
-              <p className="muted" style={{ margin: 0, fontSize: "var(--text-xs)" }}>
-                Logged {latestPain.date}
-                {latestPain.note ? ` · “${latestPain.note}”` : ""}
-              </p>
-            </>
-          )}
-        </div>
-      </section>
+      {/* 1. Recovery summary — ring, streak, adherence, latest self-reported pain */}
+      <AdminRecoverySummary patientUid={patientUid} personId={person.id} />
 
       {/* 2. Pain trend */}
       <AdminRecoveryChart patientUid={patientUid} personId={person.id} />

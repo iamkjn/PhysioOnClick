@@ -14,6 +14,7 @@ import { AdminStreakGoal } from "@/components/admin-streak-goal";
 import { PainCheckinTimeline } from "@/components/pain-checkin-timeline";
 import { AdminFollowUp } from "@/components/admin-follow-up";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
+import { AdminRecoverySummary } from "@/components/admin-recovery-summary";
 import { AdminMotionTargets } from "@/components/admin-motion-targets";
 import { AdminFaceTargets } from "@/components/admin-face-targets";
 import { AdminMotionSessions } from "@/components/admin-motion-sessions";
@@ -91,6 +92,15 @@ export default function AdminRecoveryPage() {
             />
           )}
         </section>
+
+        {selection && (
+          <section className="page-section">
+            <AdminRecoverySummary
+              patientUid={selection.patientUid}
+              personId={selection.personId}
+            />
+          </section>
+        )}
 
         {selection && (
           <section className="page-section admin-panels-grid">

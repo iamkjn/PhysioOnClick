@@ -18,6 +18,10 @@ interface Props {
   // ring, for callers whose percent isn't sourced from the check-in series
   // that copy describes.
   subtitle?: string;
+  // Clinician view: drop the patient-facing "log your first check-in" CTA and
+  // rephrase the empty/error copy so it reads as being about the patient, not
+  // to the person looking at the screen.
+  adminView?: boolean;
 }
 
 // Geometry for the SVG progress ring. r drives the circumference the
@@ -25,7 +29,7 @@ interface Props {
 const RING_R = 54;
 const RING_C = 2 * Math.PI * RING_R;
 
-export function RecoveryPercentCard({ uid, personId, staticPercent, subtitle }: Props) {
+export function RecoveryPercentCard({ uid, personId, staticPercent, subtitle, adminView }: Props) {
   const [percent, setPercent] = useState<number | null | undefined>(
     staticPercent !== undefined ? staticPercent : undefined
   );
@@ -105,11 +109,17 @@ export function RecoveryPercentCard({ uid, personId, staticPercent, subtitle }: 
         <h3>Recovery score</h3>
         {fetchError ? (
           <>
-            <p className="muted">We couldn&apos;t load your recovery score just now.</p>
+            <p className="muted">
+              {adminView
+                ? "Couldn't load this patient's recovery data just now."
+                : "We couldn't load your recovery score just now."}
+            </p>
             <button type="button" className="recovery-retry" onClick={() => setReloadKey((k) => k + 1)}>
               Try again
             </button>
           </>
+        ) : adminView ? (
+          <p className="muted">No pain check-ins from this patient yet.</p>
         ) : (
           <>
             <p className="muted">Log your first pain check-in and your recovery score appears here.</p>
@@ -153,9 +163,13 @@ export function RecoveryPercentCard({ uid, personId, staticPercent, subtitle }: 
       <div className="recovery-percent-copy">
         <h3>Recovery score</h3>
         <p className="muted">
-          {subtitle ?? (regressing
-            ? "Pain is higher than your first check-in. Mention it at your next session."
-            : "Improvement since your first pain check-in.")}
+          {subtitle ?? (adminView
+            ? (regressing
+              ? "Self-reported pain is higher than this patient's first check-in."
+              : "Improvement since this patient's first pain check-in.")
+            : (regressing
+              ? "Pain is higher than your first check-in. Mention it at your next session."
+              : "Improvement since your first pain check-in."))}
         </p>
       </div>
     </div>

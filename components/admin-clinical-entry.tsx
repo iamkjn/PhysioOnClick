@@ -71,7 +71,11 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
       {/* h2, not h3 — sits alongside AdminPatientSelector/AdminExerciseAssigner
           (also h2) under the recovery page's single h1; size pinned to the
           old h3 value so this reads the same. */}
-      <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Add clinical assessment</h2>
+      <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Record session assessment</h2>
+      <p className="muted" style={{ margin: 0, fontSize: "var(--text-xs)" }}>
+        Recorded at a session — not a daily log. Patients report their own daily pain
+        through check-ins; this is your clinical assessment for a specific session date.
+      </p>
       {saved && (
         <p role="status" aria-live="polite" style={{ color: "var(--color-success)", fontSize: "var(--text-sm)" }}>Saved successfully.</p>
       )}
@@ -103,7 +107,7 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
           {errors.date && <span className="field-error" id="err-clinical-date">{errors.date}</span>}
         </label>
         <label style={fieldLabelStyle}>
-          Pain score:{" "}
+          Pain (clinician-assessed):{" "}
           <strong style={{ color: "var(--color-text-primary)" }}>{painScore}/10</strong>
           <input
             type="range"
@@ -117,7 +121,7 @@ export function AdminClinicalEntry({ patientUid, personId }: Props) {
           />
         </label>
         <label style={fieldLabelStyle}>
-          Mobility score:{" "}
+          Mobility (clinician-assessed):{" "}
           <strong style={{ color: "var(--color-text-primary)" }}>{mobilityScore}/10</strong>
           <input
             type="range"
