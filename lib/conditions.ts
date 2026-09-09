@@ -371,13 +371,13 @@ export const conditions: Condition[] = [
         stage: "Build strength",
         blurb:
           "Add these as range improves. Train the deep neck flexors and the muscles around the shoulder blades most days, keeping the effort light to moderate and the neck relaxed.",
-        exerciseSlugs: ["isometric-neck-hold", "standing-chin-retraction", "scapular-retraction-band-row", "wall-angels"],
+        exerciseSlugs: ["deep-neck-flexor-hold", "banded-neck-isometrics", "standing-chin-retraction", "scapular-retraction-band-row", "wall-angels"],
       },
       {
         stage: "Return to activity",
         blurb:
           "The final stage builds tolerance for desk work, driving and overhead tasks. Combine mobility and strength, take regular movement breaks, and gradually extend how long you work before symptoms build.",
-        exerciseSlugs: ["levator-scapulae-stretch", "thoracic-rotation-open-book", "prone-y-t-w-raises"],
+        exerciseSlugs: ["prone-neck-extension", "levator-scapulae-stretch", "thoracic-rotation-open-book", "prone-y-t-w-raises"],
       },
     ],
     redFlags: [
@@ -580,13 +580,13 @@ export const conditions: Condition[] = [
         stage: "Build strength",
         blurb:
           "Once light gripping is tolerable, load the wrist extensor tendon progressively, with an emphasis on the slow lowering phase, and add strengthening for the shoulder and shoulder blade.",
-        exerciseSlugs: ["eccentric-wrist-extension", "grip-strengthening", "scapular-retraction-band-row"],
+        exerciseSlugs: ["eccentric-wrist-extension", "wrist-extension-isotonic", "tyler-twist-flexbar", "grip-strengthening", "scapular-retraction-band-row"],
       },
       {
         stage: "Return to activity",
         blurb:
           "The final stage rebuilds tolerance for heavier gripping, lifting and sport. Increase load and speed gradually, and reintroduce the specific tasks that used to hurt.",
-        exerciseSlugs: ["weight-bearing-through-extended-wrist", "eccentric-wrist-extension", "wrist-extensor-stretch"],
+        exerciseSlugs: ["weight-bearing-through-extended-wrist", "eccentric-wrist-extension", "forearm-pronation-supination", "wrist-extensor-stretch"],
       },
     ],
     redFlags: [
@@ -648,13 +648,13 @@ export const conditions: Condition[] = [
         stage: "Build strength",
         blurb:
           "As light gripping becomes comfortable, progress the load on the forearm flexors and grip, controlling the movement slowly, and add shoulder and shoulder-blade strengthening.",
-        exerciseSlugs: ["grip-strengthening", "scapular-retraction-band-row", "wrist-flexor-stretch"],
+        exerciseSlugs: ["eccentric-wrist-flexion", "resisted-wrist-flexion", "forearm-pronation-supination", "grip-strengthening", "scapular-retraction-band-row"],
       },
       {
         stage: "Return to activity",
         blurb:
           "The final stage rebuilds tolerance for heavier and faster gripping, lifting and sport. Increase load gradually and reintroduce the specific movements that used to provoke it.",
-        exerciseSlugs: ["weight-bearing-through-extended-wrist", "grip-strengthening"],
+        exerciseSlugs: ["weight-bearing-through-extended-wrist", "resisted-wrist-flexion", "forearm-pronation-supination", "grip-strengthening"],
       },
     ],
     redFlags: [
@@ -778,13 +778,13 @@ export const conditions: Condition[] = [
         stage: "Settle the pain",
         blurb:
           "Start here while stairs and squatting are sharply painful. Reduce the aggravating load - for runners that means cutting volume, not necessarily stopping - and use low-load strengthening in a comfortable range.",
-        exerciseSlugs: ["quad-sets", "straight-leg-raise", "clam-shell"],
+        exerciseSlugs: ["quad-sets", "straight-leg-raise", "clam-shell", "spanish-squat"],
       },
       {
         stage: "Build strength",
         blurb:
           "The main phase. Strengthen the hip and thigh two to three times a week, with a particular focus on the gluteal muscles and controlled knee bending through increasing range.",
-        exerciseSlugs: ["step-up", "box-step-down", "side-lying-hip-abduction", "hip-bridge"],
+        exerciseSlugs: ["step-up", "box-step-down", "side-lying-hip-abduction", "hip-bridge", "single-leg-glute-bridge"],
       },
       {
         stage: "Return to activity",
@@ -852,13 +852,13 @@ export const conditions: Condition[] = [
         stage: "Build strength",
         blurb:
           "As night pain eases, progressively load the gluteal muscles two to three times a week, keeping the hip in neutral rather than letting it drop or cross the midline.",
-        exerciseSlugs: ["side-lying-hip-abduction", "hip-bridge", "sit-to-stand-repetitions"],
+        exerciseSlugs: ["side-lying-hip-abduction", "standing-banded-hip-abduction", "banded-hip-external-rotation", "single-leg-glute-bridge", "hip-bridge"],
       },
       {
         stage: "Return to activity",
         blurb:
           "The final stage rebuilds single-leg strength and walking or running tolerance. Progress standing hip work and load, and build hills, stairs and distance back up gradually.",
-        exerciseSlugs: ["lateral-band-walk", "step-up", "graded-walking-programme"],
+        exerciseSlugs: ["hip-hitch", "lateral-band-walk", "step-up", "graded-walking-programme"],
       },
     ],
     redFlags: [
@@ -920,13 +920,13 @@ export const conditions: Condition[] = [
         stage: "Build strength",
         blurb:
           "The core of the programme. Progressively load the calf and tendon, including slow heel drops that lower the heel below the step, three times a week, building the weight and range over several weeks.",
-        exerciseSlugs: ["eccentric-heel-drop", "heel-raises", "calf-stretch-gastrocnemius"],
+        exerciseSlugs: ["eccentric-heel-drop", "heavy-slow-calf-raise", "seated-calf-raise", "heel-raises", "calf-stretch-gastrocnemius"],
       },
       {
         stage: "Return to activity",
         blurb:
           "The final stage restores springy, faster loading. Add single-leg and quicker calf work, then rebuild running with a walk-run progression, keeping hills and speed for last.",
-        exerciseSlugs: ["eccentric-heel-drop", "single-leg-balance", "graded-walking-programme"],
+        exerciseSlugs: ["heavy-slow-calf-raise", "eccentric-heel-drop", "single-leg-balance", "graded-walking-programme"],
       },
     ],
     redFlags: [
@@ -1124,13 +1124,13 @@ export const conditions: Condition[] = [
         stage: "Settle",
         blurb:
           "For a painful flare. Reduce jumping and change-of-direction load, and use isometric holds - a static wall sit or held knee extension - which often reduce tendon pain for hours afterwards.",
-        exerciseSlugs: ["wall-squat-hold", "quad-sets", "straight-leg-raise"],
+        exerciseSlugs: ["wall-squat-hold", "spanish-squat", "quad-sets", "straight-leg-raise"],
       },
       {
         stage: "Build strength",
         blurb:
           "Load the tendon with heavy, slow strength work - controlled squats, step-ups and knee extension - three times a week, taking three seconds up and three seconds down. Some tendon pain during is acceptable if it settles by the next day.",
-        exerciseSlugs: ["mini-squat", "terminal-knee-extension-band", "step-up"],
+        exerciseSlugs: ["mini-squat", "terminal-knee-extension-band", "step-up", "reverse-nordic"],
       },
       {
         stage: "Power and change of direction",
@@ -1352,7 +1352,7 @@ export const conditions: Condition[] = [
         stage: "Build strength",
         blurb:
           "Develop single-leg strength through the thigh, hip, hamstring and calf, three times a week, progressing load until the injured side is working as hard as the healthy side.",
-        exerciseSlugs: ["split-squat", "step-up", "nordic-hamstring-curl-assisted", "heel-raises"],
+        exerciseSlugs: ["split-squat", "step-up", "nordic-hamstring-curl-assisted", "copenhagen-adductor", "heel-raises"],
       },
       {
         stage: "Power and change of direction",

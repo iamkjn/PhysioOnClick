@@ -5763,6 +5763,675 @@ export const exercises: Exercise[] = [
       perWeek: 7,
       notes: "Hold each muscle group for about 5 seconds before releasing. Use a shorter version during a pain flare."
     }
+  },
+  {
+    id: "ex-151",
+    slug: "eccentric-wrist-flexion",
+    title: "Eccentric Wrist Flexion",
+    bodyPart: "Wrist",
+    clinicalArea: "upper_limb",
+    tags: ["wrist", "golfers-elbow", "strength-phase"],
+    condition: "Medial epicondylalgia (golfer's elbow)",
+    stage: "Strength phase",
+    description: "Slowly lowering a light weight through wrist flexion, the evidence-informed way to load the forearm flexor tendon on the inner elbow.",
+    equipment: ["A light dumbbell, starting around 0.5 to 1 kg", "A table or your thigh to rest the forearm on"],
+    setup: "Sit with your forearm resting along a table or your thigh, palm facing up, with your hand and the weight just over the edge. Hold the weight loosely.",
+    steps: [
+      "Use your other hand to lift the weight up so the wrist is bent fully up towards you.",
+      "Let go with the helping hand so the sore side is holding the weight up.",
+      "Slowly lower the weight over about three to four seconds until the wrist is fully bent back.",
+      "Help the weight back up to the top with your other hand, then repeat. Only the lowering is done by the sore side."
+    ],
+    cues: [
+      "Count three to four seconds on every lower - slow and even.",
+      "The lift back to the top is done with the other hand, not the sore wrist.",
+      "Some ache in the inner forearm during and after is expected, as long as it settles within 24 hours."
+    ],
+    mistakes: [
+      "Lowering quickly or letting the weight drop.",
+      "Raising the weight back up with the sore side.",
+      "Adding weight before three sets of the current weight feel controlled.",
+      "Stop and message your physio if the pain is sharp, spreads down into the hand, or is clearly worse day to day."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 15,
+      perDay: 1,
+      perWeek: 7,
+      tempo: "3 to 4 seconds to lower",
+      notes: "Expect some inner-forearm ache during and after - this is a loading exercise and it should settle within a day. Add a small amount of weight only once 3 sets of 15 feel easy."
+    },
+    helpsWith: ["Easing pain on the inside of the elbow", "Rebuilding a pain-free grip", "Coping with lifting, carrying and gripping tasks"]
+  },
+  {
+    id: "ex-152",
+    slug: "resisted-wrist-flexion",
+    title: "Resisted Wrist Flexion",
+    bodyPart: "Wrist",
+    clinicalArea: "upper_limb",
+    tags: ["wrist", "golfers-elbow", "strength-phase"],
+    condition: "Medial epicondylalgia (golfer's elbow)",
+    stage: "Build strength",
+    description: "Curling the wrist up against a light weight or band through its full range to strengthen the forearm flexor muscles.",
+    equipment: ["A light dumbbell or a resistance band", "A table or your thigh to rest the forearm on"],
+    setup: "Sit with your forearm resting along a table or your thigh, palm facing up and your hand just past the edge. Hold a light weight, or step on one end of a band and hold the other.",
+    steps: [
+      "Let the wrist relax so the weight or band draws the hand back.",
+      "Curl the wrist up towards you as far as it comfortably goes.",
+      "Pause briefly at the top.",
+      "Lower under control back to the start over about three seconds."
+    ],
+    cues: [
+      "Only the wrist moves - the forearm stays still on the support.",
+      "Both the lift and the lower are smooth and controlled.",
+      "Work to a firm but manageable effort, not to sharp pain."
+    ],
+    mistakes: [
+      "Lifting the forearm off the support to help the movement.",
+      "Rushing the lower so the weight drops.",
+      "Using a load so heavy the wrist cannot move through its full range.",
+      "Stop and message your physio if gripping or lifting becomes sharply painful, or you notice new pins and needles in the hand."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 12,
+      perDay: 1,
+      perWeek: 5,
+      tempo: "3 seconds to lower",
+      notes: "Start with a very light weight or a light band. Build the load gradually once 3 sets of 12 feel controlled."
+    },
+    helpsWith: ["Building forearm and grip strength", "Easing inner-elbow pain when gripping", "Getting back to lifting and carrying"]
+  },
+  {
+    id: "ex-153",
+    slug: "forearm-pronation-supination",
+    title: "Forearm Rotation with Weight",
+    bodyPart: "Wrist",
+    clinicalArea: "upper_limb",
+    tags: ["wrist", "tennis-elbow", "golfers-elbow", "strength-phase"],
+    condition: "Elbow tendinopathy (tennis or golfer's elbow)",
+    stage: "Build strength",
+    description: "Slowly rotating the forearm palm-up and palm-down against a light off-centre weight, loading the muscles that twist the forearm.",
+    equipment: ["A light hammer, or a dumbbell held at one end", "A table or your thigh to rest the forearm on"],
+    setup: "Sit with your forearm resting along a table or your thigh, wrist and hand just past the edge, elbow bent to a right angle. Hold a light hammer or a dumbbell by one end so the weight sits to one side.",
+    steps: [
+      "Start with the thumb pointing up and the wrist held straight and still.",
+      "Slowly turn the palm up as far as is comfortable.",
+      "Slowly turn the palm down, again to a comfortable end point.",
+      "Keep the movement slow and even in both directions."
+    ],
+    cues: [
+      "The movement is a slow twist of the forearm - the wrist itself stays straight.",
+      "Your elbow stays tucked at your side and does not swing.",
+      "Control the weight through the whole arc, especially near the ends."
+    ],
+    mistakes: [
+      "Letting the wrist bend instead of keeping the turn in the forearm.",
+      "Swinging the whole arm to throw the weight round.",
+      "Holding the weight too far down the handle so it feels heavy too soon.",
+      "Stop and message your physio if the elbow pain becomes sharp, or twisting a key or door handle is much more painful afterwards."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 10,
+      perDay: 1,
+      perWeek: 5,
+      tempo: "slow and controlled",
+      notes: "One rep is a full turn palm-up then palm-down. Slide your hand further down the handle, or add weight, only as it becomes easy."
+    },
+    helpsWith: ["Coping with twisting tasks like keys, jars and door handles", "Easing elbow pain on the inner or outer side", "Building forearm strength for work and sport"]
+  },
+  {
+    id: "ex-154",
+    slug: "wrist-extension-isotonic",
+    title: "Wrist Extension with Weight",
+    bodyPart: "Wrist",
+    clinicalArea: "upper_limb",
+    tags: ["wrist", "tennis-elbow", "strength-phase"],
+    condition: "Lateral epicondylalgia (tennis elbow)",
+    stage: "Build strength",
+    description: "Lifting and lowering a light weight through wrist extension using both phases of the movement, progressing the load on the wrist extensor tendon.",
+    equipment: ["A light dumbbell or a resistance band", "A table or your thigh to rest the forearm on"],
+    setup: "Sit with your forearm resting along a table or your thigh, palm facing down and your hand just past the edge, holding a light weight.",
+    steps: [
+      "Let the wrist drop so the weight lowers towards the floor.",
+      "Lift the back of the hand up as far as the wrist comfortably goes.",
+      "Pause briefly at the top.",
+      "Lower back down under control over about three seconds."
+    ],
+    cues: [
+      "The forearm stays still on the support - only the wrist moves.",
+      "Both lifting and lowering are slow and smooth.",
+      "Expect a working ache on top of the forearm that settles within a day."
+    ],
+    mistakes: [
+      "Lifting the elbow or forearm to swing the weight up.",
+      "Letting the weight drop quickly on the way down.",
+      "Progressing the weight before the current one feels controlled for every set.",
+      "Stop and message your physio if the outer-elbow pain sharpens, spreads down the arm, or is clearly worse the next day."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 12,
+      perDay: 1,
+      perWeek: 5,
+      tempo: "3 seconds to lower",
+      notes: "Start very light. This is the next step on from the eccentric-only version once that feels easy. Build the load slowly."
+    },
+    helpsWith: ["Loading the tennis-elbow tendon through its full range", "Rebuilding a pain-free grip", "Returning to gripping, lifting and racket sports"]
+  },
+  {
+    id: "ex-155",
+    slug: "tyler-twist-flexbar",
+    title: "Tyler Twist (Resistance Bar)",
+    bodyPart: "Elbow",
+    clinicalArea: "upper_limb",
+    tags: ["elbow", "tennis-elbow", "strength-phase"],
+    condition: "Lateral epicondylalgia (tennis elbow)",
+    stage: "Build strength",
+    description: "A twisting exercise with a flexible rubber bar that loads the wrist extensor tendon through a controlled release, a well-studied approach for tennis elbow.",
+    equipment: ["A flexible resistance bar, such as a red or green rubber FlexBar"],
+    setup: "Stand tall holding the bar upright in the sore hand with that wrist bent fully back. Grip the top of the bar with the other hand, palm facing you.",
+    steps: [
+      "Twist the bar with the top (good) hand while the sore wrist holds its bent-back position.",
+      "Bring the bar out in front of you and straighten both arms, keeping the twist held in the bar.",
+      "Slowly let the sore wrist untwist the bar over about four seconds until that wrist is bent forward.",
+      "Reset your grip and repeat. The sore side only controls the slow untwisting."
+    ],
+    cues: [
+      "The work for the sore arm is the slow, controlled untwist - not the twisting up.",
+      "Take about four seconds to release each rep.",
+      "Keep your shoulders relaxed and down, not hunched."
+    ],
+    mistakes: [
+      "Letting the bar spring back quickly instead of releasing it slowly.",
+      "Using a bar that is too stiff to control at first - start with a lighter one.",
+      "Gripping so hard that the hand and forearm cramp.",
+      "Stop and message your physio if the elbow pain rises through the set, spreads down the forearm, or is worse the next morning."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 15,
+      perDay: 1,
+      perWeek: 7,
+      tempo: "4 seconds to release",
+      notes: "Expect a tolerable tendon ache during and after that settles within 24 hours. Move up a bar colour only once 3 sets of 15 feel easy."
+    },
+    helpsWith: ["Loading the tennis-elbow tendon in a controlled way", "Easing pain on the outside of the elbow", "Rebuilding grip strength for work and sport"]
+  },
+  {
+    id: "ex-156",
+    slug: "hip-hitch",
+    title: "Hip Hitch (Pelvic Drop)",
+    bodyPart: "Hip",
+    clinicalArea: "lower_limb",
+    tags: ["hip", "glute-strength", "strength-phase"],
+    condition: "Gluteal tendinopathy",
+    stage: "Build strength",
+    description: "Standing on one leg on a step and slowly lowering then lifting the opposite side of the pelvis, training the outer-hip muscles that keep the pelvis level.",
+    equipment: ["A step or the bottom stair", "A wall or rail for light balance support"],
+    pose: "balance",
+    setup: "Stand sideways on a step with one foot, the other foot hanging free over the edge. Rest a hand on a wall or rail for balance only. Stand tall through the standing leg.",
+    steps: [
+      "Keep the standing knee straight but not locked.",
+      "Let the free-side hip drop slowly towards the floor by a few centimetres.",
+      "Use the muscles on the side of the standing hip to lift that hip back up until the pelvis is level, or very slightly higher.",
+      "Move slowly and with control in both directions."
+    ],
+    cues: [
+      "The movement comes from hitching the pelvis, not from bending or straightening the standing knee.",
+      "You feel the work in the side of the standing buttock and hip.",
+      "Your upper body stays tall and still - you are not leaning over."
+    ],
+    mistakes: [
+      "Bending and straightening the standing knee to create the movement.",
+      "Pushing down hard through the balance hand.",
+      "Letting the standing hip sway out to the side.",
+      "Stop and message your physio if this brings on sharp outer-hip pain, or pain that lingers and disturbs your sleep that night."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 12,
+      perDay: 1,
+      perWeek: 5,
+      tempo: "slow and controlled",
+      notes: "Keep the standing hip in neutral rather than letting it drop out sideways, which can compress a sore tendon. Add light hand weights once the movement is easy."
+    },
+    helpsWith: ["Keeping the pelvis level when you walk and climb stairs", "Building outer-hip strength", "Easing lateral hip pain over time"]
+  },
+  {
+    id: "ex-157",
+    slug: "banded-hip-external-rotation",
+    title: "Banded Hip External Rotation",
+    bodyPart: "Hip",
+    clinicalArea: "lower_limb",
+    tags: ["hip", "glute-strength", "band", "strength-phase"],
+    condition: "Gluteal tendinopathy",
+    stage: "Build strength",
+    description: "Pressing the thighs apart against a resistance band while seated or side-lying, targeting the deep outer-hip rotators and the gluteal muscles.",
+    equipment: ["A short resistance loop band"],
+    pose: "bandRotation",
+    setup: "Sit on a firm chair with a loop band around both thighs just above the knees, feet flat and hip-width apart. Sit tall.",
+    steps: [
+      "Keep your feet planted and your knees over your ankles.",
+      "Slowly press both knees apart against the band.",
+      "Open only as far as you can without your pelvis rocking or your feet rolling.",
+      "Bring the knees back together slowly, keeping tension on the band."
+    ],
+    cues: [
+      "The movement is a slow open-and-close, not a series of quick pulses.",
+      "You feel the work in the sides and back of the hips.",
+      "Your trunk stays upright and still throughout."
+    ],
+    mistakes: [
+      "Letting the knees snap back in rather than lowering with control.",
+      "Leaning back or rocking the pelvis to force the knees wider.",
+      "Using a band so strong the knees cannot move smoothly.",
+      "Stop and message your physio if you feel a deep pinch in the front of the hip or groin, or the outer hip is more painful afterwards."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 15,
+      perDay: 1,
+      perWeek: 5,
+      notes: "Can also be done lying on your side with knees bent, lifting the top knee against the band without letting the pelvis roll back. Progress to a stronger band as it becomes easy."
+    },
+    helpsWith: ["Strengthening the deep outer-hip muscles", "Improving control of the hip and pelvis", "Supporting recovery from lateral hip pain"]
+  },
+  {
+    id: "ex-158",
+    slug: "copenhagen-adductor",
+    title: "Copenhagen Adductor Hold",
+    bodyPart: "Hip",
+    clinicalArea: "lower_limb",
+    tags: ["hip", "adductor-strength", "return-to-sport"],
+    condition: "Groin and adductor loading for sport",
+    stage: "Return to activity",
+    description: "A side-lying hold with the top leg supported on a bench, building strength through the inner-thigh adductor muscles and the side of the supporting hip.",
+    equipment: ["A sturdy bench, sofa or low chair to rest the top leg on", "An exercise mat"],
+    setup: "Lie on your side with your forearm on the floor and your elbow under your shoulder. Rest the inside of your top ankle and lower shin on a bench so that leg is roughly level with your body.",
+    steps: [
+      "Press down through the top leg into the bench and lift your hips up off the floor.",
+      "Aim for a straight line from your top shoulder to your top foot.",
+      "Hold steady, keeping your body long and your hips level.",
+      "Lower back down slowly and rest fully between reps."
+    ],
+    cues: [
+      "The lift comes from squeezing the top leg down into the support.",
+      "Your body stays in one straight line, not sagging or piking at the hips.",
+      "Keep breathing steadily through the hold."
+    ],
+    mistakes: [
+      "Letting the hips drop or roll backwards during the hold.",
+      "Starting with the full version before you can hold the easier bent-knee variation.",
+      "Holding your breath and bracing the neck.",
+      "Stop and message your physio if you feel a sharp pull in the groin or inner thigh, or pain that is worse the next day."
+    ],
+    defaultDosage: {
+      sets: 3,
+      holdSeconds: 10,
+      reps: 5,
+      perDay: 1,
+      perWeek: 3,
+      notes: "Start with the top knee bent and resting on the bench, a shorter and easier lever. Build towards a straight top leg and longer holds as it becomes comfortable."
+    },
+    helpsWith: ["Building inner-thigh and hip strength", "Preparing the hip for sport and change of direction", "Improving pelvic control on one leg"]
+  },
+  {
+    id: "ex-159",
+    slug: "single-leg-glute-bridge",
+    title: "Single-Leg Glute Bridge",
+    bodyPart: "Hip",
+    clinicalArea: "lower_limb",
+    tags: ["hip", "glute-strength", "strength-phase"],
+    condition: "Gluteal weakness and hip or knee pain",
+    stage: "Build strength",
+    description: "Lifting the hips into a bridge while holding one leg off the floor, roughly doubling the load through the gluteal muscles of the standing leg.",
+    equipment: ["An exercise mat"],
+    pose: "pelvicTilt",
+    setup: "Lie on your back with both knees bent and feet flat, hip-width apart, arms resting by your sides. Lift one foot off the floor and hold that knee towards your chest.",
+    steps: [
+      "Push through the heel of the foot that is still down and lift your hips up.",
+      "Raise up until your body is in a straight line from shoulder to knee.",
+      "Keep your pelvis level - do not let the lifted side sag.",
+      "Lower slowly back to the floor and repeat, then swap legs."
+    ],
+    cues: [
+      "The push comes through your heel, and you feel the work in your buttock.",
+      "Your hips stay level, as if balancing a tray across them.",
+      "Your lower back stays long, not arched."
+    ],
+    mistakes: [
+      "Letting the non-working side of the pelvis drop as you lift.",
+      "Pushing up mainly with the lower back rather than the buttock.",
+      "Rushing the lower instead of controlling it.",
+      "Stop and message your physio if you feel pinching in the front of the hip or groin, or lasting outer-hip or back pain afterwards."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 10,
+      perDay: 1,
+      perWeek: 5,
+      tempo: "3 seconds to lower",
+      notes: "Master the two-legged bridge first. Keep the pelvis level throughout - quality matters more than the number of reps."
+    },
+    helpsWith: ["Building single-leg buttock strength", "Steadying the pelvis on stairs and when running", "Supporting the hip and the kneecap"]
+  },
+  {
+    id: "ex-160",
+    slug: "standing-banded-hip-abduction",
+    title: "Standing Banded Hip Abduction",
+    bodyPart: "Hip",
+    clinicalArea: "lower_limb",
+    tags: ["hip", "glute-strength", "band", "strength-phase"],
+    condition: "Gluteal tendinopathy",
+    stage: "Build strength",
+    description: "Standing on one leg and moving the other leg out to the side against a resistance band, strengthening the outer-hip muscles in an upright, functional position.",
+    equipment: ["A short resistance loop band", "A wall or worktop for light balance support"],
+    setup: "Stand with a loop band around both ankles, feet hip-width apart, next to a wall or worktop you can rest a hand on. Stand tall.",
+    steps: [
+      "Take most of your weight onto the leg nearest the wall.",
+      "Keeping both knees straight, move the outer leg out to the side against the band.",
+      "Move it only as far as you can without leaning your trunk or hitching the hip up.",
+      "Bring the leg back in slowly, keeping some tension on the band."
+    ],
+    cues: [
+      "Your trunk stays upright and still - the leg moves, not the body.",
+      "You feel the work in the side of the standing buttock as well as the moving leg.",
+      "Keep your toes pointing forwards, not turning out."
+    ],
+    mistakes: [
+      "Leaning the body away to swing the leg higher.",
+      "Letting the moving leg drift forwards instead of straight out to the side.",
+      "Pushing hard through the balance hand.",
+      "Stop and message your physio if the outer hip becomes sharply painful or is more painful lying on it that night."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 15,
+      perDay: 1,
+      perWeek: 5,
+      notes: "The standing leg works to keep you steady, so both hips are training. Move the band up to the calves or thighs, or use a stronger band, to progress."
+    },
+    helpsWith: ["Strengthening the outer hip in standing", "Steadying the pelvis when walking", "Coping with stairs, hills and single-leg tasks"]
+  },
+  {
+    id: "ex-161",
+    slug: "deep-neck-flexor-hold",
+    title: "Deep Neck Flexor Endurance Hold",
+    bodyPart: "Cervical spine",
+    clinicalArea: "spine",
+    tags: ["neck", "deep-neck-flexors", "strength-phase"],
+    condition: "Non-specific neck pain",
+    stage: "Build strength",
+    description: "A gentle sustained chin-nod that holds the deep muscles at the front of the neck in a light contraction to build their endurance.",
+    equipment: [],
+    pose: "chinTuck",
+    setup: "Lie on your back with your knees bent and your head resting flat on the surface, or on a folded towel so your face is level. Let your shoulders and jaw relax.",
+    steps: [
+      "Nod your head very gently, as if saying a small yes, to flatten the back of your neck slightly towards the floor.",
+      "Keep the nod small - your head stays resting down, it does not lift.",
+      "Hold the gentle nod steady while you breathe normally.",
+      "Release slowly and rest for a few seconds before the next hold."
+    ],
+    cues: [
+      "The movement is a tiny nod at the top of the neck, not a chin-to-chest curl.",
+      "The muscles at the front of your throat feel like they are working gently, without hardening or shaking.",
+      "Your jaw stays loose - your teeth are not clenched."
+    ],
+    mistakes: [
+      "Lifting the head off the surface, which brings in the larger surface muscles.",
+      "Pushing the nod so hard the front-of-neck muscles bulge or tremble.",
+      "Holding your breath during the hold.",
+      "Stop and message your physio if this brings on dizziness, a headache, or pins and needles into the arm."
+    ],
+    defaultDosage: {
+      sets: 3,
+      holdSeconds: 10,
+      reps: 5,
+      perDay: 2,
+      perWeek: 7,
+      notes: "Build the hold from 5 seconds towards 10, then add reps. Once it is easy lying down, progress to doing it sitting against a wall."
+    },
+    helpsWith: ["Building endurance in the deep neck muscles", "Coping better with desk work and screen time", "Reducing how often neck pain flares"]
+  },
+  {
+    id: "ex-162",
+    slug: "banded-neck-isometrics",
+    title: "Banded Neck Isometrics (4-Way)",
+    bodyPart: "Cervical spine",
+    clinicalArea: "spine",
+    tags: ["neck", "isometric", "strength-phase"],
+    condition: "Non-specific neck pain",
+    stage: "Build strength",
+    description: "Gentle press-and-hold contractions of the neck muscles in four directions with no movement, using a hand for light resistance.",
+    equipment: [],
+    pose: "chinTuck",
+    setup: "Sit or stand tall with your head balanced level over your shoulders and your chin very slightly tucked.",
+    steps: [
+      "Place a palm flat against your forehead and press your head gently forwards into it - the head does not move.",
+      "Hold, then relax. Repeat with the palm on the back of the head, pressing gently backwards.",
+      "Repeat with a palm on each side in turn, pressing the head gently sideways into the hand.",
+      "Keep each press light, around a quarter of your full effort."
+    ],
+    cues: [
+      "Your head stays completely still - only the effort changes.",
+      "The chin stays gently tucked and level, not poking forward or tipping up.",
+      "Build each press up slowly over two seconds and ease off slowly."
+    ],
+    mistakes: [
+      "Pressing so hard the neck actually moves or the shoulders hunch up.",
+      "Holding your breath through the contraction.",
+      "Letting the chin poke forward as you press.",
+      "Stop and message your physio if the pressing brings on dizziness, visual changes, or pain or tingling spreading into the arm."
+    ],
+    defaultDosage: {
+      sets: 2,
+      holdSeconds: 6,
+      reps: 4,
+      perDay: 1,
+      perWeek: 6,
+      notes: "One rep is one press in one direction; work through forwards, backwards and each side. Keep the effort light and the neck pain-free."
+    },
+    helpsWith: ["Building all-round neck strength", "Making the neck feel steadier and less fragile", "Coping with longer spells of sitting and driving"]
+  },
+  {
+    id: "ex-163",
+    slug: "prone-neck-extension",
+    title: "Prone Neck Extension",
+    bodyPart: "Cervical spine",
+    clinicalArea: "spine",
+    tags: ["neck", "extensor-strength", "return-to-activity"],
+    condition: "Non-specific neck pain",
+    stage: "Return to activity",
+    description: "Lying face down over the edge of a bed and slowly lifting the head against gravity to strengthen the muscles at the back of the neck.",
+    equipment: ["A firm bed or bench"],
+    setup: "Lie face down with your chest on a firm bed and your head and neck just past the edge, forehead towards the floor. Rest your arms by your sides or on the bed.",
+    steps: [
+      "Start with the chin gently tucked, not with the head hanging loose.",
+      "Slowly lift your head until it is level with your body, leading with the crown of the head, not the chin.",
+      "Hold level for a moment, keeping the chin tucked.",
+      "Lower slowly back down under control."
+    ],
+    cues: [
+      "The lift stops when your head is in line with your body - you are not arching up higher.",
+      "The chin stays tucked so the movement works the deep muscles, not just the surface ones.",
+      "The neck moves slowly and smoothly, with no jerking."
+    ],
+    mistakes: [
+      "Throwing the head up quickly or letting it drop on the way down.",
+      "Leading with the chin so the head tips back into a crane position.",
+      "Lifting past level into a strong backward arch.",
+      "Stop and message your physio if this brings on dizziness, a headache, or symptoms spreading into the arm, or sharply worsens your neck pain."
+    ],
+    defaultDosage: {
+      sets: 2,
+      reps: 10,
+      perDay: 1,
+      perWeek: 4,
+      tempo: "3 seconds up, 3 seconds down",
+      notes: "A late-stage exercise - only add it once the lighter neck work is easy and pain-free. Start with very few reps and build slowly."
+    },
+    helpsWith: ["Strengthening the muscles at the back of the neck", "Holding the head up comfortably for longer", "Coping with sustained desk and driving postures"]
+  },
+  {
+    id: "ex-164",
+    slug: "heavy-slow-calf-raise",
+    title: "Heavy Slow Calf Raise",
+    bodyPart: "Ankle",
+    clinicalArea: "lower_limb",
+    tags: ["ankle", "calf-strength", "tendon-loading", "strength-phase"],
+    condition: "Achilles tendinopathy",
+    stage: "Strength phase",
+    description: "A slow, heavily loaded heel raise through full range, the strength end of a staged Achilles loading programme.",
+    equipment: ["A step", "A loaded rucksack, dumbbells, or a gym calf-raise machine", "A rail or wall for balance"],
+    pose: "heelRaise",
+    setup: "Stand with the balls of both feet on the edge of a step, heels off the back, holding a rail. Add load with a weighted rucksack or dumbbells once bodyweight feels easy.",
+    steps: [
+      "Lower your heels slowly below the level of the step over about three seconds.",
+      "Pause briefly at the bottom, feeling the stretch through the calf and Achilles.",
+      "Rise up onto your toes slowly over about three seconds, as high as you can.",
+      "Pause at the top, then repeat. Progress towards doing it on one leg."
+    ],
+    cues: [
+      "Each rep takes about three seconds up and three seconds down - no bouncing.",
+      "Push evenly through the big toe and second toe, not rolling to the outside.",
+      "Work to a heavy but manageable effort - the last two or three reps should feel hard."
+    ],
+    mistakes: [
+      "Rushing the reps or using momentum to bounce out of the bottom.",
+      "Cutting the range short at the top or the bottom.",
+      "Adding a lot of weight in one jump rather than small steps.",
+      "Stop and message your physio if the tendon pain climbs above a moderate level during the set, or the tendon is stiffer and more painful the next morning."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 8,
+      perDay: 1,
+      perWeek: 3,
+      tempo: "3 seconds up, 3 seconds down",
+      notes: "Aim for a load where 8 reps feel hard. Some tendon pain up to about 3 to 5 out of 10 is acceptable if it settles within 24 hours and morning stiffness is not increasing week on week."
+    },
+    helpsWith: ["Building calf and Achilles tendon strength", "Coping with walking, hills and stairs", "Returning to running and jumping"]
+  },
+  {
+    id: "ex-165",
+    slug: "seated-calf-raise",
+    title: "Seated Calf Raise (Soleus)",
+    bodyPart: "Ankle",
+    clinicalArea: "lower_limb",
+    tags: ["ankle", "calf-strength", "soleus", "strength-phase"],
+    condition: "Achilles tendinopathy",
+    stage: "Strength phase",
+    description: "A heel raise performed sitting with the knee bent, which shifts the load onto the soleus, the deeper calf muscle that takes most of the strain during running.",
+    equipment: ["A firm chair", "A weight to rest on the knees, such as a dumbbell or a loaded bag", "A step or thick book for the feet"],
+    pose: "heelRaise",
+    setup: "Sit on a firm chair with your feet flat, knees bent to a right angle and directly over your ankles. Rest the balls of your feet on a step or thick book and place a weight across your thighs, close to the knees.",
+    steps: [
+      "Let your heels lower slowly towards the floor over about three seconds.",
+      "Pause briefly at the bottom.",
+      "Press through the balls of the feet to lift the heels as high as they go, over about three seconds.",
+      "Pause at the top, then repeat."
+    ],
+    cues: [
+      "The knees stay bent at a right angle throughout - the movement is only at the ankles.",
+      "Both heels rise and lower together and evenly.",
+      "Work to a firm effort where the final reps feel hard."
+    ],
+    mistakes: [
+      "Bouncing the weight with quick, short reps.",
+      "Letting the knees drift forwards or the feet roll outwards.",
+      "Using so little range that the heels barely move.",
+      "Stop and message your physio if the tendon or heel pain rises sharply during the set or is clearly worse the next day."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 10,
+      perDay: 1,
+      perWeek: 3,
+      tempo: "3 seconds up, 3 seconds down",
+      notes: "The bent knee targets the soleus, which straight-knee heel raises miss. Build the weight gradually. Expect a tolerable working ache that settles within a day."
+    },
+    helpsWith: ["Strengthening the deeper calf muscle used in running", "Filling a common gap in calf rehab", "Coping with longer walks and runs"]
+  },
+  {
+    id: "ex-166",
+    slug: "spanish-squat",
+    title: "Spanish Squat (Isometric)",
+    bodyPart: "Knee",
+    clinicalArea: "lower_limb",
+    tags: ["knee", "isometric", "tendon-loading", "early-rehab"],
+    condition: "Patellar tendinopathy (flare-up)",
+    stage: "Early rehab",
+    description: "A held squat with a strong band looped behind the knees and anchored in front, letting you load the quads hard with the shins kept vertical - a low-irritation way to settle tendon pain.",
+    equipment: ["A strong resistance band or strap", "A solid anchor point such as a heavy table leg or a door anchor"],
+    pose: "squat",
+    setup: "Loop a strong band around the back of both knees and anchor the other end to something solid at about knee height in front of you. Step back until the band is tight, feet hip-width apart.",
+    steps: [
+      "Let the band take some of your weight as you sit back into a squat.",
+      "Lower until your knees are bent to roughly a right angle, keeping your shins vertical and your chest up.",
+      "Hold the position still, with your weight even through both feet.",
+      "Stand back up to finish the hold."
+    ],
+    cues: [
+      "Your shins stay vertical - the band lets you sit back without your knees travelling forward.",
+      "The hold feels like steady, strong work in the front of the thighs.",
+      "Any tendon pain stays low and does not build through the hold."
+    ],
+    mistakes: [
+      "Letting the knees drift forward over the toes, which loads the tendon more.",
+      "Holding your breath - keep breathing through the whole hold.",
+      "Putting more weight on the less painful leg.",
+      "Stop and message your physio if the knee pain climbs during the hold or is worse the morning after."
+    ],
+    defaultDosage: {
+      sets: 5,
+      holdSeconds: 45,
+      perDay: 1,
+      perWeek: 4,
+      tempo: "still hold",
+      notes: "Set the depth and band tension so the hold is a firm 6 or 7 out of 10 effort with low pain. Often used before training to reduce tendon pain for a few hours."
+    },
+    helpsWith: ["Settling tendon pain at the front of the knee", "Loading the thigh muscles with less strain on the kneecap", "Staying in training while a flare calms down"]
+  },
+  {
+    id: "ex-167",
+    slug: "reverse-nordic",
+    title: "Reverse Nordic (Quad Eccentric)",
+    bodyPart: "Knee",
+    clinicalArea: "lower_limb",
+    tags: ["knee", "quad-strength", "eccentric", "strength-phase"],
+    condition: "Patellar tendinopathy",
+    stage: "Strength phase",
+    description: "Kneeling upright and slowly leaning back from the knees, lowering under control to load the quadriceps and the front of the knee through a long, lengthened range.",
+    equipment: ["An exercise mat or a padded surface for the knees"],
+    setup: "Kneel upright on a mat with your knees hip-width apart, feet pointing back and ankles relaxed. Cross your arms over your chest or hold them out in front. Keep a straight line from knees to head.",
+    steps: [
+      "Keeping your hips straight and your body in one line, lean slowly backwards from the knees.",
+      "Lower only as far as you can control, letting the fronts of the thighs take the strain.",
+      "Pause briefly, then pull yourself back up to upright using your thigh muscles.",
+      "Move slowly and smoothly throughout, especially on the way down."
+    ],
+    cues: [
+      "Your body stays in a straight line from knees to head - the hips do not bend.",
+      "The lower is slow and controlled, taking three to four seconds.",
+      "Start with a small range and build it as your strength improves."
+    ],
+    mistakes: [
+      "Bending at the hips so it becomes a lean rather than a knee movement.",
+      "Dropping back quickly instead of lowering with control.",
+      "Going deeper than you can control and having to catch yourself.",
+      "Stop and message your physio if you feel sharp pain in the knee or kneecap, or the knee is swollen or much more painful the next day."
+    ],
+    defaultDosage: {
+      sets: 3,
+      reps: 6,
+      perDay: 1,
+      perWeek: 3,
+      tempo: "3 to 4 seconds to lower",
+      notes: "A demanding exercise - start with a very small backward range, or hold a pole in front for support, and build up slowly over weeks."
+    },
+    helpsWith: ["Building quad strength through a long range", "Loading the front of the knee for jumping sports", "Improving control when landing and slowing down"]
   }
 ];
 

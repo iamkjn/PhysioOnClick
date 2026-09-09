@@ -188,6 +188,25 @@ export const exerciseImagePrompts: Record<string, string> = {
   "ex-149": "a person accelerating into a run and cutting to change direction between two markers, the thigh, calf and hip muscles working through the sprint and turn",
   "ex-150": "a person lying on their back with the knees bent and one hand on the chest and one on the tummy breathing slowly and deeply, the belly rising as the diaphragm works",
 
+  // Competitive pass: elbow / hip / neck / calf / knee loading
+  "ex-151": "a seated person with the forearm resting on a table palm up holding a light dumbbell, slowly lowering the weight by letting the wrist bend back, the muscles on the underside of the forearm under load",
+  "ex-152": "a seated person with the forearm resting on a table palm up holding a light dumbbell, curling the wrist up towards the body against the weight, the forearm flexor muscles on the underside of the forearm working",
+  "ex-153": "a seated person with the forearm resting on a table and the elbow bent to a right angle holding a hammer by one end, slowly rotating the forearm to turn the palm up then down, the muscles that twist the forearm working",
+  "ex-154": "a seated person with the forearm resting on a table palm down holding a light dumbbell, lifting the back of the hand up and lowering it slowly, the muscles on the top of the forearm under load",
+  "ex-155": "a standing person holding a flexible rubber exercise bar in both hands, one wrist bent back holding a twist while the other hand slowly releases it, the wrist extensor muscles on the top of the forearm working",
+  "ex-156": "a person standing sideways on a step on one leg with the other foot hanging free, slowly dropping and then lifting the free-side hip to level the pelvis, the gluteus medius on the side of the standing hip working",
+  "ex-157": "a person seated on a chair with a loop band around both thighs above the knees, slowly pressing the knees apart against the band, the deep outer-hip rotators and gluteal muscles working",
+  "ex-158": "a person lying on their side propped on one forearm with the top ankle and shin resting on a bench, lifting the hips into a straight line, the inner-thigh adductor muscles of the top leg and the side of the lower hip working",
+  "ex-159": "a person lying on their back with one knee bent and foot flat and the other knee hugged towards the chest, lifting the hips into a bridge on the single supporting leg, the gluteal muscles of that leg working",
+  "ex-160": "a person standing tall beside a worktop with a loop band around both ankles, moving one straight leg out to the side against the band while balancing on the other, the outer-hip muscles of both legs working",
+  "ex-161": "a person lying on their back with knees bent making a small gentle chin nod that flattens the neck towards the floor and holding it, the deep muscles at the front of the neck working",
+  "ex-162": "a seated person pressing one palm against the forehead and resisting so the head does not move, then repeating against the back and each side of the head, the neck muscles working without movement",
+  "ex-163": "a person lying face down on a bench with the head and neck past the edge, slowly lifting the head until it is level with the body with the chin tucked, the muscles at the back of the neck working",
+  "ex-164": "a person standing with the balls of both feet on the edge of a step holding a rail and wearing a loaded rucksack, slowly lowering the heels below the step and rising onto the toes, the calf muscles and Achilles tendon under heavy load",
+  "ex-165": "a seated person with the knees bent to a right angle and a weight resting across the thighs, raising and lowering the heels with the balls of the feet on a low block, the deep soleus calf muscle low on the lower leg working",
+  "ex-166": "a person in a held squat with a strong band looped behind both knees and anchored in front, the shins kept vertical and the knees bent to a right angle, the quadriceps at the front of both thighs under sustained load",
+  "ex-167": "a person kneeling upright on a mat with the body in a straight line from knees to head, leaning slowly backwards from the knees under control, the quadriceps along the front of the thighs under lengthening load",
+
   // Face (adapt the suffix mentally: close-up, both sides shown, no movement arrow)
   "face-smile": "close-up medical illustration of a face gently raising both corners of the mouth into a smile, both sides shown for symmetry, the muscles around the mouth and cheeks working",
   "face-brow-raise": "close-up medical illustration of a face raising both eyebrows high to wrinkle the forehead, both sides shown for symmetry, the forehead muscles working",

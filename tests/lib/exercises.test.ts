@@ -92,9 +92,9 @@ describe('validateDosage', () => {
 
 describe('catalogue move', () => {
   it('still exports the full catalogue with stable ids', () => {
-    // 150 ex-* entries (ex-1..ex-150) + 8 face-* entries = 158.
-    // The brief's draft said 150; the live catalogue is 158 (verified against lib/site-data.ts).
-    expect(exercises.length).toBe(158)
+    // 150 original ex-* entries (ex-1..ex-150) + 8 face-* entries = 158, plus
+    // 17 competitive-pass MSK loading exercises (ex-151..ex-167) = 175.
+    expect(exercises.length).toBe(175)
     expect(exercises[0].id).toBe('ex-1')
   })
 })
