@@ -12,12 +12,15 @@
 
 import { conditions } from "@/lib/conditions";
 import { exercises } from "@/lib/exercises";
+import { selfTests } from "@/lib/self-tests";
 
 export type { Condition, ConditionStage } from "@/lib/conditions";
 export type { Exercise } from "@/lib/exercises";
+export type { SelfTest, SelfTestStep } from "@/lib/self-tests";
 
 import type { Condition, ConditionStage } from "@/lib/conditions";
 import type { Exercise } from "@/lib/exercises";
+import type { SelfTest } from "@/lib/self-tests";
 
 /**
  * Clinical review date shown on every public exercise page's by-line. Phase 1
@@ -223,3 +226,34 @@ export function librarySearchIndex(): {
 
 /** The shape returned by `librarySearchIndex()`, for prop typing at call sites. */
 export type LibrarySearchIndex = ReturnType<typeof librarySearchIndex>;
+
+/* -------------------------------------------------------------------------- */
+/* Self-check tests (Phase 1 - Part B)                                        */
+/* -------------------------------------------------------------------------- */
+
+/** The self-check test for `slug`, or `null` if there is no such test. */
+export function getSelfTest(slug: string): SelfTest | null {
+  return selfTests.find((test) => test.slug === slug) ?? null;
+}
+
+/** Every self-check test slug, in source order. */
+export function allSelfTestSlugs(): string[] {
+  return selfTests.map((test) => test.slug);
+}
+
+/**
+ * Every self-check test whose `conditionSlugs` includes `conditionSlug`, in
+ * source order. Returns `[]` when nothing maps to that hub (including an unknown
+ * slug).
+ */
+export function selfTestsForCondition(conditionSlug: string): SelfTest[] {
+  return selfTests.filter((test) => test.conditionSlugs.includes(conditionSlug));
+}
+
+/** Every self-check test whose `bodyArea` matches `area` (case-insensitive). */
+export function selfTestsByBodyArea(area: string): SelfTest[] {
+  const target = area.trim().toLowerCase();
+  return selfTests.filter(
+    (test) => test.bodyArea.trim().toLowerCase() === target,
+  );
+}
