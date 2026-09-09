@@ -13,8 +13,8 @@ const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const IMAGE_ID = /^test-[a-z0-9-]+-\d+$/
 
 describe('self-tests: shape and launch set', () => {
-  it('ships the 11-record launch set', () => {
-    expect(selfTests.length).toBe(11)
+  it('ships the 12-record launch set', () => {
+    expect(selfTests.length).toBe(12)
   })
 
   it('every slug is unique and kebab-case', () => {

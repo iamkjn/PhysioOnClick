@@ -26,8 +26,8 @@ describe('self-test image prompts', () => {
     for (const key of keySet) {
       expect(idSet.has(key), `extra key: ${key}`).toBe(true)
     }
-    // sanity: the spec fixes this at 45 step images
-    expect(idSet.size).toBe(45)
+    // sanity: 49 step images across the 12 launch-set self-tests
+    expect(idSet.size).toBe(49)
   })
 
   it('the style contract is a photograph brief, not an illustration', () => {

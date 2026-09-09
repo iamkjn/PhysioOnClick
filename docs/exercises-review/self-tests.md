@@ -2,7 +2,7 @@
 
 **For clinical review and sign-off by Shivaliba Zala (registered physiotherapist).**
 
-These 11 self-check tests are **AI-drafted starting points, not clinical fact**.
+These 12 self-check tests are **AI-drafted starting points, not clinical fact**.
 They are informational triage content for the public exercise library: a person tries a
 plain movement at home and reads what their symptoms *might* point towards. They are
 **not a diagnosis** and must never read as one.
@@ -30,6 +30,18 @@ placeholder (same as the condition hubs) - it does **not** indicate your sign-of
 
 Ways to give feedback: write in the **Notes:** line under each test, edit the field text
 inline, or mark up on a call. Anything not ticked stays a draft.
+
+## Launch set: 12 tests, and where it deviates from the spec
+
+Launch set is 12 tests. Spec 11a also named a FABER-style hip check - omitted for now
+because the Trendelenburg Mirror Check already covers the hip region and unsupervised
+FABER positioning is unreliable; add if you want hip-joint coverage.
+`resisted-wrist-flexion-test` (golfer's elbow) was added beyond the spec list so the
+golfers-elbow hub has a self-test.
+
+Every `interpretation` line uses the hedged "may point towards ... only a hands-on
+assessment can tell you for sure" template - the plain-words condition each one names
+still needs your check.
 
 ---
 
@@ -88,7 +100,7 @@ inline, or mark up on a call. Anything not ticked stays a draft.
 
 > A positive result may point towards an irritated or weak rotator cuff tendon in the shoulder, but it cannot confirm it - plenty of other things cause similar shoulder pain, and only a hands-on assessment can tell you for sure.
 
-- [ ] **Approved** &nbsp;&nbsp; Notes:
+- [ ] **Approved** &nbsp;&nbsp; Notes: the "Jobe test" aka clinically denotes the empty-can (thumb-down) variant, but this record describes the full-can (thumb-up) position - confirm the aka or the position.
 
 ---
 ## 2. Hawkins-Kennedy Test
@@ -259,7 +271,7 @@ inline, or mark up on a call. Anything not ticked stays a draft.
 
 > A positive result may point towards tennis elbow, an irritation of the wrist extensor tendons where they attach at the outer elbow, but it cannot confirm it - neck and nerve problems can refer similar pain, and only a hands-on assessment can tell you for sure.
 
-- [ ] **Approved** &nbsp;&nbsp; Notes:
+- [ ] **Approved** &nbsp;&nbsp; Notes: these are simplified self-versions of Cozen's - confirm they describe a meaningful response without an examiner.
 
 ---
 ## 5. Resisted Wrist Flexion Test
@@ -316,7 +328,7 @@ inline, or mark up on a call. Anything not ticked stays a draft.
 
 > A positive result may point towards golfer's elbow, an irritation of the wrist flexor tendons where they attach at the inner elbow, but it cannot confirm it - nerve irritation at the inner elbow can feel similar, and only a hands-on assessment can tell you for sure.
 
-- [ ] **Approved** &nbsp;&nbsp; Notes:
+- [ ] **Approved** &nbsp;&nbsp; Notes: these are simplified self-versions of Cozen's - confirm they describe a meaningful response without an examiner.
 
 ---
 ## 6. Slump Self-Check
@@ -377,7 +389,7 @@ inline, or mark up on a call. Anything not ticked stays a draft.
 
 > A positive result may point towards sciatica, where the sciatic nerve is being irritated somewhere along its path, but it cannot confirm it - tight hamstrings and other problems can feel similar, and only a hands-on assessment can tell you for sure.
 
-- [ ] **Approved** &nbsp;&nbsp; Notes:
+- [ ] **Approved** &nbsp;&nbsp; Notes: confirm the shared cauda-equina red-flag wording is complete and urgent enough, and that these simplified self-versions (no palpation / no examiner overpressure) still describe a meaningful response.
 
 ---
 ## 7. Straight Leg Raise Self-Check
@@ -434,10 +446,67 @@ inline, or mark up on a call. Anything not ticked stays a draft.
 
 > A positive result may point towards sciatica or nerve-related back pain, where a nerve from the lower back is sensitive, but it cannot confirm it - tight hamstrings and other problems can limit a straight leg raise too, and only a hands-on assessment can tell you for sure.
 
+- [ ] **Approved** &nbsp;&nbsp; Notes: confirm the shared cauda-equina red-flag wording is complete and urgent enough, and that these simplified self-versions (no palpation / no examiner overpressure) still describe a meaningful response.
+
+---
+## 8. Chin Tuck and Rotation Range Check
+
+- **Slug:** `chin-tuck-rotation-check`
+- **Also known as:** "neck rotation test", "cervical range self-check"
+- **Assesses:** The movement and comfort of the neck joints and muscles
+- **Body area:** Back & neck
+- **Points towards (condition hubs):** `neck-pain`
+- **Reviewed by / on:** Shivaliba Zala / 2026-09-08 _(shared placeholder - not your sign-off)_
+
+**What this checks (plain language):**
+
+> This checks how far you can turn your head each way and whether a gentle chin tuck eases or provokes your symptoms. Limited or uneven rotation, or pain that spreads down the arm, points towards the neck needing an assessment.
+
+**Do NOT do this test if (contraindications / red flags):**
+
+> Do not do this test if your neck pain followed a significant accident, fall or blow to the head, you have pins and needles or weakness spreading into an arm or hand, you feel unsteady on your feet, or you have dizziness, blackouts, difficulty swallowing or slurred speech. See a doctor first if any of those apply.
+
+**Steps:**
+
+1. **Sit tall and face forwards**  _(image: `test-chin-tuck-1`)_
+  - Sit upright in a firm chair with your feet flat and your shoulders relaxed.
+  - Look straight ahead with your chin level.
+2. **Turn your head slowly to the right**  _(image: `test-chin-tuck-2`)_
+  - Keeping your shoulders still, turn your head to look over your right shoulder as far as is comfortable.
+  - Note how far you get and whether it pulls, catches or hurts, then return to the middle.
+3. **Turn your head slowly to the left and compare**  _(image: `test-chin-tuck-3`)_
+  - Turn to look over your left shoulder in the same way.
+  - Compare how far each side turns and how each one feels.
+4. **Add a gentle chin tuck**  _(image: `test-chin-tuck-4`)_
+  - Draw your chin straight back to make a gentle double chin, without tipping your head down.
+  - Hold for a few seconds and notice if it eases the ache, does nothing, or makes it worse.
+
+**Normal / negative result (green panel):**
+
+  - Your head turns a similar amount to each side.
+  - Only a mild stretch at the end of the range, with no sharp pain.
+  - The chin tuck feels neutral or eases the ache slightly.
+
+**Positive result (red panel):**
+
+  - One side turns noticeably less than the other, or is blocked by pain.
+  - Turning your head or the chin tuck sends pain, pins and needles or numbness down an arm.
+  - The ache is much worse afterwards and slow to settle.
+
+**Tips (blue panel):**
+
+  - Move slowly and stop at the first sharp pain rather than pushing through.
+  - Do it in front of a mirror so you can see how far each side turns.
+  - A gentle end-of-range stretch is normal; a shooting pain is not.
+
+**Interpretation line (shown with the disclaimer):**
+
+> A positive result may point towards neck pain that would benefit from a proper assessment, especially if symptoms spread into the arm, but it cannot confirm what is causing it - only a hands-on examination can tell you for sure.
+
 - [ ] **Approved** &nbsp;&nbsp; Notes:
 
 ---
-## 8. Single-Leg Decline Squat Check
+## 9. Single-Leg Decline Squat Check
 
 - **Slug:** `single-leg-decline-squat-check`
 - **Also known as:** "decline squat test"
@@ -493,10 +562,10 @@ inline, or mark up on a call. Anything not ticked stays a draft.
 
 > A positive result may point towards kneecap-related pain or an irritated kneecap tendon at the front of the knee, but it cannot confirm it - several knee problems feel similar, and only a hands-on assessment can tell you for sure.
 
-- [ ] **Approved** &nbsp;&nbsp; Notes:
+- [ ] **Approved** &nbsp;&nbsp; Notes: "about 15 to 25 degrees" slope and the cadence numbers are invented anchors. Also this is the most demanding movement in the set for an irritable knee - confirm it is publishable unsupervised or soften to a flat single-leg squat.
 
 ---
-## 9. Trendelenburg Mirror Check
+## 10. Trendelenburg Mirror Check
 
 - **Slug:** `trendelenburg-mirror-check`
 - **Also known as:** "hip drop test", "single-leg stance test"
@@ -550,10 +619,10 @@ inline, or mark up on a call. Anything not ticked stays a draft.
 
 > A positive result may point towards gluteal tendinopathy, an irritation of the hip muscle tendons on the outside of the hip, but it cannot confirm it - hip joint and back problems can feel similar, and only a hands-on assessment can tell you for sure.
 
-- [ ] **Approved** &nbsp;&nbsp; Notes:
+- [ ] **Approved** &nbsp;&nbsp; Notes: "up to 30 seconds" hold is an invented anchor - confirm.
 
 ---
-## 10. Single-Leg Calf Raise Check
+## 11. Single-Leg Calf Raise Check
 
 - **Slug:** `single-leg-calf-raise-check`
 - **Also known as:** "heel raise test", "calf endurance test"
@@ -607,10 +676,10 @@ inline, or mark up on a call. Anything not ticked stays a draft.
 
 > A positive result may point towards Achilles tendinopathy, or a calf that has not fully recovered after an ankle injury, but it cannot confirm it - other ankle and foot problems feel similar, and only a hands-on assessment can tell you for sure.
 
-- [ ] **Approved** &nbsp;&nbsp; Notes:
+- [ ] **Approved** &nbsp;&nbsp; Notes: "around 20 to 25" reps is an invented lay normative anchor, not cited - confirm or replace. Also: the spec's launch item was "single-leg calf-raise + hop"; this draft implements the endurance-only version deliberately (safer unsupervised) - confirm that is acceptable or ask for a hop progression.
 
 ---
-## 11. Active Knee Extension Check
+## 12. Active Knee Extension Check
 
 - **Slug:** `active-knee-extension-check`
 - **Also known as:** "AKE test", "hamstring length test"

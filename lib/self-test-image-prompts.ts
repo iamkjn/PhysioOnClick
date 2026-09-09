@@ -24,7 +24,7 @@ export const SELF_TEST_IMAGE_STYLE_SUFFIX =
  * One `core` phrase per `step.imageId` in `lib/self-tests.ts`. Every key here
  * is a step image id of the form `test-<slug>-<n>`; the value describes what
  * that step's `label` + `instruction` should look like as a photo. There are
- * 45 keys - one for every step across the 11 launch-set self-tests. The
+ * 49 keys - one for every step across the 12 launch-set self-tests. The
  * dev-only guard at the bottom of this file (and
  * tests/lib/self-test-image-prompts.test.ts) keeps this set exactly in step
  * with `selfTests`.
@@ -101,6 +101,16 @@ export const selfTestImagePrompts: Record<string, string> = {
     "the person lying on their back holding the straight leg raised part way up, well short of vertical, at the point where a pull is felt down the back of the leg, seen from the side",
   "test-slr-4":
     "the person lying on their back lowering the raised leg back down to the bed before testing the other straight leg to compare, seen from the side",
+
+  // Chin Tuck and Rotation Range Check - neck joint and muscle movement (back and neck)
+  "test-chin-tuck-1":
+    "the person sitting upright and side-on in a firm chair, feet flat, shoulders relaxed, looking straight ahead with the chin level",
+  "test-chin-tuck-2":
+    "the person seated upright turning the head to look over the right shoulder as far as is comfortable, shoulders staying square to the front, a small sky-blue arrow curving to show the head rotating right",
+  "test-chin-tuck-3":
+    "the person seated upright turning the head to look over the left shoulder, shoulders staying square, a small sky-blue arrow curving to show the head rotating left",
+  "test-chin-tuck-4":
+    "the person seated upright drawing the chin straight back into a gentle double chin without tipping the head down, seen from the side, a short straight sky-blue arrow pointing backward at chin level",
 
   // Single-Leg Decline Squat Check - kneecap and its tendon (knee)
   "test-decline-squat-1":

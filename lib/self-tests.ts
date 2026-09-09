@@ -518,6 +518,71 @@ export const selfTests: SelfTest[] = [
     reviewedOn: REVIEWED_ON,
   },
   {
+    slug: "chin-tuck-rotation-check",
+    name: "Chin Tuck and Rotation Range Check",
+    aka: ["neck rotation test", "cervical range self-check"],
+    assesses: "The movement and comfort of the neck joints and muscles",
+    bodyArea: "Back & neck",
+    conditionSlugs: ["neck-pain"],
+    whatItChecks:
+      "This checks how far you can turn your head each way and whether a gentle chin tuck eases or provokes your symptoms. Limited or uneven rotation, or pain that spreads down the arm, points towards the neck needing an assessment.",
+    whoShouldNotDoThis:
+      "Do not do this test if your neck pain followed a significant accident, fall or blow to the head, you have pins and needles or weakness spreading into an arm or hand, you feel unsteady on your feet, or you have dizziness, blackouts, difficulty swallowing or slurred speech. See a doctor first if any of those apply.",
+    steps: [
+      {
+        label: "Sit tall and face forwards",
+        instruction: [
+          "Sit upright in a firm chair with your feet flat and your shoulders relaxed.",
+          "Look straight ahead with your chin level.",
+        ],
+        imageId: "test-chin-tuck-1",
+      },
+      {
+        label: "Turn your head slowly to the right",
+        instruction: [
+          "Keeping your shoulders still, turn your head to look over your right shoulder as far as is comfortable.",
+          "Note how far you get and whether it pulls, catches or hurts, then return to the middle.",
+        ],
+        imageId: "test-chin-tuck-2",
+      },
+      {
+        label: "Turn your head slowly to the left and compare",
+        instruction: [
+          "Turn to look over your left shoulder in the same way.",
+          "Compare how far each side turns and how each one feels.",
+        ],
+        imageId: "test-chin-tuck-3",
+      },
+      {
+        label: "Add a gentle chin tuck",
+        instruction: [
+          "Draw your chin straight back to make a gentle double chin, without tipping your head down.",
+          "Hold for a few seconds and notice if it eases the ache, does nothing, or makes it worse.",
+        ],
+        imageId: "test-chin-tuck-4",
+      },
+    ],
+    negativeResult: [
+      "Your head turns a similar amount to each side.",
+      "Only a mild stretch at the end of the range, with no sharp pain.",
+      "The chin tuck feels neutral or eases the ache slightly.",
+    ],
+    positiveResult: [
+      "One side turns noticeably less than the other, or is blocked by pain.",
+      "Turning your head or the chin tuck sends pain, pins and needles or numbness down an arm.",
+      "The ache is much worse afterwards and slow to settle.",
+    ],
+    tips: [
+      "Move slowly and stop at the first sharp pain rather than pushing through.",
+      "Do it in front of a mirror so you can see how far each side turns.",
+      "A gentle end-of-range stretch is normal; a shooting pain is not.",
+    ],
+    interpretation:
+      "A positive result may point towards neck pain that would benefit from a proper assessment, especially if symptoms spread into the arm, but it cannot confirm what is causing it - only a hands-on examination can tell you for sure.",
+    reviewedBy: REVIEWED_BY,
+    reviewedOn: REVIEWED_ON,
+  },
+  {
     slug: "single-leg-decline-squat-check",
     name: "Single-Leg Decline Squat Check",
     aka: ["decline squat test"],
