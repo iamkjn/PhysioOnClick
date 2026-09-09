@@ -64,6 +64,41 @@ sky-blue accent bar along the bottom edge. This is added by
 image generator is never asked for the logo. Colours match "The Clarity System"
 (`lib/exercise-plan-pdf.ts`).
 
+## Self-check test photos
+
+The public self-check tests (`lib/self-tests.ts`, Phase 1 Part B) use a
+**distinct** contract, held in `lib/self-test-image-prompts.ts` as
+`SELF_TEST_IMAGE_STYLE_PREFIX` + a per-step `core` + `SELF_TEST_IMAGE_STYLE_SUFFIX`,
+assembled by `fullSelfTestImagePrompt(id)`. There is one `core` for every
+`step.imageId` across the launch set (45 in total, one per numbered step).
+
+- **A real photograph, not an illustration.** This is the single biggest
+  difference from the exercise set. The reference sample cards for the self-check
+  tests use photos, and a photo of a person in the test position reads as "a
+  real thing I can copy" rather than "a diagram I have to interpret". So the
+  brief asks for a realistic, photorealistic photograph of a person
+  demonstrating the position - never the anatomical-textbook look used for the
+  exercises, and no muscle shading.
+- **One consistent model across the whole set**: the same adult in plain grey
+  activewear on a plain pale neutral studio background, natural even lighting, a
+  consistent three-quarter camera angle, so a page of test thumbnails reads as
+  one set.
+- **Sky-blue direction arrow only where movement direction matters**: a single
+  `#0EA5E9` arrow appears on the steps that show a movement (raise the arm,
+  rotate the forearm down, straighten the knee, rise onto the toes, ...) and is
+  omitted from the static setup and "note the response" steps.
+- **No text, no labels, no watermark** baked into the image. All instructional
+  text lives in the page layout. The PhysioOnClick brand footer is composited on
+  afterwards, exactly as for the exercise illustrations.
+- **Same pipeline.** Generate -> brand-footer -> clinical review -> upload is the
+  same manual, image-gen-API-gated sequence described below, producing
+  `self-test-images/{stepImageId}.png` in Storage.
+- **`uploadedSelfTestImageIds` is the go-live gate.** It starts empty. Until a
+  step image id is in that set, the self-test page renders a labelled
+  placeholder for that step and the page still ships. Adding an id there (in the
+  same commit that uploads the photo) is what flips the step from placeholder to
+  the real photo. Keep it a strict subset of the authored prompts.
+
 ## Authoring & Review
 
 Prompts are authored in `lib/exercise-image-prompts.ts` (all 158 done). The
