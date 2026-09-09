@@ -8463,3 +8463,293 @@ textarea:focus {
   color: var(--color-primary-dark);
   font-weight: 600;
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Public self-check tests — /exercises/tests + /exercises/tests/[slug]
+   (.exlib-selftest-*)
+   Clarity System: warm paper, navy ink, one graded sky accent.
+   Result panels: green/success = likely normal, coral = possible
+   problem, sky = tips. Accent as a text/border colour is always
+   --color-primary-dark, never the raw --color-primary.
+   ────────────────────────────────────────────────────────────── */
+
+.exlib-selftest-checks {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  color: var(--color-text-primary);
+}
+
+.exlib-selftest-checks strong {
+  color: var(--color-navy);
+}
+
+.exlib-selftest {
+  margin-top: var(--space-6);
+}
+
+.exlib-selftest__prose {
+  max-width: 44rem;
+}
+
+.exlib-selftest__prose > h2 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  color: var(--color-navy);
+}
+
+.exlib-selftest__prose > p {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  color: var(--color-text-primary);
+}
+
+/* "Do not do this test if" callout — coral tint, matches the hub red-flags box. */
+.exlib-selftest-nogo {
+  max-width: 44rem;
+  padding: var(--space-5);
+  background: color-mix(in srgb, var(--color-coral) 12%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--color-coral) 45%, transparent);
+  border-left: 4px solid var(--color-coral);
+  border-radius: var(--radius-card);
+}
+
+.exlib-selftest-nogo__title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--color-navy);
+}
+
+.exlib-selftest-nogo p {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+/* Numbered steps: photo left / label + bullets right, stacking on mobile. */
+.exlib-selftest-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.exlib-selftest-step {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+.exlib-selftest-step__media {
+  min-width: 0;
+}
+
+.exlib-selftest-step__num {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary-dark);
+}
+
+.exlib-selftest-step__label {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: 1.3;
+  color: var(--color-navy);
+}
+
+.exlib-selftest-step__points {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+/* Photo tile + the "illustration coming soon" placeholder it currently ships. */
+.exlib-selftest-photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-border);
+}
+
+.exlib-selftest-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.exlib-selftest-photo--placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  text-align: center;
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--color-primary) 32%, transparent);
+}
+
+.exlib-selftest-photo__step {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary-dark);
+}
+
+.exlib-selftest-photo__label {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  line-height: 1.3;
+  color: var(--color-navy);
+}
+
+.exlib-selftest-photo__note {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+/* Three result panels */
+.exlib-selftest-results {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+.exlib-selftest-result {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.exlib-selftest-result__title {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--color-navy);
+}
+
+.exlib-selftest-result__hint {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.exlib-selftest-result ul {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.exlib-selftest-result--negative {
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-success) 40%, transparent);
+  border-left: 4px solid var(--color-success);
+}
+
+.exlib-selftest-result--positive {
+  background: color-mix(in srgb, var(--color-coral) 12%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-coral) 45%, transparent);
+  border-left: 4px solid var(--color-coral);
+}
+
+.exlib-selftest-result--tips {
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-primary) 32%, transparent);
+  border-left: 4px solid var(--color-primary-dark);
+}
+
+/* Interpretation disclaimer — the single most load-bearing line on the page. */
+.exlib-selftest-disclaimer {
+  max-width: 44rem;
+  margin: 0;
+  padding: var(--space-4);
+  background: var(--color-primary-light);
+  border-radius: var(--radius-card);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--color-navy);
+}
+
+.exlib-selftest-hubs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Primary "book an online assessment" funnel for a positive result. */
+.exlib-selftest-cta {
+  max-width: 44rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-5);
+  background: var(--color-primary-light);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 24%, transparent);
+  border-radius: var(--radius-panel);
+}
+
+.exlib-selftest-cta__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--color-navy);
+}
+
+.exlib-selftest-cta__body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+@media (min-width: 720px) {
+  .exlib-selftest-step {
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 900px) {
+  .exlib-selftest-results {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+}

@@ -18,8 +18,10 @@
 
 import { absoluteUrl } from "@/lib/utils";
 import { founder, services } from "@/lib/site-data";
+import { getCondition } from "@/lib/exercise-library";
 import type { Exercise } from "@/lib/exercises";
 import type { Condition } from "@/lib/conditions";
+import type { SelfTest } from "@/lib/self-tests";
 
 const SITE = absoluteUrl("/");
 
@@ -260,6 +262,35 @@ export function conditionWebPage(c: Condition, path: string): object {
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a }
     }))
+  };
+}
+
+/** `MedicalWebPage` for a single self-check test page.
+ *
+ *  Deliberately NOT `MedicalTest` or `MedicalGuideline` (spec 11a "Schema"):
+ *  those types assert a validated clinical instrument, and these pages are
+ *  informational triage that explicitly cannot rule a condition in or out. The
+ *  numbered step list rides along implicitly inside the web page, exactly as on
+ *  the exercise pages - never `HowTo` or `FAQPage`. */
+export function selfTestWebPage(t: SelfTest, path: string): object {
+  const firstSlug = t.conditionSlugs[0];
+  const aboutName = firstSlug
+    ? (getCondition(firstSlug)?.name ?? firstSlug)
+    : undefined;
+  return {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    name: `${t.name} - self-check test`,
+    description: shortDescription(t.whatItChecks),
+    url: absoluteUrl(path),
+    ...(aboutName
+      ? { about: { "@type": "MedicalCondition", name: aboutName } }
+      : {}),
+    author: personRef(),
+    reviewedBy: personRef(),
+    lastReviewed: t.reviewedOn,
+    inLanguage: "en-GB",
+    isPartOf: { "@id": absoluteUrl("/exercises/tests") }
   };
 }
 
