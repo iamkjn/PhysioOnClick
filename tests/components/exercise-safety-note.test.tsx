@@ -23,7 +23,7 @@ describe("ExerciseSafetyNote", () => {
       "up to about 3 or 4 out of 10 that settles within a day is fine",
     );
     expect(container).toHaveTextContent(
-      "pain that is worse the next morning means stop and get it checked",
+      "pain that wakes you at night, or pain that is clearly worse the next morning",
     );
     expect(container).toHaveTextContent("not a substitute for a personal assessment");
 
