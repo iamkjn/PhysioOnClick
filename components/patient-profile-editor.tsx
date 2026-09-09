@@ -8,7 +8,8 @@ import { auth, db } from "@/lib/firebase";
 import { ensurePatientRecord, mergePatientProfileDetails } from "@/lib/patient-account";
 import { SkeletonForm } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
-import { validateName, validateUKPhone, LIMITS } from "@/lib/validation";
+import { validateDob, validateName, validateUKPhone, LIMITS } from "@/lib/validation";
+import { DEFAULT_DOB } from "@/lib/age";
 
 function getStatusTone(message: string): "neutral" | "success" | "error" {
   if (message.includes("successfully")) return "success";
@@ -24,6 +25,7 @@ export function PatientProfileEditor() {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [dob, setDob] = useState("");
   const [status, setStatus] = useState("Sign in to manage your profile details.");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
@@ -65,6 +67,7 @@ export function PatientProfileEditor() {
       setFullName(String(data?.displayName || auth?.currentUser?.displayName || ""));
       setPhone(String(data?.phoneNumber || auth?.currentUser?.phoneNumber || ""));
       setEmail(String(data?.email || auth?.currentUser?.email || ""));
+      setDob(String(data?.dob || ""));
     });
   }, [userId]);
 
@@ -82,6 +85,8 @@ export function PatientProfileEditor() {
     if (nameErr) nextErrors.name = nameErr;
     const phoneErr = validateUKPhone(phone);
     if (phoneErr) nextErrors.phone = phoneErr;
+    const dobErr = validateDob(dob);
+    if (dobErr) nextErrors.dob = dobErr;
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length) {
@@ -95,7 +100,8 @@ export function PatientProfileEditor() {
       await mergePatientProfileDetails(user, {
         fullName: fullName.trim(),
         phone: phone.trim(),
-        email
+        email,
+        dob: dob.trim()
       });
       setStatus("Profile updated successfully.");
       toast.show("Profile updated successfully.", "success");
@@ -109,7 +115,7 @@ export function PatientProfileEditor() {
   if (!resolvedAuth) {
     return (
       <div className="panel patient-profile-panel">
-        <SkeletonForm fields={3} />
+        <SkeletonForm fields={4} />
       </div>
     );
   }
@@ -147,6 +153,32 @@ export function PatientProfileEditor() {
             style={errors.name ? { borderColor: "var(--color-error)" } : undefined}
           />
           {errors.name && <span className="field-error" id="err-full-name">{errors.name}</span>}
+        </label>
+
+        <label>
+          Date of birth *
+          <input
+            type="date"
+            onChange={(event) => setDob(event.target.value)}
+            value={dob}
+            max={new Date().toISOString().slice(0, 10)}
+            autoComplete="bday"
+            aria-required="true"
+            aria-invalid={errors.dob ? true : undefined}
+            aria-describedby={errors.dob ? "err-dob" : undefined}
+            style={errors.dob ? { borderColor: "var(--color-error)" } : undefined}
+          />
+          {errors.dob ? (
+            <span className="field-error" id="err-dob">{errors.dob}</span>
+          ) : dob === DEFAULT_DOB ? (
+            <span className="muted" style={{ fontSize: "var(--text-xs)", fontWeight: 400, color: "var(--color-warning)" }}>
+              We set a placeholder date of birth for your account. Please update it to your real date of birth.
+            </span>
+          ) : (
+            <span className="muted" style={{ fontSize: "var(--text-xs)", fontWeight: 400 }}>
+              Helps your physiotherapist tailor your care to your age.
+            </span>
+          )}
         </label>
 
         <label>

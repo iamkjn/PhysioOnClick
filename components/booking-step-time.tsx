@@ -359,13 +359,23 @@ export function BookingStepTime({
         }
       }
 
+      // When the booking is for a dependent, the clinician's calendar invite
+      // and meeting should name the person actually being treated — not the
+      // account holder. Attendee email stays the account holder's (dependents
+      // have none). Format keeps the payer visible: "Anish George (booked by
+      // Seena George)".
+      const bookingForDependent = signedIn && Boolean(bookingForId) && bookingForId !== user!.uid;
+      const calBookingName = bookingForDependent
+        ? `${bookingForName || "Patient"} (booked by ${attendeeName})`
+        : attendeeName;
+
       const res = await fetch("/api/checkout/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           service: service.id,
           start: selectedSlot,
-          name: attendeeName,
+          name: calBookingName,
           email: attendeeEmail,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           focusAreas

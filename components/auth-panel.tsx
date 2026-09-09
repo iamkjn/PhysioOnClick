@@ -16,7 +16,7 @@ import {
 import { auth, firebaseEnabled } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
 import { ensureAppUserRecord, ensurePatientRecord } from "@/lib/patient-account";
-import { LIMITS, validateEmail, validateName } from "@/lib/validation";
+import { LIMITS, validateDob, validateEmail, validateName } from "@/lib/validation";
 import { PasswordInput } from "@/components/password-input";
 
 export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" | "admin"; redirectTo?: string | null }) {
@@ -115,6 +115,7 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
     const email = String(formData.get("email")).trim();
     const password = String(formData.get("password"));
     const fullName = String(formData.get("fullName") || "").trim();
+    const dob = String(formData.get("dob") || "").trim();
 
     if (!auth) {
       setStatus("Firebase Authentication is not configured. Add your environment variables first.", "error");
@@ -132,6 +133,11 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
         setStatus(nameErr, "error");
         return;
       }
+      const dobErr = validateDob(dob);
+      if (dobErr) {
+        setStatus(dobErr, "error");
+        return;
+      }
     }
 
     try {
@@ -142,7 +148,7 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
         if (fullName) {
           await updateProfile(credential.user, { displayName: fullName });
         }
-        runAfterSignIn(ensurePatientRecord(credential.user, fullName), "ensurePatientRecord");
+        runAfterSignIn(ensurePatientRecord(credential.user, fullName, dob), "ensurePatientRecord");
         track("sign_up", { method: "password" });
         completePatientSignIn("Patient account created.");
         return;
@@ -282,10 +288,19 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
       ) : (
         <form className="auth-form" onSubmit={handleAuth}>
           {isSignup && isPatient ? (
-            <label>
-              Full name
-              <input type="text" name="fullName" required minLength={2} maxLength={LIMITS.name} autoComplete="name" placeholder="Your full name" />
-            </label>
+            <>
+              <label>
+                Full name
+                <input type="text" name="fullName" required minLength={2} maxLength={LIMITS.name} autoComplete="name" placeholder="Your full name" />
+              </label>
+              <label>
+                Date of birth
+                <input type="date" name="dob" required max={new Date().toISOString().slice(0, 10)} autoComplete="bday" />
+                <span className="muted" style={{ fontSize: "var(--text-xs)", fontWeight: 400 }}>
+                  So your physiotherapist can tailor your care to your age.
+                </span>
+              </label>
+            </>
           ) : null}
           <label>
             Email
