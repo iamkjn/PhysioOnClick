@@ -84,12 +84,6 @@ function splitMistakes(mistakes: string[]): {
   return { ordinary: mistakes, safety: GENERIC_SAFETY };
 }
 
-// "a", "a and b", "a, b and c" - plain-language list, no Oxford comma, ASCII.
-function joinNames(names: string[]): string {
-  if (names.length <= 1) return names.join("");
-  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
-}
-
 export default async function ExerciseDetailPage({
   params,
 }: {
@@ -107,7 +101,6 @@ export default async function ExerciseDetailPage({
   const related = relatedExercises(slug, 4);
   const programmes = programmesForExercise(slug);
   const helpsWith = exercise.helpsWith ?? [];
-  const helpsWithNames = hubs.map((hub) => hub.name);
   const dose = formatDosage(resolveDosage(exercise));
   const { ordinary: ordinaryMistakes, safety: safetyLine } = splitMistakes(
     exercise.mistakes ?? [],
@@ -182,10 +175,6 @@ export default async function ExerciseDetailPage({
               </li>
             ))}
           </ul>
-        ) : helpsWithNames.length ? (
-          <p data-helps-with className="exlib-ex-page__helps">
-            This exercise is used in rehab for {joinNames(helpsWithNames)}.
-          </p>
         ) : null}
 
         {hubs.length ? (

@@ -137,19 +137,24 @@ describe("app/exercises/[slug] page", () => {
     expect(blocks.some((json) => json["@type"] === "BreadcrumbList")).toBe(true);
   });
 
-  it("shows a [data-helps-with] block naming the conditions it is used for", async () => {
-    const { container } = await renderPage(SLUG);
+  it("renders the [data-helps-with] chips for an exercise that has helpsWith goals", async () => {
+    // one of the competitive-pass records - it carries plain-language helpsWith
+    const withGoals = "hip-hitch";
+    const ex = getExerciseBySlug(withGoals)!;
+    expect(ex.helpsWith?.length).toBeGreaterThan(0);
 
+    const { container } = await renderPage(withGoals);
     const block = container.querySelector("[data-helps-with]");
-    const names = conditionsForExercise(SLUG).map((c) => c.name);
+    expect(block).not.toBeNull();
+    expect(block).toHaveTextContent(ex.helpsWith![0]);
+  });
 
-    if (exercise.helpsWith?.length || names.length) {
-      expect(block).not.toBeNull();
-    }
-    if (!exercise.helpsWith?.length && names.length) {
-      // plain-language fallback lists the condition names
-      expect(block).toHaveTextContent(names[0]);
-    }
+  it("omits the [data-helps-with] block for an exercise with no helpsWith", async () => {
+    // clam-shell has no helpsWith - the slot should be empty, not a duplicate
+    // of the condition pill links below it.
+    expect(exercise.helpsWith?.length ?? 0).toBe(0);
+    const { container } = await renderPage(SLUG);
+    expect(container.querySelector("[data-helps-with]")).toBeNull();
   });
 
   it("shows a [data-equipment] line with the exercise's kit", async () => {

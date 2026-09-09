@@ -187,6 +187,14 @@ describe('exercise-library: programmesForExercise', () => {
     expect(new Set(slugs).size).toBe(slugs.length)
   })
 
+  it('collapses a multi-stage appearance to one row at the earliest stage', () => {
+    // shoulder-flexion is in frozen-shoulder stages 1 AND 2.
+    const rows = programmesForExercise('shoulder-flexion')
+    const frozen = rows.filter((r) => r.condition.slug === 'frozen-shoulder')
+    expect(frozen).toHaveLength(1)
+    expect(frozen[0].stageName).toBe('Settle and keep it moving')
+  })
+
   it('is deterministic in allConditionSlugs() order', () => {
     const order = allConditionSlugs()
     const slugs = programmesForExercise('scapular-setting').map((e) => e.condition.slug)

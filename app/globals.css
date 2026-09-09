@@ -8950,18 +8950,9 @@ textarea:focus {
 }
 
 /* Canonical exercise page (/exercises/[slug]) enrichment blocks: the
-   "what this helps with" line/chips and the equipment line in the hero, and
+   "what this helps with" chips and the equipment line in the hero, and
    the "recovery programmes" list grouped with related exercises. Clarity
    tokens, flat at rest, accent only ever as --color-primary-dark. */
-.exlib-ex-page__helps {
-  margin: 0;
-  max-width: 60ch;
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  line-height: 1.6;
-  color: var(--color-text-secondary);
-}
-
 .exlib-ex-page__chips {
   display: flex;
   flex-wrap: wrap;

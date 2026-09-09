@@ -1,6 +1,6 @@
 # PhysioOnClick -- exercise & self-check image prompt sheet
 
-_Generated 2026-09-09. 175 exercise illustrations + 49 self-check test photos._
+_Generated 2026-09-09. 174 exercise illustrations + 49 self-check test photos._
 
 ## How to use this
 
@@ -17,7 +17,7 @@ _Generated 2026-09-09. 175 exercise illustrations + 49 self-check test photos._
 
 _Style: detailed medical illustration, single clothed figure, realistic proportions and joint angles, the working muscles lightly shaded, one sky-blue (#0EA5E9) movement arrow, navy (#043246) outlines, no text._
 
-## Spine (lower back / neck / mid-back) (25)
+## Spine (lower back / neck / mid-back) (24)
 
 ### `ex-3` -- Bridge Progression
 
@@ -155,12 +155,6 @@ Detailed medical illustration of a single human figure performing the exercise, 
 
 ```
 Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a person lying on their back with knees bent making a small gentle chin nod that flattens the neck towards the floor and holding it, the deep muscles at the front of the neck working, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
-```
-
-### `ex-162` -- Banded Neck Isometrics (4-Way)
-
-```
-Detailed medical illustration of a single human figure performing the exercise, realistic body proportions and accurate joint positions, a seated person pressing one palm against the forehead and resisting so the head does not move, then repeating against the back and each side of the head, the neck muscles working without movement, the primary working muscles subtly shaded in a warm tone, clean anatomical-textbook style, neutral pale studio background, a single sky-blue (#0EA5E9) arrow indicating the direction of movement, navy (#043246) outlines, no text, no labels, no watermark, consistent three-quarter view
 ```
 
 ### `ex-163` -- Prone Neck Extension
@@ -1453,7 +1447,7 @@ Realistic clean photograph of a single person demonstrating a physiotherapy self
 
 ## Checklist for handing images back
 
-- [ ] 175 exercise illustrations, each named `ex-N.png` / `face-*.png`
+- [ ] 174 exercise illustrations, each named `ex-N.png` / `face-*.png`
 - [ ] 49 self-check test photos, each named `test-*.png`
 - [ ] All square, ~1024px, plain pale background, no text or logo
 - [ ] One folder, shared back
