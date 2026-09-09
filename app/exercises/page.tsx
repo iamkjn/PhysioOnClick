@@ -177,7 +177,7 @@ export default function ExerciseLibraryIndexPage() {
       {selfTests.length ? (
         <section className="exlib-index-section">
           <div className="section-heading">
-            <h2>Self-checks</h2>
+            <h2>Self-check tests</h2>
             <p>
               Quick movement tests you can try at home to see what your symptoms
               might point towards - a guide, not a diagnosis.

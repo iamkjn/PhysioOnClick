@@ -18,7 +18,12 @@
 
 import { absoluteUrl } from "@/lib/utils";
 import { founder, services } from "@/lib/site-data";
-import { getCondition } from "@/lib/exercise-library";
+// Import the conditions array directly, not `getCondition` from the
+// `@/lib/exercise-library` barrel: this module is pulled into app/layout.tsx
+// (siteEntityGraph), so a value import from the barrel would drag the whole
+// catalogue (exercises.ts + self-tests.ts, ~330 KB) into every route's graph.
+// `lib/conditions.ts` is dependency-free pure data.
+import { conditions } from "@/lib/conditions";
 import type { Exercise } from "@/lib/exercises";
 import type { Condition } from "@/lib/conditions";
 import type { SelfTest } from "@/lib/self-tests";
@@ -275,7 +280,7 @@ export function conditionWebPage(c: Condition, path: string): object {
 export function selfTestWebPage(t: SelfTest, path: string): object {
   const firstSlug = t.conditionSlugs[0];
   const aboutName = firstSlug
-    ? (getCondition(firstSlug)?.name ?? firstSlug)
+    ? (conditions.find((c) => c.slug === firstSlug)?.name ?? firstSlug)
     : undefined;
   return {
     "@context": "https://schema.org",

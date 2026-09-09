@@ -84,6 +84,15 @@ describe('self-tests: shape and launch set', () => {
     }
   })
 
+  it('every contraindication opens with the imperative lead the page callout relies on', () => {
+    // app/exercises/tests/[slug]/page.tsx strips this exact lead to build the
+    // coral "Do not do this test if" heading; a differently-phrased record
+    // would silently downgrade that heading to a soft advisory.
+    for (const t of selfTests) {
+      expect(t.whoShouldNotDoThis, t.slug).toMatch(/^Do not do this test if\s+/)
+    }
+  })
+
   it('every record carries the shared clinical-review placeholder', () => {
     for (const t of selfTests) {
       expect(t.reviewedBy, t.slug).toBe('Shivaliba Zala')

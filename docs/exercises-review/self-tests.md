@@ -43,6 +43,22 @@ Every `interpretation` line uses the hedged "may point towards ... only a hands-
 assessment can tell you for sure" template - the plain-words condition each one names
 still needs your check.
 
+### Specific points to check (raised in code review)
+
+- **`resisted-wrist-flexion-test`** - the draft Notes call it a "self-version of Cozen's".
+  Cozen's is strictly the lateral-epicondylalgia (tennis elbow) test; the golfer's-elbow
+  equivalent is not Cozen's. Please reword to whatever you would call the resisted
+  wrist-flexion / medial equivalent.
+- **`single-leg-calf-raise-check` -> `ankle-sprain` mapping** - the test's
+  `whoShouldNotDoThis` is Achilles-rupture-shaped, not acute-lateral-sprain-shaped
+  (no Ottawa-rules prompt, no "can you weight-bear four steps"). If you want to keep
+  this test pointing at the ankle-sprain hub, the contraindication list probably needs
+  an acute-sprain line; or drop the `ankle-sprain` mapping and leave it Achilles-only.
+- **`frozen-shoulder` has no self-check.** 13 of 25 hubs now carry one; the 11 without
+  are post-op / return-to-sport / pelvic-health / falls hubs with no safe unsupervised
+  home test. `frozen-shoulder` is the one exception - loss of *passive* external
+  rotation is a recognised, safe self-observation. Add one if you think it is worth it.
+
 ---
 
 ## 1. Full Can Test

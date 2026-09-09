@@ -25,4 +25,15 @@ describe("generateSelfTestOgSvg", () => {
     expect(svg).toContain("&lt;b&gt;");
     expect(svg).toContain("&amp;");
   });
+
+  it("truncates an overlong name with ASCII dots, never a U+2026 glyph", () => {
+    // wrapLines() marks 3-line overflow; ~3 of the 12 real test names already
+    // hit it. A U+2026 there would be a forbidden codepoint in the OG SVG.
+    const svg = generateSelfTestOgSvg({
+      ...test,
+      name: "Word ".repeat(40).trim(),
+    });
+    expect(svg).toContain("...");
+    expect(svg).not.toContain("…");
+  });
 });
