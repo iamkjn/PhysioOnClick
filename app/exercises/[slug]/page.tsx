@@ -299,7 +299,10 @@ export default async function ExerciseDetailPage({
           <ul className="exlib-ex-page__programmes-list">
             {programmes.map(({ condition, stageName }) => (
               <li key={condition.slug} className="exlib-ex-page__programme">
-                <Link href={`/exercises/for/${condition.slug}`}>
+                <Link
+                  className="exlib-ex-page__programme-link"
+                  href={`/exercises/for/${condition.slug}`}
+                >
                   {condition.name} exercises
                 </Link>
                 <span className="exlib-ex-page__programme-stage">

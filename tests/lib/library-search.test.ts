@@ -83,6 +83,17 @@ describe("library-search: searchItems lay-language matching", () => {
     expect(new Set(keys).size).toBe(keys.length);
   });
 
+  it("matches a single-word query on word boundaries, not as a substring", () => {
+    // "hip" must not pull in "whiplash"; "acl" must not pull in "obstacle".
+    const hip = slugs(run("hip"));
+    expect(hip.some((s) => s.includes("whiplash") || s === "neck-pain")).toBe(
+      false,
+    );
+    const acl = slugs(run("acl"));
+    expect(acl).toContain("acl-rehabilitation");
+    expect(acl.some((s) => s.includes("obstacle"))).toBe(false);
+  });
+
   it("ranks an exact hub-name phrase match above incidental token hits", () => {
     const results = run("tennis elbow");
     expect(results[0]?.slug).toBe("tennis-elbow");

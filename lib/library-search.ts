@@ -224,7 +224,7 @@ export function searchItems(items: SearchItem[], query: string): SearchItem[] {
       const label = normalise(item.kind === "exercise" ? item.title : item.name);
       const { terms } = item;
       let score = 0;
-      if (raw.length >= 2 && label.includes(raw)) score += 10;
+      if (raw.length >= 2 && termAppears(label, raw)) score += 10;
       if (tokens.every((token) => termAppears(terms, token))) score += 4;
       for (const token of tokens) if (termAppears(terms, token)) score += 1;
       for (const term of injected) {
