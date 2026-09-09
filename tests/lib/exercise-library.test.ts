@@ -9,6 +9,7 @@ import {
   programForCondition,
   conditionsForExercise,
   relatedExercises,
+  programmesForExercise,
   bodyAreas,
   exercisesByBodyArea,
   conditionsByBodyArea,
@@ -157,6 +158,51 @@ describe('exercise-library: relatedExercises', () => {
   it('returns [] for an unknown exercise or a non-positive limit', () => {
     expect(relatedExercises('no-such-exercise', 5)).toEqual([])
     expect(relatedExercises('clam-shell', 0)).toEqual([])
+  })
+})
+
+describe('exercise-library: programmesForExercise', () => {
+  it('lists every condition programme an exercise appears in, with its stage', () => {
+    const result = programmesForExercise('scapular-setting')
+    expect(result.length).toBeGreaterThan(0)
+
+    for (const entry of result) {
+      expect(entry.condition).toBeTruthy()
+      expect(typeof entry.condition.slug).toBe('string')
+      expect(entry.condition.slug.length).toBeGreaterThan(0)
+      expect(typeof entry.condition.name).toBe('string')
+      expect(entry.condition.name.length).toBeGreaterThan(0)
+      expect(typeof entry.stageName).toBe('string')
+      expect(entry.stageName.length).toBeGreaterThan(0)
+    }
+
+    // scapular-setting sits in rotator-cuff-tendinopathy's first stage.
+    const rc = result.find((e) => e.condition.slug === 'rotator-cuff-tendinopathy')
+    expect(rc).toBeTruthy()
+    expect(rc!.stageName).toBe('Settle the pain')
+  })
+
+  it('returns one row per condition, deduped by condition slug', () => {
+    const slugs = programmesForExercise('scapular-setting').map((e) => e.condition.slug)
+    expect(new Set(slugs).size).toBe(slugs.length)
+  })
+
+  it('is deterministic in allConditionSlugs() order', () => {
+    const order = allConditionSlugs()
+    const slugs = programmesForExercise('scapular-setting').map((e) => e.condition.slug)
+    const sorted = [...slugs].sort((a, b) => order.indexOf(a) - order.indexOf(b))
+    expect(slugs).toEqual(sorted)
+  })
+
+  it('returns [] for an exercise in no programme', () => {
+    // smile-mouth-raise is a real facial-rehab exercise that no condition
+    // programme lists.
+    expect(getExerciseBySlug('smile-mouth-raise')).not.toBeNull()
+    expect(programmesForExercise('smile-mouth-raise')).toEqual([])
+  })
+
+  it('returns [] for an unknown exercise slug', () => {
+    expect(programmesForExercise('no-such-exercise')).toEqual([])
   })
 })
 

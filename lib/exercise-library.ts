@@ -122,6 +122,36 @@ export function conditionsForExercise(exerciseSlug: string): Condition[] {
 }
 
 /**
+ * Which condition programmes an exercise appears in, and at which stage.
+ *
+ * Iterates the condition hubs in source order (`allConditionSlugs()`); for each
+ * one whose staged programme lists this exercise slug, returns a single row with
+ * the `Condition` and the name of the first stage it shows up in. One row per
+ * condition - an exercise used in several stages of the same programme still
+ * lists that programme once, tagged with its earliest stage. Returns `[]` for an
+ * exercise that is in no programme (including an unknown slug).
+ */
+export function programmesForExercise(
+  exerciseSlug: string,
+): { condition: Condition; stageName: string }[] {
+  const rows: { condition: Condition; stageName: string }[] = [];
+
+  for (const conditionSlug of allConditionSlugs()) {
+    const condition = getCondition(conditionSlug);
+    if (!condition) continue;
+
+    const firstStage = programForCondition(conditionSlug).find((programStage) =>
+      programStage.exercises.some((exercise) => exercise.slug === exerciseSlug),
+    );
+    if (firstStage) {
+      rows.push({ condition, stageName: firstStage.stage.stage });
+    }
+  }
+
+  return rows;
+}
+
+/**
  * Up to `limit` other exercises related to `exerciseSlug`, ranked by: shares a
  * condition hub (weight 2), then same `bodyPart` (weight 1). Exercises related
  * on neither count are excluded. The exercise itself is never returned. Returns

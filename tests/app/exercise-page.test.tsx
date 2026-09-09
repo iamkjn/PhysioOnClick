@@ -10,6 +10,7 @@ import {
   allExerciseSlugs,
   conditionsForExercise,
   getExerciseBySlug,
+  programmesForExercise,
   relatedExercises,
 } from "@/lib/exercise-library";
 import { formatDosage, resolveDosage } from "@/lib/exercises";
@@ -134,6 +135,54 @@ describe("app/exercises/[slug] page", () => {
 
     expect(blocks.some((json) => json["@type"] === "MedicalWebPage")).toBe(true);
     expect(blocks.some((json) => json["@type"] === "BreadcrumbList")).toBe(true);
+  });
+
+  it("shows a [data-helps-with] block naming the conditions it is used for", async () => {
+    const { container } = await renderPage(SLUG);
+
+    const block = container.querySelector("[data-helps-with]");
+    const names = conditionsForExercise(SLUG).map((c) => c.name);
+
+    if (exercise.helpsWith?.length || names.length) {
+      expect(block).not.toBeNull();
+    }
+    if (!exercise.helpsWith?.length && names.length) {
+      // plain-language fallback lists the condition names
+      expect(block).toHaveTextContent(names[0]);
+    }
+  });
+
+  it("shows a [data-equipment] line with the exercise's kit", async () => {
+    const { container } = await renderPage(SLUG);
+
+    const line = container.querySelector("[data-equipment]");
+    expect(line).not.toBeNull();
+    // clam-shell carries equipment ["Exercise mat"]
+    expect(exercise.equipment?.length).toBeGreaterThan(0);
+    expect(line).toHaveTextContent("Exercise mat");
+  });
+
+  it("lists every programmesForExercise() hub in a [data-programmes] section", async () => {
+    const { container } = await renderPage(SLUG);
+
+    const programmes = programmesForExercise(SLUG);
+    expect(programmes.length).toBeGreaterThan(0);
+
+    const section = container.querySelector("[data-programmes]");
+    expect(section).not.toBeNull();
+    for (const { condition } of programmes) {
+      expect(
+        section!.querySelector(`a[href="/exercises/for/${condition.slug}"]`),
+        `missing programme link for ${condition.slug}`,
+      ).not.toBeNull();
+    }
+  });
+
+  it("omits the [data-programmes] section for an exercise in no programme", async () => {
+    // smile-mouth-raise appears in no condition programme.
+    expect(programmesForExercise("smile-mouth-raise")).toEqual([]);
+    const { container } = await renderPage("smile-mouth-raise");
+    expect(container.querySelector("[data-programmes]")).toBeNull();
   });
 
   it("calls notFound() for an unknown slug", async () => {

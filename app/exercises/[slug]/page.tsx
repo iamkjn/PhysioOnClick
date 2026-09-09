@@ -7,6 +7,7 @@ import {
   EXERCISE_LIBRARY_REVIEWED_ON,
   getExerciseBySlug,
   allExerciseSlugs,
+  programmesForExercise,
   relatedExercises,
 } from "@/lib/exercise-library";
 import { formatDosage, resolveDosage } from "@/lib/exercises";
@@ -83,6 +84,12 @@ function splitMistakes(mistakes: string[]): {
   return { ordinary: mistakes, safety: GENERIC_SAFETY };
 }
 
+// "a", "a and b", "a, b and c" - plain-language list, no Oxford comma, ASCII.
+function joinNames(names: string[]): string {
+  if (names.length <= 1) return names.join("");
+  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}
+
 export default async function ExerciseDetailPage({
   params,
 }: {
@@ -98,6 +105,9 @@ export default async function ExerciseDetailPage({
   const path = `/exercises/${slug}`;
   const hubs = conditionsForExercise(slug);
   const related = relatedExercises(slug, 4);
+  const programmes = programmesForExercise(slug);
+  const helpsWith = exercise.helpsWith ?? [];
+  const helpsWithNames = hubs.map((hub) => hub.name);
   const dose = formatDosage(resolveDosage(exercise));
   const { ordinary: ordinaryMistakes, safety: safetyLine } = splitMistakes(
     exercise.mistakes ?? [],
@@ -160,6 +170,24 @@ export default async function ExerciseDetailPage({
 
         <ExerciseVideo exercise={exercise} />
 
+        {helpsWith.length ? (
+          <ul
+            data-helps-with
+            aria-label="What this exercise helps with"
+            className="exlib-ex-page__chips"
+          >
+            {helpsWith.map((item) => (
+              <li key={item} className="exlib-ex-page__chip">
+                {item}
+              </li>
+            ))}
+          </ul>
+        ) : helpsWithNames.length ? (
+          <p data-helps-with className="exlib-ex-page__helps">
+            This exercise is used in rehab for {joinNames(helpsWithNames)}.
+          </p>
+        ) : null}
+
         {hubs.length ? (
           <ul
             aria-label="Conditions this exercise helps with"
@@ -208,6 +236,11 @@ export default async function ExerciseDetailPage({
         <Reveal direction="up">
           <article className="simple-service-card">
             <h2>How to do it</h2>
+            <p className="muted exlib-ex-page__equipment" data-equipment>
+              {exercise.equipment?.length
+                ? `You need: ${exercise.equipment.join(", ")}.`
+                : "No equipment needed - just a bit of space."}
+            </p>
             {exercise.setup ? <p>{exercise.setup}</p> : null}
 
             {exercise.steps?.length ? (
@@ -250,6 +283,33 @@ export default async function ExerciseDetailPage({
       <section className="page-section stack">
         <ExerciseSafetyNote variant="compact" />
       </section>
+
+      {programmes.length ? (
+        <section className="page-section stack" data-programmes>
+          <Reveal direction="up">
+            <div className="section-heading">
+              <h2>Part of these recovery programmes</h2>
+              <p>
+                This exercise is one step in a staged plan for the conditions
+                below. Each link opens the full programme and shows where this
+                exercise fits.
+              </p>
+            </div>
+          </Reveal>
+          <ul className="exlib-ex-page__programmes-list">
+            {programmes.map(({ condition, stageName }) => (
+              <li key={condition.slug} className="exlib-ex-page__programme">
+                <Link href={`/exercises/for/${condition.slug}`}>
+                  {condition.name} exercises
+                </Link>
+                <span className="exlib-ex-page__programme-stage">
+                  {stageName}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {related.length ? (
         <section className="page-section stack">
