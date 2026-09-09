@@ -14,6 +14,7 @@ import { auth, db } from "@/lib/firebase";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { cancelCalBooking } from "@/app/admin/actions";
+import { calcAge } from "@/lib/age";
 import { Avatar } from "@/components/avatar";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { AdminRecoverySummary } from "@/components/admin-recovery-summary";
@@ -27,6 +28,9 @@ import { useToast } from "@/components/toast-provider";
 
 interface Props {
   patientUid: string;
+  // Deep link from the patients list: preselect this dependent instead of the
+  // primary account holder.
+  initialPersonId?: string;
 }
 
 interface PatientRecord {
@@ -34,6 +38,7 @@ interface PatientRecord {
   email: string;
   phoneNumber?: string;
   photoUrl?: string;
+  dob?: string;
 }
 
 interface Person {
@@ -77,17 +82,19 @@ function displayStatus(b: AdminBookingRow): AdminBookingRow["status"] {
   return b.sessionDate < new Date() ? "completed" : "upcoming";
 }
 
-export function AdminPatientDetail({ patientUid }: Props) {
+export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
   const toast = useToast();
 
   // ── Patient + active person ──────────────────────────────────────────
   const [patient, setPatient] = useState<PatientRecord | null | undefined>(undefined);
-  const [person, setPerson] = useState<Person>({ id: patientUid, name: "" });
+  const [person, setPerson] = useState<Person>(() => ({
+    id: initialPersonId && initialPersonId !== patientUid ? initialPersonId : patientUid,
+    name: "",
+  }));
 
   useEffect(() => {
     let live = true;
     setPatient(undefined);
-    setPerson({ id: patientUid, name: "" });
     if (!db) { setPatient(null); return; }
     getDoc(doc(db, "patients", patientUid))
       .then((snap) => {
@@ -100,8 +107,12 @@ export function AdminPatientDetail({ patientUid }: Props) {
           email: (data.email as string) || "",
           phoneNumber: (data.phoneNumber as string) || undefined,
           photoUrl: (data.photoUrl as string) || undefined,
+          dob: (data.dob as string) || undefined,
         });
-        setPerson({ id: patientUid, name: displayName });
+        // Only claim the "primary" slot if we're not already viewing a
+        // deep-linked dependent (PersonSwitcher fills that name in once its
+        // dependents load).
+        setPerson((prev) => (prev.id === patientUid ? { id: patientUid, name: displayName } : prev));
       })
       .catch(() => { if (live) setPatient(null); });
     return () => { live = false; };
@@ -260,12 +271,19 @@ export function AdminPatientDetail({ patientUid }: Props) {
           </h1>
           <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--text-xs)" }}>
             {patient.email}{patient.phoneNumber ? ` · ${patient.phoneNumber}` : ""}
+            {calcAge(patient.dob) !== null ? ` · ${calcAge(patient.dob)} yrs` : ""}
           </p>
+          {person.id !== patientUid && person.name ? (
+            <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-primary-dark)" }}>
+              Viewing {person.name}&apos;s records (dependent)
+            </p>
+          ) : null}
         </div>
         <PersonSwitcher
           key={patientUid}
           uid={patientUid}
           displayName={patient.displayName}
+          initialPersonId={initialPersonId}
           onSelect={(id, name) => setPerson({ id, name })}
           alwaysShow
         />

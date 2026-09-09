@@ -14,16 +14,21 @@ interface Props {
   onSelect: (personId: string, name: string) => void;
   alwaysShow?: boolean;
   onAddPerson?: () => void;
+  // Admin use: preselect a specific dependent on mount (from a `?person=` deep
+  // link in the patients list) when there's no PersonProvider context.
+  initialPersonId?: string;
 }
 
-export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false, onAddPerson }: Props) {
+export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false, onAddPerson, initialPersonId }: Props) {
   // Optional: undefined when no PersonProvider is mounted (e.g. admin pages,
   // or this component rendered in isolation) — every use below is guarded.
   const personCtx = usePerson();
   const [dependents, setDependents] = useState<Dependent[] | null>(null);
-  const [selected, setSelected] = useState(() =>
-    personCtx?.personId && personCtx.personId !== uid ? personCtx.personId : uid
-  );
+  const [selected, setSelected] = useState(() => {
+    if (personCtx?.personId && personCtx.personId !== uid) return personCtx.personId;
+    if (initialPersonId && initialPersonId !== uid) return initialPersonId;
+    return uid;
+  });
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
@@ -34,6 +39,13 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
       // longer exists for this uid (removed dependent, or a different
       // account signed in), fall back to self. Runs once dependents load.
       personCtx?.reconcile(uid, deps.map((d) => d.id));
+      // No-context (admin) deep link: resolve the preselected dependent's
+      // name and push it up so the detail view switches to them.
+      if (!personCtx && selected !== uid) {
+        const dep = deps.find((d) => d.id === selected);
+        if (dep) onSelect(dep.id, dep.name);
+        else { setSelected(uid); onSelect(uid, displayName); }
+      }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- personCtx.reconcile has a stable identity (useCallback); only re-run when uid changes
   }, [uid]);

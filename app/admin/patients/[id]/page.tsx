@@ -16,6 +16,13 @@ export default function AdminPatientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [checkedAdmin, setCheckedAdmin] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  // `?person=<dependentId>` deep link from the patients list. Read straight from
+  // the URL in a lazy initializer (client-only) to avoid a useSearchParams
+  // Suspense boundary and any first-render flash of the primary's records.
+  const [initialPersonId] = useState<string | undefined>(() => {
+    if (typeof window === "undefined") return undefined;
+    return new URLSearchParams(window.location.search).get("person") || undefined;
+  });
 
   useEffect(() => {
     if (!auth) { setCheckedAdmin(true); return; }
@@ -60,7 +67,7 @@ export default function AdminPatientDetailPage() {
     <AdminShell backHref="/admin/patients" backLabel="← Back to patients">
       <div className="site-shell">
         <section className="page-section">
-          <AdminPatientDetail patientUid={id} />
+          <AdminPatientDetail patientUid={id} initialPersonId={initialPersonId} />
         </section>
       </div>
     </AdminShell>
