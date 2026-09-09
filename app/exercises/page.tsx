@@ -15,6 +15,7 @@ import { breadcrumbs } from "@/lib/structured-data";
 import { BodyMap } from "@/components/exercise-library/body-map";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
+import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
 import { LibrarySearch } from "@/components/exercise-library/library-search";
 import { SavedPlanList } from "@/components/exercise-library/saved-plan-list";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -201,6 +202,10 @@ export default function ExerciseLibraryIndexPage() {
           Want to know how this library is put together and reviewed? Read{" "}
           <Link href="/exercises/how-we-make-this">how we make this library</Link>.
         </p>
+      </section>
+
+      <section className="exlib-index-section">
+        <ExerciseSafetyNote variant="full" />
       </section>
 
       <section className="simple-cta-band">

@@ -134,6 +134,14 @@ describe("app/exercises index page", () => {
     expect(container.querySelectorAll('a[href="/book"]').length).toBeGreaterThanOrEqual(1);
   });
 
+  it("renders the shared [data-safety-note] block in its full variant", () => {
+    const { container } = render(<ExerciseLibraryIndexPage />);
+    const note = container.querySelector("[data-safety-note]");
+    expect(note).not.toBeNull();
+    expect(note?.getAttribute("data-variant")).toBe("full");
+    expect(note?.textContent).toContain("Using these exercises safely");
+  });
+
   it("generateMetadata sets the title and a self canonical", async () => {
     const meta = await indexMetadata();
     expect(meta.title).toBe("Exercise library | PhysioOnClick");
@@ -181,6 +189,17 @@ describe("app/exercises/area/[bodyArea] page", () => {
     await expect(
       AreaPage({ params: Promise.resolve({ bodyArea: "sports" }) }),
     ).rejects.toThrow(/NEXT_HTTP_ERROR_FALLBACK;404/);
+  });
+
+  it("renders the shared [data-safety-note] block in its full variant", async () => {
+    const ui = await AreaPage({
+      params: Promise.resolve({ bodyArea: "shoulder" }),
+    });
+    const { container } = render(ui);
+    const note = container.querySelector("[data-safety-note]");
+    expect(note).not.toBeNull();
+    expect(note?.getAttribute("data-variant")).toBe("full");
+    expect(note?.textContent).toContain("Using these exercises safely");
   });
 
   it("generateMetadata canonical points to /exercises, not the area URL", async () => {

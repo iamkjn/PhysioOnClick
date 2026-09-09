@@ -139,6 +139,14 @@ describe("app/exercises/for/[condition] page", () => {
     });
   });
 
+  it("renders the shared [data-safety-note] block in its compact variant", async () => {
+    const { container } = await renderPage(SLUG);
+    const note = container.querySelector("[data-safety-note]");
+    expect(note).not.toBeNull();
+    expect(note?.getAttribute("data-variant")).toBe("compact");
+    expect(note?.textContent).toContain("Using these exercises safely");
+  });
+
   it("does not render its own <main> landmark (the layout owns the only one)", async () => {
     const { container } = await renderPage(SLUG);
     expect(container.querySelectorAll("main")).toHaveLength(0);

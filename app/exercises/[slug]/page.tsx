@@ -14,6 +14,7 @@ import { breadcrumbs, exerciseWebPage } from "@/lib/structured-data";
 import { AddToPlanButton } from "@/components/exercise-library/add-to-plan-button";
 import { ByLine } from "@/components/exercise-library/by-line";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
+import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
 import { ExerciseImage } from "@/components/exercise-image";
 import { ExerciseVideo } from "@/components/exercise-library/exercise-video";
 import { Reveal } from "@/components/reveal";
@@ -244,6 +245,10 @@ export default async function ExerciseDetailPage({
             </p>
           </article>
         </Reveal>
+      </section>
+
+      <section className="page-section stack">
+        <ExerciseSafetyNote variant="compact" />
       </section>
 
       {related.length ? (

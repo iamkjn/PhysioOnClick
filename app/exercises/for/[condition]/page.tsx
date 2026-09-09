@@ -13,6 +13,7 @@ import { breadcrumbs, conditionWebPage } from "@/lib/structured-data";
 import { ByLine } from "@/components/exercise-library/by-line";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
 import { ConditionPdfForm } from "@/components/exercise-library/condition-pdf-form";
+import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
 import { FaqAccordion } from "@/components/exercise-library/faq-accordion";
 import { StagedProgram } from "@/components/exercise-library/staged-program";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -206,6 +207,8 @@ export default async function ConditionHubPage({
             <h2>The staged programme</h2>
             <StagedProgram program={program} />
           </section>
+
+          <ExerciseSafetyNote variant="compact" />
 
           <div className="exlib-guidance">
             <div className="exlib-guidance__card">

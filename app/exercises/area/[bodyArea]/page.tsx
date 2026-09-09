@@ -12,6 +12,7 @@ import {
 } from "@/lib/exercise-library";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
+import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 
 // One statically-exported page per curated body area. Same reasoning as the
@@ -157,6 +158,10 @@ export default async function ExerciseAreaPage({
         <p className="muted">
           <Link href="/exercises">Back to the full exercise library</Link>
         </p>
+      </section>
+
+      <section className="exlib-index-section">
+        <ExerciseSafetyNote variant="full" />
       </section>
 
       <section className="simple-cta-band">

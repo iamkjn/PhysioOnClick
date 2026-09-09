@@ -112,6 +112,14 @@ describe("app/exercises/[slug] page", () => {
     }
   });
 
+  it("renders the shared [data-safety-note] block in its compact variant", async () => {
+    const { container } = await renderPage(SLUG);
+    const note = container.querySelector("[data-safety-note]");
+    expect(note).not.toBeNull();
+    expect(note?.getAttribute("data-variant")).toBe("compact");
+    expect(note?.textContent).toContain("Using these exercises safely");
+  });
+
   it("has no video slot in Phase 1 (exerciseVideoObject is always null)", async () => {
     const { container } = await renderPage(SLUG);
     expect(container.querySelector("[data-exercise-video]")).toBeNull();
