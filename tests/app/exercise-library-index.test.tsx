@@ -171,6 +171,26 @@ describe("app/exercises/area/[bodyArea] page", () => {
     ).toBeGreaterThanOrEqual(1);
   });
 
+  it("renders a 'Self-checks for this area' section for shoulder with test links", async () => {
+    const ui = await AreaPage({
+      params: Promise.resolve({ bodyArea: "shoulder" }),
+    });
+    const { container } = render(ui);
+    const section = container.querySelector("[data-self-checks]");
+    expect(section).not.toBeNull();
+    expect(section?.textContent).toContain("Self-checks for this area");
+    const testLinks = section!.querySelectorAll('a[href^="/exercises/tests/"]');
+    expect(testLinks.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("omits the self-checks section for an area with no matching tests (after-surgery)", async () => {
+    const ui = await AreaPage({
+      params: Promise.resolve({ bodyArea: "after-surgery" }),
+    });
+    const { container } = render(ui);
+    expect(container.querySelector("[data-self-checks]")).toBeNull();
+  });
+
   it("renders an area with no condition hubs (upper-back) without crashing", async () => {
     const ui = await AreaPage({
       params: Promise.resolve({ bodyArea: "upper-back" }),

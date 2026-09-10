@@ -8,6 +8,7 @@ import {
   conditionsByBodyArea,
   exercisesByBodyArea,
   programForCondition,
+  selfTestsByBodyArea,
   type BodyArea,
 } from "@/lib/exercise-library";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
@@ -88,6 +89,13 @@ export default async function ExerciseAreaPage({
 
   const areaExercises = exercisesByBodyArea(area.key);
   const areaConditions = conditionsByBodyArea(area.key);
+  // `selfTestsByBodyArea` matches on `SelfTest.bodyArea`, which uses the
+  // condition body-area vocabulary ("Shoulder", "Back & neck", ...), not the
+  // curated kebab key - so map through `conditionArea`. Areas without one
+  // (e.g. `neuro`, `after-surgery`) simply get no self-checks.
+  const areaSelfTests = area.conditionArea
+    ? selfTestsByBodyArea(area.conditionArea)
+    : [];
 
   return (
     <div className="site-shell">
@@ -151,6 +159,29 @@ export default async function ExerciseAreaPage({
               />
             ))}
           </div>
+        </section>
+      ) : null}
+
+      {areaSelfTests.length ? (
+        <section
+          className="exlib-index-section exlib-selfcheck"
+          data-self-checks
+        >
+          <div className="section-heading">
+            <h2>Self-checks for this area</h2>
+            <p>
+              Quick movement tests you can try at home to see what your symptoms
+              might point towards. A guide, not a diagnosis.
+            </p>
+          </div>
+          <ul className="exlib-selfcheck__list">
+            {areaSelfTests.map((test) => (
+              <li key={test.slug}>
+                <Link href={`/exercises/tests/${test.slug}`}>{test.name}</Link>
+                <span className="exlib-selfcheck__hint">{test.assesses}</span>
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
 
