@@ -4,9 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { PersonSwitcher } from "@/components/person-switcher";
 import { usePerson } from "@/components/person-provider";
-import { PatientAssessmentForm } from "@/components/patient-assessment-form";
+import { AssessmentWizard } from "@/components/assessment-wizard";
 import { PatientAssessmentHistory } from "@/components/patient-assessment-history";
 import { SkeletonRow } from "@/components/skeleton";
 import { EmptyState } from "@/components/empty-state";
@@ -105,44 +104,30 @@ function AssessmentPageInner() {
 
   return (
     <div className="site-shell patient-page assessment-page">
-      <section className="page-hero">
-        <div className="stack">
-          <span className="eyebrow">Assessment form</span>
-          <h1 style={{ color: "var(--color-text-primary)" }}>Prepare for your physiotherapy check-up.</h1>
-          <p className="muted">
-            Complete this once before a first appointment, then again for follow-up check-ups when something changes.
-          </p>
-        </div>
-      </section>
-
-      <section className="page-section stack" style={{ gap: "var(--space-2)" }}>
-        <PersonSwitcher
-          uid={uid}
-          displayName={displayName}
-          alwaysShow
-          onAddPerson={() => router.push("/patient/people")}
-          onSelect={() => {
-            // Selection is persisted by PersonProvider and read below.
-          }}
-        />
-      </section>
-
       {target === undefined ? (
         <section className="page-section stack">
           <SkeletonRow count={3} />
         </section>
       ) : target === null ? (
-        <section className="page-section">
-          <EmptyState
-            illustration="calendar"
-            title="Book a session first"
-            body="Your assessment unlocks once you have an upcoming appointment. It only takes a few minutes and helps us make the most of your session."
-            cta={{ label: "Book a session", href: "/book" }}
-          />
-        </section>
+        <>
+          <section className="page-hero">
+            <div className="stack">
+              <span className="eyebrow">Assessment form</span>
+              <h1 style={{ color: "var(--color-text-primary)" }}>Prepare for your physiotherapy check-up.</h1>
+            </div>
+          </section>
+          <section className="page-section">
+            <EmptyState
+              illustration="calendar"
+              title="Book a session first"
+              body="Your assessment unlocks once you have an upcoming appointment. It only takes a few minutes and helps us make the most of your session."
+              cta={{ label: "Book a session", href: "/book" }}
+            />
+          </section>
+        </>
       ) : (
-        <section className="page-section assessment-page-grid">
-          <PatientAssessmentForm
+        <>
+          <AssessmentWizard
             uid={uid}
             personId={personId as string}
             displayName={displayName}
@@ -150,8 +135,13 @@ function AssessmentPageInner() {
             bookingId={target.id}
             onSubmitted={handleSubmitted}
           />
-          <PatientAssessmentHistory uid={uid} personId={personId as string} reloadKey={reloadKey} />
-        </section>
+          <section className="page-section">
+            <details className="assessment-history-disclosure">
+              <summary>View my past check-ups</summary>
+              <PatientAssessmentHistory uid={uid} personId={personId as string} reloadKey={reloadKey} />
+            </details>
+          </section>
+        </>
       )}
     </div>
   );

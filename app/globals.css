@@ -9392,3 +9392,12 @@ textarea:focus {
   color: #fff;
   background: var(--color-primary);
 }
+
+.assessment-history-disclosure > summary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary-dark, var(--color-primary));
+  padding: var(--space-2) 0;
+}
+.assessment-history-disclosure[open] > summary { margin-bottom: var(--space-3); }
