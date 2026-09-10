@@ -2,7 +2,7 @@ import { render, screen, fireEvent, within } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { BodyChart } from "@/components/body-chart";
 
-// "Neck" is a front-only region, "Upper back" is back-only, "Shoulder" is both.
+// "Neck" is on both views; "Upper back & shoulder blades" is back-only.
 
 describe("BodyChart", () => {
   it("toggles a region on click", () => {
@@ -31,7 +31,7 @@ describe("BodyChart", () => {
     fireEvent.mouseEnter(screen.getByRole("button", { name: "Neck" }));
     const tip = screen.getByRole("status");
     expect(within(tip).getByText("Neck")).toBeInTheDocument();
-    expect(within(tip).getByText("Cervical spine")).toBeInTheDocument();
+    expect(within(tip).getByText(/cervical spine/i)).toBeInTheDocument();
   });
 
   it("readOnly regions are not focusable and do not fire onChange", () => {
@@ -43,31 +43,35 @@ describe("BodyChart", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("'somewhere else' clears anatomical selections", () => {
-    const onChange = vi.fn();
-    render(<BodyChart value={["neck"]} onChange={onChange} />);
+  it("'somewhere else' clears anatomical selections and vice versa", () => {
+    const a = vi.fn();
+    const { rerender } = render(<BodyChart value={["neck"]} onChange={a} />);
     fireEvent.click(screen.getByRole("button", { name: /somewhere else/i }));
-    expect(onChange).toHaveBeenCalledWith(["somewhere-else"]);
-  });
+    expect(a).toHaveBeenCalledWith(["somewhere-else"]);
 
-  it("picking an anatomical region clears 'somewhere else'", () => {
-    const onChange = vi.fn();
-    render(<BodyChart value={["somewhere-else"]} onChange={onChange} />);
+    const b = vi.fn();
+    rerender(<BodyChart value={["somewhere-else"]} onChange={b} />);
     fireEvent.click(screen.getByRole("button", { name: "Neck" }));
-    expect(onChange).toHaveBeenCalledWith(["neck"]);
+    expect(b).toHaveBeenCalledWith(["neck"]);
   });
 
   it("front/back toggle changes which regions are shown", () => {
     render(<BodyChart value={[]} onChange={vi.fn()} />);
-    expect(screen.queryByRole("button", { name: "Upper back" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /upper back/i })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
-    expect(screen.getByRole("button", { name: "Upper back" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /upper back/i })).toBeInTheDocument();
   });
 
-  it("offers wrist/hand and ankle/foot as chips", () => {
-    const onChange = vi.fn();
-    render(<BodyChart value={[]} onChange={onChange} />);
-    fireEvent.click(screen.getByRole("button", { name: /wrist or hand/i }));
-    expect(onChange).toHaveBeenCalledWith(["wrist-hand"]);
+  it("has a Show bones toggle and renders a skeleton layer", () => {
+    const { container } = render(<BodyChart value={[]} onChange={vi.fn()} />);
+    expect(container.querySelector(".body-chart__skeleton")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /show bones/i }));
+    expect(container.querySelector(".body-chart.show-bones")).toBeInTheDocument();
+  });
+
+  it("has front-view hand and foot regions", () => {
+    render(<BodyChart value={[]} onChange={vi.fn()} />);
+    expect(screen.getByRole("button", { name: /left wrist or hand/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /left ankle or foot/i })).toBeInTheDocument();
   });
 });

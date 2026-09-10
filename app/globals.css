@@ -9072,6 +9072,13 @@ textarea:focus {
   gap: var(--space-3);
   width: 100%;
 }
+.body-chart__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+}
 .body-chart__views {
   display: inline-flex;
   border: 1px solid var(--color-border);
@@ -9093,6 +9100,22 @@ textarea:focus {
   background: var(--color-navy);
   color: #fff;
 }
+.body-chart__bones-btn {
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 999px;
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+}
+.body-chart__bones-btn[aria-pressed="true"] {
+  border-color: var(--color-navy);
+  background: color-mix(in srgb, var(--color-navy) 10%, transparent);
+  color: var(--color-navy);
+}
 .body-chart__figure {
   position: relative;
   width: 100%;
@@ -9104,36 +9127,46 @@ textarea:focus {
   display: block;
   overflow: visible;
 }
-/* faint anatomical silhouette behind the interactive regions */
-.body-chart__silhouette > polygon {
-  fill: color-mix(in srgb, var(--color-navy) 8%, transparent);
-  stroke: color-mix(in srgb, var(--color-navy) 16%, transparent);
+
+/* skeleton underlay */
+.body-chart__skeleton {
+  fill: color-mix(in srgb, var(--color-navy) 34%, transparent);
+  stroke: color-mix(in srgb, var(--color-navy) 34%, transparent);
+  stroke-width: 0.5;
+  stroke-linecap: round;
+  transition: opacity 160ms ease;
+  opacity: 0.5;
+}
+.body-chart.show-bones .body-chart__skeleton {
+  fill: color-mix(in srgb, var(--color-navy) 62%, transparent);
+  stroke: color-mix(in srgb, var(--color-navy) 62%, transparent);
+  opacity: 1;
+}
+
+/* muscle regions */
+.body-chart__region > path {
+  fill: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  stroke: color-mix(in srgb, var(--color-primary) 42%, transparent);
   stroke-width: 0.4;
+  transition: fill 120ms ease, opacity 160ms ease;
 }
-.body-chart__region > polygon {
-  fill: color-mix(in srgb, var(--color-primary) 16%, transparent);
-  stroke: color-mix(in srgb, var(--color-primary) 55%, transparent);
-  stroke-width: 0.6;
-  transition: fill 120ms ease;
+.body-chart__region { cursor: pointer; }
+.body-chart__region:hover > path {
+  fill: color-mix(in srgb, var(--color-primary) 34%, transparent);
 }
-.body-chart__region {
-  cursor: pointer;
-}
-.body-chart__region:hover > polygon {
-  fill: color-mix(in srgb, var(--color-primary) 38%, transparent);
-}
-.body-chart__region.is-selected > polygon {
+.body-chart__region.is-selected > path {
   fill: var(--color-primary);
   stroke: var(--color-primary-dark, var(--color-primary));
-  stroke-width: 0.8;
+  stroke-width: 0.6;
 }
-.body-chart__region:focus-visible {
-  outline: none;
+.body-chart.show-bones .body-chart__region:not(.is-selected) > path {
+  opacity: 0.5;
 }
-.body-chart__region:focus-visible > polygon {
+.body-chart__region:focus-visible { outline: none; }
+.body-chart__region:focus-visible > path {
   stroke: var(--color-navy);
-  stroke-width: 1.4;
-  stroke-dasharray: 2 1.5;
+  stroke-width: 1;
+  stroke-dasharray: 1.5 1;
 }
 [data-view] .body-chart__region[tabindex="-1"] { cursor: default; }
 
@@ -9156,28 +9189,17 @@ textarea:focus {
 .body-chart__tooltip strong { font-weight: 700; }
 .body-chart__tooltip span { opacity: 0.72; font-size: 0.68rem; }
 
-.body-chart__chip-hint {
-  margin: var(--space-2) 0 0;
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-}
-.body-chart__extra {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  justify-content: center;
-}
-.body-chart__extra-btn {
+.body-chart__elsewhere {
   border: 1.5px solid var(--color-border);
   background: var(--color-surface);
   border-radius: 999px;
   font: inherit;
   font-size: var(--text-sm);
-  color: var(--color-text-primary);
-  padding: 0.45rem 0.95rem;
+  color: var(--color-text-secondary);
+  padding: 0.5rem 1rem;
   cursor: pointer;
 }
-.body-chart__extra-btn[aria-pressed="true"] {
+.body-chart__elsewhere[aria-pressed="true"] {
   border-color: var(--color-primary);
   background: color-mix(in srgb, var(--color-primary) 12%, transparent);
   color: var(--color-primary-dark, var(--color-primary));

@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { FRONT_MUSCLES, BACK_MUSCLES } from "body-muscles";
 import {
   BODY_REGIONS,
   REGION_MUSCLES,
@@ -10,16 +11,17 @@ import {
   deriveSymptomStartDate,
   deriveOnsetPattern,
 } from "@/lib/body-chart";
-import { ANTERIOR_MUSCLES, POSTERIOR_MUSCLES } from "@/lib/body-chart-data";
 import { allBodyAreaKeys } from "@/lib/body-areas";
 
+const MUSCLE_IDS = new Set([...FRONT_MUSCLES, ...BACK_MUSCLES].map((m) => m.id));
+
 describe("body-chart taxonomy", () => {
-  it("every region has a unique key, a label and a clinical name", () => {
+  it("every region has a unique key, label and clinical name", () => {
     const keys = BODY_REGIONS.map((r) => r.key);
     expect(new Set(keys).size).toBe(keys.length);
     for (const r of BODY_REGIONS) {
       expect(r.label.length).toBeGreaterThan(1);
-      expect(r.clinical.length).toBeGreaterThanOrEqual(0);
+      expect(r.clinical.length).toBeGreaterThan(1);
     }
   });
 
@@ -30,16 +32,19 @@ describe("body-chart taxonomy", () => {
     }
   });
 
-  it("every figure region resolves to real muscle polygons in at least one view", () => {
+  it("every region maps to real body-muscles ids in at least one view", () => {
     for (const r of BODY_REGIONS) {
-      if (r.chip) continue;
       const map = REGION_MUSCLES[r.key];
-      expect(map).toBeTruthy();
-      const anteriorOk = (map.anterior ?? []).every((k) => ANTERIOR_MUSCLES[k]?.length);
-      const posteriorOk = (map.posterior ?? []).every((k) => POSTERIOR_MUSCLES[k]?.length);
-      expect(anteriorOk && posteriorOk).toBe(true);
-      expect((map.anterior?.length ?? 0) + (map.posterior?.length ?? 0)).toBeGreaterThan(0);
+      expect(map, r.key).toBeTruthy();
+      const all = [...(map.front ?? []), ...(map.back ?? [])];
+      expect(all.length, r.key).toBeGreaterThan(0);
+      for (const id of all) expect(MUSCLE_IDS.has(id), `${r.key} -> ${id}`).toBe(true);
     }
+  });
+
+  it("covers hands, feet, elbow and face", () => {
+    const keys = BODY_REGIONS.map((r) => r.key);
+    expect(keys).toEqual(expect.arrayContaining(["hand-left", "hand-right", "foot-left", "foot-right", "elbow-left", "head-jaw"]));
   });
 
   it("regionLabel / regionClinical resolve known keys and are graceful otherwise", () => {
@@ -53,19 +58,18 @@ describe("body-chart taxonomy", () => {
 describe("deriveClinicalArea", () => {
   it("spine keys win", () => {
     expect(deriveClinicalArea(["lower-back"])).toBe("spine");
-    expect(deriveClinicalArea(["neck", "deltoids"])).toBe("spine");
+    expect(deriveClinicalArea(["neck", "shoulder-left"])).toBe("spine");
   });
   it("upper limb", () => {
-    expect(deriveClinicalArea(["deltoids"])).toBe("upper_limb");
-    expect(deriveClinicalArea(["forearm"])).toBe("upper_limb");
-    expect(deriveClinicalArea(["wrist-hand"])).toBe("upper_limb");
+    expect(deriveClinicalArea(["shoulder-left"])).toBe("upper_limb");
+    expect(deriveClinicalArea(["hand-right"])).toBe("upper_limb");
   });
   it("lower limb", () => {
-    expect(deriveClinicalArea(["knees"])).toBe("lower_limb");
-    expect(deriveClinicalArea(["gluteal", "calves"])).toBe("lower_limb");
+    expect(deriveClinicalArea(["knee-left"])).toBe("lower_limb");
+    expect(deriveClinicalArea(["buttock-left", "foot-right"])).toBe("lower_limb");
   });
-  it("mixed upper + lower, chest-only, empty, or somewhere-else -> general", () => {
-    expect(deriveClinicalArea(["deltoids", "knees"])).toBe("general");
+  it("mixed, chest-only, empty, or somewhere-else -> general", () => {
+    expect(deriveClinicalArea(["shoulder-left", "knee-left"])).toBe("general");
     expect(deriveClinicalArea(["chest"])).toBe("general");
     expect(deriveClinicalArea([])).toBe("general");
     expect(deriveClinicalArea([SOMEWHERE_ELSE])).toBe("general");
@@ -74,7 +78,7 @@ describe("deriveClinicalArea", () => {
 
 describe("describeRegions", () => {
   it("joins human labels", () => {
-    const s = describeRegions(["deltoids", "lower-back"]).toLowerCase();
+    const s = describeRegions(["shoulder-right", "lower-back"]).toLowerCase();
     expect(s).toContain("shoulder");
     expect(s).toContain("lower back");
   });
