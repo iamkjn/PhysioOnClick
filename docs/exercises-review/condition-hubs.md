@@ -17,8 +17,15 @@ until you have reviewed it.
 > (220-320 words); every `seoTitle`/`seoDescription` re-trimmed to length. The
 > intros now also cover why the problem tends to happen, the day-to-day picture,
 > and the prognosis, so please re-read them even if you had skimmed an earlier
-> draft. Content is still AI-drafted - the per-hub Approved checkboxes below
-> still gate production.
+> draft. 12 hubs also had a scope-broadening sentence added to `whoItHelps`
+> (sciatica, frozen-shoulder, tennis-elbow, golfers-elbow, knee-osteoarthritis,
+> patellofemoral-pain, gluteal-tendinopathy, achilles-tendinopathy,
+> patellar-tendinopathy, after-knee-replacement, after-hip-replacement,
+> after-acl-reconstruction). One to check specifically: `after-acl-reconstruction`
+> now tells the reader the programme suits "any stage from the first weeks after
+> the operation to the final return-to-sport phase" - confirm that early-weeks
+> framing is safe given the graft-protection protocol. Content is still
+> AI-drafted - the per-hub Approved checkboxes below still gate production.
 
 Please give particular attention to:
 

@@ -7,7 +7,7 @@ alignment.
 
 The contract lives in code as `IMAGE_STYLE_PREFIX` + a per-exercise `core` +
 `IMAGE_STYLE_SUFFIX` in `lib/exercise-image-prompts.ts`. `fullImagePrompt(id)`
-assembles the three parts. All 158 catalogue exercises have an authored `core`.
+assembles the three parts. All 174 catalogue exercises have an authored `core`.
 
 ## Style Principles
 
@@ -70,7 +70,7 @@ The public self-check tests (`lib/self-tests.ts`, Phase 1 Part B) use a
 **distinct** contract, held in `lib/self-test-image-prompts.ts` as
 `SELF_TEST_IMAGE_STYLE_PREFIX` + a per-step `core` + `SELF_TEST_IMAGE_STYLE_SUFFIX`,
 assembled by `fullSelfTestImagePrompt(id)`. There is one `core` for every
-`step.imageId` across the launch set (45 in total, one per numbered step).
+`step.imageId` across the launch set (49 in total, one per numbered step).
 
 - **A real photograph, not an illustration.** This is the single biggest
   difference from the exercise set. The reference sample cards for the self-check
@@ -90,9 +90,14 @@ assembled by `fullSelfTestImagePrompt(id)`. There is one `core` for every
 - **No text, no labels, no watermark** baked into the image. All instructional
   text lives in the page layout. The PhysioOnClick brand footer is composited on
   afterwards, exactly as for the exercise illustrations.
-- **Same pipeline.** Generate -> brand-footer -> clinical review -> upload is the
-  same manual, image-gen-API-gated sequence described below, producing
-  `self-test-images/{stepImageId}.png` in Storage.
+- **Same pipeline, same Storage prefix.** Generate -> brand-footer -> clinical
+  review -> upload is the same manual, image-gen-API-gated sequence described
+  below. The self-check photos land at `exercise-images/{stepImageId}.png` in
+  Storage - the one route and prefix the exercise illustrations use, which is
+  also where `SelfTestImage` looks (`exerciseImageUrl(id)` -> `/exercise-images/<id>`).
+  The step image ids (`test-<slug>-<n>`) keep them from colliding with the
+  `ex-*` illustration ids. `scripts/upload-exercise-images.ts --only=test-...`
+  uploads them; there is no separate self-test uploader.
 - **`uploadedSelfTestImageIds` is the go-live gate.** It starts empty. Until a
   step image id is in that set, the self-test page renders a labelled
   placeholder for that step and the page still ships. Adding an id there (in the
@@ -101,7 +106,7 @@ assembled by `fullSelfTestImagePrompt(id)`. There is one `core` for every
 
 ## Authoring & Review
 
-Prompts are authored in `lib/exercise-image-prompts.ts` (all 158 done). The
+Prompts are authored in `lib/exercise-image-prompts.ts` (all 174 done). The
 generate -> brand -> review -> upload pipeline is a manual step, gated on the
 image-generation API key:
 
