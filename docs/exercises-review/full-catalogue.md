@@ -3,8 +3,11 @@
 **For Shivaliba (registered physiotherapist).**
 
 All 174 catalogue exercises now carry a structured write-up: `setup`, `steps`,
-`cues` (good form), `mistakes` (ease off / stop), an evidence-informed
-**starting** `defaultDosage`, and a stick-figure `pose`. The one-line
+`cues` (good form), `mistakes` (ease off / stop), and an evidence-informed
+**starting** `defaultDosage`. Most also carry an explicit stick-figure `pose`;
+a handful (around 7 to 9, mostly prone, side-lying or kneeling positions the
+figure set does not cover) fall back to a name-inferred generic figure, marked
+`(name-inferred)` or `null` on the **Figure pose** line below. The one-line
 `description` (used elsewhere on the site) is unchanged and shown for context.
 The 16 exercises added in the competitive pass (2026-09-09) are listed in their
 own section at the end of this document.
@@ -3215,7 +3218,7 @@ _Medial epicondylalgia (golfer's elbow) / Strength phase_ &nbsp; · &nbsp; summa
 - **Ease off / stop if:** Lowering quickly or letting the weight drop. / Raising the weight back up with the sore side. / Adding weight before three sets of the current weight feel controlled. / Stop and message your physio if the pain is sharp, spreads down into the hand, or is clearly worse day to day.
 - **Starting dose:** 3 sets × 15 reps · once a day · 3 to 4 seconds to lower
 - **Dose note:** Expect some inner-forearm ache during and after - this is a loading exercise and it should settle within a day. Add a small amount of weight only once 3 sets of 15 feel easy.
-- **Figure pose:** `(name-inferred)`
+- **Figure pose:** `gripSqueeze`
 - **Helps with:** Easing pain on the inside of the elbow / Rebuilding a pain-free grip / Coping with lifting, carrying and gripping tasks
 
 - [ ] **Approved** &nbsp;&nbsp; Notes:
@@ -3237,7 +3240,7 @@ _Medial epicondylalgia (golfer's elbow) / Strength phase_ &nbsp; · &nbsp; summa
 - **Ease off / stop if:** Lifting the forearm off the support to help the movement. / Rushing the lower so the weight drops. / Using a load so heavy the wrist cannot move through its full range. / Stop and message your physio if gripping or lifting becomes sharply painful, or you notice new pins and needles in the hand.
 - **Starting dose:** 3 sets × 12 reps · once a day, 5 days a week · 3 seconds to lower
 - **Dose note:** Start with a very light weight or a light band. Build the load gradually once 3 sets of 12 feel controlled.
-- **Figure pose:** `(name-inferred)`
+- **Figure pose:** `gripSqueeze`
 - **Helps with:** Building forearm and grip strength / Easing inner-elbow pain when gripping / Getting back to lifting and carrying
 
 - [ ] **Approved** &nbsp;&nbsp; Notes:
@@ -3259,7 +3262,7 @@ _Elbow tendinopathy (tennis or golfer's elbow) / Strength phase_ &nbsp; · &nbsp
 - **Ease off / stop if:** Letting the wrist bend instead of keeping the turn in the forearm. / Swinging the whole arm to throw the weight round. / Holding the weight too far down the handle so it feels heavy too soon. / Stop and message your physio if the elbow pain becomes sharp, or twisting a key or door handle is much more painful afterwards.
 - **Starting dose:** 3 sets × 10 reps · once a day, 5 days a week · slow and controlled
 - **Dose note:** One rep is a full turn palm-up then palm-down. Slide your hand further down the handle, or add weight, only as it becomes easy.
-- **Figure pose:** `(name-inferred)`
+- **Figure pose:** `gripSqueeze`
 - **Helps with:** Coping with twisting tasks like keys, jars and door handles / Easing elbow pain on the inner or outer side / Building forearm strength for work and sport
 
 - [ ] **Approved** &nbsp;&nbsp; Notes:
@@ -3281,7 +3284,7 @@ _Lateral epicondylalgia (tennis elbow) / Strength phase_ &nbsp; · &nbsp; summar
 - **Ease off / stop if:** Lifting the elbow or forearm to swing the weight up. / Letting the weight drop quickly on the way down. / Progressing the weight before the current one feels controlled for every set. / Stop and message your physio if the outer-elbow pain sharpens, spreads down the arm, or is clearly worse the next day.
 - **Starting dose:** 3 sets × 12 reps · once a day, 5 days a week · 3 seconds to lower
 - **Dose note:** Start very light. This is the next step on from the eccentric-only version once that feels easy. Build the load slowly.
-- **Figure pose:** `(name-inferred)`
+- **Figure pose:** `gripSqueeze`
 - **Helps with:** Loading the tennis-elbow tendon through its full range / Rebuilding a pain-free grip / Returning to gripping, lifting and racket sports
 
 - [ ] **Approved** &nbsp;&nbsp; Notes:
@@ -3303,7 +3306,7 @@ _Lateral epicondylalgia (tennis elbow) / Strength phase_ &nbsp; · &nbsp; summar
 - **Ease off / stop if:** Letting the bar spring back quickly instead of releasing it slowly. / Using a bar that is too stiff to control at first - start with a lighter one. / Gripping so hard that the hand and forearm cramp. / Stop and message your physio if the elbow pain rises through the set, spreads down the forearm, or is worse the next morning.
 - **Starting dose:** 3 sets × 15 reps · once a day · 4 seconds to release
 - **Dose note:** Expect a tolerable tendon ache during and after that settles within 24 hours. Move up a bar colour only once 3 sets of 15 feel easy.
-- **Figure pose:** `(name-inferred)`
+- **Figure pose:** `gripSqueeze`
 - **Helps with:** Loading the tennis-elbow tendon in a controlled way / Easing pain on the outside of the elbow / Rebuilding grip strength for work and sport
 
 - [ ] **Approved** &nbsp;&nbsp; Notes:
@@ -3369,7 +3372,7 @@ _Groin and adductor loading for sport / Return to function_ &nbsp; · &nbsp; sum
 - **Ease off / stop if:** Letting the hips drop or roll backwards during the hold. / Starting with the full version before you can hold the easier bent-knee variation. / Holding your breath and bracing the neck. / Stop and message your physio if you feel a sharp pull in the groin or inner thigh, or pain that is worse the next day.
 - **Starting dose:** 3 sets × 5 reps, 10s hold · once a day, 3 days a week
 - **Dose note:** Start with the top knee bent and resting on the bench, a shorter and easier lever. Build towards a straight top leg and longer holds as it becomes comfortable.
-- **Figure pose:** `(name-inferred)`
+- **Figure pose:** `null` (no close stick-figure; name inference falls back to a generic standing figure)
 - **Helps with:** Building inner-thigh and hip strength / Preparing the hip for sport and change of direction / Improving pelvic control on one leg
 
 - [ ] **Approved** &nbsp;&nbsp; Notes:
@@ -3413,7 +3416,7 @@ _Gluteal tendinopathy / Strength phase_ &nbsp; · &nbsp; summary: Standing on on
 - **Ease off / stop if:** Leaning the body away to swing the leg higher. / Letting the moving leg drift forwards instead of straight out to the side. / Pushing hard through the balance hand. / Stop and message your physio if the outer hip becomes sharply painful or is more painful lying on it that night.
 - **Starting dose:** 3 sets × 15 reps · once a day, 5 days a week
 - **Dose note:** The standing leg works to keep you steady, so both hips are training. Move the band up to the calves or thighs, or use a stronger band, to progress.
-- **Figure pose:** `(name-inferred)`
+- **Figure pose:** `balance`
 - **Helps with:** Strengthening the outer hip in standing / Steadying the pelvis when walking / Coping with stairs, hills and single-leg tasks
 
 - [ ] **Approved** &nbsp;&nbsp; Notes:
@@ -3457,7 +3460,7 @@ _Non-specific neck pain / Return to function_ &nbsp; · &nbsp; summary: Lying fa
 - **Ease off / stop if:** Throwing the head up quickly or letting it drop on the way down. / Leading with the chin so the head tips back into a crane position. / Lifting past level into a strong backward arch. / Stop and message your physio if this brings on dizziness, a headache, or symptoms spreading into the arm, or sharply worsens your neck pain.
 - **Starting dose:** 2 sets × 10 reps · once a day, 4 days a week · 3 seconds up, 3 seconds down
 - **Dose note:** A late-stage exercise - only add it once the lighter neck work is easy and pain-free. Start with very few reps and build slowly.
-- **Figure pose:** `(name-inferred)`
+- **Figure pose:** `null` (no close stick-figure; name inference falls back to a generic standing figure)
 - **Helps with:** Strengthening the muscles at the back of the neck / Holding the head up comfortably for longer / Coping with sustained desk and driving postures
 
 - [ ] **Approved** &nbsp;&nbsp; Notes:
@@ -3545,7 +3548,7 @@ _Patellar tendinopathy / Strength phase_ &nbsp; · &nbsp; summary: Kneeling upri
 - **Ease off / stop if:** Bending at the hips so it becomes a lean rather than a knee movement. / Dropping back quickly instead of lowering with control. / Going deeper than you can control and having to catch yourself. / Stop and message your physio if you feel sharp pain in the knee or kneecap, or the knee is swollen or much more painful the next day.
 - **Starting dose:** 3 sets × 6 reps · once a day, 3 days a week · 3 to 4 seconds to lower
 - **Dose note:** A demanding exercise - start with a very small backward range, or hold a pole in front for support, and build up slowly over weeks.
-- **Figure pose:** `(name-inferred)`
+- **Figure pose:** `null` (no close stick-figure; name inference falls back to a generic standing figure)
 - **Helps with:** Building quad strength through a long range / Loading the front of the knee for jumping sports / Improving control when landing and slowing down
 
 - [ ] **Approved** &nbsp;&nbsp; Notes:

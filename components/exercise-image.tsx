@@ -6,7 +6,7 @@ import { hasUploadedImage } from "@/lib/exercise-image-prompts";
 
 export function ExerciseImage({
   exerciseId, name, pose, size = 52,
-}: { exerciseId: string; name: string; pose?: string; size?: number }) {
+}: { exerciseId: string; name: string; pose?: string | null; size?: number }) {
   const [failed, setFailed] = useState(false);
   // The image route serves a placeholder SVG with HTTP 200 on a miss, so
   // <img onError> never fires. Only reach for an <img> when the real

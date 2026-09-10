@@ -16,7 +16,7 @@ import {
 export type PoseName = Pose;
 export { POSE_NAMES } from "@/lib/exercise-poses";
 
-export function ExerciseFigure({ name, size = 56, pose }: { name: string; size?: number; pose?: string }) {
+export function ExerciseFigure({ name, size = 56, pose }: { name: string; size?: number; pose?: string | null }) {
   const spec = POSE_SPECS[resolvePose(pose, name)];
   return (
     <span className="exercise-figure-tile" style={{ width: size, height: size }} aria-hidden="true">

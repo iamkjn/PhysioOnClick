@@ -32,7 +32,7 @@ export type Exercise = {
   cues?: string[];
   mistakes?: string[];
   defaultDosage?: ExerciseDosage;
-  pose?: string; // one of the SPECS keys in components/exercise-figure.tsx; validated by Task 7's test
+  pose?: string | null; // one of the SPECS keys in components/exercise-figure.tsx (validated by Task 7's test); explicit `null` = considered, no close figure, name inference falls back to "standing"
   retired?: boolean;
   /** Common alternative names patients or clinicians might search for. */
   aka?: string[];
@@ -5775,6 +5775,7 @@ export const exercises: Exercise[] = [
     stage: "Strength phase",
     description: "Slowly lowering a light weight through wrist flexion, the evidence-informed way to load the forearm flexor tendon on the inner elbow.",
     equipment: ["A light dumbbell, starting around 0.5 to 1 kg", "A table or your thigh to rest the forearm on"],
+    pose: "gripSqueeze",
     setup: "Sit with your forearm resting along a table or your thigh, palm facing up, with your hand and the weight just over the edge. Hold the weight loosely.",
     steps: [
       "Use your other hand to lift the weight up so the wrist is bent fully up towards you.",
@@ -5814,6 +5815,7 @@ export const exercises: Exercise[] = [
     stage: "Strength phase",
     description: "Curling the wrist up against a light weight or band through its full range to strengthen the forearm flexor muscles.",
     equipment: ["A light dumbbell or a resistance band", "A table or your thigh to rest the forearm on"],
+    pose: "gripSqueeze",
     setup: "Sit with your forearm resting along a table or your thigh, palm facing up and your hand just past the edge. Hold a light weight, or step on one end of a band and hold the other.",
     steps: [
       "Let the wrist relax so the weight or band draws the hand back.",
@@ -5853,6 +5855,7 @@ export const exercises: Exercise[] = [
     stage: "Strength phase",
     description: "Slowly rotating the forearm palm-up and palm-down against a light off-centre weight, loading the muscles that twist the forearm.",
     equipment: ["A light hammer, or a dumbbell held at one end", "A table or your thigh to rest the forearm on"],
+    pose: "gripSqueeze",
     setup: "Sit with your forearm resting along a table or your thigh, wrist and hand just past the edge, elbow bent to a right angle. Hold a light hammer or a dumbbell by one end so the weight sits to one side.",
     steps: [
       "Start with the thumb pointing up and the wrist held straight and still.",
@@ -5892,6 +5895,7 @@ export const exercises: Exercise[] = [
     stage: "Strength phase",
     description: "Lifting and lowering a light weight through wrist extension using both phases of the movement, progressing the load on the wrist extensor tendon.",
     equipment: ["A light dumbbell or a resistance band", "A table or your thigh to rest the forearm on"],
+    pose: "gripSqueeze",
     setup: "Sit with your forearm resting along a table or your thigh, palm facing down and your hand just past the edge, holding a light weight.",
     steps: [
       "Let the wrist drop so the weight lowers towards the floor.",
@@ -5931,6 +5935,7 @@ export const exercises: Exercise[] = [
     stage: "Strength phase",
     description: "A twisting exercise with a flexible rubber bar that loads the wrist extensor tendon through a controlled release, a well-studied approach for tennis elbow.",
     equipment: ["A flexible resistance bar, such as a red or green rubber FlexBar"],
+    pose: "gripSqueeze",
     setup: "Stand tall holding the bar upright in the sore hand with that wrist bent fully back. Grip the top of the bar with the other hand, palm facing you.",
     steps: [
       "Twist the bar with the top (good) hand while the sore wrist holds its bent-back position.",
@@ -6049,6 +6054,7 @@ export const exercises: Exercise[] = [
     stage: "Return to function",
     description: "A side-lying hold with the top leg supported on a bench, building strength through the inner-thigh adductor muscles and the side of the supporting hip.",
     equipment: ["A sturdy bench, sofa or low chair to rest the top leg on", "An exercise mat"],
+    pose: null, // no close pose in POSE_SPECS (side-lying plank); name inference falls back to "standing"
     setup: "Lie on your side with your forearm on the floor and your elbow under your shoulder. Rest the inside of your top ankle and lower shin on a bench so that leg is roughly level with your body.",
     steps: [
       "Press down through the top leg into the bench and lift your hips up off the floor.",
@@ -6128,6 +6134,7 @@ export const exercises: Exercise[] = [
     stage: "Strength phase",
     description: "Standing on one leg and moving the other leg out to the side against a resistance band, strengthening the outer-hip muscles in an upright, functional position.",
     equipment: ["A short resistance loop band", "A wall or worktop for light balance support"],
+    pose: "balance",
     setup: "Stand with a loop band around both ankles, feet hip-width apart, next to a wall or worktop you can rest a hand on. Stand tall.",
     steps: [
       "Take most of your weight onto the leg nearest the wall.",
@@ -6207,6 +6214,7 @@ export const exercises: Exercise[] = [
     stage: "Return to function",
     description: "Lying face down over the edge of a bed and slowly lifting the head against gravity to strengthen the muscles at the back of the neck.",
     equipment: ["A firm bed or bench"],
+    pose: null, // no close pose in POSE_SPECS (prone over a bed edge); name inference falls back to "standing"
     setup: "Lie face down with your chest on a firm bed and your head and neck just past the edge, forehead towards the floor. Rest your arms by your sides or on the bed.",
     steps: [
       "Start with the chin gently tucked, not with the head hanging loose.",
@@ -6366,6 +6374,7 @@ export const exercises: Exercise[] = [
     stage: "Strength phase",
     description: "Kneeling upright and slowly leaning back from the knees, lowering under control to load the quadriceps and the front of the knee through a long, lengthened range.",
     equipment: ["An exercise mat or a padded surface for the knees"],
+    pose: null, // no close pose in POSE_SPECS (tall kneeling, leaning back); name inference falls back to "standing"
     setup: "Kneel upright on a mat with your knees hip-width apart, feet pointing back and ankles relaxed. Cross your arms over your chest or hold them out in front. Keep a straight line from knees to head.",
     steps: [
       "Keeping your hips straight and your body in one line, lean slowly backwards from the knees.",
