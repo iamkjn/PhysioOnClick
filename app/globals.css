@@ -9164,3 +9164,231 @@ textarea:focus {
   cursor: pointer;
   padding: 0 0.15rem;
 }
+
+/* ── Assessment wizard (components/assessment-wizard.tsx) ───────────────── */
+.assessment-wizard {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 220px);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+.assessment-wizard__progress {
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-border) 60%, transparent);
+  overflow: hidden;
+  margin: var(--space-4) 0 var(--space-6);
+}
+.assessment-wizard__progress > span {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 999px;
+  transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.assessment-wizard__stage {
+  flex: 1;
+}
+.assessment-wizard__panel {
+  animation: aw-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes aw-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .assessment-wizard__panel { animation: none; }
+  .assessment-wizard__progress > span { transition: none; }
+}
+.assessment-wizard__panel h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  line-height: 1.15;
+  color: var(--color-navy);
+  margin: 0;
+}
+.assessment-wizard__hint,
+.assessment-wizard__lede {
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  margin: var(--space-3) 0 0;
+  max-width: 46ch;
+}
+.assessment-wizard__lede { font-size: var(--text-lg); }
+.assessment-wizard__body { margin-top: var(--space-6); }
+.assessment-wizard__person { margin-top: var(--space-5); }
+
+.assessment-wizard__field {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.assessment-wizard__field textarea,
+.assessment-wizard__field input[type="text"],
+.assessment-wizard__field input[type="tel"] {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-input, 12px);
+  font: inherit;
+  font-weight: 400;
+  color: var(--color-navy);
+  background: var(--color-surface);
+  resize: vertical;
+}
+.assessment-wizard__field textarea:focus,
+.assessment-wizard__field input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.assessment-wizard__chips,
+.assessment-wizard__flags {
+  border: 0;
+  padding: 0;
+  margin: var(--space-5) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.assessment-wizard__chips legend {
+  width: 100%;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+.assessment-wizard__chip {
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+.assessment-wizard__chip[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary-dark, var(--color-primary));
+  font-weight: 600;
+}
+.assessment-wizard__flags { flex-direction: column; }
+.assessment-wizard__flag {
+  text-align: left;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-card, 12px);
+  padding: 1rem 1.1rem;
+  font: inherit;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.assessment-wizard__flag[aria-pressed="true"] {
+  border-color: var(--color-warning, #b5691a);
+  background: color-mix(in srgb, var(--color-warning, #b5691a) 10%, transparent);
+}
+.assessment-wizard__flag--none[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+.assessment-wizard__alert {
+  margin-top: var(--space-4);
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-card, 12px);
+  background: color-mix(in srgb, var(--color-error, #b3261e) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-error, #b3261e) 40%, transparent);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+}
+
+.assessment-wizard__slider {
+  display: block;
+  margin-top: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+.assessment-wizard__slider strong { color: var(--color-navy); }
+.assessment-wizard__slider input[type="range"] {
+  width: 100%;
+  margin-top: var(--space-2);
+  accent-color: var(--color-primary);
+}
+
+.assessment-wizard__sublabel {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: var(--space-5) 0 var(--space-2);
+}
+.assessment-wizard__sublabel span { font-weight: 400; }
+.assessment-wizard__grid2 {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 560px) {
+  .assessment-wizard__grid2 { grid-template-columns: 1fr; }
+}
+
+.assessment-wizard__consent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.assessment-wizard__consent-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+}
+.assessment-wizard__consent-item input {
+  margin-top: 0.2rem;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.assessment-wizard__nav {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  margin-top: var(--space-6);
+  background: linear-gradient(to top, var(--color-bg) 60%, transparent);
+}
+.assessment-wizard__nav .button { min-width: 120px; }
+
+.assessment-wizard--done {
+  min-height: calc(100vh - 220px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.assessment-wizard--done .assessment-wizard__panel { display: grid; gap: var(--space-4); justify-items: center; }
+.assessment-wizard__tick {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  color: #fff;
+  background: var(--color-primary);
+}
