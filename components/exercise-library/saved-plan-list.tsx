@@ -7,6 +7,7 @@
 // preserving plan order and dropping any slug that is no longer a real exercise.
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import { getPlan, onPlanChange, removeFromPlan } from "@/lib/exercise-plan-store";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -41,9 +42,9 @@ export function SavedPlanList({
       <ul className="exlib-saved__list">
         {saved.map((item) => (
           <li key={item.slug} className="exlib-saved__item">
-            <a className="exlib-saved__link" href={`/exercises/${item.slug}`}>
+            <Link className="exlib-saved__link" href={`/exercises/${item.slug}`}>
               {item.title}
-            </a>
+            </Link>
             <button
               type="button"
               className="exlib-saved__remove"

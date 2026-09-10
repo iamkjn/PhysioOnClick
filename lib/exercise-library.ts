@@ -130,6 +130,11 @@ export function conditionsForExercise(exerciseSlug: string): Condition[] {
  * condition - an exercise used in several stages of the same programme still
  * lists that programme once, tagged with its earliest stage. Returns `[]` for an
  * exercise that is in no programme (including an unknown slug).
+ *
+ * Reads `condition.program` directly (the same way `conditionsForExercise`
+ * does) rather than going through `programForCondition`, which resolves every
+ * stage slug to a concrete `Exercise` and silently drops any that do not
+ * resolve - work this function never uses, since it only compares the slug.
  */
 export function programmesForExercise(
   exerciseSlug: string,
@@ -140,11 +145,11 @@ export function programmesForExercise(
     const condition = getCondition(conditionSlug);
     if (!condition) continue;
 
-    const firstStage = programForCondition(conditionSlug).find((programStage) =>
-      programStage.exercises.some((exercise) => exercise.slug === exerciseSlug),
+    const firstStage = condition.program.find((stage) =>
+      stage.exerciseSlugs.includes(exerciseSlug),
     );
     if (firstStage) {
-      rows.push({ condition, stageName: firstStage.stage.stage });
+      rows.push({ condition, stageName: firstStage.stage });
     }
   }
 
@@ -187,13 +192,16 @@ export function relatedExercises(exerciseSlug: string, limit: number): Exercise[
 
 /**
  * Every curated public body-area key, in display order (`"shoulder"`,
- * `"lower-back"`, ...). This is what `generateStaticParams` and the sitemap
- * enumerate, and what the "browse by body area" row links to. The full
- * `BodyArea` objects (label, blurb, ...) are the re-exported `BODY_AREAS`.
+ * `"lower-back"`, ...) - a thin alias of `allBodyAreaKeys()` from
+ * `lib/body-areas.ts`. The full `BodyArea` objects (label, blurb, ...) are the
+ * re-exported `BODY_AREAS`.
  *
- * Deliberately no longer the raw union of `Exercise.bodyPart` +
- * `Condition.bodyArea`: that leaked internal clinical codes as public chips and
- * emitted a zero-exercise `/exercises/area/Sports & return to activity` page.
+ * The area page's `generateStaticParams` and `app/sitemap.ts` enumerate
+ * `allBodyAreaKeys()` directly; this barrel export now only backs the library
+ * tests. It returns the curated kebab keys, deliberately not the old raw union
+ * of `Exercise.bodyPart` + `Condition.bodyArea` - that leaked internal clinical
+ * codes as public chips and emitted a zero-exercise
+ * `/exercises/area/Sports & return to activity` page.
  */
 export function bodyAreas(): string[] {
   return allBodyAreaKeys();

@@ -7,6 +7,7 @@
 // conditions interleaved by score.
 
 import { useState } from "react";
+import Link from "next/link";
 
 import { searchItems, type SearchItem } from "@/lib/exercise-library";
 
@@ -30,7 +31,7 @@ export function LibrarySearch({ items }: { items: SearchItem[] }) {
         <ul className="exlib-search__results">
           {results.map((item) => (
             <li key={`${item.kind}-${item.slug}`}>
-              <a
+              <Link
                 href={
                   item.kind === "exercise"
                     ? `/exercises/${item.slug}`
@@ -44,7 +45,7 @@ export function LibrarySearch({ items }: { items: SearchItem[] }) {
                 <span className="exlib-search__label">
                   {item.kind === "exercise" ? item.title : item.name}
                 </span>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
