@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/react";
 
@@ -6,6 +7,28 @@ import { render } from "@testing-library/react";
 vi.mock("@/components/track-view", () => ({
   TrackView: ({ event, slug }: { event: string; slug: string }) => (
     <span data-testid="track-view" data-event={event} data-slug={slug} />
+  ),
+}));
+
+// Surface the analytics `event` the CTA is wired with as a DOM attribute so the
+// tracking contract is assertable without simulating a click.
+vi.mock("@/components/tracked-book-link", () => ({
+  TrackedBookLink: ({
+    href,
+    className,
+    event = "service_book_click",
+    source,
+    children,
+  }: {
+    href: string;
+    className?: string;
+    event?: string;
+    source: string;
+    children: ReactNode;
+  }) => (
+    <a href={href} className={className} data-event={event} data-source={source}>
+      {children}
+    </a>
   ),
 }));
 
@@ -105,6 +128,16 @@ describe("app/exercises/tests/[slug] page", () => {
   it("renders a TrackedBookLink to /book", async () => {
     const { container } = await renderPage(SLUG);
     expect(container.querySelector('a[href="/book"]')).not.toBeNull();
+  });
+
+  it("wires the primary 'Book an online assessment' CTA to the library_selftest_cta_click event", async () => {
+    const { container } = await renderPage(SLUG);
+    const cta = [...container.querySelectorAll('a[href="/book"]')].find((a) =>
+      /Book an online assessment/i.test(a.textContent ?? ""),
+    );
+    expect(cta).toBeTruthy();
+    expect(cta?.getAttribute("data-event")).toBe("library_selftest_cta_click");
+    expect(cta?.getAttribute("data-source")).toBe("self-test");
   });
 
   it("fires a library_selftest_view TrackView for this test on mount", async () => {

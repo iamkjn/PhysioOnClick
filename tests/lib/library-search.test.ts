@@ -75,8 +75,17 @@ describe("library-search: searchItems lay-language matching", () => {
     expect(run("the my for")).toEqual([]);
   });
 
-  it("caps the ranked list at 12 and never repeats a (kind, slug)", () => {
+  it("never returns more than the ranked cap of 12, and never repeats a (kind, slug)", () => {
     const results = run("shoulder");
+    expect(results.length).toBeLessThanOrEqual(12);
+    const keys = results.map((r) => `${r.kind}:${r.slug}`);
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it("actually applies the cap when a broad term matches far more than 12 items", () => {
+    // "strength" appears in the folded `terms` of ~38 catalogue items, so a
+    // functioning cap must trim the ranked list to exactly 12.
+    const results = run("strength");
     expect(results.length).toBeLessThanOrEqual(12);
     expect(results.length).toBe(12);
     const keys = results.map((r) => `${r.kind}:${r.slug}`);

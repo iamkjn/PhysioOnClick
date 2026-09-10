@@ -138,13 +138,16 @@ function subline(lines: string[], startY: number): string {
   return `<text x="72" y="${startY}" font-family="${SANS}" font-size="30" fill="${MUTED}">${tspans}</text>`;
 }
 
-/** OG card for a self-check test page: the test name + a "SELF-CHECK TEST" kicker + what it assesses. */
+/** OG card for a self-check test page: the test name + a "Self-check test" kicker + what it assesses. */
 export function generateSelfTestOgSvg(t: SelfTest): string {
   const lines = wrapLines(t.name, 22, 3);
   const startY = lines.length >= 3 ? 288 : 324;
   const subY = startY + (lines.length - 1) * 84 + 62;
   return frame(
-    kicker("SELF-CHECK TEST · PhysioOnClick") +
+    // Title case to match the "Exercise" / "Exercise library" kickers on the
+    // sibling cards - `kicker()` applies no text-transform, so this renders
+    // exactly as written.
+    kicker("Self-check test · PhysioOnClick") +
       titleBlock(lines, startY) +
       subline(wrapLines(`Checks: ${t.assesses}`, 44, 2), subY),
   );

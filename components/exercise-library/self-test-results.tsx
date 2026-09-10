@@ -17,8 +17,14 @@ export function SelfTestResults({
       <section
         className="exlib-selftest-result exlib-selftest-result--negative"
         data-result="negative"
+        aria-labelledby="selftest-result-negative"
       >
-        <h3 className="exlib-selftest-result__title">Likely normal</h3>
+        <h3
+          id="selftest-result-negative"
+          className="exlib-selftest-result__title"
+        >
+          Likely normal
+        </h3>
         <p className="exlib-selftest-result__hint">
           A negative result usually looks like this.
         </p>
@@ -32,8 +38,14 @@ export function SelfTestResults({
       <section
         className="exlib-selftest-result exlib-selftest-result--positive"
         data-result="positive"
+        aria-labelledby="selftest-result-positive"
       >
-        <h3 className="exlib-selftest-result__title">Possible problem</h3>
+        <h3
+          id="selftest-result-positive"
+          className="exlib-selftest-result__title"
+        >
+          Possible problem
+        </h3>
         <p className="exlib-selftest-result__hint">
           A positive result usually looks like this.
         </p>
@@ -47,8 +59,11 @@ export function SelfTestResults({
       <section
         className="exlib-selftest-result exlib-selftest-result--tips"
         data-result="tips"
+        aria-labelledby="selftest-result-tips"
       >
-        <h3 className="exlib-selftest-result__title">Tips for a clearer result</h3>
+        <h3 id="selftest-result-tips" className="exlib-selftest-result__title">
+          Tips for a clearer result
+        </h3>
         <p className="exlib-selftest-result__hint">
           Small things that make the test easier to read.
         </p>
