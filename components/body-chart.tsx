@@ -1,54 +1,25 @@
 "use client";
 
 // components/body-chart.tsx
-// Clickable SVG body chart for the assessment wizard. Front/back silhouette
-// with tappable regions. Orientation is "selfie / mirror": the patient's LEFT
-// is on the LEFT of the image in both views, which is the most intuitive for
-// someone tapping their own body. Region keys come from lib/body-chart.ts.
+// Anatomical body chart for the assessment wizard. Renders a front/back muscle
+// figure from lib/body-chart-data.ts; each named region is a keyboard-operable
+// button with a hover/focus tooltip giving its plain and clinical names.
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import {
+  ANTERIOR_MUSCLES,
+  POSTERIOR_MUSCLES,
+  ANTERIOR_VIEWBOX,
+  POSTERIOR_VIEWBOX,
+} from "@/lib/body-chart-data";
 import {
   BODY_REGIONS,
+  REGION_MUSCLES,
   SOMEWHERE_ELSE,
+  regionClinical,
   regionLabel,
   type ChartView,
 } from "@/lib/body-chart";
-
-interface Ellipse {
-  cx: number;
-  cy: number;
-  rx: number;
-  ry: number;
-}
-
-// One ellipse per view. "both"-view regions reuse `front` for the back too.
-const SHAPES: Record<string, { front?: Ellipse; back?: Ellipse }> = {
-  neck: { front: { cx: 110, cy: 54, rx: 12, ry: 11 }, back: { cx: 110, cy: 54, rx: 12, ry: 11 } },
-  chest: { front: { cx: 110, cy: 100, rx: 32, ry: 24 } },
-  "upper-back": { back: { cx: 110, cy: 96, rx: 30, ry: 22 } },
-  "lower-back": { back: { cx: 110, cy: 150, rx: 26, ry: 24 } },
-  "shoulder-left": ellipseBoth(72, 74, 15, 13),
-  "shoulder-right": ellipseBoth(148, 74, 15, 13),
-  "upper-arm-left": ellipseBoth(55, 110, 11, 26),
-  "upper-arm-right": ellipseBoth(165, 110, 11, 26),
-  "elbow-hand-left": ellipseBoth(52, 168, 10, 36),
-  "elbow-hand-right": ellipseBoth(168, 168, 10, 36),
-  "hip-left": ellipseBoth(88, 182, 16, 15),
-  "hip-right": ellipseBoth(132, 182, 16, 15),
-  "thigh-left": ellipseBoth(90, 240, 15, 42),
-  "thigh-right": ellipseBoth(130, 240, 15, 42),
-  "knee-left": ellipseBoth(91, 300, 13, 13),
-  "knee-right": ellipseBoth(129, 300, 13, 13),
-  "lower-leg-left": ellipseBoth(91, 345, 12, 40),
-  "lower-leg-right": ellipseBoth(129, 345, 12, 40),
-  "ankle-foot-left": ellipseBoth(92, 400, 13, 14),
-  "ankle-foot-right": ellipseBoth(128, 400, 13, 14),
-};
-
-function ellipseBoth(cx: number, cy: number, rx: number, ry: number) {
-  const e = { cx, cy, rx, ry };
-  return { front: e, back: e };
-}
 
 interface Props {
   value: string[];
@@ -57,9 +28,22 @@ interface Props {
   idPrefix?: string;
 }
 
+const CHIP_REGIONS = BODY_REGIONS.filter((r) => r.chip);
+
 export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }: Props) {
   const [view, setView] = useState<ChartView>("front");
+  const [hover, setHover] = useState<string | null>(null);
+  const [tip, setTip] = useState<{ x: number; y: number } | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const selected = useMemo(() => new Set(value), [value]);
+
+  const muscleMap = view === "front" ? ANTERIOR_MUSCLES : POSTERIOR_MUSCLES;
+  const viewBox = view === "front" ? ANTERIOR_VIEWBOX : POSTERIOR_VIEWBOX;
+  const viewKey = view === "front" ? "anterior" : "posterior";
+
+  const figureRegions = BODY_REGIONS.filter(
+    (r) => !r.chip && (REGION_MUSCLES[r.key]?.[viewKey]?.length ?? 0) > 0
+  );
 
   function toggle(key: string) {
     if (readOnly || !onChange) return;
@@ -73,80 +57,106 @@ export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }
     onChange([...next]);
   }
 
-  const visible = BODY_REGIONS.filter((r) => r.view === "both" || r.view === view);
+  function onMove(e: React.MouseEvent) {
+    const rect = wrapRef.current?.getBoundingClientRect();
+    if (rect) setTip({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  }
+
   const chips = value.map((k) => ({ key: k, label: regionLabel(k) }));
 
   return (
-    <div className="body-chart" data-view={view}>
+    <div className="body-chart" ref={wrapRef} onMouseMove={onMove} data-view={view}>
       {!readOnly && (
         <div className="body-chart__views" role="group" aria-label="Body view">
           <button type="button" className="body-chart__view-btn" aria-pressed={view === "front"} onClick={() => setView("front")}>
-            Front view
+            Front
           </button>
           <button type="button" className="body-chart__view-btn" aria-pressed={view === "back"} onClick={() => setView("back")}>
-            Back view
+            Back
           </button>
         </div>
       )}
 
-      <svg className="body-chart__svg" viewBox="0 0 220 460" role="group" aria-label={`Body chart, ${view} view`}>
-        <g className="body-chart__silhouette" aria-hidden="true">
-          <circle cx="110" cy="30" r="19" />
-          <rect x="100" y="46" width="20" height="14" />
-          <path d="M70 62 Q110 54 150 62 L156 152 Q110 168 64 152 Z" />
-          <rect x="45" y="66" width="18" height="70" rx="9" />
-          <rect x="157" y="66" width="18" height="70" rx="9" />
-          <rect x="43" y="130" width="16" height="80" rx="8" />
-          <rect x="161" y="130" width="16" height="80" rx="8" />
-          <path d="M64 150 Q110 170 156 150 L150 198 Q110 210 70 198 Z" />
-          <rect x="75" y="196" width="26" height="100" rx="13" />
-          <rect x="119" y="196" width="26" height="100" rx="13" />
-          <rect x="79" y="292" width="22" height="104" rx="11" />
-          <rect x="119" y="292" width="22" height="104" rx="11" />
-          <ellipse cx="90" cy="404" rx="16" ry="9" />
-          <ellipse cx="130" cy="404" rx="16" ry="9" />
-        </g>
+      <div className="body-chart__figure">
+        <svg className="body-chart__svg" viewBox={viewBox} role="group" aria-label={`Body chart, ${view} view`}>
+          <g className="body-chart__silhouette" aria-hidden="true">
+            {Object.values(muscleMap).flat().map((pts, i) => (
+              <polygon key={i} points={pts} />
+            ))}
+          </g>
 
-        <g className="body-chart__regions">
-          {visible.map((r) => {
-            const shape = SHAPES[r.key]?.[view];
-            if (!shape) return null;
-            const isOn = selected.has(r.key);
-            return (
-              <ellipse
-                key={r.key}
-                id={`${idPrefix}-${r.key}`}
-                className={`body-chart__region${isOn ? " is-selected" : ""}`}
-                cx={shape.cx}
-                cy={shape.cy}
-                rx={shape.rx}
-                ry={shape.ry}
-                role="button"
-                aria-label={r.label}
-                aria-pressed={isOn}
-                tabIndex={readOnly ? -1 : 0}
-                onClick={() => toggle(r.key)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggle(r.key);
-                  }
-                }}
-              />
-            );
-          })}
-        </g>
-      </svg>
+          <g className="body-chart__regions">
+            {figureRegions.map((r) => {
+              const polys = (REGION_MUSCLES[r.key][viewKey] ?? []).flatMap((mk) => muscleMap[mk] ?? []);
+              const on = selected.has(r.key);
+              return (
+                <g
+                  key={r.key}
+                  id={`${idPrefix}-${r.key}`}
+                  className={`body-chart__region${on ? " is-selected" : ""}`}
+                  role="button"
+                  aria-label={r.label}
+                  aria-pressed={on}
+                  tabIndex={readOnly ? -1 : 0}
+                  onClick={() => toggle(r.key)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      toggle(r.key);
+                    }
+                  }}
+                  onMouseEnter={() => setHover(r.key)}
+                  onMouseLeave={() => setHover((h) => (h === r.key ? null : h))}
+                  onFocus={() => setHover(r.key)}
+                  onBlur={() => setHover((h) => (h === r.key ? null : h))}
+                >
+                  {polys.map((pts, i) => (
+                    <polygon key={i} points={pts} />
+                  ))}
+                </g>
+              );
+            })}
+          </g>
+        </svg>
+
+        {hover && (
+          <div
+            className="body-chart__tooltip"
+            role="status"
+            style={tip ? { left: tip.x, top: tip.y } : { left: "50%", top: 8, transform: "translateX(-50%)" }}
+          >
+            <strong>{regionLabel(hover)}</strong>
+            {regionClinical(hover) && <span>{regionClinical(hover)}</span>}
+          </div>
+        )}
+      </div>
 
       {!readOnly && (
-        <button
-          type="button"
-          className="body-chart__elsewhere"
-          aria-pressed={selected.has(SOMEWHERE_ELSE)}
-          onClick={() => toggle(SOMEWHERE_ELSE)}
-        >
-          Somewhere else / not sure
-        </button>
+        <>
+          <p className="body-chart__chip-hint">Not on the diagram?</p>
+          <div className="body-chart__extra">
+            {CHIP_REGIONS.map((r) => (
+              <button
+                key={r.key}
+                type="button"
+                className="body-chart__extra-btn"
+                aria-pressed={selected.has(r.key)}
+                title={r.clinical}
+                onClick={() => toggle(r.key)}
+              >
+                {r.label}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="body-chart__extra-btn"
+              aria-pressed={selected.has(SOMEWHERE_ELSE)}
+              onClick={() => toggle(SOMEWHERE_ELSE)}
+            >
+              Somewhere else / not sure
+            </button>
+          </div>
+        </>
       )}
 
       {chips.length > 0 && (
@@ -155,11 +165,7 @@ export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }
             <li key={c.key} className="body-chart__chip">
               {c.label}
               {!readOnly && (
-                <button
-                  type="button"
-                  aria-label={`Remove ${c.label}`}
-                  onClick={() => toggle(c.key)}
-                >
+                <button type="button" aria-label={`Remove ${c.label}`} onClick={() => toggle(c.key)}>
                   ×
                 </button>
               )}
