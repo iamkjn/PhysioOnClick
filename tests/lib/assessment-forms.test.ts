@@ -4,10 +4,12 @@ vi.mock("@/lib/firebase", () => ({ db: {} }));
 
 const addDocMock = vi.fn();
 
+const getDocsMock = vi.fn();
+
 vi.mock("firebase/firestore", () => ({
   addDoc: (...args: unknown[]) => addDocMock(...args),
   collection: vi.fn(() => ({})),
-  getDocs: vi.fn(),
+  getDocs: (...args: unknown[]) => getDocsMock(...args),
   orderBy: vi.fn(),
   query: vi.fn(),
   serverTimestamp: vi.fn(() => "SERVER_TIMESTAMP"),
@@ -16,6 +18,8 @@ vi.mock("firebase/firestore", () => ({
 }));
 
 import {
+  ASSESSMENT_FORM_VERSION,
+  getPatientAssessmentForms,
   submitPatientAssessmentForm,
   defaultRedFlags,
   defaultOnlineReadiness,
@@ -84,5 +88,33 @@ describe("submitPatientAssessmentForm", () => {
 
     const written = addDocMock.mock.calls[0][1] as Record<string, unknown>;
     expect(written.bookingId).toBe("");
+  });
+
+  it("forwards bodyRegions", async () => {
+    await submitPatientAssessmentForm("u1", "self", buildInput({ bodyRegions: ["neck", "lower-back"] }));
+    const written = addDocMock.mock.calls[0][1] as Record<string, unknown>;
+    expect(written.bodyRegions).toEqual(["neck", "lower-back"]);
+  });
+});
+
+describe("getPatientAssessmentForms / bodyRegions", () => {
+  it("reads a stored bodyRegions array", async () => {
+    getDocsMock.mockResolvedValue({
+      docs: [{ id: "f1", data: () => ({ bodyRegions: ["neck", "knee-left"], version: ASSESSMENT_FORM_VERSION }) }],
+    });
+    const [rec] = await getPatientAssessmentForms("u1", "self");
+    expect(rec.bodyRegions).toEqual(["neck", "knee-left"]);
+  });
+
+  it("defaults bodyRegions to [] for legacy docs", async () => {
+    getDocsMock.mockResolvedValue({
+      docs: [{ id: "f2", data: () => ({ version: "old" }) }],
+    });
+    const [rec] = await getPatientAssessmentForms("u1", "self");
+    expect(rec.bodyRegions).toEqual([]);
+  });
+
+  it("ASSESSMENT_FORM_VERSION marks the short-form generation", () => {
+    expect(ASSESSMENT_FORM_VERSION).toBe("2.0");
   });
 });

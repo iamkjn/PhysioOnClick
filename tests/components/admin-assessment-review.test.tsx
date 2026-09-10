@@ -32,6 +32,7 @@ function makeForm(overrides: Partial<PatientAssessmentFormRecord> = {}): Patient
     relationshipToPatient: '',
     presentingComplaint: 'Persistent lower back pain after lifting',
     bodyArea: 'Lower back',
+    bodyRegions: [],
     symptomStartDate: '2026-07-01',
     onsetPattern: 'sudden',
     painScore: 6,

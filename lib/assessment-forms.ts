@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-export const ASSESSMENT_FORM_VERSION = "2026-07-csp-hcpc-v2";
+export const ASSESSMENT_FORM_VERSION = "2.0";
 
 export type AssessmentFormType = "initial" | "checkup";
 export type ConsultationMode = "online" | "in_person";
@@ -170,6 +170,7 @@ export interface PatientAssessmentFormInput {
   emergencyContactName: string;
   emergencyContactPhone: string;
   redFlags: AssessmentRedFlags;
+  bodyRegions?: string[];
   onlineReadiness: OnlineReadiness;
   consent: AssessmentConsent;
   signature: string;
@@ -180,6 +181,7 @@ export interface PatientAssessmentFormInput {
 
 export interface PatientAssessmentFormRecord extends PatientAssessmentFormInput {
   id: string;
+  bodyRegions: string[];
   version: string;
   reviewStatus: AssessmentReviewStatus;
   reviewedBy: string;
@@ -300,6 +302,11 @@ function readString(data: Record<string, unknown>, key: string): string {
 function readNumber(data: Record<string, unknown>, key: string, fallback: number): number {
   const value = data[key];
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function readStringArray(data: Record<string, unknown>, key: string): string[] {
+  const value = data[key];
+  return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
 }
 
 function readRedFlags(value: unknown): AssessmentRedFlags {
@@ -465,6 +472,7 @@ function mapAssessmentForm(snap: QueryDocumentSnapshot): PatientAssessmentFormRe
     relationshipToPatient: readString(data, "relationshipToPatient"),
     presentingComplaint: readString(data, "presentingComplaint"),
     bodyArea: readString(data, "bodyArea"),
+    bodyRegions: readStringArray(data, "bodyRegions"),
     symptomStartDate: readString(data, "symptomStartDate"),
     onsetPattern: asOnsetPattern(data.onsetPattern),
     painScore: readNumber(data, "painScore", 0),
