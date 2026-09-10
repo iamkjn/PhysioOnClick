@@ -15,6 +15,7 @@ import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 import { suggestExercises } from "@/lib/exercise-suggestions";
 import { SuggestedExercises } from "@/components/suggested-exercises";
+import { BodyChart } from "@/components/body-chart";
 import { assignExercise, getAssignedExercises } from "@/lib/recovery";
 
 interface LinkedBooking {
@@ -108,6 +109,13 @@ function goalStatement(form: PatientAssessmentFormRecord) {
   return `In ${form.goalsPlan.timeframeWeeks} weeks: ${form.goalsPlan.meaningfulGoal}. Baseline: ${form.goalsPlan.baseline || "not recorded"}. Target: ${form.goalsPlan.target || "not recorded"}.`;
 }
 
+// Short (v2.0) patient wizard submissions don't collect the clinician-grade
+// subjective/objective/goal detail — the physiotherapist captures those at the
+// session. Show "Not provided by patient" rather than a misleading blank.
+function isShortForm(form: PatientAssessmentFormRecord): boolean {
+  return form.version === "2.0" || (form.bodyRegions?.length ?? 0) > 0;
+}
+
 function ReviewItem({
   patientUid,
   personId,
@@ -190,6 +198,11 @@ function ReviewItem({
   }
 
   const linkedBooking = form.bookingId ? bookings?.find((b) => b.id === form.bookingId) : undefined;
+  const shortForm = isShortForm(form);
+  const clinicianOnly = (value: string) =>
+    shortForm && !value.trim()
+      ? <span className="assessment-not-provided">Not provided by patient</span>
+      : value || "Not recorded";
   const urgent = hasUrgentRedFlags(form.redFlags);
   const coreConsentComplete = form.consent.careConsent &&
     form.consent.dataConsent &&
@@ -226,14 +239,20 @@ function ReviewItem({
         <dl className="assessment-detail-grid">
           <div><dt>Patient</dt><dd>{form.patientName}</dd></div>
           <div><dt>Completed by</dt><dd>{form.completedBy} ({form.relationshipToPatient || "relationship not recorded"})</dd></div>
-          <div><dt>Body area</dt><dd>{form.bodyArea}</dd></div>
+          <div><dt>Body area</dt><dd>{form.bodyArea || "Not recorded"}</dd></div>
+          {(form.bodyRegions?.length ?? 0) > 0 && (
+            <div className="assessment-detail-grid__wide">
+              <dt>Body chart</dt>
+              <dd><BodyChart value={form.bodyRegions ?? []} readOnly idPrefix={`rev-${form.id}`} /></dd>
+            </div>
+          )}
           <div><dt>Started</dt><dd>{form.symptomStartDate || "Not recorded"} ({form.onsetPattern.replace("_", " ")})</dd></div>
           <div><dt>Concern</dt><dd>{form.presentingComplaint}</dd></div>
           <div><dt>Symptoms</dt><dd>{form.symptoms}</dd></div>
           <div><dt>Clinical area</dt><dd>{clinicalAreaLabels[form.subjective.clinicalArea]}</dd></div>
-          <div><dt>Symptom behaviour</dt><dd>{form.subjective.symptomBehaviour || "Not recorded"}</dd></div>
+          <div><dt>Symptom behaviour</dt><dd>{clinicianOnly(form.subjective.symptomBehaviour)}</dd></div>
           <div><dt>Severity / irritability</dt><dd>{form.subjective.severity}/10 / {form.subjective.irritability}/10</dd></div>
-          <div><dt>Yellow flags</dt><dd>{form.subjective.yellowFlags || "Not recorded"}</dd></div>
+          <div><dt>Yellow flags</dt><dd>{clinicianOnly(form.subjective.yellowFlags)}</dd></div>
           <div><dt>Worse/eased by</dt><dd>{form.aggravatingFactors || "Not recorded"} / {form.easingFactors || "not recorded"}</dd></div>
           <div><dt>Function and goals</dt><dd>{form.functionalImpact || "Not recorded"} {form.goals ? `Goal: ${form.goals}` : ""}</dd></div>
           <div><dt>PSFS average</dt><dd>{psfsAverage(form)}</dd></div>
@@ -244,16 +263,16 @@ function ReviewItem({
           ].filter(Boolean).join("; ") || "Not recorded"}</dd></div>
           <div><dt>Pain range / confidence</dt><dd>Best {form.outcomes.painBest}/10, current {form.painScore}/10, worst {form.outcomes.painWorst}/10. Confidence {form.outcomes.confidenceScore}/10.</dd></div>
           <div><dt>Condition measure</dt><dd>{form.outcomes.conditionMeasureName ? `${form.outcomes.conditionMeasureName}: ${form.outcomes.conditionMeasureScore}/${form.outcomes.conditionMeasureMax}` : "Not recorded"}</dd></div>
-          <div><dt>Objective task</dt><dd>{form.objectiveVideo.taskLabel || "Not recorded"}</dd></div>
+          <div><dt>Objective task</dt><dd>{clinicianOnly(form.objectiveVideo.taskLabel)}</dd></div>
           <div><dt>Objective metric</dt><dd>{form.objectiveVideo.metricName || "Metric"}: {form.objectiveVideo.metricValue} {form.objectiveVideo.metricUnit || ""}{form.objectiveVideo.reps ? `, ${form.objectiveVideo.reps} reps` : ""}{form.objectiveVideo.durationSeconds ? `, ${form.objectiveVideo.durationSeconds}s` : ""}</dd></div>
-          <div><dt>Objective notes</dt><dd>{form.objectiveVideo.qualityNotes || "Not recorded"}</dd></div>
+          <div><dt>Objective notes</dt><dd>{clinicianOnly(form.objectiveVideo.qualityNotes)}</dd></div>
           <div><dt>Video evidence</dt><dd>{form.objectiveVideo.videoUrl ? <a href={form.objectiveVideo.videoUrl} target="_blank" rel="noreferrer">Open objective video</a> : "No video attached"}</dd></div>
           <div><dt>Review-ready goal</dt><dd>{goalStatement(form)}</dd></div>
           <div><dt>Goal confidence</dt><dd>{form.goalsPlan.confidenceScore}/10{form.goalsPlan.reviewDate ? `, review ${form.goalsPlan.reviewDate}` : ""}</dd></div>
           <div><dt>Barriers/support</dt><dd>{form.goalsPlan.barriers || "No barriers recorded"} / {form.goalsPlan.supportPlan || "no support plan recorded"}</dd></div>
           <div><dt>Medical context</dt><dd>{form.medicalHistory || "Not recorded"}</dd></div>
-          <div><dt>Medication/allergies</dt><dd>{form.medications || "Not recorded"} / {form.allergies || "not recorded"}</dd></div>
-          <div><dt>Previous care</dt><dd>{form.previousTreatment || "Not recorded"}</dd></div>
+          <div><dt>Medication/allergies</dt><dd>{shortForm && !form.medications.trim() && !form.allergies.trim() ? <span className="assessment-not-provided">Not provided by patient</span> : `${form.medications || "Not recorded"} / ${form.allergies || "not recorded"}`}</dd></div>
+          <div><dt>Previous care</dt><dd>{clinicianOnly(form.previousTreatment)}</dd></div>
           <div><dt>Safety check</dt><dd>{selectedRedFlags(form)}</dd></div>
           <div><dt>Access needs</dt><dd>{form.communicationNeeds || "None recorded"}</dd></div>
           <div><dt>Emergency contact</dt><dd>{form.emergencyContactName || "Not recorded"} {form.emergencyContactPhone ? `- ${form.emergencyContactPhone}` : ""}</dd></div>

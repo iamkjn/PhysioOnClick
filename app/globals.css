@@ -9401,3 +9401,12 @@ textarea:focus {
   padding: var(--space-2) 0;
 }
 .assessment-history-disclosure[open] > summary { margin-bottom: var(--space-3); }
+
+.assessment-not-provided {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+.assessment-detail-grid__wide {
+  grid-column: 1 / -1;
+}
+.assessment-detail-grid__wide .body-chart__svg { max-width: 160px; }

@@ -148,3 +148,35 @@ describe('AdminAssessmentReview suggested exercises', () => {
     expect(container.querySelector('.suggested-exercise-badge')?.textContent).toBe('spine')
   })
 })
+
+describe('AdminAssessmentReview short (v2.0) forms', () => {
+  it('renders a read-only body chart of the picked regions', async () => {
+    getPatientAssessmentFormsMock.mockResolvedValue([
+      makeForm({ version: '2.0', bodyRegions: ['neck'] }),
+    ])
+    getAssignedExercisesMock.mockResolvedValue([])
+    const { findAllByRole } = render(<AdminAssessmentReview patientUid="p" personId="p" />)
+    const neck = (await findAllByRole('button', { name: /^neck$/i }))[0]
+    expect(neck).toHaveAttribute('aria-pressed', 'true')
+    expect(neck).toHaveAttribute('tabindex', '-1')
+  })
+
+  it('shows "Not provided by patient" for clinician-only fields on a v2.0 form', async () => {
+    getPatientAssessmentFormsMock.mockResolvedValue([
+      makeForm({ version: '2.0', bodyRegions: ['neck'] }),
+    ])
+    getAssignedExercisesMock.mockResolvedValue([])
+    const { findAllByText } = render(<AdminAssessmentReview patientUid="p" personId="p" />)
+    expect((await findAllByText(/not provided by patient/i)).length).toBeGreaterThan(0)
+  })
+
+  it('legacy forms keep their stored values', async () => {
+    getPatientAssessmentFormsMock.mockResolvedValue([
+      makeForm({ subjective: { ...makeForm().subjective, symptomBehaviour: 'worse in the evening' } }),
+    ])
+    getAssignedExercisesMock.mockResolvedValue([])
+    const { findByText, queryByText } = render(<AdminAssessmentReview patientUid="p" personId="p" />)
+    await findByText(/worse in the evening/i)
+    expect(queryByText(/not provided by patient/i)).not.toBeInTheDocument()
+  })
+})
