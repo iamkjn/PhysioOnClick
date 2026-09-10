@@ -9063,3 +9063,104 @@ textarea:focus {
   color: var(--color-text-secondary);
 }
 
+
+/* ── Body chart (components/body-chart.tsx) ─────────────────────────────── */
+.body-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+.body-chart__views {
+  display: inline-flex;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill, 999px);
+  overflow: hidden;
+}
+.body-chart__view-btn {
+  border: 0;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: var(--text-sm);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+.body-chart__view-btn[aria-pressed="true"] {
+  background: var(--color-primary);
+  color: #fff;
+}
+.body-chart__svg {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+}
+.body-chart__silhouette > * {
+  fill: color-mix(in srgb, var(--color-border) 60%, transparent);
+  pointer-events: none;
+}
+.body-chart__region {
+  fill: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  stroke: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: fill 120ms ease;
+}
+.body-chart__region:hover {
+  fill: color-mix(in srgb, var(--color-primary) 34%, transparent);
+}
+.body-chart__region.is-selected {
+  fill: var(--color-primary);
+  stroke: var(--color-primary-dark, var(--color-primary));
+}
+.body-chart__region:focus-visible {
+  outline: 2px solid var(--color-primary-dark, var(--color-primary));
+  outline-offset: 2px;
+}
+[data-view] .body-chart__region[tabindex="-1"] {
+  cursor: default;
+}
+.body-chart__elsewhere {
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-pill, 999px);
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+.body-chart__elsewhere[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary-dark, var(--color-primary));
+}
+.body-chart__chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}
+.body-chart__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary-dark, var(--color-primary));
+  border-radius: var(--radius-pill, 999px);
+  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+.body-chart__chip button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.15rem;
+}
