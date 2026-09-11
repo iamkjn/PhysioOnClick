@@ -16,10 +16,13 @@ vi.mock('firebase/auth', () => ({
   },
 }))
 vi.mock('@/components/person-provider', () => ({
-  usePerson: () => ({ personId: 'u1' }),
+  usePerson: () => ({ personId: 'u1', reconcile: vi.fn() }),
 }))
 vi.mock('@/lib/session-summaries', () => ({
   getLatestSummaryId: vi.fn().mockResolvedValue(undefined),
+}))
+vi.mock('@/lib/dependents', () => ({
+  getDependents: vi.fn().mockResolvedValue([]),
 }))
 
 const AssignedExercisesMock = vi.fn(() => <div data-testid="assigned-exercises" />)
