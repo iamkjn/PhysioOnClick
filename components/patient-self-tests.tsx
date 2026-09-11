@@ -65,17 +65,20 @@ export function PatientSelfTests({ uid, personId }: Props) {
 
   if (assigned === null) {
     return (
-      <div className="panel stack">
-        <h3>Check your progress</h3>
-        <SkeletonRow count={2} />
-      </div>
+      <section className="page-section">
+        <div className="panel stack">
+          <h3>Check your progress</h3>
+          <SkeletonRow count={2} />
+        </div>
+      </section>
     );
   }
 
   if (tests.length === 0) return null;
 
   return (
-    <div className="panel stack">
+    <section className="page-section">
+      <div className="panel stack">
       <h3 style={{ margin: 0 }}>Check your progress</h3>
       <p className="muted" style={{ margin: "var(--space-1) 0 0" }}>
         Quick self-checks related to what you&apos;re working on.
@@ -113,6 +116,7 @@ export function PatientSelfTests({ uid, personId }: Props) {
                   negative={test.negativeResult}
                   positive={test.positiveResult}
                   tips={test.tips}
+                  idPrefix={`selftest-${test.slug}`}
                 />
               </div>
             )}
@@ -121,6 +125,7 @@ export function PatientSelfTests({ uid, personId }: Props) {
           </div>
         ))}
       </div>
-    </div>
+      </div>
+    </section>
   );
 }

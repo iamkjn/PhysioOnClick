@@ -112,9 +112,7 @@ export default function ExercisesPage() {
         <AssignedExercises uid={uid} personId={personId} />
       </section>
 
-      <section className="page-section">
-        <PatientSelfTests uid={uid} personId={personId} />
-      </section>
+      <PatientSelfTests uid={uid} personId={personId} />
     </div>
   );
 }
