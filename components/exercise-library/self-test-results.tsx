@@ -7,22 +7,30 @@ export function SelfTestResults({
   negative,
   positive,
   tips,
+  idPrefix = "selftest",
 }: {
   negative: string[];
   positive: string[];
   tips: string[];
+  /** Prefix for the result panel ids/aria-labelledby. Defaults to the fixed
+   *  ids the public self-test page (one test per page) has always used, so
+   *  that call site needs no changes. Callers that render multiple tests on
+   *  one page (e.g. the patient portal) must pass a unique prefix per test
+   *  to avoid duplicate DOM ids. */
+  idPrefix?: string;
 }) {
+  const negativeId = `${idPrefix}-result-negative`;
+  const positiveId = `${idPrefix}-result-positive`;
+  const tipsId = `${idPrefix}-result-tips`;
+
   return (
     <div className="exlib-selftest-results">
       <section
         className="exlib-selftest-result exlib-selftest-result--negative"
         data-result="negative"
-        aria-labelledby="selftest-result-negative"
+        aria-labelledby={negativeId}
       >
-        <h3
-          id="selftest-result-negative"
-          className="exlib-selftest-result__title"
-        >
+        <h3 id={negativeId} className="exlib-selftest-result__title">
           Likely normal
         </h3>
         <p className="exlib-selftest-result__hint">
@@ -38,12 +46,9 @@ export function SelfTestResults({
       <section
         className="exlib-selftest-result exlib-selftest-result--positive"
         data-result="positive"
-        aria-labelledby="selftest-result-positive"
+        aria-labelledby={positiveId}
       >
-        <h3
-          id="selftest-result-positive"
-          className="exlib-selftest-result__title"
-        >
+        <h3 id={positiveId} className="exlib-selftest-result__title">
           Possible problem
         </h3>
         <p className="exlib-selftest-result__hint">
@@ -59,9 +64,9 @@ export function SelfTestResults({
       <section
         className="exlib-selftest-result exlib-selftest-result--tips"
         data-result="tips"
-        aria-labelledby="selftest-result-tips"
+        aria-labelledby={tipsId}
       >
-        <h3 id="selftest-result-tips" className="exlib-selftest-result__title">
+        <h3 id={tipsId} className="exlib-selftest-result__title">
           Tips for a clearer result
         </h3>
         <p className="exlib-selftest-result__hint">

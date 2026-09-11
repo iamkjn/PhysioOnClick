@@ -7,6 +7,7 @@ import { auth } from "@/lib/firebase";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { usePerson } from "@/components/person-provider";
 import { AssignedExercises } from "@/components/assigned-exercises";
+import { PatientSelfTests } from "@/components/patient-self-tests";
 import { PatientExercisePlanButton } from "@/components/patient-exercise-plan-button";
 import { SkeletonRow } from "@/components/skeleton";
 import { getLatestSummaryId } from "@/lib/session-summaries";
@@ -110,6 +111,8 @@ export default function ExercisesPage() {
       <section className="page-section">
         <AssignedExercises uid={uid} personId={personId} />
       </section>
+
+      <PatientSelfTests uid={uid} personId={personId} />
     </div>
   );
 }

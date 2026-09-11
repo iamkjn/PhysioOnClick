@@ -332,3 +332,25 @@ export function selfTestsByBodyArea(area: string): SelfTest[] {
     (test) => test.bodyArea.trim().toLowerCase() === target,
   );
 }
+
+/**
+ * Self-check tests relevant to a set of exercise slugs: every `SelfTest` whose
+ * `conditionSlugs` intersects the condition hubs those exercises appear in
+ * (via `conditionsForExercise`), in `selfTests` source order. Returns `[]`
+ * when no exercise resolves to a condition hub with a matching self-test
+ * (including an empty or all-unknown `exerciseSlugs` list). Used to derive a
+ * signed-in patient's relevant self-tests straight from their assigned
+ * exercises, with no new data to maintain.
+ */
+export function selfTestsForExercises(exerciseSlugs: string[]): SelfTest[] {
+  const conditionSlugs = new Set<string>();
+  for (const slug of exerciseSlugs) {
+    for (const condition of conditionsForExercise(slug)) {
+      conditionSlugs.add(condition.slug);
+    }
+  }
+  if (conditionSlugs.size === 0) return [];
+  return selfTests.filter((test) =>
+    test.conditionSlugs.some((cs) => conditionSlugs.has(cs)),
+  );
+}
