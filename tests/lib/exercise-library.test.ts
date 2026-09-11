@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { conditions } from '@/lib/conditions'
 import { exercises } from '@/lib/exercises'
+import { selfTests } from '@/lib/self-tests'
 import {
   getCondition,
   allConditionSlugs,
@@ -14,6 +15,7 @@ import {
   exercisesByBodyArea,
   conditionsByBodyArea,
   searchLibrary,
+  selfTestsForExercises,
 } from '@/lib/exercise-library'
 
 describe('exercise-library: getCondition / allConditionSlugs', () => {
@@ -294,5 +296,39 @@ describe('exercise-library: searchLibrary', () => {
     expect(ex.length + co.length).toBeLessThanOrEqual(12)
     expect(ex.length).toBeLessThanOrEqual(20)
     expect(co.length).toBeLessThanOrEqual(20)
+  })
+})
+
+describe('exercise-library: selfTestsForExercises', () => {
+  it('returns self-tests for a condition hub the exercise belongs to', () => {
+    // shoulder-external-rotation-band is in rotator-cuff-tendinopathy's "Build strength" stage
+    const result = selfTestsForExercises(['shoulder-external-rotation-band'])
+    expect(result.length).toBeGreaterThan(0)
+    expect(result.every((t) => t.conditionSlugs.includes('rotator-cuff-tendinopathy'))).toBe(true)
+  })
+
+  it('returns [] for an exercise with no condition-hub match', () => {
+    // an exercise slug that exists but appears in no condition program, or an unknown slug
+    expect(selfTestsForExercises(['no-such-exercise-slug'])).toEqual([])
+  })
+
+  it('returns [] for an empty input list', () => {
+    expect(selfTestsForExercises([])).toEqual([])
+  })
+
+  it('de-dupes when two assigned exercises map to the same condition hub', () => {
+    const result = selfTestsForExercises([
+      'shoulder-external-rotation-band',
+      'shoulder-internal-rotation-band',
+    ])
+    const slugs = result.map((t) => t.slug)
+    expect(new Set(slugs).size).toBe(slugs.length)
+  })
+
+  it('preserves selfTests source order', () => {
+    const result = selfTestsForExercises(allExerciseSlugs())
+    const sourceOrder = selfTests.map((t) => t.slug)
+    const resultOrder = result.map((t) => t.slug)
+    expect(resultOrder).toEqual(sourceOrder.filter((s) => resultOrder.includes(s)))
   })
 })
