@@ -99,45 +99,59 @@ export function getProjectId(): string {
 }
 
 let tokenCache: { token: string; expiresAt: number } | null = null;
+// Guards against concurrent callers (e.g. a Promise.all over several
+// downloadObject calls) each missing the cache and independently paying for
+// an RS256 JWT signature + token exchange — that pile-up of WebCrypto work
+// is enough to trip a Worker's CPU-time limit under load.
+let tokenRequest: Promise<string> | null = null;
 
 /** Exchanges a signed service-account assertion for a Google OAuth2 access token. */
 async function getAccessToken(): Promise<string> {
-  const sa = loadServiceAccount();
-  if (!sa) throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not configured");
-
   const now = Math.floor(Date.now() / 1000);
   // Refresh a minute early so a token never expires mid-flight.
   if (tokenCache && tokenCache.expiresAt > now + 60) return tokenCache.token;
+  if (tokenRequest) return tokenRequest;
 
-  // Env vars often carry the PEM with escaped newlines; real newlines pass through.
-  const pem = sa.private_key.replace(/\\n/g, "\n");
-  const key = await importPKCS8(pem, "RS256");
+  tokenRequest = (async () => {
+    const sa = loadServiceAccount();
+    if (!sa) throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not configured");
 
-  const assertion = await new SignJWT({ scope: SCOPES })
-    .setProtectedHeader({ alg: "RS256" })
-    .setIssuer(sa.client_email)
-    .setSubject(sa.client_email)
-    .setAudience(TOKEN_URL)
-    .setIssuedAt(now)
-    .setExpirationTime(now + 3600)
-    .sign(key);
+    // Env vars often carry the PEM with escaped newlines; real newlines pass through.
+    const pem = sa.private_key.replace(/\\n/g, "\n");
+    const key = await importPKCS8(pem, "RS256");
 
-  const res = await fetch(TOKEN_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-      assertion,
-    }),
-  });
+    const assertion = await new SignJWT({ scope: SCOPES })
+      .setProtectedHeader({ alg: "RS256" })
+      .setIssuer(sa.client_email)
+      .setSubject(sa.client_email)
+      .setAudience(TOKEN_URL)
+      .setIssuedAt(now)
+      .setExpirationTime(now + 3600)
+      .sign(key);
 
-  if (!res.ok) {
-    throw new Error(`Token exchange failed (${res.status}): ${await res.text()}`);
+    const res = await fetch(TOKEN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        assertion,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Token exchange failed (${res.status}): ${await res.text()}`);
+    }
+
+    const json = (await res.json()) as { access_token: string; expires_in: number };
+    tokenCache = { token: json.access_token, expiresAt: now + json.expires_in };
+    return json.access_token;
+  })();
+
+  try {
+    return await tokenRequest;
+  } finally {
+    tokenRequest = null;
   }
-
-  const json = (await res.json()) as { access_token: string; expires_in: number };
-  tokenCache = { token: json.access_token, expiresAt: now + json.expires_in };
-  return json.access_token;
 }
 
 async function apiFetch(url: string, init?: RequestInit): Promise<Response> {
