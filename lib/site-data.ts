@@ -24,10 +24,9 @@ export type Service = {
 };
 
 export function serviceImagePath(slug: string) {
-  // v3: each service now gets its own icon composition instead of a
-  // recolored template. The route serves immutable/1y cache headers, so a
-  // redesign must bump this to bust caches.
-  return `/service-images/${slug}?v=3`;
+  // Real photographic cover art, generated 2026-09-12 and checked into
+  // public/images/service-covers/ — one PNG per service slug.
+  return `/images/service-covers/service-${slug}.png`;
 }
 
 export type PricingItem = {

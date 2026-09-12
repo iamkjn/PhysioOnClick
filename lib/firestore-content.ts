@@ -25,8 +25,8 @@ function toBlogArticle(doc: Record<string, unknown>, fallback?: BlogArticle): Bl
     author: String(doc.author || fallback?.author || "PhysioOnClick"),
     authorCredential: String(doc.authorCredential || fallback?.authorCredential || ""),
     // Never fall through to "" — <Image src=""> throws. Generated cover art
-    // keyed on slug is the same last-resort every static article already uses.
-    image: String(doc.image || fallback?.image || blogImagePath(slug)),
+    // keyed on category is the same last-resort every static article already uses.
+    image: String(doc.image || fallback?.image || blogImagePath(String(doc.category || fallback?.category || "Back pain"))),
     sections: Array.isArray(doc.sections) && doc.sections.length
       ? (doc.sections as BlogArticle["sections"])
       : fallback?.sections || []

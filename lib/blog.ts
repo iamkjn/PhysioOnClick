@@ -48,10 +48,11 @@ export type BlogArticle = {
   sections: { heading: string; body: string[] }[];
 };
 
-export function blogImagePath(slug: string) {
-  // v2: covers are decorative now (no baked-in title). The route serves
-  // immutable/1y cache headers, so a redesign must bump this to bust caches.
-  return `/blog-images/${slug}?v=2`;
+export function blogImagePath(category: string) {
+  // Real photographic cover art, generated 2026-09-12 and checked into
+  // public/images/blog-covers/ — one PNG per category (covers are decorative,
+  // shared across every article in that category, not per-article).
+  return `/images/blog-covers/blog-${toSlug(category)}.png`;
 }
 
 function toSlug(value: string) {
@@ -397,7 +398,7 @@ export const blogArticles: BlogArticle[] = articlePlan.map(({ category, topic },
     lastReviewedAt: new Date(2026, 7, 25).toISOString(),
     author: founder.name,
     authorCredential: founder.credentials[0],
-    image: blogImagePath(slug),
+    image: blogImagePath(category),
     sections
   };
 });
