@@ -16,10 +16,21 @@ import {
 export type PoseName = Pose;
 export { POSE_NAMES } from "@/lib/exercise-poses";
 
-export function ExerciseFigure({ name, size = 56, pose }: { name: string; size?: number; pose?: string | null }) {
+export function ExerciseFigure({
+  name,
+  size = 56,
+  pose,
+  className,
+}: {
+  name: string;
+  size?: number;
+  pose?: string | null;
+  className?: string;
+}) {
   const spec = POSE_SPECS[resolvePose(pose, name)];
+  const classes = ["exercise-figure-tile", className].filter(Boolean).join(" ");
   return (
-    <span className="exercise-figure-tile" style={{ width: size, height: size }} aria-hidden="true">
+    <span className={classes} style={{ width: size, height: size }} aria-hidden="true">
       <svg
         viewBox={`0 0 ${POSE_VIEWBOX.w} ${POSE_VIEWBOX.h}`}
         width="78%"

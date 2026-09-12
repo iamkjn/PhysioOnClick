@@ -56,9 +56,8 @@ describe('exercise image prompts', () => {
     }
   })
 
-  it('does not claim an uploaded image before generation is unblocked', () => {
-    // Guard: an authored prompt must NOT flip the web/PDF to expect a real
-    // image until scripts/upload-exercise-images.ts has actually run for it.
-    expect(hasUploadedImage('ex-12')).toBe(false)
+  it('covers every one of the 174 catalogue exercises (2026-09-10 image library upload)', () => {
+    const missing = exercises.filter((e) => !hasUploadedImage(e.id)).map((e) => e.id)
+    expect(missing).toEqual([])
   })
 })

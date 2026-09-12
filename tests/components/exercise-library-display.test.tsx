@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { conditions } from "@/lib/conditions";
-import { exercises, formatDosage, resolveDosage } from "@/lib/exercises";
+import { exercises } from "@/lib/exercises";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
 import { StagedProgram } from "@/components/exercise-library/staged-program";
@@ -13,7 +13,7 @@ const sideLying = exercises.find((e) => e.slug === "side-lying-hip-abduction")!;
 const rotatorCuff = conditions.find((c) => c.slug === "rotator-cuff-tendinopathy")!;
 
 describe("ExerciseCard", () => {
-  it("renders the title, dosage, a slug link and an illustration", () => {
+  it("renders the title, metadata, a slug link and an illustration", () => {
     const { container } = render(<ExerciseCard exercise={clamShell} />);
 
     expect(screen.getByText("Clam Shell")).toBeInTheDocument();
@@ -21,7 +21,9 @@ describe("ExerciseCard", () => {
     const link = container.querySelector('a[href="/exercises/clam-shell"]');
     expect(link).not.toBeNull();
 
-    expect(container).toHaveTextContent(formatDosage(resolveDosage(clamShell)));
+    expect(container).toHaveTextContent(clamShell.bodyPart);
+    expect(container).toHaveTextContent(clamShell.stage);
+    expect(container).toHaveTextContent("View details");
 
     // ExerciseImage renders an <img> when a real illustration exists, otherwise
     // the inline stick-figure <svg> fallback. In jsdom nothing is uploaded.

@@ -6,7 +6,6 @@ import Link from "next/link";
 
 import { ExerciseImage } from "@/components/exercise-image";
 import type { Exercise } from "@/lib/exercise-library";
-import { formatDosage, resolveDosage } from "@/lib/exercises";
 
 export function ExerciseCard({ exercise }: { exercise: Exercise }) {
   return (
@@ -15,14 +14,20 @@ export function ExerciseCard({ exercise }: { exercise: Exercise }) {
         exerciseId={exercise.id}
         name={exercise.title}
         pose={exercise.pose}
-        size={72}
+        size={320}
+        className="exlib-ex-card__image"
+        variant="thumb"
       />
-      <span className="exlib-ex-card__title">{exercise.title}</span>
-      <span className="exlib-ex-card__dose">
-        {formatDosage(resolveDosage(exercise))}
+      <span className="exlib-ex-card__body">
+        <span className="exlib-ex-card__title">{exercise.title}</span>
+        <span className="exlib-ex-card__summary">{exercise.description}</span>
+        <span className="exlib-ex-card__meta">
+          <span>{exercise.bodyPart}</span>
+          <span>{exercise.stage}</span>
+        </span>
       </span>
       <span className="exlib-ex-card__more">
-        Full instructions <span aria-hidden>&rarr;</span>
+        View details <span aria-hidden>&rarr;</span>
       </span>
     </Link>
   );

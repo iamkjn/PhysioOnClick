@@ -228,7 +228,7 @@ export function AssignedExercises({ uid, personId }: Props) {
           return (
             <div key={ae.exerciseId} className={`exercise-card${done ? " done" : ""}`}>
               <div className="exercise-card-head">
-                <ExerciseImage exerciseId={ex.id} name={ex.title} pose={ex.pose} size={52} />
+                <ExerciseImage exerciseId={ex.id} name={ex.title} pose={ex.pose} size={64} />
                 <div className="exercise-card-body">
                   <strong>{ex.title}</strong>
                   <span>{ex.bodyPart} · {ex.stage}</span>

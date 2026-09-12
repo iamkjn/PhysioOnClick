@@ -147,77 +147,98 @@ export default async function ExerciseDetailPage({
         </span>
       </nav>
 
-      <section className="simple-page-hero">
-        <span className="eyebrow">Exercise library</span>
-        <ExerciseImage
-          exerciseId={exercise.id}
-          name={exercise.title}
-          pose={exercise.pose}
-          size={128}
-        />
-        <h1>{exercise.title}</h1>
-        {exercise.aka?.length ? (
-          <p className="muted">Also known as {exercise.aka.join(", ")}.</p>
-        ) : null}
-        <p>{exercise.description}</p>
-
-        <ExerciseVideo exercise={exercise} />
-
-        {helpsWith.length ? (
-          <ul
-            data-helps-with
-            aria-label="What this exercise helps with"
-            className="exlib-ex-page__chips"
-          >
-            {helpsWith.map((item) => (
-              <li key={item} className="exlib-ex-page__chip">
-                {item}
-              </li>
-            ))}
-          </ul>
-        ) : null}
-
-        {hubs.length ? (
-          <ul
-            aria-label="Conditions this exercise helps with"
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-              listStyle: "none",
-              padding: 0,
-            }}
-          >
-            {hubs.map((hub) => (
-              <li key={hub.slug}>
-                <Link className="pill-link" href={`/exercises/for/${hub.slug}`}>
-                  {hub.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-
-        <p className="muted">
-          <strong>Typical dose:</strong> {dose}. Always follow the plan your
-          physiotherapist gave you.
-        </p>
-
-        <div className="simple-nav-actions">
-          <TrackedBookLink
-            className="button primary"
-            href="/book"
-            serviceSlug={exercise.slug}
-            source="exercise-page"
-            event="library_cta_click"
-            params={{ slug: exercise.slug }}
-          >
-            Book a physiotherapy assessment
-          </TrackedBookLink>
-          <AddToPlanButton
-            exerciseSlug={exercise.slug}
-            exerciseTitle={exercise.title}
+      <section className="exlib-detail-hero">
+        <div className="exlib-detail-hero__media">
+          <ExerciseImage
+            exerciseId={exercise.id}
+            name={exercise.title}
+            pose={exercise.pose}
+            size={640}
+            className="exlib-detail-hero__image"
+            variant="full"
+            decorative={false}
           />
+        </div>
+
+        <div className="exlib-detail-hero__copy">
+          <span className="eyebrow">Exercise library</span>
+          <h1>{exercise.title}</h1>
+          {exercise.aka?.length ? (
+            <p className="muted">Also known as {exercise.aka.join(", ")}.</p>
+          ) : null}
+          <p>{exercise.description}</p>
+
+          <ExerciseVideo exercise={exercise} />
+
+          <dl className="exlib-detail-hero__facts">
+            <div>
+              <dt>Area</dt>
+              <dd>{exercise.bodyPart}</dd>
+            </div>
+            <div>
+              <dt>Stage</dt>
+              <dd>{exercise.stage}</dd>
+            </div>
+            <div>
+              <dt>Equipment</dt>
+              <dd>
+                {exercise.equipment?.length
+                  ? exercise.equipment.join(", ")
+                  : "No equipment"}
+              </dd>
+            </div>
+          </dl>
+
+          {helpsWith.length ? (
+            <ul
+              data-helps-with
+              aria-label="What this exercise helps with"
+              className="exlib-ex-page__chips"
+            >
+              {helpsWith.map((item) => (
+                <li key={item} className="exlib-ex-page__chip">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
+          {hubs.length ? (
+            <ul
+              aria-label="Conditions this exercise helps with"
+              className="exlib-detail-hero__hub-list"
+            >
+              {hubs.map((hub) => (
+                <li key={hub.slug}>
+                  <Link className="pill-link" href={`/exercises/for/${hub.slug}`}>
+                    {hub.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
+          <p className="muted">
+            <strong>Typical dose:</strong> {dose}. Always follow the plan your
+            physiotherapist gave you.
+          </p>
+
+          <div className="exlib-detail-hero__actions">
+            <TrackedBookLink
+              className="button primary"
+              href="/book"
+              serviceSlug={exercise.slug}
+              source="exercise-page"
+              event="library_cta_click"
+              params={{ slug: exercise.slug }}
+            >
+              Book a physiotherapy assessment
+            </TrackedBookLink>
+            <AddToPlanButton
+              exerciseSlug={exercise.slug}
+              exerciseTitle={exercise.title}
+            />
+          </div>
         </div>
       </section>
 

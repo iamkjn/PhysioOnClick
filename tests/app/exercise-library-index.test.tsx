@@ -30,12 +30,10 @@ describe("app/exercises index page", () => {
     expect(container.querySelector('a[href="/book"]')).not.toBeNull();
   });
 
-  it("renders the LibrarySearch input (by its aria-label)", () => {
+  it("renders the exercise browser's search input", () => {
     const { container } = render(<ExerciseLibraryIndexPage />);
     expect(
-      container.querySelector(
-        'input[aria-label="Search exercises and conditions"]',
-      ),
+      container.querySelector('.exlib-browser__search input[type="search"]'),
     ).not.toBeNull();
   });
 
@@ -92,16 +90,14 @@ describe("app/exercises index page", () => {
     expect(shoulder?.textContent).toContain("Shoulder");
   });
 
-  it("renders the body map before the LibrarySearch input", () => {
+  it("renders the exercise browser before the body map", () => {
     const { container } = render(<ExerciseLibraryIndexPage />);
+    const browser = container.querySelector(".exlib-browser");
     const bodyMap = container.querySelector("[data-body-map]");
-    const search = container.querySelector(
-      'input[aria-label="Search exercises and conditions"]',
-    );
+    expect(browser).not.toBeNull();
     expect(bodyMap).not.toBeNull();
-    expect(search).not.toBeNull();
     expect(
-      bodyMap!.compareDocumentPosition(search!) &
+      browser!.compareDocumentPosition(bodyMap!) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });

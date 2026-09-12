@@ -3,20 +3,21 @@ import Link from "next/link";
 
 import {
   allConditionSlugs,
+  allExerciseSlugs,
   allSelfTestSlugs,
   getCondition,
   getExerciseBySlug,
   getSelfTest,
   librarySearchIndex,
-  librarySearchItems,
   programForCondition,
+  relatedExercises,
 } from "@/lib/exercise-library";
 import { breadcrumbs } from "@/lib/structured-data";
 import { BodyMap } from "@/components/exercise-library/body-map";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
+import { ExerciseBrowser } from "@/components/exercise-library/exercise-browser";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
-import { LibrarySearch } from "@/components/exercise-library/library-search";
 import { SavedPlanList } from "@/components/exercise-library/saved-plan-list";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 
@@ -69,6 +70,15 @@ export default function ExerciseLibraryIndexPage() {
     );
   const featured = FEATURED_SLUGS.map((slug) => getExerciseBySlug(slug)).filter(
     (exercise): exercise is NonNullable<typeof exercise> => exercise !== null,
+  );
+  const browserExercises = allExerciseSlugs()
+    .map((slug) => getExerciseBySlug(slug))
+    .filter((exercise): exercise is NonNullable<typeof exercise> => exercise !== null);
+  const browserSuggestions = Object.fromEntries(
+    browserExercises.map((exercise) => [
+      exercise.slug,
+      relatedExercises(exercise.slug, 3),
+    ]),
   );
   const selfTests = allSelfTestSlugs()
     .map((slug) => getSelfTest(slug))
@@ -123,11 +133,14 @@ export default function ExerciseLibraryIndexPage() {
         </p>
       </section>
 
-      <BodyMap />
-
       <section className="exlib-index-section">
-        <LibrarySearch items={librarySearchItems()} />
+        <ExerciseBrowser
+          exercises={browserExercises}
+          relatedBySlug={browserSuggestions}
+        />
       </section>
+
+      <BodyMap />
 
       <section className="exlib-index-section" id="my-plan">
         <h2>Your saved exercises</h2>
