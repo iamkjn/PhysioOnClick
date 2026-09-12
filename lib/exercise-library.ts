@@ -57,9 +57,20 @@ export type ProgramStage = {
   exercises: Exercise[];
 };
 
+// Slug -> Condition, built once. Same rationale as `exerciseIndex`: an O(n)
+// scan here is fine standalone, but `programmesForExercise` calls it once per
+// condition per exercise page - keep it O(1) so that stays cheap too.
+let conditionBySlugIndex: Map<string, Condition> | null = null;
+function conditionIndex(): Map<string, Condition> {
+  if (!conditionBySlugIndex) {
+    conditionBySlugIndex = new Map(conditions.map((condition) => [condition.slug, condition]));
+  }
+  return conditionBySlugIndex;
+}
+
 /** The condition hub for `slug`, or `null` if there is no such hub. */
 export function getCondition(slug: string): Condition | null {
-  return conditions.find((condition) => condition.slug === slug) ?? null;
+  return conditionIndex().get(slug) ?? null;
 }
 
 /** Every condition slug, in source order. */
@@ -185,10 +196,7 @@ export function programmesForExercise(
 ): { condition: Condition; stageName: string }[] {
   const rows: { condition: Condition; stageName: string }[] = [];
 
-  for (const conditionSlug of allConditionSlugs()) {
-    const condition = getCondition(conditionSlug);
-    if (!condition) continue;
-
+  for (const condition of conditions) {
     const firstStage = condition.program.find((stage) =>
       stage.exerciseSlugs.includes(exerciseSlug),
     );
