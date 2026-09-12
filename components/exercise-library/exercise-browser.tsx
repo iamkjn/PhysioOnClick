@@ -27,12 +27,17 @@ type BrowserExercise = Pick<
 
 type ExerciseBrowserProps = {
   exercises: BrowserExercise[];
-  // Slugs, not full objects: every related exercise is already present in
-  // `exercises`, so shipping full copies here would duplicate the heaviest
-  // fields (steps/cues/setup/description) up to 3x per exercise across all
-  // 174 - a payload-size blow-up that overloaded the Worker in production.
-  relatedBySlug: Record<string, string[]>;
+  // Condition-hub slugs per exercise, not precomputed related-exercise lists:
+  // the page only ever needs "related" for whichever single exercise is
+  // selected, so ranking every one of the 174 server-side (an O(n^2) scan
+  // over the full catalogue on every request) wasted CPU the Worker doesn't
+  // reliably have - it's what tipped /exercises into hitting Cloudflare's
+  // CPU-time limit in production. Doing the same ranking here, once, only
+  // for `selected`, keeps the cost O(n) per view instead of O(n^2) per load.
+  conditionSlugsBySlug: Record<string, string[]>;
 };
+
+const RELATED_LIMIT = 3;
 
 function normalise(value: string): string {
   return value.toLowerCase().replace(/['\u2018\u2019]/g, "");
@@ -57,7 +62,7 @@ function firstUsefulSteps(exercise: BrowserExercise): string[] {
   return (exercise.steps ?? []).slice(0, 3);
 }
 
-export function ExerciseBrowser({ exercises, relatedBySlug }: ExerciseBrowserProps) {
+export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBrowserProps) {
   const [query, setQuery] = useState("");
   const [area, setArea] = useState("All");
   const [selectedSlug, setSelectedSlug] = useState(exercises[0]?.slug ?? "");
@@ -86,18 +91,29 @@ export function ExerciseBrowser({ exercises, relatedBySlug }: ExerciseBrowserPro
     }
   }, [filtered, selectedSlug]);
 
-  const bySlug = useMemo(
-    () => new Map(exercises.map((exercise) => [exercise.slug, exercise])),
-    [exercises],
-  );
-
   const selected =
     exercises.find((exercise) => exercise.slug === selectedSlug) ?? filtered[0] ?? exercises[0];
-  const suggestions = selected
-    ? (relatedBySlug[selected.slug] ?? [])
-        .map((slug) => bySlug.get(slug))
-        .filter((exercise): exercise is BrowserExercise => exercise !== undefined)
-    : [];
+
+  const suggestions = useMemo(() => {
+    if (!selected) return [];
+    const targetHubs = new Set(conditionSlugsBySlug[selected.slug] ?? []);
+
+    return exercises
+      .map((exercise, index) => ({ exercise, index }))
+      .filter(({ exercise }) => exercise.slug !== selected.slug)
+      .map(({ exercise, index }) => {
+        const sharesHub = (conditionSlugsBySlug[exercise.slug] ?? []).some((slug) =>
+          targetHubs.has(slug),
+        );
+        const sameBodyPart = exercise.bodyPart === selected.bodyPart;
+        return { exercise, index, score: (sharesHub ? 2 : 0) + (sameBodyPart ? 1 : 0) };
+      })
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score || a.index - b.index)
+      .slice(0, RELATED_LIMIT)
+      .map((entry) => entry.exercise);
+  }, [conditionSlugsBySlug, exercises, selected]);
+
   const previewSteps = selected ? firstUsefulSteps(selected) : [];
 
   if (!selected) return null;

@@ -5,12 +5,12 @@ import {
   allConditionSlugs,
   allExerciseSlugs,
   allSelfTestSlugs,
+  conditionsForExercise,
   getCondition,
   getExerciseBySlug,
   getSelfTest,
   librarySearchIndex,
   programForCondition,
-  relatedExercises,
 } from "@/lib/exercise-library";
 import { breadcrumbs } from "@/lib/structured-data";
 import { BodyMap } from "@/components/exercise-library/body-map";
@@ -74,13 +74,15 @@ export default function ExerciseLibraryIndexPage() {
   const browserExercises = allExerciseSlugs()
     .map((slug) => getExerciseBySlug(slug))
     .filter((exercise): exercise is NonNullable<typeof exercise> => exercise !== null);
-  // Slugs only - ExerciseBrowser resolves these against the `exercises` prop
-  // it already has in full, so related exercises aren't duplicated in the
-  // page payload (each is already sent once via `browserExercises`).
-  const browserSuggestions = Object.fromEntries(
+  // Condition-hub slugs only, not ranked related-exercise lists: ranking
+  // "related" exercises for all 174 up front was an O(n^2) scan over the
+  // full catalogue on every request, which is what tipped this page into
+  // Cloudflare's Worker CPU-time limit in production. ExerciseBrowser ranks
+  // related exercises client-side, once, for whichever one is selected.
+  const conditionSlugsBySlug = Object.fromEntries(
     browserExercises.map((exercise) => [
       exercise.slug,
-      relatedExercises(exercise.slug, 3).map((related) => related.slug),
+      conditionsForExercise(exercise.slug).map((condition) => condition.slug),
     ]),
   );
   const selfTests = allSelfTestSlugs()
@@ -139,7 +141,7 @@ export default function ExerciseLibraryIndexPage() {
       <section className="exlib-index-section">
         <ExerciseBrowser
           exercises={browserExercises}
-          relatedBySlug={browserSuggestions}
+          conditionSlugsBySlug={conditionSlugsBySlug}
         />
       </section>
 
