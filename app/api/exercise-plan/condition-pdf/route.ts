@@ -4,6 +4,7 @@ import { sendConditionPlanEmail } from "@/lib/emails/condition-plan-email";
 import { getCondition, programForCondition } from "@/lib/exercise-library";
 import { buildPlanCards } from "@/lib/exercise-plan";
 import { buildExercisePlanPdf } from "@/lib/exercise-plan-pdf";
+import { downloadObject } from "@/lib/firebase-admin";
 import { founder } from "@/lib/site-data";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -78,7 +79,19 @@ export async function POST(request: Request) {
     const assigned = programForCondition(slug)
       .flatMap((stage) => stage.exercises)
       .map((exercise) => ({ exerciseId: exercise.id }));
-    const cards = buildPlanCards(assigned, {});
+
+    // Same illustration source as the patient-booking PDF: read straight from
+    // Storage through the admin shim rather than fetching our own public URL.
+    const imageByExerciseId: Record<string, Uint8Array | null> = {};
+    await Promise.all(
+      assigned.map(async (a) => {
+        imageByExerciseId[a.exerciseId] = await downloadObject(
+          `exercise-images/${a.exerciseId}.png`,
+        ).catch(() => null);
+      }),
+    );
+
+    const cards = buildPlanCards(assigned, imageByExerciseId);
 
     const pdf = await buildExercisePlanPdf({
       patientName: "",

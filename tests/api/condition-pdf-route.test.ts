@@ -4,6 +4,7 @@ const buildExercisePlanPdf = vi.fn().mockResolvedValue(new Uint8Array([0x25, 0x5
 const sendConditionPlanEmail = vi.fn().mockResolvedValue({ sent: true })
 const getCondition = vi.fn()
 const programForCondition = vi.fn()
+const downloadObject = vi.fn().mockResolvedValue(null)
 
 vi.mock('@/lib/exercise-plan-pdf', () => ({
   buildExercisePlanPdf: (...a: unknown[]) => buildExercisePlanPdf(...a),
@@ -14,6 +15,9 @@ vi.mock('@/lib/emails/condition-plan-email', () => ({
 vi.mock('@/lib/exercise-library', () => ({
   getCondition: (...a: unknown[]) => getCondition(...a),
   programForCondition: (...a: unknown[]) => programForCondition(...a),
+}))
+vi.mock('@/lib/firebase-admin', () => ({
+  downloadObject: (...a: unknown[]) => downloadObject(...a),
 }))
 
 import { POST } from '@/app/api/exercise-plan/condition-pdf/route'
@@ -85,6 +89,24 @@ describe('POST /api/exercise-plan/condition-pdf', () => {
     // (/exercises/for/<slug>), not the non-existent /exercise-library/<slug>.
     const emailArg = sendConditionPlanEmail.mock.calls[0][0] as { libraryUrl: string }
     expect(emailArg.libraryUrl).toMatch(/\/exercises\/for\/rotator-cuff-tendinopathy$/)
+  })
+
+  it('fetches each exercise illustration from Storage and embeds it in its card', async () => {
+    downloadObject.mockImplementation(async (path: string) =>
+      path === 'exercise-images/ex-2.png' ? new Uint8Array([1, 2, 3]) : null,
+    )
+    const res = await POST(
+      req({ conditionSlug: 'rotator-cuff-tendinopathy', email: 'patient@example.com' }, '10.3.3.3'),
+    )
+    expect(res.status).toBe(200)
+    expect(downloadObject).toHaveBeenCalledWith('exercise-images/ex-1.png')
+    expect(downloadObject).toHaveBeenCalledWith('exercise-images/ex-2.png')
+    expect(downloadObject).toHaveBeenCalledWith('exercise-images/ex-3.png')
+    const pdfArg = buildExercisePlanPdf.mock.calls[0][0] as {
+      cards: { title: string; imageBytes: Uint8Array | null }[]
+    }
+    const withImage = pdfArg.cards.find((c) => c.imageBytes != null)
+    expect(withImage?.imageBytes).toEqual(new Uint8Array([1, 2, 3]))
   })
 
   it('a downstream failure still returns 200 { ok: false } with no unhandled rejection', async () => {
