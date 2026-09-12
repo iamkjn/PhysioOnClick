@@ -1,6 +1,5 @@
 import { exercises, resolveDosage, formatDosage, type ExerciseDosage } from "@/lib/exercises";
 import type { ExercisePlanCard } from "@/lib/exercise-plan-pdf";
-import { resolvePose } from "@/lib/exercise-poses";
 
 /**
  * Turn a patient's assigned exercises into the render-ready cards the PDF
@@ -24,7 +23,6 @@ export function buildPlanCards(
       index: cards.length + 1,
       title: ex.title,
       imageBytes: imageByExerciseId[a.exerciseId] ?? null,
-      pose: resolvePose(ex.pose, ex.title),
       setup: ex.setup ?? ex.description ?? null,
       steps: ex.steps ?? [],
       cues: (ex.cues ?? []).slice(0, 3),

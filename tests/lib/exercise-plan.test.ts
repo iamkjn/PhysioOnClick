@@ -54,14 +54,6 @@ describe('buildPlanCards', () => {
     expect(cards.map((c) => c.title)).toEqual([ex('ex-3').title, ex('ex-1').title])
   })
 
-  it('always sets a pose (explicit key or name-inferred)', () => {
-    for (const c of buildPlanCards(exercises.map((e) => ({ exerciseId: e.id })), {})) {
-      expect(typeof c.pose).toBe('string')
-      expect(c.pose).not.toBe('')
-    }
-    // ex-12 Heel Raises has an explicit pose authored in the catalogue.
-    expect(buildPlanCards([{ exerciseId: 'ex-12' }], {})[0].pose).toBe(ex('ex-12').pose)
-  })
 
   it('caps cues at 3', () => {
     for (const c of buildPlanCards(exercises.map((e) => ({ exerciseId: e.id })), {})) {

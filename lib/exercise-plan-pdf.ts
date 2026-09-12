@@ -1,16 +1,11 @@
 import { PDFDocument, rgb, StandardFonts, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
 import { invoiceIssuer, founder } from "@/lib/site-data";
-import { POSE_SPECS, POSE_VIEWBOX, resolvePose } from "@/lib/exercise-poses";
 import { PRACTICE_PHONE } from "@/lib/structured-data";
 
 export type ExercisePlanCard = {
   index: number;
   title: string;
   imageBytes: Uint8Array | null;
-  /** Stick-figure pose key (or a hint resolved by name) drawn when no
-   * illustration is available. Every card gets a figure, so this is only
-   * null when the caller has no title to infer from. */
-  pose: string | null;
   setup: string | null;
   steps: string[];
   cues: string[];
@@ -40,8 +35,6 @@ const SAFETY_FILL = rgb(0xff / 255, 0xf4 / 255, 0xf2 / 255);
 const SAFETY_BORDER = rgb(0xf3 / 255, 0xd6 / 255, 0xd0 / 255);
 const SAFETY_INK = rgb(0xa8 / 255, 0x3a / 255, 0x2c / 255);
 const FOOTER_RULE = rgb(0xe6 / 255, 0xee / 255, 0xf2 / 255);
-const FIGURE_TILE = rgb(0xe8 / 255, 0xf4 / 255, 0xfb / 255); // accent-soft, matches the web figure tile
-const FIGURE_STROKE = rgb(0x0c / 255, 0x7c / 255, 0xb0 / 255); // primary-dark, legible on the tile
 const WHITE = rgb(1, 1, 1);
 
 const PAGE: [number, number] = [595.28, 841.89]; // A4 portrait (pt)
@@ -258,56 +251,6 @@ function drawCheck(page: PDFPage, x: number, y: number, s: number, color: Return
   page.drawLine({ start: { x: x + s * 0.38, y }, end: { x: x + s, y: y + s * 0.92 }, thickness: 1.3, color });
 }
 
-/** Draw the stick-figure diagram for `poseHint` (an explicit pose key or a name
- * to infer from) inside a rounded tile. `(boxX, boxTopY)` is the tile's
- * top-left in pdf-lib coordinates (y up); `box` is its side length. The pose
- * specs use a 64×56 viewBox with y increasing downward, so y is flipped here.
- * Mirrors components/exercise-figure.tsx — same coordinates, ~78% inset. */
-function drawPoseFigure(
-  page: PDFPage,
-  poseHint: string | null,
-  title: string,
-  boxX: number,
-  boxTopY: number,
-  box: number,
-): void {
-  page.drawSvgPath(roundedRectPath(box, box, 10), {
-    x: boxX,
-    y: boxTopY,
-    color: FIGURE_TILE,
-    borderColor: CARD_BORDER,
-    borderWidth: 1,
-  });
-
-  const spec = POSE_SPECS[resolvePose(poseHint, title)];
-  const inset = box * 0.11; // ~78% of the tile, centred
-  const draw = box - inset * 2;
-  const sx = draw / POSE_VIEWBOX.w;
-  const sy = draw / POSE_VIEWBOX.h;
-  const px = (vx: number): number => boxX + inset + vx * sx;
-  const py = (vy: number): number => boxTopY - inset - vy * sy; // flip: viewBox y-down → pdf y-up
-  const stroke = Math.max(1.4, box * 0.033);
-
-  for (const [cx, cy, r] of spec.circles) {
-    page.drawCircle({
-      x: px(cx),
-      y: py(cy),
-      size: r * ((sx + sy) / 2),
-      borderColor: FIGURE_STROKE,
-      borderWidth: stroke,
-    });
-  }
-  for (const [x1, y1, x2, y2] of spec.segments) {
-    page.drawLine({
-      start: { x: px(x1), y: py(y1) },
-      end: { x: px(x2), y: py(y2) },
-      thickness: stroke,
-      color: FIGURE_STROKE,
-      lineCap: 1, // round
-    });
-  }
-}
-
 function drawCard(
   page: PDFPage,
   topY: number,
@@ -356,13 +299,9 @@ function drawCard(
   const titleRowH = Math.max(BADGE, layout.titleLines.length * leading(T_TITLE));
   const bodyTop = topY - PAD - titleRowH - GAP_TITLE_BODY;
 
-  // Left gutter: the real illustration if we have one, else the stick-figure.
-  if (layout.hasVisual) {
-    if (image) {
-      page.drawImage(image, { x: innerLeft, y: bodyTop - IMG, width: IMG, height: IMG });
-    } else {
-      drawPoseFigure(page, card.pose, card.title, innerLeft, bodyTop, IMG);
-    }
+  // Left gutter: the real illustration, when we have one.
+  if (layout.hasVisual && image) {
+    page.drawImage(image, { x: innerLeft, y: bodyTop - IMG, width: IMG, height: IMG });
   }
 
   const drawRow = (row: Row): void => {
@@ -483,9 +422,10 @@ export async function buildExercisePlanPdf(input: ExercisePlanPdfInput): Promise
       }
     }
 
-    // Every card carries a visual: the illustration if present, else the
-    // stick-figure diagram.
-    const layout = layoutCard(card, font, bold, width, true);
+    // No stick-figure fallback: a card only reserves the illustration gutter
+    // when a real image embedded successfully, otherwise text reclaims the
+    // full card width.
+    const layout = layoutCard(card, font, bold, width, image != null);
 
     // A card taller than a whole page still gets drawn (overflowing the
     // footer) — it only triggers one page break, never an infinite loop.
