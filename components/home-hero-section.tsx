@@ -90,44 +90,44 @@ export function HomeHeroSection({
     <section className="home-hero">
       <Image
         className="home-hero-image"
-        src="/home-hero-premium.svg"
-        // Purely decorative background art (an assisted-stretch/mobility-
-        // assessment illustration) sitting behind a dark overlay and the
-        // real H1/subhead text, which already carry the page's content —
-        // alt="" tells screen readers to skip it rather than double up.
+        src="/home-hero-premium.webp"
+        // Purely decorative hero photography sitting behind the real
+        // H1/subhead text, which already carry the page's content.
         alt=""
         fill
         priority
       />
       <div className="home-hero-overlay" />
       <div className="site-shell home-hero-content">
-        <span className="location-pill">Online Across the UK</span>
-        <h1>
-          Expert Physiotherapy,
-          <span> One Click Away</span>
-        </h1>
-        <p className="home-hero-copy">
-          Evidence-based physiotherapy by {founderName}, HCPC registered physiotherapist. Online consultations
-          across the UK.
-        </p>
-        <div className="button-row">
-          <Link className="button primary" href="/book" prefetch>
-            Book Your Session
-          </Link>
-          <Link className="button secondary inverted" href="/services" prefetch>
-            Explore Services
+        <div className="home-hero-text">
+          <span className="location-pill">Online Across the UK</span>
+          <h1>
+            Expert Physiotherapy,
+            <span> One Click Away</span>
+          </h1>
+          <p className="home-hero-copy">
+            Evidence-based physiotherapy by {founderName}, HCPC registered physiotherapist. Online consultations
+            across the UK.
+          </p>
+          <div className="button-row">
+            <Link className="button primary" href="/book" prefetch>
+              Book Your Session
+            </Link>
+            <Link className="button secondary inverted" href="/services" prefetch>
+              Explore Services
+            </Link>
+          </div>
+          {/* Below the two primary CTAs rather than a third competing button —
+              answers "is this actually online?" for a visitor who isn't ready
+              to book yet, without diluting the hero's conversion hierarchy. */}
+          <Link
+            href="/how-online-physiotherapy-works"
+            className="home-hero-secondary-link"
+            style={{ color: "inherit", textDecoration: "underline", opacity: 0.85 }}
+          >
+            See how online physiotherapy works
           </Link>
         </div>
-        {/* Below the two primary CTAs rather than a third competing button —
-            answers "is this actually online?" for a visitor who isn't ready
-            to book yet, without diluting the hero's conversion hierarchy. */}
-        <Link
-          href="/how-online-physiotherapy-works"
-          className="home-hero-secondary-link"
-          style={{ color: "inherit", textDecoration: "underline", opacity: 0.85 }}
-        >
-          See how online physiotherapy works
-        </Link>
       </div>
     </section>
   );
