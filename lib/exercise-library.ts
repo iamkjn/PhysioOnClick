@@ -67,9 +67,23 @@ export function allConditionSlugs(): string[] {
   return conditions.map((condition) => condition.slug);
 }
 
+// Slug -> Exercise, built once on first use. `getExerciseBySlug` is called
+// deep inside `relatedExercises`' per-candidate loop (via
+// `conditionsForExercise`), which itself runs once per catalogue exercise on
+// the library index page - an O(n) linear scan there made the whole page
+// O(n^3) across 174 exercises and blew the Cloudflare Worker's CPU budget in
+// production (Error 1102). Keep this a plain Map lookup.
+let exerciseBySlugIndex: Map<string, Exercise> | null = null;
+function exerciseIndex(): Map<string, Exercise> {
+  if (!exerciseBySlugIndex) {
+    exerciseBySlugIndex = new Map(exercises.map((exercise) => [exercise.slug, exercise]));
+  }
+  return exerciseBySlugIndex;
+}
+
 /** The exercise for `slug`, or `null` if there is no such exercise. */
 export function getExerciseBySlug(slug: string): Exercise | null {
-  return exercises.find((exercise) => exercise.slug === slug) ?? null;
+  return exerciseIndex().get(slug) ?? null;
 }
 
 /** Every exercise slug, in source order. */
@@ -100,25 +114,55 @@ export function programForCondition(slug: string): ProgramStage[] {
  * those whose staged programme lists this exercise slug. Deduped by condition
  * slug, name matches first. Returns `[]` for an unknown exercise slug.
  */
-export function conditionsForExercise(exerciseSlug: string): Condition[] {
-  const exercise = getExerciseBySlug(exerciseSlug);
-  if (!exercise) return [];
+// exerciseSlug -> Condition[], built once. Same rationale as `exerciseIndex`
+// above: this used to re-scan every condition's every stage on every call,
+// and `relatedExercises` calls it once per candidate exercise (174x per
+// exercise, 174 exercises on the index page) - O(n^3) overall.
+let conditionsForExerciseIndex: Map<string, Condition[]> | null = null;
+function conditionsForExerciseCache(): Map<string, Condition[]> {
+  if (conditionsForExerciseIndex) return conditionsForExerciseIndex;
 
-  const primaryName = exercise.condition.trim().toLowerCase();
-  const nameMatches: Condition[] = [];
-  const programMatches: Condition[] = [];
+  const byExercise = new Map<string, { nameMatches: Condition[]; programMatches: Condition[] }>();
+  const entry = (slug: string) => {
+    let e = byExercise.get(slug);
+    if (!e) {
+      e = { nameMatches: [], programMatches: [] };
+      byExercise.set(slug, e);
+    }
+    return e;
+  };
+
+  const conditionNameByExercise = new Map(
+    exercises.map((exercise) => [exercise.slug, exercise.condition.trim().toLowerCase()]),
+  );
 
   for (const condition of conditions) {
-    if (condition.name.trim().toLowerCase() === primaryName) {
-      nameMatches.push(condition);
-    } else if (
-      condition.program.some((stage) => stage.exerciseSlugs.includes(exerciseSlug))
-    ) {
-      programMatches.push(condition);
+    const conditionName = condition.name.trim().toLowerCase();
+    const inProgram = new Set<string>();
+    for (const stage of condition.program) {
+      for (const slug of stage.exerciseSlugs) inProgram.add(slug);
+    }
+    for (const [exerciseSlug, name] of conditionNameByExercise) {
+      if (name === conditionName) {
+        entry(exerciseSlug).nameMatches.push(condition);
+      } else if (inProgram.has(exerciseSlug)) {
+        entry(exerciseSlug).programMatches.push(condition);
+      }
     }
   }
 
-  return [...nameMatches, ...programMatches];
+  conditionsForExerciseIndex = new Map(
+    [...byExercise.entries()].map(([slug, { nameMatches, programMatches }]) => [
+      slug,
+      [...nameMatches, ...programMatches],
+    ]),
+  );
+  return conditionsForExerciseIndex;
+}
+
+export function conditionsForExercise(exerciseSlug: string): Condition[] {
+  if (!getExerciseBySlug(exerciseSlug)) return [];
+  return conditionsForExerciseCache().get(exerciseSlug) ?? [];
 }
 
 /**

@@ -74,10 +74,13 @@ export default function ExerciseLibraryIndexPage() {
   const browserExercises = allExerciseSlugs()
     .map((slug) => getExerciseBySlug(slug))
     .filter((exercise): exercise is NonNullable<typeof exercise> => exercise !== null);
+  // Slugs only - ExerciseBrowser resolves these against the `exercises` prop
+  // it already has in full, so related exercises aren't duplicated in the
+  // page payload (each is already sent once via `browserExercises`).
   const browserSuggestions = Object.fromEntries(
     browserExercises.map((exercise) => [
       exercise.slug,
-      relatedExercises(exercise.slug, 3),
+      relatedExercises(exercise.slug, 3).map((related) => related.slug),
     ]),
   );
   const selfTests = allSelfTestSlugs()

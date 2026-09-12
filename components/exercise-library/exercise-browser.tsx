@@ -27,7 +27,11 @@ type BrowserExercise = Pick<
 
 type ExerciseBrowserProps = {
   exercises: BrowserExercise[];
-  relatedBySlug: Record<string, BrowserExercise[]>;
+  // Slugs, not full objects: every related exercise is already present in
+  // `exercises`, so shipping full copies here would duplicate the heaviest
+  // fields (steps/cues/setup/description) up to 3x per exercise across all
+  // 174 - a payload-size blow-up that overloaded the Worker in production.
+  relatedBySlug: Record<string, string[]>;
 };
 
 function normalise(value: string): string {
@@ -82,9 +86,18 @@ export function ExerciseBrowser({ exercises, relatedBySlug }: ExerciseBrowserPro
     }
   }, [filtered, selectedSlug]);
 
+  const bySlug = useMemo(
+    () => new Map(exercises.map((exercise) => [exercise.slug, exercise])),
+    [exercises],
+  );
+
   const selected =
     exercises.find((exercise) => exercise.slug === selectedSlug) ?? filtered[0] ?? exercises[0];
-  const suggestions = selected ? relatedBySlug[selected.slug] ?? [] : [];
+  const suggestions = selected
+    ? (relatedBySlug[selected.slug] ?? [])
+        .map((slug) => bySlug.get(slug))
+        .filter((exercise): exercise is BrowserExercise => exercise !== undefined)
+    : [];
   const previewSteps = selected ? firstUsefulSteps(selected) : [];
 
   if (!selected) return null;
