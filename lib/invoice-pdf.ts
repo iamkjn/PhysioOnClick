@@ -46,6 +46,27 @@ function tracked(text: string): string {
   return text.toUpperCase();
 }
 
+/** Word-wrap `text` to `maxWidth` using the font's own metrics. A single word
+ * wider than `maxWidth` is left to overflow rather than hard-broken. Mirrors
+ * lib/exercise-plan-pdf.ts's wrapText. */
+function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [];
+  const lines: string[] = [];
+  let line = words[0];
+  for (let i = 1; i < words.length; i += 1) {
+    const candidate = `${line} ${words[i]}`;
+    if (font.widthOfTextAtSize(candidate, size) <= maxWidth) {
+      line = candidate;
+    } else {
+      lines.push(line);
+      line = words[i];
+    }
+  }
+  lines.push(line);
+  return lines;
+}
+
 /** `Buffer` is a Node-only global whose `instanceof Uint8Array` check can
  * fail across realms (e.g. Vitest's jsdom environment) even though it holds
  * the right bytes — decoding through `atob`, global in Node, Workers and
@@ -138,10 +159,28 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Uint8A
 
   const bx = MARGIN + 18;
   const by = cardTop - 28;
+  const cardInnerWidth = cardW - 36;
   label("Billed to", bx, by);
-  textAt(input.patientName || input.patientEmail, bx, by - 24, { f: bold, size: 14 });
+
+  // The billed-to name (e.g. "Anish George (booked by Seena George)") can run
+  // much longer than a single line at 14pt fits inside its card — wrap it
+  // instead of letting it overflow into the "Issued by" card next to it,
+  // shrinking the font first so two names still read as one confident line
+  // where they can.
+  const nameText = input.patientName || input.patientEmail;
+  let nameSize = 14;
+  let nameLines = wrapText(nameText, bold, nameSize, cardInnerWidth);
+  if (nameLines.length > 1) {
+    nameSize = 12;
+    nameLines = wrapText(nameText, bold, nameSize, cardInnerWidth);
+  }
+  nameLines = nameLines.slice(0, 2);
+  const nameLineGap = nameSize + 3;
+  nameLines.forEach((line, i) => {
+    textAt(line, bx, by - 24 - i * nameLineGap, { f: bold, size: nameSize });
+  });
   if (input.patientName) {
-    textAt(input.patientEmail, bx, by - 44, { size: 10, color: MUTED });
+    textAt(input.patientEmail, bx, by - 24 - nameLines.length * nameLineGap - 4, { size: 10, color: MUTED });
   }
 
   const ix = MARGIN + cardW + cardGap + 18;
