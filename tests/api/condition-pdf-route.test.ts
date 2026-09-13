@@ -93,15 +93,15 @@ describe('POST /api/exercise-plan/condition-pdf', () => {
 
   it('fetches each exercise illustration from Storage and embeds it in its card', async () => {
     downloadObject.mockImplementation(async (path: string) =>
-      path === 'exercise-images/ex-2.png' ? new Uint8Array([1, 2, 3]) : null,
+      path === 'exercise-images/ex-2-pdf.png' ? new Uint8Array([1, 2, 3]) : null,
     )
     const res = await POST(
       req({ conditionSlug: 'rotator-cuff-tendinopathy', email: 'patient@example.com' }, '10.3.3.3'),
     )
     expect(res.status).toBe(200)
-    expect(downloadObject).toHaveBeenCalledWith('exercise-images/ex-1.png')
-    expect(downloadObject).toHaveBeenCalledWith('exercise-images/ex-2.png')
-    expect(downloadObject).toHaveBeenCalledWith('exercise-images/ex-3.png')
+    expect(downloadObject).toHaveBeenCalledWith('exercise-images/ex-1-pdf.png')
+    expect(downloadObject).toHaveBeenCalledWith('exercise-images/ex-2-pdf.png')
+    expect(downloadObject).toHaveBeenCalledWith('exercise-images/ex-3-pdf.png')
     const pdfArg = buildExercisePlanPdf.mock.calls[0][0] as {
       cards: { title: string; imageBytes: Uint8Array | null }[]
     }

@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     await Promise.all(
       assigned.map(async (a) => {
         imageByExerciseId[a.exerciseId] = await downloadObject(
-          `exercise-images/${a.exerciseId}.png`,
+          `exercise-images/${a.exerciseId}-pdf.png`,
         ).catch(() => null);
       }),
     );
