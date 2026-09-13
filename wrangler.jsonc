@@ -33,6 +33,15 @@
     "enabled": true
   },
 
+  // PDF generation (pdf-lib decoding/embedding several 960px illustration
+  // PNGs per plan) is CPU-heavier than the platform's default bundled limit
+  // allows, which was silently truncating condition-hub and exercise-plan PDF
+  // requests with a Cloudflare 1102 "exceeded resource limits" error before
+  // this was set. Requires a paid Workers plan.
+  "limits": {
+    "cpu_ms": 30000
+  },
+
   // Non-secret runtime config only. Secrets (CAL_API_KEY, CAL_WEBHOOK_SECRET,
   // GEMINI_API_KEY, RESEND_API_KEY, FIREBASE_SERVICE_ACCOUNT_JSON) are set with
   // `wrangler secret put` / the dashboard and must NEVER be listed here — this
