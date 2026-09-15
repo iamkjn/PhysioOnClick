@@ -219,8 +219,8 @@ export default async function ExerciseDetailPage({
           ) : null}
 
           <p className="muted">
-            <strong>Typical dose:</strong> {dose}. Always follow the plan your
-            physiotherapist gave you.
+            <strong>Typical dose:</strong> {dose}. This is a general starting
+            point, not a plan matched to your condition or stage.
           </p>
 
           <div className="exlib-detail-hero__actions">
@@ -232,7 +232,7 @@ export default async function ExerciseDetailPage({
               event="library_cta_click"
               params={{ slug: exercise.slug }}
             >
-              Book a physiotherapy assessment
+              Get a plan personalized to you
             </TrackedBookLink>
             <AddToPlanButton
               exerciseSlug={exercise.slug}
@@ -346,11 +346,12 @@ export default async function ExerciseDetailPage({
 
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
-          <span className="eyebrow">Not sure this is the right exercise?</span>
-          <h2>Get a plan built for you</h2>
+          <span className="eyebrow">This exercise is generic - you're not</span>
+          <h2>Get a plan personalized to you</h2>
           <p>
             Book an online assessment with an HCPC-registered physiotherapist and
-            get a rehab plan matched to your condition and stage.
+            get a rehab plan matched to your condition and stage - not a generic
+            starting point.
           </p>
           <TrackedBookLink
             className="button secondary cta-white"
@@ -358,7 +359,7 @@ export default async function ExerciseDetailPage({
             serviceSlug="cta_band"
             source="exercise-page-cta-band"
           >
-            Book assessment
+            Get my personalized plan
           </TrackedBookLink>
         </div>
       </section>

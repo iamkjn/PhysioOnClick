@@ -259,12 +259,12 @@ export default async function ConditionHubPage({
         <aside className="exlib-hub__rail">
           <div className="exlib-cta-card">
             <h2 className="exlib-cta-card__title">
-              Want this checked by a physiotherapist?
+              This programme is generic - you're not
             </h2>
             <p className="exlib-cta-card__body">
               Book an online assessment with an HCPC-registered physiotherapist
-              and get a plan matched to your shoulder, knee or back - wherever
-              you are in the UK.
+              and get a plan personalized to your shoulder, knee or back, your
+              stage of recovery, and your goals - wherever you are in the UK.
             </p>
             <TrackedBookLink
               className="button primary"
@@ -274,7 +274,7 @@ export default async function ConditionHubPage({
               event="library_cta_click"
               params={{ slug: condition.slug }}
             >
-              Book an assessment
+              Get a plan personalized to you
             </TrackedBookLink>
             <p className="exlib-cta-card__price">
               Online physiotherapy {priceLabel} a session.
@@ -289,11 +289,12 @@ export default async function ConditionHubPage({
 
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
-          <span className="eyebrow">Not sure this is the right programme?</span>
-          <h2>Get a plan built for you</h2>
+          <span className="eyebrow">This programme is generic - you're not</span>
+          <h2>Get a plan personalized to you</h2>
           <p>
             Book an online assessment with an HCPC-registered physiotherapist and
-            get a rehab plan matched to your condition and stage.
+            get a rehab plan matched to your condition and stage - not a generic
+            starting point.
           </p>
           <TrackedBookLink
             className="button secondary cta-white"
@@ -301,7 +302,7 @@ export default async function ConditionHubPage({
             serviceSlug="cta_band"
             source="condition-hub-cta-band"
           >
-            Book assessment
+            Get my personalized plan
           </TrackedBookLink>
         </div>
       </section>

@@ -132,7 +132,7 @@ export default function ExerciseLibraryIndexPage() {
             serviceSlug="musculoskeletal-physiotherapy"
             source="exercise-library-hero"
           >
-            Book an online assessment
+            Get a plan personalized to you
           </TrackedBookLink>
           .
         </p>
@@ -228,12 +228,12 @@ export default function ExerciseLibraryIndexPage() {
 
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
-          <span className="eyebrow">Not sure where to start?</span>
-          <h2>Get a plan built for you</h2>
+          <span className="eyebrow">This library is generic - you're not</span>
+          <h2>Get a plan personalized to you</h2>
           <p>
             Book an online assessment with an HCPC-registered physiotherapist and
-            get a rehab plan matched to your condition and stage, wherever you
-            are in the UK.
+            get a rehab plan matched to your condition and stage - not a generic
+            starting point - wherever you are in the UK.
           </p>
           <TrackedBookLink
             className="button secondary cta-white"
@@ -241,7 +241,7 @@ export default function ExerciseLibraryIndexPage() {
             serviceSlug="musculoskeletal-physiotherapy"
             source="exercise-library-index"
           >
-            Book assessment
+            Get my personalized plan
           </TrackedBookLink>
         </div>
       </section>
