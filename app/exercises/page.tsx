@@ -228,7 +228,7 @@ export default function ExerciseLibraryIndexPage() {
 
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
-          <span className="eyebrow">This library is generic - you're not</span>
+          <span className="eyebrow">This library is generic - you&apos;re not</span>
           <h2>Get a plan personalized to you</h2>
           <p>
             Book an online assessment with an HCPC-registered physiotherapist and

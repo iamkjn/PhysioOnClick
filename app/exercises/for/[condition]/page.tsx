@@ -259,7 +259,7 @@ export default async function ConditionHubPage({
         <aside className="exlib-hub__rail">
           <div className="exlib-cta-card">
             <h2 className="exlib-cta-card__title">
-              This programme is generic - you're not
+              This programme is generic - you&apos;re not
             </h2>
             <p className="exlib-cta-card__body">
               Book an online assessment with an HCPC-registered physiotherapist
@@ -289,7 +289,7 @@ export default async function ConditionHubPage({
 
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
-          <span className="eyebrow">This programme is generic - you're not</span>
+          <span className="eyebrow">This programme is generic - you&apos;re not</span>
           <h2>Get a plan personalized to you</h2>
           <p>
             Book an online assessment with an HCPC-registered physiotherapist and
