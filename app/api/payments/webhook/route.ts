@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { createCalBooking } from "@/lib/cal-booking";
-import { sendAssessmentLinkEmail } from "@/lib/emails/assessment-link-email";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
-import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
@@ -203,12 +202,51 @@ export async function POST(request: Request) {
     console.error("Payment recorded but booking paid-flag update failed", error);
   }
 
-  // Invoice PDF, receipt email and assessment email are three independent
-  // best-effort steps that must never break the 200 response to Stripe —
-  // but they used to share one try/catch, so a PDF/upload failure silently
-  // skipped BOTH emails even though neither depends on the PDF succeeding.
-  // Each step now has its own try/catch so one failure can't take the others
-  // down with it.
+  // The self-assessment is now filled in BEFORE payment (see
+  // components/booking-step-time.tsx), so by the time we're here the form
+  // already exists at patients/{assessmentUid}/people/{assessmentPersonId}/
+  // assessmentForms/{assessmentFormId} with an empty bookingId (the real
+  // booking didn't exist yet when it was submitted). Link the two together
+  // now and mark the booking's assessment complete immediately — no
+  // post-payment email/reminder needed.
+  if (intent.assessmentUid && intent.assessmentPersonId && intent.assessmentFormId) {
+    try {
+      const assessmentRef = db
+        .collection("patients")
+        .doc(intent.assessmentUid)
+        .collection("people")
+        .doc(intent.assessmentPersonId)
+        .collection("assessmentForms")
+        .doc(intent.assessmentFormId);
+      await assessmentRef.update({ bookingId: booking.uid });
+
+      const bookingSnap = await db
+        .collection("bookings")
+        .where("calBookingUid", "==", booking.uid)
+        .limit(1)
+        .get();
+      if (!bookingSnap.empty) {
+        await bookingSnap.docs[0].ref.update({
+          assessmentFormId: intent.assessmentFormId,
+          assessmentCompletedAt: FieldValue.serverTimestamp(),
+        });
+      }
+      // If cal-webhook hasn't created the bookings doc yet, it reconciles
+      // this from the payments doc itself — see app/api/cal-webhook/route.ts.
+      await paymentRef.set(
+        { assessmentUid: intent.assessmentUid, assessmentPersonId: intent.assessmentPersonId, assessmentFormId: intent.assessmentFormId },
+        { merge: true }
+      );
+    } catch (error) {
+      console.error("Assessment-to-booking linking failed (non-blocking)", error);
+    }
+  }
+
+  // Invoice PDF and receipt email are two independent best-effort steps that
+  // must never break the 200 response to Stripe — but they used to share one
+  // try/catch, so a PDF/upload failure silently skipped the email too even
+  // though it doesn't depend on the PDF succeeding. Each step now has its own
+  // try/catch so one failure can't take the other down with it.
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const serviceLabel = bookServiceFor(intent.service).title;
 
@@ -248,32 +286,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Receipt email failed (non-blocking)", error);
-  }
-
-  try {
-    let assessmentUrl = `${siteUrl}/patient/assessment`;
-    try {
-      const adminAuth = getAdminAuth();
-      if (adminAuth) {
-        const verifyUrl = new URL("/auth/verify", siteUrl);
-        verifyUrl.searchParams.set("email", intent.email);
-        verifyUrl.searchParams.set("returnTo", "/patient/assessment");
-        assessmentUrl = await adminAuth.generateSignInWithEmailLink(intent.email, {
-          url: verifyUrl.toString(),
-          handleCodeInApp: true,
-        });
-      }
-    } catch (error) {
-      console.error("Assessment magic-link generation failed; falling back to plain URL", error);
-    }
-    await sendAssessmentLinkEmail({
-      to: intent.email,
-      patientName: intent.name,
-      serviceLabel,
-      assessmentUrl,
-    });
-  } catch (error) {
-    console.error("Assessment email failed (non-blocking)", error);
   }
 
   return NextResponse.json({ received: true }, { status: 200 });

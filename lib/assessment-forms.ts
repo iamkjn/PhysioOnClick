@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  getDoc,
   getDocs,
   orderBy,
   query,
@@ -8,6 +9,7 @@ import {
   updateDoc,
   doc,
   type QueryDocumentSnapshot,
+  type DocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -459,7 +461,7 @@ function asReviewStatus(value: unknown): AssessmentReviewStatus {
   return "awaiting_review";
 }
 
-function mapAssessmentForm(snap: QueryDocumentSnapshot): PatientAssessmentFormRecord {
+function mapAssessmentForm(snap: QueryDocumentSnapshot | DocumentSnapshot): PatientAssessmentFormRecord {
   const data = snap.data() as Record<string, unknown>;
   return {
     id: snap.id,
@@ -546,6 +548,18 @@ export async function getPatientAssessmentForms(
 ): Promise<PatientAssessmentFormRecord[]> {
   const snap = await getDocs(query(personBase(uid, personId), orderBy("createdAt", "desc")));
   return snap.docs.map(mapAssessmentForm);
+}
+
+/** Fetch one assessment by id — used by the admin bookings table to show what a patient submitted pre-payment. */
+export async function getPatientAssessmentFormById(
+  uid: string,
+  personId: string,
+  formId: string,
+): Promise<PatientAssessmentFormRecord | null> {
+  if (!db) return null;
+  const snap = await getDoc(doc(db, "patients", uid, "people", personId, "assessmentForms", formId));
+  if (!snap.exists()) return null;
+  return mapAssessmentForm(snap);
 }
 
 export async function updateAssessmentReview(

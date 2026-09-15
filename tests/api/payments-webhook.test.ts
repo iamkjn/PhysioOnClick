@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const bookingDoc = { update: vi.fn().mockResolvedValue(undefined) };
+const assessmentDoc = { update: vi.fn().mockResolvedValue(undefined) };
 const paymentDocRef = {
   get: vi.fn(),
   set: vi.fn().mockResolvedValue(undefined),
@@ -11,6 +12,10 @@ const db = {
     if (name === "payments") {
       return { doc: vi.fn(() => paymentDocRef) };
     }
+    if (name === "patients") {
+      // patients/{uid}/people/{personId}/assessmentForms/{formId}
+      return { doc: () => ({ collection: () => ({ doc: () => ({ collection: () => ({ doc: () => assessmentDoc }) }) }) }) };
+    }
     // bookings lookup by calBookingUid
     return {
       where: () => ({ limit: () => ({ get: async () => ({ empty: false, docs: [{ ref: bookingDoc }] }) }) }),
@@ -18,14 +23,8 @@ const db = {
   }),
 };
 
-const adminAuth = {
-  generateSignInWithEmailLink: vi
-    .fn()
-    .mockResolvedValue("https://example.test/auth/verify?magic=1&returnTo=/patient/assessment"),
-};
 vi.mock("@/lib/firebase-admin", () => ({
   getAdminDb: () => db,
-  getAdminAuth: () => adminAuth,
   FieldValue: { serverTimestamp: () => "TS" },
   uploadObject: vi.fn().mockResolvedValue({ ok: true }),
 }));
@@ -35,12 +34,8 @@ vi.mock("@/lib/cal-booking", () => ({
 vi.mock("@/lib/invoice-pdf", () => ({
   generateInvoicePdf: vi.fn().mockResolvedValue(new Uint8Array([37, 80, 68, 70])),
 }));
-vi.mock("@/lib/emails/assessment-link-email", () => ({
-  sendAssessmentLinkEmail: vi.fn().mockResolvedValue({ sent: true }),
-}));
 // slot re-check helper lives in the route module's dependency; stub global fetch for /v2/slots
 import { createCalBooking } from "@/lib/cal-booking";
-import { sendAssessmentLinkEmail } from "@/lib/emails/assessment-link-email";
 import { POST } from "@/app/api/payments/webhook/route";
 
 const SECRET = "whsec_test";
@@ -111,13 +106,6 @@ describe("POST /api/payments/webhook", () => {
     // booking doc marked as paid
     expect(bookingDoc.update).toHaveBeenCalledWith(
       expect.objectContaining({ paid: true }),
-    );
-    // assessment-link email sent with a magic-link URL landing on /patient/assessment
-    expect(sendAssessmentLinkEmail).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: "ada@example.com",
-        assessmentUrl: expect.stringContaining("/patient/assessment"),
-      }),
     );
   });
 
@@ -190,5 +178,29 @@ describe("POST /api/payments/webhook", () => {
     expect(res.status).toBe(200);
     const written = paymentDocRef.set.mock.calls.at(-1)[0];
     expect(written.status).toBe("booking_failed");
+  });
+
+  it("links a pre-payment self-assessment to the new booking instead of emailing a link", async () => {
+    const eventWithAssessment = {
+      ...EVENT,
+      data: {
+        object: {
+          ...EVENT.data.object,
+          metadata: {
+            ...EVENT.data.object.metadata,
+            assessmentUid: "uid_1",
+            assessmentPersonId: "uid_1",
+            assessmentFormId: "form_1",
+          },
+        },
+      },
+    };
+    const res = await POST(signedRequest(eventWithAssessment));
+    expect(res.status).toBe(200);
+    // the draft assessment (submitted before checkout, with an empty bookingId) is now linked to the real booking
+    expect(assessmentDoc.update).toHaveBeenCalledWith({ bookingId: "cal_xyz" });
+    expect(bookingDoc.update).toHaveBeenCalledWith(
+      expect.objectContaining({ assessmentFormId: "form_1", assessmentCompletedAt: "TS" }),
+    );
   });
 });

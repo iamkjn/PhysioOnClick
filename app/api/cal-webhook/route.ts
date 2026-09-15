@@ -131,7 +131,13 @@ export async function POST(request: NextRequest) {
             .limit(1)
             .get();
           if (!paymentSnap.empty) {
-            const pay = paymentSnap.docs[0].data() as { amountPence?: number; status?: string };
+            const pay = paymentSnap.docs[0].data() as {
+              amountPence?: number;
+              status?: string;
+              assessmentUid?: string;
+              assessmentPersonId?: string;
+              assessmentFormId?: string;
+            };
             if (pay.status === "paid") {
               await bookingRef.update({
                 paid: true,
@@ -139,9 +145,27 @@ export async function POST(request: NextRequest) {
                 paymentProvider: "stripe",
               });
             }
+            // Pre-payment self-assessment (see components/booking-step-time.tsx):
+            // the payments webhook may have recorded this before the Cal.com
+            // BOOKING_CREATED event reached us. Link it now instead of waiting
+            // on a post-payment reminder.
+            if (pay.assessmentUid && pay.assessmentPersonId && pay.assessmentFormId) {
+              await db
+                .collection("patients")
+                .doc(pay.assessmentUid)
+                .collection("people")
+                .doc(pay.assessmentPersonId)
+                .collection("assessmentForms")
+                .doc(pay.assessmentFormId)
+                .update({ bookingId: booking.uid });
+              await bookingRef.update({
+                assessmentFormId: pay.assessmentFormId,
+                assessmentCompletedAt: FieldValue.serverTimestamp(),
+              });
+            }
           }
         } catch (error) {
-          console.error("cal-webhook paid reconciliation failed", error);
+          console.error("cal-webhook paid/assessment reconciliation failed", error);
         }
 
         // Link booking to Firebase user and merge dependent selection if present.

@@ -14,7 +14,15 @@ type Body = {
   email?: unknown;
   timeZone?: unknown;
   focusAreas?: unknown;
+  assessmentUid?: unknown;
+  assessmentPersonId?: unknown;
+  assessmentFormId?: unknown;
 };
+
+/** A Firestore auto-id / uid: alphanumeric, reasonable length. */
+function isIdLike(v: unknown): v is string {
+  return typeof v === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(v);
+}
 
 function bad(error: string) {
   return NextResponse.json({ ok: false, error }, { status: 400 });
@@ -28,7 +36,8 @@ export async function POST(request: Request) {
     return bad("Invalid request body.");
   }
 
-  const { service, start, name, email, timeZone, focusAreas } = body;
+  const { service, start, name, email, timeZone, focusAreas, assessmentUid, assessmentPersonId, assessmentFormId } =
+    body;
 
   if (!isBookServiceId(service)) return bad("Invalid or missing service.");
   if (typeof start !== "string" || start.trim() === "") return bad("Invalid or missing start time.");
@@ -64,6 +73,13 @@ export async function POST(request: Request) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
+  // All three are optional (a free service or an edge case might skip the
+  // pre-payment assessment step), but if present they must be well-formed —
+  // they're trusted as-is by the payment webhook to patch Firestore docs.
+  if (assessmentUid !== undefined && !isIdLike(assessmentUid)) return bad("Invalid assessmentUid.");
+  if (assessmentPersonId !== undefined && !isIdLike(assessmentPersonId)) return bad("Invalid assessmentPersonId.");
+  if (assessmentFormId !== undefined && !isIdLike(assessmentFormId)) return bad("Invalid assessmentFormId.");
+
   const intent: BookingIntent = {
     service,
     startISO: startDate.toISOString(),
@@ -71,6 +87,9 @@ export async function POST(request: Request) {
     email: trimmedEmail,
     timeZone: resolvedTimeZone,
     focusAreas: cleanedFocus,
+    ...(isIdLike(assessmentUid) ? { assessmentUid } : {}),
+    ...(isIdLike(assessmentPersonId) ? { assessmentPersonId } : {}),
+    ...(isIdLike(assessmentFormId) ? { assessmentFormId } : {}),
   };
 
   const result = await createStripeCheckout({

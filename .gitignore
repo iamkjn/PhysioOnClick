@@ -42,3 +42,10 @@ functions/.env.*
 
 # Generated exercise illustrations (Imagen API output, uploaded to Storage)
 exercise-images-src/
+
+# Raw image-generation working files (multi-GB, source assets already
+# committed under app/*-images/ once shipped) — never commit these wholesale.
+generated-assets/
+
+# One-off SEO audit report output — a generated report, not app code.
+physioonclick.co.uk-audit/

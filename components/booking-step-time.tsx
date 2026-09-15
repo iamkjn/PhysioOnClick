@@ -18,6 +18,7 @@ import type { PricingItem } from "@/lib/site-data";
 import type { BookingConfirmation } from "@/components/booking-flow";
 import { LIMITS, validateEmail, validateName } from "@/lib/validation";
 import { PasswordInput } from "@/components/password-input";
+import { AssessmentWizard } from "@/components/assessment-wizard";
 
 type Props = {
   service: CalService & PricingItem;
@@ -123,8 +124,31 @@ export function BookingStepTime({
   const [error, setError] = useState<string | null>(null);
   const [consent, setConsent] = useState(false);
 
+  // Once account + slot are settled we collect the pre-payment self-assessment
+  // (see AssessmentWizard below) before ever hitting Stripe — so a physio has
+  // it in hand before the appointment instead of chasing a post-payment
+  // reminder. checkoutInfo holds what /api/checkout/create needs once that's done.
+  const [phase, setPhase] = useState<"details" | "assessment">("details");
+  const [checkoutInfo, setCheckoutInfo] = useState<{
+    name: string;
+    email: string;
+    assessmentUid: string;
+    assessmentPersonId: string;
+  } | null>(null);
+
   const signedIn = Boolean(user);
   const signingIn = !signedIn && authMode === "signin";
+
+  // Signed-in patients book as themselves, so prefill from their account.
+  // Some accounts (e.g. magic-link sign-ins) never captured a display name —
+  // for those, surface the editable fields up front instead of hiding them
+  // behind "Edit" and only discovering the gap at submit time.
+  useEffect(() => {
+    if (!user) return;
+    setName(user.displayName ?? "");
+    setEmail(user.email ?? "");
+    if (!user.displayName) setEditingDetails(true);
+  }, [user]);
 
   useEffect(() => {
     let cancelled = false;
@@ -268,6 +292,17 @@ export function BookingStepTime({
           return;
         }
       }
+    } else if (editingDetails) {
+      const nameErr = validateName(name);
+      if (nameErr) {
+        setError(nameErr);
+        return;
+      }
+      const emailErr = validateEmail(email);
+      if (emailErr) {
+        setError(emailErr);
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -278,11 +313,19 @@ export function BookingStepTime({
       let attendeeEmail: string;
 
       if (signedIn) {
-        attendeeName = user!.displayName ?? name.trim();
-        attendeeEmail = user!.email ?? email.trim();
+        attendeeName = (user!.displayName || name.trim());
+        attendeeEmail = (user!.email || email.trim());
         if (!attendeeName || !attendeeEmail) {
           setError("Please enter your name and email.");
+          setEditingDetails(true);
           return;
+        }
+        if (!user!.displayName && attendeeName) {
+          try {
+            await updateProfile(user!, { displayName: attendeeName });
+          } catch {
+            // Non-fatal — the booking still proceeds with the name we collected.
+          }
         }
       } else {
         if (!auth) {
@@ -369,31 +412,71 @@ export function BookingStepTime({
         ? `${bookingForName || "Patient"} (booked by ${attendeeName})`
         : attendeeName;
 
+      // Account + slot are settled — collect the assessment before payment
+      // instead of redirecting to Stripe now (see AssessmentWizard render below).
+      setCheckoutInfo({
+        name: calBookingName,
+        email: attendeeEmail,
+        assessmentUid: user?.uid ?? "",
+        assessmentPersonId: bookingForId ?? user?.uid ?? "",
+      });
+      setPhase("assessment");
+    } catch {
+      setError("Something went wrong booking your session. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function startCheckout(assessmentFormId?: string) {
+    if (!checkoutInfo) return;
+    setSubmitting(true);
+    setError(null);
+    try {
       const res = await fetch("/api/checkout/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           service: service.id,
           start: selectedSlot,
-          name: calBookingName,
-          email: attendeeEmail,
+          name: checkoutInfo.name,
+          email: checkoutInfo.email,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          focusAreas
+          focusAreas,
+          ...(assessmentFormId
+            ? {
+                assessmentFormId,
+                assessmentUid: checkoutInfo.assessmentUid,
+                assessmentPersonId: checkoutInfo.assessmentPersonId,
+              }
+            : {})
         })
       });
       const data = await res.json();
       if (!res.ok || !data.ok || !data.url) {
         setError("We couldn't start payment. Please try again.");
+        setSubmitting(false);
         return;
       }
       // Redirect to Stripe's hosted Checkout (standard UK payment screen).
       window.location.href = data.url as string;
-      return;
     } catch {
-      setError("Something went wrong booking your session. Please try again.");
-    } finally {
+      setError("Something went wrong starting payment. Please try again.");
       setSubmitting(false);
     }
+  }
+
+  if (phase === "assessment" && checkoutInfo && user) {
+    return (
+      <AssessmentWizard
+        uid={checkoutInfo.assessmentUid}
+        personId={checkoutInfo.assessmentPersonId}
+        displayName={checkoutInfo.name}
+        personName={bookingForId ? bookingForName || "Patient" : checkoutInfo.name}
+        bookingId=""
+        onSubmitted={(formId) => startCheckout(formId)}
+      />
+    );
   }
 
   return (

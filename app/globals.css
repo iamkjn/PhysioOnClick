@@ -9823,12 +9823,18 @@ textarea:focus {
   margin: 0 auto;
   padding: 0 var(--space-4);
 }
+.assessment-wizard__progress-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-6);
+}
 .assessment-wizard__progress {
+  flex: 1;
   height: 6px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-border) 60%, transparent);
   overflow: hidden;
-  margin: var(--space-4) 0 var(--space-6);
 }
 .assessment-wizard__progress > span {
   display: block;
@@ -9836,6 +9842,12 @@ textarea:focus {
   background: var(--color-primary);
   border-radius: 999px;
   transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.assessment-wizard__step-count {
+  flex-shrink: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 .assessment-wizard__stage {
   flex: 1;
@@ -9851,12 +9863,37 @@ textarea:focus {
   .assessment-wizard__panel { animation: none; }
   .assessment-wizard__progress > span { transition: none; }
 }
+.assessment-wizard__title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
 .assessment-wizard__panel h1 {
   font-family: var(--font-serif);
   font-size: clamp(1.6rem, 4vw, 2.3rem);
   line-height: 1.15;
   color: var(--color-navy);
   margin: 0;
+}
+.assessment-wizard__hint-toggle {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-sm);
+  line-height: 1;
+  cursor: pointer;
+}
+.assessment-wizard__hint-toggle:hover,
+.assessment-wizard__hint-toggle[aria-expanded="true"] {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 .assessment-wizard__hint,
 .assessment-wizard__lede {

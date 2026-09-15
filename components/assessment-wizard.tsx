@@ -111,7 +111,11 @@ function canAdvance(step: StepId, s: WizardState): boolean {
     case "impact":
       return s.impact.trim().length >= 5;
     case "context":
-      return s.ecPhone.trim() === "" || validateUKPhone(s.ecPhone) === null;
+      return (
+        s.ecName.trim().length > 0 &&
+        s.ecPhone.trim().length > 0 &&
+        validateUKPhone(s.ecPhone) === null
+      );
     case "safety":
       return s.redFlags.none || RED_FLAGS.some((f) => s.redFlags[f.key]);
     case "consent":
@@ -165,6 +169,11 @@ export function AssessmentWizard({
   const patch = (p: Partial<WizardState>) => setState((s) => ({ ...s, ...p }));
   const urgent = hasUrgentRedFlags(state.redFlags);
   const progress = useMemo(() => Math.round(((stepIdx + 1) / STEPS.length) * 100), [stepIdx]);
+  const [hintOpen, setHintOpen] = useState(false);
+
+  useEffect(() => {
+    setHintOpen(false);
+  }, [step]);
 
   function back() {
     setStepIdx((i) => Math.max(0, i - 1));
@@ -262,8 +271,13 @@ export function AssessmentWizard({
 
   return (
     <div className="assessment-wizard">
-      <div className="assessment-wizard__progress" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
-        <span style={{ width: `${progress}%` }} />
+      <div className="assessment-wizard__progress-row">
+        <div className="assessment-wizard__progress" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+          <span style={{ width: `${progress}%` }} />
+        </div>
+        <span className="assessment-wizard__step-count">
+          Step {stepIdx + 1} of {STEPS.length}
+        </span>
       </div>
 
       <div className="assessment-wizard__stage" key={step}>
@@ -280,13 +294,23 @@ export function AssessmentWizard({
         )}
 
         {step === "body" && (
-          <StepShell title="Where is the problem?" hint="Tap every area that's involved. You can pick more than one.">
+          <StepShell
+            title="Where is the problem?"
+            hint="Tap every area that's involved. You can pick more than one."
+            hintOpen={hintOpen}
+            onToggleHint={() => setHintOpen((v) => !v)}
+          >
             <BodyChart value={state.regions} onChange={(regions) => patch({ regions })} />
           </StepShell>
         )}
 
         {step === "story" && (
-          <StepShell title="Tell us what's going on." hint="In your own words — what it feels like, when it started, what makes it better or worse.">
+          <StepShell
+            title="Tell us what's going on."
+            hint="In your own words — what it feels like, when it started, what makes it better or worse."
+            hintOpen={hintOpen}
+            onToggleHint={() => setHintOpen((v) => !v)}
+          >
             <label className="assessment-wizard__field">
               <span className="sr-only">What&apos;s going on</span>
               <textarea
@@ -327,11 +351,16 @@ export function AssessmentWizard({
         )}
 
         {step === "impact" && (
-          <StepShell title="What is it stopping you doing?" hint="The everyday things that matter most — work, sleep, sport, lifting the kids.">
+          <StepShell
+            title="What has this been getting in the way of?"
+            hint="No rush — just the everyday things that matter most to you, like work, sleep, sport, or lifting the kids."
+            hintOpen={hintOpen}
+            onToggleHint={() => setHintOpen((v) => !v)}
+          >
             <label className="assessment-wizard__field">
-              <span className="sr-only">What is it stopping you doing</span>
+              <span className="sr-only">What has this been getting in the way of</span>
               <textarea
-                aria-label="What is it stopping you doing"
+                aria-label="What has this been getting in the way of"
                 rows={4}
                 maxLength={ASSESSMENT_LIMITS.functionalImpact}
                 value={state.impact}
@@ -343,7 +372,12 @@ export function AssessmentWizard({
         )}
 
         {step === "context" && (
-          <StepShell title="Anything we should know?" hint="Optional — medicines you take, past injuries or operations, or health conditions.">
+          <StepShell
+            title="Anything we should know?"
+            hint="Optional — medicines you take, past injuries or operations, or health conditions."
+            hintOpen={hintOpen}
+            onToggleHint={() => setHintOpen((v) => !v)}
+          >
             <label className="assessment-wizard__field">
               <span className="sr-only">Anything we should know</span>
               <textarea
@@ -356,12 +390,13 @@ export function AssessmentWizard({
               />
             </label>
             <div className="assessment-wizard__emergency">
-              <p className="assessment-wizard__sublabel">Emergency contact <span>(optional)</span></p>
+              <p className="assessment-wizard__sublabel">Emergency contact <span>(required)</span></p>
               <div className="assessment-wizard__grid2">
                 <label className="assessment-wizard__field">
                   Name
                   <input
                     type="text"
+                    required
                     value={state.ecName}
                     maxLength={ASSESSMENT_LIMITS.emergencyContactName}
                     onChange={(e) => patch({ ecName: e.target.value })}
@@ -372,12 +407,13 @@ export function AssessmentWizard({
                   <input
                     type="tel"
                     inputMode="tel"
+                    required
                     value={state.ecPhone}
                     maxLength={ASSESSMENT_LIMITS.emergencyContactPhone}
                     onChange={(e) => patch({ ecPhone: e.target.value })}
                   />
                   {state.ecPhone.trim() !== "" && validateUKPhone(state.ecPhone) !== null && (
-                    <span className="field-error">Enter a valid UK phone number, or leave it blank.</span>
+                    <span className="field-error">Enter a valid UK phone number.</span>
                   )}
                 </label>
               </div>
@@ -386,7 +422,12 @@ export function AssessmentWizard({
         )}
 
         {step === "safety" && (
-          <StepShell title="A quick safety check." hint="Physiotherapists screen for a few things that need a doctor first. Do any of these apply right now?">
+          <StepShell
+            title="A quick safety check."
+            hint="Physiotherapists screen for a few things that need a doctor first. Do any of these apply right now?"
+            hintOpen={hintOpen}
+            onToggleHint={() => setHintOpen((v) => !v)}
+          >
             <div className="assessment-wizard__flags">
               {RED_FLAGS.map((f) => (
                 <button
@@ -491,16 +532,33 @@ export function AssessmentWizard({
 function StepShell({
   title,
   hint,
+  hintOpen,
+  onToggleHint,
   children,
 }: {
   title: string;
   hint?: string;
+  hintOpen?: boolean;
+  onToggleHint?: () => void;
   children: React.ReactNode;
 }) {
   return (
     <div className="assessment-wizard__panel">
-      <h1>{title}</h1>
-      {hint && <p className="assessment-wizard__hint">{hint}</p>}
+      <div className="assessment-wizard__title-row">
+        <h1>{title}</h1>
+        {hint && (
+          <button
+            type="button"
+            className="assessment-wizard__hint-toggle"
+            aria-expanded={hintOpen}
+            aria-label={hintOpen ? "Hide guidance" : "Show guidance"}
+            onClick={onToggleHint}
+          >
+            i
+          </button>
+        )}
+      </div>
+      {hint && hintOpen && <p className="assessment-wizard__hint">{hint}</p>}
       <div className="assessment-wizard__body">{children}</div>
     </div>
   );

@@ -7,6 +7,10 @@ export type BookingIntent = {
   email: string;
   timeZone: string;
   focusAreas?: string[];
+  /** Pre-payment self-assessment, submitted before checkout — see booking-step-time.tsx. */
+  assessmentUid?: string;
+  assessmentPersonId?: string;
+  assessmentFormId?: string;
 };
 
 export type CreateCheckoutInput = {
@@ -30,6 +34,9 @@ export function intentToMetadata(intent: BookingIntent): Record<string, string> 
     email: intent.email,
     timeZone: intent.timeZone,
     focusAreas: (intent.focusAreas ?? []).join(", "),
+    ...(intent.assessmentUid ? { assessmentUid: intent.assessmentUid } : {}),
+    ...(intent.assessmentPersonId ? { assessmentPersonId: intent.assessmentPersonId } : {}),
+    ...(intent.assessmentFormId ? { assessmentFormId: intent.assessmentFormId } : {}),
   };
 }
 
@@ -41,5 +48,15 @@ export function metadataToIntent(meta: Record<string, string> | undefined): Book
   const focusAreas = meta.focusAreas
     ? meta.focusAreas.split(",").map((f) => f.trim()).filter(Boolean)
     : undefined;
-  return { service: service as BookServiceId, startISO, name, email, timeZone, focusAreas };
+  return {
+    service: service as BookServiceId,
+    startISO,
+    name,
+    email,
+    timeZone,
+    focusAreas,
+    ...(meta.assessmentUid ? { assessmentUid: meta.assessmentUid } : {}),
+    ...(meta.assessmentPersonId ? { assessmentPersonId: meta.assessmentPersonId } : {}),
+    ...(meta.assessmentFormId ? { assessmentFormId: meta.assessmentFormId } : {}),
+  };
 }
