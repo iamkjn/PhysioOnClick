@@ -71,7 +71,7 @@ function toSlug(value: string) {
 const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; redFlags: string }> = {
   "Back pain": {
     mechanism: [
-      "Most non-specific low back pain is driven by a mix of mechanical sensitivity, muscle guarding and deconditioning rather than a single damaged structure. Discs, facet joints and the surrounding muscles all share nerve supply, which is why pain can feel deep, diffuse and hard to pin to one spot, and why it often eases and flares in a pattern that doesn't map neatly onto any scan finding.",
+      "PhysioOnClick assesses and treats back pain entirely through online video consultations — everything below is exactly what that remote assessment covers. Most non-specific low back pain is driven by a mix of mechanical sensitivity, muscle guarding and deconditioning rather than a single damaged structure. Discs, facet joints and the surrounding muscles all share nerve supply, which is why pain can feel deep, diffuse and hard to pin to one spot, and why it often eases and flares in a pattern that doesn't map neatly onto any scan finding.",
       "Pain intensity in the first few days is usually a poor guide to injury severity. NICE guidance on the assessment and management of low back pain and sciatica in adults emphasises that imaging rarely changes management for straightforward presentations, and that staying active — within a tolerable range — tends to outperform prolonged rest."
     ],
     assessment: "A physiotherapy assessment for back pain covers how symptoms behave over a full day, which movements ease or aggravate them, muscle strength and control through the trunk and hips, and enough neurological screening to rule out nerve involvement before building a loading plan.",
@@ -79,7 +79,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
   },
   "Knee injuries": {
     mechanism: [
-      "Knee symptoms usually trace back to one of three patterns: a specific traumatic injury (ligament, meniscus or patellar), an overuse presentation from a sudden change in load (runner's knee, patellar tendinopathy), or degenerative change where cartilage and joint surfaces have gradually lost tolerance to load. Each responds to a different rehab emphasis, which is why a generic 'knee exercise' plan often underperforms.",
+      "Every knee assessment at PhysioOnClick happens over video rather than in a clinic, and the reasoning below is exactly what a physiotherapist looks for remotely. Knee symptoms usually trace back to one of three patterns: a specific traumatic injury (ligament, meniscus or patellar), an overuse presentation from a sudden change in load (runner's knee, patellar tendinopathy), or degenerative change where cartilage and joint surfaces have gradually lost tolerance to load. Each responds to a different rehab emphasis, which is why a generic 'knee exercise' plan often underperforms.",
       "Swelling, locking, giving way and a clear mechanism of injury point toward a structural cause worth imaging; a gradual ache that builds with specific activities and settles with rest points more toward a load-tolerance problem that usually responds to a structured strengthening programme rather than scans."
     ],
     assessment: "Assessment looks at how the knee was injured (or whether it built up gradually), joint line tenderness, ligament stability tests, quadriceps and hip strength, and functional tasks like a single-leg squat or step-down to see how the whole limb shares load, not just the joint itself.",
@@ -87,7 +87,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
   },
   "Shoulder rehab": {
     mechanism: [
-      "The shoulder trades stability for range of motion, which makes it unusually dependent on the rotator cuff and scapular muscles working well together. Impingement-type pain, rotator cuff tendinopathy and post-dislocation instability all look different on assessment but share a common thread: symptoms often relate more to how load is shared through the shoulder blade and cuff than to any single 'torn' structure.",
+      "PhysioOnClick's shoulder assessments run entirely through online video consultations, and the criteria below are exactly what a remote physiotherapist checks for. The shoulder trades stability for range of motion, which makes it unusually dependent on the rotator cuff and scapular muscles working well together. Impingement-type pain, rotator cuff tendinopathy and post-dislocation instability all look different on assessment but share a common thread: symptoms often relate more to how load is shared through the shoulder blade and cuff than to any single 'torn' structure.",
       "Pain with overhead reaching, sleeping on the affected side and reduced strength lifting away from the body are the most common complaints. In most non-traumatic presentations, a graded strengthening programme resolves symptoms without surgery, though findings on a scan (partial tears, bursitis) are extremely common in pain-free shoulders too, which is why symptoms — not imaging alone — should drive the treatment plan."
     ],
     assessment: "A shoulder assessment checks active and passive range of motion, resisted strength testing for each rotator cuff muscle, scapular positioning and control, and how symptoms change with specific provocation tests, alongside a history of any dislocation, trauma or instability episodes.",
@@ -95,7 +95,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
   },
   Sciatica: {
     mechanism: [
-      "Sciatica describes nerve root irritation, most commonly from a disc bulge pressing on or chemically irritating a nerve root as it exits the spine, producing pain, pins and needles or numbness that can travel down the leg past the knee. This is different from general low back pain because the nerve itself — not just the joint or muscle — is involved, which changes both the expected timeline and the assessment.",
+      "PhysioOnClick assesses and manages sciatica entirely through video consultations, and the guidance below reflects exactly what a remote assessment covers. Sciatica describes nerve root irritation, most commonly from a disc bulge pressing on or chemically irritating a nerve root as it exits the spine, producing pain, pins and needles or numbness that can travel down the leg past the knee. This is different from general low back pain because the nerve itself — not just the joint or muscle — is involved, which changes both the expected timeline and the assessment.",
       "The reassuring evidence is that most disc-related sciatica improves within weeks to a few months without surgery, as the disc irritation and any inflammatory swelling settle. NICE guidance on managing sciatica supports a staged approach: staying appropriately active, targeted exercise and pain management, with imaging and surgical opinion reserved for cases that fail to improve or show worsening neurological signs."
     ],
     assessment: "Assessment includes straight leg raise and neural tension testing, checking reflexes, muscle power and sensation in specific nerve root distributions down the leg, and screening for the alternative pattern of spinal stenosis, where symptoms are usually worse standing and walking and ease with sitting or leaning forward.",
@@ -103,7 +103,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
   },
   "Sports injuries": {
     mechanism: [
-      "Sports injuries split broadly into acute trauma (a specific incident — a sprain, strain or tear with a clear mechanism) and overuse injuries that build gradually when training load rises faster than the tissue's ability to adapt. The rehab principles differ: acute injuries usually need an initial period of protected loading followed by progressive rebuilding, while overuse injuries need a training-load review as much as they need treatment.",
+      "Sports injury assessments at PhysioOnClick happen entirely over video, and the same clinical reasoning below applies whether the injury happened on a pitch or a running route. Sports injuries split broadly into acute trauma (a specific incident — a sprain, strain or tear with a clear mechanism) and overuse injuries that build gradually when training load rises faster than the tissue's ability to adapt. The rehab principles differ: acute injuries usually need an initial period of protected loading followed by progressive rebuilding, while overuse injuries need a training-load review as much as they need treatment.",
       "The single biggest predictor of re-injury on return to sport isn't how the injury was treated in isolation — it's whether the athlete returns with adequate strength, control and confidence relative to the demands of their sport, tested under fatigue and at speed, not just pain-free at rest."
     ],
     assessment: "Assessment covers the mechanism and history of injury, strength and range of movement compared side-to-side, movement quality under load (jumping, cutting, sprinting mechanics where relevant), and a realistic picture of training volume and competition demands to build a return-to-sport timeline around.",
@@ -111,7 +111,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
   },
   "Neurological conditions": {
     mechanism: [
-      "Neurological physiotherapy — for conditions such as stroke, Parkinson's, multiple sclerosis or peripheral nerve injury — works differently to musculoskeletal rehab because the goal is often to support the nervous system's capacity to adapt (neuroplasticity) and manage a changing condition, rather than to heal a single injured tissue on a predictable timeline.",
+      "PhysioOnClick supports neurological conditions through online video consultations, working alongside a patient's wider medical team rather than in a clinic setting. Neurological physiotherapy — for conditions such as stroke, Parkinson's, multiple sclerosis or peripheral nerve injury — works differently to musculoskeletal rehab because the goal is often to support the nervous system's capacity to adapt (neuroplasticity) and manage a changing condition, rather than to heal a single injured tissue on a predictable timeline.",
       "Symptoms like weakness, altered sensation, balance difficulty or fatigue often fluctuate day to day and can be affected by heat, illness, stress or overexertion in ways that differ from typical musculoskeletal pain, so pacing and monitoring matter as much as the exercises themselves."
     ],
     assessment: "Assessment typically includes standardised balance and mobility measures, muscle tone and strength testing, functional tasks relevant to daily life (transfers, stairs, walking distance), and close coordination with the wider medical team managing the underlying neurological condition.",
@@ -119,7 +119,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
   },
   "Post-surgery recovery": {
     mechanism: [
-      "Recovery after surgery follows a biological healing timeline that rehab has to respect: tissue needs time to gain tensile strength before it can tolerate full loading, regardless of how good someone feels day to day. Rehab that moves faster than this timeline risks setting recovery back; rehab that moves slower than necessary leaves people deconditioned and often more anxious about movement than the surgery itself justifies.",
+      "PhysioOnClick delivers post-surgery physiotherapy entirely through video consultations, and the recovery principles below apply just as directly to a remote follow-up appointment. Recovery after surgery follows a biological healing timeline that rehab has to respect: tissue needs time to gain tensile strength before it can tolerate full loading, regardless of how good someone feels day to day. Rehab that moves faster than this timeline risks setting recovery back; rehab that moves slower than necessary leaves people deconditioned and often more anxious about movement than the surgery itself justifies.",
       "Surgeons' individual protocols vary by procedure, and physiotherapy should follow the specific guidance given for that operation. Within that framework, the physiotherapist's role is to progress range of motion, strength and function as the tissue allows, while addressing the very common drop in confidence that follows any operation."
     ],
     assessment: "Assessment reviews the surgical procedure and any surgeon-specific precautions, wound healing, swelling, current range of movement against expected milestones for that stage of recovery, and functional goals — return to work, driving, sport or specific hobbies.",
@@ -127,7 +127,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
   },
   "Home exercise advice": {
     mechanism: [
-      "The exercises that work best are rarely the most complicated ones — they're the ones a person can actually do consistently. Home exercise programmes fail more often from poor adherence and unclear dosage than from choosing the 'wrong' exercise, which is why physiotherapy puts as much emphasis on habit-building and progression rules as on the movements themselves.",
+      "PhysioOnClick builds every home exercise programme around video consultations, so a physiotherapist can watch technique and adjust the plan remotely rather than relying on a printed sheet alone. The exercises that work best are rarely the most complicated ones — they're the ones a person can actually do consistently. Home exercise programmes fail more often from poor adherence and unclear dosage than from choosing the 'wrong' exercise, which is why physiotherapy puts as much emphasis on habit-building and progression rules as on the movements themselves.",
       "A well-designed home programme specifies not just which exercises, but how much (sets, reps, load), how often, and clear criteria for when to progress, hold, or scale back — removing the guesswork that causes people to either under-do it or overdo it on a good day."
     ],
     assessment: "Before prescribing a home programme, a physiotherapist checks baseline strength and movement quality, current activity levels, equipment and space available at home, and any specific goals so the plan is realistic rather than generic.",
@@ -135,7 +135,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
   },
   "Workplace ergonomics": {
     mechanism: [
-      "Workplace-related pain is rarely caused by posture alone — it's usually a combination of sustained static positions, insufficient movement variety through the day, and a workstation setup that puts joints toward the end of their comfortable range for hours at a time. Fixing the chair height helps, but rarely resolves symptoms on its own if the underlying issue is hours of unbroken sitting or screen-focused strain.",
+      "PhysioOnClick reviews workplace-related pain — including home workstations — through online video consultations, which makes it straightforward to see an actual desk setup rather than working from a description alone. Workplace-related pain is rarely caused by posture alone — it's usually a combination of sustained static positions, insufficient movement variety through the day, and a workstation setup that puts joints toward the end of their comfortable range for hours at a time. Fixing the chair height helps, but rarely resolves symptoms on its own if the underlying issue is hours of unbroken sitting or screen-focused strain.",
       "The evidence on ergonomic interventions is clearest when equipment changes are combined with movement breaks and some general conditioning work — the body copes far better with a poor position held briefly than a good position held for six hours straight."
     ],
     assessment: "A workplace-focused assessment looks at desk and screen setup, chair support, keyboard and mouse position, how the working day is structured (meeting length, break frequency), and any specific symptoms that correlate with particular tasks or times of day.",
@@ -280,32 +280,138 @@ const articlePlan: ArticlePlan[] = [
   { category: "Workplace ergonomics", topic: "Exercise pacing" }
 ];
 
-const titleTemplates: Array<(topic: string, category: string) => string> = [
+// --- Online/remote/video search-intent framing -----------------------------
+// A full SEO audit (2026-08-25, followed up 2026-09-15) found real Search
+// Console data showing ZERO query-level impressions for any "online physio" /
+// "video physio" / "remote physio" phrase, despite 36 articles covering
+// exactly these clinical topics — because none of the title/meta templates
+// below ever said the care is delivered online. Big competitors already own
+// the bare condition term ("sciatica treatment"); the winnable long-tail is
+// condition + online/remote/video delivery, which nobody else optimises for.
+// This table maps each category to its real target phrase (see
+// physioonclick.co.uk-audit/findings/keywords.md, Clusters 2 & 3), with 4
+// variants per category so the online/remote/video qualifier — and where it
+// sits in the sentence — varies across the 4 articles in that category,
+// rather than repeating one keyword-stuffed phrase 4 times.
+const categoryOnlinePhrase: Record<Category, [string, string, string, string]> = {
+  "Back pain": [
+    "online physiotherapy for back pain",
+    "remote physio for back pain",
+    "video physiotherapy for back pain",
+    "physiotherapy for back pain, delivered online"
+  ],
+  "Knee injuries": [
+    "remote physiotherapy for knee pain",
+    "online physio for knee injuries",
+    "video physiotherapy for knee pain",
+    "physiotherapy for knee pain, delivered remotely"
+  ],
+  "Shoulder rehab": [
+    "online physio for shoulder pain",
+    "remote physiotherapy for shoulder pain",
+    "video physiotherapy for shoulder pain",
+    "shoulder physiotherapy, delivered online"
+  ],
+  Sciatica: [
+    "online physiotherapy for sciatica",
+    "remote physio for sciatica",
+    "video physiotherapy for sciatica",
+    "sciatica physiotherapy, delivered online"
+  ],
+  "Sports injuries": [
+    "remote physiotherapy for sports injuries",
+    "online physio for sports injuries",
+    "video physio for sports injury rehab",
+    "sports injury physiotherapy, delivered online"
+  ],
+  "Neurological conditions": [
+    "online neurological physiotherapy",
+    "remote neurological physiotherapy",
+    "video neurological physiotherapy",
+    "neurological physiotherapy, delivered online"
+  ],
+  "Post-surgery recovery": [
+    "online physiotherapy after surgery",
+    "post-surgery rehab by video consultation",
+    "remote physiotherapy after surgery",
+    "post-surgical physiotherapy, delivered online"
+  ],
+  "Home exercise advice": [
+    "online physiotherapy exercise guidance",
+    "remote physio exercise guidance by video",
+    "online exercise guidance",
+    "video-guided home exercise advice"
+  ],
+  "Workplace ergonomics": [
+    "online physio advice for desk-based pain",
+    "remote physiotherapy for desk-based pain",
+    "video physio for workplace-related pain",
+    "desk-based pain physiotherapy, delivered online"
+  ]
+};
+
+function cap(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+// Sentence/title case for the short phrase used in <title> tags — keeps
+// minor connecting words lowercase (except as the first word) so it reads
+// like a normal title tag rather than every-word-capitalised keyword stuffing.
+const MINOR_TITLE_WORDS = new Set(["a", "an", "the", "for", "by", "with", "of", "and", "to", "in", "on"]);
+function titleCasePhrase(value: string) {
+  return value
+    .split(" ")
+    .map((word, i) => {
+      const lower = word.toLowerCase();
+      if (i !== 0 && MINOR_TITLE_WORDS.has(lower)) return lower;
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
+// title/H1 — the same text also becomes the JSON-LD headline
+// (app/blog/[slug]/page.tsx), so this is the highest-value place to put the
+// exact "online/remote/video + condition" phrase patients actually search.
+const titleTemplates: Array<(topic: string, category: Category) => string> = [
+  (topic, category) => `${cap(categoryOnlinePhrase[category][0])}: ${topic.toLowerCase()}`,
+  (topic, category) => `${topic}: how ${categoryOnlinePhrase[category][1]} can help`,
+  (topic, category) => `${cap(categoryOnlinePhrase[category][2])}: ${topic.toLowerCase()} explained`,
+  (topic, category) => `${topic}: ${categoryOnlinePhrase[category][3]}`
+];
+
+const excerptTemplates: Array<(topic: string, category: Category) => string> = [
+  (topic, category) => `${topic} and ${category.toLowerCase()}: symptoms to watch for, what an online physiotherapy assessment involves, and the rehab steps that help you recover with confidence.`,
+  (topic, category) => `A practical look at ${category.toLowerCase()} and ${topic.toLowerCase()} — what to expect from a remote physiotherapy assessment, how treatment is structured, and when to get extra help.`,
+  (topic, category) => `${category} explained through the lens of ${topic.toLowerCase()}: key symptoms, and how video physiotherapy supports safe, evidence-based treatment.`,
+  (topic, category) => `What UK physiotherapists cover online for ${category.toLowerCase()}, with practical, video-consultation guidance on ${topic.toLowerCase()}.`
+];
+
+// <title> tag — the field Google truncates around ~60 characters in the
+// SERP, so this stays the tightest of the four (see word-count check below).
+const seoTitleTemplates: Array<(topic: string, category: Category) => string> = [
+  (topic, category) => `${titleCasePhrase(categoryOnlinePhrase[category][0])} | ${topic}`,
+  (topic, category) => `${topic} | ${titleCasePhrase(categoryOnlinePhrase[category][1])}`,
+  (topic, category) => `${titleCasePhrase(categoryOnlinePhrase[category][2])}: ${topic}`,
+  (topic, category) => `${topic} — ${titleCasePhrase(categoryOnlinePhrase[category][3])}`
+];
+
+const seoDescriptionTemplates: Array<(topic: string, category: Category) => string> = [
+  (topic, category) => `UK online physiotherapy guidance on ${topic.toLowerCase()} and ${category.toLowerCase()} — symptoms to watch for and when to seek an assessment.`,
+  (topic, category) => `${category} and ${topic.toLowerCase()}: evidence-based, remote-physiotherapy advice on assessment, treatment and realistic recovery timelines.`,
+  (topic, category) => `Practical, UK-focused advice on ${topic.toLowerCase()}, including how video physiotherapy for ${category.toLowerCase()} works and what to expect.`,
+  (topic, category) => `An online physiotherapist's guide to ${category.toLowerCase()}, focused on ${topic.toLowerCase()} — symptoms, safe exercise progression and red flags to know.`
+];
+
+// Slugs are already indexed and ranking — changing the wording that feeds
+// toSlug() would change the URL and break those rankings with redirect
+// churn. This is a frozen copy of the ORIGINAL title templates, kept only so
+// slug generation below stays byte-identical to what's already published;
+// it must never be edited to match the new titleTemplates above.
+const legacySlugTitleTemplates: Array<(topic: string, category: string) => string> = [
   (topic, category) => `${topic} and ${category.toLowerCase()}: a UK physiotherapy guide`,
   (topic, category) => `Managing ${category.toLowerCase()}: what to know about ${topic.toLowerCase()}`,
   (topic, category) => `${category} explained: dealing with ${topic.toLowerCase()}`,
   (topic, category) => `${topic}: a physiotherapist's approach to ${category.toLowerCase()}`
-];
-
-const excerptTemplates: Array<(topic: string, category: string) => string> = [
-  (topic, category) => `How ${topic.toLowerCase()} relates to ${category.toLowerCase()}: symptoms to watch for, what assessment looks like, and the rehab steps that help you recover with confidence.`,
-  (topic, category) => `A practical look at ${category.toLowerCase()} and ${topic.toLowerCase()} — what to expect from assessment, how treatment is structured, and when to get extra help.`,
-  (topic, category) => `${category} explained through the lens of ${topic.toLowerCase()}: key symptoms, evidence-based treatment options and realistic recovery timelines.`,
-  (topic, category) => `What UK physiotherapists actually look for with ${category.toLowerCase()}, and practical guidance on ${topic.toLowerCase()}.`
-];
-
-const seoTitleTemplates: Array<(topic: string, category: string) => string> = [
-  (topic, category) => `${category} and ${topic} | UK Physiotherapy Guide`,
-  (topic, category) => `${topic} for ${category}: What to Know | PhysioOnClick`,
-  (topic, category) => `${category}: ${topic} Explained | PhysioOnClick`,
-  (topic, category) => `Physiotherapy Guide to ${category} & ${topic}`
-];
-
-const seoDescriptionTemplates: Array<(topic: string, category: string) => string> = [
-  (topic, category) => `UK physiotherapy guidance on ${topic.toLowerCase()} and ${category.toLowerCase()} — understand your symptoms, plan safe rehabilitation and know when to seek an assessment.`,
-  (topic, category) => `${category} and ${topic.toLowerCase()}: evidence-based advice from a HCPC-registered physiotherapist on assessment, treatment and realistic recovery timelines.`,
-  (topic, category) => `Practical, UK-focused advice on ${topic.toLowerCase()} for people managing ${category.toLowerCase()} — what physiotherapy assessment and treatment actually involve.`,
-  (topic, category) => `A physiotherapist's guide to ${category.toLowerCase()}, focused on ${topic.toLowerCase()} — symptoms, safe exercise progression and red flags to know.`
 ];
 
 function wordCount(sections: { body: string[] }[]) {
@@ -378,7 +484,10 @@ function articleSections(category: Category, topic: Topic, index: number) {
 export const blogArticles: BlogArticle[] = articlePlan.map(({ category, topic }, index) => {
   const title = titleTemplates[index % titleTemplates.length](topic, category);
   const excerpt = excerptTemplates[index % excerptTemplates.length](topic, category);
-  const slug = toSlug(`${title}-${index + 1}`);
+  // Slug intentionally derived from the ORIGINAL (pre-rewrite) title text,
+  // not the new `title` above — see legacySlugTitleTemplates comment.
+  const legacySlugTitle = legacySlugTitleTemplates[index % legacySlugTitleTemplates.length](topic, category);
+  const slug = toSlug(`${legacySlugTitle}-${index + 1}`);
   const sections = articleSections(category, topic, index);
 
   return {

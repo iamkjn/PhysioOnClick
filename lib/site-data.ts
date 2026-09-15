@@ -185,9 +185,9 @@ export const services: Service[] = [
       "after-acl-reconstruction",
       "acl-rehabilitation"
     ],
-    seoTitle: "Post Knee Replacement Rehab UK | PhysioOnClick",
+    seoTitle: "Post-Surgical Physiotherapy Glasgow | PhysioOnClick",
     seoDescription:
-      "Recover confidently after orthopaedic surgery with tailored rehabilitation support."
+      "Rehabilitation after knee or hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery — delivered online from Glasgow, UK-wide."
   },
   {
     slug: "neurological-rehabilitation",
