@@ -39,12 +39,16 @@ class CheckoutRepository {
   final http.Client _client;
   final IdTokenProvider _idTokenProvider;
 
+  /// Builds request headers, attaching `Authorization: Bearer <token>` when
+  /// signed in. The Cal.com/Stripe routes these calls hit
+  /// (app/api/cal/slots, app/api/checkout/create, app/api/checkout/status)
+  /// do not require auth — guests book with name/email instead — so a
+  /// missing token must NOT block the request.
   Future<Map<String, String>> _authHeaders() async {
     final token = await _idTokenProvider();
-    if (token == null) throw Exception('Not signed in');
     return {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
   }
 

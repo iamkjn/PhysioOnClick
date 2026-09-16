@@ -53,52 +53,53 @@ void main() {
     );
   });
 
-  test('fetchSlots throws Not signed in and makes no HTTP call when token is null', () async {
-    var called = false;
+  test('fetchSlots succeeds as a guest, sending no Authorization header', () async {
     final client = MockClient((request) async {
-      called = true;
-      return http.Response('{}', 200);
+      expect(request.headers.containsKey('Authorization'), isFalse);
+      return http.Response(jsonEncode({'slots': <String, dynamic>{}}), 200);
     });
     final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
-    await expectLater(
-      () => repo.fetchSlots(
-        service: 'initial-assessment',
-        start: DateTime(2026, 9, 20),
-        end: DateTime(2026, 9, 25),
-      ),
-      throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Not signed in'))),
+    final slots = await repo.fetchSlots(
+      service: 'initial-assessment',
+      start: DateTime(2026, 9, 20),
+      end: DateTime(2026, 9, 25),
     );
-    expect(called, isFalse);
+    expect(slots, isEmpty);
   });
 
-  test('createCheckoutSession throws Not signed in and makes no HTTP call when token is null', () async {
-    var called = false;
+  test('createCheckoutSession succeeds as a guest, sending no Authorization header', () async {
     final client = MockClient((request) async {
-      called = true;
-      return http.Response('{}', 200);
+      expect(request.headers.containsKey('Authorization'), isFalse);
+      return http.Response(jsonEncode({'ok': true, 'url': 'https://checkout.stripe.com/guest123'}), 200);
     });
     final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
-    await expectLater(
-      () => repo.createCheckoutSession(
-        service: 'follow-up', start: DateTime.now(), name: 'A', email: 'a@b.com',
-      ),
-      throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Not signed in'))),
+    final url = await repo.createCheckoutSession(
+      service: 'follow-up', start: DateTime.now(), name: 'A', email: 'a@b.com',
     );
-    expect(called, isFalse);
+    expect(url, 'https://checkout.stripe.com/guest123');
   });
 
-  test('pollCheckoutStatus throws Not signed in and makes no HTTP call when token is null', () async {
-    var called = false;
+  test('pollCheckoutStatus succeeds as a guest, sending no Authorization header', () async {
     final client = MockClient((request) async {
-      called = true;
-      return http.Response('{}', 200);
+      expect(request.headers.containsKey('Authorization'), isFalse);
+      return http.Response(jsonEncode({'status': 'pending'}), 200);
     });
     final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
-    await expectLater(
-      () => repo.pollCheckoutStatus('session123'),
-      throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Not signed in'))),
+    final status = await repo.pollCheckoutStatus('session123');
+    expect(status.status, 'pending');
+  });
+
+  test('fetchSlots sends an Authorization header when signed in', () async {
+    final client = MockClient((request) async {
+      expect(request.headers['Authorization'], 'Bearer test-token');
+      return http.Response(jsonEncode({'slots': <String, dynamic>{}}), 200);
+    });
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => 'test-token');
+    await repo.fetchSlots(
+      service: 'initial-assessment',
+      start: DateTime(2026, 9, 20),
+      end: DateTime(2026, 9, 25),
     );
-    expect(called, isFalse);
   });
 
   test('createCheckoutSession throws a status-code error on non-JSON error body without FormatException', () async {
