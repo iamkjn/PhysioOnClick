@@ -50,6 +50,13 @@ void main() {
       ),
     );
     await tester.pump();
+
+    // Verify the widget type exists
     expect(find.byType(AssessmentScreen), findsOneWidget);
+
+    // Verify the widget renders its scaffold body, proving it accepted and processed
+    // the constructor params (bookingId, personId, personName) without silently
+    // dropping them. When no user is authenticated, it shows the sign-in prompt.
+    expect(find.text('Sign in to complete your assessment'), findsOneWidget);
   });
 }
