@@ -19,6 +19,7 @@ import '../motion/motion_service.dart';
 import '../motion/motion_targets.dart';
 import '../invoices/invoices_screen.dart';
 import '../people/people_screen.dart';
+import 'dosage_format.dart';
 import 'exercise_video.dart';
 import 'rehab_program.dart';
 
@@ -735,6 +736,7 @@ class _AssignedExercisesSectionState extends State<_AssignedExercisesSection> {
                 final video = exerciseVideos[exerciseId];
                 final title = video?.title ?? exerciseId;
                 final bodyPart = video?.bodyPart ?? '';
+                final dosageText = formatDosage(doc.data()['dosage'] as Map<String, dynamic>?);
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 14),
@@ -751,6 +753,16 @@ class _AssignedExercisesSectionState extends State<_AssignedExercisesSection> {
                           if (bodyPart.isNotEmpty) ...[
                             const SizedBox(height: 6),
                             Text(bodyPart, style: theme.textTheme.bodyMedium),
+                          ],
+                          if (dosageText.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              dosageText,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: const Color(0xFF2380C8),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                           _CheckMotionButton(
                             exerciseId: exerciseId,
