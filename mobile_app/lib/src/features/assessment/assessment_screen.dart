@@ -14,12 +14,18 @@ class AssessmentScreen extends StatefulWidget {
     required this.bookingId,
     required this.personId,
     required this.personName,
+    this.onSubmitted,
     super.key,
   });
 
   final String bookingId;
   final String personId;
   final String personName;
+
+  /// When set, called with the newly created assessment form's Firestore
+  /// document id instead of the standalone "assessment submitted" snackbar +
+  /// pop. Used by the booking flow's assessment step to move on to payment.
+  final ValueChanged<String>? onSubmitted;
 
   @override
   State<AssessmentScreen> createState() => _AssessmentScreenState();
@@ -170,17 +176,21 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
     );
 
     try {
-      await AssessmentRepository().submit(
+      final formId = await AssessmentRepository().submit(
         uid: user.uid,
         personId: widget.personId,
         bookingId: widget.bookingId,
         input: input,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Assessment submitted. Thank you.')),
-      );
-      Navigator.pop(context, true);
+      if (widget.onSubmitted != null) {
+        widget.onSubmitted!(formId);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Assessment submitted. Thank you.')),
+        );
+        Navigator.pop(context, true);
+      }
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
