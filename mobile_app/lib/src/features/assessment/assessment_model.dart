@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Mirrors `ASSESSMENT_FORM_VERSION` in lib/assessment-forms.ts.
+const kAssessmentFormVersion = '2.0';
+
 /// Mirrors `AssessmentFormType` in lib/assessment-forms.ts.
 class AssessmentFormType {
   static const initial = 'initial';
@@ -289,6 +292,7 @@ class AssessmentInput {
   final String relationshipToPatient;
   final String presentingComplaint;
   final String bodyArea;
+  final List<String> bodyRegions;
   final String symptomStartDate;
   final String onsetPattern;
   final num painScore;
@@ -325,6 +329,7 @@ class AssessmentInput {
     required this.relationshipToPatient,
     required this.presentingComplaint,
     required this.bodyArea,
+    this.bodyRegions = const [],
     required this.symptomStartDate,
     required this.onsetPattern,
     required this.painScore,
@@ -366,6 +371,7 @@ class AssessmentInput {
         'relationshipToPatient': relationshipToPatient,
         'presentingComplaint': presentingComplaint,
         'bodyArea': bodyArea,
+        'bodyRegions': bodyRegions,
         'symptomStartDate': symptomStartDate,
         'onsetPattern': onsetPattern,
         'painScore': painScore,
@@ -393,7 +399,7 @@ class AssessmentInput {
         'submittedByUid': submittedByUid,
         'bookingId': bookingId,
         // Matches ASSESSMENT_FORM_VERSION in lib/assessment-forms.ts.
-        'version': '2026-07-csp-hcpc-v2',
+        'version': kAssessmentFormVersion,
         'reviewStatus': 'awaiting_review',
         'reviewedBy': '',
         'reviewedAt': '',
