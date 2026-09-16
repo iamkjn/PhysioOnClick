@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -38,13 +37,13 @@ class WhoIsThisForScreen extends StatelessWidget {
     String? avatarUrl,
   }) async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    await FirebaseFirestore.instance.doc('pendingSelections/$uid').set({
-      'patientType': patientType,
-      'patientId': patientId,
-      'patientName': patientName,
-      'patientAvatarUrl': avatarUrl ?? '',
-      'selectedAt': FieldValue.serverTimestamp(),
-    });
+    await PeopleRepository().writePendingSelection(
+      uid: uid,
+      patientType: patientType,
+      patientId: patientId,
+      patientName: patientName,
+      avatarUrl: avatarUrl,
+    );
     if (context.mounted) {
       Navigator.pushReplacement(
         context,

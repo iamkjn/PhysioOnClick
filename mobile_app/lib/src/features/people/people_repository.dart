@@ -51,4 +51,24 @@ class PeopleRepository {
     await ref.putFile(imageFile, SettableMetadata(contentType: 'image/jpeg'));
     return ref.getDownloadURL();
   }
+
+  /// Writes the `pendingSelections/{uid}` doc that the server-side Cal.com
+  /// webhook reads to stamp a booking with the right patient. Shared by
+  /// [WhoIsThisForScreen] and the native booking flow's time/details step —
+  /// keep the field names/shape identical everywhere this is called from.
+  Future<void> writePendingSelection({
+    required String uid,
+    required String patientType,
+    required String patientId,
+    required String patientName,
+    String? avatarUrl,
+  }) async {
+    await FirebaseFirestore.instance.doc('pendingSelections/$uid').set({
+      'patientType': patientType,
+      'patientId': patientId,
+      'patientName': patientName,
+      'patientAvatarUrl': avatarUrl ?? '',
+      'selectedAt': FieldValue.serverTimestamp(),
+    });
+  }
 }
