@@ -45,9 +45,11 @@ Future<Map<String, dynamic>?> _defaultPendingSelectionLoader(String uid) async {
 }
 
 /// Step 2 of the native booking flow (service -> time/details -> assessment
-/// -> payment -> confirmation). Lets the patient pick an available slot,
-/// confirm their name/email, and (if booking for a dependent) select who the
-/// appointment is for, before continuing to [AssessmentStepScreen].
+/// -> payment -> confirmation). Lets the patient pick an available slot and
+/// confirm their name/email before continuing to [AssessmentStepScreen].
+/// Booking-for-a-dependent is chosen upstream in `WhoIsThisForScreen`; this
+/// screen only reads back that selection (see [_loadPendingSelection]) —
+/// it does not offer its own who-for picker.
 class TimeDetailsScreen extends StatefulWidget {
   final ResolvedService service;
   final PendingSelectionLoader pendingSelectionLoader;
@@ -101,7 +103,11 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
       final (patientId, patientName) = resolved;
       setState(() {
         _selectedPersonId = patientId;
-        _selectedPersonName = patientName?.isNotEmpty == true ? patientName : _selectedPersonName;
+        // A dependent was selected, so the parent's own displayName (set as
+        // the default above) is no longer correct here even if the
+        // dependent's own name is unexpectedly blank — fall back to a
+        // neutral label rather than silently keeping the parent's name.
+        _selectedPersonName = (patientName?.isNotEmpty ?? false) ? patientName : 'this patient';
       });
     } catch (_) {
       // Non-critical: fall back to booking for self.

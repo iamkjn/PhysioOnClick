@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/page_transitions.dart';
+import '../../core/widgets/auth_gate_sheet.dart';
 import 'models/book_service.dart';
 import 'time_details_screen.dart';
 
@@ -11,7 +13,21 @@ import 'time_details_screen.dart';
 class ServiceSelectScreen extends StatelessWidget {
   const ServiceSelectScreen({super.key});
 
+  /// Routes to [ServiceSelectScreen] for authenticated users. For
+  /// unauthenticated users, shows the auth gate sheet instead of allowing
+  /// direct access to the booking flow — mirrors [WhoIsThisForScreen.go],
+  /// the flow's other entry point. Without this gate, a signed-out user
+  /// could fill out the entire assessment only to have submission silently
+  /// no-op (AssessmentScreen._submit early-returns when signed out).
   static void go(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      showAuthGateSheet(
+        context,
+        message: 'Sign in or create an account to book your appointment.',
+      );
+      return;
+    }
     Navigator.push(
       context,
       PhysioPageRoute(builder: (_) => const ServiceSelectScreen()),
