@@ -7,15 +7,9 @@
 /// `notes` is NOT used by this formatter — on web it is a separate field
 /// (`physioNote`) rendered elsewhere, not folded into the dosage summary.
 ///
-/// NOTE: this does not merge in the exercise catalogue's `defaultDosage`
-/// the way the web's `resolveDosage(exercise, assigned)` does — mobile has
-/// no local mirror of the exercise catalogue (only `ExerciseVideo`, which
-/// carries no dosage fields) and no Firestore read path wired up for one.
-/// So an exercise whose dosage is set entirely by catalogue default with no
-/// per-patient override will render as "As advised by your physio" here
-/// instead of the real default. Fixing that needs either a Dart-side
-/// exercise catalogue or a new Firestore field, both out of scope for this
-/// change — flagged as a follow-up.
+/// This does not itself merge in the exercise catalogue's `defaultDosage` —
+/// callers should pass a map already merged via [resolveDosage], mirroring
+/// web's `formatDosage(resolveDosage(exercise, assigned))` (`lib/exercises.ts`).
 String formatDosage(Map<String, dynamic>? dosage) {
   if (dosage == null || dosage.isEmpty) return '';
 
@@ -73,3 +67,15 @@ String? _frequencyClause({int? perDay, int? perWeek}) {
 }
 
 String _plural(int n, String word) => '$n $word${n == 1 ? '' : 's'}';
+
+/// Merges a catalogue exercise's `defaultDosage` with a patient's
+/// per-assignment `dosage` override, field by field, with the assigned
+/// value winning whenever a field is present in both — mirroring web's
+/// `resolveDosage(ex, assigned) = { ...ex.defaultDosage, ...assigned.dosage }`
+/// (`lib/exercises.ts`).
+Map<String, dynamic> resolveDosage(Map<String, dynamic>? defaultDosage, Map<String, dynamic>? assignedDosage) {
+  return {
+    ...?defaultDosage,
+    ...?assignedDosage,
+  };
+}

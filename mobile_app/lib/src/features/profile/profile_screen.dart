@@ -736,7 +736,9 @@ class _AssignedExercisesSectionState extends State<_AssignedExercisesSection> {
                 final video = exerciseVideos[exerciseId];
                 final title = video?.title ?? exerciseId;
                 final bodyPart = video?.bodyPart ?? '';
-                final dosageText = formatDosage(doc.data()['dosage'] as Map<String, dynamic>?);
+                final dosageText = formatDosage(
+                  resolveDosage(video?.defaultDosage, doc.data()['dosage'] as Map<String, dynamic>?),
+                );
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 14),

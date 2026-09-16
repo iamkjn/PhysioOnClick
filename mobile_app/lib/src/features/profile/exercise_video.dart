@@ -7,6 +7,7 @@ class ExerciseVideo {
     required this.stage,
     required this.description,
     required this.videoUrl,
+    this.defaultDosage,
   });
 
   final String id;
@@ -17,6 +18,12 @@ class ExerciseVideo {
   final String description;
   final String videoUrl;
 
+  /// The catalogue's default dosage for this exercise, mirroring web's
+  /// `ex.defaultDosage` (`lib/exercises.ts`) — merged with a patient's
+  /// per-assignment `dosage` override via `resolveDosage` semantics at the
+  /// call site (see `profile_screen.dart`'s `_AssignedExercisesSection`).
+  final Map<String, dynamic>? defaultDosage;
+
   factory ExerciseVideo.fromMap(Map<String, dynamic> data, String id) {
     return ExerciseVideo(
       id: id,
@@ -26,6 +33,7 @@ class ExerciseVideo {
       stage: '${data['stage'] ?? ''}',
       description: '${data['description'] ?? ''}',
       videoUrl: '${data['videoUrl'] ?? ''}',
+      defaultDosage: (data['defaultDosage'] as Map<String, dynamic>?),
     );
   }
 }

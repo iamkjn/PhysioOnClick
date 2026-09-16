@@ -90,4 +90,50 @@ void main() {
   test('tempo alone with sets-only core', () {
     expect(formatDosage({'sets': 3, 'tempo': 'slow and controlled'}), '3 sets · slow and controlled');
   });
+
+  group('resolveDosage', () {
+    test('uses the default alone when the assigned dosage is null', () {
+      expect(
+        resolveDosage({'sets': 3, 'reps': 10}, null),
+        {'sets': 3, 'reps': 10},
+      );
+    });
+
+    test('uses the default alone when the assigned dosage is empty', () {
+      expect(
+        resolveDosage({'sets': 3, 'reps': 10}, {}),
+        {'sets': 3, 'reps': 10},
+      );
+    });
+
+    test('assigned value overrides the default field-by-field', () {
+      expect(
+        resolveDosage({'sets': 3, 'reps': 10, 'perDay': 1}, {'reps': 15}),
+        {'sets': 3, 'reps': 15, 'perDay': 1},
+      );
+    });
+
+    test('assigned adds fields not present in the default', () {
+      expect(
+        resolveDosage({'sets': 3}, {'tempo': 'slow'}),
+        {'sets': 3, 'tempo': 'slow'},
+      );
+    });
+
+    test('falls back to an empty map when both are null', () {
+      expect(resolveDosage(null, null), <String, dynamic>{});
+    });
+
+    test('uses the assigned dosage alone when there is no default', () {
+      expect(
+        resolveDosage(null, {'reps': 12}),
+        {'reps': 12},
+      );
+    });
+
+    test('composes with formatDosage the way the call site does', () {
+      final merged = resolveDosage({'sets': 3, 'reps': 10, 'perDay': 1}, {'reps': 15});
+      expect(formatDosage(merged), '3 sets × 15 reps · once a day');
+    });
+  });
 }
