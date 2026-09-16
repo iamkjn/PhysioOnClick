@@ -114,12 +114,3 @@ List<ResolvedService> allBookServices() => _kServices;
 
 ResolvedService bookServiceFor(BookServiceId id) =>
     _kServices.firstWhere((s) => s.id == id);
-
-const List<String> kFocusAreas = [
-  'Back & neck',
-  'Shoulder',
-  'Post-surgery',
-  'Sports injury',
-  'Neuro',
-  'Paediatric',
-];
