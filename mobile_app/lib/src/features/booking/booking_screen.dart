@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:intl/intl.dart';
 
-import '../../core/config.dart';
+import '../../core/app_colors.dart';
 import '../auth/auth_sheet.dart';
-import 'booking_record.dart';
+import '../appointments/booking_model.dart';
+import 'service_select_screen.dart';
 
 class _SignInBanner extends StatelessWidget {
   const _SignInBanner({required this.theme});
@@ -112,6 +113,7 @@ class _RecentBookingsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fmt = DateFormat('d MMM yyyy');
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection('bookings')
@@ -124,9 +126,7 @@ class _RecentBookingsList extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final items = snapshot.data?.docs
-                .map((doc) => BookingRecord.fromMap(doc.data(), doc.id))
-                .toList() ??
+        final items = snapshot.data?.docs.map(BookingRecord.fromDoc).toList() ??
             <BookingRecord>[];
 
         if (items.isEmpty) {
@@ -156,13 +156,9 @@ class _RecentBookingsList extends StatelessWidget {
                       style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 6),
-                    Text(item.appointmentLabel, style: theme.textTheme.bodyMedium),
+                    Text(fmt.format(item.sessionDate), style: theme.textTheme.bodyMedium),
                     const SizedBox(height: 4),
                     Text('Status: ${item.status}', style: theme.textTheme.bodySmall),
-                    if (item.notes.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(item.notes, style: theme.textTheme.bodySmall),
-                    ],
                   ],
                 ),
               ),
@@ -174,30 +170,8 @@ class _RecentBookingsList extends StatelessWidget {
   }
 }
 
-class BookingScreen extends StatefulWidget {
+class BookingScreen extends StatelessWidget {
   const BookingScreen({super.key});
-
-  @override
-  State<BookingScreen> createState() => _BookingScreenState();
-}
-
-class _BookingScreenState extends State<BookingScreen> {
-  late final WebViewController _controller;
-  bool _webLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (_) => setState(() => _webLoading = true),
-          onPageFinished: (_) => setState(() => _webLoading = false),
-        ),
-      )
-      ..loadRequest(Uri.parse(AppConfig.calComBookingUrl));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -222,14 +196,18 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
               if (user == null)
                 _SignInBanner(theme: theme),
-              Expanded(
-                flex: 3,
-                child: Stack(
-                  children: [
-                    WebViewWidget(controller: _controller),
-                    if (_webLoading)
-                      const Center(child: CircularProgressIndicator()),
-                  ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.teal,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    onPressed: () => ServiceSelectScreen.go(context),
+                    child: const Text('Book an appointment'),
+                  ),
                 ),
               ),
               if (user != null) ...[
@@ -238,7 +216,6 @@ class _BookingScreenState extends State<BookingScreen> {
                   child: Text('Your recent bookings', style: theme.textTheme.titleLarge),
                 ),
                 Expanded(
-                  flex: 2,
                   child: _RecentBookingsList(userId: user.uid, theme: theme),
                 ),
               ],
