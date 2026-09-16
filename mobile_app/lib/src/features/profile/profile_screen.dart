@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import '../appointments/appointments_screen.dart';
 import '../auth/sign_in_screen.dart';
 import '../auth/sign_up_screen.dart';
+import '../../core/app_colors.dart';
 import '../../core/page_transitions.dart';
 import '../admin/recovery/recovery_service.dart';
 import '../motion/face_check_screen.dart';
@@ -761,7 +762,7 @@ class _AssignedExercisesSectionState extends State<_AssignedExercisesSection> {
                             Text(
                               dosageText,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: const Color(0xFF2380C8),
+                                color: AppColors.teal,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

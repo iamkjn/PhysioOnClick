@@ -57,9 +57,10 @@ class AssessmentStepScreen extends StatelessWidget {
             PhysioPageRoute(builder: (_) => PaymentScreen(checkoutUrl: url)),
           );
         } catch (e) {
+          debugPrint('createCheckoutSession failed: $e');
           if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not start payment: $e')),
+            const SnackBar(content: Text('Could not start payment. Please try again.')),
           );
         }
       },
