@@ -48,6 +48,11 @@ class _FakeNavigationDelegate extends PlatformNavigationDelegate {
 
   @override
   Future<void> setOnPageFinished(PageEventCallback onPageFinished) async {}
+
+  @override
+  Future<void> setOnNavigationRequest(
+    NavigationRequestCallback onNavigationRequest,
+  ) async {}
 }
 
 class _FakeWebViewWidget extends PlatformWebViewWidget {
@@ -80,5 +85,24 @@ void main() {
   testWidgets('extractSessionId returns null for non-success URLs', (tester) async {
     final sessionId = extractSessionId(Uri.parse('https://checkout.stripe.com/pay/cs_test'));
     expect(sessionId, isNull);
+  });
+
+  testWidgets('isCancelUrl recognizes the web app\'s cancel redirect', (tester) async {
+    expect(
+      isCancelUrl(Uri.parse('https://physioonclick.com/book?cancelled=1')),
+      isTrue,
+    );
+  });
+
+  testWidgets('isCancelUrl returns false for the success URL', (tester) async {
+    expect(
+      isCancelUrl(Uri.parse('https://physioonclick.com/book/success?session_id=sess_abc123')),
+      isFalse,
+    );
+  });
+
+  testWidgets('isCancelUrl returns false for unrelated URLs', (tester) async {
+    expect(isCancelUrl(Uri.parse('https://checkout.stripe.com/pay/cs_test')), isFalse);
+    expect(isCancelUrl(Uri.parse('https://physioonclick.com/book')), isFalse);
   });
 }

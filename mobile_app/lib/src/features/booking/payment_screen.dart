@@ -14,6 +14,14 @@ String? extractSessionId(Uri uri) {
   return uri.queryParameters['session_id'];
 }
 
+/// Whether [uri] is the web app's hardcoded Stripe-cancel redirect
+/// (`{site}/book?cancelled=1`) rather than `/book/success` or any other page.
+bool isCancelUrl(Uri uri) {
+  if (uri.path.contains('/book/success')) return false;
+  if (!uri.path.contains('/book')) return false;
+  return uri.queryParameters['cancelled'] == '1';
+}
+
 class PaymentScreen extends StatefulWidget {
   final String checkoutUrl;
   const PaymentScreen({required this.checkoutUrl, super.key});
@@ -25,7 +33,7 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   late final WebViewController _controller;
   bool _loading = true;
-  bool _handledSuccess = false;
+  bool _handledTerminal = false;
 
   @override
   void initState() {
@@ -36,13 +44,27 @@ class _PaymentScreenState extends State<PaymentScreen> {
         onPageStarted: (_) {
           if (mounted) setState(() => _loading = true);
         },
-        onPageFinished: (url) {
+        onPageFinished: (_) {
           if (mounted) setState(() => _loading = false);
-          final sessionId = extractSessionId(Uri.parse(url));
-          if (sessionId != null && !_handledSuccess) {
-            _handledSuccess = true;
-            _startPolling(sessionId);
+        },
+        onNavigationRequest: (request) {
+          final uri = Uri.parse(request.url);
+          final sessionId = extractSessionId(uri);
+          if (sessionId != null) {
+            if (!_handledTerminal) {
+              _handledTerminal = true;
+              _startPolling(sessionId);
+            }
+            return NavigationDecision.prevent;
           }
+          if (isCancelUrl(uri)) {
+            if (!_handledTerminal) {
+              _handledTerminal = true;
+              if (mounted) Navigator.pop(context);
+            }
+            return NavigationDecision.prevent;
+          }
+          return NavigationDecision.navigate;
         },
       ))
       ..loadRequest(Uri.parse(widget.checkoutUrl));
