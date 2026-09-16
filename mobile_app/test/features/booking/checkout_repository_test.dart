@@ -53,6 +53,65 @@ void main() {
     );
   });
 
+  test('fetchSlots throws Not signed in and makes no HTTP call when token is null', () async {
+    var called = false;
+    final client = MockClient((request) async {
+      called = true;
+      return http.Response('{}', 200);
+    });
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+    await expectLater(
+      () => repo.fetchSlots(
+        service: 'initial-assessment',
+        start: DateTime(2026, 9, 20),
+        end: DateTime(2026, 9, 25),
+      ),
+      throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Not signed in'))),
+    );
+    expect(called, isFalse);
+  });
+
+  test('createCheckoutSession throws Not signed in and makes no HTTP call when token is null', () async {
+    var called = false;
+    final client = MockClient((request) async {
+      called = true;
+      return http.Response('{}', 200);
+    });
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+    await expectLater(
+      () => repo.createCheckoutSession(
+        service: 'follow-up', start: DateTime.now(), name: 'A', email: 'a@b.com',
+      ),
+      throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Not signed in'))),
+    );
+    expect(called, isFalse);
+  });
+
+  test('pollCheckoutStatus throws Not signed in and makes no HTTP call when token is null', () async {
+    var called = false;
+    final client = MockClient((request) async {
+      called = true;
+      return http.Response('{}', 200);
+    });
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+    await expectLater(
+      () => repo.pollCheckoutStatus('session123'),
+      throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Not signed in'))),
+    );
+    expect(called, isFalse);
+  });
+
+  test('createCheckoutSession throws a status-code error on non-JSON error body without FormatException', () async {
+    final client = MockClient((request) async => http.Response('Bad Gateway', 502));
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => 'test-token');
+    await expectLater(
+      () => repo.createCheckoutSession(
+        service: 'follow-up', start: DateTime.now(), name: 'A', email: 'a@b.com',
+      ),
+      throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('502'))),
+    );
+  });
+
   test('pollCheckoutStatus parses a paid status', () async {
     final client = MockClient((request) async {
       expect(request.url.path, '/api/checkout/status');

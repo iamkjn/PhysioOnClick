@@ -41,9 +41,10 @@ class CheckoutRepository {
 
   Future<Map<String, String>> _authHeaders() async {
     final token = await _idTokenProvider();
+    if (token == null) throw Exception('Not signed in');
     return {
       'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
+      'Authorization': 'Bearer $token',
     };
   }
 
@@ -103,11 +104,19 @@ class CheckoutRepository {
           }),
         )
         .timeout(const Duration(seconds: 20));
-    final body = jsonDecode(res.body) as Map<String, dynamic>;
-    if (res.statusCode != 200 || body['ok'] != true) {
-      throw Exception(body['error'] as String? ?? 'Failed to start checkout (${res.statusCode})');
+
+    Map<String, dynamic>? body;
+    try {
+      body = jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (_) {
+      body = null;
     }
-    return body['url'] as String;
+
+    if (res.statusCode != 200 || body?['ok'] != true) {
+      final error = body?['error'] as String?;
+      throw Exception(error ?? 'Failed to start checkout (${res.statusCode})');
+    }
+    return body!['url'] as String;
   }
 
   Future<CheckoutStatus> pollCheckoutStatus(String sessionId) async {
