@@ -1,3 +1,17 @@
+import '../../core/api_client.dart';
+
+/// Mirrors web's `exerciseImageUrl` (`lib/exercise-images.ts`) — the
+/// illustration isn't a Firestore field, it's served by the Next.js route
+/// `/exercise-images/{id}` keyed off the exercise's own id, which mobile
+/// already has via [ExerciseVideo.id]. `thumb` (320px) for list tiles,
+/// `full` (960px) for an enlarged view; bump `_imageLibraryVersion` if that
+/// ever drifts from the web-side `IMAGE_LIBRARY_VERSION` constant.
+const _imageLibraryVersion = 2;
+
+String exerciseImageUrl(String id, {String variant = 'thumb'}) {
+  return '$kApiBase/exercise-images/${Uri.encodeComponent(id)}?size=$variant&v=$_imageLibraryVersion';
+}
+
 class ExerciseVideo {
   const ExerciseVideo({
     required this.id,

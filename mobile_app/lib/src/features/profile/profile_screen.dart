@@ -749,6 +749,38 @@ class _AssignedExercisesSectionState extends State<_AssignedExercisesSection> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: Image.network(
+                                exerciseImageUrl(exerciseId),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  color: const Color(0xFFEAF6FB),
+                                  alignment: Alignment.center,
+                                  child: const Icon(
+                                    Icons.fitness_center_rounded,
+                                    color: AppColors.teal,
+                                    size: 28,
+                                  ),
+                                ),
+                                loadingBuilder: (context, child, progress) {
+                                  if (progress == null) return child;
+                                  return Container(
+                                    color: const Color(0xFFEAF6FB),
+                                    alignment: Alignment.center,
+                                    child: const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
                           Text(
                             title,
                             style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),

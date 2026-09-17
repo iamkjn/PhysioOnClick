@@ -1,39 +1,73 @@
 import 'package:flutter/material.dart';
 
+import '../../core/api_client.dart';
 import '../booking/who_is_this_for_screen.dart';
 
+/// Mirrors web's `serviceImagePath` (`lib/site-data.ts`) — real cover
+/// photography checked into `public/images/service-covers/`, one PNG per
+/// service slug, served directly by the Next.js static file handler.
+String serviceImageUrl(String slug) => '$kApiBase/images/service-covers/service-$slug.png';
+
+/// The six real services from `lib/site-data.ts`'s `services` array — titles,
+/// summaries and condition lists copied verbatim from there. Keep this in
+/// sync by hand if that file's copy changes; there is no shared runtime
+/// catalogue between the two apps (same convention as
+/// `booking/models/book_service.dart`'s pricing mirror).
 const _services = [
   (
+    slug: 'musculoskeletal-physiotherapy',
     title: 'Musculoskeletal Physiotherapy',
-    description: 'Back pain, neck pain, tendon pain and persistent strain rehabilitation.',
-    conditions: ['Back pain', 'Neck pain', 'Tendon pain', 'Muscle strain', 'Joint stiffness'],
+    description:
+        'Assessment and rehabilitation for joint, tendon, spine and muscle pain with a practical, evidence-based treatment plan.',
+    conditions: ['Back and neck pain', 'Shoulder impingement', 'Tendon pain', 'Persistent sports injuries', 'Work-related strain'],
     icon: Icons.accessibility_new_rounded,
     color: Color(0xFF0891B2),
     bgColor: Color(0xFFD8F3F9),
   ),
   (
+    slug: 'post-surgical-rehabilitation',
     title: 'Post-Surgical Rehabilitation',
-    description: 'Recovery support after joint replacement, ligament reconstruction and orthopaedic surgery.',
-    conditions: ['Joint replacement', 'ACL repair', 'Rotator cuff', 'Hip replacement', 'Knee surgery'],
+    description: 'Structured rehabilitation after arthroplasty, ligament reconstruction and orthopaedic procedures.',
+    conditions: ['Total knee replacement rehab', 'Total hip replacement rehab', 'ACL reconstruction', 'Rotator cuff repair', 'Fracture recovery'],
     icon: Icons.medical_services_rounded,
     color: Color(0xFF0E7490),
     bgColor: Color(0xFFE0F5FA),
   ),
   (
+    slug: 'neurological-rehabilitation',
     title: 'Neurological Rehabilitation',
-    description: 'Mobility, gait and functional support for neurological conditions.',
-    conditions: ['Stroke rehab', 'MS support', 'Parkinson\'s', 'Balance issues', 'Gait training'],
+    description: 'Goal-led rehabilitation for neurological conditions focused on mobility, confidence and function.',
+    conditions: ['Stroke rehabilitation', 'Parkinsonian movement challenges', 'Balance difficulties', 'Functional mobility loss', 'Neurological deconditioning'],
     icon: Icons.psychology_rounded,
     color: Color(0xFF7C3AED),
     bgColor: Color(0xFFF3E8FF),
   ),
   (
+    slug: 'paediatric-physiotherapy',
     title: 'Paediatric Physiotherapy',
-    description: 'Family-guided rehabilitation and movement support for children.',
-    conditions: ['Developmental delay', 'Flat feet', 'Growing pains', 'Sports injuries', 'Posture issues'],
+    description: 'Child-centred physiotherapy for movement confidence, developmental support and family-guided rehab.',
+    conditions: ['Developmental delay', 'Coordination challenges', 'Mobility support', 'Post-operative paediatric rehab', 'Strength and endurance building'],
     icon: Icons.child_care_rounded,
     color: Color(0xFF16A34A),
     bgColor: Color(0xFFDCFCE7),
+  ),
+  (
+    slug: 'gait-and-mobility-assessment',
+    title: 'Gait & Mobility Assessment',
+    description: 'Movement analysis, walking assessment and rehabilitation planning for confidence and independence.',
+    conditions: ['Walking changes after surgery', 'Falls risk', 'Balance confidence issues', 'Mobility aid review', 'Reduced walking tolerance'],
+    icon: Icons.directions_walk_rounded,
+    color: Color(0xFFD97706),
+    bgColor: Color(0xFFFEF3C7),
+  ),
+  (
+    slug: 'online-rehab-programmes',
+    title: 'Online Rehab Programmes',
+    description: 'UK-wide digital physiotherapy support with review calls, progress tracking and guided exercise plans.',
+    conditions: ['Remote recovery support', 'Self-management planning', 'Exercise progression', 'Return-to-work guidance', 'Long-term rehab follow-up'],
+    icon: Icons.videocam_rounded,
+    color: Color(0xFF0EA5E9),
+    bgColor: Color(0xFFE0F2FE),
   ),
 ];
 
@@ -73,6 +107,7 @@ class _ServiceCard extends StatefulWidget {
   const _ServiceCard({required this.service});
 
   final ({
+    String slug,
     String title,
     String description,
     List<String> conditions,
@@ -126,6 +161,34 @@ class _ServiceCardState extends State<_ServiceCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Image.network(
+                    serviceImageUrl(s.slug),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: s.bgColor,
+                      alignment: Alignment.center,
+                      child: Icon(s.icon, color: s.color, size: 32),
+                    ),
+                    loadingBuilder: (context, child, progress) {
+                      if (progress == null) return child;
+                      return Container(
+                        color: s.bgColor,
+                        alignment: Alignment.center,
+                        child: SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: s.color),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
               Row(
                 children: [
                   Container(
