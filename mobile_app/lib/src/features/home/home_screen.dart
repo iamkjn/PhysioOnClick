@@ -23,41 +23,48 @@ class HomeScreen extends StatelessWidget {
             builder: (context, snapshot) {
               final user = snapshot.data;
               if (user != null) {
+                // Signed-in patients get their own dashboard and nothing
+                // else — the marketing content below is for guests deciding
+                // whether to sign up, not for existing patients.
                 return PatientDashboard(user: user);
               }
-              return _HeroBanner(theme: theme);
+              return Column(
+                children: [
+                  _HeroBanner(theme: theme),
+                  const SizedBox(height: 24),
+                  _TrustBar(theme: theme),
+                  const SizedBox(height: 28),
+                  Text('Why choose PhysioOnClick', style: theme.textTheme.titleLarge),
+                  const SizedBox(height: 14),
+                  const _FeatureCard(
+                    title: 'Online across the UK',
+                    body: 'Remote assessments, exercise progression and guided rehab — from anywhere in the UK.',
+                    icon: Icons.videocam_rounded,
+                    color: Color(0xFF0891B2),
+                    bgColor: Color(0xFFD8F3F9),
+                  ),
+                  const SizedBox(height: 12),
+                  const _FeatureCard(
+                    title: 'Structured rehab programmes',
+                    body: 'Personalised exercise plans and progress tracking built around your recovery goals.',
+                    icon: Icons.fitness_center_rounded,
+                    color: Color(0xFF0E7490),
+                    bgColor: Color(0xFFE0F5FA),
+                  ),
+                  const SizedBox(height: 12),
+                  const _FeatureCard(
+                    title: 'HCPC registered',
+                    body: 'All sessions with a fully registered, CSP member physiotherapist (PH155757).',
+                    icon: Icons.verified_rounded,
+                    color: Color(0xFF16A34A),
+                    bgColor: Color(0xFFDCFCE7),
+                  ),
+                  const SizedBox(height: 28),
+                  _QuickBookCard(theme: theme),
+                ],
+              );
             },
           ),
-          const SizedBox(height: 24),
-          _TrustBar(theme: theme),
-          const SizedBox(height: 28),
-          Text('Why choose PhysioOnClick', style: theme.textTheme.titleLarge),
-          const SizedBox(height: 14),
-          const _FeatureCard(
-            title: 'Online across the UK',
-            body: 'Remote assessments, exercise progression and guided rehab — from anywhere in the UK.',
-            icon: Icons.videocam_rounded,
-            color: Color(0xFF0891B2),
-            bgColor: Color(0xFFD8F3F9),
-          ),
-          const SizedBox(height: 12),
-          const _FeatureCard(
-            title: 'Structured rehab programmes',
-            body: 'Personalised exercise plans and progress tracking built around your recovery goals.',
-            icon: Icons.fitness_center_rounded,
-            color: Color(0xFF0E7490),
-            bgColor: Color(0xFFE0F5FA),
-          ),
-          const SizedBox(height: 12),
-          const _FeatureCard(
-            title: 'HCPC registered',
-            body: 'All sessions with a fully registered, CSP member physiotherapist (PH155757).',
-            icon: Icons.verified_rounded,
-            color: Color(0xFF16A34A),
-            bgColor: Color(0xFFDCFCE7),
-          ),
-          const SizedBox(height: 28),
-          _QuickBookCard(theme: theme),
         ],
       ),
     );
