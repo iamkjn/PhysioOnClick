@@ -88,6 +88,8 @@ class _PatientDashboardState extends State<PatientDashboard> {
             personId: _personId,
             personName: _personName,
             onboarded: (context) => [
+              _StreakCard(uid: widget.user.uid, personId: _personId),
+              const SizedBox(height: 12),
               _RecoveryPercentTile(uid: widget.user.uid, personId: _personId),
               _PainCheckinCard(uid: widget.user.uid, personId: _personId),
             ],
@@ -472,22 +474,60 @@ class _RecoveryPercentTile extends StatelessWidget {
             );
 
             return _tile(
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    percent == null ? '—' : '$percent%',
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF0891B2),
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        percent == null ? '—' : '$percent%',
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF0891B2),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Improvement since your first pain check-in',
+                          style: TextStyle(fontSize: 13),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'Improvement since your first pain check-in',
-                      style: TextStyle(fontSize: 13),
-                    ),
+                  // Trend sparkline: separate stream from the 3-log window
+                  // above (this one wants more history to draw a line, not
+                  // just an average), so it's its own StreamBuilder.
+                  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                    stream: RecoveryService.watchPainLogs(uid, personId, 10),
+                    builder: (context, trendSnap) {
+                      final docs = trendSnap.data?.docs ?? const [];
+                      if (docs.length < 2) return const SizedBox.shrink();
+                      // watchPainLogs orders descending (most recent first);
+                      // the sparkline reads left-to-right chronologically.
+                      final scores = docs
+                          .map((d) => ((d.data()['score'] as num?) ?? 0).toDouble())
+                          .toList()
+                          .reversed
+                          .toList();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: SizedBox(
+                          height: 36,
+                          width: double.infinity,
+                          child: CustomPaint(
+                            painter: _SparklinePainter(
+                              values: scores,
+                              color: const Color(0xFF0891B2),
+                              // Pain score: lower is better, so invert so an
+                              // improving trend visibly slopes upward.
+                              invert: true,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -506,6 +546,108 @@ class _RecoveryPercentTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: child,
+    );
+  }
+}
+
+/// Draws [values] as a simple connected line, normalized to fill the
+/// painter's bounds. Set [invert] when a lower value is the "better"
+/// direction (e.g. pain score) so the line still slopes upward for
+/// improvement, matching how a viewer reads a trend line intuitively.
+class _SparklinePainter extends CustomPainter {
+  const _SparklinePainter({required this.values, required this.color, this.invert = false});
+
+  final List<double> values;
+  final Color color;
+  final bool invert;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (values.length < 2) return;
+
+    final minV = values.reduce((a, b) => a < b ? a : b);
+    final maxV = values.reduce((a, b) => a > b ? a : b);
+    final range = (maxV - minV).abs() < 0.001 ? 1.0 : maxV - minV;
+
+    double normalize(double v) {
+      final t = (v - minV) / range;
+      return invert ? t : 1 - t;
+    }
+
+    final dx = size.width / (values.length - 1);
+    final points = <Offset>[
+      for (var i = 0; i < values.length; i++)
+        Offset(i * dx, normalize(values[i]) * size.height),
+    ];
+
+    final linePaint = Paint()
+      ..color = color
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final path = Path()..moveTo(points.first.dx, points.first.dy);
+    for (final p in points.skip(1)) {
+      path.lineTo(p.dx, p.dy);
+    }
+    canvas.drawPath(path, linePaint);
+
+    final dotPaint = Paint()..color = color;
+    canvas.drawCircle(points.last, 3.5, dotPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _SparklinePainter oldDelegate) {
+    return oldDelegate.values != values || oldDelegate.color != color || oldDelegate.invert != invert;
+  }
+}
+
+/// Consecutive-day exercise-completion streak, mirroring web's
+/// `StreakCard` (`components/streak-card.tsx`) — same
+/// `computeStreakDays`/`getCompletedExerciseDates` semantics, so the two
+/// platforms report the same number for the same patient.
+class _StreakCard extends StatelessWidget {
+  const _StreakCard({required this.uid, required this.personId});
+
+  final String uid;
+  final String personId;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Set<String>>(
+      // 60 days back is plenty to bound any realistic streak while keeping
+      // the read small — same window web's StreakCard uses.
+      future: RecoveryService.getCompletedExerciseDates(uid, personId, 60),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const SizedBox.shrink();
+        final streak = RecoveryService.computeStreakDays(snapshot.data!);
+        if (streak == 0) return const SizedBox.shrink();
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFEF3C7),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              const Text('🔥', style: TextStyle(fontSize: 24)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  '$streak day${streak == 1 ? '' : 's'} exercise streak',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF92400E),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
