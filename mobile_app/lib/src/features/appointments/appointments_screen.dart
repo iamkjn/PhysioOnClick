@@ -7,7 +7,7 @@ import '../../core/api_client.dart';
 import '../../core/app_colors.dart';
 import '../../core/widgets/avatar_widget.dart';
 import '../../core/widgets/empty_state.dart';
-import '../booking/who_is_this_for_screen.dart';
+import '../booking/service_select_screen.dart';
 import 'appointment_detail_screen.dart';
 import 'appointments_repository.dart';
 import 'booking_model.dart';
@@ -76,7 +76,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
               icon: Icons.calendar_today_outlined,
               cta: FilledButton(
                 onPressed: () {
-                  WhoIsThisForScreen.go(context);
+                  ServiceSelectScreen.go(context);
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.gold,

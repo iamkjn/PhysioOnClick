@@ -28,4 +28,15 @@ void main() {
     expect(svc.calSlug, 'initial-online-assessment');
     expect(svc.sessions, 8);
   });
+
+  test('kFocusAreas matches the web catalogue', () {
+    expect(kFocusAreas, [
+      'Back & neck',
+      'Shoulder',
+      'Post-surgery',
+      'Sports injury',
+      'Neuro',
+      'Paediatric',
+    ]);
+  });
 }

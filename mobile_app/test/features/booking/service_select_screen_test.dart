@@ -46,6 +46,38 @@ void main() {
     expect(find.textContaining('£50'), findsOneWidget);
   });
 
+  testWidgets('shows a step progress header and a Continue button', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: ServiceSelectScreen()));
+    await tester.pumpAndSettle();
+    expect(find.text('Step 1 of 3'), findsOneWidget);
+    expect(find.text('Continue to times'), findsOneWidget);
+  });
+
+  testWidgets('selecting a service does not navigate away — it stays selected', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: ServiceSelectScreen()));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Online Follow-Up'));
+    await tester.pump();
+    // Still on ServiceSelectScreen — tapping a card selects it, it doesn't
+    // push the next screen (that's what the Continue button is for).
+    expect(find.byType(ServiceSelectScreen), findsOneWidget);
+    expect(find.text('Continue to times'), findsOneWidget);
+  });
+
+  testWidgets('shows optional focus-area chips', (tester) async {
+    // Four service cards push the focus-area chips below the default test
+    // viewport inside the screen's ListView — size the surface generously.
+    tester.view.physicalSize = const Size(1200, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const MaterialApp(home: ServiceSelectScreen()));
+    await tester.pumpAndSettle();
+    expect(find.text('Focus area (optional)'), findsOneWidget);
+    expect(find.text('Back & neck'), findsOneWidget);
+  });
+
   testWidgets('go() shows the auth gate instead of navigating when signed out', (tester) async {
     await tester.pumpWidget(MaterialApp(
       home: Builder(

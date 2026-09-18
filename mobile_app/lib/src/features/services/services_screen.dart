@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
-import '../booking/who_is_this_for_screen.dart';
+import '../booking/service_select_screen.dart';
 
 /// Mirrors web's `serviceImagePath` (`lib/site-data.ts`) — real cover
 /// photography checked into `public/images/service-covers/`, one PNG per
@@ -274,7 +274,7 @@ class _ServiceCardState extends State<_ServiceCard> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () => WhoIsThisForScreen.go(context),
+                        onPressed: () => ServiceSelectScreen.go(context),
                         icon: const Icon(Icons.calendar_month_rounded, size: 18),
                         label: Text('Book ${s.title.split(' ').first} session'),
                         style: ElevatedButton.styleFrom(
@@ -339,7 +339,7 @@ class _BookingCTA extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => WhoIsThisForScreen.go(context),
+              onPressed: () => ServiceSelectScreen.go(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: const Color(0xFF0891B2),

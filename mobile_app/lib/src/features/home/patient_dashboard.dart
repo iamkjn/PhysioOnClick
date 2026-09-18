@@ -7,7 +7,7 @@ import '../admin/recovery/recovery_service.dart';
 import '../appointments/appointments_repository.dart';
 import '../appointments/appointments_screen.dart';
 import '../appointments/booking_model.dart';
-import '../booking/who_is_this_for_screen.dart';
+import '../booking/service_select_screen.dart';
 import '../people/add_person_sheet.dart';
 import '../people/dependent_model.dart';
 import '../people/people_repository.dart';
@@ -99,7 +99,7 @@ class _PatientDashboardState extends State<PatientDashboard> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => WhoIsThisForScreen.go(context),
+                  onPressed: () => ServiceSelectScreen.go(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0891B2),
                     foregroundColor: Colors.white,
@@ -389,7 +389,7 @@ class _GettingStartedChecklist extends StatelessWidget {
             done: status.hasBooked,
             cta: status.hasBooked
                 ? null
-                : ('Book session', () => WhoIsThisForScreen.go(context)),
+                : ('Book session', () => ServiceSelectScreen.go(context)),
           ),
           _ChecklistRow(label: 'Complete your assessment', done: status.hasAssessment),
           _ChecklistRow(label: 'Start your rehab plan', done: status.hasExercises),

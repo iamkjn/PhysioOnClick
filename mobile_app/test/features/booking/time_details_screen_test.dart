@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 // ignore: depend_on_referenced_packages
 import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
@@ -24,8 +23,7 @@ class _FakeFirebaseAppPlatform extends FirebaseAppPlatform {
 
 /// A `FirebasePlatform` that serves the fake app above instead of talking to
 /// a real platform channel, so `FirebaseAuth.instance.currentUser` resolves
-/// to null (signed out) rather than crashing on a missing native init — see
-/// assessment_step_screen_test.dart for the same pattern.
+/// to null (signed out) rather than crashing on a missing native init.
 class _FakeFirebasePlatform extends FirebasePlatform {
   final _app = _FakeFirebaseAppPlatform();
 
@@ -41,111 +39,54 @@ void main() {
     Firebase.delegatePackingProperty = _FakeFirebasePlatform();
   });
 
-  testWidgets('shows the selected service name in the app bar', (tester) async {
+  testWidgets('shows the selected service name and a real month calendar', (tester) async {
     final service = bookServiceFor(BookServiceId.followUp);
     await tester.pumpWidget(MaterialApp(home: TimeDetailsScreen(service: service)));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
     expect(find.text('Online Follow-Up'), findsOneWidget);
+    // Real calendar grid: weekday header row.
+    expect(find.text('Mon'), findsOneWidget);
+    expect(find.text('Sun'), findsOneWidget);
+    // Continue button carries the price, matching web's "Continue to payment · £X".
+    expect(find.textContaining('Continue to payment'), findsOneWidget);
+    expect(find.textContaining('£40'), findsWidgets);
   });
 
-  testWidgets('shows empty state when slot loading fails (signed out)', (tester) async {
+  testWidgets('shows an error message when slot loading fails (signed out)', (tester) async {
     final service = bookServiceFor(BookServiceId.followUp);
     await tester.pumpWidget(MaterialApp(home: TimeDetailsScreen(service: service)));
-    // Let the async fetchSlots call resolve/reject.
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
-    // Should not crash, and should stop showing the loading spinner.
-    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.textContaining('couldn\'t load'), findsOneWidget);
   });
 
-  group('resolvePendingDependentSelection', () {
-    test('returns the dependent id/name for a fresh dependent selection', () {
-      final now = DateTime(2026, 9, 16, 12, 0);
-      final result = resolvePendingDependentSelection(
-        {
-          'patientType': 'dependent',
-          'patientId': 'child-1',
-          'patientName': 'Junior',
-          'selectedAt': Timestamp.fromDate(now.subtract(const Duration(minutes: 5))),
-        },
-        now: now,
-      );
-      expect(result, ('child-1', 'Junior'));
-    });
-
-    test('returns null when the doc is missing', () {
-      expect(resolvePendingDependentSelection(null), isNull);
-    });
-
-    test('returns null for a self selection', () {
-      final result = resolvePendingDependentSelection({
-        'patientType': 'self',
-        'patientId': 'uid-1',
-        'patientName': 'Pat',
-      });
-      expect(result, isNull);
-    });
-
-    test('returns null when patientId is missing/empty', () {
-      expect(
-        resolvePendingDependentSelection({'patientType': 'dependent', 'patientId': ''}),
-        isNull,
-      );
-      expect(
-        resolvePendingDependentSelection({'patientType': 'dependent'}),
-        isNull,
-      );
-    });
-
-    test('returns null for a stale selection older than the freshness window', () {
-      final now = DateTime(2026, 9, 16, 12, 0);
-      final result = resolvePendingDependentSelection(
-        {
-          'patientType': 'dependent',
-          'patientId': 'child-1',
-          'patientName': 'Junior',
-          'selectedAt': Timestamp.fromDate(now.subtract(const Duration(hours: 2))),
-        },
-        now: now,
-      );
-      expect(result, isNull);
-    });
-
-    test('accepts a dependent selection with no selectedAt timestamp', () {
-      final result = resolvePendingDependentSelection({
-        'patientType': 'dependent',
-        'patientId': 'child-1',
-        'patientName': 'Junior',
-      });
-      expect(result, ('child-1', 'Junior'));
-    });
-  });
-
-  testWidgets('builds without crashing when a pending dependent selection loader is supplied',
-      (tester) async {
+  testWidgets('requires consent before Continue is enabled', (tester) async {
     final service = bookServiceFor(BookServiceId.followUp);
-    var loaderCalled = false;
-    await tester.pumpWidget(MaterialApp(
-      home: TimeDetailsScreen(
-        service: service,
-        pendingSelectionLoader: (uid) async {
-          loaderCalled = true;
-          return {
-            'patientType': 'dependent',
-            'patientId': 'child-1',
-            'patientName': 'Junior',
-            'selectedAt': Timestamp.now(),
-          };
-        },
-      ),
-    ));
+    await tester.pumpWidget(MaterialApp(home: TimeDetailsScreen(service: service)));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
-    expect(find.byType(TimeDetailsScreen), findsOneWidget);
-    // Signed-out in this test environment, so `_loadPendingSelection` returns
-    // early before calling the loader (see time_details_screen.dart) — the
-    // real signed-in threading behaviour is covered by the pure
-    // resolvePendingDependentSelection tests above.
-    expect(loaderCalled, isFalse);
+    final button = tester.widget<FilledButton>(find.byType(FilledButton));
+    // No slot selected and consent unchecked (signed out here, so no slots
+    // load anyway) — the Continue button must be disabled.
+    expect(button.onPressed, isNull);
+  });
+
+  testWidgets('shows a consent checkbox', (tester) async {
+    // The calendar grid + slot list + who-for + account fields push the
+    // consent checkbox below the default test viewport inside the
+    // screen's ListView (off-screen children aren't built) — size the
+    // surface generously rather than scrolling to find it.
+    tester.view.physicalSize = const Size(1200, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final service = bookServiceFor(BookServiceId.followUp);
+    await tester.pumpWidget(MaterialApp(home: TimeDetailsScreen(service: service)));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.byType(CheckboxListTile), findsOneWidget);
+    expect(find.textContaining('I consent'), findsOneWidget);
   });
 }

@@ -114,3 +114,15 @@ List<ResolvedService> allBookServices() => _kServices;
 
 ResolvedService bookServiceFor(BookServiceId id) =>
     _kServices.firstWhere((s) => s.id == id);
+
+/// Mirrors web's `FOCUS_AREAS` (`lib/cal-services.ts`) — optional multi-select
+/// chips shown on the service step, threaded through to
+/// `CheckoutRepository.createCheckoutSession`'s `focusAreas` param.
+const List<String> kFocusAreas = [
+  'Back & neck',
+  'Shoulder',
+  'Post-surgery',
+  'Sports injury',
+  'Neuro',
+  'Paediatric',
+];

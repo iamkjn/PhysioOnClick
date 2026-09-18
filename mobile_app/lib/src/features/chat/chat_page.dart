@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../appointments/appointments_screen.dart';
-import '../booking/who_is_this_for_screen.dart';
+import '../booking/service_select_screen.dart';
 
 // ─── Theme constants ────────────────────────────────────────────────────────
 
@@ -154,7 +154,7 @@ class _ChatPageState extends State<ChatPage> {
 
   void _tapBook(BuildContext ctx) {
     _addUser('Book appointment');
-    WhoIsThisForScreen.go(ctx);
+    ServiceSelectScreen.go(ctx);
   }
 
   void _tapLocation(BuildContext _) {

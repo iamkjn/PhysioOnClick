@@ -9,7 +9,6 @@ import '../../core/widgets/app_toast.dart';
 import '../../core/widgets/auth_gate_sheet.dart';
 import '../admin/recovery/admin_patient_list_screen.dart';
 import '../booking/booking_screen.dart';
-import '../booking/who_is_this_for_screen.dart';
 import '../chat/chat_page.dart';
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
@@ -143,18 +142,6 @@ class _RootShellState extends State<RootShell>
     setState(() => _currentIndex = index);
     // Fade in the newly selected tab from 0.
     _tabFadeCtrl.forward(from: 0.0);
-
-    if (isBookingTab) {
-      // Microtask so the fade animation starts before the push overlay appears.
-      Future.microtask(() {
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const WhoIsThisForScreen()),
-          );
-        }
-      });
-    }
   }
 
   @override

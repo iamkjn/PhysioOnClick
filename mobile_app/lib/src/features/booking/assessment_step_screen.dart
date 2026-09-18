@@ -20,6 +20,7 @@ class AssessmentStepScreen extends StatelessWidget {
   final String email;
   final String? personId;
   final String personName;
+  final List<String> focusAreas;
 
   const AssessmentStepScreen({
     required this.service,
@@ -28,6 +29,7 @@ class AssessmentStepScreen extends StatelessWidget {
     required this.email,
     required this.personId,
     required this.personName,
+    this.focusAreas = const [],
     super.key,
   });
 
@@ -47,6 +49,7 @@ class AssessmentStepScreen extends StatelessWidget {
             start: start,
             name: name,
             email: email,
+            focusAreas: focusAreas,
             assessmentUid: uid,
             assessmentPersonId: resolvedPersonId,
             assessmentFormId: formId,
