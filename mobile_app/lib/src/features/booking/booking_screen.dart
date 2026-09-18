@@ -177,51 +177,52 @@ class BookingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return SafeArea(
-      child: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, authSnapshot) {
-          if (authSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      appBar: AppBar(title: const Text('Book an appointment')),
+      body: SafeArea(
+        child: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, authSnapshot) {
+            if (authSnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final user = authSnapshot.data;
+            final user = authSnapshot.data;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-                child: Text('Book an appointment', style: theme.textTheme.headlineMedium),
-              ),
-              if (user == null)
-                _SignInBanner(theme: theme),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.teal,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                if (user == null)
+                  _SignInBanner(theme: theme),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.teal,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () => ServiceSelectScreen.go(context),
+                      child: const Text('Book an appointment'),
                     ),
-                    onPressed: () => ServiceSelectScreen.go(context),
-                    child: const Text('Book an appointment'),
                   ),
                 ),
-              ),
-              if (user != null) ...[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                  child: Text('Your recent bookings', style: theme.textTheme.titleLarge),
-                ),
-                Expanded(
-                  child: _RecentBookingsList(userId: user.uid, theme: theme),
-                ),
+                if (user != null) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                    child: Text('Your recent bookings', style: theme.textTheme.titleLarge),
+                  ),
+                  Expanded(
+                    child: _RecentBookingsList(userId: user.uid, theme: theme),
+                  ),
+                ],
               ],
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
