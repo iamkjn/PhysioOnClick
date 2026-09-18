@@ -4,11 +4,43 @@ import 'package:flutter/material.dart';
 import '../../core/app_colors.dart';
 import 'assessment_model.dart';
 import 'assessment_repository.dart';
+import 'body_regions.dart';
 
-/// Native patient assessment form. Mirrors the web assessment form's
-/// sections (red flags, consultation mode, key subjective history, goals,
-/// consent) without every micro-field — see field-by-field notes in
-/// `.git/sdd/task-15-report.md`.
+typedef _StepId = String;
+
+const _kIntro = 'intro';
+const _kBody = 'body';
+const _kStory = 'story';
+const _kImpact = 'impact';
+const _kContext = 'context';
+const _kSafety = 'safety';
+const _kConsent = 'consent';
+const List<_StepId> _steps = [_kIntro, _kBody, _kStory, _kImpact, _kContext, _kSafety, _kConsent];
+
+const _howLongOptions = [
+  (value: HowLong.days, label: 'A few days'),
+  (value: HowLong.weeks, label: 'A few weeks'),
+  (value: HowLong.months, label: 'A few months or more'),
+  (value: HowLong.sinceOp, label: 'Since an operation'),
+  (value: HowLong.notSure, label: 'Not sure'),
+];
+
+const _redFlagOptions = [
+  (key: 'majorTrauma', label: 'A recent serious injury, fall or suspected broken bone'),
+  (key: 'chestPainBreathlessness', label: 'Chest pain, breathlessness, blackouts or dizziness'),
+  (key: 'bladderBowelSaddle', label: "New problems with your bladder, bowel or numbness around the saddle area"),
+  (key: 'progressiveWeakness', label: "Weakness or clumsiness that's quickly getting worse"),
+  (key: 'unexplainedFeverWeightLoss', label: 'Unexplained fever, night sweats or weight loss'),
+  (key: 'nightPain', label: "Constant pain that's there all night"),
+];
+
+/// Native patient assessment — a short, full-screen step wizard mirroring
+/// web's `AssessmentWizard` (`components/assessment-wizard.tsx`) one
+/// question per screen: intro → body area → story → impact → context →
+/// safety → consent. The body-area step uses a grouped chip picker instead
+/// of porting web's anatomical SVG chart (see `body_regions.dart`), but the
+/// region taxonomy, step order, validation, and submitted field shape all
+/// match web exactly.
 class AssessmentScreen extends StatefulWidget {
   const AssessmentScreen({
     required this.bookingId,
@@ -32,46 +64,40 @@ class AssessmentScreen extends StatefulWidget {
 }
 
 class _AssessmentScreenState extends State<AssessmentScreen> {
-  final _formKey = GlobalKey<FormState>();
+  int _stepIdx = 0;
   bool _submitting = false;
 
-  // Red flags.
+  final List<String> _regions = [];
+  final _storyController = TextEditingController();
+  String _howLong = '';
+  double _pain = 3;
+  final _impactController = TextEditingController();
+  final _contextController = TextEditingController();
+  final _ecNameController = TextEditingController();
+  final _ecPhoneController = TextEditingController();
+
   bool _majorTrauma = false;
   bool _chestPainBreathlessness = false;
   bool _bladderBowelSaddle = false;
   bool _progressiveWeakness = false;
   bool _unexplainedFeverWeightLoss = false;
   bool _nightPain = false;
-  bool _noRedFlags = false;
+  bool _redFlagsNone = false;
 
-  // Consultation mode.
-  String _consultationMode = AssessmentConsultationMode.inPerson;
-
-  // Subjective history.
-  String _clinicalArea = ClinicalArea.general;
-  final _presentingComplaintController = TextEditingController();
-  double _painScore = 3;
-  final _symptomBehaviourController = TextEditingController();
-  double _irritability = 5;
-  double _severity = 5;
-
-  // Goals.
-  final _goalController = TextEditingController();
-  final _baselineController = TextEditingController();
-  final _targetController = TextEditingController();
-
-  // Consent.
   bool _careConsent = false;
   bool _dataConsent = false;
   bool _privacyConsent = false;
+  bool _safetyConsent = false;
+  final _signatureController = TextEditingController();
 
   @override
   void dispose() {
-    _presentingComplaintController.dispose();
-    _symptomBehaviourController.dispose();
-    _goalController.dispose();
-    _baselineController.dispose();
-    _targetController.dispose();
+    _storyController.dispose();
+    _impactController.dispose();
+    _contextController.dispose();
+    _ecNameController.dispose();
+    _ecPhoneController.dispose();
+    _signatureController.dispose();
     super.dispose();
   }
 
@@ -83,70 +109,116 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       _unexplainedFeverWeightLoss ||
       _nightPain;
 
-  bool get _consentGiven => _careConsent && _dataConsent && _privacyConsent;
+  bool _redFlagValue(String key) => switch (key) {
+        'majorTrauma' => _majorTrauma,
+        'chestPainBreathlessness' => _chestPainBreathlessness,
+        'bladderBowelSaddle' => _bladderBowelSaddle,
+        'progressiveWeakness' => _progressiveWeakness,
+        'unexplainedFeverWeightLoss' => _unexplainedFeverWeightLoss,
+        'nightPain' => _nightPain,
+        _ => false,
+      };
+
+  void _toggleRedFlag(String key) {
+    setState(() {
+      _redFlagsNone = false;
+      switch (key) {
+        case 'majorTrauma':
+          _majorTrauma = !_majorTrauma;
+        case 'chestPainBreathlessness':
+          _chestPainBreathlessness = !_chestPainBreathlessness;
+        case 'bladderBowelSaddle':
+          _bladderBowelSaddle = !_bladderBowelSaddle;
+        case 'progressiveWeakness':
+          _progressiveWeakness = !_progressiveWeakness;
+        case 'unexplainedFeverWeightLoss':
+          _unexplainedFeverWeightLoss = !_unexplainedFeverWeightLoss;
+        case 'nightPain':
+          _nightPain = !_nightPain;
+      }
+    });
+  }
+
+  void _toggleNoneOfThese() {
+    setState(() {
+      _redFlagsNone = !_redFlagsNone;
+      if (_redFlagsNone) {
+        _majorTrauma = false;
+        _chestPainBreathlessness = false;
+        _bladderBowelSaddle = false;
+        _progressiveWeakness = false;
+        _unexplainedFeverWeightLoss = false;
+        _nightPain = false;
+      }
+    });
+  }
+
+  /// Mirrors web's `canAdvance` (`components/assessment-wizard.tsx`).
+  bool _canAdvance(_StepId step) {
+    switch (step) {
+      case _kBody:
+        return _regions.isNotEmpty;
+      case _kStory:
+        return _storyController.text.trim().length >= 10 && _howLong.isNotEmpty;
+      case _kImpact:
+        return _impactController.text.trim().length >= 5;
+      case _kContext:
+        return _ecNameController.text.trim().isNotEmpty &&
+            _ecPhoneController.text.trim().isNotEmpty &&
+            isValidUKPhone(_ecPhoneController.text);
+      case _kSafety:
+        return _redFlagsNone || _hasAnyRedFlag;
+      case _kConsent:
+        return _careConsent &&
+            _dataConsent &&
+            _privacyConsent &&
+            _safetyConsent &&
+            _signatureController.text.trim().length >= 2;
+      default:
+        return true;
+    }
+  }
+
+  void _back() => setState(() => _stepIdx = (_stepIdx - 1).clamp(0, _steps.length - 1));
+  void _forward() => setState(() => _stepIdx = (_stepIdx + 1).clamp(0, _steps.length - 1));
 
   Future<void> _submit() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-
-    if (!_noRedFlags && !_hasAnyRedFlag) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please answer the safety questions, or confirm none apply.'),
-        ),
-      );
-      return;
-    }
-
-    if (!_consentGiven) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please agree to all consent statements to continue.')),
-      );
-      return;
-    }
+    if (user == null || !_canAdvance(_kConsent) || _submitting) return;
 
     setState(() => _submitting = true);
 
-    final now = DateTime.now().toUtc().toIso8601String();
+    final howLong = _howLong.isEmpty ? HowLong.notSure : _howLong;
+    final now = DateTime.now();
     final input = AssessmentInput(
       formType: AssessmentFormType.initial,
-      consultationMode: _consultationMode,
+      consultationMode: AssessmentConsultationMode.online,
       completedVia: AssessmentCompletionMethod.onlineForm,
       patientName: widget.personName,
       completedBy: widget.personName,
       relationshipToPatient: 'self',
-      presentingComplaint: _presentingComplaintController.text.trim(),
-      bodyArea: '',
-      symptomStartDate: '',
-      onsetPattern: OnsetPattern.notSure,
-      painScore: _painScore.round(),
-      subjective: SubjectiveAssessmentProfile(
-        clinicalArea: _clinicalArea,
-        symptomBehaviour: _symptomBehaviourController.text.trim(),
-        irritability: _irritability.round(),
-        severity: _severity.round(),
-      ),
+      presentingComplaint: _storyController.text.trim(),
+      bodyArea: describeRegions(_regions),
+      bodyRegions: _regions,
+      symptomStartDate: deriveSymptomStartDate(howLong),
+      onsetPattern: deriveOnsetPattern(howLong),
+      painScore: _pain.round(),
+      subjective: SubjectiveAssessmentProfile(clinicalArea: deriveClinicalArea(_regions)),
       outcomes: const OutcomeMeasureSet(),
       objectiveVideo: const ObjectiveVideoAssessment(),
-      goalsPlan: GoalSetting(
-        meaningfulGoal: _goalController.text.trim(),
-        baseline: _baselineController.text.trim(),
-        target: _targetController.text.trim(),
-      ),
-      symptoms: '',
+      goalsPlan: GoalSetting(meaningfulGoal: _impactController.text.trim()),
+      symptoms: _storyController.text.trim(),
       aggravatingFactors: '',
       easingFactors: '',
-      functionalImpact: '',
-      goals: _goalController.text.trim(),
-      medicalHistory: '',
+      functionalImpact: _impactController.text.trim(),
+      goals: _impactController.text.trim(),
+      medicalHistory: _contextController.text.trim(),
       medications: '',
       allergies: '',
       previousTreatment: '',
       communicationNeeds: '',
-      emergencyContactName: '',
-      emergencyContactPhone: '',
+      emergencyContactName: _ecNameController.text.trim(),
+      emergencyContactPhone: _ecPhoneController.text.trim(),
       redFlags: AssessmentRedFlags(
         majorTrauma: _majorTrauma,
         chestPainBreathlessness: _chestPainBreathlessness,
@@ -154,23 +226,18 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
         progressiveWeakness: _progressiveWeakness,
         unexplainedFeverWeightLoss: _unexplainedFeverWeightLoss,
         nightPain: _nightPain,
-        none: _noRedFlags,
+        none: _redFlagsNone,
       ),
-      onlineReadiness: OnlineReadiness(
-        privateSpace: _consultationMode == AssessmentConsultationMode.online,
-        safeSpace: _consultationMode == AssessmentConsultationMode.online,
-        cameraAvailable: _consultationMode == AssessmentConsultationMode.online,
-        emergencyContactAvailable: false,
-      ),
+      onlineReadiness: const OnlineReadiness(),
       consent: AssessmentConsent(
         careConsent: _careConsent,
         dataConsent: _dataConsent,
         privacyConsent: _privacyConsent,
-        safetySharing: true,
+        safetySharing: _safetyConsent,
         videoConsent: false,
       ),
-      signature: widget.personName,
-      completedAt: now,
+      signature: _signatureController.text.trim(),
+      completedAt: '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}',
       submittedByUid: user.uid,
       bookingId: widget.bookingId,
     );
@@ -187,19 +254,23 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
         widget.onSubmitted!(formId);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Assessment submitted. Thank you.')),
+          const SnackBar(content: Text("Thank you — that's everything.")),
         );
         Navigator.pop(context, true);
       }
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not submit your assessment. Please try again.')),
+        const SnackBar(content: Text("We couldn't submit your form. Please try again.")),
       );
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
   }
+
+  /// Mirrors web's `hasUrgentRedFlags` (`lib/assessment-forms.ts`) exactly —
+  /// identical to [_hasAnyRedFlag].
+  bool get _urgent => _hasAnyRedFlag;
 
   @override
   Widget build(BuildContext context) {
@@ -208,342 +279,390 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       return const Scaffold(body: Center(child: Text('Sign in to complete your assessment')));
     }
 
+    final step = _steps[_stepIdx];
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pre-Session Assessment'),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0C2A38),
-        elevation: 0,
-      ),
-      backgroundColor: const Color(0xFFF0FDFA),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      backgroundColor: AppColors.bg,
+      appBar: AppBar(title: const Text('Pre-Session Assessment')),
+      body: SafeArea(
+        child: Column(
           children: [
-            _SectionCard(
-              title: 'Safety check',
-              subtitle: 'Please tell us if any of these apply to you right now.',
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _RedFlagCheckbox(
-                    label: 'Recent major trauma or injury',
-                    value: _majorTrauma,
-                    onChanged: (v) => setState(() {
-                      _majorTrauma = v;
-                      if (v) _noRedFlags = false;
-                    }),
-                  ),
-                  _RedFlagCheckbox(
-                    label: 'Chest pain or breathlessness',
-                    value: _chestPainBreathlessness,
-                    onChanged: (v) => setState(() {
-                      _chestPainBreathlessness = v;
-                      if (v) _noRedFlags = false;
-                    }),
-                  ),
-                  _RedFlagCheckbox(
-                    label: 'Loss of bladder/bowel control or saddle numbness',
-                    value: _bladderBowelSaddle,
-                    onChanged: (v) => setState(() {
-                      _bladderBowelSaddle = v;
-                      if (v) _noRedFlags = false;
-                    }),
-                  ),
-                  _RedFlagCheckbox(
-                    label: 'Progressive weakness or numbness',
-                    value: _progressiveWeakness,
-                    onChanged: (v) => setState(() {
-                      _progressiveWeakness = v;
-                      if (v) _noRedFlags = false;
-                    }),
-                  ),
-                  _RedFlagCheckbox(
-                    label: 'Unexplained fever or weight loss',
-                    value: _unexplainedFeverWeightLoss,
-                    onChanged: (v) => setState(() {
-                      _unexplainedFeverWeightLoss = v;
-                      if (v) _noRedFlags = false;
-                    }),
-                  ),
-                  _RedFlagCheckbox(
-                    label: 'Pain that wakes you at night',
-                    value: _nightPain,
-                    onChanged: (v) => setState(() {
-                      _nightPain = v;
-                      if (v) _noRedFlags = false;
-                    }),
-                  ),
-                  const Divider(height: 24),
-                  _RedFlagCheckbox(
-                    label: 'None of the above apply to me',
-                    value: _noRedFlags,
-                    onChanged: (v) => setState(() {
-                      _noRedFlags = v;
-                      if (v) {
-                        _majorTrauma = false;
-                        _chestPainBreathlessness = false;
-                        _bladderBowelSaddle = false;
-                        _progressiveWeakness = false;
-                        _unexplainedFeverWeightLoss = false;
-                        _nightPain = false;
-                      }
-                    }),
-                  ),
-                ],
-              ),
-            ),
-            _SectionCard(
-              title: 'Consultation mode',
-              child: SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: AssessmentConsultationMode.inPerson,
-                    label: Text('In person'),
-                  ),
-                  ButtonSegment(
-                    value: AssessmentConsultationMode.online,
-                    label: Text('Online'),
-                  ),
-                ],
-                selected: {_consultationMode},
-                onSelectionChanged: (s) => setState(() => _consultationMode = s.first),
-              ),
-            ),
-            _SectionCard(
-              title: 'Your symptoms',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  DropdownButtonFormField<String>(
-                    initialValue: _clinicalArea,
-                    decoration: const InputDecoration(labelText: 'Clinical area'),
-                    items: const [
-                      DropdownMenuItem(value: ClinicalArea.spine, child: Text('Spine')),
-                      DropdownMenuItem(value: ClinicalArea.upperLimb, child: Text('Upper limb')),
-                      DropdownMenuItem(value: ClinicalArea.lowerLimb, child: Text('Lower limb')),
-                      DropdownMenuItem(
-                        value: ClinicalArea.balanceWalking,
-                        child: Text('Balance / walking'),
-                      ),
-                      DropdownMenuItem(value: ClinicalArea.neuro, child: Text('Neuro')),
-                      DropdownMenuItem(value: ClinicalArea.postOp, child: Text('Post-op')),
-                      DropdownMenuItem(
-                        value: ClinicalArea.pelvicHealth,
-                        child: Text('Pelvic health'),
-                      ),
-                      DropdownMenuItem(
-                        value: ClinicalArea.paediatric,
-                        child: Text('Paediatric'),
-                      ),
-                      DropdownMenuItem(value: ClinicalArea.general, child: Text('General')),
-                    ],
-                    onChanged: (v) => setState(() => _clinicalArea = v ?? ClinicalArea.general),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _presentingComplaintController,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      labelText: 'What brings you in today?',
-                    ),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Please describe your symptoms' : null,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _symptomBehaviourController,
-                    maxLines: 2,
-                    decoration: const InputDecoration(
-                      labelText: 'What makes it better or worse?',
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      value: (_stepIdx + 1) / _steps.length,
+                      minHeight: 6,
+                      backgroundColor: AppColors.border,
+                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.teal),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  _LabeledSlider(
-                    label: 'Current pain (0 = none, 10 = worst)',
-                    value: _painScore,
-                    onChanged: (v) => setState(() => _painScore = v),
-                  ),
-                  _LabeledSlider(
-                    label: 'Irritability (how easily symptoms are triggered)',
-                    value: _irritability,
-                    onChanged: (v) => setState(() => _irritability = v),
-                  ),
-                  _LabeledSlider(
-                    label: 'Severity',
-                    value: _severity,
-                    onChanged: (v) => setState(() => _severity = v),
-                  ),
-                ],
-              ),
-            ),
-            _SectionCard(
-              title: 'Your goal',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextFormField(
-                    controller: _goalController,
-                    decoration: const InputDecoration(
-                      labelText: 'What would you like to achieve?',
+                  const SizedBox(height: 6),
+                  Text(
+                    'Step ${_stepIdx + 1} of ${_steps.length}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
                     ),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Please tell us your goal' : null,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _baselineController,
-                    decoration: const InputDecoration(labelText: 'What can you do now?'),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _targetController,
-                    decoration: const InputDecoration(labelText: 'What is your target?'),
                   ),
                 ],
               ),
             ),
-            _SectionCard(
-              title: 'Consent',
-              child: Column(
-                children: [
-                  _RedFlagCheckbox(
-                    label: 'I consent to receiving physiotherapy care',
-                    value: _careConsent,
-                    onChanged: (v) => setState(() => _careConsent = v),
-                  ),
-                  _RedFlagCheckbox(
-                    label: 'I consent to my data being stored and used for my care',
-                    value: _dataConsent,
-                    onChanged: (v) => setState(() => _dataConsent = v),
-                  ),
-                  _RedFlagCheckbox(
-                    label: 'I have read and accept the privacy policy',
-                    value: _privacyConsent,
-                    onChanged: (v) => setState(() => _privacyConsent = v),
-                  ),
-                ],
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                children: [_buildStep(step, theme)],
               ),
             ),
-            const SizedBox(height: 8),
-            FilledButton(
-              onPressed: _submitting ? null : _submit,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.gold,
-                foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                child: Row(
+                  children: [
+                    if (_stepIdx > 0)
+                      OutlinedButton(onPressed: _back, child: const Text('Back'))
+                    else
+                      const SizedBox.shrink(),
+                    const Spacer(),
+                    if (step == _kConsent)
+                      FilledButton(
+                        onPressed: (_canAdvance(_kConsent) && !_submitting) ? _submit : null,
+                        style: FilledButton.styleFrom(backgroundColor: AppColors.teal),
+                        child: _submitting
+                            ? const SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              )
+                            : const Text('Submit'),
+                      )
+                    else
+                      FilledButton(
+                        onPressed: _canAdvance(step) ? _forward : null,
+                        style: FilledButton.styleFrom(backgroundColor: AppColors.teal),
+                        child: const Text('Continue'),
+                      ),
+                  ],
+                ),
               ),
-              child: _submitting
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Text('Submit assessment'),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.title, required this.child, this.subtitle});
-
-  final String title;
-  final String? subtitle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 16,
-              color: Color(0xFF0C2A38),
+  Widget _buildStep(_StepId step, ThemeData theme) {
+    switch (step) {
+      case _kIntro:
+        return _StepShell(
+          title: "Let's get you ready for your appointment.",
+          children: [
+            const Text(
+              'A few quick questions — about 3 minutes. Your physiotherapist reads this before you meet, '
+              'so the session starts where it matters.',
             ),
-          ),
-          if (subtitle != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              subtitle!,
-              style: const TextStyle(color: Color(0xFF5E7A84), fontSize: 13),
+            const SizedBox(height: 16),
+            Text('Completing this for ${widget.personName}.', style: theme.textTheme.bodyMedium),
+          ],
+        );
+
+      case _kBody:
+        return _StepShell(
+          title: 'Where is the problem?',
+          hint: "Tap every area that's involved. You can pick more than one.",
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ...bodyRegions.map((r) => ChoiceChip(
+                      label: Text(r.label),
+                      selected: _regions.contains(r.key),
+                      onSelected: (_) => setState(() {
+                        _regions.remove(somewhereElse);
+                        if (_regions.contains(r.key)) {
+                          _regions.remove(r.key);
+                        } else {
+                          _regions.add(r.key);
+                        }
+                      }),
+                    )),
+              ],
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: () => setState(() {
+                if (_regions.contains(somewhereElse)) {
+                  _regions.clear();
+                } else {
+                  _regions
+                    ..clear()
+                    ..add(somewhereElse);
+                }
+              }),
+              child: const Text('Somewhere else / not sure'),
             ),
           ],
-          const SizedBox(height: 12),
-          child,
-        ],
-      ),
-    );
+        );
+
+      case _kStory:
+        return _StepShell(
+          title: "Tell us what's going on.",
+          hint: 'In your own words — what it feels like, when it started, what makes it better or worse.',
+          children: [
+            TextField(
+              controller: _storyController,
+              maxLines: 5,
+              maxLength: 2000,
+              onChanged: (_) => setState(() {}),
+              decoration: const InputDecoration(
+                hintText: 'e.g. A sharp pain in my right shoulder when I lift my arm overhead, started '
+                    'about three weeks ago after decorating…',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text('How long have you had it?', style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _howLongOptions
+                  .map((h) => ChoiceChip(
+                        label: Text(h.label),
+                        selected: _howLong == h.value,
+                        onSelected: (_) => setState(() => _howLong = h.value),
+                      ))
+                  .toList(),
+            ),
+            const SizedBox(height: 16),
+            Text('Pain right now: ${_pain.round()}/10', style: theme.textTheme.bodyMedium),
+            Slider(
+              value: _pain,
+              min: 0,
+              max: 10,
+              divisions: 10,
+              activeColor: AppColors.teal,
+              onChanged: (v) => setState(() => _pain = v),
+            ),
+          ],
+        );
+
+      case _kImpact:
+        return _StepShell(
+          title: 'What has this been getting in the way of?',
+          hint: 'No rush — just the everyday things that matter most to you, like work, sleep, sport, or '
+              'lifting the kids.',
+          children: [
+            TextField(
+              controller: _impactController,
+              maxLines: 4,
+              maxLength: 1500,
+              onChanged: (_) => setState(() {}),
+              decoration: const InputDecoration(
+                hintText: "e.g. I can't sleep on that side and I've stopped going to the gym.",
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        );
+
+      case _kContext:
+        return _StepShell(
+          title: 'Anything we should know?',
+          hint: 'Optional — medicines you take, past injuries or operations, or health conditions.',
+          children: [
+            TextField(
+              controller: _contextController,
+              maxLines: 4,
+              maxLength: 2000,
+              decoration: const InputDecoration(
+                hintText: 'e.g. I take blood pressure tablets. Broke the same wrist 10 years ago.',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text('Emergency contact (required)', style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _ecNameController,
+              maxLength: 80,
+              onChanged: (_) => setState(() {}),
+              decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _ecPhoneController,
+              maxLength: 20,
+              keyboardType: TextInputType.phone,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                labelText: 'Phone',
+                border: const OutlineInputBorder(),
+                errorText: _ecPhoneController.text.trim().isNotEmpty && !isValidUKPhone(_ecPhoneController.text)
+                    ? 'Enter a valid UK phone number.'
+                    : null,
+              ),
+            ),
+          ],
+        );
+
+      case _kSafety:
+        return _StepShell(
+          title: 'A quick safety check.',
+          hint: 'Physiotherapists screen for a few things that need a doctor first. Do any of these apply '
+              'right now?',
+          children: [
+            ..._redFlagOptions.map((f) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _FlagButton(
+                    label: f.label,
+                    selected: _redFlagValue(f.key),
+                    onTap: () => _toggleRedFlag(f.key),
+                  ),
+                )),
+            _FlagButton(
+              label: 'None of these',
+              selected: _redFlagsNone,
+              onTap: _toggleNoneOfThese,
+            ),
+            if (_urgent) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEE2E2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFFCA5A5)),
+                ),
+                child: const Text(
+                  "Some of what you've described may need urgent medical attention. Please contact your "
+                  'GP, call NHS 111, or call 999 if it\'s an emergency. You can still submit this form so '
+                  'your physiotherapist has the detail.',
+                  style: TextStyle(color: Color(0xFF991B1B)),
+                ),
+              ),
+            ],
+          ],
+        );
+
+      case _kConsent:
+        return _StepShell(
+          title: 'Last step — your consent.',
+          children: [
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _careConsent,
+              onChanged: (v) => setState(() => _careConsent = v ?? false),
+              title: const Text("I'm happy to have an online physiotherapy assessment and treatment."),
+            ),
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _dataConsent,
+              onChanged: (v) => setState(() => _dataConsent = v ?? false),
+              title: const Text('I agree to PhysioOnClick storing this information to provide my care.'),
+            ),
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _privacyConsent,
+              onChanged: (v) => setState(() => _privacyConsent = v ?? false),
+              title: const Text("I've read how my information is used (privacy policy)."),
+            ),
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _safetyConsent,
+              onChanged: (v) => setState(() => _safetyConsent = v ?? false),
+              title: const Text(
+                'I understand my physiotherapist may contact my GP or emergency services if there\'s a '
+                'safety concern.',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _signatureController,
+              onChanged: (_) => setState(() {}),
+              decoration: const InputDecoration(
+                labelText: 'Type your name to confirm',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        );
+
+      default:
+        return const SizedBox.shrink();
+    }
   }
 }
 
-class _RedFlagCheckbox extends StatelessWidget {
-  const _RedFlagCheckbox({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
+class _StepShell extends StatelessWidget {
+  const _StepShell({required this.title, required this.children, this.hint});
 
-  final String label;
-  final bool value;
-  final ValueChanged<bool> onChanged;
+  final String title;
+  final String? hint;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    return CheckboxListTile(
-      value: value,
-      onChanged: (v) => onChanged(v ?? false),
-      title: Text(label, style: const TextStyle(fontSize: 14)),
-      controlAffinity: ListTileControlAffinity.leading,
-      contentPadding: EdgeInsets.zero,
-      dense: true,
-    );
-  }
-}
-
-class _LabeledSlider extends StatelessWidget {
-  const _LabeledSlider({required this.label, required this.value, required this.onChanged});
-
-  final String label;
-  final double value;
-  final ValueChanged<double> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('$label: ${value.round()}/10', style: const TextStyle(fontSize: 13)),
-        Slider(
-          value: value,
-          min: 0,
-          max: 10,
-          divisions: 10,
-          activeColor: AppColors.teal,
-          onChanged: onChanged,
-        ),
+        Text(title, style: theme.textTheme.headlineSmall),
+        if (hint != null) ...[
+          const SizedBox(height: 6),
+          Text(hint!, style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+        ],
+        const SizedBox(height: 16),
+        ...children,
       ],
+    );
+  }
+}
+
+class _FlagButton extends StatelessWidget {
+  const _FlagButton({required this.label, required this.selected, required this.onTap});
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.tealLight : AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: selected ? AppColors.teal : AppColors.border, width: selected ? 2 : 1),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+              size: 20,
+              color: selected ? AppColors.teal : AppColors.border,
+            ),
+            const SizedBox(width: 10),
+            Expanded(child: Text(label)),
+          ],
+        ),
+      ),
     );
   }
 }
