@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_colors.dart';
 import 'assessment_model.dart';
 import 'assessment_repository.dart';
+import 'body_chart.dart';
 import 'body_regions.dart';
 
 typedef _StepId = String;
@@ -37,10 +38,9 @@ const _redFlagOptions = [
 /// Native patient assessment — a short, full-screen step wizard mirroring
 /// web's `AssessmentWizard` (`components/assessment-wizard.tsx`) one
 /// question per screen: intro → body area → story → impact → context →
-/// safety → consent. The body-area step uses a grouped chip picker instead
-/// of porting web's anatomical SVG chart (see `body_regions.dart`), but the
-/// region taxonomy, step order, validation, and submitted field shape all
-/// match web exactly.
+/// safety → consent. The body-area step uses the same tappable anatomical
+/// body chart as web (see `body_chart.dart`), and the region taxonomy, step
+/// order, validation, and submitted field shape all match web exactly.
 class AssessmentScreen extends StatefulWidget {
   const AssessmentScreen({
     required this.bookingId,
@@ -325,29 +325,31 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 child: Row(
                   children: [
-                    if (_stepIdx > 0)
-                      OutlinedButton(onPressed: _back, child: const Text('Back'))
-                    else
-                      const SizedBox.shrink(),
-                    const Spacer(),
-                    if (step == _kConsent)
-                      FilledButton(
-                        onPressed: (_canAdvance(_kConsent) && !_submitting) ? _submit : null,
-                        style: FilledButton.styleFrom(backgroundColor: AppColors.teal),
-                        child: _submitting
-                            ? const SizedBox(
-                                height: 18,
-                                width: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                              )
-                            : const Text('Submit'),
-                      )
-                    else
-                      FilledButton(
-                        onPressed: _canAdvance(step) ? _forward : null,
-                        style: FilledButton.styleFrom(backgroundColor: AppColors.teal),
-                        child: const Text('Continue'),
+                    if (_stepIdx > 0) ...[
+                      Expanded(
+                        child: OutlinedButton(onPressed: _back, child: const Text('Back')),
                       ),
+                      const SizedBox(width: 12),
+                    ],
+                    Expanded(
+                      child: step == _kConsent
+                          ? FilledButton(
+                              onPressed: (_canAdvance(_kConsent) && !_submitting) ? _submit : null,
+                              style: FilledButton.styleFrom(backgroundColor: AppColors.teal),
+                              child: _submitting
+                                  ? const SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                    )
+                                  : const Text('Submit'),
+                            )
+                          : FilledButton(
+                              onPressed: _canAdvance(step) ? _forward : null,
+                              style: FilledButton.styleFrom(backgroundColor: AppColors.teal),
+                              child: const Text('Continue'),
+                            ),
+                    ),
                   ],
                 ),
               ),
@@ -376,38 +378,15 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       case _kBody:
         return _StepShell(
           title: 'Where is the problem?',
-          hint: "Tap every area that's involved. You can pick more than one.",
+          hint: "Tap the body chart on every area that's involved. You can pick more than one.",
           children: [
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ...bodyRegions.map((r) => ChoiceChip(
-                      label: Text(r.label),
-                      selected: _regions.contains(r.key),
-                      onSelected: (_) => setState(() {
-                        _regions.remove(somewhereElse);
-                        if (_regions.contains(r.key)) {
-                          _regions.remove(r.key);
-                        } else {
-                          _regions.add(r.key);
-                        }
-                      }),
-                    )),
-              ],
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton(
-              onPressed: () => setState(() {
-                if (_regions.contains(somewhereElse)) {
-                  _regions.clear();
-                } else {
-                  _regions
-                    ..clear()
-                    ..add(somewhereElse);
-                }
+            BodyChart(
+              value: _regions,
+              onChange: (next) => setState(() {
+                _regions
+                  ..clear()
+                  ..addAll(next);
               }),
-              child: const Text('Somewhere else / not sure'),
             ),
           ],
         );

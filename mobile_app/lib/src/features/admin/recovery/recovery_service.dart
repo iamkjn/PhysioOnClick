@@ -219,10 +219,4 @@ class RecoveryService {
         .snapshots();
   }
 
-  static Future<List<Map<String, dynamic>>> getPatients() async {
-    final snap = await _db.collection('patients').get();
-    return snap.docs
-        .map((d) => {'uid': d.id, ...d.data()})
-        .toList();
-  }
 }

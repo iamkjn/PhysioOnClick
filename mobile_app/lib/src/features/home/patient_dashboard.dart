@@ -99,7 +99,7 @@ class _PatientDashboardState extends State<PatientDashboard> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => ServiceSelectScreen.go(context),
+                  onPressed: () => ServiceSelectScreen.go(context, personId: _personId, personName: _personName),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0891B2),
                     foregroundColor: Colors.white,
@@ -353,15 +353,16 @@ class _GettingStartedGate extends StatelessWidget {
         if (status == null || status.isFullyOnboarded) {
           return Column(children: onboarded(context));
         }
-        return _GettingStartedChecklist(personName: personName, status: status);
+        return _GettingStartedChecklist(personId: personId, personName: personName, status: status);
       },
     );
   }
 }
 
 class _GettingStartedChecklist extends StatelessWidget {
-  const _GettingStartedChecklist({required this.personName, required this.status});
+  const _GettingStartedChecklist({required this.personId, required this.personName, required this.status});
 
+  final String personId;
   final String personName;
   final _OnboardingStatus status;
 
@@ -389,7 +390,7 @@ class _GettingStartedChecklist extends StatelessWidget {
             done: status.hasBooked,
             cta: status.hasBooked
                 ? null
-                : ('Book session', () => ServiceSelectScreen.go(context)),
+                : ('Book session', () => ServiceSelectScreen.go(context, personId: personId, personName: personName)),
           ),
           _ChecklistRow(label: 'Complete your assessment', done: status.hasAssessment),
           _ChecklistRow(label: 'Start your rehab plan', done: status.hasExercises),

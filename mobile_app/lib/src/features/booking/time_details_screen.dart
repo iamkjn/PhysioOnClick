@@ -32,9 +32,16 @@ class TimeDetailsScreen extends StatefulWidget {
   final ResolvedService service;
   final List<String> focusAreas;
 
+  /// When set (non-self), pre-selects this dependent in the "Booking for"
+  /// picker instead of defaulting to "myself" — see [ServiceSelectScreen].
+  final String? initialPersonId;
+  final String? initialPersonName;
+
   const TimeDetailsScreen({
     required this.service,
     this.focusAreas = const [],
+    this.initialPersonId,
+    this.initialPersonName,
     super.key,
   });
 
@@ -69,6 +76,8 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
       _nameController.text = user.displayName ?? '';
       _emailController.text = user.email ?? '';
     }
+    _selectedPersonId = widget.initialPersonId;
+    _selectedPersonName = widget.initialPersonName;
     _loadSlots();
   }
 

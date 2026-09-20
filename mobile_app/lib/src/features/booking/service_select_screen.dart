@@ -15,7 +15,14 @@ import 'time_details_screen.dart';
 /// and a single "Continue" button advances to [TimeDetailsScreen] — the same
 /// select-then-continue shape as web, not a list of tap-to-navigate rows.
 class ServiceSelectScreen extends StatefulWidget {
-  const ServiceSelectScreen({super.key});
+  const ServiceSelectScreen({this.initialPersonId, this.initialPersonName, super.key});
+
+  /// When set (non-null, non-self), the booking flow starts pre-selected for
+  /// this dependent instead of defaulting to "myself" — carries through the
+  /// patient currently being viewed on the home dashboard, so the booking
+  /// flow doesn't silently reset to the account holder.
+  final String? initialPersonId;
+  final String? initialPersonName;
 
   /// Routes to [ServiceSelectScreen] for authenticated users. For
   /// unauthenticated users, shows the auth gate sheet instead of allowing
@@ -23,7 +30,7 @@ class ServiceSelectScreen extends StatefulWidget {
   /// the flow's other entry point. Without this gate, a signed-out user
   /// could fill out the entire assessment only to have submission silently
   /// no-op (AssessmentScreen._submit early-returns when signed out).
-  static void go(BuildContext context) {
+  static void go(BuildContext context, {String? personId, String? personName}) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       showAuthGateSheet(
@@ -32,9 +39,15 @@ class ServiceSelectScreen extends StatefulWidget {
       );
       return;
     }
+    final isSelf = personId == null || personId == user.uid;
     Navigator.push(
       context,
-      PhysioPageRoute(builder: (_) => const ServiceSelectScreen()),
+      PhysioPageRoute(
+        builder: (_) => ServiceSelectScreen(
+          initialPersonId: isSelf ? null : personId,
+          initialPersonName: isSelf ? null : personName,
+        ),
+      ),
     );
   }
 
@@ -164,6 +177,8 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
                           builder: (_) => TimeDetailsScreen(
                             service: service,
                             focusAreas: _focusAreas.toList(),
+                            initialPersonId: widget.initialPersonId,
+                            initialPersonName: widget.initialPersonName,
                           ),
                         ),
                       );

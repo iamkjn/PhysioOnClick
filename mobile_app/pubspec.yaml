@@ -55,12 +55,25 @@ dependencies:
   # Facial motion check (palsy/stroke/older-patient symmetry). NOTE: ML Kit
   # Face Mesh is Android-only; face_check_screen.dart gates iOS with a message.
   google_mlkit_face_mesh_detection: ^0.5.0
+  path_drawing: ^1.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
   webview_flutter_platform_interface: ^2.10.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  # Master icon exported from the website's public/icon-512.png (same "P"
+  # mark, flattened to a full-bleed square — see the export step in git
+  # history — so iOS/Android apply their own corner masking correctly).
+  image_path: "assets/icon/app_icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/body_chart/muscle_paths.json
