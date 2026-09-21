@@ -17,8 +17,13 @@ import {
   defaultRedFlags,
   hasUrgentRedFlags,
   ASSESSMENT_LIMITS,
+  CONDITIONAL_RED_FLAG_FIELDS,
+  RED_FLAG_FIELD_LABELS,
+  CONDITION_GROUP_LABELS,
   type AssessmentFormType,
   type AssessmentRedFlags,
+  type ConditionGroup,
+  type ConditionalRedFlags,
   type PatientAssessmentFormInput,
 } from "@/lib/assessment-forms";
 import { validateUKPhone } from "@/lib/validation";
@@ -29,6 +34,7 @@ import {
   describeRegions,
   type HowLong,
 } from "@/lib/body-chart";
+import { regionToConditionGroups } from "@/lib/red-flag-groups";
 import { BodyChart } from "@/components/body-chart";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { useToast } from "@/components/toast-provider";
@@ -41,6 +47,10 @@ interface Props {
   bookingId: string;
   formType?: AssessmentFormType;
   onSubmitted: (formId: string) => void;
+  /** When true, skip the "Thank you" screen and show a payment-redirect spinner
+   * instead — the caller is about to redirect to Stripe checkout, so showing a
+   * booking-confirmed state first would be misleading. */
+  redirectingToPayment?: boolean;
 }
 
 type StepId = "intro" | "body" | "story" | "impact" | "context" | "safety" | "consent";
@@ -61,6 +71,17 @@ const RED_FLAGS: { key: keyof AssessmentRedFlags; label: string }[] = [
   { key: "progressiveWeakness", label: "Weakness or clumsiness that's quickly getting worse" },
   { key: "unexplainedFeverWeightLoss", label: "Unexplained fever, night sweats or weight loss" },
   { key: "nightPain", label: "Constant pain that's there all night" },
+  { key: "steroidUseOrOsteoporosis", label: "Long-term steroid use or known osteoporosis" },
+  { key: "anticoagulantMedication", label: "Taking blood-thinning (anticoagulant) medication" },
+  { key: "persistentCough", label: "A persistent cough" },
+  { key: "smoker", label: "Current or recent smoker" },
+  { key: "systemicallyUnwellFeverFatigue", label: "Feeling generally unwell — fever or fatigue" },
+  { key: "recreationalIVDrugUse", label: "History of recreational IV drug use" },
+  { key: "nightSweats", label: "Night sweats" },
+  { key: "weightLoss", label: "Unexplained weight loss" },
+  { key: "thoracicPain", label: "Pain in the middle of your back (thoracic spine)" },
+  { key: "cancerOrFamilyHistory", label: "Personal or family history of cancer" },
+  { key: "immunocompromised", label: "A weakened immune system" },
 ];
 
 const CONSENT_ITEMS: { key: "care" | "data" | "privacy" | "safety"; label: string }[] = [
@@ -80,6 +101,7 @@ interface WizardState {
   ecName: string;
   ecPhone: string;
   redFlags: AssessmentRedFlags;
+  conditionalFlags: ConditionalRedFlags;
   consent: { care: boolean; data: boolean; privacy: boolean; safety: boolean };
   signature: string;
 }
@@ -94,6 +116,7 @@ const INITIAL: WizardState = {
   ecName: "",
   ecPhone: "",
   redFlags: { ...defaultRedFlags },
+  conditionalFlags: {},
   consent: { care: false, data: false, privacy: false, safety: false },
   signature: "",
 };
@@ -139,12 +162,14 @@ export function AssessmentWizard({
   bookingId,
   formType = "initial",
   onSubmitted,
+  redirectingToPayment = false,
 }: Props) {
   const toast = useToast();
   const [stepIdx, setStepIdx] = useState(0);
   const [state, setState] = useState<WizardState>(INITIAL);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
+  const [awaitingPayment, setAwaitingPayment] = useState(false);
 
   // hydrate draft
   useEffect(() => {
@@ -191,6 +216,24 @@ export function AssessmentWizard({
     });
   }
 
+  function toggleConditionalFlag(group: ConditionGroup, key: string) {
+    setState((s) => {
+      const groupFields = s.conditionalFlags[group] ?? {};
+      return {
+        ...s,
+        conditionalFlags: {
+          ...s.conditionalFlags,
+          [group]: { ...groupFields, [key]: !groupFields[key] },
+        },
+      };
+    });
+  }
+
+  const relevantConditionGroups = useMemo(
+    () => regionToConditionGroups(state.regions),
+    [state.regions]
+  );
+
   async function handleSubmit() {
     if (!canAdvance("consent", state) || saving) return;
     setSaving(true);
@@ -225,6 +268,7 @@ export function AssessmentWizard({
       emergencyContactName: state.ecName.trim(),
       emergencyContactPhone: state.ecPhone.trim(),
       redFlags: state.redFlags,
+      conditionalFlags: state.conditionalFlags,
       onlineReadiness: { ...defaultOnlineReadiness },
       consent: {
         careConsent: state.consent.care,
@@ -245,13 +289,33 @@ export function AssessmentWizard({
       } catch {
         /* ignore */
       }
-      setDone(true);
-      onSubmitted(id);
+      if (redirectingToPayment) {
+        // Go straight to payment — no confirmation screen here, since the
+        // booking isn't actually confirmed until Stripe checkout succeeds.
+        // Keep `saving` true so the submit button stays disabled while we wait.
+        setAwaitingPayment(true);
+        onSubmitted(id);
+      } else {
+        setSaving(false);
+        setDone(true);
+        onSubmitted(id);
+      }
     } catch {
-      toast.show("We couldn't submit your form. Please try again.", "error");
-    } finally {
       setSaving(false);
+      toast.show("We couldn't submit your form. Please try again.", "error");
     }
+  }
+
+  if (awaitingPayment) {
+    return (
+      <div className="assessment-wizard assessment-wizard--done">
+        <div className="assessment-wizard__panel">
+          <span className="assessment-wizard__spinner" aria-hidden="true" />
+          <h1>Taking you to payment…</h1>
+          <p>Hold on while we redirect you to secure checkout.</p>
+        </div>
+      </div>
+    );
   }
 
   if (done) {
@@ -449,6 +513,24 @@ export function AssessmentWizard({
                 None of these
               </button>
             </div>
+            {relevantConditionGroups.map((group) => (
+              <fieldset key={group} className="assessment-wizard__chips" style={{ marginTop: "1rem" }}>
+                <legend>{CONDITION_GROUP_LABELS[group]}</legend>
+                <div className="assessment-wizard__flags">
+                  {CONDITIONAL_RED_FLAG_FIELDS[group].map((field) => (
+                    <button
+                      key={field}
+                      type="button"
+                      className="assessment-wizard__flag"
+                      aria-pressed={state.conditionalFlags[group]?.[field] === true}
+                      onClick={() => toggleConditionalFlag(group, field)}
+                    >
+                      {RED_FLAG_FIELD_LABELS[field] ?? field}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+            ))}
             {urgent && (
               <p className="assessment-wizard__alert" role="alert">
                 Some of what you&apos;ve described may need urgent medical attention. Please contact your GP,

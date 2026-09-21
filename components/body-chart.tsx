@@ -69,21 +69,24 @@ export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }
 
   return (
     <div
-      className={`body-chart${showBones ? " show-bones" : ""}`}
+      className={`body-chart${showBones ? " show-bones" : ""}${readOnly ? " is-readonly" : ""}`}
       ref={wrapRef}
       onMouseMove={onMove}
       data-view={view}
     >
-      {!readOnly && (
-        <div className="body-chart__toolbar">
-          <div className="body-chart__views" role="group" aria-label="Body view">
-            <button type="button" className="body-chart__view-btn" aria-pressed={view === "front"} onClick={() => setView("front")}>
-              Front
-            </button>
-            <button type="button" className="body-chart__view-btn" aria-pressed={view === "back"} onClick={() => setView("back")}>
-              Back
-            </button>
-          </div>
+      {/* Front/back is view-only navigation, not data editing, so it stays
+          interactive even in readOnly mode. "Show bones" and "somewhere
+          else" do edit chart state/selection, so those stay gated below. */}
+      <div className="body-chart__toolbar">
+        <div className="body-chart__views" role="group" aria-label="Body view">
+          <button type="button" className="body-chart__view-btn" aria-pressed={view === "front"} onClick={() => setView("front")}>
+            Front
+          </button>
+          <button type="button" className="body-chart__view-btn" aria-pressed={view === "back"} onClick={() => setView("back")}>
+            Back
+          </button>
+        </div>
+        {!readOnly && (
           <button
             type="button"
             className="body-chart__bones-btn"
@@ -92,8 +95,8 @@ export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }
           >
             {showBones ? "Hide bones" : "Show bones"}
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="body-chart__figure">
         <svg className="body-chart__svg" viewBox={VIEWBOX[view]} role="group" aria-label={`Body chart, ${view} view`}>

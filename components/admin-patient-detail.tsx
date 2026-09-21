@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   collection,
   doc,
@@ -11,7 +12,7 @@ import {
   query,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
+import { getPatientBookings, displayBookingStatus, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { cancelCalBooking } from "@/app/admin/actions";
 import { calcAge } from "@/lib/age";
@@ -73,14 +74,7 @@ const BOOKING_STATUS_CLASS: Record<AdminBookingRow["status"], string> = {
   cancelled: "dashboard-status-pill status-cancelled",
 };
 
-// The stored `status` field is only ever written as "upcoming" or
-// "cancelled" (see app/api/cal-webhook/route.ts) — "completed" is always
-// derived from the session date having passed, same as
-// app/patient/appointments/page.tsx and admin-bookings-table.tsx do.
-function displayStatus(b: AdminBookingRow): AdminBookingRow["status"] {
-  if (b.status === "cancelled") return "cancelled";
-  return b.sessionDate < new Date() ? "completed" : "upcoming";
-}
+const displayStatus = displayBookingStatus;
 
 export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
   const toast = useToast();
@@ -350,6 +344,9 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
                   </span>
                 </div>
                 <span className={BOOKING_STATUS_CLASS[status]}>{BOOKING_STATUS_LABEL[status]}</span>
+                <Link href={`/admin/session/${b.id}`} className="button small">
+                  View
+                </Link>
                 {status === "upcoming" && b.calBookingUid && (
                   <button
                     type="button"
@@ -445,6 +442,15 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
                     <strong style={{ fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}>
                       {b.service} · {b.sessionDate.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                     </strong>
+                    {status === "upcoming" && summary === null && (
+                      // "Start Session" replaces the old "Write summary" trigger for
+                      // upcoming bookings — it opens the full screening -> self-tests ->
+                      // diagnosis -> exercises -> summary wizard instead of just the
+                      // summary form. See components/start-session-flow.tsx.
+                      <Link href={`/admin/session/${b.id}/start`} className="summary-trigger">
+                        Start Session
+                      </Link>
+                    )}
                     {status === "completed" && summary === null && (
                       <SummaryForm
                         booking={{ id: b.id, patientId: person.id, patientType: b.patientType, patientName: b.patientName, service: b.service, bookedBy: patientUid }}

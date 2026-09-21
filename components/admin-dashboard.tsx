@@ -77,6 +77,12 @@ export function AdminDashboard() {
               from the library, set motion-check targets, streak goals and
               follow-ups. Previously reachable only by typing the URL. */}
           <Link
+            href="/admin/sessions"
+            className="admin-dashboard-link"
+          >
+            Upcoming sessions <span aria-hidden="true">→</span>
+          </Link>
+          <Link
             href="/admin/recovery"
             className="admin-dashboard-link"
           >

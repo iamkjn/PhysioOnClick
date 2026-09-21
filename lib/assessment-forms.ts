@@ -125,7 +125,147 @@ export interface AssessmentRedFlags {
   progressiveWeakness: boolean;
   unexplainedFeverWeightLoss: boolean;
   nightPain: boolean;
+  // NHS general-checklist additions.
+  steroidUseOrOsteoporosis: boolean;
+  anticoagulantMedication: boolean;
+  persistentCough: boolean;
+  smoker: boolean;
+  systemicallyUnwellFeverFatigue: boolean;
+  recreationalIVDrugUse: boolean;
+  nightSweats: boolean;
+  weightLoss: boolean;
+  thoracicPain: boolean;
+  cancerOrFamilyHistory: boolean;
+  immunocompromised: boolean;
   none: boolean;
+}
+
+/**
+ * Condition-specific red-flag groups (NHS Lothian MSK form). Only the groups
+ * relevant to the patient's picked body region(s) are shown — see
+ * `regionToConditionGroups()` in lib/red-flag-groups.ts.
+ */
+export type ConditionGroup =
+  | "cervicalVascular"
+  | "caudaEquina"
+  | "spinalFragilityFracture"
+  | "inflammatoryArthritisAxSpA"
+  | "cancerMSCC";
+
+export type ConditionalRedFlags = Partial<Record<ConditionGroup, Record<string, boolean>>>;
+
+export const CONDITIONAL_RED_FLAG_FIELDS: Record<ConditionGroup, string[]> = {
+  cervicalVascular: [
+    "dizziness",
+    "doubleOrBlurredVision",
+    "difficultySwallowing",
+    "difficultyTalking",
+    "blackoutOrUnexplainedFall",
+    "suddenSevereHeadache",
+    "cordSigns",
+    "bilateralNumbnessHandsFeet",
+  ],
+  caudaEquina: [
+    "bilateralSciatica",
+    "severeProgressiveBilateralLegDeficit",
+    "difficultyMicturition",
+    "lossOfRectalSensation",
+    "perianalSensoryLoss",
+    "changeInSexualFunction",
+  ],
+  spinalFragilityFracture: [
+    "suddenOnsetPain",
+    "minimalTrauma",
+    "worsePainSittingLeaningBack",
+    "worsePainStandingLeaningForward",
+  ],
+  inflammatoryArthritisAxSpA: [
+    "jointSwellingNoMechanicalCause",
+    "prolongedMorningStiffness",
+    "dactylitis",
+    "enthesitisNoMechanicalCause",
+    "historyPsoriasisOrIBD",
+    "familyHistoryInflammatoryArthritis",
+  ],
+  cancerMSCC: [
+    "severeProgressivePainThoracic",
+    "newSpinalNerveRootPain",
+    "newDifficultyWalking",
+    "reducedPowerOrAlteredSensationLimbs",
+    "bowelBladderDisturbance",
+  ],
+};
+
+export const CONDITION_GROUP_LABELS: Record<ConditionGroup, string> = {
+  cervicalVascular: "Cervical (neck) vascular screen",
+  caudaEquina: "Cauda equina screen",
+  spinalFragilityFracture: "Spinal fragility fracture screen",
+  inflammatoryArthritisAxSpA: "Inflammatory arthritis / axial spondyloarthritis screen",
+  cancerMSCC: "Cancer / spinal cord compression screen",
+};
+
+export const RED_FLAG_FIELD_LABELS: Record<string, string> = {
+  // common
+  majorTrauma: "A recent serious injury, fall or suspected broken bone",
+  chestPainBreathlessness: "Chest pain, breathlessness, blackouts or dizziness",
+  bladderBowelSaddle: "New problems with bladder, bowel or numbness around the saddle area",
+  progressiveWeakness: "Weakness or clumsiness that's quickly getting worse",
+  unexplainedFeverWeightLoss: "Unexplained fever, night sweats or weight loss",
+  nightPain: "Constant pain that's there all night",
+  steroidUseOrOsteoporosis: "Long-term steroid use or known osteoporosis",
+  anticoagulantMedication: "Taking anticoagulant (blood-thinning) medication",
+  persistentCough: "Persistent cough",
+  smoker: "Current or recent smoker",
+  systemicallyUnwellFeverFatigue: "Feeling systemically unwell — fever or fatigue",
+  recreationalIVDrugUse: "History of recreational IV drug use",
+  nightSweats: "Night sweats",
+  weightLoss: "Unexplained weight loss",
+  thoracicPain: "Thoracic (mid-back) pain",
+  cancerOrFamilyHistory: "Personal or family history of cancer",
+  immunocompromised: "Immunocompromised",
+  // cervicalVascular
+  dizziness: "Dizziness",
+  doubleOrBlurredVision: "Double or blurred vision",
+  difficultySwallowing: "Difficulty swallowing",
+  difficultyTalking: "Difficulty talking / slurred speech",
+  blackoutOrUnexplainedFall: "Blackout or unexplained fall",
+  suddenSevereHeadache: "Sudden, severe headache",
+  cordSigns: "Signs of spinal cord involvement",
+  bilateralNumbnessHandsFeet: "Bilateral numbness in hands or feet",
+  // caudaEquina
+  bilateralSciatica: "Bilateral sciatica",
+  severeProgressiveBilateralLegDeficit: "Severe, progressive bilateral leg weakness",
+  difficultyMicturition: "Difficulty passing urine",
+  lossOfRectalSensation: "Loss of rectal sensation",
+  perianalSensoryLoss: "Numbness around the perianal area (saddle anaesthesia)",
+  changeInSexualFunction: "New change in sexual function",
+  // spinalFragilityFracture
+  suddenOnsetPain: "Sudden onset of severe spinal pain",
+  minimalTrauma: "Pain after only minimal trauma (e.g. a minor bump)",
+  worsePainSittingLeaningBack: "Pain worse sitting or leaning back",
+  worsePainStandingLeaningForward: "Pain worse standing or leaning forward",
+  // inflammatoryArthritisAxSpA
+  jointSwellingNoMechanicalCause: "Joint swelling with no obvious mechanical cause",
+  prolongedMorningStiffness: "Prolonged morning stiffness (over 30 minutes)",
+  dactylitis: "'Sausage' swelling of a whole finger or toe (dactylitis)",
+  enthesitisNoMechanicalCause: "Tendon/ligament attachment pain with no mechanical cause (enthesitis)",
+  historyPsoriasisOrIBD: "History of psoriasis or inflammatory bowel disease",
+  familyHistoryInflammatoryArthritis: "Family history of inflammatory arthritis",
+  // cancerMSCC
+  severeProgressivePainThoracic: "Severe, progressive thoracic/spinal pain",
+  newSpinalNerveRootPain: "New spinal nerve root pain",
+  newDifficultyWalking: "New difficulty walking",
+  reducedPowerOrAlteredSensationLimbs: "Reduced power or altered sensation in the limbs",
+  bowelBladderDisturbance: "New bowel or bladder disturbance",
+};
+
+export interface RedFlagAuditEntry {
+  field: string;
+  from: boolean | null;
+  to: boolean;
+  changedBy: string;
+  changedAt: string;
+  source: "patient_form" | "admin_session";
 }
 
 export interface OnlineReadiness {
@@ -172,6 +312,7 @@ export interface PatientAssessmentFormInput {
   emergencyContactName: string;
   emergencyContactPhone: string;
   redFlags: AssessmentRedFlags;
+  conditionalFlags?: ConditionalRedFlags;
   bodyRegions?: string[];
   onlineReadiness: OnlineReadiness;
   consent: AssessmentConsent;
@@ -193,6 +334,9 @@ export interface PatientAssessmentFormRecord extends PatientAssessmentFormInput 
   nextCheckupDate: string;
   createdAt: Date | null;
   updatedAt: Date | null;
+  // Server/admin-managed only — never written by the patient-facing form.
+  conditionalFlags: ConditionalRedFlags;
+  redFlagAuditLog: RedFlagAuditEntry[];
 }
 
 export interface AssessmentReviewInput {
@@ -211,8 +355,29 @@ export const defaultRedFlags: AssessmentRedFlags = {
   progressiveWeakness: false,
   unexplainedFeverWeightLoss: false,
   nightPain: false,
+  steroidUseOrOsteoporosis: false,
+  anticoagulantMedication: false,
+  persistentCough: false,
+  smoker: false,
+  systemicallyUnwellFeverFatigue: false,
+  recreationalIVDrugUse: false,
+  nightSweats: false,
+  weightLoss: false,
+  thoracicPain: false,
+  cancerOrFamilyHistory: false,
+  immunocompromised: false,
   none: false,
 };
+
+export function defaultConditionalRedFlagsFor(groups: ConditionGroup[]): ConditionalRedFlags {
+  const out: ConditionalRedFlags = {};
+  for (const g of groups) {
+    out[g] = Object.fromEntries(CONDITIONAL_RED_FLAG_FIELDS[g].map((f) => [f, false]));
+  }
+  return out;
+}
+
+export const defaultConditionalRedFlags: ConditionalRedFlags = {};
 
 export const defaultOnlineReadiness: OnlineReadiness = {
   privateSpace: false,
@@ -311,7 +476,7 @@ function readStringArray(data: Record<string, unknown>, key: string): string[] {
   return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
 }
 
-function readRedFlags(value: unknown): AssessmentRedFlags {
+export function readRedFlags(value: unknown): AssessmentRedFlags {
   const d = typeof value === "object" && value !== null ? value as Partial<AssessmentRedFlags> : {};
   return {
     majorTrauma: d.majorTrauma === true,
@@ -320,8 +485,49 @@ function readRedFlags(value: unknown): AssessmentRedFlags {
     progressiveWeakness: d.progressiveWeakness === true,
     unexplainedFeverWeightLoss: d.unexplainedFeverWeightLoss === true,
     nightPain: d.nightPain === true,
+    steroidUseOrOsteoporosis: d.steroidUseOrOsteoporosis === true,
+    anticoagulantMedication: d.anticoagulantMedication === true,
+    persistentCough: d.persistentCough === true,
+    smoker: d.smoker === true,
+    systemicallyUnwellFeverFatigue: d.systemicallyUnwellFeverFatigue === true,
+    recreationalIVDrugUse: d.recreationalIVDrugUse === true,
+    nightSweats: d.nightSweats === true,
+    weightLoss: d.weightLoss === true,
+    thoracicPain: d.thoracicPain === true,
+    cancerOrFamilyHistory: d.cancerOrFamilyHistory === true,
+    immunocompromised: d.immunocompromised === true,
     none: d.none === true,
   };
+}
+
+export function readConditionalRedFlags(value: unknown): ConditionalRedFlags {
+  const d = typeof value === "object" && value !== null ? value as Record<string, unknown> : {};
+  const out: ConditionalRedFlags = {};
+  for (const group of Object.keys(CONDITIONAL_RED_FLAG_FIELDS) as ConditionGroup[]) {
+    const raw = d[group];
+    if (typeof raw !== "object" || raw === null) continue;
+    const rawFields = raw as Record<string, unknown>;
+    const fields: Record<string, boolean> = {};
+    for (const key of CONDITIONAL_RED_FLAG_FIELDS[group]) {
+      fields[key] = rawFields[key] === true;
+    }
+    out[group] = fields;
+  }
+  return out;
+}
+
+function readRedFlagAuditLog(value: unknown): RedFlagAuditEntry[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((v): v is Record<string, unknown> => typeof v === "object" && v !== null)
+    .map((v) => ({
+      field: typeof v.field === "string" ? v.field : "",
+      from: typeof v.from === "boolean" ? v.from : null,
+      to: v.to === true,
+      changedBy: typeof v.changedBy === "string" ? v.changedBy : "",
+      changedAt: typeof v.changedAt === "string" ? v.changedAt : "",
+      source: v.source === "admin_session" ? "admin_session" : "patient_form",
+    }));
 }
 
 function readOnlineReadiness(value: unknown): OnlineReadiness {
@@ -509,6 +715,8 @@ function mapAssessmentForm(snap: QueryDocumentSnapshot | DocumentSnapshot): Pati
     nextCheckupDate: readString(data, "nextCheckupDate"),
     createdAt: readDate(data.createdAt),
     updatedAt: readDate(data.updatedAt),
+    conditionalFlags: readConditionalRedFlags(data.conditionalFlags),
+    redFlagAuditLog: readRedFlagAuditLog(data.redFlagAuditLog),
   };
 }
 
@@ -518,7 +726,52 @@ export function hasUrgentRedFlags(flags: AssessmentRedFlags): boolean {
     flags.bladderBowelSaddle ||
     flags.progressiveWeakness ||
     flags.unexplainedFeverWeightLoss ||
-    flags.nightPain;
+    flags.nightPain ||
+    flags.cancerOrFamilyHistory ||
+    flags.thoracicPain ||
+    (flags.nightSweats && flags.weightLoss);
+}
+
+function countTrue(fields: Record<string, boolean> | undefined): number {
+  if (!fields) return 0;
+  return Object.values(fields).filter(Boolean).length;
+}
+
+/**
+ * Overall triage tier mirroring the NHS Lothian MSK document's structure:
+ * "emergency" for anything that should stop the session and prompt urgent
+ * care, "some"/"few" for a growing number of lower-severity flags, "none"
+ * otherwise. Deliberately simple/rule-based, not a diagnosis.
+ */
+export function levelOfConcern(
+  flags: AssessmentRedFlags,
+  conditionalFlags: ConditionalRedFlags,
+): "none" | "few" | "some" | "emergency" {
+  // Any cauda equina, cervical vascular, or cancer/MSCC conditional flag is
+  // an immediate emergency tier, same as the common urgent flags.
+  const emergencyGroups: ConditionGroup[] = ["caudaEquina", "cervicalVascular", "cancerMSCC"];
+  const hasEmergencyConditional = emergencyGroups.some((g) => countTrue(conditionalFlags[g]) > 0);
+  if (hasUrgentRedFlags(flags) || hasEmergencyConditional) return "emergency";
+
+  const commonCount = [
+    flags.steroidUseOrOsteoporosis,
+    flags.anticoagulantMedication,
+    flags.persistentCough,
+    flags.smoker,
+    flags.systemicallyUnwellFeverFatigue,
+    flags.recreationalIVDrugUse,
+    flags.nightSweats,
+    flags.weightLoss,
+    flags.immunocompromised,
+  ].filter(Boolean).length;
+
+  const conditionalCount =
+    countTrue(conditionalFlags.spinalFragilityFracture) + countTrue(conditionalFlags.inflammatoryArthritisAxSpA);
+
+  const total = commonCount + conditionalCount;
+  if (total === 0) return "none";
+  if (total <= 2) return "few";
+  return "some";
 }
 
 export async function submitPatientAssessmentForm(
@@ -526,6 +779,9 @@ export async function submitPatientAssessmentForm(
   personId: string,
   input: PatientAssessmentFormInput
 ): Promise<string> {
+  if (!input.emergencyContactName.trim() || !input.emergencyContactPhone.trim()) {
+    throw new Error("Emergency contact name and phone are required.");
+  }
   const ref = await addDoc(personBase(uid, personId), {
     ...input,
     bookingId: input.bookingId ?? "",
@@ -560,6 +816,52 @@ export async function getPatientAssessmentFormById(
   const snap = await getDoc(doc(db, "patients", uid, "people", personId, "assessmentForms", formId));
   if (!snap.exists()) return null;
   return mapAssessmentForm(snap);
+}
+
+/**
+ * Applies red-flag edits made during the "Start Session" wizard's Screening
+ * step and appends each change to the audit log. Read-modify-write (rather
+ * than a blind arrayUnion) so `updatedFlags`/`updatedConditionalFlags` and the
+ * log stay consistent with each other in one write.
+ */
+export async function recordRedFlagChange(
+  uid: string,
+  personId: string,
+  formId: string,
+  entries: RedFlagAuditEntry[],
+  updatedFlags: AssessmentRedFlags,
+  updatedConditionalFlags: ConditionalRedFlags,
+): Promise<void> {
+  if (!db) throw new Error("Firestore not available");
+  if (entries.length === 0) return;
+  const ref = doc(db, "patients", uid, "people", personId, "assessmentForms", formId);
+  const snap = await getDoc(ref);
+  const existingLog = snap.exists() ? readRedFlagAuditLog(snap.data()?.redFlagAuditLog) : [];
+  await updateDoc(ref, {
+    redFlags: updatedFlags,
+    conditionalFlags: updatedConditionalFlags,
+    redFlagAuditLog: [...existingLog, ...entries],
+    updatedAt: serverTimestamp(),
+  });
+}
+
+/**
+ * Lightweight partial update for the "document reasoning for positive red
+ * flags" nudge in the Start Session wizard (components/start-session-flow.tsx)
+ * — deliberately just the one field, not the full clinician-review payload
+ * `updateAssessmentReview` writes, so it doesn't touch `reviewStatus` etc.
+ */
+export async function updateAssessmentRiskPlan(
+  uid: string,
+  personId: string,
+  formId: string,
+  riskPlan: string,
+): Promise<void> {
+  if (!db) throw new Error("Firestore not available");
+  await updateDoc(doc(db, "patients", uid, "people", personId, "assessmentForms", formId), {
+    riskPlan,
+    updatedAt: serverTimestamp(),
+  });
 }
 
 export async function updateAssessmentReview(

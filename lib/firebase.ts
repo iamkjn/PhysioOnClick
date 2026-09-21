@@ -31,6 +31,19 @@ const firebaseConfig = {
 
 export const firebaseEnabled = Object.values(firebaseConfig).every(Boolean);
 
+// Plain string map of the same config, for callers that need to pass it
+// somewhere that can't read process.env directly — e.g. as query params when
+// registering firebase-messaging-sw.js (see lib/admin-notifications.ts),
+// since a static file in public/ has no access to build-time env vars.
+export const firebaseConfigValues: Record<string, string> = {
+  apiKey: firebaseConfig.apiKey,
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+  storageBucket: firebaseConfig.storageBucket,
+  messagingSenderId: firebaseConfig.messagingSenderId,
+  appId: firebaseConfig.appId,
+};
+
 export function getFirebaseApp(): FirebaseApp | null {
   if (!firebaseEnabled) {
     return null;

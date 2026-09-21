@@ -65,10 +65,10 @@ describe('self-test image prompts', () => {
     expect(hasSelfTestImagePrompt('nope')).toBe(false)
   })
 
-  it('uploadedSelfTestImageIds is the empty go-live gate', () => {
-    expect(uploadedSelfTestImageIds.size).toBe(0)
+  it('uploadedSelfTestImageIds covers every authored step image (2026-09-20 pack)', () => {
+    expect(uploadedSelfTestImageIds.size).toBe(allImageIds.length)
     for (const id of allImageIds) {
-      expect(hasUploadedSelfTestImage(id), id).toBe(false)
+      expect(hasUploadedSelfTestImage(id), id).toBe(true)
     }
   })
 

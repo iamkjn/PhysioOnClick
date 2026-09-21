@@ -515,3 +515,74 @@ export const sendPainCheckinReminders = onSchedule(
     }
   }
 );
+
+// Admin "upcoming session" alerts (components/admin-notification-bell.tsx):
+// runs every 5 minutes and flags any booking whose appointment starts in the
+// next 5-15 minutes, writing an in-app adminNotifications doc and (if the
+// single admin account has registered a token — see lib/admin-notifications.ts)
+// pushing FCM. Idempotency mirrors sendDailyMonitoringReminders/
+// sendPainCheckinReminders above: stamp `adminNotifiedAt` on the booking once
+// notified so a later run in the same 5-15 minute window doesn't re-fire.
+export const notifyAdminUpcomingSessions = onSchedule(
+  { schedule: "every 5 minutes" },
+  async () => {
+    const db = getFirestore();
+    const now = Date.now();
+    const windowStart = new Date(now + 5 * 60_000);
+    const windowEnd = new Date(now + 15 * 60_000);
+
+    const snap = await db
+      .collection("bookings")
+      .where("status", "==", "upcoming")
+      .where("sessionDate", ">=", windowStart)
+      .where("sessionDate", "<=", windowEnd)
+      .get();
+
+    for (const bookingDoc of snap.docs) {
+      try {
+        const booking = bookingDoc.data();
+        if (booking.adminNotifiedAt) continue;
+
+        await db.collection("adminNotifications").add({
+          bookingId: bookingDoc.id,
+          patientName: booking.patientName ?? "Patient",
+          personId: booking.patientId ?? "",
+          sessionDate: booking.sessionDate,
+          createdAt: FieldValue.serverTimestamp(),
+          read: false,
+        });
+
+        try {
+          const configSnap = await db.doc("admin/config").get();
+          const fcmToken: string | undefined = configSnap.data()?.fcmToken;
+          if (fcmToken) {
+            const time = booking.sessionDate?.toDate
+              ? (booking.sessionDate.toDate() as Date).toLocaleTimeString("en-GB", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  timeZone: "Europe/London",
+                })
+              : "shortly";
+            await getMessaging().send({
+              token: fcmToken,
+              notification: {
+                title: "Upcoming session",
+                body: `${booking.patientName ?? "A patient"}'s ${booking.service ?? "session"} starts at ${time}`,
+              },
+              data: {
+                type: "admin-upcoming-session",
+                bookingId: bookingDoc.id,
+              },
+            });
+          }
+        } catch (fcmErr) {
+          console.error("notifyAdminUpcomingSessions: FCM send failed", bookingDoc.ref.path, fcmErr);
+        }
+
+        await bookingDoc.ref.set({ adminNotifiedAt: FieldValue.serverTimestamp() }, { merge: true });
+      } catch (err) {
+        console.error("notifyAdminUpcomingSessions: failed to process doc", bookingDoc.ref.path, err);
+      }
+    }
+  }
+);

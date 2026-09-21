@@ -4,6 +4,7 @@
 import { signOut } from "firebase/auth";
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
+import { AdminNotificationBell } from "@/components/admin-notification-bell";
 
 interface AdminShellProps {
   /** Path for the header's back link. Omit to render no back link (the root dashboard). */
@@ -43,6 +44,7 @@ export function AdminShell({ backHref, backLabel, children }: AdminShellProps) {
           </span>
         </div>
         <div className="admin-topbar-actions">
+          <AdminNotificationBell />
           {backHref && (
             <Link
               href={backHref}

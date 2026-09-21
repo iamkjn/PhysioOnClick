@@ -7,6 +7,7 @@ import {
   where,
   orderBy,
   limit,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -20,6 +21,11 @@ export interface BookingRecord {
   summaryId?: string;
   paid: boolean;
   assessmentCompletedAt: Date | null;
+  // Owning account + person, so an admin screen that only has a bookingId
+  // (e.g. app/admin/session/[bookingId]/page.tsx, reached from a notification)
+  // can look up the rest of that person's history without a second read.
+  bookedBy?: string;
+  patientId?: string;
 }
 
 // Resolve the booking's start moment from whatever the writer stored. The
@@ -68,6 +74,8 @@ function toBookingRecord(id: string, data: Record<string, unknown>): BookingReco
     summaryId: data.summaryId as string | undefined,
     paid: data.paid === true,
     assessmentCompletedAt: resolveAssessmentCompletedAt(data),
+    bookedBy: typeof data.bookedBy === "string" ? data.bookedBy : undefined,
+    patientId: typeof data.patientId === "string" ? data.patientId : undefined,
   };
 }
 
@@ -85,9 +93,38 @@ export async function getPatientBookings(userId: string, personId?: string): Pro
   return snap.docs.map((d) => toBookingRecord(d.id, d.data() as Record<string, unknown>));
 }
 
+// The stored `status` field is only ever written as "upcoming" or
+// "cancelled" (see app/api/cal-webhook/route.ts) — "completed" is always
+// derived from the session date having passed. Any screen that shows or
+// filters on booking status should go through this, not the raw field
+// (admin-patient-detail.tsx, admin-session-view.tsx, admin-upcoming-sessions.tsx,
+// app/patient/appointments/page.tsx, and admin-bookings-table.tsx all rely on it).
+export function displayBookingStatus(b: Pick<BookingRecord, "status" | "sessionDate">): BookingRecord["status"] {
+  if (b.status === "cancelled") return "cancelled";
+  return b.sessionDate < new Date() ? "completed" : "upcoming";
+}
+
 export async function getBooking(id: string): Promise<BookingRecord | null> {
   if (!db) return null;
   const snap = await getDoc(doc(db, "bookings", id));
   if (!snap.exists()) return null;
   return toBookingRecord(snap.id, snap.data() as Record<string, unknown>);
+}
+
+// For the admin "Upcoming Sessions" overview (app/admin/sessions/page.tsx):
+// every upcoming booking across all patients, soonest first. Unlike
+// getPatientBookings above, this deliberately isn't scoped to one
+// bookedBy/patientId pair — it needs the status+sessionDate composite index
+// in firestore.indexes.json (added alongside this helper).
+export async function getUpcomingBookingsAcrossPatients(max = 100): Promise<BookingRecord[]> {
+  if (!db) return [];
+  const q = query(
+    collection(db, "bookings"),
+    where("status", "==", "upcoming"),
+    where("sessionDate", ">=", Timestamp.fromDate(new Date())),
+    orderBy("sessionDate", "asc"),
+    limit(max)
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => toBookingRecord(d.id, d.data() as Record<string, unknown>));
 }

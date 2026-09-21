@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import type { PatientAssessmentFormRecord } from '@/lib/assessment-forms'
+import { defaultRedFlags, type PatientAssessmentFormRecord } from '@/lib/assessment-forms'
 
 const getPatientAssessmentFormsMock = vi.fn()
 vi.mock('@/lib/assessment-forms', async () => {
@@ -94,14 +94,11 @@ function makeForm(overrides: Partial<PatientAssessmentFormRecord> = {}): Patient
     emergencyContactName: '',
     emergencyContactPhone: '',
     redFlags: {
-      majorTrauma: false,
-      chestPainBreathlessness: false,
-      bladderBowelSaddle: false,
-      progressiveWeakness: false,
-      unexplainedFeverWeightLoss: false,
-      nightPain: false,
+      ...defaultRedFlags,
       none: true,
     },
+    conditionalFlags: {},
+    redFlagAuditLog: [],
     onlineReadiness: {
       privateSpace: true,
       safeSpace: true,

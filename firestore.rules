@@ -126,6 +126,14 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    match /sessionRecords/{bookingId} {
+      // Working document for the admin "Start Session" wizard
+      // (lib/session-records.ts). Admin-only — patients never read or write
+      // this directly; the patient-facing summary/exercise views read the
+      // published sessionSummaries / assignedExercises collections instead.
+      allow read, write: if isAdmin();
+    }
+
     match /pendingSelections/{userId} {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
@@ -257,11 +265,21 @@ service cloud.firestore {
           )
         );
       allow update: if isAdmin() &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'reviewStatus', 'reviewedBy', 'reviewedAt', 'clinicianNotes',
-          'riskPlan', 'nextCheckupDate', 'updatedAt'
-        ]) &&
-        validAssessmentReviewFields(request.resource.data);
+        (
+          (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'reviewStatus', 'reviewedBy', 'reviewedAt', 'clinicianNotes',
+              'riskPlan', 'nextCheckupDate', 'updatedAt'
+            ]) &&
+            validAssessmentReviewFields(request.resource.data)
+          ) ||
+          // Start Session wizard (Step 1 - Screening): admin edits the
+          // red-flag values live and appends to the audit log. See
+          // lib/assessment-forms.ts recordRedFlagChange().
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'redFlags', 'conditionalFlags', 'redFlagAuditLog', 'updatedAt'
+          ])
+        );
       allow delete: if isAdmin();
     }
 
@@ -460,6 +478,17 @@ service cloud.firestore {
 
     match /admin/{document=**} {
       allow read, write: if isAdmin();
+    }
+
+    // Upcoming-session alerts for the admin bell (components/admin-notification-bell.tsx),
+    // written server-side by the notifyAdminUpcomingSessions Cloud Function via the
+    // Admin SDK (bypasses these rules). The client only ever flips `read` to true.
+    match /adminNotifications/{notificationId} {
+      allow read, delete: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["read"]) &&
+        request.resource.data.read is bool;
     }
 
     match /{document=**} {

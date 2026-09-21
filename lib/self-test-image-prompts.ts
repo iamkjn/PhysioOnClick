@@ -174,7 +174,24 @@ export function fullSelfTestImagePrompt(id: string): string | null {
  * ids in the same commit that runs the upload script for them, and keep this a
  * strict subset of the authored prompts.
  */
-export const uploadedSelfTestImageIds: ReadonlySet<string> = new Set<string>([]);
+export const uploadedSelfTestImageIds: ReadonlySet<string> = new Set<string>([
+  // Self-check test photo pack (2026-09-20), uploaded to dev + prod via
+  // scripts/upload-self-test-images-2026-09-20.ts. Covers every step across
+  // all 12 launch-set self-tests (test-ake-4 uses the corrected image from
+  // this pack).
+  "test-ake-1", "test-ake-2", "test-ake-3", "test-ake-4",
+  "test-calf-raise-1", "test-calf-raise-2", "test-calf-raise-3", "test-calf-raise-4",
+  "test-chin-tuck-1", "test-chin-tuck-2", "test-chin-tuck-3", "test-chin-tuck-4",
+  "test-decline-squat-1", "test-decline-squat-2", "test-decline-squat-3", "test-decline-squat-4",
+  "test-full-can-1", "test-full-can-2", "test-full-can-3", "test-full-can-4",
+  "test-hawkins-kennedy-1", "test-hawkins-kennedy-2", "test-hawkins-kennedy-3", "test-hawkins-kennedy-4",
+  "test-painful-arc-1", "test-painful-arc-2", "test-painful-arc-3", "test-painful-arc-4",
+  "test-slr-1", "test-slr-2", "test-slr-3", "test-slr-4",
+  "test-slump-1", "test-slump-2", "test-slump-3", "test-slump-4", "test-slump-5",
+  "test-trendelenburg-1", "test-trendelenburg-2", "test-trendelenburg-3", "test-trendelenburg-4",
+  "test-wrist-ext-1", "test-wrist-ext-2", "test-wrist-ext-3", "test-wrist-ext-4",
+  "test-wrist-flex-1", "test-wrist-flex-2", "test-wrist-flex-3", "test-wrist-flex-4",
+]);
 
 export function hasUploadedSelfTestImage(id: string): boolean {
   return uploadedSelfTestImageIds.has(id);
