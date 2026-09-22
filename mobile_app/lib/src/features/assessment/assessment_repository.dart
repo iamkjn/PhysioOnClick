@@ -18,6 +18,10 @@ class AssessmentRepository {
     required String bookingId,
     required AssessmentInput input,
   }) async {
+    if (input.emergencyContactName.trim().isEmpty ||
+        input.emergencyContactPhone.trim().isEmpty) {
+      throw ArgumentError('Emergency contact name and phone are required.');
+    }
     final ref = await FirebaseFirestore.instance
         .collection('patients')
         .doc(uid)
