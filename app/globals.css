@@ -1148,14 +1148,13 @@ p {
 .service-split-cta {
   margin-top: auto;
   padding-top: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .service-split-cta .button.primary {
   width: 100%;
-}
-
-.service-split-cta .muted {
-  margin-top: 0.5rem;
 }
 
 .service-assessment-included {
