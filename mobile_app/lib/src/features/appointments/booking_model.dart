@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../core/utils/clinical_note.dart';
+
 class BookingRecord {
   const BookingRecord({
     required this.id,
@@ -75,9 +77,9 @@ class SessionSummary {
     return SessionSummary(
       id: doc.id,
       patientName: (d['patientName'] as String?) ?? '',
-      workedOn: (d['workedOn'] as String?) ?? '',
-      exercises: (d['exercises'] as String?) ?? '',
-      nextSteps: (d['nextSteps'] as String?) ?? '',
+      workedOn: formatClinicalNote((d['workedOn'] as String?) ?? ''),
+      exercises: formatClinicalNote((d['exercises'] as String?) ?? ''),
+      nextSteps: formatClinicalNote((d['nextSteps'] as String?) ?? ''),
       followUpWeeks: (d['followUpWeeks'] as int?) ?? 0,
       publishedAt: date,
     );

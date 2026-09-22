@@ -1,6 +1,7 @@
 import { collection, getDocs, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { getPatientBookings } from "@/lib/patient-bookings";
+import { formatClinicalNote } from "@/lib/clinical-note";
 
 export interface SessionSummary {
   id: string;
@@ -31,9 +32,9 @@ export async function getSessionSummary(bookingId: string): Promise<SessionSumma
     id: d.id,
     bookingId: data.bookingId as string,
     patientName: (data.patientName as string) ?? "",
-    workedOn: (data.workedOn as string) ?? "",
-    exercises: (data.exercises as string) ?? "",
-    nextSteps: (data.nextSteps as string) ?? "",
+    workedOn: formatClinicalNote((data.workedOn as string) ?? ""),
+    exercises: formatClinicalNote((data.exercises as string) ?? ""),
+    nextSteps: formatClinicalNote((data.nextSteps as string) ?? ""),
     followUpWeeks: (data.followUpWeeks as number) ?? 0,
     painScore: (data.painScore as number) ?? 0,
     recoveryPercent: (data.recoveryPercent as number) ?? 0,
