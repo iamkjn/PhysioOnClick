@@ -1004,6 +1004,21 @@ p {
   margin-top: 0.5rem;
 }
 
+/* Unlike the left column, the right column has no flex `gap` and its
+   subheads (Conditions Treated / What Progress Looks Like / When In-Person
+   Care Is a Better Fit / Common Questions) sit directly after the previous
+   section's closing paragraph with no separation — add the same top margin
+   the left column gets, mirrored per section rather than lumped onto every
+   .service-subhead so the first one (right after the column's own padding)
+   doesn't get doubled-up spacing. */
+.service-split-right .service-subhead {
+  margin-top: 1.75rem;
+}
+
+.service-split-right .service-subhead:first-child {
+  margin-top: 0;
+}
+
 /* "Our approach" steps: a real marked list, not a comma run-on. */
 .service-approach-list {
   list-style: none;

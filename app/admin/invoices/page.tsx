@@ -23,6 +23,7 @@ export default function AdminInvoicesPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<string | null>(null);
 
   useEffect(() => {
     if (!auth) { setCheckedAdmin(true); return; }
@@ -64,6 +65,31 @@ export default function AdminInvoicesPage() {
       toast.show("Could not download this invoice. Try again.", "error");
     } finally {
       setDownloading(null);
+    }
+  }
+
+  // Opens the tab synchronously (before the fetch) so it carries the click's
+  // user-activation and isn't blocked as a popup — the tab is then pointed at
+  // the PDF blob once it's fetched, instead of downloading it.
+  async function handleView(invoiceNumber: string) {
+    if (!auth?.currentUser) return;
+    const win = window.open("", "_blank");
+    setViewing(invoiceNumber);
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const res = await fetch(`/api/admin/invoice/${invoiceNumber}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error(`View failed (${res.status})`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      if (win) win.location.href = url;
+      else toast.show("Please allow pop-ups to view this invoice.", "error");
+    } catch {
+      win?.close();
+      toast.show("Could not open this invoice. Try again.", "error");
+    } finally {
+      setViewing(null);
     }
   }
 
@@ -140,33 +166,58 @@ export default function AdminInvoicesPage() {
                 </thead>
                 <tbody>
                   {rows.map((r) => (
-                    <tr key={r.invoiceNumber} className="admin-table-row">
-                      <td style={{ fontFamily: "var(--font-sans)" }}>
+                    <tr key={r.invoiceNumber} className="admin-table-row" style={{ verticalAlign: "middle" }}>
+                      <td style={{ fontFamily: "var(--font-sans)", verticalAlign: "middle" }}>
                         {r.paidAt ? new Date(r.paidAt).toLocaleDateString("en-GB") : "—"}
                       </td>
-                      <td style={{ color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{r.invoiceNumber}</td>
-                      <td style={{ fontFamily: "var(--font-sans)" }}>{r.email}</td>
-                      <td style={{ fontFamily: "var(--font-sans)" }}>{r.service}</td>
-                      <td style={{ fontFamily: "var(--font-sans)" }}>{formatGbp(r.amountPence)}</td>
-                      <td>
+                      <td style={{ color: "var(--color-navy)", fontFamily: "var(--font-sans)", verticalAlign: "middle" }}>{r.invoiceNumber}</td>
+                      <td style={{ fontFamily: "var(--font-sans)", verticalAlign: "middle" }}>{r.email}</td>
+                      <td style={{ fontFamily: "var(--font-sans)", verticalAlign: "middle" }}>{r.service}</td>
+                      <td style={{ fontFamily: "var(--font-sans)", verticalAlign: "middle" }}>{formatGbp(r.amountPence)}</td>
+                      <td style={{ verticalAlign: "middle" }}>
                         {r.hasPdf ? (
-                          <button
-                            type="button"
-                            className="button small"
-                            disabled={downloading === r.invoiceNumber}
-                            onClick={() => void handleDownload(r.invoiceNumber)}
-                            style={{
-                              border: "1.5px solid var(--color-primary-dark)",
-                              color: "var(--color-primary-dark)",
-                              background: "none",
-                              padding: "0 10px",
-                              fontSize: "var(--text-xs)",
-                              cursor: downloading === r.invoiceNumber ? "not-allowed" : "pointer",
-                              opacity: downloading === r.invoiceNumber ? 0.6 : 1,
-                            }}
-                          >
-                            {downloading === r.invoiceNumber ? "Downloading…" : "Download"}
-                          </button>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <button
+                              type="button"
+                              disabled={viewing === r.invoiceNumber}
+                              onClick={() => void handleView(r.invoiceNumber)}
+                              style={{
+                                border: "1.5px solid var(--color-primary-dark)",
+                                borderRadius: "var(--radius-input)",
+                                color: "var(--color-primary-dark)",
+                                background: "none",
+                                padding: "6px 10px",
+                                lineHeight: 1.2,
+                                fontFamily: "var(--font-sans)",
+                                fontWeight: 700,
+                                fontSize: "var(--text-xs)",
+                                cursor: viewing === r.invoiceNumber ? "not-allowed" : "pointer",
+                                opacity: viewing === r.invoiceNumber ? 0.6 : 1,
+                              }}
+                            >
+                              {viewing === r.invoiceNumber ? "Opening…" : "View"}
+                            </button>
+                            <button
+                              type="button"
+                              disabled={downloading === r.invoiceNumber}
+                              onClick={() => void handleDownload(r.invoiceNumber)}
+                              style={{
+                                border: "1.5px solid var(--color-primary-dark)",
+                                borderRadius: "var(--radius-input)",
+                                color: "var(--color-primary-dark)",
+                                background: "none",
+                                padding: "6px 10px",
+                                lineHeight: 1.2,
+                                fontFamily: "var(--font-sans)",
+                                fontWeight: 700,
+                                fontSize: "var(--text-xs)",
+                                cursor: downloading === r.invoiceNumber ? "not-allowed" : "pointer",
+                                opacity: downloading === r.invoiceNumber ? 0.6 : 1,
+                              }}
+                            >
+                              {downloading === r.invoiceNumber ? "Downloading…" : "Download"}
+                            </button>
+                          </div>
                         ) : (
                           <span style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>—</span>
                         )}

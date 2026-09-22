@@ -475,6 +475,7 @@ export function BookingStepTime({
         personName={bookingForId ? bookingForName || "Patient" : checkoutInfo.name}
         bookingId=""
         onSubmitted={(formId) => startCheckout(formId)}
+        redirectingToPayment
       />
     );
   }

@@ -27,6 +27,10 @@ const RECEIPT_CSS = `
   gap: 1.25rem;
   padding: 2.5rem 1rem 3.5rem;
   color: var(--ink);
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 .rcpt-paper {
   width: 100%;
@@ -36,6 +40,8 @@ const RECEIPT_CSS = `
   border-radius: 6px;
   box-shadow: 0 10px 40px rgba(18, 50, 78, 0.12);
   padding: 48px 52px;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 .rcpt-head {
   display: flex;
@@ -67,14 +73,19 @@ const RECEIPT_CSS = `
   display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 1.5rem;
   padding: 26px 0; font-size: 0.9rem; line-height: 1.5;
 }
+.rcpt-meta > div { min-width: 0; overflow-wrap: anywhere; }
 .rcpt-label {
   font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--ink-soft); margin-bottom: 6px;
 }
 .rcpt-reg { margin-top: 6px; font-weight: 700; font-size: 0.82rem; }
-.rcpt-info div { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; }
+.rcpt-info div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; padding: 2px 0; }
 .rcpt-info span { color: var(--ink-soft); }
-.rcpt-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.rcpt-table { width: 100%; border-collapse: collapse; margin-top: 4px; table-layout: fixed; }
+.rcpt-table td, .rcpt-table th { overflow-wrap: anywhere; }
+.rcpt-table th:nth-child(1), .rcpt-table td:nth-child(1) { width: 50%; }
+.rcpt-table th:nth-child(2), .rcpt-table td:nth-child(2) { width: 28%; }
+.rcpt-table th:nth-child(3), .rcpt-table td:nth-child(3) { width: 22%; }
 .rcpt-table thead th {
   text-align: left; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em;
   text-transform: uppercase; color: #fff; background: var(--ink);
@@ -123,9 +134,9 @@ const RECEIPT_CSS = `
 
 @media print {
   body { margin: 0; background: #fff; }
-  body * { visibility: hidden; }
-  .rcpt-root, .rcpt-root * { visibility: visible; }
-  .rcpt-root { position: absolute; inset: 0; min-height: 0; padding: 0; background: #fff; display: block; }
+  header, footer, nav, .skip-link { display: none !important; }
+  #main-content > *:not(.rcpt-root) { display: none !important; }
+  .rcpt-root { position: static; min-height: 0; padding: 0; background: #fff; display: block; }
   .rcpt-paper { max-width: none; border: none; box-shadow: none; border-radius: 0; padding: 0; }
   .rcpt-no-print { display: none !important; }
   .rcpt-logo, .rcpt-table thead th, .rcpt-grand, .rcpt-paid { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
