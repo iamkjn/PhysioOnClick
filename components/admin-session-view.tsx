@@ -80,6 +80,14 @@ export function AdminSessionView({ bookingId }: Props) {
     };
   }, [bookingId]);
 
+  // Stable reference across renders that don't change `history` — see the
+  // matching comment in admin-patient-detail.tsx for why this matters. Must
+  // stay above the early returns below (rules-of-hooks).
+  const assessmentBookings = useMemo(
+    () => (history ?? []).map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status })),
+    [history]
+  );
+
   if (booking === undefined) {
     return (
       <div className="stack">
@@ -97,12 +105,6 @@ export function AdminSessionView({ bookingId }: Props) {
   }
 
   const otherBookings = (history ?? []).filter((b) => b.id !== bookingId);
-  // Stable reference across renders that don't change `history` — see the
-  // matching comment in admin-patient-detail.tsx for why this matters.
-  const assessmentBookings = useMemo(
-    () => (history ?? []).map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status })),
-    [history]
-  );
 
   return (
     <div className="stack" style={{ gap: "var(--space-6)" }}>
