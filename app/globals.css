@@ -6489,6 +6489,7 @@ textarea:focus {
 .summary-trigger {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   background: var(--color-primary-light);
   border: 1px solid var(--color-primary-dark);
@@ -6498,8 +6499,11 @@ textarea:focus {
   font-size: var(--text-sm);
   font-weight: 600;
   font-family: var(--font-sans);
+  line-height: 1.2;
   min-height: 36px;
-  padding: 0 var(--space-3);
+  padding: 6px var(--space-3);
+  white-space: nowrap;
+  text-decoration: none;
 }
 
 .summary-backdrop {
