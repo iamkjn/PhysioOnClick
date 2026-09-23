@@ -409,7 +409,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
       <AdminAssessmentReview
         patientUid={patientUid}
         personId={person.id}
-        bookings={bookings?.map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate }))}
+        bookings={bookings?.map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status }))}
         onFormsChange={setLinkedBookingIds}
       />
 

@@ -138,7 +138,7 @@ export function AdminSessionView({ bookingId }: Props) {
         <AdminAssessmentReview
           patientUid={booking.bookedBy}
           personId={booking.patientId ?? booking.bookedBy}
-          bookings={(history ?? []).map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate }))}
+          bookings={(history ?? []).map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status }))}
         />
       )}
 

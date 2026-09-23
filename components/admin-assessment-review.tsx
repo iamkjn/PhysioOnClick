@@ -22,6 +22,7 @@ interface LinkedBooking {
   id: string;
   service: string;
   sessionDate: Date;
+  status?: "upcoming" | "completed" | "cancelled";
 }
 
 interface Props {
@@ -65,6 +66,17 @@ function formatDate(date: Date | null) {
     day: "numeric",
     month: "short",
     year: "numeric",
+  });
+}
+
+function formatDateTime(date: Date | null) {
+  if (!date) return "Date not recorded";
+  return date.toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -220,7 +232,7 @@ function ReviewItem({
               <>
                 {" - "}
                 {linkedBooking
-                  ? `Linked to ${linkedBooking.service} appointment on ${formatDate(linkedBooking.sessionDate)}`
+                  ? `Linked to ${linkedBooking.service} appointment on ${formatDateTime(linkedBooking.sessionDate)}`
                   : `Linked booking ${form.bookingId}`}
               </>
             )}
@@ -365,20 +377,20 @@ function ReviewItem({
 }
 
 export function AdminAssessmentReview({ patientUid, personId, bookings, onFormsChange }: Props) {
-  const [forms, setForms] = useState<PatientAssessmentFormRecord[] | null>(null);
+  const [rawForms, setRawForms] = useState<PatientAssessmentFormRecord[] | null>(null);
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     let live = true;
-    setForms(null);
+    setRawForms(null);
     setLoadError(false);
     getPatientAssessmentForms(patientUid, personId)
       .then((records) => {
-        if (live) setForms(records);
+        if (live) setRawForms(records);
       })
       .catch(() => {
         if (live) {
-          setForms([]);
+          setRawForms([]);
           setLoadError(true);
         }
       });
@@ -386,6 +398,14 @@ export function AdminAssessmentReview({ patientUid, personId, bookings, onFormsC
       live = false;
     };
   }, [patientUid, personId]);
+
+  // A cancelled appointment doesn't need its assessment reviewed — drop any
+  // form linked to a cancelled booking rather than leaving it stuck in the
+  // "awaiting" count forever.
+  const forms = rawForms?.filter((form) => {
+    const linked = form.bookingId ? bookings?.find((b) => b.id === form.bookingId) : undefined;
+    return linked?.status !== "cancelled";
+  }) ?? null;
 
   useEffect(() => {
     if (forms) onFormsChange?.(forms.map((form) => form.bookingId).filter((id): id is string => !!id));
@@ -395,7 +415,7 @@ export function AdminAssessmentReview({ patientUid, personId, bookings, onFormsC
   }, [forms]);
 
   function handleSaved(updated: PatientAssessmentFormRecord) {
-    setForms((current) => current?.map((form) => form.id === updated.id ? updated : form) ?? current);
+    setRawForms((current) => current?.map((form) => form.id === updated.id ? updated : form) ?? current);
   }
 
   const awaiting = forms?.filter((form) => form.reviewStatus === "awaiting_review").length ?? 0;
