@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { auth } from "@/lib/firebase";
 import {
   ASSESSMENT_LIMITS,
@@ -401,11 +401,20 @@ export function AdminAssessmentReview({ patientUid, personId, bookings, onFormsC
 
   // A cancelled appointment doesn't need its assessment reviewed — drop any
   // form linked to a cancelled booking rather than leaving it stuck in the
-  // "awaiting" count forever.
-  const forms = rawForms?.filter((form) => {
-    const linked = form.bookingId ? bookings?.find((b) => b.id === form.bookingId) : undefined;
-    return linked?.status !== "cancelled";
-  }) ?? null;
+  // "awaiting" count forever. Memoized: a plain `.filter()` on every render
+  // returns a new array reference even when nothing changed, which turned
+  // the effect below into an infinite render loop (React error #185) on any
+  // page that passes onFormsChange — every render recomputed `forms`, which
+  // reran the effect, which called setState in the parent, which re-rendered
+  // this component, forever.
+  const forms = useMemo(
+    () =>
+      rawForms?.filter((form) => {
+        const linked = form.bookingId ? bookings?.find((b) => b.id === form.bookingId) : undefined;
+        return linked?.status !== "cancelled";
+      }) ?? null,
+    [rawForms, bookings]
+  );
 
   useEffect(() => {
     if (forms) onFormsChange?.(forms.map((form) => form.bookingId).filter((id): id is string => !!id));

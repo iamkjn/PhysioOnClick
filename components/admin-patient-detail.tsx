@@ -1,7 +1,7 @@
 // components/admin-patient-detail.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   collection,
@@ -215,6 +215,14 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
   // ── Assessment-form linkage, reported up by AdminAssessmentReview so we
   // can flag bookings that are still awaiting a submitted assessment ──────
   const [linkedBookingIds, setLinkedBookingIds] = useState<string[]>([]);
+  // Memoized so it's a stable reference across renders that don't change
+  // `bookings` — an inline `.map()` here recreated the array on every render,
+  // which (combined with AdminAssessmentReview's own derived-forms memo)
+  // caused an infinite render loop. See admin-assessment-review.tsx.
+  const assessmentBookings = useMemo(
+    () => bookings?.map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status })),
+    [bookings]
+  );
   const awaitingAssessment = (bookings ?? []).some(
     (b) => b.paid && displayStatus(b) === "upcoming" && !linkedBookingIds.includes(b.id)
   );
@@ -402,7 +410,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
       <AdminAssessmentReview
         patientUid={patientUid}
         personId={person.id}
-        bookings={bookings?.map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status }))}
+        bookings={assessmentBookings}
         onFormsChange={setLinkedBookingIds}
       />
 

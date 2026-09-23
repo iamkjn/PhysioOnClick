@@ -1,7 +1,7 @@
 // components/admin-session-view.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getBooking, getPatientBookings, displayBookingStatus, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
@@ -97,6 +97,12 @@ export function AdminSessionView({ bookingId }: Props) {
   }
 
   const otherBookings = (history ?? []).filter((b) => b.id !== bookingId);
+  // Stable reference across renders that don't change `history` — see the
+  // matching comment in admin-patient-detail.tsx for why this matters.
+  const assessmentBookings = useMemo(
+    () => (history ?? []).map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status })),
+    [history]
+  );
 
   return (
     <div className="stack" style={{ gap: "var(--space-6)" }}>
@@ -138,7 +144,7 @@ export function AdminSessionView({ bookingId }: Props) {
         <AdminAssessmentReview
           patientUid={booking.bookedBy}
           personId={booking.patientId ?? booking.bookedBy}
-          bookings={(history ?? []).map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status }))}
+          bookings={assessmentBookings}
         />
       )}
 
