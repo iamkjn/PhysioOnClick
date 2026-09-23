@@ -22,7 +22,6 @@ import { AdminRecoverySummary } from "@/components/admin-recovery-summary";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminAssessmentReview } from "@/components/admin-assessment-review";
-import { SummaryForm } from "@/components/summary-form";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
@@ -238,12 +237,6 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `summaries` is deliberately omitted: it's only read to skip ids already resolved, and including it would refetch on every publish.
   }, [bookings]);
 
-  function handlePublished(bookingId: string) {
-    getSessionSummary(bookingId).then((s) => {
-      setSummaries((prev) => ({ ...prev, [bookingId]: s }));
-    });
-  }
-
   const adminUid = auth?.currentUser?.uid ?? "";
 
   // Exercises can only be *assigned* from this screen while the patient has a
@@ -442,20 +435,15 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
                     <strong style={{ fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}>
                       {b.service} · {b.sessionDate.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                     </strong>
-                    {status === "upcoming" && summary === null && (
-                      // "Start Session" replaces the old "Write summary" trigger for
-                      // upcoming bookings — it opens the full screening -> self-tests ->
-                      // diagnosis -> exercises -> summary wizard instead of just the
-                      // summary form. See components/start-session-flow.tsx.
+                    {status !== "cancelled" && summary === null && (
+                      // "Start Session" is the only way to add a summary now — it opens
+                      // the full screening -> self-tests -> diagnosis -> exercises ->
+                      // summary wizard. The old one-shot "Write summary" quick form was
+                      // retired and its fields merged into this wizard's Summary step.
+                      // See components/start-session-flow.tsx.
                       <Link href={`/admin/session/${b.id}/start`} className="summary-trigger">
                         Start Session
                       </Link>
-                    )}
-                    {status === "completed" && summary === null && (
-                      <SummaryForm
-                        booking={{ id: b.id, patientId: person.id, patientType: b.patientType, patientName: b.patientName, service: b.service, bookedBy: patientUid }}
-                        onPublished={() => handlePublished(b.id)}
-                      />
                     )}
                   </div>
                   {summary && (

@@ -12,8 +12,8 @@ interface Props {
   personId: string;
 }
 
-// 3-bucket token approach, matching summary-form.tsx's getPainColor: low pain
-// = success, moderate = warning, high = error.
+// 3-bucket token approach, matching start-session-flow.tsx's getPainColor:
+// low pain = success, moderate = warning, high = error.
 function painColor(score: number): string {
   if (score <= 3) return "var(--color-success)";
   if (score <= 6) return "var(--color-warning)";

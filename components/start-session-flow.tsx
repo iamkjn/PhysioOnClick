@@ -43,11 +43,33 @@ import { SelfTestSteps } from "@/components/exercise-library/self-test-steps";
 import { ExerciseImage } from "@/components/exercise-image";
 import { deriveDifferentialDiagnosis, type SelfTestResult, type DiagnosisCandidate } from "@/lib/differential-diagnosis";
 import { suggestExercises } from "@/lib/exercise-suggestions";
-import { exercises as allExercises } from "@/lib/site-data";
 import { assignExercise, getAssignedExercises } from "@/lib/recovery";
+import { getStreakGoal, setStreakGoal } from "@/lib/goals";
 import { publishSummary, type PublishSummaryInput } from "@/app/admin/actions";
 import { useToast } from "@/components/toast-provider";
 import { SkeletonRow } from "@/components/skeleton";
+import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
+
+function getPainColor(score: number): string {
+  if (score <= 3) return "var(--color-success)";
+  if (score <= 6) return "var(--color-warning, #D97706)";
+  return "var(--color-error)";
+}
+
+// Ported from the retired components/summary-form.tsx (merged into this
+// wizard's Summary step) — same visual, no behaviour change.
+function RecoveryRing({ percent }: { percent: number }) {
+  const r = 26;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (Math.min(100, Math.max(0, percent)) / 100) * circ;
+  return (
+    <svg width="64" height="64" viewBox="0 0 64 64" className="summary-ring">
+      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--color-border)" strokeWidth="6" />
+      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--color-primary)" strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} transform="rotate(-90 32 32)" className="summary-ring-arc" />
+      <text x="32" y="37" textAnchor="middle" fontSize="14" fontWeight="700" fill="var(--color-navy)" fontFamily="var(--font-sans)">{percent}%</text>
+    </svg>
+  );
+}
 
 interface Props {
   bookingId: string;
@@ -95,6 +117,9 @@ export function StartSessionFlow({ bookingId }: Props) {
     followUpWeeks: 2,
   });
   const [publishing, setPublishing] = useState(false);
+  const [publishedSummaryId, setPublishedSummaryId] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
+  const [streakGoal, setStreakGoalState] = useState(0);
 
   // Sub-project #4 — UK-guideline hard-gate nudges, derived from the NHS
   // Lothian MSK form: (1) acknowledge elevated concern before proceeding
@@ -180,8 +205,22 @@ export function StartSessionFlow({ bookingId }: Props) {
     getAssignedExercises(form.submittedByUid, form.submittedByUid)
       .then((a) => { if (live) setAssignedIds(a.map((x) => x.exerciseId)); })
       .catch(() => {});
+    getStreakGoal(form.submittedByUid, form.submittedByUid)
+      .then((g) => { if (live) setStreakGoalState(g ?? 0); })
+      .catch(() => {});
     return () => { live = false; };
   }, [form]);
+
+  async function handleStreakGoal(days: number) {
+    if (!form || !adminUid) return;
+    setStreakGoalState(days);
+    try {
+      await setStreakGoal(form.submittedByUid, form.submittedByUid, days, adminUid);
+      toast.show(`Daily streak goal set to ${days} days.`, "success");
+    } catch {
+      toast.show("Could not set streak goal. Try again.", "error");
+    }
+  }
 
   async function goToStep(next: number) {
     setStep(next);
@@ -392,18 +431,49 @@ export function StartSessionFlow({ bookingId }: Props) {
         nextSteps: summary.nextSteps,
         followUpWeeks: summary.followUpWeeks,
       };
-      await publishSummary(input, idToken);
+      const { summaryId } = await publishSummary(input, idToken);
       await updateSessionRecordStep(bookingId, {
         summary,
         currentStep: 5,
         safetyNettingProvided,
         safetyNettingNotes,
       });
+      setPublishedSummaryId(summaryId);
       toast.show("Session published.", "success");
     } catch {
       toast.show("Could not publish. Please try again.", "error");
     } finally {
       setPublishing(false);
+    }
+  }
+
+  // Re-trigger the exercise-plan handout email for the summary just
+  // published — mirrors the retired components/summary-form.tsx's resend
+  // button exactly (same admin route, same CRON_SECRET-free auth path).
+  async function handleResendPlan() {
+    if (!publishedSummaryId) return;
+    setResending(true);
+    try {
+      const idToken = await auth?.currentUser?.getIdToken();
+      if (!idToken) throw new Error("Not signed in");
+      const res = await fetch("/api/admin/exercise-plan/resend", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${idToken}`, "content-type": "application/json" },
+        body: JSON.stringify({ summaryId: publishedSummaryId }),
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const data = (await res.json()) as { emailed?: boolean; skipped?: string; ok?: boolean };
+      if (data.skipped) {
+        toast.show(`Plan email skipped: ${data.skipped}.`, "warning");
+      } else if (data.emailed === false || data.ok === false) {
+        toast.show("Plan rebuilt, but the email did not send. Try again.", "error");
+      } else {
+        toast.show("Exercise plan email resent.", "success");
+      }
+    } catch {
+      toast.show("Could not resend the plan email. Try again.", "error");
+    } finally {
+      setResending(false);
     }
   }
 
@@ -734,15 +804,10 @@ export function StartSessionFlow({ bookingId }: Props) {
                   <p className="muted">No further suggestions — browse the full library on the patient&apos;s recovery screen.</p>
                 )}
               </div>
-              {assignedIds.length > 0 && (
+              {form && adminUid && (
                 <>
-                  <h3 style={{ fontSize: "var(--text-md)" }}>Assigned so far</h3>
-                  <div style={{ display: "grid", gap: "0.3rem" }}>
-                    {assignedIds.map((id) => {
-                      const ex = allExercises.find((e) => e.id === id);
-                      return <span key={id} className="muted" style={{ fontSize: "var(--text-xs)" }}>{ex?.title ?? id}</span>;
-                    })}
-                  </div>
+                  <h3 style={{ fontSize: "var(--text-md)" }}>Assigned exercises</h3>
+                  <AdminExerciseAssigner adminUid={adminUid} patientUid={form.submittedByUid} personId={form.submittedByUid} />
                 </>
               )}
             </>
@@ -751,35 +816,54 @@ export function StartSessionFlow({ bookingId }: Props) {
           {step === 5 && (
             <>
               <div className="summary-fields">
-                <label>
-                  <span className="summary-label">Pain level today (0-10)</span>
-                  <input
-                    type="range" min={0} max={10} step={1}
-                    value={summary.painScore}
-                    onChange={(e) => setSummary((s) => ({ ...s, painScore: Number(e.target.value) }))}
-                  />
-                  <span>{summary.painScore}</span>
-                </label>
-                <label>
-                  <span className="summary-label">Recovery %</span>
-                  <input
-                    type="number" min={0} max={100}
-                    value={summary.recoveryPercent}
-                    onChange={(e) => setSummary((s) => ({ ...s, recoveryPercent: Math.min(100, Math.max(0, Number(e.target.value) || 0)) }))}
-                  />
-                </label>
-                <div role="group" aria-label="Session outcome" className="summary-chip-row">
-                  {(["improving", "stable", "setback"] as const).map((o) => (
-                    <button
-                      key={o}
-                      type="button"
-                      className="summary-chip"
-                      aria-pressed={summary.sessionOutcome === o}
-                      onClick={() => setSummary((s) => ({ ...s, sessionOutcome: o }))}
-                    >
-                      {o}
-                    </button>
-                  ))}
+                <div>
+                  <label htmlFor="session-pain-score" className="summary-label">Pain level today (0 = none · 10 = worst)</label>
+                  <div className="summary-row">
+                    <input
+                      id="session-pain-score"
+                      type="range" min={0} max={10} step={1}
+                      value={summary.painScore}
+                      onChange={(e) => setSummary((s) => ({ ...s, painScore: Number(e.target.value) }))}
+                      aria-valuetext={`${summary.painScore} out of 10`}
+                      className="summary-pain-slider"
+                      style={{ accentColor: getPainColor(summary.painScore) }}
+                    />
+                    <span className="summary-pain-badge" style={{ background: getPainColor(summary.painScore) }}>
+                      {summary.painScore}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="session-recovery-percent" className="summary-label">Estimated recovery progress</label>
+                  <div className="summary-row">
+                    <RecoveryRing percent={summary.recoveryPercent} />
+                    <div className="summary-inline-group">
+                      <input
+                        id="session-recovery-percent"
+                        type="number" min={0} max={100} step={1}
+                        value={summary.recoveryPercent}
+                        onChange={(e) => setSummary((s) => ({ ...s, recoveryPercent: Math.min(100, Math.max(0, Number(e.target.value) || 0)) }))}
+                        className="summary-recovery-input"
+                      />
+                      <span className="summary-recovery-suffix">%</span>
+                    </div>
+                  </div>
+                </div>
+                <div role="group" aria-label="Session outcome">
+                  <span className="summary-label">Session outcome</span>
+                  <div className="summary-chip-row">
+                    {(["improving", "stable", "setback"] as const).map((o) => (
+                      <button
+                        key={o}
+                        type="button"
+                        className="summary-chip"
+                        aria-pressed={summary.sessionOutcome === o}
+                        onClick={() => setSummary((s) => ({ ...s, sessionOutcome: o }))}
+                      >
+                        {o}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <label>
                   <span className="summary-label">What we worked on today *</span>
@@ -799,18 +883,37 @@ export function StartSessionFlow({ bookingId }: Props) {
                     className="summary-textarea"
                   />
                 </label>
-                <div role="group" aria-label="Recommend follow-up" className="summary-chip-row">
-                  {[0, 1, 2, 4, 6, 8].map((w) => (
-                    <button
-                      key={w}
-                      type="button"
-                      className="summary-chip"
-                      aria-pressed={summary.followUpWeeks === w}
-                      onClick={() => setSummary((s) => ({ ...s, followUpWeeks: w }))}
-                    >
-                      {w === 0 ? "None" : `${w} wks`}
-                    </button>
-                  ))}
+                <div role="group" aria-label="Recommend follow-up">
+                  <span className="summary-label">Recommend follow-up</span>
+                  <div className="summary-chip-row">
+                    {[0, 1, 2, 4, 6, 8].map((w) => (
+                      <button
+                        key={w}
+                        type="button"
+                        className="summary-chip"
+                        aria-pressed={summary.followUpWeeks === w}
+                        onClick={() => setSummary((s) => ({ ...s, followUpWeeks: w }))}
+                      >
+                        {w === 0 ? "None" : `${w} wk${w > 1 ? "s" : ""}`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div role="group" aria-label="Daily streak goal">
+                  <span className="summary-label">Daily streak goal</span>
+                  <div className="summary-chip-row">
+                    {[3, 5, 7, 14, 30].map((d) => (
+                      <button
+                        key={d}
+                        type="button"
+                        className="summary-chip"
+                        aria-pressed={streakGoal === d}
+                        onClick={() => void handleStreakGoal(d)}
+                      >
+                        {d} days
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -835,15 +938,27 @@ export function StartSessionFlow({ bookingId }: Props) {
                 />
               </div>
 
-              <button
-                type="button"
-                className="button primary"
-                disabled={publishing || !safetyNettingProvided}
-                title={!safetyNettingProvided ? "Confirm safety-netting advice was given first" : undefined}
-                onClick={() => void handlePublish()}
-              >
-                {publishing ? "Publishing…" : "Publish session"}
-              </button>
+              <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", alignItems: "center" }}>
+                <button
+                  type="button"
+                  className="button primary"
+                  disabled={publishing || !safetyNettingProvided}
+                  title={!safetyNettingProvided ? "Confirm safety-netting advice was given first" : undefined}
+                  onClick={() => void handlePublish()}
+                >
+                  {publishing ? "Publishing…" : publishedSummaryId ? "Published ✓" : "Publish session"}
+                </button>
+                {publishedSummaryId && (
+                  <button
+                    type="button"
+                    onClick={() => void handleResendPlan()}
+                    disabled={resending}
+                    className="summary-cancel"
+                  >
+                    {resending ? "Sending…" : "Resend plan email"}
+                  </button>
+                )}
+              </div>
             </>
           )}
         </div>

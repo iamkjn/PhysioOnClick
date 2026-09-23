@@ -5,7 +5,6 @@ import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestor
 import { auth, db } from "@/lib/firebase";
 import { cancelCalBooking } from "@/app/admin/actions";
 import { track } from "@/lib/analytics";
-import { SummaryForm } from "@/components/summary-form";
 import { SkeletonTable } from "@/components/skeleton";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useToast } from "@/components/toast-provider";
@@ -373,17 +372,15 @@ export function AdminBookingsTable() {
                     </div>
                   </td>
                   <td>
-                    {(item.displayStatus === "pending" || item.displayStatus === "upcoming") && !item.summaryId && item.patientId && (
-                      // "Start Session" replaces the old "Write summary" trigger for
-                      // upcoming bookings — see components/admin-patient-detail.tsx for
-                      // the same pattern and components/start-session-flow.tsx for the
-                      // wizard itself.
+                    {!item.summaryId && item.patientId && (
+                      // "Start Session" is the only way to add a summary now — the old
+                      // one-shot "Write summary" quick form was retired and its fields
+                      // (pain/recovery/outcome/notes/follow-up/streak goal/exercise
+                      // assignment) merged into this wizard's Summary step. See
+                      // components/start-session-flow.tsx.
                       <Link href={`/admin/session/${item.id}/start`} className="summary-trigger">
                         Start Session
                       </Link>
-                    )}
-                    {item.displayStatus === "completed" && !item.summaryId && item.patientId && (
-                      <SummaryForm booking={{ id: item.id, patientId: item.patientId, patientType: item.patientType, patientName: item.patientName, service: item.service, bookedBy: item.bookedBy }} />
                     )}
                     {item.summaryId && (
                       <span style={{ fontSize: "var(--text-xs)", color: "var(--color-success)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>✓ Published</span>

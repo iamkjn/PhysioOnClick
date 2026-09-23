@@ -5,7 +5,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 vi.mock('@/lib/firebase', () => ({ db: {}, auth: null }))
 vi.mock('@/app/admin/actions', () => ({ cancelCalBooking: vi.fn() }))
 vi.mock('@/components/toast-provider', () => ({ useToast: () => ({ show: vi.fn() }) }))
-vi.mock('@/components/summary-form', () => ({ SummaryForm: () => null }))
 
 // Captures the callbacks handed to onSnapshot so each test can push its own
 // snapshot (or an error) without touching Firestore.
