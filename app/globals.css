@@ -10170,6 +10170,16 @@ textarea:focus {
   border: 0;
   background: none;
   cursor: pointer;
+  /* .notification-bell's base color is dark ink, tuned for the light patient
+     header — invisible against .admin-topbar's navy background. Admin gets
+     its own light color + hover here; patient's bell (components/site-header
+     .tsx, .notification-bell with no admin modifier) is untouched. */
+  color: rgba(255, 255, 255, 0.85);
+}
+.admin-notification-bell:hover,
+.admin-notification-bell:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
 }
 .admin-notification-panel {
   position: absolute;
