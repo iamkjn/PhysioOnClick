@@ -12,8 +12,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { getBooking, type BookingRecord } from "@/lib/patient-bookings";
 import {
   getPatientAssessmentForms,
@@ -75,7 +74,13 @@ interface Props {
   bookingId: string;
 }
 
-const STEP_LABELS = ["Screening", "Self-check tests", "Differential diagnosis", "Exercises", "Summary"];
+const STEPS = [
+  { label: "Screening", description: "Review safety checks and document any clinical concerns." },
+  { label: "Self-check tests", description: "Record the relevant movement and symptom checks." },
+  { label: "Clinical impression", description: "Confirm or dismiss the suggested clinical possibilities." },
+  { label: "Exercise plan", description: "Choose the exercises that support today\'s treatment plan." },
+  { label: "Session summary", description: "Capture outcomes, next steps and publish the patient plan." },
+] as const;
 
 const CONCERN_COLORS: Record<string, { bg: string; fg: string }> = {
   none: { bg: "var(--color-success-light)", fg: "var(--color-success)" },
@@ -132,6 +137,10 @@ export function StartSessionFlow({ bookingId }: Props) {
   const [safetyNettingProvided, setSafetyNettingProvided] = useState(false);
   const [safetyNettingNotes, setSafetyNettingNotes] = useState("");
 
+  const patientUid = booking?.bookedBy ?? form?.submittedByUid ?? "";
+  const personId = booking?.patientId ?? patientUid;
+  const patientType = personId && patientUid && personId !== patientUid ? "dependent" : "self";
+
   // ── Load booking, patient's assessment form, and/or create the session record ──
   useEffect(() => {
     let live = true;
@@ -142,19 +151,11 @@ export function StartSessionFlow({ bookingId }: Props) {
       setBooking(b);
       if (!b) { setLoading(false); return; }
 
-      // BookingRecord doesn't expose bookedBy/patientId — read the raw
-      // booking doc directly, same as admin-patient-detail.tsx does for
-      // calBookingUid/patientType, to resolve which patient/person this
-      // session belongs to.
       let matchedForm: PatientAssessmentFormRecord | null = null;
       try {
-        if (db) {
-          const snap = await getDoc(doc(db, "bookings", bookingId));
-          const raw = snap.data() as { bookedBy?: string; patientId?: string } | undefined;
-          if (raw?.bookedBy) {
-            const forms = await getPatientAssessmentForms(raw.bookedBy, raw.patientId || raw.bookedBy);
-            matchedForm = forms.find((f) => f.bookingId === bookingId) ?? forms[0] ?? null;
-          }
+        if (b.bookedBy) {
+          const forms = await getPatientAssessmentForms(b.bookedBy, b.patientId || b.bookedBy);
+          matchedForm = forms.find((f) => f.bookingId === bookingId) ?? forms[0] ?? null;
         }
       } catch {
         /* best effort — screening simply starts blank if this fails */
@@ -197,25 +198,22 @@ export function StartSessionFlow({ bookingId }: Props) {
 
   // Load currently-assigned exercise ids for the "already assigned" exclusion.
   useEffect(() => {
-    if (!form) return;
+    if (!patientUid || !personId) return;
     let live = true;
-    // The assessment form's submittedByUid is the account uid; bodyRegions
-    // person context comes from the same account for a self-booking. For a
-    // dependent booking this is a best-effort read (falls back gracefully).
-    getAssignedExercises(form.submittedByUid, form.submittedByUid)
+    getAssignedExercises(patientUid, personId)
       .then((a) => { if (live) setAssignedIds(a.map((x) => x.exerciseId)); })
       .catch(() => {});
-    getStreakGoal(form.submittedByUid, form.submittedByUid)
+    getStreakGoal(patientUid, personId)
       .then((g) => { if (live) setStreakGoalState(g ?? 0); })
       .catch(() => {});
     return () => { live = false; };
-  }, [form]);
+  }, [patientUid, personId]);
 
   async function handleStreakGoal(days: number) {
-    if (!form || !adminUid) return;
+    if (!patientUid || !personId || !adminUid) return;
     setStreakGoalState(days);
     try {
-      await setStreakGoal(form.submittedByUid, form.submittedByUid, days, adminUid);
+      await setStreakGoal(patientUid, personId, days, adminUid);
       toast.show(`Daily streak goal set to ${days} days.`, "success");
     } catch {
       toast.show("Could not set streak goal. Try again.", "error");
@@ -257,10 +255,10 @@ export function StartSessionFlow({ bookingId }: Props) {
 
   async function saveRiskPlan(value: string) {
     setRiskPlanText(value);
-    if (!form) return;
+    if (!form || !patientUid || !personId) return;
     setSavingRiskPlan(true);
     try {
-      await updateAssessmentRiskPlan(form.submittedByUid, form.submittedByUid, form.id, value);
+      await updateAssessmentRiskPlan(patientUid, personId, form.id, value);
     } catch {
       toast.show("Could not save that note. Try again.", "error");
     } finally {
@@ -278,7 +276,7 @@ export function StartSessionFlow({ bookingId }: Props) {
   }
 
   async function toggleConditionalFlagField(group: ConditionGroup, key: string) {
-    if (!form) return;
+    if (!form || !patientUid || !personId) return;
     const groupFields = conditionalFlags[group] ?? {};
     const from = groupFields[key] === true;
     const to = !from;
@@ -304,7 +302,7 @@ export function StartSessionFlow({ bookingId }: Props) {
       source: "admin_session",
     };
     try {
-      await recordRedFlagChange(form.submittedByUid, form.submittedByUid, form.id, [entry], nextFlags, nextConditional);
+      await recordRedFlagChange(patientUid, personId, form.id, [entry], nextFlags, nextConditional);
       await updateSessionRecordStep(bookingId, { redFlagsSnapshot: { flags: nextFlags, conditionalFlags: nextConditional } });
     } catch {
       toast.show("Could not save that change. Try again.", "error");
@@ -384,13 +382,13 @@ export function StartSessionFlow({ bookingId }: Props) {
   );
 
   async function handleAssignAtSession(exerciseId: string) {
-    if (!form || !adminUid) {
+    if (!patientUid || !personId || !adminUid) {
       toast.show("Not signed in — please refresh and try again.", "error");
       return;
     }
     setAssigningId(exerciseId);
     try {
-      await assignExercise(form.submittedByUid, form.submittedByUid, exerciseId, adminUid);
+      await assignExercise(patientUid, personId, exerciseId, adminUid);
       setAssignedIds((prev) => [...prev, exerciseId]);
       const updated = record ? [...record.exercisesAssignedAtSession, exerciseId] : [exerciseId];
       await updateSessionRecordStep(bookingId, { exercisesAssignedAtSession: updated });
@@ -404,7 +402,7 @@ export function StartSessionFlow({ bookingId }: Props) {
 
   // ── Step 5: Summary ───────────────────────────────────────────────────
   async function handlePublish() {
-    if (!booking || !form) return;
+    if (!booking || !patientUid || !personId) return;
     if (!summary.workedOn.trim() || !summary.nextSteps.trim()) {
       toast.show("Fill in both session note fields to publish.", "error");
       return;
@@ -419,8 +417,8 @@ export function StartSessionFlow({ bookingId }: Props) {
       if (!idToken) throw new Error("Not signed in");
       const input: PublishSummaryInput = {
         bookingId,
-        patientId: form.submittedByUid,
-        patientType: "self",
+        patientId: personId,
+        patientType,
         patientName: booking.patientName,
         service: booking.service,
         painScore: summary.painScore,
@@ -493,7 +491,7 @@ export function StartSessionFlow({ bookingId }: Props) {
     );
   }
 
-  const progress = Math.round((step / STEP_LABELS.length) * 100);
+  const progress = Math.round((step / STEPS.length) * 100);
 
   return (
     <div className="assessment-wizard" style={{ maxWidth: 880 }}>
@@ -502,7 +500,7 @@ export function StartSessionFlow({ bookingId }: Props) {
           <span style={{ width: `${progress}%` }} />
         </div>
         <span className="assessment-wizard__step-count">
-          Step {step} of {STEP_LABELS.length} · {STEP_LABELS[step - 1]}
+          Step {step} of {STEPS.length} · {STEPS[step - 1].label}
         </span>
       </div>
 
@@ -807,7 +805,7 @@ export function StartSessionFlow({ bookingId }: Props) {
               {form && adminUid && (
                 <>
                   <h3 style={{ fontSize: "var(--text-md)" }}>Assigned exercises</h3>
-                  <AdminExerciseAssigner adminUid={adminUid} patientUid={form.submittedByUid} personId={form.submittedByUid} />
+                  <AdminExerciseAssigner adminUid={adminUid} patientUid={patientUid} personId={personId} />
                 </>
               )}
             </>
@@ -972,7 +970,7 @@ export function StartSessionFlow({ bookingId }: Props) {
         ) : (
           <span />
         )}
-        {step < STEP_LABELS.length ? (
+        {step < STEPS.length ? (
           <button
             type="button"
             className="button primary"
