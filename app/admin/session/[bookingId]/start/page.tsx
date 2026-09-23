@@ -58,8 +58,8 @@ export default function StartSessionPage() {
 
   return (
     <AdminShell backHref="/admin/patients" backLabel="← Back to patients">
-      <div className="site-shell">
-        <section className="page-section">
+      <div className="site-shell session-page-shell">
+        <section className="page-section session-page-section">
           <StartSessionFlow bookingId={bookingId} />
         </section>
       </div>

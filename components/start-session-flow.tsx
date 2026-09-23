@@ -82,13 +82,6 @@ const STEPS = [
   { label: "Session summary", description: "Capture outcomes, next steps and publish the patient plan." },
 ] as const;
 
-const CONCERN_COLORS: Record<string, { bg: string; fg: string }> = {
-  none: { bg: "var(--color-success-light)", fg: "var(--color-success)" },
-  few: { bg: "rgba(217, 119, 6, 0.15)", fg: "var(--color-warning, #D97706)" },
-  some: { bg: "rgba(217, 119, 6, 0.25)", fg: "var(--color-warning, #D97706)" },
-  emergency: { bg: "var(--color-error-light)", fg: "var(--color-error)" },
-};
-
 const CONCERN_TEXT: Record<string, string> = {
   none: "No red flags recorded.",
   few: "A small number of lower-severity flags recorded — proceed with awareness.",
@@ -492,100 +485,145 @@ export function StartSessionFlow({ bookingId }: Props) {
   }
 
   const progress = Math.round((step / STEPS.length) * 100);
+  const currentStep = STEPS[step - 1];
+  const patientHref = patientUid
+    ? `/admin/patients/${patientUid}${personId && personId !== patientUid ? `?person=${personId}` : ""}`
+    : "/admin/patients";
 
   return (
-    <div className="assessment-wizard" style={{ maxWidth: 880 }}>
-      <div className="assessment-wizard__progress-row">
-        <div className="assessment-wizard__progress" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
-          <span style={{ width: `${progress}%` }} />
+    <div className="session-workspace">
+      <header className="session-workspace__header">
+        <div>
+          <span className="session-workspace__eyebrow">Clinical session</span>
+          <h1>{booking.patientName}</h1>
+          <p>
+            {booking.service}
+            <span aria-hidden="true"> · </span>
+            {booking.sessionDate.toLocaleDateString("en-GB", {
+              weekday: "short",
+              day: "numeric",
+              month: "short",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
         </div>
-        <span className="assessment-wizard__step-count">
-          Step {step} of {STEPS.length} · {STEPS[step - 1].label}
-        </span>
-      </div>
+        <div className="session-workspace__save-state">
+          <span aria-hidden="true" />
+          Progress saves as you continue
+        </div>
+      </header>
 
-      <div className="assessment-wizard__stage" key={step}>
-        <div className="assessment-wizard__panel stack">
-          <h1>{booking.patientName} · {booking.service}</h1>
+      <div className="session-workspace__layout">
+        <aside className="session-step-rail" aria-label="Session steps">
+          <div className="session-step-rail__progress" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+            <span style={{ width: `${progress}%` }} />
+          </div>
+          <ol>
+            {STEPS.map((item, index) => {
+              const number = index + 1;
+              const state = number === step ? "current" : number < step ? "complete" : "upcoming";
+              return (
+                <li key={item.label} className={`session-step-rail__item is-${state}`} aria-current={state === "current" ? "step" : undefined}>
+                  <span className="session-step-rail__number" aria-hidden="true">{state === "complete" ? "✓" : number}</span>
+                  <span>
+                    <strong>{item.label}</strong>
+                    <small>{state === "complete" ? "Completed" : state === "current" ? "In progress" : "Not started"}</small>
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </aside>
+
+        <main className="session-stage">
+          <header className="session-stage__header">
+            <span>Step {step} of {STEPS.length}</span>
+            <h2>{currentStep.label}</h2>
+            <p>{currentStep.description}</p>
+          </header>
+
+          <div className="session-stage__body" key={step}>
 
           {step === 1 && (
             <>
-              <div
-                className="dashboard-status-pill"
-                role="status"
-                style={{ background: CONCERN_COLORS[concern].bg, color: CONCERN_COLORS[concern].fg, fontWeight: 700 }}
-              >
-                Level of concern: {concern.toUpperCase()}
+              <div className="session-status-row">
+                <div className={`session-concern session-concern--${concern}`} role="status">
+                  <span>Concern level</span>
+                  <strong>{concern}</strong>
+                </div>
+                <p>{CONCERN_TEXT[concern]}</p>
               </div>
-              <p className="muted" style={{ fontSize: "var(--text-sm)" }}>{CONCERN_TEXT[concern]}</p>
               {!form && (
-                <p className="field-error" style={{ fontSize: "var(--text-sm)" }}>
-                  No submitted assessment form was found for this booking, so red flags can&apos;t be recorded here —
-                  there&apos;s no assessment record to attach them to. Ask the patient to submit one, or note any
-                  concerns directly in this session&apos;s summary instead.
-                </p>
+                <div className="session-notice session-notice--warning" role="alert">
+                  <strong>No assessment form is linked to this booking.</strong>
+                  <span>Safety checks cannot be saved, but you can still complete and publish the session summary.</span>
+                </div>
               )}
-              <h3 style={{ fontSize: "var(--text-md)" }}>Common red flags</h3>
-              <div className="assessment-wizard__flags">
+              <section className="session-section" aria-labelledby="safety-checks-title">
+                <div className="session-section__heading">
+                  <div>
+                    <h3 id="safety-checks-title">Safety checks</h3>
+                    <p>Select only the findings that are present. General and condition-specific checks are combined.</p>
+                  </div>
+                </div>
+                <div className="session-flag-grid">
                 {(Object.keys(defaultRedFlags) as (keyof AssessmentRedFlags)[])
-                  .filter((k) => k !== "none")
+                  .filter((key) => key !== "none")
                   .map((key) => (
                     <button
                       key={key}
                       type="button"
-                      className="assessment-wizard__flag"
+                      className="session-flag"
                       aria-pressed={flags[key]}
                       disabled={!form}
                       title={!form ? "No assessment form to update for this booking" : undefined}
                       onClick={() => void toggleCommonFlag(key)}
                     >
-                      {RED_FLAG_FIELD_LABELS[key] ?? key}
+                      <span className="session-flag__check" aria-hidden="true">{flags[key] ? "✓" : ""}</span>
+                      <span>{RED_FLAG_FIELD_LABELS[key] ?? key}</span>
                     </button>
                   ))}
-              </div>
-              {relevantGroups.map((group) => (
-                <fieldset key={group} className="assessment-wizard__chips" style={{ marginTop: "0.5rem" }}>
-                  <legend>{CONDITION_GROUP_LABELS[group]}</legend>
-                  <div className="assessment-wizard__flags">
-                    {CONDITIONAL_RED_FLAG_FIELDS[group].map((f) => (
+                {relevantGroups.flatMap((group) =>
+                  CONDITIONAL_RED_FLAG_FIELDS[group].map((field) => {
+                    const selected = conditionalFlags[group]?.[field] === true;
+                    return (
                       <button
-                        key={f}
+                        key={`${group}-${field}`}
                         type="button"
-                        className="assessment-wizard__flag"
-                        aria-pressed={conditionalFlags[group]?.[f] === true}
+                        className="session-flag"
+                        aria-pressed={selected}
                         disabled={!form}
-                        title={!form ? "No assessment form to update for this booking" : undefined}
-                        onClick={() => void toggleConditionalFlagField(group, f)}
+                        title={`${CONDITION_GROUP_LABELS[group]}${!form ? " — no assessment form to update" : ""}`}
+                        onClick={() => void toggleConditionalFlagField(group, field)}
                       >
-                        {RED_FLAG_FIELD_LABELS[f] ?? f}
+                        <span className="session-flag__check" aria-hidden="true">{selected ? "✓" : ""}</span>
+                        <span>{RED_FLAG_FIELD_LABELS[field] ?? field}</span>
                       </button>
-                    ))}
-                  </div>
-                </fieldset>
-              ))}
+                    );
+                  }),
+                )}
+                </div>
+              </section>
 
               {hasPositiveFlag && (
-                <div className="panel stack" style={{ borderColor: "var(--color-warning, #b5691a)" }}>
-                  <label htmlFor="risk-plan-note">
-                    <strong>Action taken / reasoning for the flag(s) above *</strong>
-                  </label>
+                <div className="session-callout session-callout--warning">
+                  <label htmlFor="risk-plan-note">Action taken or clinical reasoning *</label>
                   <textarea
                     id="risk-plan-note"
                     rows={3}
                     value={riskPlanText}
                     onChange={(e) => setRiskPlanText(e.target.value)}
                     onBlur={(e) => void saveRiskPlan(e.target.value)}
-                    placeholder="e.g. discussed with patient, safe to proceed with modified exercises / referred to GP same day..."
+                    placeholder="Document why it is safe to proceed, any modification made, or the referral action taken."
                   />
-                  <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
-                    {savingRiskPlan ? "Saving…" : "Required before continuing — saved to the patient's assessment record."}
-                  </span>
+                  <small>{savingRiskPlan ? "Saving..." : "Required before continuing and saved to the assessment record."}</small>
                 </div>
               )}
 
               {needsConcernAck && (
-                <div className="panel stack" style={{ borderColor: "var(--color-error)" }}>
-                  <label style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem", fontSize: "var(--text-sm)" }}>
+                <div className="session-callout session-callout--urgent">
+                  <label className="session-confirmation">
                     <input
                       type="checkbox"
                       checked={concernAckSatisfied}
@@ -595,8 +633,9 @@ export function StartSessionFlow({ bookingId }: Props) {
                       }}
                     />
                     <span>
-                      I&apos;ve considered whether urgent referral is needed before proceeding, per NHS screening
-                      guidance ({concern === "emergency" ? "do not begin a trial of therapy" : "proceed with vigilance"}).
+                      <strong>Referral risk considered</strong>
+                      I have considered whether urgent referral is needed before proceeding
+                      ({concern === "emergency" ? "do not begin a trial of therapy" : "proceed with vigilance"}).
                     </span>
                   </label>
                 </div>
@@ -606,31 +645,34 @@ export function StartSessionFlow({ bookingId }: Props) {
 
           {step === 2 && !presenting && (
             <>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
-                <p className="muted" style={{ fontSize: "var(--text-sm)", margin: 0 }}>
-                  Pick relevant self-check tests and record positive/negative.
-                </p>
+              <div className="session-section__heading">
+                <div>
+                  <h3>Recommended checks</h3>
+                  <p>Record a result for each test you use. Unused tests can stay blank.</p>
+                </div>
                 {candidateTests.length > 0 && (
                   <button
                     type="button"
-                    className="assign-edit-dose"
+                    className="session-text-button"
                     onClick={() => { setPresentIndex(0); setPresenting(true); }}
                   >
-                    Present to patient →
+                    Present to patient
                   </button>
                 )}
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "var(--space-3)" }}>
+              <div className="session-test-grid">
                 {candidateTests.map((t) => {
                   const current = selfTestResults.find((r) => r.slug === t.slug);
                   return (
-                    <div key={t.slug} className="panel stack" style={{ padding: "var(--space-3)" }}>
+                    <article key={t.slug} className="session-test-card">
                       {t.steps[0] && (
                         <SelfTestImage imageId={t.steps[0].imageId} label={t.name} stepNumber={1} />
                       )}
-                      <strong style={{ fontSize: "var(--text-sm)" }}>{t.name}</strong>
-                      <span className="muted" style={{ fontSize: "var(--text-xs)" }}>{t.assesses}</span>
-                      <div className="summary-chip-row">
+                      <div className="session-test-card__copy">
+                        <h4>{t.name}</h4>
+                        <p>{t.assesses}</p>
+                      </div>
+                      <div className="session-result-control">
                         <button
                           type="button"
                           className="summary-chip"
@@ -658,7 +700,7 @@ export function StartSessionFlow({ bookingId }: Props) {
                           Negative
                         </button>
                       </div>
-                    </div>
+                    </article>
                   );
                 })}
               </div>
@@ -750,27 +792,34 @@ export function StartSessionFlow({ bookingId }: Props) {
 
           {step === 3 && (
             <>
-              <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
-                Ranked from positive self-check results. Confirm the ones that match your clinical judgement, or dismiss.
-              </p>
+              <div className="session-section__heading">
+                <div>
+                  <h3>Suggested clinical possibilities</h3>
+                  <p>Based on positive self-check results. Confirm only what matches your clinical judgement.</p>
+                </div>
+              </div>
               {diagnosis.length === 0 ? (
-                <p className="muted">No candidates yet — mark some self-check tests positive on the previous step.</p>
+                <div className="session-empty-state">
+                  <strong>No suggestions yet</strong>
+                  <span>Return to self-check tests and record any positive findings.</span>
+                </div>
               ) : (
-                <div style={{ display: "grid", gap: "var(--space-2)" }}>
+                <div className="session-diagnosis-list">
                   {diagnosis.map((d) => (
-                    <div key={d.conditionSlug} className="assign-row">
-                      <span className="assign-row-label">
-                        {d.label} {d.confirmedByAdmin && <span className="dashboard-status-pill status-confirmed">Confirmed</span>}
-                      </span>
-                      <span className="assign-row-actions">
-                        <button type="button" className="assign-edit-dose" onClick={() => toggleConfirm(d.conditionSlug)}>
-                          {d.confirmedByAdmin ? "Unconfirm" : "Confirm"}
+                    <article key={d.conditionSlug} className={d.confirmedByAdmin ? "session-diagnosis is-confirmed" : "session-diagnosis"}>
+                      <div>
+                        <h4>{d.label}</h4>
+                        <span>{d.confirmedByAdmin ? "Included in clinical impression" : "Awaiting review"}</span>
+                      </div>
+                      <div className="session-diagnosis__actions">
+                        <button type="button" className="button small secondary" onClick={() => toggleConfirm(d.conditionSlug)}>
+                          {d.confirmedByAdmin ? "Undo" : "Confirm"}
                         </button>
-                        <button type="button" className="assign-remove" onClick={() => dismissCandidate(d.conditionSlug)}>
+                        <button type="button" className="session-text-button session-text-button--danger" onClick={() => dismissCandidate(d.conditionSlug)}>
                           Dismiss
                         </button>
-                      </span>
-                    </div>
+                      </div>
+                    </article>
                   ))}
                 </div>
               )}
@@ -779,32 +828,45 @@ export function StartSessionFlow({ bookingId }: Props) {
 
           {step === 4 && (
             <>
-              <p className="muted" style={{ fontSize: "var(--text-sm)" }}>
-                Suggested from the clinical area and confirmed diagnosis. Assigning here adds instantly to the patient&apos;s plan.
-              </p>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "var(--space-3)" }}>
+              <div className="session-section__heading">
+                <div>
+                  <h3>Suggested exercises</h3>
+                  <p>Based on the assessment area and confirmed impression. Assignment is immediate.</p>
+                </div>
+              </div>
+              <div className="session-exercise-grid">
                 {suggestions.map((s) => (
-                  <div key={s.exercise.id} className="panel stack" style={{ padding: "var(--space-3)" }}>
+                  <article key={s.exercise.id} className="session-exercise-card">
                     <ExerciseImage exerciseId={s.exercise.id} name={s.exercise.title} pose={s.exercise.pose} size={96} />
-                    <strong style={{ fontSize: "var(--text-sm)" }}>{s.exercise.title}</strong>
-                    <span className="muted" style={{ fontSize: "var(--text-xs)" }}>{s.reason}</span>
+                    <div>
+                      <h4>{s.exercise.title}</h4>
+                      <p>{s.reason}</p>
+                    </div>
                     <button
                       type="button"
-                      className="assign-add-btn"
+                      className="button small secondary"
                       disabled={assigningId === s.exercise.id}
                       onClick={() => void handleAssignAtSession(s.exercise.id)}
                     >
-                      {assigningId === s.exercise.id ? "…" : "Assign"}
+                      {assigningId === s.exercise.id ? "Assigning..." : "Assign"}
                     </button>
-                  </div>
+                  </article>
                 ))}
                 {suggestions.length === 0 && (
-                  <p className="muted">No further suggestions — browse the full library on the patient&apos;s recovery screen.</p>
+                  <div className="session-empty-state">
+                    <strong>No further suggestions</strong>
+                    <span>Use the full exercise library below to build the plan.</span>
+                  </div>
                 )}
               </div>
-              {form && adminUid && (
+              {patientUid && personId && adminUid && (
                 <>
-                  <h3 style={{ fontSize: "var(--text-md)" }}>Assigned exercises</h3>
+                  <div className="session-section__heading session-section__heading--library">
+                    <div>
+                      <h3>Patient exercise plan</h3>
+                      <p>Review assigned exercises or add a different exercise from the library.</p>
+                    </div>
+                  </div>
                   <AdminExerciseAssigner adminUid={adminUid} patientUid={patientUid} personId={personId} />
                 </>
               )}
@@ -813,7 +875,7 @@ export function StartSessionFlow({ bookingId }: Props) {
 
           {step === 5 && (
             <>
-              <div className="summary-fields">
+              <div className="summary-fields session-summary-fields">
                 <div>
                   <label htmlFor="session-pain-score" className="summary-label">Pain level today (0 = none · 10 = worst)</label>
                   <div className="summary-row">
@@ -870,6 +932,7 @@ export function StartSessionFlow({ bookingId }: Props) {
                     value={summary.workedOn}
                     onChange={(e) => setSummary((s) => ({ ...s, workedOn: e.target.value }))}
                     className="summary-textarea"
+                    placeholder="Assessment findings, treatment completed and patient response."
                   />
                 </label>
                 <label>
@@ -879,6 +942,7 @@ export function StartSessionFlow({ bookingId }: Props) {
                     value={summary.nextSteps}
                     onChange={(e) => setSummary((s) => ({ ...s, nextSteps: e.target.value }))}
                     className="summary-textarea"
+                    placeholder="Home plan, activity advice, precautions and what happens next."
                   />
                 </label>
                 <div role="group" aria-label="Recommend follow-up">
@@ -915,80 +979,83 @@ export function StartSessionFlow({ bookingId }: Props) {
                 </div>
               </div>
 
-              <div className="panel stack" style={{ borderColor: "var(--color-error)" }}>
-                <label style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem", fontSize: "var(--text-sm)" }}>
+              <div className="session-callout session-callout--safety">
+                <label className="session-confirmation">
                   <input
                     type="checkbox"
                     checked={safetyNettingProvided}
                     onChange={(e) => setSafetyNettingProvided(e.target.checked)}
                   />
                   <span>
-                    <strong>Safety-netting advice given *</strong> — the patient knows what to do and who to
-                    contact if symptoms worsen (NHS-required before closing any session).
+                    <strong>Safety-netting advice given *</strong>
+                    The patient knows what to do and who to contact if symptoms worsen.
                   </span>
                 </label>
                 <textarea
                   rows={2}
                   value={safetyNettingNotes}
                   onChange={(e) => setSafetyNettingNotes(e.target.value)}
-                  placeholder="Optional notes — what was advised"
+                  placeholder="Optional: record the specific advice provided."
                   className="summary-textarea"
                 />
               </div>
 
-              <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", alignItems: "center" }}>
-                <button
-                  type="button"
-                  className="button primary"
-                  disabled={publishing || !safetyNettingProvided}
-                  title={!safetyNettingProvided ? "Confirm safety-netting advice was given first" : undefined}
-                  onClick={() => void handlePublish()}
-                >
-                  {publishing ? "Publishing…" : publishedSummaryId ? "Published ✓" : "Publish session"}
-                </button>
-                {publishedSummaryId && (
-                  <button
-                    type="button"
-                    onClick={() => void handleResendPlan()}
-                    disabled={resending}
-                    className="summary-cancel"
-                  >
-                    {resending ? "Sending…" : "Resend plan email"}
-                  </button>
-                )}
-              </div>
+              {publishedSummaryId && (
+                <div className="session-notice session-notice--success" role="status">
+                  <strong>Session published</strong>
+                  <span>The summary and plan are now available on the patient record.</span>
+                </div>
+              )}
             </>
           )}
-        </div>
-      </div>
+          </div>
 
-      <div className="assessment-wizard__nav" style={presenting ? { display: "none" } : undefined}>
-        {step > 1 ? (
-          <button type="button" className="button secondary" onClick={() => void goToStep(step - 1)}>
-            Back
-          </button>
-        ) : (
-          <span />
-        )}
-        {step < STEPS.length ? (
-          <button
-            type="button"
-            className="button primary"
-            disabled={step === 1 && !screeningGateSatisfied}
-            title={step === 1 && !screeningGateSatisfied ? "Complete the required screening checks above first" : undefined}
-            onClick={async () => {
-              if (step === 2) await saveSelfTests();
-              if (step === 3) await saveDiagnosis();
-              await goToStep(step + 1);
-            }}
-          >
-            Continue
-          </button>
-        ) : (
-          <Link href={`/admin/patients/${form?.submittedByUid ?? ""}`} className="button secondary">
-            Back to patient
-          </Link>
-        )}
+          {!presenting && (
+            <footer className="session-stage__footer">
+              {step > 1 ? (
+                <button type="button" className="button secondary" onClick={() => void goToStep(step - 1)}>
+                  Back
+                </button>
+              ) : (
+                <Link href={patientHref} className="session-text-button">Exit session</Link>
+              )}
+              <div className="session-stage__footer-actions">
+                {step < STEPS.length ? (
+                  <button
+                    type="button"
+                    className="button primary"
+                    disabled={step === 1 && !screeningGateSatisfied}
+                    title={step === 1 && !screeningGateSatisfied ? "Complete the required screening checks above first" : undefined}
+                    onClick={async () => {
+                      if (step === 2) await saveSelfTests();
+                      if (step === 3) await saveDiagnosis();
+                      await goToStep(step + 1);
+                    }}
+                  >
+                    Continue to {STEPS[step].label}
+                  </button>
+                ) : (
+                  <>
+                    {publishedSummaryId && (
+                      <button type="button" onClick={() => void handleResendPlan()} disabled={resending} className="button secondary">
+                        {resending ? "Sending..." : "Resend plan email"}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="button primary"
+                      disabled={publishing || !safetyNettingProvided || Boolean(publishedSummaryId)}
+                      title={!safetyNettingProvided ? "Confirm safety-netting advice was given first" : undefined}
+                      onClick={() => void handlePublish()}
+                    >
+                      {publishing ? "Publishing..." : publishedSummaryId ? "Session published" : "Publish session"}
+                    </button>
+                  </>
+                )}
+              </div>
+            </footer>
+          )}
+        </main>
       </div>
     </div>
   );
