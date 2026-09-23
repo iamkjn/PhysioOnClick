@@ -1,11 +1,9 @@
 "use client";
 
 // components/start-session-flow.tsx
-// Full-screen, 5-step "Start Session" wizard for admins: Screening ->
-// Self-Check Tests -> Differential Diagnosis -> Exercises -> Summary.
-// Mirrors the visual pattern of components/assessment-wizard.tsx (itself
-// modelled on booking-flow.tsx): a progress bar + step count header, one
-// full-viewport step at a time, back/continue nav.
+// Focused, 5-step clinician workspace: Screening -> Self-Check Tests ->
+// Clinical Impression -> Exercise Plan -> Session Summary. The patient and
+// session context stays visible while the clinician moves through each task.
 //
 // Persists to sessionRecords/{bookingId} (lib/session-records.ts) so leaving
 // and returning mid-session resumes at `currentStep`.
