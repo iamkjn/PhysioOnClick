@@ -1,5 +1,6 @@
 "use client";
 import { Fragment, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { cancelCalBooking } from "@/app/admin/actions";
@@ -372,6 +373,15 @@ export function AdminBookingsTable() {
                     </div>
                   </td>
                   <td>
+                    {(item.displayStatus === "pending" || item.displayStatus === "upcoming") && !item.summaryId && item.patientId && (
+                      // "Start Session" replaces the old "Write summary" trigger for
+                      // upcoming bookings — see components/admin-patient-detail.tsx for
+                      // the same pattern and components/start-session-flow.tsx for the
+                      // wizard itself.
+                      <Link href={`/admin/session/${item.id}/start`} className="summary-trigger">
+                        Start Session
+                      </Link>
+                    )}
                     {item.displayStatus === "completed" && !item.summaryId && item.patientId && (
                       <SummaryForm booking={{ id: item.id, patientId: item.patientId, patientType: item.patientType, patientName: item.patientName, service: item.service, bookedBy: item.bookedBy }} />
                     )}
