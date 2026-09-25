@@ -125,7 +125,19 @@ export default function AdminInvoicesPage() {
   return (
     <AdminShell backHref="/admin" backLabel="← Back to dashboard">
       <div className="site-shell">
-        <section className="page-section">
+        <section className="page-section admin-nav-page">
+          <div className="admin-page-hero admin-page-hero--compact">
+            <div>
+              <span className="dashboard-eyebrow">Billing</span>
+              <h1>Invoices</h1>
+              <p>Review paid bookings and open or download insurance-ready PDF invoices.</p>
+            </div>
+            <div className="admin-page-metrics" aria-label="Invoice totals">
+              <span><strong>{rows.length}</strong> paid</span>
+            </div>
+          </div>
+
+          <div className="panel admin-patient-card">
           <div className="dashboard-table-head">
             <div>
               <span className="dashboard-eyebrow">Invoices</span>
@@ -181,19 +193,7 @@ export default function AdminInvoicesPage() {
                               type="button"
                               disabled={viewing === r.invoiceNumber}
                               onClick={() => void handleView(r.invoiceNumber)}
-                              style={{
-                                border: "1.5px solid var(--color-primary-dark)",
-                                borderRadius: "var(--radius-input)",
-                                color: "var(--color-primary-dark)",
-                                background: "none",
-                                padding: "6px 10px",
-                                lineHeight: 1.2,
-                                fontFamily: "var(--font-sans)",
-                                fontWeight: 700,
-                                fontSize: "var(--text-xs)",
-                                cursor: viewing === r.invoiceNumber ? "not-allowed" : "pointer",
-                                opacity: viewing === r.invoiceNumber ? 0.6 : 1,
-                              }}
+                              className="admin-outline-action"
                             >
                               {viewing === r.invoiceNumber ? "Opening…" : "View"}
                             </button>
@@ -201,19 +201,7 @@ export default function AdminInvoicesPage() {
                               type="button"
                               disabled={downloading === r.invoiceNumber}
                               onClick={() => void handleDownload(r.invoiceNumber)}
-                              style={{
-                                border: "1.5px solid var(--color-primary-dark)",
-                                borderRadius: "var(--radius-input)",
-                                color: "var(--color-primary-dark)",
-                                background: "none",
-                                padding: "6px 10px",
-                                lineHeight: 1.2,
-                                fontFamily: "var(--font-sans)",
-                                fontWeight: 700,
-                                fontSize: "var(--text-xs)",
-                                cursor: downloading === r.invoiceNumber ? "not-allowed" : "pointer",
-                                opacity: downloading === r.invoiceNumber ? 0.6 : 1,
-                              }}
+                              className="admin-outline-action"
                             >
                               {downloading === r.invoiceNumber ? "Downloading…" : "Download"}
                             </button>
@@ -228,6 +216,7 @@ export default function AdminInvoicesPage() {
               </table>
             </div>
           )}
+          </div>
         </section>
       </div>
     </AdminShell>

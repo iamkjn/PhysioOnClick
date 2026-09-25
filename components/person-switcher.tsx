@@ -52,8 +52,13 @@ export function PersonSwitcher({
       personCtx?.reconcile(uid, deps.map((d) => d.id));
       // No-context (admin) deep link: resolve the preselected dependent's
       // name and push it up so the detail view switches to them.
-      if (!personCtx && selected !== uid) {
-        const dep = deps.find((d) => d.id === selected);
+      if (!personCtx) {
+        const targetId = initialPersonId && initialPersonId !== uid ? initialPersonId : selected;
+        if (targetId === uid) {
+          onSelect(uid, displayLabel);
+          return;
+        }
+        const dep = deps.find((d) => d.id === targetId);
         if (dep) onSelect(dep.id, formatPersonName(dep.name));
         else { setSelected(uid); onSelect(uid, displayLabel); }
       }
@@ -65,12 +70,13 @@ export function PersonSwitcher({
   // arrives a tick after mount — after the useState initializer above has
   // already run with `undefined`. Sync to it when it lands.
   useEffect(() => {
-    if (!initialPersonId || initialPersonId === uid || initialPersonId === selected) return;
+    if (!initialPersonId || initialPersonId === uid) return;
+    if (initialPersonId === selected && dependents === null) return;
     setSelected(initialPersonId);
     const dep = dependents?.find((d) => d.id === initialPersonId);
-    onSelect(initialPersonId, dep?.name ?? "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- react only to initialPersonId changing; the getDependents .then above fills the name in once deps load
-  }, [initialPersonId]);
+    onSelect(initialPersonId, formatPersonName(dep?.name, ""));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `onSelect` is caller-created; this effect intentionally follows only deep-link/dependency resolution.
+  }, [initialPersonId, dependents, selected, uid]);
 
   // Keep local selection (and the caller, via onSelect) in sync with the
   // shared context — e.g. another switcher instance on the same page

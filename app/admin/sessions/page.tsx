@@ -55,7 +55,14 @@ export default function AdminSessionsPage() {
   return (
     <AdminShell backHref="/admin" backLabel="← Back to dashboard">
       <div className="site-shell">
-        <section className="page-section">
+        <section className="page-section admin-nav-page">
+          <div className="admin-page-hero admin-page-hero--compact">
+            <div>
+              <span className="dashboard-eyebrow">Schedule</span>
+              <h1>Sessions</h1>
+              <p>See the next appointments, spot sessions starting soon and jump into assessment review.</p>
+            </div>
+          </div>
           <AdminUpcomingSessions />
         </section>
       </div>

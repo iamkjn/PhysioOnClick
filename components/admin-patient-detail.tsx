@@ -11,6 +11,7 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
+import { Activity, CalendarDays, ClipboardCheck, FileText } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { getPatientBookings, displayBookingStatus, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
@@ -247,6 +248,15 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
   }, [bookings]);
 
   const adminUid = auth?.currentUser?.uid ?? "";
+  const bookingCounts = useMemo(() => {
+    const rows = bookings ?? [];
+    return {
+      upcoming: rows.filter((b) => displayStatus(b) === "upcoming").length,
+      completed: rows.filter((b) => displayStatus(b) === "completed").length,
+      cancelled: rows.filter((b) => displayStatus(b) === "cancelled").length,
+    };
+  }, [bookings]);
+  const latestAssessment = assessments?.[0];
 
   // Exercises can only be *assigned* from this screen while the patient has a
   // submitted online assessment AND a completed session whose summary is still
@@ -278,35 +288,67 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
     );
   }
 
+  const activePersonName = formatPersonName(
+    person.id === patientUid ? patient.displayName : person.name,
+    patient.displayName
+  );
+  const patientAge = calcAge(patient.dob);
+
   return (
-    <div className="stack" style={{ gap: "var(--space-5)" }}>
-      {/* Header */}
-      <div className="panel" style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", flexWrap: "wrap" as const }}>
-        <Avatar name={patient.displayName} imageUrl={patient.photoUrl} size={52} />
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <h1 style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>
-            {patient.displayName}
-          </h1>
-          <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--text-xs)" }}>
-            {patient.email}{patient.phoneNumber ? ` · ${patient.phoneNumber}` : ""}
-            {calcAge(patient.dob) !== null ? ` · ${calcAge(patient.dob)} yrs` : ""}
-          </p>
-          {person.id !== patientUid && person.name ? (
-            <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-primary-dark)" }}>
-              Viewing {formatPersonName(person.name)}&apos;s records (dependent)
+    <div className="admin-patient-detail">
+      <section className="admin-patient-hero" aria-labelledby="admin-patient-title">
+        <div className="admin-patient-identity">
+          <Avatar name={activePersonName} imageUrl={patient.photoUrl} size={64} />
+          <div>
+            <span className="dashboard-eyebrow">Patient record</span>
+            <h1 id="admin-patient-title">{activePersonName}</h1>
+            <p>
+              Account holder: {patient.displayName}
+              {person.id !== patientUid ? " · Dependent profile" : ""}
             </p>
-          ) : null}
+          </div>
         </div>
-        <PersonSwitcher
-          key={patientUid}
-          uid={patientUid}
-          displayName={patient.displayName}
-          label="Viewing records for:"
-          initialPersonId={initialPersonId}
-          onSelect={(id, name) => setPerson({ id, name: formatPersonName(name, "") })}
-          alwaysShow
-        />
-      </div>
+
+        <div className="admin-patient-actions">
+          <PersonSwitcher
+            key={patientUid}
+            uid={patientUid}
+            displayName={patient.displayName}
+            label="Viewing records for:"
+            initialPersonId={initialPersonId}
+            onSelect={(id, name) => setPerson({ id, name: formatPersonName(name, "") })}
+            alwaysShow
+          />
+          <div className="admin-patient-contact" aria-label="Patient contact details">
+            <span>{patient.email || "No email"}</span>
+            {patient.phoneNumber ? <span>{patient.phoneNumber}</span> : null}
+            {patientAge !== null ? <span>{patientAge} yrs</span> : null}
+          </div>
+        </div>
+      </section>
+
+      <section className="admin-patient-kpis" aria-label="Patient summary">
+        <div className="admin-patient-kpi">
+          <CalendarDays aria-hidden="true" />
+          <span>Upcoming</span>
+          <strong>{bookings ? bookingCounts.upcoming : "..."}</strong>
+        </div>
+        <div className="admin-patient-kpi">
+          <ClipboardCheck aria-hidden="true" />
+          <span>Completed</span>
+          <strong>{bookings ? bookingCounts.completed : "..."}</strong>
+        </div>
+        <div className="admin-patient-kpi">
+          <Activity aria-hidden="true" />
+          <span>Latest pain</span>
+          <strong>{latestAssessment ? `${latestAssessment.painScore}/10` : "None"}</strong>
+        </div>
+        <div className="admin-patient-kpi">
+          <FileText aria-hidden="true" />
+          <span>Forms</span>
+          <strong>{linkedBookingIds.length}</strong>
+        </div>
+      </section>
 
       {/* 1. Recovery summary — ring, streak, adherence, latest self-reported pain */}
       <AdminRecoverySummary patientUid={patientUid} personId={person.id} />
@@ -315,8 +357,18 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
       <AdminRecoveryChart patientUid={patientUid} personId={person.id} />
 
       {/* 3. Bookings */}
-      <div className="panel stack">
-        <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Bookings</h2>
+      <div className="panel admin-patient-card stack">
+        <div className="admin-patient-section-head">
+          <div>
+            <span className="dashboard-eyebrow">Appointments</span>
+            <h2>Bookings</h2>
+          </div>
+          {bookings ? (
+            <span className="dashboard-table-count">
+              {bookingCounts.upcoming} upcoming · {bookingCounts.cancelled} cancelled
+            </span>
+          ) : null}
+        </div>
         {bookingsError && (
           <p role="alert" style={{ color: "var(--color-error)", fontSize: "var(--text-sm)", margin: 0 }}>Could not load bookings.</p>
         )}
@@ -325,55 +377,44 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         ) : bookings.length === 0 ? (
           <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No bookings for {person.name ? formatPersonName(person.name) : "this person"} yet.</p>
         ) : (
-          <div style={{ display: "grid", gap: "var(--space-2)" }}>
+          <div className="admin-patient-bookings">
             {bookings.map((b) => {
               const status = displayStatus(b);
               return (
               <div
                 key={b.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "var(--space-3)",
-                  flexWrap: "wrap" as const,
-                  padding: "0.6rem 0",
-                  borderBottom: "1px solid var(--color-border)",
-                }}
+                className="admin-patient-booking-row"
               >
-                <div style={{ flex: 1, minWidth: 160 }}>
-                  <strong style={{ display: "block", fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}>{b.service}</strong>
-                  <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
+                <span className="admin-patient-booking-icon" aria-hidden="true">
+                  <CalendarDays />
+                </span>
+                <div>
+                  <strong>{b.service}</strong>
+                  <span>
                     {b.sessionDate.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                   </span>
                 </div>
-                <span className={BOOKING_STATUS_CLASS[status]}>{BOOKING_STATUS_LABEL[status]}</span>
-                <Link href={`/admin/session/${b.id}`} className="button small">
-                  View
-                </Link>
-                {linkedBookingIds.includes(b.id) && (
-                  <Link href={`/admin/session/${b.id}#self-assessment`} className="button small secondary">
-                    Assessment
+                <div className="admin-patient-row-actions">
+                  <span className={BOOKING_STATUS_CLASS[status]}>{BOOKING_STATUS_LABEL[status]}</span>
+                  <Link href={`/admin/session/${b.id}`} className="button small">
+                    View
                   </Link>
-                )}
-                {status === "upcoming" && b.calBookingUid && (
-                  <button
-                    type="button"
-                    className="button small"
-                    disabled={cancelling === b.id}
-                    onClick={() => setCancelTarget({ id: b.id, calBookingUid: b.calBookingUid!, label: b.service })}
-                    style={{
-                      background: "none",
-                      border: "1.5px solid var(--color-error)",
-                      color: "var(--color-error)",
-                      padding: "0 10px",
-                      fontSize: "var(--text-xs)",
-                      cursor: cancelling === b.id ? "not-allowed" : "pointer",
-                      opacity: cancelling === b.id ? 0.6 : 1,
-                    }}
-                  >
-                    {cancelling === b.id ? "Cancelling…" : "Cancel"}
-                  </button>
-                )}
+                  {linkedBookingIds.includes(b.id) && (
+                    <Link href={`/admin/session/${b.id}#self-assessment`} className="button small secondary">
+                      Assessment
+                    </Link>
+                  )}
+                  {status === "upcoming" && b.calBookingUid && (
+                    <button
+                      type="button"
+                      className="button small admin-danger-button"
+                      disabled={cancelling === b.id}
+                      onClick={() => setCancelTarget({ id: b.id, calBookingUid: b.calBookingUid!, label: b.service })}
+                    >
+                      {cancelling === b.id ? "Cancelling..." : "Cancel"}
+                    </button>
+                  )}
+                </div>
               </div>
               );
             })}
@@ -384,8 +425,13 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
       {/* 4. Clinical assessments (history only — recording an assessment lives
           on /admin/recovery, not on this screen) */}
       <section>
-        <div className="panel stack">
-          <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Clinical assessments</h2>
+        <div className="panel admin-patient-card stack">
+          <div className="admin-patient-section-head">
+            <div>
+              <span className="dashboard-eyebrow">Clinical history</span>
+              <h2>Clinical assessments</h2>
+            </div>
+          </div>
           {!assessments ? (
             <SkeletonRow count={2} />
           ) : assessments.length === 0 ? (
@@ -393,7 +439,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           ) : (
             <div style={{ display: "grid", gap: "var(--space-2)" }}>
               {assessments.map((a) => (
-                <div key={a.date} style={{ padding: "var(--space-2) 0", borderBottom: "1px solid var(--color-border)" }}>
+                <div key={a.date} className="admin-patient-clinical-row">
                   <div style={{ display: "flex", justifyContent: "space-between", gap: "var(--space-3)", fontSize: "var(--text-xs)" }}>
                     <strong style={{ color: "var(--color-text-primary)" }}>{a.date}</strong>
                     <span className="muted">Pain {a.painScore}/10 · Mobility {a.mobilityScore}/10</span>
@@ -435,8 +481,13 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
       )}
 
       {/* 7. Session summaries */}
-      <div className="panel stack">
-        <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Session summaries</h2>
+      <div className="panel admin-patient-card stack">
+        <div className="admin-patient-section-head">
+          <div>
+            <span className="dashboard-eyebrow">Clinical notes</span>
+            <h2>Session summaries</h2>
+          </div>
+        </div>
         {!bookings ? (
           <SkeletonRow count={2} />
         ) : bookings.length === 0 ? (
@@ -447,9 +498,9 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
               const summary = summaries[b.id];
               const status = displayStatus(b);
               return (
-                <div key={b.id} style={{ padding: "var(--space-3) 0", borderBottom: "1px solid var(--color-border)" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" as const }}>
-                    <strong style={{ fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}>
+                <div key={b.id} className="admin-patient-summary-row">
+                  <div className="admin-patient-summary-head">
+                    <strong>
                       {b.service} · {b.sessionDate.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                     </strong>
                     {status !== "cancelled" && summary === null && (
@@ -464,7 +515,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
                     )}
                   </div>
                   {summary && (
-                    <div style={{ marginTop: "var(--space-2)", display: "grid", gap: "0.4rem", fontSize: "var(--text-xs)" }}>
+                    <div className="admin-patient-summary-body">
                       <p style={{ margin: 0 }}><strong>Worked on:</strong> {summary.workedOn}</p>
                       <p style={{ margin: 0 }}><strong>Exercises:</strong> {summary.exercises}</p>
                       <p style={{ margin: 0 }}><strong>Next steps:</strong> {summary.nextSteps}</p>

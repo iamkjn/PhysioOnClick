@@ -71,12 +71,14 @@ export default function AdminRecoveryPage() {
   return (
     <AdminShell backHref="/admin" backLabel="← Back to dashboard">
       <div className="site-shell">
-        <section className="page-section">
-          <span className="dashboard-eyebrow">Admin</span>
-          <h1 style={{ margin: "var(--space-1) 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Patient recovery management</h1>
-          <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>
-            Assign exercises and record clinical assessments for any patient.
-          </p>
+        <section className="page-section admin-nav-page">
+          <div className="admin-page-hero admin-page-hero--compact">
+            <div>
+              <span className="dashboard-eyebrow">Recovery</span>
+              <h1>Patient recovery management</h1>
+              <p>Assign exercises, review progress and record clinical assessments from one focused workspace.</p>
+            </div>
+          </div>
         </section>
 
         <section className="page-section dashboard-grid">

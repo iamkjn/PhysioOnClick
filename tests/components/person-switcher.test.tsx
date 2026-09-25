@@ -24,4 +24,27 @@ describe('PersonSwitcher', () => {
     expect(screen.getByText('Booking session for:')).toBeInTheDocument()
     expect(document.querySelector('.skeleton')).not.toBeInTheDocument()
   })
+
+  it('resolves an admin deep-linked dependent after dependents finish loading', async () => {
+    const onSelect = vi.fn()
+    let resolveDeps: (v: unknown[]) => void = () => {}
+    getDependentsMock.mockReturnValue(new Promise((resolve) => { resolveDeps = resolve }))
+
+    render(
+      <PersonSwitcher
+        uid="owner-1"
+        displayName="Seena Nayak"
+        initialPersonId="dep-anish"
+        onSelect={onSelect}
+        alwaysShow
+      />
+    )
+
+    resolveDeps([{ id: 'dep-anish', name: 'anish nayak', relationship: 'Husband' }])
+
+    await waitFor(() => {
+      expect(onSelect).toHaveBeenCalledWith('dep-anish', 'Anish Nayak')
+    })
+    expect(screen.getByRole('combobox')).toHaveValue('dep-anish')
+  })
 })

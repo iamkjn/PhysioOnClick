@@ -116,45 +116,45 @@ export function AdminPatientsList() {
   const dependentCount = rows.length - primaryCount;
 
   return (
-    <div className="panel stack">
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" as const }}>
-        <h1 style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Patients</h1>
+    <div className="admin-directory">
+      <section className="admin-page-hero admin-page-hero--compact">
+        <div>
+          <span className="dashboard-eyebrow">People</span>
+          <h1>Patients</h1>
+          <p>Search primary accounts and dependent profiles from one place.</p>
+        </div>
         {loaded && (
-          <span className="muted" style={{ fontSize: "var(--text-xs)" }}>
-            {filtered.length} shown · {primaryCount} primary · {dependentCount} dependent
-          </span>
+          <div className="admin-page-metrics" aria-label="Patient counts">
+            <span><strong>{filtered.length}</strong> shown</span>
+            <span><strong>{primaryCount}</strong> primary</span>
+            <span><strong>{dependentCount}</strong> dependent</span>
+          </div>
         )}
-      </div>
+      </section>
 
-      <input
-        type="text"
-        className="input"
-        placeholder="Search by name, relationship, primary account, email or phone…"
-        aria-label="Search patients"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <div className="admin-directory-toolbar">
+        <input
+          type="text"
+          className="input"
+          placeholder="Search by name, relationship, primary account, email or phone..."
+          aria-label="Search patients"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
-      <div role="group" aria-label="Filter patients" style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" as const }}>
-        {(Object.keys(FILTER_LABEL) as Filter[]).map((f) => (
-          <button
-            key={f}
-            type="button"
-            className="button small"
-            aria-pressed={filter === f}
-            onClick={() => setFilter(f)}
-            style={{
-              padding: "0 12px",
-              fontSize: "var(--text-xs)",
-              border: `1.5px solid ${filter === f ? "var(--primary)" : "var(--color-border)"}`,
-              background: filter === f ? "var(--color-primary-light)" : "transparent",
-              color: filter === f ? "var(--color-primary-dark)" : "var(--color-text-secondary)",
-              cursor: "pointer",
-            }}
-          >
-            {FILTER_LABEL[f]}
-          </button>
-        ))}
+        <div role="group" aria-label="Filter patients" className="admin-segmented-filter">
+          {(Object.keys(FILTER_LABEL) as Filter[]).map((f) => (
+            <button
+              key={f}
+              type="button"
+              aria-pressed={filter === f}
+              onClick={() => setFilter(f)}
+              className={filter === f ? "is-active" : ""}
+            >
+              {FILTER_LABEL[f]}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loadError && (
@@ -168,7 +168,7 @@ export function AdminPatientsList() {
           {rows.length === 0 ? "No patients yet." : "No patients match your search."}
         </p>
       ) : (
-        <div role="list" aria-label="Patients" style={{ display: "grid", gap: "var(--space-2)" }}>
+        <div role="list" aria-label="Patients" className="admin-directory-list">
           {filtered.map((p) => {
             const age = calcAge(p.dob);
             const sub =
@@ -181,54 +181,27 @@ export function AdminPatientsList() {
                 href={p.href}
                 role="listitem"
                 className="admin-patient-row"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.85rem",
-                  textDecoration: "none",
-                  background: "var(--color-bg)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "var(--radius-chip)",
-                  padding: "0.65rem 0.9rem",
-                }}
               >
                 <Avatar name={p.name} imageUrl={p.photoUrl} size={38} />
-                <span style={{ display: "grid", gap: 2, minWidth: 0 }}>
-                  <strong style={{ color: "var(--color-text-primary)", fontSize: "var(--text-sm)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <span className="admin-patient-row-copy">
+                  <strong>
                     {p.name}
                     {p.kind === "dependent" && (
-                      <span
-                        className="dashboard-status-pill"
-                        style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.04em" }}
-                      >
+                      <span className="dashboard-status-pill admin-patient-kind-pill">
                         {p.relationship}
                       </span>
                     )}
                   </strong>
-                  <span
-                    style={{
-                      color: "var(--color-text-secondary)",
-                      fontSize: "var(--text-xs)",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <span>
                     {sub}
                   </span>
                 </span>
-                <span aria-hidden="true" style={{ marginLeft: "auto", color: "var(--color-text-secondary)" }}>→</span>
+                <span aria-hidden="true" className="admin-patient-row-arrow">→</span>
               </Link>
             );
           })}
         </div>
       )}
-
-      {/* Scoped hover/focus for the rows above. */}
-      <style>{`
-        .admin-patient-row:hover { background: var(--surface-alt); border-color: var(--primary); }
-        .admin-patient-row:focus-visible { outline: 2px solid var(--color-primary-dark); outline-offset: 2px; }
-      `}</style>
     </div>
   );
 }
