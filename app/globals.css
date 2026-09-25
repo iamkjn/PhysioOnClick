@@ -4723,6 +4723,7 @@ textarea:focus {
 
 .admin-library-search {
   min-height: 44px;
+  flex-direction: row;
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -4735,17 +4736,22 @@ textarea:focus {
 .admin-library-search svg {
   width: 17px;
   height: 17px;
+  flex: 0 0 17px;
   color: #0a77a8;
 }
 
 .admin-library-search input {
+  min-width: 0;
+  min-height: 42px;
   width: 100%;
   border: 0;
+  border-radius: 0;
   outline: 0;
   background: transparent;
   color: #043246;
   font-family: var(--font-sans);
   font-size: var(--text-sm);
+  padding: 0;
 }
 
 .admin-library-layout {
