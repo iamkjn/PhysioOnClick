@@ -1,5 +1,6 @@
 import { getAdminDb } from "@/lib/firebase-admin";
 import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { formatPersonName } from "@/lib/name-format";
 
 export type ReceiptData = {
   invoiceNumber: string;
@@ -49,7 +50,7 @@ export async function getReceiptBySession(sessionId: string): Promise<ReceiptDat
       .get();
     if (!bookSnap.empty) {
       const b = bookSnap.docs[0].data() as { fullName?: string; sessionDate?: unknown };
-      patientName = b.fullName ?? "";
+      patientName = formatPersonName(b.fullName, "");
       const sd = b.sessionDate;
       if (typeof sd === "string") sessionDate = sd;
       else if (sd && typeof sd === "object" && "toDate" in sd && typeof (sd as { toDate: unknown }).toDate === "function") {

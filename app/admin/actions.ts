@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { DecodedIdToken, FieldValue, Firestore, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import { formatPersonName } from "@/lib/name-format";
 import { LIMITS } from "@/lib/validation";
 
 // Server actions are public HTTP endpoints — the /admin page gate is client-side
@@ -242,7 +243,7 @@ async function sendFollowUpEmail(
     const html = `
       <div style="font-family: Arial, Helvetica, sans-serif; color: #10233a; line-height: 1.6; max-width: 600px;">
         <h2 style="margin-bottom: 16px;">Follow-up scheduled</h2>
-        <p>Hi ${escapeHtml(patientName)},</p>
+        <p>Hi ${escapeHtml(formatPersonName(patientName))},</p>
         <p>Your physio has scheduled a follow-up for <strong>${escapeHtml(pretty)}</strong>.</p>
         ${note ? `<p>${escapeHtml(note).replaceAll("\n", "<br />")}</p>` : ""}
         <p><a href="${escapeHtml(siteUrl)}/patient/appointments">View your appointments</a></p>

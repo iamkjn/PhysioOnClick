@@ -11,6 +11,7 @@ import { PatientSelfTests } from "@/components/patient-self-tests";
 import { PatientExercisePlanButton } from "@/components/patient-exercise-plan-button";
 import { SkeletonRow } from "@/components/skeleton";
 import { getLatestSummaryId } from "@/lib/session-summaries";
+import { formatPersonName } from "@/lib/name-format";
 
 export default function ExercisesPage() {
   // undefined = auth still resolving, null = signed out, string = signed in.
@@ -38,7 +39,7 @@ export default function ExercisesPage() {
     return onAuthStateChanged(auth, (user) => {
       if (user) {
         setUid(user.uid);
-        setDisplayName(user.displayName || user.email || "Patient");
+        setDisplayName(formatPersonName(user.displayName, user.email || "Patient"));
       } else {
         setUid(null);
       }

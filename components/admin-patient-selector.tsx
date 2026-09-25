@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { getDependents } from "@/lib/dependents";
+import { formatPersonName } from "@/lib/name-format";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 
@@ -50,7 +51,7 @@ export function AdminPatientSelector({ onSelect }: Props) {
         setPatients(
           snap.docs.map((d) => ({
             uid: d.id,
-            displayName: (d.data().displayName as string) || "Unnamed",
+            displayName: formatPersonName(d.data().displayName as string | undefined, "Unnamed"),
             email: (d.data().email as string) || "",
           }))
         );
@@ -69,7 +70,7 @@ export function AdminPatientSelector({ onSelect }: Props) {
     const deps = await getDependents(p.uid);
     const options = [
       { id: p.uid, name: `${p.displayName} (account holder)` },
-      ...deps.map((d) => ({ id: d.id, name: `${d.name} (${d.relationship})` })),
+      ...deps.map((d) => ({ id: d.id, name: `${formatPersonName(d.name)} (${d.relationship})` })),
     ];
     setPersonOptions(options);
     setSelectedPersonId(p.uid);

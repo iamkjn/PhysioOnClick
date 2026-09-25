@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { getAuth } from "firebase/auth";
+import { formatPersonName } from "@/lib/name-format";
 
 interface InvitableBooking {
   id: string;
@@ -66,7 +67,7 @@ export function TrustpilotInvitations({ bookings }: Props) {
         for (const b of due) {
           window.tp("createInvitation", {
             recipientEmail: email,
-            recipientName: user?.displayName || b.patientName || "",
+            recipientName: formatPersonName(user?.displayName || b.patientName, ""),
             referenceId: b.id,
             source: "InvitationScript",
           });

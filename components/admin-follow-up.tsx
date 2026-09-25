@@ -5,6 +5,7 @@ import { useState } from "react";
 import { scheduleFollowUp } from "@/app/admin/actions";
 import { auth } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
+import { formatPersonName } from "@/lib/name-format";
 import { useToast } from "@/components/toast-provider";
 import { LIMITS, validateOptionalText } from "@/lib/validation";
 
@@ -20,6 +21,7 @@ interface Props {
 // this one. The server action re-derives the actual admin identity from the
 // verified idToken rather than trusting a client-supplied uid.
 export function AdminFollowUp({ patientUid, patientName, personId }: Props) {
+  const displayPatientName = formatPersonName(patientName, "");
   const today = new Date().toISOString().slice(0, 10);
   const [dueDate, setDueDate] = useState(today);
   const [note, setNote] = useState("");
@@ -45,7 +47,7 @@ export function AdminFollowUp({ patientUid, patientName, personId }: Props) {
       const idToken = await auth?.currentUser?.getIdToken();
       if (!idToken) throw new Error("Not signed in");
       await scheduleFollowUp(
-        { patientUid, patientName, dueDate, note, personId },
+        { patientUid, patientName: displayPatientName || patientName, dueDate, note, personId },
         idToken
       );
       track("follow_up_scheduled", { for_dependent: Boolean(personId) });
@@ -65,7 +67,7 @@ export function AdminFollowUp({ patientUid, patientName, personId }: Props) {
           AdminStreakGoal (all h2) under the recovery page's single h1. */}
       <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Schedule follow-up</h2>
       <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>
-        Notifies {patientName || "the patient"} immediately by in-app alert and email.
+        Notifies {displayPatientName || "the patient"} immediately by in-app alert and email.
       </p>
       <form
         onSubmit={(e) => void handleSubmit(e)}

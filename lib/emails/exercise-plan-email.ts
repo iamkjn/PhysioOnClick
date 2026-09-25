@@ -1,4 +1,5 @@
 import { renderEmailLayout, toPlainText } from "@/lib/emails/email-layout";
+import { formatPersonName } from "@/lib/name-format";
 
 /** Escape user-controlled values before interpolating into email HTML. */
 function escapeHtml(value: string): string {
@@ -15,7 +16,8 @@ export function buildExercisePlanEmailHtml(input: {
   planUrl: string;
   exerciseCount: number;
 }): string {
-  const greeting = input.patientName ? `Hi ${escapeHtml(input.patientName)},` : "Hello,";
+  const patientName = formatPersonName(input.patientName, "");
+  const greeting = patientName ? `Hi ${escapeHtml(patientName)},` : "Hello,";
   const exerciseLabel = input.exerciseCount === 1 ? "exercise" : "exercises";
   return renderEmailLayout({
     preheader: `Your exercise plan with ${input.exerciseCount} ${exerciseLabel}`,
@@ -47,8 +49,9 @@ export async function sendExercisePlanEmail(input: {
     planUrl: input.planUrl,
     exerciseCount: input.exerciseCount,
   });
-  const greeting = input.patientName
-    ? `Hi ${input.patientName},`
+  const patientName = formatPersonName(input.patientName, "");
+  const greeting = patientName
+    ? `Hi ${patientName},`
     : "Hello,";
   const exerciseLabel = input.exerciseCount === 1 ? "exercise" : "exercises";
   const text = toPlainText(

@@ -1,4 +1,5 @@
 import { renderEmailLayout, toPlainText } from "@/lib/emails/email-layout";
+import { formatPersonName } from "@/lib/name-format";
 
 /** Escape user-controlled values before interpolating into email HTML. */
 function escapeHtml(value: string): string {
@@ -17,7 +18,8 @@ export function buildAssessmentLinkEmailHtml(input: {
   meetingUrl?: string;
   appointmentLabel?: string;
 }): string {
-  const greeting = input.patientName ? `Hi ${escapeHtml(input.patientName)},` : "Hello,";
+  const patientName = formatPersonName(input.patientName, "");
+  const greeting = patientName ? `Hi ${escapeHtml(patientName)},` : "Hello,";
   const appointmentLine = input.appointmentLabel
     ? `<p style="margin:0 0 16px; font-size:14px;"><strong>Appointment:</strong> ${escapeHtml(input.appointmentLabel)}</p>`
     : "";
@@ -45,7 +47,8 @@ function buildAssessmentLinkEmailText(input: {
   meetingUrl?: string;
   appointmentLabel?: string;
 }): string {
-  const greeting = input.patientName ? `Hi ${input.patientName},` : "Hello,";
+  const patientName = formatPersonName(input.patientName, "");
+  const greeting = patientName ? `Hi ${patientName},` : "Hello,";
   const lines = [
     greeting,
     "",

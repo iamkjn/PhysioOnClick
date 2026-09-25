@@ -10,6 +10,7 @@ import { SkeletonForm } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 import { validateDob, validateName, validateUKPhone, LIMITS } from "@/lib/validation";
 import { DEFAULT_DOB } from "@/lib/age";
+import { formatPersonName } from "@/lib/name-format";
 
 function getStatusTone(message: string): "neutral" | "success" | "error" {
   if (message.includes("successfully")) return "success";
@@ -51,7 +52,7 @@ export function PatientProfileEditor() {
       }
 
       await ensurePatientRecord(user);
-      setFullName(user.displayName || "");
+      setFullName(formatPersonName(user.displayName, ""));
       setPhone(user.phoneNumber || "");
       setStatus("Update your name and phone number so bookings and enquiries stay linked to your account.");
     });
@@ -64,7 +65,7 @@ export function PatientProfileEditor() {
 
     return onSnapshot(doc(db, "patients", userId), (snapshot) => {
       const data = snapshot.data();
-      setFullName(String(data?.displayName || auth?.currentUser?.displayName || ""));
+      setFullName(formatPersonName(String(data?.displayName || auth?.currentUser?.displayName || ""), ""));
       setPhone(String(data?.phoneNumber || auth?.currentUser?.phoneNumber || ""));
       setEmail(String(data?.email || auth?.currentUser?.email || ""));
       setDob(String(data?.dob || ""));
@@ -96,9 +97,10 @@ export function PatientProfileEditor() {
 
     try {
       setIsSaving(true);
-      await updateProfile(user, { displayName: fullName.trim() });
+      const displayName = formatPersonName(fullName, "");
+      await updateProfile(user, { displayName });
       await mergePatientProfileDetails(user, {
-        fullName: fullName.trim(),
+        fullName: displayName,
         phone: phone.trim(),
         email,
         dob: dob.trim()

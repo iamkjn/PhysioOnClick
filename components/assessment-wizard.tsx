@@ -39,6 +39,7 @@ import {
   type HowLong,
 } from "@/lib/body-chart";
 import type { FocusArea } from "@/lib/cal-services";
+import { formatPersonName } from "@/lib/name-format";
 import { regionToConditionGroups } from "@/lib/red-flag-groups";
 import { validateUKPhone } from "@/lib/validation";
 
@@ -202,6 +203,8 @@ export function AssessmentWizard({
   redirectingToPayment = false,
 }: Props) {
   const toast = useToast();
+  const displayPersonName = formatPersonName(personName);
+  const displayCompletedBy = formatPersonName(displayName);
   const [stepIdx, setStepIdx] = useState(0);
   const [state, setState] = useState<WizardState>(INITIAL);
   const [hydrated, setHydrated] = useState(false);
@@ -357,9 +360,9 @@ export function AssessmentWizard({
       formType,
       consultationMode: "online",
       completedVia: "online_form",
-      patientName: personName,
-      completedBy: displayName,
-      relationshipToPatient: personName === displayName ? "self" : "",
+      patientName: displayPersonName,
+      completedBy: displayCompletedBy,
+      relationshipToPatient: displayPersonName === displayCompletedBy ? "self" : "",
       presentingComplaint: state.story.trim(),
       bodyArea: describeRegions(state.regions),
       bodyRegions: state.regions,
@@ -464,11 +467,11 @@ export function AssessmentWizard({
       <header className="assessment-wizard__header">
         <div>
           <span className="assessment-wizard__eyebrow">Pre-appointment assessment</span>
-          <h1>Help us prepare for {personName}</h1>
+          <h1>Help us prepare for {displayPersonName}</h1>
           <p>Short, secure and saved as you go. Open any section to review or change your answers before submitting.</p>
         </div>
         <div className="assessment-wizard__header-meta" aria-label="Assessment context">
-          <span>For {personName}</span>
+          <span>For {displayPersonName}</span>
           <span>About 3 minutes</span>
         </div>
       </header>

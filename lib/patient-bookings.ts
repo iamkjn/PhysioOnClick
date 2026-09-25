@@ -10,6 +10,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { formatPersonName } from "@/lib/name-format";
 
 export interface BookingRecord {
   id: string;
@@ -67,7 +68,7 @@ function toBookingRecord(id: string, data: Record<string, unknown>): BookingReco
   const date = resolveSessionDate(data);
   return {
     id,
-    patientName: (data.patientName as string) ?? "Patient",
+    patientName: formatPersonName(data.patientName as string | undefined),
     patientAvatarUrl: data.patientAvatarUrl as string | undefined,
     service: (data.service as string) ?? "Session",
     sessionDate: date,

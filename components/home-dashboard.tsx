@@ -11,6 +11,7 @@ import { PatientDashboard } from "@/components/patient-dashboard";
 import { usePerson } from "@/components/person-provider";
 import { getAssignedExercises, getRecoveryScoreSeries } from "@/lib/recovery";
 import { getPatientBookings } from "@/lib/patient-bookings";
+import { formatPersonName } from "@/lib/name-format";
 
 function greeting() {
   const h = new Date().getHours();
@@ -61,13 +62,13 @@ const SECONDARY_ACTIONS = [
 
 export function HomeDashboard({ user }: { user: User }) {
   const router = useRouter();
-  const displayName = user.displayName || user.email || "Patient";
+  const displayName = formatPersonName(user.displayName, user.email || "Patient");
   const firstName = displayName.split(" ")[0];
   // The active person is shared (and persisted) via PersonProvider so it
   // carries over to /book, /patient/recovery, and /patient/appointments.
   const personCtx = usePerson();
   const personId = personCtx?.personId ?? user.uid;
-  const personName = personCtx?.personId ? personCtx.personName : displayName;
+  const personName = personCtx?.personId ? formatPersonName(personCtx.personName) : displayName;
   const viewingOther = personId !== user.uid;
 
   // Recovery-tracking UI ("Your recovery at a glance", "My recovery", "My

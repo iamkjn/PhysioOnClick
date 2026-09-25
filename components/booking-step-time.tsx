@@ -17,6 +17,7 @@ import type { CalService, FocusArea } from "@/lib/cal-services";
 import type { PricingItem } from "@/lib/site-data";
 import type { BookingConfirmation } from "@/components/booking-flow";
 import { LIMITS, validateEmail, validateName } from "@/lib/validation";
+import { formatPersonName } from "@/lib/name-format";
 import { PasswordInput } from "@/components/password-input";
 import { AssessmentWizard } from "@/components/assessment-wizard";
 
@@ -146,7 +147,7 @@ export function BookingStepTime({
   // behind "Edit" and only discovering the gap at submit time.
   useEffect(() => {
     if (!user) return;
-    setName(user.displayName ?? "");
+    setName(formatPersonName(user.displayName, ""));
     setEmail(user.email ?? "");
     if (!user.displayName) setEditingDetails(true);
   }, [user]);
@@ -315,7 +316,7 @@ export function BookingStepTime({
       let accountUser: User | null = user ?? null;
 
       if (signedIn) {
-        attendeeName = (user!.displayName || name.trim());
+        attendeeName = formatPersonName(user!.displayName || name.trim(), "");
         attendeeEmail = (user!.email || email.trim());
         if (!attendeeName || !attendeeEmail) {
           setError("Please enter your name and email.");
@@ -345,14 +346,14 @@ export function BookingStepTime({
             const credential = await signInWithEmailAndPassword(auth, trimmedEmail, password);
             await ensurePatientRecord(credential.user);
             accountUser = credential.user;
-            attendeeName = credential.user.displayName ?? trimmedEmail;
+            attendeeName = formatPersonName(credential.user.displayName, trimmedEmail);
             attendeeEmail = credential.user.email ?? trimmedEmail;
           } catch (authError) {
             setError(authErrorMessage(authError));
             return;
           }
         } else {
-          const trimmedName = name.trim();
+          const trimmedName = formatPersonName(name, "");
           if (!trimmedName || !trimmedEmail) {
             setError("Please enter your name and email.");
             return;
@@ -394,7 +395,7 @@ export function BookingStepTime({
           await setDoc(doc(db, "pendingSelections", user!.uid), {
             patientType: isSelf ? "self" : "dependent",
             patientId: isSelf ? user!.uid : bookingForId,
-            patientName: isSelf ? attendeeName : bookingForName || "Patient",
+            patientName: isSelf ? attendeeName : formatPersonName(bookingForName),
             patientAvatarUrl: isSelf
               ? user!.photoURL ?? ""
               : dependents.find((d) => d.id === bookingForId)?.avatarUrl ?? "",
@@ -413,7 +414,7 @@ export function BookingStepTime({
       // Seena George)".
       const bookingForDependent = signedIn && Boolean(bookingForId) && bookingForId !== user!.uid;
       const calBookingName = bookingForDependent
-        ? `${bookingForName || "Patient"} (booked by ${attendeeName})`
+        ? `${formatPersonName(bookingForName)} (booked by ${attendeeName})`
         : attendeeName;
 
       // Account + slot are settled — collect the assessment before payment
@@ -477,7 +478,7 @@ export function BookingStepTime({
         uid={checkoutInfo.assessmentUid}
         personId={checkoutInfo.assessmentPersonId}
         displayName={checkoutInfo.completedBy}
-        personName={bookingForId ? bookingForName || "Patient" : checkoutInfo.completedBy}
+        personName={bookingForId ? formatPersonName(bookingForName) : checkoutInfo.completedBy}
         bookingId=""
         focusAreas={focusAreas}
         onSubmitted={(formId) => startCheckout(formId)}
@@ -640,17 +641,17 @@ export function BookingStepTime({
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val === user!.uid) {
-                    onBookingForChange(null, user!.displayName ?? "");
+                    onBookingForChange(null, formatPersonName(user!.displayName, ""));
                   } else {
                     const dep = dependents.find((d) => d.id === val);
-                    onBookingForChange(val, dep?.name ?? "");
+                    onBookingForChange(val, formatPersonName(dep?.name, ""));
                   }
                 }}
               >
-                <option value={user!.uid}>{user!.displayName || "Myself"} (my appointment)</option>
+                <option value={user!.uid}>{formatPersonName(user!.displayName, "Myself")} (my appointment)</option>
                 {dependents.map((dep) => (
                   <option key={dep.id} value={dep.id}>
-                    {dep.name} ({dep.relationship})
+                    {formatPersonName(dep.name)} ({dep.relationship})
                   </option>
                 ))}
               </select>
@@ -660,14 +661,14 @@ export function BookingStepTime({
           {signedIn && !editingDetails ? (
             <div className="book-signed-in">
               <span>
-                Booking as <strong>{user!.displayName || user!.email}</strong>
+                Booking as <strong>{formatPersonName(user!.displayName, user!.email || "Patient")}</strong>
                 {user!.displayName ? ` · ${user!.email}` : ""}
               </span>
               <button
                 type="button"
                 className="book-edit"
                 onClick={() => {
-                  setName(user!.displayName ?? "");
+                  setName(formatPersonName(user!.displayName, ""));
                   setEmail(user!.email ?? "");
                   setEditingDetails(true);
                 }}

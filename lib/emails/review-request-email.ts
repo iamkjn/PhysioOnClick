@@ -1,4 +1,5 @@
 import { renderEmailLayout, toPlainText } from "@/lib/emails/email-layout";
+import { formatPersonName } from "@/lib/name-format";
 
 /** Escape user-controlled values before interpolating into email HTML. */
 function escapeHtml(value: string): string {
@@ -21,7 +22,8 @@ interface ReviewEmailInput {
 }
 
 export function buildReviewRequestEmailHtml(input: ReviewEmailInput): string {
-  const greeting = input.patientName ? `Hi ${escapeHtml(input.patientName)},` : "Hi there,";
+  const patientName = formatPersonName(input.patientName, "");
+  const greeting = patientName ? `Hi ${escapeHtml(patientName)},` : "Hi there,";
   const cta = input.reviewUrl
     ? `<p style="margin:0 0 16px;">
         <a href="${escapeHtml(input.reviewUrl)}" style="display:inline-block; background:#00B67A; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:8px; font-weight:700; font-size:14px;">Review us on Trustpilot ★</a>
@@ -43,7 +45,8 @@ export function buildReviewRequestEmailHtml(input: ReviewEmailInput): string {
 }
 
 function buildReviewRequestEmailText(input: ReviewEmailInput): string {
-  const greeting = input.patientName ? `Hi ${input.patientName},` : "Hi there,";
+  const patientName = formatPersonName(input.patientName, "");
+  const greeting = patientName ? `Hi ${patientName},` : "Hi there,";
   const cta = input.reviewUrl
     ? `Review us on Trustpilot: ${input.reviewUrl}`
     : "In the next day or two you'll get a short invitation from Trustpilot to rate your experience. It only takes a minute.";

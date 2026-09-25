@@ -5,6 +5,7 @@ import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestor
 import { auth, db } from "@/lib/firebase";
 import { cancelCalBooking } from "@/app/admin/actions";
 import { track } from "@/lib/analytics";
+import { formatPersonName } from "@/lib/name-format";
 import { SkeletonTable } from "@/components/skeleton";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useToast } from "@/components/toast-provider";
@@ -102,7 +103,7 @@ export function AdminBookingsTable() {
         const d = doc.data();
         return {
           id: doc.id,
-          fullName:         String(d.fullName || d.name || ""),
+          fullName:         formatPersonName(String(d.fullName || d.name || ""), ""),
           email:            String(d.email || ""),
           service:          String(d.service || ""),
           appointmentLabel: String(d.appointmentLabel || (d.appointmentDate && d.appointmentTime ? `${d.appointmentDate} ${d.appointmentTime}` : "TBC")),
@@ -110,7 +111,7 @@ export function AdminBookingsTable() {
           appointmentTime:  String(d.appointmentTime || ""),
           status:           String(d.status || "pending"),
           calBookingUid:    String(d.calBookingUid || ""),
-          patientName:      String(d.patientName || d.fullName || d.name || "Patient"),
+          patientName:      formatPersonName(String(d.patientName || d.fullName || d.name || "Patient")),
           patientId:        String(d.patientId || d.bookedBy || ""),
           patientType:      String(d.patientType || "self"),
           bookedBy:         String(d.bookedBy || d.patientId || ""),
@@ -161,8 +162,8 @@ export function AdminBookingsTable() {
       if (!bv) return -1;
       return av < bv ? -dir : av > bv ? dir : 0;
     }
-    const av = sort.key === "patient" ? (a.fullName || a.patientName) : sort.key === "service" ? a.service : a.displayStatus;
-    const bv = sort.key === "patient" ? (b.fullName || b.patientName) : sort.key === "service" ? b.service : b.displayStatus;
+    const av = sort.key === "patient" ? formatPersonName(a.fullName || a.patientName) : sort.key === "service" ? a.service : a.displayStatus;
+    const bv = sort.key === "patient" ? formatPersonName(b.fullName || b.patientName) : sort.key === "service" ? b.service : b.displayStatus;
     return av.localeCompare(bv) * dir;
   });
 
@@ -278,7 +279,7 @@ export function AdminBookingsTable() {
               {displayed.map((item) => (
                 <tr className="admin-table-row" key={item.id}>
                   <td>
-                    <strong style={{ display: "block", color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{item.fullName || item.patientName}</strong>
+                    <strong style={{ display: "block", color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{formatPersonName(item.fullName || item.patientName)}</strong>
                     <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{item.email}</span>
                   </td>
                   <td style={{ color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{item.service}</td>
@@ -319,8 +320,8 @@ export function AdminBookingsTable() {
                               type="button"
                               className="button small"
                               disabled={cancelling === item.id}
-                              aria-label={`Cancel booking for ${item.fullName || item.patientName}`}
-                              onClick={() => setCancelTarget({ id: item.id, label: item.fullName || item.patientName })}
+                              aria-label={`Cancel booking for ${formatPersonName(item.fullName || item.patientName)}`}
+                              onClick={() => setCancelTarget({ id: item.id, label: formatPersonName(item.fullName || item.patientName) })}
                               style={{
                                 background: "none",
                                 border: "1.5px solid var(--color-error)",
@@ -338,7 +339,7 @@ export function AdminBookingsTable() {
                             href={`https://cal.com/reschedule/${item.calBookingUid}`}
                             target="_blank" rel="noopener noreferrer"
                             className="button small"
-                            aria-label={`Reschedule booking for ${item.fullName || item.patientName}`}
+                            aria-label={`Reschedule booking for ${formatPersonName(item.fullName || item.patientName)}`}
                             onClick={() => track("appointment_reschedule", { source: "admin" })}
                             style={{ border: "1.5px solid var(--color-primary-dark)", color: "var(--color-primary-dark)", background: "none", padding: "0 10px", fontSize: "var(--text-xs)" }}
                           >Reschedule</a>

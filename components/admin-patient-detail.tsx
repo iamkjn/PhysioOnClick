@@ -16,6 +16,7 @@ import { getPatientBookings, displayBookingStatus, type BookingRecord } from "@/
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { cancelCalBooking } from "@/app/admin/actions";
 import { calcAge } from "@/lib/age";
+import { formatPersonName } from "@/lib/name-format";
 import { Avatar } from "@/components/avatar";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { AdminRecoverySummary } from "@/components/admin-recovery-summary";
@@ -103,7 +104,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         if (!live) return;
         if (!snap.exists()) { setPatient(null); return; }
         const data = snap.data();
-        const displayName = (data.displayName as string) || "Unnamed";
+        const displayName = formatPersonName(data.displayName as string | undefined, "Unnamed");
         setPatient({
           displayName,
           email: (data.email as string) || "",
@@ -292,7 +293,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           </p>
           {person.id !== patientUid && person.name ? (
             <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-primary-dark)" }}>
-              Viewing {person.name}&apos;s records (dependent)
+              Viewing {formatPersonName(person.name)}&apos;s records (dependent)
             </p>
           ) : null}
         </div>
@@ -302,7 +303,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           displayName={patient.displayName}
           label="Viewing records for:"
           initialPersonId={initialPersonId}
-          onSelect={(id, name) => setPerson({ id, name })}
+          onSelect={(id, name) => setPerson({ id, name: formatPersonName(name, "") })}
           alwaysShow
         />
       </div>
@@ -322,7 +323,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         {!bookings ? (
           <SkeletonRow count={3} />
         ) : bookings.length === 0 ? (
-          <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No bookings for {person.name || "this person"} yet.</p>
+          <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No bookings for {person.name ? formatPersonName(person.name) : "this person"} yet.</p>
         ) : (
           <div style={{ display: "grid", gap: "var(--space-2)" }}>
             {bookings.map((b) => {
@@ -487,7 +488,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
       <ConfirmDialog
         isOpen={cancelTarget !== null}
         title="Cancel this booking?"
-        body={cancelTarget ? `This cancels ${person.name || "this patient"}'s "${cancelTarget.label}" appointment via Cal.com. This can't be undone from here.` : ""}
+        body={cancelTarget ? `This cancels ${person.name ? formatPersonName(person.name) : "this patient"}'s "${cancelTarget.label}" appointment via Cal.com. This can't be undone from here.` : ""}
         confirmLabel="Cancel booking"
         confirmVariant="destructive"
         onCancel={() => setCancelTarget(null)}

@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/components/toast-provider";
 import { getPatientBookings } from "@/lib/patient-bookings";
 import { selectTargetBooking, type GateBooking } from "@/lib/assessment-gate";
+import { formatPersonName } from "@/lib/name-format";
 
 function AssessmentPageInner() {
   const router = useRouter();
@@ -35,7 +36,7 @@ function AssessmentPageInner() {
         return;
       }
       setUid(user.uid);
-      setDisplayName(user.displayName || user.email || "Patient");
+      setDisplayName(formatPersonName(user.displayName, user.email || "Patient"));
     });
   }, []);
 
@@ -81,7 +82,7 @@ function AssessmentPageInner() {
 
   if (uid === null) return null;
 
-  const personName = personCtx?.personName || displayName;
+  const personName = personCtx?.personName ? formatPersonName(personCtx.personName) : displayName;
 
   async function handleSubmitted(formId: string) {
     setReloadKey((key) => key + 1);

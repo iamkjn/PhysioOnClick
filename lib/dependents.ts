@@ -11,6 +11,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { formatPersonName } from "@/lib/name-format";
 
 export interface Dependent {
   id: string;
@@ -30,7 +31,10 @@ export async function getDependents(userId: string): Promise<Dependent[]> {
     orderBy("createdAt", "asc")
   );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Dependent));
+  return snap.docs.map((d) => {
+    const data = d.data() as Omit<Dependent, "id">;
+    return { id: d.id, ...data, name: formatPersonName(data.name) } as Dependent;
+  });
 }
 
 export async function addDependent(
@@ -40,6 +44,7 @@ export async function addDependent(
   if (!db) throw new Error("Firestore not available");
   const ref = await addDoc(collection(db, "dependents"), {
     ...data,
+    name: formatPersonName(data.name),
     ownerId: userId,
     createdAt: serverTimestamp(),
   });
@@ -51,7 +56,10 @@ export async function updateDependent(
   data: Partial<Pick<Dependent, "name" | "dob" | "relationship" | "notes" | "avatarUrl">>
 ): Promise<void> {
   if (!db) return;
-  await updateDoc(doc(db, "dependents", id), data);
+  await updateDoc(doc(db, "dependents", id), {
+    ...data,
+    ...(data.name ? { name: formatPersonName(data.name) } : {}),
+  });
 }
 
 export async function deleteDependent(id: string): Promise<void> {

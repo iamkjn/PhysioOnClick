@@ -2,6 +2,7 @@ import { collection, getDocs, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { getPatientBookings } from "@/lib/patient-bookings";
 import { formatClinicalNote } from "@/lib/clinical-note";
+import { formatPersonName } from "@/lib/name-format";
 
 export interface SessionSummary {
   id: string;
@@ -31,7 +32,7 @@ export async function getSessionSummary(bookingId: string): Promise<SessionSumma
   return {
     id: d.id,
     bookingId: data.bookingId as string,
-    patientName: (data.patientName as string) ?? "",
+    patientName: formatPersonName(data.patientName as string | undefined, ""),
     workedOn: formatClinicalNote((data.workedOn as string) ?? ""),
     exercises: formatClinicalNote((data.exercises as string) ?? ""),
     nextSteps: formatClinicalNote((data.nextSteps as string) ?? ""),

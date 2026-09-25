@@ -12,6 +12,7 @@ import { ClipboardIcon } from "@/components/icons";
 import { TrustpilotInvitations } from "@/components/trustpilot-invitations";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 import { getFollowUps, type FollowUp } from "@/lib/follow-ups";
+import { formatPersonName } from "@/lib/name-format";
 
 function resolveStatus(booking: BookingRecord): BookingRecord["status"] {
   if (booking.status === "cancelled") return "cancelled";
@@ -67,7 +68,7 @@ export default function AppointmentsPage() {
         setSyncDone(true);
       }
       setUid(u.uid);
-      setDisplayName(u.displayName || u.email || "Patient");
+      setDisplayName(formatPersonName(u.displayName, u.email || "Patient"));
     });
   }, [router]);
 

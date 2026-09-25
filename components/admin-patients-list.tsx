@@ -6,6 +6,7 @@ import Link from "next/link";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { calcAge } from "@/lib/age";
+import { formatPersonName } from "@/lib/name-format";
 import { Avatar } from "@/components/avatar";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
@@ -54,7 +55,7 @@ export function AdminPatientsList() {
         const owners = new Map<string, { name: string; email: string }>();
         const primaries: PersonRow[] = patientsSnap.docs.map((d) => {
           const data = d.data();
-          const name = (data.displayName as string) || "Unnamed";
+          const name = formatPersonName(data.displayName as string | undefined, "Unnamed");
           owners.set(d.id, { name, email: (data.email as string) || "" });
           return {
             key: `p:${d.id}`,
@@ -74,7 +75,7 @@ export function AdminPatientsList() {
             key: `d:${d.id}`,
             kind: "dependent" as const,
             href: `/admin/patients/${data.ownerId}?person=${d.id}`,
-            name: (data.name as string) || "Unnamed",
+            name: formatPersonName(data.name as string | undefined, "Unnamed"),
             photoUrl: (data.avatarUrl as string) || undefined,
             dob: (data.dob as string) || undefined,
             relationship: (data.relationship as string) || "Dependent",

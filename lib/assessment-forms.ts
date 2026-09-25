@@ -12,6 +12,7 @@ import {
   type DocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { formatPersonName } from "@/lib/name-format";
 
 export const ASSESSMENT_FORM_VERSION = "2.0";
 
@@ -675,8 +676,8 @@ function mapAssessmentForm(snap: QueryDocumentSnapshot | DocumentSnapshot): Pati
     formType: asFormType(data.formType),
     consultationMode: asConsultationMode(data.consultationMode),
     completedVia: asCompletionMethod(data.completedVia),
-    patientName: readString(data, "patientName"),
-    completedBy: readString(data, "completedBy"),
+    patientName: formatPersonName(readString(data, "patientName")),
+    completedBy: formatPersonName(readString(data, "completedBy"), ""),
     relationshipToPatient: readString(data, "relationshipToPatient"),
     presentingComplaint: readString(data, "presentingComplaint"),
     bodyArea: readString(data, "bodyArea"),

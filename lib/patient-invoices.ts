@@ -1,5 +1,6 @@
 import { getAdminDb } from "@/lib/firebase-admin";
 import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { formatPersonName } from "@/lib/name-format";
 
 export type PatientInvoice = {
   invoiceNumber: string;
@@ -68,7 +69,7 @@ export async function getInvoicesForEmail(email: string): Promise<PatientInvoice
           .get();
         if (!bookSnap.empty) {
           const b = bookSnap.docs[0].data() as { patientName?: string; fullName?: string; sessionDate?: unknown };
-          patientName = b.patientName || b.fullName || "";
+          patientName = formatPersonName(b.patientName || b.fullName || "", "");
           sessionDate = toISO(b.sessionDate);
         }
       }

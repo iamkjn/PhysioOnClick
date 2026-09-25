@@ -17,6 +17,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db, firebaseApp, firebaseConfigValues } from "@/lib/firebase";
+import { formatPersonName } from "@/lib/name-format";
 
 export interface AdminNotification {
   id: string;
@@ -34,7 +35,7 @@ function toAdminNotification(id: string, data: Record<string, unknown>): AdminNo
   return {
     id,
     bookingId: typeof data.bookingId === "string" ? data.bookingId : "",
-    patientName: typeof data.patientName === "string" ? data.patientName : "Patient",
+    patientName: formatPersonName(typeof data.patientName === "string" ? data.patientName : undefined),
     personId: typeof data.personId === "string" ? data.personId : "",
     sessionDate: sessionTs?.toDate ? sessionTs.toDate() : null,
     createdAt: createdTs?.toDate ? createdTs.toDate() : null,

@@ -17,6 +17,7 @@ import { AdherenceBar } from "@/components/adherence-bar";
 import { DownloadReportButton } from "@/components/download-report-button";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
 import { SkeletonRow } from "@/components/skeleton";
+import { formatPersonName } from "@/lib/name-format";
 
 export default function RecoveryPage() {
   // undefined = auth still resolving, null = confirmed signed out, string = signed in.
@@ -31,7 +32,7 @@ export default function RecoveryPage() {
   // the PersonSwitcher's selection and every chart below in sync.
   const personCtx = usePerson();
   const personId = uid ? (personCtx?.personId ?? uid) : null;
-  const personName = personCtx?.personId ? personCtx.personName : displayName;
+  const personName = personCtx?.personId ? formatPersonName(personCtx.personName) : displayName;
 
   // The recovery score ring and the pain-trend chart are only meaningful once
   // there's at least one pain check-in (or physio-entered assessment) to show.
@@ -59,7 +60,7 @@ export default function RecoveryPage() {
     return onAuthStateChanged(auth, (user) => {
       if (user) {
         setUid(user.uid);
-        setDisplayName(user.displayName || user.email || "Patient");
+        setDisplayName(formatPersonName(user.displayName, user.email || "Patient"));
       } else {
         setUid(null);
       }

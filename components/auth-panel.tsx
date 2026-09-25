@@ -17,6 +17,7 @@ import { auth, firebaseEnabled } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
 import { ensureAppUserRecord, ensurePatientRecord } from "@/lib/patient-account";
 import { LIMITS, validateDob, validateEmail, validateName } from "@/lib/validation";
+import { formatPersonName } from "@/lib/name-format";
 import { PasswordInput } from "@/components/password-input";
 
 export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" | "admin"; redirectTo?: string | null }) {
@@ -114,7 +115,7 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email")).trim();
     const password = String(formData.get("password"));
-    const fullName = String(formData.get("fullName") || "").trim();
+    const fullName = formatPersonName(String(formData.get("fullName") || ""), "");
     const dob = String(formData.get("dob") || "").trim();
 
     if (!auth) {

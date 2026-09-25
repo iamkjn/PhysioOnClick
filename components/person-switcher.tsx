@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { getDependents, type Dependent } from "@/lib/dependents";
+import { formatPersonName } from "@/lib/name-format";
 import { Skeleton } from "@/components/skeleton";
 import { usePerson } from "@/components/person-provider";
 
@@ -32,6 +33,7 @@ export function PersonSwitcher({
   // Optional: undefined when no PersonProvider is mounted (e.g. admin pages,
   // or this component rendered in isolation) — every use below is guarded.
   const personCtx = usePerson();
+  const displayLabel = formatPersonName(displayName, "Patient");
   const [dependents, setDependents] = useState<Dependent[] | null>(null);
   const [selected, setSelected] = useState(() => {
     if (personCtx?.personId && personCtx.personId !== uid) return personCtx.personId;
@@ -52,8 +54,8 @@ export function PersonSwitcher({
       // name and push it up so the detail view switches to them.
       if (!personCtx && selected !== uid) {
         const dep = deps.find((d) => d.id === selected);
-        if (dep) onSelect(dep.id, dep.name);
-        else { setSelected(uid); onSelect(uid, displayName); }
+        if (dep) onSelect(dep.id, formatPersonName(dep.name));
+        else { setSelected(uid); onSelect(uid, displayLabel); }
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- personCtx.reconcile has a stable identity (useCallback); only re-run when uid changes
@@ -78,7 +80,7 @@ export function PersonSwitcher({
     const nextId = personCtx.personId && personCtx.personId !== uid ? personCtx.personId : uid;
     if (nextId === selected) return;
     setSelected(nextId);
-    const name = nextId === uid ? displayName : (dependents?.find((d) => d.id === nextId)?.name ?? "");
+    const name = nextId === uid ? displayLabel : formatPersonName(dependents?.find((d) => d.id === nextId)?.name, "");
     onSelect(nextId, name);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to the context's personId changing; reading selected/uid/displayName/dependents/onSelect here without depending on them avoids re-running this on every local update
   }, [personCtx?.personId]);
@@ -90,7 +92,7 @@ export function PersonSwitcher({
       return;
     }
     setSelected(val);
-    const name = val === uid ? displayName : (dependents?.find((d) => d.id === val)?.name ?? "");
+    const name = val === uid ? displayLabel : formatPersonName(dependents?.find((d) => d.id === val)?.name, "");
     onSelect(val, name);
     personCtx?.setPerson(val === uid ? null : val, name);
   }
@@ -137,10 +139,10 @@ export function PersonSwitcher({
           transition: "border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease"
         }}
       >
-        <option value={uid}>{displayName} (You)</option>
+        <option value={uid}>{displayLabel} (You)</option>
         {dependents.map((dep) => (
           <option key={dep.id} value={dep.id}>
-            {dep.name} ({dep.relationship})
+            {formatPersonName(dep.name)} ({dep.relationship})
           </option>
         ))}
         {onAddPerson ? <option value={ADD_PERSON_VALUE}>+ Add person</option> : null}

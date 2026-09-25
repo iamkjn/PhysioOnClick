@@ -16,6 +16,7 @@ import {
   type Dependent,
 } from "@/lib/dependents";
 import { validateName, validateDob, validateOptionalText, LIMITS } from "@/lib/validation";
+import { formatPersonName } from "@/lib/name-format";
 
 function validatePerson(fields: { name: string; dob: string; notes: string }) {
   const e: Record<string, string> = {};
@@ -69,7 +70,7 @@ export default function PeoplePage() {
         return;
       }
       setUid(u.uid);
-      setCurrentName(u.displayName || "You");
+      setCurrentName(formatPersonName(u.displayName, "You"));
       setCurrentEmail(u.email || "");
       getDependents(u.uid).then((deps) => {
         setDependents(deps);
@@ -82,7 +83,7 @@ export default function PeoplePage() {
     e.preventDefault();
     if (!uid) return;
     const fd = new FormData(e.currentTarget);
-    const name = fd.get("name") as string;
+    const name = formatPersonName(fd.get("name") as string, "");
     const dob = fd.get("dob") as string;
     const relationship = fd.get("relationship") as string;
     const notes = (fd.get("notes") as string) ?? "";
@@ -112,7 +113,7 @@ export default function PeoplePage() {
     setEditingId(dep.id);
     setEditErrors({});
     setEditForm({
-      name: dep.name,
+      name: formatPersonName(dep.name),
       dob: dep.dob,
       relationship: dep.relationship,
       notes: dep.notes,
@@ -130,7 +131,7 @@ export default function PeoplePage() {
 
     setSaving(true);
     try {
-      await updateDependent(id, editForm);
+      await updateDependent(id, { ...editForm, name: formatPersonName(editForm.name, "") });
       setDependents(await getDependents(uid));
       setEditingId(null);
       setEditErrors({});

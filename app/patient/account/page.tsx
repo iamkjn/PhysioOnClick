@@ -10,6 +10,7 @@ import { RehabProgramsSection } from "@/components/rehab-programs-section";
 import { UploadPanel } from "@/components/upload-panel";
 import { Skeleton, SkeletonForm, SkeletonRow } from "@/components/skeleton";
 import { PeopleIcon, ClipboardIcon } from "@/components/icons";
+import { formatPersonName } from "@/lib/name-format";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function AccountPage() {
         return;
       }
       setUid(user.uid);
-      setDisplayName(user.displayName || "Patient");
+      setDisplayName(formatPersonName(user.displayName));
       setEmail(user.email || "");
     });
   }, [router]);

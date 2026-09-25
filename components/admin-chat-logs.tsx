@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { db } from "@/lib/firebase";
+import { formatPersonName } from "@/lib/name-format";
 import {
   collectionGroup,
   doc,
@@ -56,7 +57,7 @@ export function AdminChatLogs() {
             let patientName = patientId;
             try {
               const patientSnap = await getDoc(doc(database, "patients", patientId));
-              if (patientSnap.exists()) patientName = patientSnap.data().displayName ?? patientId;
+              if (patientSnap.exists()) patientName = formatPersonName(patientSnap.data().displayName as string | undefined, patientId);
             } catch {
               // non-fatal
             }
@@ -71,7 +72,7 @@ export function AdminChatLogs() {
           return {
             sessionId: sessionDoc.id,
             patientId,
-            patientName: patientNameCache.get(patientId) ?? patientId,
+            patientName: formatPersonName(patientNameCache.get(patientId), patientId),
             updatedAt: data.updatedAt,
             messages: data.messages ?? [],
           };

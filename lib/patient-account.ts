@@ -5,6 +5,7 @@ import type { User } from "firebase/auth";
 
 import { db } from "@/lib/firebase";
 import { DEFAULT_DOB } from "@/lib/age";
+import { formatPersonName } from "@/lib/name-format";
 
 type AppUserRole = "patient" | "admin";
 
@@ -31,13 +32,14 @@ async function ensureUserRecord(user: User, preferredName?: string, role: AppUse
   }
 
   const providerId = user.providerData[0]?.providerId || "password";
+  const displayName = formatPersonName(preferredName || user.displayName || "", "");
 
   await setDoc(
     doc(db, "users", user.uid),
     {
       uid: user.uid,
       email: user.email || "",
-      displayName: (preferredName || user.displayName || "").trim(),
+      displayName,
       photoUrl: user.photoURL || "",
       phoneNumber: user.phoneNumber || "",
       dob: await resolveDob("users", user.uid, dob),
@@ -61,6 +63,7 @@ export async function ensurePatientRecord(user: User, preferredName?: string, do
   }
 
   const providerId = user.providerData[0]?.providerId || "password";
+  const displayName = formatPersonName(preferredName || user.displayName || "", "");
 
   await ensureUserRecord(user, preferredName, "patient", dob);
 
@@ -69,7 +72,7 @@ export async function ensurePatientRecord(user: User, preferredName?: string, do
     {
       uid: user.uid,
       email: user.email || "",
-      displayName: (preferredName || user.displayName || "").trim(),
+      displayName,
       photoUrl: user.photoURL || "",
       phoneNumber: user.phoneNumber || "",
       dob: await resolveDob("patients", user.uid, dob),
@@ -98,7 +101,7 @@ export async function mergePatientProfileDetails(
   const shared = {
     uid: user.uid,
     email: details.email || user.email || "",
-    displayName: (details.fullName || user.displayName || "").trim(),
+    displayName: formatPersonName(details.fullName || user.displayName || "", ""),
     phoneNumber: (details.phone || user.phoneNumber || "").trim(),
     ...(details.dob ? { dob: details.dob } : {}),
     updatedAt: serverTimestamp()

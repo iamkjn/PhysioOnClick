@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { buildSystemPrompt, type PatientContext } from "@/lib/chat-prompt";
 import { AUTH_TOOL_DECLARATIONS, executeFunction, GUEST_TOOL_DECLARATIONS } from "@/lib/chat-tools";
 import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import { formatPersonName } from "@/lib/name-format";
 
 type HistoryMessage = { role: "user" | "model"; text: string };
 
@@ -57,11 +58,11 @@ async function fetchPatientContext(uid: string): Promise<PatientContext | undefi
 
   const people = peopleSnap.docs.map(d => {
     const data = d.data();
-    return { name: data.name ?? "", relationship: data.relationship ?? "" };
+    return { name: formatPersonName(data.name, ""), relationship: data.relationship ?? "" };
   });
 
   return {
-    displayName: patient?.displayName ?? "Patient",
+    displayName: formatPersonName(patient?.displayName),
     appointments,
     people,
   };
