@@ -12061,6 +12061,10 @@ textarea:focus {
   color: #fff;
 }
 
+.session-step-rail__item.is-complete .session-step-rail__number svg {
+  stroke-width: 3;
+}
+
 .session-step-rail__item strong,
 .session-step-rail__item small {
   display: block;

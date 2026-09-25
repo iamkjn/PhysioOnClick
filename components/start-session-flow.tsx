@@ -11,6 +11,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
+  Check,
   ClipboardCheck,
   Dumbbell,
   FileText,
@@ -649,7 +650,9 @@ export function StartSessionFlow({ bookingId }: Props) {
                     aria-label={`Open ${item.label}: ${sectionStatus(number)}`}
                     onClick={() => void goToStep(number)}
                   >
-                    <span className="session-step-rail__number" aria-hidden="true"><Icon /></span>
+                    <span className="session-step-rail__number" aria-hidden="true">
+                      {state === "complete" ? <Check /> : <Icon />}
+                    </span>
                     <span>
                       <strong>{item.label}</strong>
                       <small>{number === step ? "Open now" : sectionStatus(number)}</small>
