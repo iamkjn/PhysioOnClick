@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 
 vi.mock('@/lib/firebase', () => ({ auth: {} }))
@@ -14,6 +15,9 @@ vi.mock('firebase/auth', () => ({
 vi.mock('@/lib/admin-auth', () => ({ isAdminUser: vi.fn() }))
 vi.mock('@/components/admin-sign-in', () => ({ AdminSignIn: () => null }))
 vi.mock('@/components/admin-chat-logs', () => ({ AdminChatLogs: () => <div>chat logs content</div> }))
+vi.mock('@/components/admin-shell', () => ({
+  AdminShell: ({ children }: { children: ReactNode }) => <>{children}</>,
+}))
 
 import { AdminChatLogsGate } from '@/components/admin-chat-logs-gate'
 import { isAdminUser } from '@/lib/admin-auth'

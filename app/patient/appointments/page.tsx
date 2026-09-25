@@ -110,6 +110,7 @@ export default function AppointmentsPage() {
           <PersonSwitcher
             uid={uid}
             displayName={displayName}
+            label="Viewing appointments for:"
             onSelect={() => {
               // PersonSwitcher persists the selection via the shared
               // PersonProvider context; personId above already reads from it.

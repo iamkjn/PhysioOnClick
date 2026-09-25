@@ -21,6 +21,7 @@ describe('PersonSwitcher', () => {
     await waitFor(() => {
       expect(screen.getByRole('combobox')).toBeInTheDocument()
     })
+    expect(screen.getByText('Booking session for:')).toBeInTheDocument()
     expect(document.querySelector('.skeleton')).not.toBeInTheDocument()
   })
 })

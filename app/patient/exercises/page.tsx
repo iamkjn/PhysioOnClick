@@ -100,6 +100,7 @@ export default function ExercisesPage() {
         <PersonSwitcher
           uid={uid}
           displayName={displayName}
+          label="Viewing exercises for:"
           onSelect={() => {
             // PersonSwitcher persists the selection via the shared
             // PersonProvider context; `personId` above already reads from it.

@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { defaultRedFlags, type PatientAssessmentFormRecord } from '@/lib/assessment-forms'
 
@@ -134,7 +134,7 @@ describe('AdminAssessmentReview suggested exercises', () => {
     getAssignedExercisesMock.mockResolvedValue([])
 
     const { container } = render(
-      <AdminAssessmentReview patientUid="patient-1" personId="patient-1" />
+      <AdminAssessmentReview patientUid="patient-1" personId="patient-1" showExerciseSuggestions />
     )
 
     await waitFor(() => {
@@ -143,6 +143,32 @@ describe('AdminAssessmentReview suggested exercises', () => {
 
     expect(container.querySelectorAll('.suggested-exercise-row').length).toBeGreaterThan(0)
     expect(container.querySelector('.suggested-exercise-badge')?.textContent).toBe('spine')
+  })
+})
+
+describe('AdminAssessmentReview booking workspace', () => {
+  it('shows only the form linked to the selected booking and keeps it open', async () => {
+    getPatientAssessmentFormsMock.mockResolvedValue([
+      makeForm({ id: 'form-a', bookingId: 'booking-a', presentingComplaint: 'Should not be shown' }),
+      makeForm({ id: 'form-b', bookingId: 'booking-b', presentingComplaint: 'Right knee pain on stairs' }),
+    ])
+
+    const { container } = render(
+      <AdminAssessmentReview
+        patientUid="patient-1"
+        personId="patient-1"
+        bookingId="booking-b"
+        forceOpen
+        heading="Self-assessment for this session"
+      />
+    )
+
+    expect(await screen.findByText('Right knee pain on stairs')).toBeInTheDocument()
+    expect(screen.queryByText('Should not be shown')).not.toBeInTheDocument()
+    expect(screen.getByText('Presenting story')).toBeInTheDocument()
+    expect(screen.getByText('Function and outcomes')).toBeInTheDocument()
+    expect(screen.getByText('Medical, safety and access')).toBeInTheDocument()
+    expect(container.querySelector('details')).toHaveAttribute('open')
   })
 })
 

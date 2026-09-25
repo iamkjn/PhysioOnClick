@@ -25,12 +25,12 @@ vi.mock('@/lib/dependents', () => ({
   getDependents: vi.fn().mockResolvedValue([]),
 }))
 
-const AssignedExercisesMock = vi.fn(() => <div data-testid="assigned-exercises" />)
+const AssignedExercisesMock = vi.fn((_props: unknown) => <div data-testid="assigned-exercises" />)
 vi.mock('@/components/assigned-exercises', () => ({
   AssignedExercises: (props: unknown) => AssignedExercisesMock(props),
 }))
 
-const PatientSelfTestsMock = vi.fn(() => <div data-testid="patient-self-tests" />)
+const PatientSelfTestsMock = vi.fn((_props: unknown) => <div data-testid="patient-self-tests" />)
 vi.mock('@/components/patient-self-tests', () => ({
   PatientSelfTests: (props: unknown) => PatientSelfTestsMock(props),
 }))

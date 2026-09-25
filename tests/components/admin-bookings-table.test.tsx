@@ -134,4 +134,74 @@ describe('AdminBookingsTable', () => {
     await userEvent.type(screen.getByRole('searchbox'), 'nobody-by-this-name')
     expect(screen.getByText(/no bookings match/i)).toHaveTextContent('nobody-by-this-name')
   })
+
+  it('does not offer Start Session for a cancelled booking', () => {
+    render(<AdminBookingsTable />)
+    act(() => {
+      emit?.({
+        docs: [
+          {
+            id: 'cancelled-booking',
+            data: () => ({
+              fullName: 'Cancelled Patient',
+              email: 'cancelled@example.com',
+              service: 'Initial assessment',
+              appointmentDate: '2099-01-01',
+              appointmentTime: '09:00',
+              appointmentLabel: '1 Jan 2099 at 09:00',
+              status: 'cancelled',
+              patientId: 'patient-cancelled',
+              bookedBy: 'patient-cancelled',
+            }),
+          },
+          {
+            id: 'upcoming-booking',
+            data: () => ({
+              fullName: 'Upcoming Patient',
+              email: 'upcoming@example.com',
+              service: 'Follow-up',
+              appointmentDate: '2099-01-02',
+              appointmentTime: '10:00',
+              appointmentLabel: '2 Jan 2099 at 10:00',
+              status: 'upcoming',
+              patientId: 'patient-upcoming',
+              bookedBy: 'patient-upcoming',
+            }),
+          },
+        ],
+      })
+    })
+
+    const startLinks = screen.getAllByRole('link', { name: 'Start Session' })
+    expect(startLinks).toHaveLength(1)
+    expect(startLinks[0]).toHaveAttribute('href', '/admin/session/upcoming-booking/start')
+    expect(screen.getByText('Unavailable')).toBeInTheDocument()
+  })
+
+  it('opens submitted assessments in the canonical session workspace', () => {
+    render(<AdminBookingsTable />)
+    act(() => {
+      emit?.({
+        docs: [{
+          id: 'booking-with-assessment',
+          data: () => ({
+            fullName: 'Assessment Patient',
+            email: 'assessment@example.com',
+            service: 'Initial assessment',
+            appointmentDate: '2099-01-03',
+            appointmentTime: '11:00',
+            status: 'upcoming',
+            patientId: 'patient-1',
+            bookedBy: 'patient-1',
+            assessmentFormId: 'form-1',
+          }),
+        }],
+      })
+    })
+
+    expect(screen.getByRole('link', { name: 'Review' })).toHaveAttribute(
+      'href',
+      '/admin/session/booking-with-assessment#self-assessment'
+    )
+  })
 })

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 vi.mock('@/lib/firebase', () => ({ db: {} }))
-const getDoc = vi.fn(); const setDoc = vi.fn().mockResolvedValue(undefined)
+const getDoc = vi.fn(async (..._args: unknown[]) => ({ exists: () => false })); const setDoc = vi.fn(async (..._args: unknown[]) => undefined)
 const batchSet = vi.fn(); const batchCommit = vi.fn().mockResolvedValue(undefined)
-const writeBatch = vi.fn(() => ({ set: batchSet, commit: batchCommit }))
+const writeBatch = vi.fn((..._args: unknown[]) => ({ set: batchSet, commit: batchCommit }))
 vi.mock('firebase/firestore', () => ({
   doc: vi.fn((..._a) => ({ __doc: _a })),
   collection: vi.fn((..._a) => ({ __col: _a })),

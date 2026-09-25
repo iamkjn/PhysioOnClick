@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 
 vi.mock('firebase/auth', () => ({
@@ -11,6 +12,9 @@ vi.mock('firebase/auth', () => ({
 // out to status "out" immediately.
 vi.mock('@/lib/firebase', () => ({ auth: {} }))
 vi.mock('@/lib/admin-auth', () => ({ isAdminUser: vi.fn() }))
+vi.mock('@/components/admin-shell', () => ({
+  AdminShell: ({ children }: { children: ReactNode }) => <>{children}</>,
+}))
 
 import AdminRecoveryPage from '@/app/admin/recovery/page'
 

@@ -3,6 +3,7 @@
 // payload carries a video call URL, and omits the field entirely when absent.
 // Modeled on tests/api/cal-webhook-paid.test.ts's mock/signature setup.
 import crypto from "node:crypto";
+import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 let addedDocData: Record<string, unknown> | undefined;
@@ -33,7 +34,7 @@ import { POST } from "@/app/api/cal-webhook/route";
 const SECRET = "cal_secret";
 function signed(body: string) {
   const sig = crypto.createHmac("sha256", SECRET).update(body).digest("hex");
-  return new Request("http://localhost/api/cal-webhook", {
+  return new NextRequest("http://localhost/api/cal-webhook", {
     method: "POST",
     headers: { "X-Cal-Signature-256": sig },
     body,

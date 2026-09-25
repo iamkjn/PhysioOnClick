@@ -15,6 +15,8 @@ import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { DEFAULT_MOTION_TARGETS } from "@/lib/motion-targets";
+import { ExerciseImage } from "@/components/exercise-image";
+import type { Suggestion } from "@/lib/exercise-suggestions";
 
 function MotionBadge({ exerciseId }: { exerciseId: string }) {
   if (!(exerciseId in DEFAULT_MOTION_TARGETS)) return null;
@@ -35,9 +37,19 @@ interface Props {
   // been submitted and a session summary is still pending.
   readOnly?: boolean;
   readOnlyReason?: string;
+  suggestions?: Suggestion[];
+  onAssignmentChange?: (exerciseId: string, action: "assigned" | "removed") => void | Promise<void>;
 }
 
-export function AdminExerciseAssigner({ adminUid, patientUid, personId, readOnly = false, readOnlyReason }: Props) {
+export function AdminExerciseAssigner({
+  adminUid,
+  patientUid,
+  personId,
+  readOnly = false,
+  readOnlyReason,
+  suggestions = [],
+  onAssignmentChange,
+}: Props) {
   const [assigned, setAssigned] = useState<AssignedExercise[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
@@ -45,6 +57,8 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId, readOnly
   const [editing, setEditing] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("All");
+  const [visibleLimit, setVisibleLimit] = useState(24);
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
   const toast = useToast();
 
   useEffect(() => {
@@ -64,24 +78,27 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId, readOnly
   const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
   const allCategories = Array.from(new Set(allExercises.map((e) => e.bodyPart))).sort((a, b) => a.localeCompare(b));
 
-  // Unassigned exercises, narrowed by the category filter + free-text search.
+  const activeSuggestions = suggestions.filter(
+    ({ exercise }) => !assignedIds.has(exercise.id) && !dismissedSuggestions.includes(exercise.id),
+  );
+  const activeSuggestionIds = new Set(activeSuggestions.map(({ exercise }) => exercise.id));
+
+  // The full gallery excludes exercises already shown in the selected or
+  // suggested sections, so every assignable exercise appears exactly once.
   const q = search.trim().toLowerCase();
-  const unassigned = allExercises.filter(
+  const galleryExercises = allExercises.filter(
     (e) =>
       !assignedIds.has(e.id) &&
+      !activeSuggestionIds.has(e.id) &&
       !e.retired &&
       (catFilter === "All" || e.bodyPart === catFilter) &&
-      (q === "" || e.title.toLowerCase().includes(q) || e.bodyPart.toLowerCase().includes(q)),
+      (q === "" ||
+        e.title.toLowerCase().includes(q) ||
+        e.bodyPart.toLowerCase().includes(q) ||
+        e.condition.toLowerCase().includes(q) ||
+        e.tags.some((tag) => tag.toLowerCase().includes(q))),
   );
-
-  // Group the (filtered) "Add exercise" list by bodyPart, alphabetical.
-  const unassignedByCategory = new Map<string, typeof unassigned>();
-  for (const ex of unassigned) {
-    const bucket = unassignedByCategory.get(ex.bodyPart);
-    if (bucket) bucket.push(ex);
-    else unassignedByCategory.set(ex.bodyPart, [ex]);
-  }
-  const categories = Array.from(unassignedByCategory.keys()).sort((a, b) => a.localeCompare(b));
+  const visibleGalleryExercises = galleryExercises.slice(0, visibleLimit);
 
   if (!loaded) {
     return (
@@ -125,6 +142,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId, readOnly
       await assignExercise(patientUid, personId, exerciseId, adminUid);
       const updated = await getAssignedExercises(patientUid, personId);
       setAssigned(updated);
+      await onAssignmentChange?.(exerciseId, "assigned");
     } catch {
       toast.show("Could not assign exercise. Try again.", "error");
     } finally {
@@ -139,6 +157,7 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId, readOnly
       await removeExercise(patientUid, personId, exerciseId);
       const updated = await getAssignedExercises(patientUid, personId);
       setAssigned(updated);
+      await onAssignmentChange?.(exerciseId, "removed");
     } catch {
       toast.show("Could not remove exercise. Try again.", "error");
     } finally {
@@ -174,111 +193,192 @@ export function AdminExerciseAssigner({ adminUid, patientUid, personId, readOnly
   }
 
   return (
-    <div className="panel stack">
-      {/* h2, not h3 — sibling of AdminPatientSelector/AdminClinicalEntry
-          (also h2) under the recovery page's single h1; size pinned to the
-          old h3 value so this reads the same. "Add exercise" below is
-          bumped h4 → h3 to stay sequential under it. */}
-      <h2 style={{ fontSize: "var(--text-lg)", margin: 0 }}>Assigned exercises</h2>
-      {assigned.length === 0 && <p className="muted">None assigned yet.</p>}
-      {assigned.map((ae) => {
-        const ex = exerciseMap.get(ae.exerciseId);
-        const title = ex?.title ?? ae.exerciseId;
-        const doseLabel = ex ? formatDosage(resolveDosage(ex, ae)) : null;
-        const isEditing = editing === ae.exerciseId;
-        return (
-          <div key={ae.exerciseId}>
-            <div className="assign-row">
-              <span className="assign-row-label">
-                {doseLabel ? `${title} · ${doseLabel}` : title} <MotionBadge exerciseId={ae.exerciseId} />
-              </span>
-              <span className="assign-row-actions">
-                {ex && (
-                  <button
-                    type="button"
-                    onClick={() => setEditing(isEditing ? null : ae.exerciseId)}
-                    aria-expanded={isEditing}
-                    aria-controls={`dose-${ae.exerciseId}`}
-                    className="assign-edit-dose"
-                  >
-                    {isEditing ? "Close" : "Edit dose"}
-                  </button>
-                )}
-                <button
-                  onClick={() => setRemoveTarget({ exerciseId: ae.exerciseId, title })}
-                  disabled={saving === ae.exerciseId}
-                  aria-label={`Remove ${title} from assigned exercises`}
-                  className="assign-remove"
-                >
-                  {saving === ae.exerciseId ? "…" : "Remove"}
-                </button>
-              </span>
-            </div>
-            {ex && isEditing && (
-              <DoseForm
-                id={`dose-${ae.exerciseId}`}
-                initial={resolveDosage(ex, ae)}
-                onSave={(d) => handleSaveDose(ae.exerciseId, d)}
-                onCancel={() => setEditing(null)}
-              />
-            )}
+    <div className="exercise-plan-builder">
+      <section className="clinical-picker__section" aria-labelledby="assigned-exercises-title">
+        <div className="clinical-picker__heading">
+          <div>
+            <span className="clinical-picker__eyebrow">Selected for this patient</span>
+            <h2 id="assigned-exercises-title">Exercise plan</h2>
+            <p>{assigned.length} exercise{assigned.length === 1 ? "" : "s"} assigned. Adjust the dose or remove an exercise at any time.</p>
           </div>
-        );
-      })}
-      <h3 style={{ marginBottom: 0, fontSize: "var(--text-md)", color: "var(--color-text-primary)" }}>Add exercise from library</h3>
-      <input
-        type="search"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search exercises…"
-        aria-label="Search exercises"
-        style={{
-          width: "100%",
-          border: "1.5px solid var(--color-border)",
-          borderRadius: "var(--radius-input)",
-          padding: "var(--space-2) var(--space-3)",
-          fontSize: "var(--text-sm)",
-          fontFamily: "var(--font-sans)",
-          color: "var(--color-navy)",
-          boxSizing: "border-box",
-        }}
-      />
-      <div className="exercise-filter-row" role="tablist" aria-label="Filter exercises by category">
-        {["All", ...allCategories].map((c) => (
-          <button
-            key={c}
-            type="button"
-            role="tab"
-            aria-selected={catFilter === c}
-            className={`exercise-filter-pill${catFilter === c ? " active" : ""}`}
-            onClick={() => setCatFilter(c)}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
-      {categories.length === 0 ? (
-        <p className="muted">No exercises match your search.</p>
-      ) : (
-        categories.map((category) => (
-          <div key={category} className="assign-group">
-            <p className="assign-group-label">{category}</p>
-            {unassignedByCategory.get(category)!.map((ex) => (
-              <div key={ex.id} className="assign-row">
-                <span className="assign-row-sub">{ex.title} <MotionBadge exerciseId={ex.id} /></span>
+        </div>
+
+        {assigned.length === 0 ? (
+          <div className="clinical-picker__empty">
+            <strong>No exercises selected</strong>
+            <span>Assign a suggested exercise or choose one from the full gallery below.</span>
+          </div>
+        ) : (
+          <div className="clinical-picker__grid">
+            {assigned.map((ae) => {
+              const ex = exerciseMap.get(ae.exerciseId);
+              const title = ex?.title ?? ae.exerciseId;
+              const doseLabel = ex ? formatDosage(resolveDosage(ex, ae)) : null;
+              const isEditing = editing === ae.exerciseId;
+              return (
+                <article key={ae.exerciseId} className="clinical-picker-card is-selected">
+                  {ex && <ExerciseImage exerciseId={ex.id} name={ex.title} pose={ex.pose} size={112} />}
+                  <div className="clinical-picker-card__body">
+                    <div className="clinical-picker-card__badges">
+                      <span>{ex?.bodyPart ?? "Assigned"}</span>
+                      <span className="is-selected">In plan</span>
+                    </div>
+                    <h4>{title}</h4>
+                    {doseLabel && <p className="clinical-picker-card__dose">{doseLabel}</p>}
+                    {ex && <p>{ex.description}</p>}
+                    <MotionBadge exerciseId={ae.exerciseId} />
+                  </div>
+                  <div className="clinical-picker-card__actions">
+                    {ex && (
+                      <button
+                        type="button"
+                        onClick={() => setEditing(isEditing ? null : ae.exerciseId)}
+                        aria-expanded={isEditing}
+                        aria-controls={`dose-${ae.exerciseId}`}
+                        className="session-text-button"
+                      >
+                        {isEditing ? "Close dose" : "Edit dose"}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setRemoveTarget({ exerciseId: ae.exerciseId, title })}
+                      disabled={saving === ae.exerciseId}
+                      aria-label={`Remove ${title} from assigned exercises`}
+                      className="session-text-button session-text-button--danger"
+                    >
+                      {saving === ae.exerciseId ? "Removing..." : "Remove"}
+                    </button>
+                  </div>
+                  {ex && isEditing && (
+                    <DoseForm
+                      id={`dose-${ae.exerciseId}`}
+                      initial={resolveDosage(ex, ae)}
+                      onSave={(dose) => handleSaveDose(ae.exerciseId, dose)}
+                      onCancel={() => setEditing(null)}
+                    />
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {activeSuggestions.length > 0 && (
+        <section className="clinical-picker__section clinical-picker__section--suggested" aria-labelledby="suggested-exercises-title">
+          <div className="clinical-picker__heading">
+            <div>
+              <span className="clinical-picker__eyebrow">Matched to assessment and clinical impression</span>
+              <h3 id="suggested-exercises-title">Suggested exercises</h3>
+              <p>Assign a match or cancel the suggestion. Cancelled exercises remain available in the full gallery.</p>
+            </div>
+          </div>
+          <div className="clinical-picker__grid clinical-picker__grid--compact">
+            {activeSuggestions.map(({ exercise, reason }) => (
+              <article key={exercise.id} className="clinical-picker-card is-suggested">
                 <button
-                  onClick={() => void handleAssign(ex.id)}
-                  disabled={saving === ex.id}
-                  aria-label={`Assign ${ex.title}`}
-                  className="assign-add-btn"
+                  type="button"
+                  className="clinical-picker-card__dismiss"
+                  aria-label={`Cancel ${exercise.title} suggestion`}
+                  title="Cancel suggestion"
+                  onClick={() => setDismissedSuggestions((current) => [...current, exercise.id])}
                 >
-                  {saving === ex.id ? "…" : "Assign"}
+                  ×
                 </button>
-              </div>
+                <ExerciseImage exerciseId={exercise.id} name={exercise.title} pose={exercise.pose} size={112} />
+                <div className="clinical-picker-card__body">
+                  <div className="clinical-picker-card__badges"><span>{exercise.bodyPart}</span><span className="is-suggested">Suggested</span></div>
+                  <h4>{exercise.title}</h4>
+                  <p>{reason.replace(/^Suggested:\s*/i, "")}</p>
+                </div>
+                <button
+                  type="button"
+                  className="button small primary"
+                  disabled={saving === exercise.id}
+                  onClick={() => void handleAssign(exercise.id)}
+                >
+                  {saving === exercise.id ? "Assigning..." : "Assign exercise"}
+                </button>
+              </article>
             ))}
           </div>
-        ))
+        </section>
       )}
+
+      <section className="clinical-picker__section" aria-labelledby="exercise-gallery-title">
+        <div className="clinical-picker__heading">
+          <div>
+            <span className="clinical-picker__eyebrow">Complete catalogue</span>
+            <h3 id="exercise-gallery-title">All assignable exercises</h3>
+            <p>Everything available to assign is shown here. Search or filter by body area.</p>
+          </div>
+          <label className="clinical-picker__search">
+            <span className="sr-only">Search exercises</span>
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setVisibleLimit(24);
+              }}
+              placeholder="Search exercise, body area or condition"
+            />
+          </label>
+        </div>
+        <div className="exercise-filter-row" role="tablist" aria-label="Filter exercises by category">
+          {["All", ...allCategories].map((category) => (
+            <button
+              key={category}
+              type="button"
+              role="tab"
+              aria-selected={catFilter === category}
+              className={`exercise-filter-pill${catFilter === category ? " active" : ""}`}
+              onClick={() => {
+                setCatFilter(category);
+                setVisibleLimit(24);
+              }}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+        {galleryExercises.length === 0 ? (
+          <div className="clinical-picker__empty"><strong>No exercises match this search</strong></div>
+        ) : (
+          <div className="clinical-picker__grid clinical-picker__grid--compact">
+            {visibleGalleryExercises.map((exercise) => (
+              <article key={exercise.id} className="clinical-picker-card">
+                <ExerciseImage exerciseId={exercise.id} name={exercise.title} pose={exercise.pose} size={112} />
+                <div className="clinical-picker-card__body">
+                  <div className="clinical-picker-card__badges"><span>{exercise.bodyPart}</span><span>{exercise.stage}</span></div>
+                  <h4>{exercise.title}</h4>
+                  <p>{exercise.description}</p>
+                  <MotionBadge exerciseId={exercise.id} />
+                </div>
+                <button
+                  type="button"
+                  className="button small secondary"
+                  disabled={saving === exercise.id}
+                  aria-label={`Assign ${exercise.title}`}
+                  onClick={() => void handleAssign(exercise.id)}
+                >
+                  {saving === exercise.id ? "Assigning..." : "Assign exercise"}
+                </button>
+              </article>
+            ))}
+          </div>
+        )}
+        {galleryExercises.length > visibleLimit && (
+          <button
+            type="button"
+            className="button secondary clinical-picker__show-more"
+            onClick={() => setVisibleLimit((current) => current + 24)}
+          >
+            Show more exercises ({galleryExercises.length - visibleLimit} remaining)
+          </button>
+        )}
+      </section>
 
       <ConfirmDialog
         isOpen={removeTarget !== null}

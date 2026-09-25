@@ -2,6 +2,11 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('@/lib/firebase', () => ({ auth: null }))
+vi.mock('@/lib/gsap', () => ({
+  gsap: { to: vi.fn() },
+  ScrollTrigger: {},
+  prefersReducedMotion: () => false,
+}))
 vi.mock('next/navigation', () => ({
   usePathname: () => '/',
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),

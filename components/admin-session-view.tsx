@@ -143,11 +143,17 @@ export function AdminSessionView({ bookingId }: Props) {
       {/* 2. Assessment (reuses the same review UI as the patient detail screen,
           including the Phase 1 read-only body chart) */}
       {booking.bookedBy && (
-        <AdminAssessmentReview
-          patientUid={booking.bookedBy}
-          personId={booking.patientId ?? booking.bookedBy}
-          bookings={assessmentBookings}
-        />
+        <section id="self-assessment" className="admin-assessment-anchor">
+          <AdminAssessmentReview
+            patientUid={booking.bookedBy}
+            personId={booking.patientId ?? booking.bookedBy}
+            bookings={assessmentBookings}
+            bookingId={booking.id}
+            formId={booking.assessmentFormId}
+            forceOpen
+            heading="Self-assessment for this session"
+          />
+        </section>
       )}
 
       {/* 3. Past session history */}
@@ -182,7 +188,7 @@ export function AdminSessionView({ bookingId }: Props) {
                     </dl>
                   )}
                   <Link
-                    href={`/admin/session/${b.id}`}
+                    href={`/admin/session/${b.id}#self-assessment`}
                     style={{ fontSize: "var(--text-xs)", color: "var(--color-primary-dark)", fontWeight: 600 }}
                   >
                     View session →

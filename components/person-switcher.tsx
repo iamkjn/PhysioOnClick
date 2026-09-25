@@ -12,6 +12,7 @@ interface Props {
   uid: string;
   displayName: string;
   onSelect: (personId: string, name: string) => void;
+  label?: string;
   alwaysShow?: boolean;
   onAddPerson?: () => void;
   // Admin use: preselect a specific dependent on mount (from a `?person=` deep
@@ -19,7 +20,15 @@ interface Props {
   initialPersonId?: string;
 }
 
-export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false, onAddPerson, initialPersonId }: Props) {
+export function PersonSwitcher({
+  uid,
+  displayName,
+  onSelect,
+  label = "Booking session for:",
+  alwaysShow = false,
+  onAddPerson,
+  initialPersonId,
+}: Props) {
   // Optional: undefined when no PersonProvider is mounted (e.g. admin pages,
   // or this component rendered in isolation) — every use below is guarded.
   const personCtx = usePerson();
@@ -101,7 +110,7 @@ export function PersonSwitcher({ uid, displayName, onSelect, alwaysShow = false,
         htmlFor="person-switcher-select"
         style={{ fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}
       >
-        Viewing recovery for:
+        {label}
       </label>
       <select
         id="person-switcher-select"

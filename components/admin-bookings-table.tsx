@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
@@ -8,7 +8,6 @@ import { track } from "@/lib/analytics";
 import { SkeletonTable } from "@/components/skeleton";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useToast } from "@/components/toast-provider";
-import { getPatientAssessmentFormById, hasUrgentRedFlags, type PatientAssessmentFormRecord } from "@/lib/assessment-forms";
 
 type BookingRecord = {
   id: string;
@@ -90,27 +89,6 @@ export function AdminBookingsTable() {
   const [cancelTarget, setCancelTarget] = useState<{ id: string; label: string } | null>(null);
   const [cancelling, setCancelling] = useState<string | null>(null);
   const cancelFormRefs = useRef<Record<string, HTMLFormElement | null>>({});
-
-  // Assessment answers, submitted pre-payment, expand inline under a row —
-  // fetched lazily on first expand and cached by booking id.
-  const [expandedAssessment, setExpandedAssessment] = useState<string | null>(null);
-  const [assessmentCache, setAssessmentCache] = useState<Record<string, PatientAssessmentFormRecord | null>>({});
-  const [assessmentLoading, setAssessmentLoading] = useState<string | null>(null);
-
-  function toggleAssessment(item: BookingRecord) {
-    if (expandedAssessment === item.id) {
-      setExpandedAssessment(null);
-      return;
-    }
-    setExpandedAssessment(item.id);
-    if (item.assessmentFormId && item.bookedBy && item.patientId && !(item.id in assessmentCache)) {
-      setAssessmentLoading(item.id);
-      getPatientAssessmentFormById(item.bookedBy, item.patientId, item.assessmentFormId)
-        .then((form) => setAssessmentCache((c) => ({ ...c, [item.id]: form })))
-        .catch(() => setAssessmentCache((c) => ({ ...c, [item.id]: null })))
-        .finally(() => setAssessmentLoading((id) => (id === item.id ? null : id)));
-    }
-  }
 
   useEffect(() => {
     if (!db) return;
@@ -298,8 +276,7 @@ export function AdminBookingsTable() {
             </thead>
             <tbody>
               {displayed.map((item) => (
-                <Fragment key={item.id}>
-                <tr className="admin-table-row">
+                <tr className="admin-table-row" key={item.id}>
                   <td>
                     <strong style={{ display: "block", color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{item.fullName || item.patientName}</strong>
                     <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{item.email}</span>
@@ -372,7 +349,7 @@ export function AdminBookingsTable() {
                     </div>
                   </td>
                   <td>
-                    {!item.summaryId && item.patientId && (
+                    {!item.summaryId && item.patientId && item.displayStatus !== "cancelled" && (
                       // "Start Session" is the only way to add a summary now — the old
                       // one-shot "Write summary" quick form was retired and its fields
                       // (pain/recovery/outcome/notes/follow-up/streak goal/exercise
@@ -382,56 +359,29 @@ export function AdminBookingsTable() {
                         Start Session
                       </Link>
                     )}
+                    {!item.summaryId && item.displayStatus === "cancelled" && (
+                      <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>
+                        Unavailable
+                      </span>
+                    )}
                     {item.summaryId && (
                       <span style={{ fontSize: "var(--text-xs)", color: "var(--color-success)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>✓ Published</span>
                     )}
                   </td>
                   <td>
-                    {item.assessmentFormId ? (
-                      <button
-                        type="button"
+                    {item.assessmentFormId && item.bookedBy && item.patientId ? (
+                      <Link
+                        href={`/admin/session/${item.id}#self-assessment`}
                         className="button small"
-                        onClick={() => toggleAssessment(item)}
                         style={{ border: "1.5px solid var(--color-success)", color: "var(--color-success)", background: "none", padding: "0 10px", fontSize: "var(--text-xs)" }}
                       >
-                        {expandedAssessment === item.id ? "Hide" : "✓ View"}
-                      </button>
+                        Review
+                      </Link>
                     ) : (
                       <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>Not submitted</span>
                     )}
                   </td>
                 </tr>
-                {expandedAssessment === item.id && item.assessmentFormId && (
-                  <tr>
-                    <td colSpan={7} style={{ background: "var(--color-surface-muted, #f7f5f0)", padding: "var(--space-4)" }}>
-                      {assessmentLoading === item.id ? (
-                        <SkeletonTable rows={2} />
-                      ) : assessmentCache[item.id] ? (
-                        <div className="stack" style={{ gap: "var(--space-2)", fontFamily: "var(--font-sans)", fontSize: "var(--text-sm)" }}>
-                          {(() => {
-                            const form = assessmentCache[item.id]!;
-                            return (
-                              <>
-                                <p><strong>Problem area:</strong> {form.bodyArea || "—"}</p>
-                                <p><strong>Their story:</strong> {form.presentingComplaint || "—"}</p>
-                                <p><strong>Pain right now:</strong> {form.painScore}/10</p>
-                                <p><strong>Getting in the way of:</strong> {form.functionalImpact || "—"}</p>
-                                <p><strong>Anything we should know:</strong> {form.medicalHistory || "—"}</p>
-                                <p><strong>Emergency contact:</strong> {form.emergencyContactName || "—"} {form.emergencyContactPhone ? `· ${form.emergencyContactPhone}` : ""}</p>
-                                {hasUrgentRedFlags(form.redFlags) && (
-                                  <p style={{ color: "var(--color-error)", fontWeight: 600 }}>⚠ Safety flag selected — review before the session.</p>
-                                )}
-                              </>
-                            );
-                          })()}
-                        </div>
-                      ) : (
-                        <p className="muted" style={{ margin: 0 }}>Could not load this assessment.</p>
-                      )}
-                    </td>
-                  </tr>
-                )}
-                </Fragment>
               ))}
             </tbody>
           </table>

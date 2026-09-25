@@ -105,8 +105,8 @@ export function AdminUpcomingSessions() {
                       {timeUntil(b.sessionDate, now)}
                     </td>
                     <td>
-                      <Link href={`/admin/session/${b.id}`} className="button small">
-                        View
+                      <Link href={`/admin/session/${b.id}#self-assessment`} className="button small">
+                        Review
                       </Link>
                     </td>
                   </tr>

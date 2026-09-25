@@ -100,6 +100,7 @@ export default function RecoveryPage() {
         <PersonSwitcher
           uid={uid}
           displayName={displayName}
+          label="Viewing recovery for:"
           onSelect={() => {
             // PersonSwitcher persists the selection via the shared
             // PersonProvider context; `personId` / `personName` above already

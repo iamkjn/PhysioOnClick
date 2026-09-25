@@ -151,6 +151,7 @@ export function HomeDashboard({ user }: { user: User }) {
           <PersonSwitcher
             uid={user.uid}
             displayName={displayName}
+            label="Viewing recovery for:"
             alwaysShow
             onAddPerson={() => router.push("/patient/people")}
             onSelect={() => {

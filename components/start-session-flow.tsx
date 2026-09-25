@@ -1,17 +1,26 @@
 "use client";
 
 // components/start-session-flow.tsx
-// Focused, 5-step clinician workspace: Screening -> Self-Check Tests ->
-// Clinical Impression -> Exercise Plan -> Session Summary. The patient and
-// session context stays visible while the clinician moves through each task.
+// Focused clinician workspace: patient assessment -> screening -> self-check
+// tests -> clinical impression -> exercise plan -> session summary. Every
+// section remains directly accessible throughout the appointment.
 //
 // Persists to sessionRecords/{bookingId} (lib/session-records.ts) so leaving
 // and returning mid-session resumes at `currentStep`.
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import {
+  ClipboardCheck,
+  Dumbbell,
+  FileText,
+  NotebookPen,
+  ShieldCheck,
+  Stethoscope,
+  type LucideIcon,
+} from "lucide-react";
 import { auth } from "@/lib/firebase";
-import { getBooking, type BookingRecord } from "@/lib/patient-bookings";
+import { displayBookingStatus, getBooking, type BookingRecord } from "@/lib/patient-bookings";
 import {
   getPatientAssessmentForms,
   recordRedFlagChange,
@@ -35,17 +44,17 @@ import {
   type SessionSummaryBlock,
 } from "@/lib/session-records";
 import { selfTests, type SelfTest } from "@/lib/self-tests";
-import { SelfTestImage } from "@/components/exercise-library/self-test-image";
 import { SelfTestSteps } from "@/components/exercise-library/self-test-steps";
-import { ExerciseImage } from "@/components/exercise-image";
 import { deriveDifferentialDiagnosis, type SelfTestResult, type DiagnosisCandidate } from "@/lib/differential-diagnosis";
 import { suggestExercises } from "@/lib/exercise-suggestions";
-import { assignExercise, getAssignedExercises } from "@/lib/recovery";
+import { getAssignedExercises } from "@/lib/recovery";
 import { getStreakGoal, setStreakGoal } from "@/lib/goals";
 import { publishSummary, type PublishSummaryInput } from "@/app/admin/actions";
 import { useToast } from "@/components/toast-provider";
 import { SkeletonRow } from "@/components/skeleton";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
+import { AdminSelfTestSelector } from "@/components/admin-self-test-selector";
+import { AdminAssessmentReviewItem } from "@/components/admin-assessment-review";
 
 function getPainColor(score: number): string {
   if (score <= 3) return "var(--color-success)";
@@ -72,13 +81,29 @@ interface Props {
   bookingId: string;
 }
 
-const STEPS = [
-  { label: "Screening", description: "Review safety checks and document any clinical concerns." },
-  { label: "Self-check tests", description: "Record the relevant movement and symptom checks." },
-  { label: "Clinical impression", description: "Confirm or dismiss the suggested clinical possibilities." },
-  { label: "Exercise plan", description: "Choose the exercises that support today\'s treatment plan." },
-  { label: "Session summary", description: "Capture outcomes, next steps and publish the patient plan." },
-] as const;
+const SECTION = {
+  assessment: 1,
+  screening: 2,
+  tests: 3,
+  impression: 4,
+  exercises: 5,
+  summary: 6,
+} as const;
+
+type SessionStep = {
+  label: string;
+  description: string;
+  icon: LucideIcon;
+};
+
+const STEPS: SessionStep[] = [
+  { label: "Self-assessment", description: "Review the patient's submitted form and add clinician review notes.", icon: FileText },
+  { label: "Screening", description: "Review safety checks and document any clinical concerns.", icon: ShieldCheck },
+  { label: "Self-check tests", description: "Record the relevant movement and symptom checks.", icon: ClipboardCheck },
+  { label: "Clinical impression", description: "Confirm or dismiss the suggested clinical possibilities.", icon: Stethoscope },
+  { label: "Exercise plan", description: "Choose the exercises that support today's treatment plan.", icon: Dumbbell },
+  { label: "Session summary", description: "Capture outcomes, next steps and publish the patient plan.", icon: NotebookPen },
+];
 
 const CONCERN_TEXT: Record<string, string> = {
   none: "No red flags recorded.",
@@ -86,6 +111,13 @@ const CONCERN_TEXT: Record<string, string> = {
   some: "Several flags recorded — consider whether onward referral is needed.",
   emergency: "Urgent flags recorded. Consider stopping the session and seeking urgent medical advice.",
 };
+
+function recommendedSelfTests(form: PatientAssessmentFormRecord | null): SelfTest[] {
+  if (!form) return selfTests.slice(0, 6);
+  const area = form.bodyArea.toLowerCase();
+  const matched = selfTests.filter((test) => area.includes(test.bodyArea.toLowerCase()));
+  return (matched.length > 0 ? matched : selfTests).slice(0, 6);
+}
 
 export function StartSessionFlow({ bookingId }: Props) {
   const toast = useToast();
@@ -95,15 +127,16 @@ export function StartSessionFlow({ bookingId }: Props) {
   const [form, setForm] = useState<PatientAssessmentFormRecord | null | undefined>(undefined);
   const [record, setRecord] = useState<SessionRecord | null>(null);
   const [step, setStep] = useState(1);
+  const [highestVisitedStep, setHighestVisitedStep] = useState(1);
   const [loading, setLoading] = useState(true);
 
   // Working copies of editable state per step.
   const [flags, setFlags] = useState<AssessmentRedFlags>({ ...defaultRedFlags });
   const [conditionalFlags, setConditionalFlags] = useState<ConditionalRedFlags>({});
+  const [selectedSelfTestSlugs, setSelectedSelfTestSlugs] = useState<string[]>([]);
   const [selfTestResults, setSelfTestResults] = useState<SelfTestResult[]>([]);
   const [diagnosis, setDiagnosis] = useState<(DiagnosisCandidate & { confirmedByAdmin: boolean })[]>([]);
   const [assignedIds, setAssignedIds] = useState<string[]>([]);
-  const [assigningId, setAssigningId] = useState<string | null>(null);
   const [summary, setSummary] = useState<SessionSummaryBlock>({
     painScore: 5,
     recoveryPercent: 50,
@@ -141,6 +174,11 @@ export function StartSessionFlow({ bookingId }: Props) {
       if (!live) return;
       setBooking(b);
       if (!b) { setLoading(false); return; }
+      if (displayBookingStatus(b) === "cancelled") {
+        setForm(null);
+        setLoading(false);
+        return;
+      }
 
       let matchedForm: PatientAssessmentFormRecord | null = null;
       try {
@@ -161,9 +199,25 @@ export function StartSessionFlow({ bookingId }: Props) {
       const rec = await getOrCreateSessionRecord(bookingId, snapshot);
       if (!live) return;
       setRecord(rec);
-      setStep(rec.currentStep || 1);
+      const restoredStep = rec.workflowVersion >= 2
+        ? Math.min(STEPS.length, Math.max(1, rec.currentStep || 1))
+        : Math.min(STEPS.length, Math.max(1, (rec.currentStep || 1) + 1));
+      setStep(restoredStep);
+      setHighestVisitedStep(restoredStep);
+      if (rec.workflowVersion < 2) {
+        try {
+          await updateSessionRecordStep(bookingId, { workflowVersion: 2, currentStep: restoredStep });
+        } catch {
+          /* best effort migration; the session can still be reviewed */
+        }
+      }
       setFlags(rec.redFlagsSnapshot.flags ?? snapshot.flags);
       setConditionalFlags(rec.redFlagsSnapshot.conditionalFlags ?? snapshot.conditionalFlags);
+      setSelectedSelfTestSlugs(
+        rec.selfTestSelectionSaved
+          ? rec.selectedSelfTestSlugs
+          : recommendedSelfTests(matchedForm).map((test) => test.slug),
+      );
       setSelfTestResults(rec.selfTestResults ?? []);
       setDiagnosis(rec.diagnosis ?? []);
       if (rec.summary) setSummary(rec.summary);
@@ -211,16 +265,42 @@ export function StartSessionFlow({ bookingId }: Props) {
     }
   }
 
+  async function saveCurrentSection() {
+    if (step === SECTION.screening) {
+      await updateSessionRecordStep(bookingId, {
+        redFlagsSnapshot: { flags, conditionalFlags },
+      });
+      if (form && riskPlanText !== form.riskPlan) await saveRiskPlan(riskPlanText);
+    }
+    if (step === SECTION.tests) await saveSelfTests();
+    if (step === SECTION.impression) await saveDiagnosis();
+    if (step === SECTION.summary) {
+      await updateSessionRecordStep(bookingId, {
+        summary,
+        safetyNettingProvided,
+        safetyNettingNotes,
+      });
+    }
+  }
+
   async function goToStep(next: number) {
-    setStep(next);
+    const target = Math.min(STEPS.length, Math.max(1, next));
     try {
-      await updateSessionRecordStep(bookingId, { currentStep: next });
+      await saveCurrentSection();
+    } catch {
+      toast.show("Some changes could not be saved. Review this section before publishing.", "warning");
+    }
+    setPresenting(false);
+    setStep(target);
+    setHighestVisitedStep((current) => Math.max(current, target));
+    try {
+      await updateSessionRecordStep(bookingId, { workflowVersion: 2, currentStep: target });
     } catch {
       /* non-fatal — the user can still navigate this session */
     }
   }
 
-  // ── Step 1: Screening ──────────────────────────────────────────────────
+  // ── Screening ───────────────────────────────────────────────────────────
   const concern = useMemo(() => levelOfConcern(flags, conditionalFlags), [flags, conditionalFlags]);
   const relevantGroups = useMemo(
     () => (form?.bodyRegions ? regionToConditionGroups(form.bodyRegions) : (Object.keys(conditionalFlags) as ConditionGroup[])),
@@ -301,12 +381,13 @@ export function StartSessionFlow({ bookingId }: Props) {
   }
 
   // ── Step 2: Self-check tests ─────────────────────────────────────────
-  const candidateTests: SelfTest[] = useMemo(() => {
-    if (!form) return selfTests.slice(0, 6);
-    const area = form.bodyArea.toLowerCase();
-    const matched = selfTests.filter((t) => area.includes(t.bodyArea.toLowerCase()));
-    return matched.length > 0 ? matched : selfTests;
-  }, [form]);
+  const recommendedTests = useMemo(() => recommendedSelfTests(form ?? null), [form]);
+  const candidateTests = useMemo(
+    () => selectedSelfTestSlugs
+      .map((slug) => selfTests.find((test) => test.slug === slug))
+      .filter((test): test is SelfTest => Boolean(test)),
+    [selectedSelfTestSlugs],
+  );
 
   // "Present" mode: a focused, one-test-at-a-time view for screen-sharing to
   // the patient over Zoom/Cal.com during the call — large images + full
@@ -327,7 +408,11 @@ export function StartSessionFlow({ bookingId }: Props) {
   }
 
   async function saveSelfTests() {
-    await updateSessionRecordStep(bookingId, { selfTestResults });
+    await updateSessionRecordStep(bookingId, {
+      selectedSelfTestSlugs,
+      selfTestSelectionSaved: true,
+      selfTestResults,
+    });
   }
 
   // ── Step 3: Differential diagnosis ───────────────────────────────────
@@ -372,28 +457,28 @@ export function StartSessionFlow({ bookingId }: Props) {
     [form, confirmedSlugs, assignedIds]
   );
 
-  async function handleAssignAtSession(exerciseId: string) {
-    if (!patientUid || !personId || !adminUid) {
-      toast.show("Not signed in — please refresh and try again.", "error");
-      return;
-    }
-    setAssigningId(exerciseId);
-    try {
-      await assignExercise(patientUid, personId, exerciseId, adminUid);
-      setAssignedIds((prev) => [...prev, exerciseId]);
-      const updated = record ? [...record.exercisesAssignedAtSession, exerciseId] : [exerciseId];
-      await updateSessionRecordStep(bookingId, { exercisesAssignedAtSession: updated });
-      setRecord((prev) => (prev ? { ...prev, exercisesAssignedAtSession: updated } : prev));
-    } catch {
-      toast.show("Could not assign exercise. Try again.", "error");
-    } finally {
-      setAssigningId(null);
-    }
+  async function handleExerciseAssignmentChange(exerciseId: string, action: "assigned" | "removed") {
+    setAssignedIds((current) =>
+      action === "assigned"
+        ? Array.from(new Set([...current, exerciseId]))
+        : current.filter((id) => id !== exerciseId),
+    );
+
+    const currentSessionIds = record?.exercisesAssignedAtSession ?? [];
+    const updated = action === "assigned"
+      ? Array.from(new Set([...currentSessionIds, exerciseId]))
+      : currentSessionIds.filter((id) => id !== exerciseId);
+    await updateSessionRecordStep(bookingId, { exercisesAssignedAtSession: updated });
+    setRecord((current) => current ? { ...current, exercisesAssignedAtSession: updated } : current);
   }
 
   // ── Step 5: Summary ───────────────────────────────────────────────────
   async function handlePublish() {
     if (!booking || !patientUid || !personId) return;
+    if (!screeningGateSatisfied) {
+      toast.show("Return to Screening and complete the required safety review before publishing.", "error");
+      return;
+    }
     if (!summary.workedOn.trim() || !summary.nextSteps.trim()) {
       toast.show("Fill in both session note fields to publish.", "error");
       return;
@@ -423,7 +508,8 @@ export function StartSessionFlow({ bookingId }: Props) {
       const { summaryId } = await publishSummary(input, idToken);
       await updateSessionRecordStep(bookingId, {
         summary,
-        currentStep: 5,
+        workflowVersion: 2,
+        currentStep: SECTION.summary,
         safetyNettingProvided,
         safetyNettingNotes,
       });
@@ -481,12 +567,45 @@ export function StartSessionFlow({ bookingId }: Props) {
       </div>
     );
   }
+  if (displayBookingStatus(booking) === "cancelled") {
+    return (
+      <div className="panel stack" role="status">
+        <span className="dashboard-status-pill status-cancelled" style={{ alignSelf: "flex-start" }}>Cancelled</span>
+        <h1 style={{ fontSize: "var(--text-xl)", margin: 0 }}>This session cannot be started</h1>
+        <p className="muted" style={{ margin: 0 }}>
+          This booking was cancelled, so no clinical session or treatment record can be created for it.
+        </p>
+        <div>
+          <Link href={`/admin/session/${bookingId}`} className="button small">
+            View booking
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-  const progress = Math.round((step / STEPS.length) * 100);
+  const progress = Math.round((highestVisitedStep / STEPS.length) * 100);
   const currentStep = STEPS[step - 1];
   const patientHref = patientUid
     ? `/admin/patients/${patientUid}${personId && personId !== patientUid ? `?person=${personId}` : ""}`
     : "/admin/patients";
+  const confirmedDiagnosisCount = diagnosis.filter((item) => item.confirmedByAdmin).length;
+
+  function sectionStatus(number: number) {
+    if (number === SECTION.assessment) {
+      if (!form) return "Not submitted";
+      return form.reviewStatus === "awaiting_review" ? "Awaiting review" : "Reviewed";
+    }
+    if (number === SECTION.screening) {
+      if (!form) return "History required";
+      return screeningGateSatisfied ? "Ready" : "Needs attention";
+    }
+    if (number === SECTION.tests) return `${selfTestResults.length} result${selfTestResults.length === 1 ? "" : "s"}`;
+    if (number === SECTION.impression) return `${confirmedDiagnosisCount} confirmed`;
+    if (number === SECTION.exercises) return `${record?.exercisesAssignedAtSession.length ?? 0} assigned`;
+    if (publishedSummaryId) return "Published";
+    return summary.workedOn.trim() || summary.nextSteps.trim() ? "Draft saved" : "Not started";
+  }
 
   return (
     <div className="session-workspace">
@@ -520,14 +639,22 @@ export function StartSessionFlow({ bookingId }: Props) {
           <ol>
             {STEPS.map((item, index) => {
               const number = index + 1;
-              const state = number === step ? "current" : number < step ? "complete" : "upcoming";
+              const state = number === step ? "current" : number <= highestVisitedStep ? "complete" : "upcoming";
+              const Icon = item.icon;
               return (
                 <li key={item.label} className={`session-step-rail__item is-${state}`} aria-current={state === "current" ? "step" : undefined}>
-                  <span className="session-step-rail__number" aria-hidden="true">{state === "complete" ? "✓" : number}</span>
-                  <span>
-                    <strong>{item.label}</strong>
-                    <small>{state === "complete" ? "Completed" : state === "current" ? "In progress" : "Not started"}</small>
-                  </span>
+                  <button
+                    type="button"
+                    className="session-step-rail__button"
+                    aria-label={`Open ${item.label}: ${sectionStatus(number)}`}
+                    onClick={() => void goToStep(number)}
+                  >
+                    <span className="session-step-rail__number" aria-hidden="true"><Icon /></span>
+                    <span>
+                      <strong>{item.label}</strong>
+                      <small>{number === step ? "Open now" : sectionStatus(number)}</small>
+                    </span>
+                  </button>
                 </li>
               );
             })}
@@ -543,7 +670,31 @@ export function StartSessionFlow({ bookingId }: Props) {
 
           <div className="session-stage__body" key={step}>
 
-          {step === 1 && (
+          {step === SECTION.assessment && (
+            <>
+              {form && patientUid && personId ? (
+                <AdminAssessmentReviewItem
+                  patientUid={patientUid}
+                  personId={personId}
+                  form={form}
+                  bookings={[{ id: booking.id, service: booking.service, sessionDate: booking.sessionDate }]}
+                  forceOpen
+                  showExerciseSuggestions={false}
+                  onSaved={(updated) => {
+                    setForm(updated);
+                    setRiskPlanText(updated.riskPlan);
+                  }}
+                />
+              ) : (
+                <div className="session-empty-state">
+                  <strong>No self-assessment submitted</strong>
+                  <span>You can continue the session, but confirm the history and screening details directly with the patient.</span>
+                </div>
+              )}
+            </>
+          )}
+
+          {step === SECTION.screening && (
             <>
               <div className="session-status-row">
                 <div className={`session-concern session-concern--${concern}`} role="status">
@@ -641,71 +792,22 @@ export function StartSessionFlow({ bookingId }: Props) {
             </>
           )}
 
-          {step === 2 && !presenting && (
-            <>
-              <div className="session-section__heading">
-                <div>
-                  <h3>Recommended checks</h3>
-                  <p>Record a result for each test you use. Unused tests can stay blank.</p>
-                </div>
-                {candidateTests.length > 0 && (
-                  <button
-                    type="button"
-                    className="session-text-button"
-                    onClick={() => { setPresentIndex(0); setPresenting(true); }}
-                  >
-                    Present to patient
-                  </button>
-                )}
-              </div>
-              <div className="session-test-grid">
-                {candidateTests.map((t) => {
-                  const current = selfTestResults.find((r) => r.slug === t.slug);
-                  return (
-                    <article key={t.slug} className="session-test-card">
-                      {t.steps[0] && (
-                        <SelfTestImage imageId={t.steps[0].imageId} label={t.name} stepNumber={1} />
-                      )}
-                      <div className="session-test-card__copy">
-                        <h4>{t.name}</h4>
-                        <p>{t.assesses}</p>
-                      </div>
-                      <div className="session-result-control">
-                        <button
-                          type="button"
-                          className="summary-chip"
-                          aria-pressed={current?.result === "positive"}
-                          style={{
-                            background: current?.result === "positive" ? "var(--color-error-light)" : "var(--color-surface)",
-                            color: current?.result === "positive" ? "var(--color-error)" : "var(--color-text-secondary)",
-                            border: `1.5px solid ${current?.result === "positive" ? "var(--color-error)" : "var(--color-border)"}`,
-                          }}
-                          onClick={() => setTestResult(t.slug, "positive", current?.notes)}
-                        >
-                          Positive
-                        </button>
-                        <button
-                          type="button"
-                          className="summary-chip"
-                          aria-pressed={current?.result === "negative"}
-                          style={{
-                            background: current?.result === "negative" ? "var(--color-success-light)" : "var(--color-surface)",
-                            color: current?.result === "negative" ? "var(--color-success)" : "var(--color-text-secondary)",
-                            border: `1.5px solid ${current?.result === "negative" ? "var(--color-success)" : "var(--color-border)"}`,
-                          }}
-                          onClick={() => setTestResult(t.slug, "negative", current?.notes)}
-                        >
-                          Negative
-                        </button>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </>
+          {step === SECTION.tests && !presenting && (
+            <AdminSelfTestSelector
+              recommendedSlugs={recommendedTests.map((test) => test.slug)}
+              selectedSlugs={selectedSelfTestSlugs}
+              results={selfTestResults}
+              onSelectedChange={setSelectedSelfTestSlugs}
+              onResultsChange={setSelfTestResults}
+              onPresent={(slug) => {
+                const index = candidateTests.findIndex((test) => test.slug === slug);
+                setPresentIndex(Math.max(0, index));
+                setPresenting(true);
+              }}
+            />
           )}
 
-          {step === 2 && presenting && presentedTest && (
+          {step === SECTION.tests && presenting && presentedTest && (
             <div className="self-test-present stack">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
                 <span className="muted" style={{ fontSize: "var(--text-sm)" }}>
@@ -788,7 +890,7 @@ export function StartSessionFlow({ bookingId }: Props) {
             </div>
           )}
 
-          {step === 3 && (
+          {step === SECTION.impression && (
             <>
               <div className="session-section__heading">
                 <div>
@@ -824,54 +926,27 @@ export function StartSessionFlow({ bookingId }: Props) {
             </>
           )}
 
-          {step === 4 && (
+          {step === SECTION.exercises && (
             <>
               <div className="session-section__heading">
                 <div>
-                  <h3>Suggested exercises</h3>
-                  <p>Based on the assessment area and confirmed impression. Assignment is immediate.</p>
+                  <h3>Build the patient exercise plan</h3>
+                  <p>Review selected exercises, use condition-based suggestions, or search the complete assignable library.</p>
                 </div>
               </div>
-              <div className="session-exercise-grid">
-                {suggestions.map((s) => (
-                  <article key={s.exercise.id} className="session-exercise-card">
-                    <ExerciseImage exerciseId={s.exercise.id} name={s.exercise.title} pose={s.exercise.pose} size={96} />
-                    <div>
-                      <h4>{s.exercise.title}</h4>
-                      <p>{s.reason}</p>
-                    </div>
-                    <button
-                      type="button"
-                      className="button small secondary"
-                      disabled={assigningId === s.exercise.id}
-                      onClick={() => void handleAssignAtSession(s.exercise.id)}
-                    >
-                      {assigningId === s.exercise.id ? "Assigning..." : "Assign"}
-                    </button>
-                  </article>
-                ))}
-                {suggestions.length === 0 && (
-                  <div className="session-empty-state">
-                    <strong>No further suggestions</strong>
-                    <span>Use the full exercise library below to build the plan.</span>
-                  </div>
-                )}
-              </div>
               {patientUid && personId && adminUid && (
-                <>
-                  <div className="session-section__heading session-section__heading--library">
-                    <div>
-                      <h3>Patient exercise plan</h3>
-                      <p>Review assigned exercises or add a different exercise from the library.</p>
-                    </div>
-                  </div>
-                  <AdminExerciseAssigner adminUid={adminUid} patientUid={patientUid} personId={personId} />
-                </>
+                <AdminExerciseAssigner
+                  adminUid={adminUid}
+                  patientUid={patientUid}
+                  personId={personId}
+                  suggestions={suggestions}
+                  onAssignmentChange={handleExerciseAssignmentChange}
+                />
               )}
             </>
           )}
 
-          {step === 5 && (
+          {step === SECTION.summary && (
             <>
               <div className="summary-fields session-summary-fields">
                 <div>
@@ -1022,11 +1097,7 @@ export function StartSessionFlow({ bookingId }: Props) {
                   <button
                     type="button"
                     className="button primary"
-                    disabled={step === 1 && !screeningGateSatisfied}
-                    title={step === 1 && !screeningGateSatisfied ? "Complete the required screening checks above first" : undefined}
                     onClick={async () => {
-                      if (step === 2) await saveSelfTests();
-                      if (step === 3) await saveDiagnosis();
                       await goToStep(step + 1);
                     }}
                   >
@@ -1042,8 +1113,12 @@ export function StartSessionFlow({ bookingId }: Props) {
                     <button
                       type="button"
                       className="button primary"
-                      disabled={publishing || !safetyNettingProvided || Boolean(publishedSummaryId)}
-                      title={!safetyNettingProvided ? "Confirm safety-netting advice was given first" : undefined}
+                      disabled={publishing || !screeningGateSatisfied || !safetyNettingProvided || Boolean(publishedSummaryId)}
+                      title={!screeningGateSatisfied
+                        ? "Complete the required screening review first"
+                        : !safetyNettingProvided
+                          ? "Confirm safety-netting advice was given first"
+                          : undefined}
                       onClick={() => void handlePublish()}
                     >
                       {publishing ? "Publishing..." : publishedSummaryId ? "Session published" : "Publish session"}

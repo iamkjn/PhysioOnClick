@@ -46,7 +46,7 @@ export function AdminNotificationBell() {
     if (isPast) return;
     if (!n.read) await markAdminNotificationRead(n.id);
     setOpen(false);
-    router.push(`/admin/session/${n.bookingId}`);
+    router.push(`/admin/session/${n.bookingId}#self-assessment`);
   }
 
   return (

@@ -132,6 +132,7 @@ export function BookingStepTime({
   const [checkoutInfo, setCheckoutInfo] = useState<{
     name: string;
     email: string;
+    completedBy: string;
     assessmentUid: string;
     assessmentPersonId: string;
   } | null>(null);
@@ -311,6 +312,7 @@ export function BookingStepTime({
       // guests either sign in to an existing account or create a new one first.
       let attendeeName: string;
       let attendeeEmail: string;
+      let accountUser: User | null = user ?? null;
 
       if (signedIn) {
         attendeeName = (user!.displayName || name.trim());
@@ -342,6 +344,7 @@ export function BookingStepTime({
           try {
             const credential = await signInWithEmailAndPassword(auth, trimmedEmail, password);
             await ensurePatientRecord(credential.user);
+            accountUser = credential.user;
             attendeeName = credential.user.displayName ?? trimmedEmail;
             attendeeEmail = credential.user.email ?? trimmedEmail;
           } catch (authError) {
@@ -358,6 +361,7 @@ export function BookingStepTime({
             const credential = await createUserWithEmailAndPassword(auth, trimmedEmail, password);
             await updateProfile(credential.user, { displayName: trimmedName });
             await ensurePatientRecord(credential.user, trimmedName);
+            accountUser = credential.user;
             attendeeName = trimmedName;
             attendeeEmail = trimmedEmail;
           } catch (authError) {
@@ -417,8 +421,9 @@ export function BookingStepTime({
       setCheckoutInfo({
         name: calBookingName,
         email: attendeeEmail,
-        assessmentUid: user?.uid ?? "",
-        assessmentPersonId: bookingForId ?? user?.uid ?? "",
+        completedBy: attendeeName,
+        assessmentUid: accountUser?.uid ?? "",
+        assessmentPersonId: bookingForId ?? accountUser?.uid ?? "",
       });
       setPhase("assessment");
     } catch {
@@ -466,14 +471,15 @@ export function BookingStepTime({
     }
   }
 
-  if (phase === "assessment" && checkoutInfo && user) {
+  if (phase === "assessment" && checkoutInfo) {
     return (
       <AssessmentWizard
         uid={checkoutInfo.assessmentUid}
         personId={checkoutInfo.assessmentPersonId}
-        displayName={checkoutInfo.name}
-        personName={bookingForId ? bookingForName || "Patient" : checkoutInfo.name}
+        displayName={checkoutInfo.completedBy}
+        personName={bookingForId ? bookingForName || "Patient" : checkoutInfo.completedBy}
         bookingId=""
+        focusAreas={focusAreas}
         onSubmitted={(formId) => startCheckout(formId)}
         redirectingToPayment
       />

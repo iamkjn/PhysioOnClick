@@ -2,10 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('@/lib/firebase', () => ({ db: {} }))
 
-const getDocsMock = vi.fn()
-const whereMock = vi.fn()
-const orderByMock = vi.fn()
-const collectionMock = vi.fn(() => ({}))
+type MockDoc = { id: string; data: () => Record<string, unknown> }
+const getDocsMock = vi.fn(async (..._args: unknown[]): Promise<{ docs: MockDoc[] }> => ({ docs: [] }))
+const whereMock = vi.fn((..._args: unknown[]) => ({}))
+const orderByMock = vi.fn((..._args: unknown[]) => ({}))
+const collectionMock = vi.fn((..._args: unknown[]) => ({}))
 
 vi.mock('firebase/firestore', () => ({
   collection: (...args: unknown[]) => collectionMock(...args),

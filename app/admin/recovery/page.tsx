@@ -71,7 +71,7 @@ export default function AdminRecoveryPage() {
   return (
     <AdminShell backHref="/admin" backLabel="← Back to dashboard">
       <div className="site-shell">
-        <section className="page-section" style={{ paddingBottom: "var(--space-4)" }}>
+        <section className="page-section">
           <span className="dashboard-eyebrow">Admin</span>
           <h1 style={{ margin: "var(--space-1) 0 0", fontFamily: "var(--font-serif)", fontSize: 22, color: "var(--color-navy)" }}>Patient recovery management</h1>
           <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>

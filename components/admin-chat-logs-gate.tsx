@@ -50,7 +50,7 @@ export function AdminChatLogsGate() {
 
   return (
     <AdminShell backHref="/admin" backLabel="← Dashboard">
-      <main style={{ maxWidth: "var(--shell)", margin: "0 auto", padding: "var(--space-6) var(--space-5)" }}>
+      <main className="admin-standard-page">
         <div style={{ marginBottom: "var(--space-5)" }}>
           <span className="dashboard-eyebrow">Admin</span>
           <h1 style={{ margin: "var(--space-1) 0 0", fontFamily: "var(--font-serif)", fontSize: 28, color: "var(--color-navy)" }}>Chat Logs</h1>

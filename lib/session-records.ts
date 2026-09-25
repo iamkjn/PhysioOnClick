@@ -29,10 +29,13 @@ export type SessionSummaryBlock = {
 
 export interface SessionRecord {
   bookingId: string;
+  workflowVersion: number;
   redFlagsSnapshot: {
     flags: AssessmentRedFlags;
     conditionalFlags: ConditionalRedFlags;
   };
+  selectedSelfTestSlugs: string[];
+  selfTestSelectionSaved?: boolean;
   selfTestResults: SelfTestResult[];
   diagnosis: (DiagnosisCandidate & { confirmedByAdmin: boolean })[];
   exercisesAssignedAtSession: string[];
@@ -67,10 +70,15 @@ function toDate(value: unknown): Date | null {
 function mapSessionRecord(id: string, data: Record<string, unknown>): SessionRecord {
   return {
     bookingId: id,
+    workflowVersion: typeof data.workflowVersion === "number" ? data.workflowVersion : 1,
     redFlagsSnapshot: (data.redFlagsSnapshot as SessionRecord["redFlagsSnapshot"]) ?? {
       flags: {} as AssessmentRedFlags,
       conditionalFlags: {},
     },
+    selectedSelfTestSlugs: Array.isArray(data.selectedSelfTestSlugs)
+      ? (data.selectedSelfTestSlugs as string[])
+      : [],
+    selfTestSelectionSaved: data.selfTestSelectionSaved === true,
     selfTestResults: Array.isArray(data.selfTestResults) ? (data.selfTestResults as SelfTestResult[]) : [],
     diagnosis: Array.isArray(data.diagnosis)
       ? (data.diagnosis as SessionRecord["diagnosis"])
@@ -110,9 +118,12 @@ export async function getOrCreateSessionRecord(
   await setDoc(ref, {
     bookingId,
     redFlagsSnapshot: initialRedFlagsSnapshot,
+    selectedSelfTestSlugs: [],
+    selfTestSelectionSaved: false,
     selfTestResults: [],
     diagnosis: [],
     exercisesAssignedAtSession: [],
+    workflowVersion: 2,
     currentStep: 1,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),

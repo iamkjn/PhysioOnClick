@@ -157,7 +157,9 @@ describe("POST /api/payments/webhook", () => {
     const res = await POST(signedRequest(EVENT));
     expect(res.status).toBe(200);
     expect(createCalBooking).not.toHaveBeenCalled();
-    const written = paymentDocRef.set.mock.calls.at(-1)[0];
+    const lastWrite = paymentDocRef.set.mock.calls.at(-1);
+    expect(lastWrite).toBeDefined();
+    const written = lastWrite![0];
     expect(written.status).toBe("slot_unavailable");
   });
 
@@ -176,7 +178,9 @@ describe("POST /api/payments/webhook", () => {
     vi.mocked(createCalBooking).mockResolvedValueOnce({ ok: false, status: 502, error: "x" } as never);
     const res = await POST(signedRequest(EVENT));
     expect(res.status).toBe(200);
-    const written = paymentDocRef.set.mock.calls.at(-1)[0];
+    const lastWrite = paymentDocRef.set.mock.calls.at(-1);
+    expect(lastWrite).toBeDefined();
+    const written = lastWrite![0];
     expect(written.status).toBe("booking_failed");
   });
 

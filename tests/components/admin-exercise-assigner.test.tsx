@@ -1,18 +1,28 @@
-import { render, waitFor, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { render, waitFor, fireEvent, within } from '@testing-library/react'
+import { beforeEach, describe, it, expect, vi } from 'vitest'
 
 const getAssignedExercisesMock = vi.fn()
+const assignExerciseMock = vi.fn().mockResolvedValue(undefined)
+const removeExerciseMock = vi.fn().mockResolvedValue(undefined)
 vi.mock('@/lib/recovery', () => ({
   getAssignedExercises: (...args: unknown[]) => getAssignedExercisesMock(...args),
-  assignExercise: vi.fn(),
-  removeExercise: vi.fn(),
+  assignExercise: (...args: unknown[]) => assignExerciseMock(...args),
+  removeExercise: (...args: unknown[]) => removeExerciseMock(...args),
   setAssignedDosage: (...args: unknown[]) => setAssignedDosageMock(...args),
 }))
 const setAssignedDosageMock = vi.fn().mockResolvedValue(undefined)
 
 import { AdminExerciseAssigner } from '@/components/admin-exercise-assigner'
+import { exercises } from '@/lib/site-data'
 
 describe('AdminExerciseAssigner', () => {
+  beforeEach(() => {
+    getAssignedExercisesMock.mockReset()
+    assignExerciseMock.mockClear()
+    removeExerciseMock.mockClear()
+    setAssignedDosageMock.mockClear()
+  })
+
   it('shows SkeletonRow while the assigned list loads', async () => {
     let resolveAssigned: (v: unknown[]) => void = () => {}
     getAssignedExercisesMock.mockReturnValue(new Promise((resolve) => { resolveAssigned = resolve }))
@@ -28,30 +38,66 @@ describe('AdminExerciseAssigner', () => {
     })
   })
 
-  it('groups the unassigned "Add exercise" list into category subheadings', async () => {
-    // ex-1 is the catalogue's only "Lower limb" exercise (lib/site-data.ts) — assigning
-    // it leaves every other bodyPart (Shoulder, Lumbar spine, Balance, Knee, Hip, Ankle,
-    // Neck, Core, ...) unassigned, so the grouping spans multiple real categories.
+  it('shows selected exercises and the complete assignable gallery together', async () => {
     getAssignedExercisesMock.mockResolvedValue([
       { exerciseId: 'ex-1', assignedAt: new Date(), assignedBy: 'admin-1', active: true },
     ])
 
-    const { container } = render(
+    const { container, getByText, getByRole } = render(
       <AdminExerciseAssigner adminUid="a1" patientUid="p1" personId="p1" />
     )
     await waitFor(() => {
       expect(container.querySelector('.skeleton-row-group')).not.toBeInTheDocument()
     })
 
-    const groupLabels = Array.from(container.querySelectorAll('.assign-group-label')).map(
-      (el) => el.textContent
+    expect(getByText('Exercise plan')).toBeInTheDocument()
+    expect(getByText('All assignable exercises')).toBeInTheDocument()
+    expect(getByRole('button', { name: /remove sit to stand control/i })).toBeInTheDocument()
+    expect(getByRole('button', { name: /assign scapular setting/i })).toBeInTheDocument()
+  })
+
+  it('can cancel a suggestion while keeping it available in the full gallery', async () => {
+    getAssignedExercisesMock.mockResolvedValue([])
+    const suggestion = { exercise: exercises[0], reason: 'Suggested: matches lower limb', score: 3 }
+    const { getByRole, getByText, queryByText } = render(
+      <AdminExerciseAssigner
+        adminUid="a1"
+        patientUid="p1"
+        personId="p1"
+        suggestions={[suggestion]}
+      />
     )
-    expect(groupLabels).toEqual(expect.arrayContaining(['Shoulder', 'Knee', 'Balance']))
-    // "Lower limb" has no unassigned exercises left (ex-1 is assigned), so it must
-    // not get an empty subheading.
-    expect(groupLabels).not.toContain('Lower limb')
-    // Categories are sorted alphabetically (component contract).
-    expect(groupLabels).toEqual([...groupLabels].sort((a, b) => (a as string).localeCompare(b as string)))
+
+    await waitFor(() => expect(getByText('Suggested exercises')).toBeInTheDocument())
+    fireEvent.click(getByRole('button', { name: /cancel sit to stand control suggestion/i }))
+
+    await waitFor(() => expect(queryByText('Suggested exercises')).not.toBeInTheDocument())
+    const card = getByText('Sit to Stand Control').closest('article')
+    expect(card).not.toBeNull()
+    expect(within(card as HTMLElement).getByRole('button', { name: /assign sit to stand control/i })).toBeInTheDocument()
+  })
+
+  it('assigns an exercise from the unified gallery', async () => {
+    getAssignedExercisesMock
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        { exerciseId: 'ex-1', assignedAt: new Date(), assignedBy: 'a1', active: true },
+      ])
+    const onAssignmentChange = vi.fn()
+    const { getByRole } = render(
+      <AdminExerciseAssigner
+        adminUid="a1"
+        patientUid="p1"
+        personId="p1"
+        onAssignmentChange={onAssignmentChange}
+      />
+    )
+
+    await waitFor(() => expect(getByRole('button', { name: /assign sit to stand control/i })).toBeInTheDocument())
+    fireEvent.click(getByRole('button', { name: /assign sit to stand control/i }))
+
+    await waitFor(() => expect(assignExerciseMock).toHaveBeenCalledWith('p1', 'p1', 'ex-1', 'a1'))
+    expect(onAssignmentChange).toHaveBeenCalledWith('ex-1', 'assigned')
   })
 
   it('shows the effective dose on an assigned row and opens an edit form', async () => {

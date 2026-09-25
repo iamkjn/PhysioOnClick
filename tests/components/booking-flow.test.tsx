@@ -8,7 +8,12 @@ const onAuthStateChanged = vi.fn((_auth: unknown, cb: (u: unknown) => void) => {
   return () => {}
 })
 
-vi.mock('@/lib/firebase', () => ({ auth: {}, db: null }))
+vi.mock('@/lib/firebase', () => ({
+  auth: {},
+  db: null,
+  firebaseApp: null,
+  firebaseMeasurementId: '',
+}))
 vi.mock('@/lib/patient-account', () => ({ ensurePatientRecord: vi.fn() }))
 const signInWithEmailAndPassword = vi.fn()
 const createUserWithEmailAndPassword = vi.fn()
@@ -113,11 +118,11 @@ describe('BookingFlow', () => {
     await user.type(screen.getByLabelText('Email'), 'pat@example.com')
     await user.type(screen.getByLabelText('Password'), 'hunter2')
     await user.click(screen.getByRole('checkbox', { name: /consent/i }))
-    await user.click(screen.getByRole('button', { name: /Confirm booking/ }))
+    await user.click(screen.getByRole('button', { name: /Continue to payment/ }))
 
     await waitFor(() => expect(signInWithEmailAndPassword).toHaveBeenCalled())
     expect(signInWithEmailAndPassword.mock.calls[0][1]).toBe('pat@example.com')
-    await waitFor(() => expect(screen.getByText(/booking confirmed/i)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('heading', { name: /Help us prepare for Existing Patient/i })).toBeInTheDocument())
   })
 
   it('disables days with no availability and marks busy times unavailable', async () => {
@@ -213,7 +218,7 @@ describe('BookingFlow', () => {
     await user.click(screen.getByRole('checkbox', { name: /consent/i }))
     expect(confirmButton).toBeEnabled()
 
-    await user.click(confirmButton)
-    await waitFor(() => expect(screen.getByText(/booking confirmed/i)).toBeInTheDocument())
+    await user.click(screen.getByRole('button', { name: /Continue to payment/ }))
+    await waitFor(() => expect(screen.getByRole('heading', { name: /Help us prepare for Alex Morgan/i })).toBeInTheDocument())
   })
 })

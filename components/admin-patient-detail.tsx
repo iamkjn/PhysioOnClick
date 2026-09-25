@@ -300,6 +300,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           key={patientUid}
           uid={patientUid}
           displayName={patient.displayName}
+          label="Viewing records for:"
           initialPersonId={initialPersonId}
           onSelect={(id, name) => setPerson({ id, name })}
           alwaysShow
@@ -348,6 +349,11 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
                 <Link href={`/admin/session/${b.id}`} className="button small">
                   View
                 </Link>
+                {linkedBookingIds.includes(b.id) && (
+                  <Link href={`/admin/session/${b.id}#self-assessment`} className="button small secondary">
+                    Assessment
+                  </Link>
+                )}
                 {status === "upcoming" && b.calBookingUid && (
                   <button
                     type="button"
@@ -407,12 +413,14 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           Awaiting assessment
         </span>
       )}
-      <AdminAssessmentReview
-        patientUid={patientUid}
-        personId={person.id}
-        bookings={assessmentBookings}
-        onFormsChange={setLinkedBookingIds}
-      />
+      <section id="self-assessment-history" className="admin-assessment-anchor">
+        <AdminAssessmentReview
+          patientUid={patientUid}
+          personId={person.id}
+          bookings={assessmentBookings}
+          onFormsChange={setLinkedBookingIds}
+        />
+      </section>
 
       {/* 6. Assigned exercises */}
       {adminUid && (
