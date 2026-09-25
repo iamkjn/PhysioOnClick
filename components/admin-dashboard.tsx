@@ -7,6 +7,7 @@ import {
   Activity,
   ArrowRight,
   BarChart3,
+  BookOpenCheck,
   CalendarCheck2,
   CalendarDays,
   FileText,
@@ -33,6 +34,7 @@ const QUICK_ACTIONS: QuickAction[] = [
   { href: "/admin/sessions", label: "Sessions", detail: "Today and upcoming", icon: CalendarDays },
   { href: "/admin/patients", label: "Patients", detail: "Records and assessments", icon: Users },
   { href: "/admin/recovery", label: "Recovery tools", detail: "Exercises and motion", icon: Activity },
+  { href: "/admin/library", label: "Library", detail: "Exercises and self-tests", icon: BookOpenCheck },
   { href: "/admin/invoices", label: "Invoices", detail: "Billing documents", icon: FileText },
 ];
 

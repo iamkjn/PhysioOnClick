@@ -4709,6 +4709,181 @@ textarea:focus {
   line-height: 1.2;
 }
 
+.admin-library {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.admin-library-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(260px, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.admin-library-search {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0 var(--space-3);
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: white;
+}
+
+.admin-library-search svg {
+  width: 17px;
+  height: 17px;
+  color: #0a77a8;
+}
+
+.admin-library-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #043246;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.admin-library-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.42fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.admin-library-list {
+  max-height: min(72vh, 860px);
+  display: grid;
+  gap: var(--space-2);
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.admin-library-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 82px;
+  padding: var(--space-3);
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.admin-library-row:hover,
+.admin-library-row:focus-visible,
+.admin-library-row.is-selected {
+  border-color: #85d2f2;
+  box-shadow: 0 7px 18px rgba(4, 50, 70, 0.08);
+  transform: translateY(-1px);
+}
+
+.admin-library-row > .exercise-figure-tile,
+.admin-library-row > .exlib-selftest-photo {
+  width: 58px;
+  height: 58px;
+  border-radius: 7px;
+}
+
+.admin-library-row span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.admin-library-row strong {
+  overflow: hidden;
+  color: #043246;
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-library-row small {
+  overflow: hidden;
+  color: #60747d;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-library-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  justify-self: end;
+  padding: 0.34rem 0.55rem;
+  border-radius: 999px;
+  background: #eaf0f2;
+  color: #60747d;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.admin-library-status svg {
+  width: 13px;
+  height: 13px;
+}
+
+.admin-library-status.is-reviewed {
+  background: rgba(5, 150, 105, 0.15);
+  color: var(--color-success);
+}
+
+.admin-library-status.is-needs-review {
+  background: rgba(217, 119, 6, 0.15);
+  color: var(--color-warning);
+}
+
+.admin-library-status.is-draft {
+  background: #eaf7fc;
+  color: #0a77a8;
+}
+
+.admin-library-editor {
+  display: grid;
+  gap: var(--space-4);
+  border-radius: 8px;
+}
+
+.admin-library-editor h2 {
+  margin: var(--space-1) 0 0;
+  color: #043246;
+  font-size: var(--text-lg);
+}
+
+.admin-library-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.admin-library-field {
+  display: grid;
+  gap: 0.45rem;
+  color: #043246;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 750;
+}
+
+.admin-library-field textarea.input {
+  min-height: auto;
+  resize: vertical;
+  line-height: 1.45;
+}
+
 @media (max-width: 1180px) {
   .admin-quick-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4828,7 +5003,9 @@ textarea:focus {
 
   .admin-page-hero,
   .admin-patient-hero,
-  .admin-directory-toolbar {
+  .admin-directory-toolbar,
+  .admin-library-toolbar,
+  .admin-library-layout {
     grid-template-columns: 1fr;
   }
 
@@ -4851,6 +5028,10 @@ textarea:focus {
   .admin-patient-row-actions {
     grid-column: 1 / -1;
     justify-content: flex-start;
+  }
+
+  .admin-library-list {
+    max-height: none;
   }
 }
 
@@ -4900,6 +5081,15 @@ textarea:focus {
 
   .admin-segmented-filter button {
     flex: 1 0 auto;
+  }
+
+  .admin-library-form-grid,
+  .admin-library-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-library-status {
+    justify-self: start;
   }
 }
 

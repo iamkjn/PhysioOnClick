@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   Activity,
   ArrowLeft,
+  BookOpenCheck,
   CalendarDays,
   ExternalLink,
   FileText,
@@ -40,6 +41,7 @@ const PRIMARY_NAV: AdminNavItem[] = [
   { href: "/admin/sessions", label: "Sessions", icon: CalendarDays, aliases: ["/admin/session"] },
   { href: "/admin/patients", label: "Patients", icon: Users },
   { href: "/admin/recovery", label: "Recovery tools", icon: Activity },
+  { href: "/admin/library", label: "Library", icon: BookOpenCheck },
   { href: "/admin/invoices", label: "Invoices", icon: FileText },
 ];
 
