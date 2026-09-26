@@ -62,10 +62,10 @@ describe("BodyChart", () => {
     expect(screen.getByRole("button", { name: /upper back/i })).toBeInTheDocument();
   });
 
-  it("has a Show bones toggle and renders a skeleton layer", () => {
+  it("has the anatomy image and a guide toggle", () => {
     const { container } = render(<BodyChart value={[]} onChange={vi.fn()} />);
-    expect(container.querySelector(".body-chart__skeleton")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /show bones/i }));
+    expect(container.querySelector(".body-chart__anatomy-image")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /show bones guide/i }));
     expect(container.querySelector(".body-chart.show-bones")).toBeInTheDocument();
   });
 

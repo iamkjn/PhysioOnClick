@@ -11316,6 +11316,7 @@ textarea:focus {
   position: relative;
   width: 100%;
   max-width: 300px;
+  aspect-ratio: 1442 / 1256;
 }
 .body-chart__side-labels {
   position: absolute;
@@ -11345,6 +11346,54 @@ textarea:focus {
   height: auto;
   display: block;
   overflow: visible;
+}
+.body-chart__anatomy-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+  filter: saturate(0.96) contrast(1.03);
+}
+.body-chart__zones {
+  position: absolute;
+  inset: 0;
+}
+.body-chart__zone {
+  position: absolute;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 2%, transparent);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+.body-chart__zone:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 72%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+.body-chart__zone.is-selected {
+  border-color: #24a56a;
+  background: color-mix(in srgb, #24a56a 24%, transparent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, #24a56a 12%, transparent);
+}
+.body-chart__zone:focus-visible {
+  outline: none;
+  border-color: var(--color-navy);
+  background: color-mix(in srgb, var(--color-primary) 22%, transparent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+.body-chart.show-bones .body-chart__anatomy-image {
+  filter: saturate(0.75) contrast(1.08) brightness(0.97);
+}
+.body-chart__credit {
+  max-width: 300px;
+  margin: -0.25rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.64rem;
+  line-height: 1.35;
+  text-align: center;
 }
 
 /* skeleton underlay */
@@ -12025,7 +12074,7 @@ textarea:focus {
 }
 
 .assessment-wizard__section .body-chart__figure {
-  max-width: 160px;
+  max-width: 280px;
 }
 
 .assessment-wizard__section .body-chart__view-btn,
@@ -12489,7 +12538,7 @@ textarea:focus {
   }
 
   .assessment-wizard__section .body-chart__figure {
-    max-width: 150px;
+    max-width: 240px;
   }
 
   .assessment-wizard__field--wide,
