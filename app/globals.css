@@ -13082,6 +13082,28 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
 }
 
+.summary-draft-helper {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, #24a56a 24%, var(--color-border));
+  border-radius: 6px;
+  background: color-mix(in srgb, #24a56a 7%, #fff);
+}
+
+.summary-draft-helper p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.summary-draft-helper .session-text-button {
+  min-height: auto;
+  justify-self: start;
+}
+
 .session-confirmation {
   display: flex;
   align-items: flex-start;

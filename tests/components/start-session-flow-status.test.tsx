@@ -105,6 +105,8 @@ describe('StartSessionFlow booking status', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Open Session summary/i }))
     expect(screen.getByRole('heading', { name: 'Session summary' })).toBeInTheDocument()
+    expect(await screen.findByDisplayValue(/Reviewed Initial assessment/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Use suggested text|Refresh from session/i).length).toBeGreaterThan(0)
 
     await userEvent.click(screen.getByRole('button', { name: /Open Screening/i }))
     expect(screen.getByRole('heading', { name: 'Screening' })).toBeInTheDocument()

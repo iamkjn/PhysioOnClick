@@ -49,6 +49,7 @@ import { SelfTestSteps } from "@/components/exercise-library/self-test-steps";
 import { deriveDifferentialDiagnosis, type SelfTestResult, type DiagnosisCandidate } from "@/lib/differential-diagnosis";
 import { suggestExercises } from "@/lib/exercise-suggestions";
 import { getAssignedExercises } from "@/lib/recovery";
+import { exercises } from "@/lib/exercises";
 import { getStreakGoal, setStreakGoal } from "@/lib/goals";
 import { publishSummary, type PublishSummaryInput } from "@/app/admin/actions";
 import { useToast } from "@/components/toast-provider";
@@ -113,6 +114,111 @@ const CONCERN_TEXT: Record<string, string> = {
   emergency: "Urgent flags recorded. Consider stopping the session and seeking urgent medical advice.",
 };
 
+function joinHuman(items: string[], fallback = "not recorded") {
+  const clean = items.map((item) => item.trim()).filter(Boolean);
+  if (clean.length === 0) return fallback;
+  if (clean.length === 1) return clean[0];
+  return `${clean.slice(0, -1).join(", ")} and ${clean[clean.length - 1]}`;
+}
+
+function formatOutcome(outcome: SessionSummaryBlock["sessionOutcome"]) {
+  if (outcome === "setback") return "a setback";
+  return outcome;
+}
+
+function exerciseTitles(ids: string[]) {
+  const unique = Array.from(new Set(ids));
+  return unique
+    .map((id) => exercises.find((exercise) => exercise.id === id)?.title)
+    .filter((title): title is string => Boolean(title));
+}
+
+function testResultLines(results: SelfTestResult[]) {
+  return results.map((result) => {
+    const test = selfTests.find((item) => item.slug === result.slug);
+    const label = test?.name ?? result.slug.replace(/-/g, " ");
+    const note = result.notes?.trim() ? ` (${result.notes.trim()})` : "";
+    return `${label}: ${result.result}${note}`;
+  });
+}
+
+function buildSummaryDraft(input: {
+  booking: BookingRecord | null | undefined;
+  form: PatientAssessmentFormRecord | null | undefined;
+  summary: SessionSummaryBlock;
+  selfTestResults: SelfTestResult[];
+  diagnosis: (DiagnosisCandidate & { confirmedByAdmin: boolean })[];
+  assignedIds: string[];
+  sessionAssignedIds: string[];
+  riskPlanText: string;
+  streakGoal: number;
+}) {
+  const confirmed = input.diagnosis.filter((item) => item.confirmedByAdmin).map((item) => item.label);
+  const testLines = testResultLines(input.selfTestResults);
+  const assignedTitles = exerciseTitles(input.sessionAssignedIds.length > 0 ? input.sessionAssignedIds : input.assignedIds);
+  const patientConcern = input.form?.presentingComplaint || input.form?.bodyArea || input.booking?.service || "the presenting concern";
+  const symptoms = input.form?.symptoms ? ` Patient reported ${input.form.symptoms}.` : "";
+  const functionImpact = input.form?.functionalImpact ? ` Function affected: ${input.form.functionalImpact}.` : "";
+  const clinicalText = confirmed.length > 0
+    ? `Clinical impression reviewed: ${joinHuman(confirmed)}.`
+    : "Clinical impression reviewed and no confirmed differential was recorded yet.";
+  const testText = testLines.length > 0
+    ? ` Self-checks: ${testLines.join("; ")}.`
+    : " Self-check tests were reviewed with no recorded results yet.";
+  const exerciseText = assignedTitles.length > 0
+    ? ` Exercise plan updated with ${joinHuman(assignedTitles)}.`
+    : " Exercise plan to be finalised in the patient app.";
+
+  const workedOn = [
+    `Reviewed ${patientConcern}.`,
+    `Pain today ${input.summary.painScore}/10 with estimated recovery progress at ${input.summary.recoveryPercent}% and session outcome recorded as ${formatOutcome(input.summary.sessionOutcome)}.`,
+    clinicalText,
+    testText.trim(),
+    exerciseText.trim(),
+    symptoms.trim(),
+    functionImpact.trim(),
+  ].filter(Boolean).join(" ");
+
+  const nextSteps = [
+    assignedTitles.length > 0
+      ? `Continue the home exercise plan: ${joinHuman(assignedTitles)}.`
+      : "Continue with the agreed home plan and update exercises once assigned.",
+    input.streakGoal > 0 ? `Aim for a ${input.streakGoal}-day daily exercise streak.` : "Build consistency with short, manageable practice.",
+    input.summary.sessionOutcome === "setback"
+      ? "Reduce aggravating activity temporarily and use symptoms over the next 24-48 hours to guide progression."
+      : "Progress activity gradually as symptoms allow and avoid sharp symptom flare-ups.",
+    input.summary.followUpWeeks > 0
+      ? `Follow-up recommended in ${input.summary.followUpWeeks} week${input.summary.followUpWeeks > 1 ? "s" : ""}.`
+      : "No routine follow-up set today; patient can contact the clinic if symptoms change.",
+  ].join(" ");
+
+  const safety = [
+    "Safety-netting given: seek urgent help for new weakness, numbness around the saddle area, bladder or bowel changes, chest pain, breathlessness, fainting, fever, unexplained worsening pain, or symptoms that feel unsafe.",
+    input.riskPlanText.trim() ? `Clinical safety note: ${input.riskPlanText.trim()}` : "",
+  ].filter(Boolean).join(" ");
+
+  return { workedOn, nextSteps, safety };
+}
+
+function SummaryDraftHelper({
+  text,
+  buttonLabel,
+  onUse,
+}: {
+  text: string;
+  buttonLabel: string;
+  onUse: () => void;
+}) {
+  return (
+    <div className="summary-draft-helper">
+      <p>{text}</p>
+      <button type="button" className="session-text-button" onClick={onUse}>
+        {buttonLabel}
+      </button>
+    </div>
+  );
+}
+
 function recommendedSelfTests(form: PatientAssessmentFormRecord | null): SelfTest[] {
   if (!form) return selfTests.slice(0, 6);
   const area = form.bodyArea.toLowerCase();
@@ -161,10 +267,76 @@ export function StartSessionFlow({ bookingId }: Props) {
   const [savingRiskPlan, setSavingRiskPlan] = useState(false);
   const [safetyNettingProvided, setSafetyNettingProvided] = useState(false);
   const [safetyNettingNotes, setSafetyNettingNotes] = useState("");
+  const [manualSummaryEdits, setManualSummaryEdits] = useState({
+    workedOn: false,
+    nextSteps: false,
+    safetyNettingNotes: false,
+  });
+  const [lastSuggestedSummary, setLastSuggestedSummary] = useState({
+    workedOn: "",
+    nextSteps: "",
+    safety: "",
+  });
 
   const patientUid = booking?.bookedBy ?? form?.submittedByUid ?? "";
   const personId = booking?.patientId ?? patientUid;
   const patientType = personId && patientUid && personId !== patientUid ? "dependent" : "self";
+  const sessionAssignedIds = record?.exercisesAssignedAtSession ?? [];
+
+  const summaryDraft = useMemo(
+    () =>
+      buildSummaryDraft({
+        booking,
+        form,
+        summary,
+        selfTestResults,
+        diagnosis,
+        assignedIds,
+        sessionAssignedIds,
+        riskPlanText,
+        streakGoal,
+      }),
+    [
+      booking,
+      form,
+      summary.painScore,
+      summary.recoveryPercent,
+      summary.sessionOutcome,
+      summary.followUpWeeks,
+      selfTestResults,
+      diagnosis,
+      assignedIds,
+      sessionAssignedIds,
+      riskPlanText,
+      streakGoal,
+    ]
+  );
+
+  useEffect(() => {
+    const draftChanged = summaryDraft.workedOn !== lastSuggestedSummary.workedOn ||
+      summaryDraft.nextSteps !== lastSuggestedSummary.nextSteps ||
+      summaryDraft.safety !== lastSuggestedSummary.safety;
+    if (!draftChanged) return;
+
+    setSummary((current) => {
+      const shouldUpdateWorkedOn = !manualSummaryEdits.workedOn &&
+        (!current.workedOn.trim() || current.workedOn === lastSuggestedSummary.workedOn);
+      const shouldUpdateNextSteps = !manualSummaryEdits.nextSteps &&
+        (!current.nextSteps.trim() || current.nextSteps === lastSuggestedSummary.nextSteps);
+      if (!shouldUpdateWorkedOn && !shouldUpdateNextSteps) return current;
+      return {
+        ...current,
+        workedOn: shouldUpdateWorkedOn ? summaryDraft.workedOn : current.workedOn,
+        nextSteps: shouldUpdateNextSteps ? summaryDraft.nextSteps : current.nextSteps,
+      };
+    });
+    setSafetyNettingNotes((current) => {
+      const shouldUpdateSafety = !manualSummaryEdits.safetyNettingNotes &&
+        (!current.trim() || current === lastSuggestedSummary.safety);
+      return shouldUpdateSafety ? summaryDraft.safety : current;
+    });
+    setLastSuggestedSummary(summaryDraft);
+  }, [summaryDraft, lastSuggestedSummary, manualSummaryEdits]);
 
   // ── Load booking, patient's assessment form, and/or create the session record ──
   useEffect(() => {
@@ -1003,20 +1175,42 @@ export function StartSessionFlow({ bookingId }: Props) {
                 </div>
                 <label>
                   <span className="summary-label">What we worked on today *</span>
+                  <SummaryDraftHelper
+                    text={summaryDraft.workedOn}
+                    buttonLabel={summary.workedOn.trim() ? "Refresh from session" : "Use suggested text"}
+                    onUse={() => {
+                      setSummary((s) => ({ ...s, workedOn: summaryDraft.workedOn }));
+                      setManualSummaryEdits((current) => ({ ...current, workedOn: false }));
+                    }}
+                  />
                   <textarea
                     rows={3}
                     value={summary.workedOn}
-                    onChange={(e) => setSummary((s) => ({ ...s, workedOn: e.target.value }))}
+                    onChange={(e) => {
+                      setManualSummaryEdits((current) => ({ ...current, workedOn: true }));
+                      setSummary((s) => ({ ...s, workedOn: e.target.value }));
+                    }}
                     className="summary-textarea"
                     placeholder="Assessment findings, treatment completed and patient response."
                   />
                 </label>
                 <label>
                   <span className="summary-label">Next steps & advice *</span>
+                  <SummaryDraftHelper
+                    text={summaryDraft.nextSteps}
+                    buttonLabel={summary.nextSteps.trim() ? "Refresh from session" : "Use suggested text"}
+                    onUse={() => {
+                      setSummary((s) => ({ ...s, nextSteps: summaryDraft.nextSteps }));
+                      setManualSummaryEdits((current) => ({ ...current, nextSteps: false }));
+                    }}
+                  />
                   <textarea
                     rows={3}
                     value={summary.nextSteps}
-                    onChange={(e) => setSummary((s) => ({ ...s, nextSteps: e.target.value }))}
+                    onChange={(e) => {
+                      setManualSummaryEdits((current) => ({ ...current, nextSteps: true }));
+                      setSummary((s) => ({ ...s, nextSteps: e.target.value }));
+                    }}
                     className="summary-textarea"
                     placeholder="Home plan, activity advice, precautions and what happens next."
                   />
@@ -1070,9 +1264,20 @@ export function StartSessionFlow({ bookingId }: Props) {
                 <textarea
                   rows={2}
                   value={safetyNettingNotes}
-                  onChange={(e) => setSafetyNettingNotes(e.target.value)}
+                  onChange={(e) => {
+                    setManualSummaryEdits((current) => ({ ...current, safetyNettingNotes: true }));
+                    setSafetyNettingNotes(e.target.value);
+                  }}
                   placeholder="Optional: record the specific advice provided."
                   className="summary-textarea"
+                />
+                <SummaryDraftHelper
+                  text={summaryDraft.safety}
+                  buttonLabel={safetyNettingNotes.trim() ? "Refresh safety text" : "Use suggested safety text"}
+                  onUse={() => {
+                    setSafetyNettingNotes(summaryDraft.safety);
+                    setManualSummaryEdits((current) => ({ ...current, safetyNettingNotes: false }));
+                  }}
                 />
               </div>
 
