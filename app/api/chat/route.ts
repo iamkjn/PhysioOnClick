@@ -74,6 +74,17 @@ async function fetchPatientContext(uid: string): Promise<PatientContext | undefi
 const MAX_MESSAGE_CHARS = 1000;
 const MAX_HISTORY_TEXT_CHARS = 2000;
 
+// Tried in order. Google retires/overloads models without notice, so a busy
+// or removed primary falls through to the next. Both must support the
+// @google/generative-ai function-calling flow below (the newest 3.8 models
+// reject its "function" role and need the @google/genai SDK instead).
+const CHAT_MODELS = ["gemini-3.5-flash", "gemini-3.1-flash-lite"];
+
+function isRetryableModelError(error: unknown): boolean {
+  const text = error instanceof Error ? error.message : String(error);
+  return /\[(404|429|500|503)\b/.test(text);
+}
+
 export async function POST(req: NextRequest) {
   if (await isRateLimited("CHAT_RATE_LIMITER", clientIp(req))) {
     return NextResponse.json(
@@ -125,56 +136,77 @@ export async function POST(req: NextRequest) {
     const toolDeclarations = uid ? AUTH_TOOL_DECLARATIONS : GUEST_TOOL_DECLARATIONS;
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-3.5-flash",
-      systemInstruction: systemPrompt,
-      tools: [{ functionDeclarations: toolDeclarations }],
-    });
 
-    const chat = model.startChat({
-      history: history.map(m => ({
-        role: m.role,
-        parts: [{ text: m.text }],
-      })),
-    });
+    // One model turn plus at most one function call. Re-run from scratch on
+    // the next model if Google is overloaded/unavailable for this one.
+    const runTurn = async (modelName: string) => {
+      actionForClient = undefined;
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction: systemPrompt,
+        tools: [{ functionDeclarations: toolDeclarations }],
+      });
 
-    let result = await chat.sendMessage(message);
-    let response = result.response;
+      const chat = model.startChat({
+        history: history.map(m => ({
+          role: m.role,
+          parts: [{ text: m.text }],
+        })),
+      });
 
-    // Function call loop (handles one call per turn)
-    const calls = response.functionCalls();
-    if (calls?.length) {
-      const call = calls[0];
-      const fnArgs = (call.args ?? {}) as Record<string, string>;
+      let result = await chat.sendMessage(message);
+      let response = result.response;
 
-      if (call.name === "redirect" && fnArgs.url) {
-        actionForClient = {
-          type: call.name,
-          label: fnArgs.label ?? "Go →",
-          url: fnArgs.url,
-        };
-      } else if (call.name === "open_booking") {
-        actionForClient = {
-          type: "open_booking",
-          label: fnArgs.service ? `Book ${fnArgs.service}` : "Book a session",
-          url: "/book",
-        };
-      }
+      // Function call loop (handles one call per turn)
+      const calls = response.functionCalls();
+      if (calls?.length) {
+        const call = calls[0];
+        const fnArgs = (call.args ?? {}) as Record<string, string>;
 
-      const fnResult = db
-        ? await executeFunction(call.name, fnArgs, uid ?? "", db)
-        : JSON.stringify({ error: "Database unavailable" });
+        if (call.name === "redirect" && fnArgs.url) {
+          actionForClient = {
+            type: call.name,
+            label: fnArgs.label ?? "Go →",
+            url: fnArgs.url,
+          };
+        } else if (call.name === "open_booking") {
+          actionForClient = {
+            type: "open_booking",
+            label: fnArgs.service ? `Book ${fnArgs.service}` : "Book a session",
+            url: "/book",
+          };
+        }
 
-      result = await chat.sendMessage([
-        {
-          functionResponse: {
-            name: call.name,
-            response: { result: fnResult },
+        const fnResult = db
+          ? await executeFunction(call.name, fnArgs, uid ?? "", db)
+          : JSON.stringify({ error: "Database unavailable" });
+
+        result = await chat.sendMessage([
+          {
+            functionResponse: {
+              name: call.name,
+              response: { result: fnResult },
+            },
           },
-        },
-      ]);
-      response = result.response;
+        ]);
+        response = result.response;
+      }
+      return response;
+    };
+
+    let response: Awaited<ReturnType<typeof runTurn>> | undefined;
+    let lastError: unknown;
+    for (const modelName of CHAT_MODELS) {
+      try {
+        response = await runTurn(modelName);
+        break;
+      } catch (error) {
+        lastError = error;
+        if (!isRetryableModelError(error)) throw error;
+        console.warn(`[/api/chat] ${modelName} unavailable, trying next model`);
+      }
     }
+    if (!response) throw lastError;
 
     const reply = response.text();
 
