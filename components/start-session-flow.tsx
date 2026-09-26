@@ -281,7 +281,10 @@ export function StartSessionFlow({ bookingId }: Props) {
   const patientUid = booking?.bookedBy ?? form?.submittedByUid ?? "";
   const personId = booking?.patientId ?? patientUid;
   const patientType = personId && patientUid && personId !== patientUid ? "dependent" : "self";
-  const sessionAssignedIds = record?.exercisesAssignedAtSession ?? [];
+  const sessionAssignedIds = useMemo(
+    () => record?.exercisesAssignedAtSession ?? [],
+    [record?.exercisesAssignedAtSession],
+  );
 
   const summaryDraft = useMemo(
     () =>
