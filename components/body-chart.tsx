@@ -14,6 +14,7 @@ interface Props {
   value: string[];
   onChange?: (next: string[]) => void;
   readOnly?: boolean;
+  compactReadOnly?: boolean;
   idPrefix?: string;
 }
 
@@ -88,7 +89,7 @@ const ZONES: Record<ChartView, Record<string, Zone>> = {
   back: BACK_ZONES,
 };
 
-export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }: Props) {
+export function BodyChart({ value, onChange, readOnly = false, compactReadOnly = false, idPrefix = "bc" }: Props) {
   const [view, setView] = useState<ChartView>("front");
   const [showBones, setShowBones] = useState(false);
   const [hover, setHover] = useState<string | null>(null);
@@ -116,6 +117,24 @@ export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }
   }
 
   const chips = value.map((key) => ({ key, label: regionLabel(key) }));
+
+  if (readOnly && compactReadOnly) {
+    return (
+      <div className="body-chart body-chart--readonly-summary">
+        {chips.length > 0 ? (
+          <ul className="body-chart__chips" aria-label="Selected areas">
+            {chips.map((chip) => (
+              <li key={chip.key} className="body-chart__chip">
+                {chip.label}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="muted">No body areas selected.</p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div

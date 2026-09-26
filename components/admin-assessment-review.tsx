@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { auth } from "@/lib/firebase";
 import {
   ASSESSMENT_LIMITS,
+  getPatientAssessmentFormById,
   getPatientAssessmentForms,
   hasUrgentRedFlags,
   updateAssessmentReview,
@@ -307,7 +308,7 @@ export function AdminAssessmentReviewItem({
                 <span>02</span>
                 <div><h3 id={`body-map-${form.id}`}>Body map</h3><p>Areas selected by the patient.</p></div>
               </div>
-              <BodyChart value={form.bodyRegions ?? []} readOnly idPrefix={`rev-${form.id}`} />
+              <BodyChart value={form.bodyRegions ?? []} readOnly compactReadOnly idPrefix={`rev-${form.id}`} />
             </section>
           )}
 
@@ -469,7 +470,15 @@ export function AdminAssessmentReview({
     let live = true;
     setRawForms(null);
     setLoadError(false);
-    getPatientAssessmentForms(patientUid, personId)
+    async function loadForms() {
+      if (formId) {
+        const directForm = await getPatientAssessmentFormById(patientUid, personId, formId);
+        if (directForm) return [directForm];
+      }
+      return getPatientAssessmentForms(patientUid, personId);
+    }
+
+    loadForms()
       .then((records) => {
         if (live) setRawForms(records);
       })
@@ -482,7 +491,7 @@ export function AdminAssessmentReview({
     return () => {
       live = false;
     };
-  }, [patientUid, personId]);
+  }, [patientUid, personId, formId]);
 
   // A cancelled appointment doesn't need its assessment reviewed — drop any
   // form linked to a cancelled booking rather than leaving it stuck in the

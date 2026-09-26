@@ -1,12 +1,14 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { defaultRedFlags, type PatientAssessmentFormRecord } from '@/lib/assessment-forms'
 
 const getPatientAssessmentFormsMock = vi.fn()
+const getPatientAssessmentFormByIdMock = vi.fn()
 vi.mock('@/lib/assessment-forms', async () => {
   const actual = await vi.importActual<typeof import('@/lib/assessment-forms')>('@/lib/assessment-forms')
   return {
     ...actual,
+    getPatientAssessmentFormById: (...args: unknown[]) => getPatientAssessmentFormByIdMock(...args),
     getPatientAssessmentForms: (...args: unknown[]) => getPatientAssessmentFormsMock(...args),
     updateAssessmentReview: vi.fn(),
   }
@@ -20,6 +22,15 @@ vi.mock('@/lib/recovery', () => ({
 }))
 
 import { AdminAssessmentReview } from '@/components/admin-assessment-review'
+
+beforeEach(() => {
+  getPatientAssessmentFormByIdMock.mockReset()
+  getPatientAssessmentFormByIdMock.mockResolvedValue(null)
+  getPatientAssessmentFormsMock.mockReset()
+  getAssignedExercisesMock.mockReset()
+  getAssignedExercisesMock.mockResolvedValue([])
+  assignExerciseMock.mockReset()
+})
 
 function makeForm(overrides: Partial<PatientAssessmentFormRecord> = {}): PatientAssessmentFormRecord {
   return {
@@ -170,6 +181,27 @@ describe('AdminAssessmentReview booking workspace', () => {
     expect(screen.getByText('Medical, safety and access')).toBeInTheDocument()
     expect(container.querySelector('details')).toHaveAttribute('open')
   })
+
+  it('loads a directly linked assessment form without fetching the full history', async () => {
+    getPatientAssessmentFormByIdMock.mockResolvedValue(
+      makeForm({ id: 'form-direct', bookingId: 'booking-b', presentingComplaint: 'Direct linked form' })
+    )
+    getPatientAssessmentFormsMock.mockResolvedValue([])
+
+    render(
+      <AdminAssessmentReview
+        patientUid="patient-1"
+        personId="patient-1"
+        bookingId="booking-b"
+        formId="form-direct"
+        forceOpen
+      />
+    )
+
+    expect(await screen.findByText('Direct linked form')).toBeInTheDocument()
+    expect(getPatientAssessmentFormByIdMock).toHaveBeenCalledWith('patient-1', 'patient-1', 'form-direct')
+    expect(getPatientAssessmentFormsMock).not.toHaveBeenCalled()
+  })
 })
 
 describe('AdminAssessmentReview short (v2.0) forms', () => {
@@ -177,11 +209,9 @@ describe('AdminAssessmentReview short (v2.0) forms', () => {
     getPatientAssessmentFormsMock.mockResolvedValue([
       makeForm({ version: '2.0', bodyRegions: ['neck'] }),
     ])
-    getAssignedExercisesMock.mockResolvedValue([])
-    const { findAllByRole } = render(<AdminAssessmentReview patientUid="p" personId="p" />)
-    const neck = (await findAllByRole('button', { name: /^neck$/i }))[0]
-    expect(neck).toHaveAttribute('aria-pressed', 'true')
-    expect(neck).toHaveAttribute('tabindex', '-1')
+    const { container, findByText } = render(<AdminAssessmentReview patientUid="p" personId="p" />)
+    expect(await findByText('Neck')).toBeInTheDocument()
+    expect(container.querySelector('.body-chart__anatomy-image')).not.toBeInTheDocument()
   })
 
   it('shows "Not provided by patient" for clinician-only fields on a v2.0 form', async () => {

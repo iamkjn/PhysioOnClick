@@ -11502,6 +11502,20 @@ textarea:focus {
   cursor: pointer;
   padding: 0 0.15rem;
 }
+.body-chart--readonly-summary {
+  align-items: flex-start;
+  gap: 0;
+}
+.body-chart--readonly-summary .body-chart__chips {
+  justify-content: flex-start;
+  margin-top: 0;
+}
+.body-chart--readonly-summary .body-chart__chip {
+  background: color-mix(in srgb, #24a56a 14%, #fff);
+  color: #17623f;
+  border: 1px solid color-mix(in srgb, #24a56a 30%, transparent);
+  padding: 0.35rem 0.65rem;
+}
 /* ── Assessment wizard (components/assessment-wizard.tsx) ───────────────── */
 .assessment-wizard {
   display: flex;
