@@ -2,8 +2,7 @@
 // Server-side read of the practice's Trustpilot Business Unit — overall score
 // plus the best recent reviews — for rendering on the marketing site in our
 // own design. Everything here is best-effort: any missing config or API error
-// returns null and callers fall back to the static testimonials in
-// lib/site-data.ts.
+// returns null and the reviews block renders nothing (no placeholder quotes).
 
 const API_BASE = "https://api.trustpilot.com/v1";
 

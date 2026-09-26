@@ -1,11 +1,8 @@
 // components/trustpilot-reviews.tsx
 import { Reveal } from "@/components/reveal";
 import { getTrustpilotSummary } from "@/lib/trustpilot";
-import type { Testimonial } from "@/lib/site-data";
 
 interface Props {
-  // Shown when Trustpilot isn't configured or the API is unreachable.
-  fallback: Testimonial[];
   limit?: number;
 }
 
@@ -21,27 +18,13 @@ function Stars({ value }: { value: number }) {
   );
 }
 
-export async function TrustpilotReviews({ fallback, limit = 4 }: Props) {
+export async function TrustpilotReviews({ limit = 4 }: Props) {
   const summary = await getTrustpilotSummary({ minStars: 4, limit });
 
+  // No genuine reviews to show (Trustpilot not configured, unreachable, or no
+  // 4-5 star reviews yet): render nothing rather than placeholder quotes.
   if (!summary || summary.reviews.length === 0) {
-    return (
-      <div className="home-testimonial-stack">
-        {fallback.slice(0, 2).map((t, i) => (
-          <Reveal key={t.name} direction="up" delay={75 + i * 75}>
-            <blockquote className="card home-testimonial-card">
-              <p>&ldquo;{t.quote}&rdquo;</p>
-              <footer>
-                <strong>{t.name}</strong>
-                <span>
-                  {t.location} &middot; {t.focus}
-                </span>
-              </footer>
-            </blockquote>
-          </Reveal>
-        ))}
-      </div>
-    );
+    return null;
   }
 
   return (

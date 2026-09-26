@@ -431,29 +431,10 @@ export const pricing: PricingItem[] = [
   }
 ];
 
-export const testimonials: Testimonial[] = [
-  {
-    name: "Sarah M.",
-    location: "Glasgow",
-    quote:
-      "The plan was calm, structured and easy to follow. I felt listened to and much more confident after my knee replacement.",
-    focus: "Post-surgical rehabilitation"
-  },
-  {
-    name: "James R.",
-    location: "Edinburgh",
-    quote:
-      "Online appointments were far more thorough than I expected. My back pain improved because the advice was practical and realistic.",
-    focus: "Online physiotherapy"
-  },
-  {
-    name: "Amina K.",
-    location: "Glasgow",
-    quote:
-      "Professional, reassuring and evidence-based. My daughter responded really well to the paediatric sessions.",
-    focus: "Paediatric physiotherapy"
-  }
-];
+// Deliberately empty: only genuine, verifiable patient reviews may appear on the
+// site (fake/placeholder reviews are unlawful under the DMCC Act 2024). Real
+// reviews come from Trustpilot via components/trustpilot-reviews.tsx.
+export const testimonials: Testimonial[] = [];
 
 export const stats = [
   { label: "Years of clinical experience", value: "4+" },

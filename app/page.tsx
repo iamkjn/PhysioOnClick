@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
 
-import { founder, testimonials } from "@/lib/site-data";
+import { founder } from "@/lib/site-data";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
 import { Reveal } from "@/components/reveal";
@@ -67,7 +67,7 @@ export default async function HomePage() {
               </Link>
             </article>
           </Reveal>
-          <TrustpilotReviews fallback={testimonials} />
+          <TrustpilotReviews />
         </div>
       </section>
 

@@ -614,6 +614,12 @@ p {
   margin-top: 1.8rem;
 }
 
+/* No Trustpilot reviews yet: centre the founder card on its own. */
+.home-proof-grid:has(> :only-child) {
+  grid-template-columns: minmax(0, 36rem);
+  justify-content: center;
+}
+
 .home-founder-card {
   display: flex;
   flex-direction: column;
