@@ -131,6 +131,9 @@ export async function POST(req: NextRequest) {
       )
       .slice(-20)
       .map((m) => ({ ...m, text: m.text.slice(0, MAX_HISTORY_TEXT_CHARS) }));
+    // Gemini requires the conversation to start with a user turn; the widget's
+    // opening greeting (and slice(-20) above) can leave model turns first.
+    while (history.length > 0 && history[0].role !== "user") history.shift();
 
     const systemPrompt = buildSystemPrompt(patientContext);
     const toolDeclarations = uid ? AUTH_TOOL_DECLARATIONS : GUEST_TOOL_DECLARATIONS;
