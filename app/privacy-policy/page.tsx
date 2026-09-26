@@ -39,8 +39,7 @@ export default function PrivacyPolicyPage() {
           <h2>Who we are</h2>
           <p>
             PhysioOnClick is operated by Shivaliba Zala (trading as PhysioOnClick), the data controller for
-            all personal data collected through this website and associated services. We are registered with
-            the Information Commissioner&apos;s Office (ICO) as a data controller. Contact:{" "}
+            all personal data collected through this website and associated services. Contact:{" "}
             <a href="mailto:hello@physioonclick.co.uk" style={inlineLinkStyle}>hello@physioonclick.co.uk</a>.
           </p>
           <p>
