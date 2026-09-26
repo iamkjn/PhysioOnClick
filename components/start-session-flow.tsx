@@ -145,7 +145,7 @@ function testResultLines(results: SelfTestResult[]) {
 function buildSummaryDraft(input: {
   booking: BookingRecord | null | undefined;
   form: PatientAssessmentFormRecord | null | undefined;
-  summary: SessionSummaryBlock;
+  summary: Pick<SessionSummaryBlock, "painScore" | "recoveryPercent" | "sessionOutcome" | "followUpWeeks">;
   selfTestResults: SelfTestResult[];
   diagnosis: (DiagnosisCandidate & { confirmedByAdmin: boolean })[];
   assignedIds: string[];
@@ -288,7 +288,12 @@ export function StartSessionFlow({ bookingId }: Props) {
       buildSummaryDraft({
         booking,
         form,
-        summary,
+        summary: {
+          painScore: summary.painScore,
+          recoveryPercent: summary.recoveryPercent,
+          sessionOutcome: summary.sessionOutcome,
+          followUpWeeks: summary.followUpWeeks,
+        },
         selfTestResults,
         diagnosis,
         assignedIds,
