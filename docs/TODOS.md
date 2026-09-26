@@ -2,6 +2,15 @@
 
 Produced by auditing the actual code against every requirement in [docs/PRD.md](PRD.md), file by file — not a restatement of the PRD, only what's missing, contradictory, or needs a decision. Dated 2026-07-10.
 
+## Open — post-launch follow-ups (added 2026-09-26)
+
+- [ ] **Register with the ICO (data protection fee, ~£52/yr Tier 1).** Deferred by owner at launch. Required for a business processing health data. Register at ico.org.uk/fee, then add the `ZA…` number to the "Who we are" section of `app/privacy-policy/page.tsx` (the "registered with the ICO" sentence was removed on 2026-09-26 because it wasn't true yet).
+- [ ] **Show real reviews.** Trustpilot API display needs a paid plan (£119+/mo); currently 1 review. Once there are about 10 good reviews, either add genuine ones by hand (with patient permission and a Trustpilot link) or upgrade and set `TRUSTPILOT_API_KEY` + `TRUSTPILOT_BUSINESS_UNIT_ID`. Never reintroduce placeholder testimonials.
+- [ ] **Full Content-Security-Policy (script/connect/frame allow-list).** Only structural CSP is live (`next.config.mjs`). Build the allow-list for Stripe, Firebase, GA, Trustpilot, Google Fonts and video embeds, then test against a real payment.
+- [ ] **Dependency advisories needing major upgrades:** firebase / firebase-admin chains (websocket-driver, node-forge, @grpc/grpc-js), sharp, postcss via Next 16. None run in the Worker bundle, but upgrade and retest.
+- [ ] **Cloudflare auto-build is disconnected.** Deploys are manual (`npm run deploy`). If Git builds are ever reconnected, first add every `NEXT_PUBLIC_*` from `.env.production` as a Cloudflare build variable, or booking breaks (empty `NEXT_PUBLIC_CAL_USERNAME` returns 503).
+- [ ] **Solicitor review** of `/terms`, `/cancellation-policy` and `/privacy-policy` (drafted 2026-09-26).
+
 ## Critical — resolved (2026-07-12)
 
 - [x] **Orphaned booking pipeline — resolved: deleted.** `components/booking-form.tsx`, `app/api/booking/route.ts`, `lib/google-calendar.ts`, and `app/api/checkout/route.ts` were confirmed to have zero callers anywhere in web or mobile code, and were fully superseded by Cal.com's native Stripe Connect payment flow (confirmed set up: GBP currency, £50/£40 pricing matching the site, "Collect payment on booking" enabled). Deleted all four, plus their now-orphaned tests (`tests/api/booking.test.ts`, `tests/components/booking-form.test.tsx`). This also removes the hardcoded personal-looking email fallback (`hello@physioonclick.co.uk`) and the missing `bookedBy`/`patientId` fields bug that lived in the deleted `/api/booking` route. Verified: `tsc` clean, full test suite passes (20/20), production build succeeds with `/api/booking` and `/api/checkout` no longer in the route list.
