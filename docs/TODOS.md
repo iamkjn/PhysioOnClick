@@ -9,6 +9,7 @@ Produced by auditing the actual code against every requirement in [docs/PRD.md](
 - [ ] **Full Content-Security-Policy (script/connect/frame allow-list).** Only structural CSP is live (`next.config.mjs`). Build the allow-list for Stripe, Firebase, GA, Trustpilot, Google Fonts and video embeds, then test against a real payment.
 - [ ] **Dependency advisories needing major upgrades:** firebase / firebase-admin chains (websocket-driver, node-forge, @grpc/grpc-js), sharp, postcss via Next 16. None run in the Worker bundle, but upgrade and retest.
 - [ ] **Cloudflare auto-build is disconnected.** Deploys are manual (`npm run deploy`). If Git builds are ever reconnected, first add every `NEXT_PUBLIC_*` from `.env.production` as a Cloudflare build variable, or booking breaks (empty `NEXT_PUBLIC_CAL_USERNAME` returns 503).
+- [ ] **Chat assistant SDK upgrade.** `app/api/chat/route.ts` uses the old `@google/generative-ai` SDK with `CHAT_MODELS = ["gemini-3.5-flash", "gemini-3.1-flash-lite"]` (fallback on 404/429/500/503). Google retires models without notice (1.5-flash and 2.5-flash were already gone on 2026-09-26, which broke the live chat). The newest 3.8 models reject the old SDK's `function` role, so migrate to `@google/genai` before these models are retired too.
 - [ ] **Solicitor review** of `/terms`, `/cancellation-policy` and `/privacy-policy` (drafted 2026-09-26).
 
 ## Critical — resolved (2026-07-12)
