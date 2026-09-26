@@ -5,6 +5,7 @@ import { buildSystemPrompt, type PatientContext } from "@/lib/chat-prompt";
 import { AUTH_TOOL_DECLARATIONS, executeFunction, GUEST_TOOL_DECLARATIONS } from "@/lib/chat-tools";
 import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import { formatPersonName } from "@/lib/name-format";
+import { clientIp, isRateLimited } from "@/lib/rate-limit";
 
 type HistoryMessage = { role: "user" | "model"; text: string };
 
@@ -68,7 +69,19 @@ async function fetchPatientContext(uid: string): Promise<PatientContext | undefi
   };
 }
 
+// Caps on what a single request can send to Gemini, so one client can't run
+// up the model bill with huge prompts.
+const MAX_MESSAGE_CHARS = 1000;
+const MAX_HISTORY_TEXT_CHARS = 2000;
+
 export async function POST(req: NextRequest) {
+  if (await isRateLimited("CHAT_RATE_LIMITER", clientIp(req))) {
+    return NextResponse.json(
+      { error: "You're sending messages too quickly. Please wait a minute and try again." },
+      { status: 429 }
+    );
+  }
+
   const body = (await req.json()) as RequestBody;
   const message = typeof body.message === "string" ? body.message.trim() : "";
   const incomingSessionId = typeof body.sessionId === "string" ? body.sessionId : null;
@@ -76,6 +89,12 @@ export async function POST(req: NextRequest) {
 
   if (!message) {
     return NextResponse.json({ error: "message is required" }, { status: 400 });
+  }
+  if (message.length > MAX_MESSAGE_CHARS) {
+    return NextResponse.json(
+      { error: `Please keep messages under ${MAX_MESSAGE_CHARS} characters.` },
+      { status: 400 }
+    );
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
@@ -99,7 +118,8 @@ export async function POST(req: NextRequest) {
           ((m as HistoryMessage).role === "user" || (m as HistoryMessage).role === "model") &&
           typeof (m as HistoryMessage).text === "string"
       )
-      .slice(-20);
+      .slice(-20)
+      .map((m) => ({ ...m, text: m.text.slice(0, MAX_HISTORY_TEXT_CHARS) }));
 
     const systemPrompt = buildSystemPrompt(patientContext);
     const toolDeclarations = uid ? AUTH_TOOL_DECLARATIONS : GUEST_TOOL_DECLARATIONS;

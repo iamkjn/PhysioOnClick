@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
+import { clientIp, isRateLimited } from "@/lib/rate-limit";
 import { LIMITS, validateEmail, validateName, validateRequiredText, validateUKPhone } from "@/lib/validation";
 
 type EnquiryPayload = {
@@ -64,7 +65,21 @@ async function sendNotificationEmail(payload: EnquiryPayload) {
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as Partial<EnquiryPayload>;
+  if (await isRateLimited("FORM_RATE_LIMITER", clientIp(request))) {
+    return NextResponse.json(
+      { error: "Too many enquiries sent. Please wait a minute and try again." },
+      { status: 429 }
+    );
+  }
+
+  const body = (await request.json()) as Partial<EnquiryPayload> & { website?: unknown };
+
+  // Honeypot: the contact form renders a hidden "website" field that people
+  // never see or fill. Bots that auto-fill every input do — pretend success.
+  if (typeof body.website === "string" && body.website.trim() !== "") {
+    return NextResponse.json({ ok: true, saved: true, emailSent: true });
+  }
+
   const payload: EnquiryPayload = {
     name: String(body.name || "").trim(),
     email: String(body.email || "").trim(),

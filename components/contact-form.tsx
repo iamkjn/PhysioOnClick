@@ -76,7 +76,7 @@ export function ContactForm() {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(enquiryPayload)
+          body: JSON.stringify({ ...enquiryPayload, website: String(formData.get("website") || "") })
         });
 
         const result = (await response.json()) as {
@@ -86,6 +86,13 @@ export function ContactForm() {
           emailSent?: boolean;
           emailReason?: string;
         };
+
+        if (response.status === 429) {
+          // Rate limited: tell the visitor rather than falling back to a direct save.
+          setStatus(result.error || "Too many enquiries sent. Please wait a minute and try again.");
+          setStatusTone("error");
+          return;
+        }
 
         if (!response.ok) {
           throw new Error(result.error || "Unable to send enquiry.");
@@ -127,6 +134,13 @@ export function ContactForm() {
     <div className="contact-form-card">
       <h2>Send an Enquiry</h2>
       <form className="contact-form-grid" noValidate onSubmit={handleSubmit}>
+        {/* Honeypot for bots — hidden from people and screen readers. */}
+        <div className="contact-form-honeypot" aria-hidden="true">
+          <label>
+            Website
+            <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+          </label>
+        </div>
         <label>
           Full Name <span aria-hidden="true">*</span>
           <input

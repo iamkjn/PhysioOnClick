@@ -99,10 +99,28 @@ const nextConfig = {
           },
         ],
       },
-      // Deliberately deferred: no Content-Security-Policy in this pass.
-      // This app loads Stripe, Firebase, Google Fonts and Cal.com from
-      // multiple origins; a wrong CSP silently breaks checkout. Needs its
-      // own pass with a real allow-list and testing against a live payment.
+      // Structural Content-Security-Policy only: it does NOT restrict
+      // script/style/connect/img/frame sources. The app loads Stripe,
+      // Firebase, Google Analytics, Trustpilot, Google Fonts and exercise
+      // video embeds from many origins, and a wrong source allow-list
+      // silently breaks checkout — that needs its own pass tested against a
+      // live payment. These directives are safe regardless of origins:
+      //   frame-ancestors 'self'  — clickjacking (modern X-Frame-Options)
+      //   object-src 'none'       — no Flash/plugin injection
+      //   base-uri 'self'         — injected <base> can't hijack relative URLs
+      //   form-action             — forms only post here (Stripe is a JS
+      //                             redirect, listed only as a safety margin)
+      //   upgrade-insecure-requests — never load http:// subresources
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value:
+              "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; upgrade-insecure-requests",
+          },
+        ],
+      },
 
       // --- Caching ---------------------------------------------------------
       // Static marketing pages: cacheable at the edge (s-maxage) but not

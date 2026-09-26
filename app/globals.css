@@ -13910,3 +13910,12 @@ textarea:focus {
     grid-column: 1 / -1;
   }
 }
+
+/* Contact form spam honeypot: off-screen, never visible to people. */
+.contact-form-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

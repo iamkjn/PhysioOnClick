@@ -17,6 +17,7 @@ vi.mock("@/lib/firebase-admin", () => ({
 }));
 
 import { POST } from "@/app/api/enquiry/route";
+import { resetRateLimitMemory } from "@/lib/rate-limit";
 
 const validBody = {
   name: "Jane Smith",
@@ -36,6 +37,7 @@ function makeRequest(body: object): Request {
 
 describe("POST /api/enquiry", () => {
   beforeEach(() => {
+    resetRateLimitMemory();
     vi.unstubAllEnvs();
     adminDbMock = {
       collection: () => ({
@@ -146,5 +148,28 @@ describe("POST /api/enquiry", () => {
     expect(addMock).not.toHaveBeenCalled();
     const data = (await res.json()) as { error: string };
     expect(data.error).toBe("Missing required enquiry fields.");
+  });
+});
+
+describe("POST /api/enquiry abuse protection", () => {
+  beforeEach(() => {
+    resetRateLimitMemory();
+    addMock.mockClear();
+    adminDbMock = { collection: () => ({ add: addMock }) };
+  });
+
+  it("silently accepts but does not save when the honeypot field is filled", async () => {
+    const res = await POST(makeRequest({ ...validBody, website: "http://spam.example" }));
+    expect(res.status).toBe(200);
+    expect(addMock).not.toHaveBeenCalled();
+  });
+
+  it("rate limits a client after 3 enquiries per minute", async () => {
+    const statuses: number[] = [];
+    for (let i = 0; i < 4; i++) {
+      statuses.push((await POST(makeRequest(validBody))).status);
+    }
+    expect(statuses.slice(0, 3).every((s) => s !== 429)).toBe(true);
+    expect(statuses[3]).toBe(429);
   });
 });

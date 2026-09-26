@@ -33,6 +33,13 @@
     "enabled": true
   },
 
+  // Workers Rate Limiting for public endpoints (see lib/rate-limit.ts).
+  // Per client IP; `period` must be 10 or 60 seconds.
+  "ratelimits": [
+    { "name": "CHAT_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 15, "period": 60 } },
+    { "name": "FORM_RATE_LIMITER", "namespace_id": "1002", "simple": { "limit": 3, "period": 60 } }
+  ],
+
   // Non-secret runtime config only. Secrets (CAL_API_KEY, CAL_WEBHOOK_SECRET,
   // GEMINI_API_KEY, RESEND_API_KEY, FIREBASE_SERVICE_ACCOUNT_JSON) are set with
   // `wrangler secret put` / the dashboard and must NEVER be listed here — this
@@ -50,7 +57,7 @@
   // A SEPARATE worker (`physioonclick-dev`) on dev.physioonclick.co.uk, wired
   // to the physioonclick-dev Firebase project and Stripe TEST keys. Deploy with:
   //   npm run deploy:dev      (build injects dev NEXT_PUBLIC_* then deploys -e dev)
-  // `vars`, `services` and `routes` are NOT inherited by environments in
+  // `vars`, `services`, `routes` and `ratelimits` are NOT inherited by environments in
   // wrangler, so they are repeated here on purpose — changing the top-level
   // block alone would leave dev pointing at prod.
   //
@@ -73,6 +80,10 @@
       "observability": {
         "enabled": true
       },
+      "ratelimits": [
+        { "name": "CHAT_RATE_LIMITER", "namespace_id": "2001", "simple": { "limit": 15, "period": 60 } },
+        { "name": "FORM_RATE_LIMITER", "namespace_id": "2002", "simple": { "limit": 3, "period": 60 } }
+      ],
       "vars": {
         "FIREBASE_ADMIN_PROJECT_ID": "physioonclick-dev",
         "FIREBASE_ADMIN_STORAGE_BUCKET": "physioonclick-dev.firebasestorage.app"
