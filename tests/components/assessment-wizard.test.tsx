@@ -150,8 +150,14 @@ describe("AssessmentWizard", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: /^neck$/i }));
-    fireEvent.keyDown(story, { key: "Tab", code: "Tab" });
-    expect(story.value).toMatch(/neck|posture|nerve/i);
+    await waitFor(() => expect(story.value).toMatch(/neck|posture|nerve/i));
+
+    fireEvent.click(screen.getByRole("button", { name: /right shoulder/i }));
+    await waitFor(() => {
+      expect(story.value).toMatch(/neck/i);
+      expect(story.value).toMatch(/shoulder/i);
+      expect(story.value).toMatch(/combination|overload|stiffness/i);
+    });
     expect(screen.getByText(/suggested from your selected area/i)).toBeInTheDocument();
   });
 

@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import { BodyChart } from "@/components/body-chart";
 import { useToast } from "@/components/toast-provider";
@@ -210,6 +210,13 @@ function suggestionCategory(regions: string[], focusAreas: FocusArea[]) {
 
 function suggestedAssessmentCopy(regions: string[], focusAreas: FocusArea[]) {
   const area = regions.length > 0 ? describeRegions(regions) : focusAreas.join(", ") || "this area";
+  const selectedCount = regions.length || focusAreas.length;
+  if (selectedCount > 1) {
+    return {
+      story: `I have symptoms around ${area}. It may be linked to a combination of strain, overload, stiffness, joint or tendon irritation, posture, or nerve sensitivity. I am avoiding sharp painful movements, sudden increases in activity and pushing through pain until I am assessed.`,
+      impact: "It is stopping me from normal daily activities, sleep, work, driving, exercise, sport or hobbies depending on which area is most irritated.",
+    };
+  }
   const category = suggestionCategory(regions, focusAreas);
   const copies: Record<string, { story: string; impact: string }> = {
     "back-neck": {
@@ -284,6 +291,7 @@ export function AssessmentWizard({
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [awaitingPayment, setAwaitingPayment] = useState(false);
+  const acceptedSuggestion = useRef({ story: "", impact: "" });
 
   const step = STEPS[stepIdx]!.id;
   const patch = (next: Partial<WizardState>) => setState((current) => ({
@@ -391,6 +399,26 @@ export function AssessmentWizard({
     }
   }, [state, hydrated, uid, personId, bookingId]);
 
+  useEffect(() => {
+    if (!hydrated || !hasSuggestion) return;
+    setState((current) => {
+      const previous = acceptedSuggestion.current;
+      const nextStory = previous.story && current.story === previous.story ? currentSuggestion.story : current.story;
+      const nextImpact = previous.impact && current.impact === previous.impact ? currentSuggestion.impact : current.impact;
+      acceptedSuggestion.current = {
+        story: nextStory === currentSuggestion.story ? currentSuggestion.story : previous.story,
+        impact: nextImpact === currentSuggestion.impact ? currentSuggestion.impact : previous.impact,
+      };
+      if (nextStory === current.story && nextImpact === current.impact) return current;
+      return {
+        ...current,
+        story: nextStory,
+        impact: nextImpact,
+        signature: current.signature ? "" : current.signature,
+      };
+    });
+  }, [currentSuggestion.story, currentSuggestion.impact, hasSuggestion, hydrated]);
+
   function goToStep(index: number) {
     if (index < 0 || index >= STEPS.length) return;
     setStepIdx(index);
@@ -401,6 +429,10 @@ export function AssessmentWizard({
     const suggestion = currentSuggestion[field].trim();
     if (!hasSuggestion || !suggestion || state[field] === suggestion) return;
     event.preventDefault();
+    acceptedSuggestion.current = {
+      ...acceptedSuggestion.current,
+      [field]: suggestion,
+    };
     patch({ [field]: suggestion });
   }
 
