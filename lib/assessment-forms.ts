@@ -289,6 +289,8 @@ export interface PatientAssessmentFormInput {
   consultationMode: ConsultationMode;
   completedVia: AssessmentCompletionMethod;
   patientName: string;
+  patientDob?: string;
+  patientAge?: number | null;
   completedBy: string;
   relationshipToPatient: string;
   presentingComplaint: string;
@@ -677,6 +679,8 @@ function mapAssessmentForm(snap: QueryDocumentSnapshot | DocumentSnapshot): Pati
     consultationMode: asConsultationMode(data.consultationMode),
     completedVia: asCompletionMethod(data.completedVia),
     patientName: formatPersonName(readString(data, "patientName")),
+    patientDob: readString(data, "patientDob"),
+    patientAge: readNumber(data, "patientAge", -1) >= 0 ? readNumber(data, "patientAge", -1) : null,
     completedBy: formatPersonName(readString(data, "completedBy"), ""),
     relationshipToPatient: readString(data, "relationshipToPatient"),
     presentingComplaint: readString(data, "presentingComplaint"),

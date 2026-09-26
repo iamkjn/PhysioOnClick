@@ -12,6 +12,7 @@ import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
 import { auth, db } from "@/lib/firebase";
 import { ensurePatientRecord } from "@/lib/patient-account";
+import { getPatientPersonDob } from "@/lib/patient-person";
 import type { Dependent } from "@/lib/dependents";
 import type { CalService, FocusArea } from "@/lib/cal-services";
 import type { PricingItem } from "@/lib/site-data";
@@ -124,6 +125,7 @@ export function BookingStepTime({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [consent, setConsent] = useState(false);
+  const [selfDob, setSelfDob] = useState("");
 
   // Once account + slot are settled we collect the pre-payment self-assessment
   // (see AssessmentWizard below) before ever hitting Stripe — so a physio has
@@ -134,6 +136,7 @@ export function BookingStepTime({
     name: string;
     email: string;
     completedBy: string;
+    personDob: string;
     assessmentUid: string;
     assessmentPersonId: string;
   } | null>(null);
@@ -150,6 +153,24 @@ export function BookingStepTime({
     setName(formatPersonName(user.displayName, ""));
     setEmail(user.email ?? "");
     if (!user.displayName) setEditingDetails(true);
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      setSelfDob("");
+      return;
+    }
+    let cancelled = false;
+    getPatientPersonDob(user.uid, user.uid)
+      .then((dob) => {
+        if (!cancelled) setSelfDob(dob);
+      })
+      .catch(() => {
+        if (!cancelled) setSelfDob("");
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   useEffect(() => {
@@ -413,6 +434,9 @@ export function BookingStepTime({
       // have none). Format keeps the payer visible: "Anish George (booked by
       // Seena George)".
       const bookingForDependent = signedIn && Boolean(bookingForId) && bookingForId !== user!.uid;
+      const selectedDependentDob = bookingForDependent
+        ? dependents.find((dependent) => dependent.id === bookingForId)?.dob ?? ""
+        : "";
       const calBookingName = bookingForDependent
         ? `${formatPersonName(bookingForName)} (booked by ${attendeeName})`
         : attendeeName;
@@ -423,6 +447,7 @@ export function BookingStepTime({
         name: calBookingName,
         email: attendeeEmail,
         completedBy: attendeeName,
+        personDob: bookingForDependent ? selectedDependentDob : selfDob,
         assessmentUid: accountUser?.uid ?? "",
         assessmentPersonId: bookingForId ?? accountUser?.uid ?? "",
       });
@@ -479,6 +504,7 @@ export function BookingStepTime({
         personId={checkoutInfo.assessmentPersonId}
         displayName={checkoutInfo.completedBy}
         personName={bookingForId ? formatPersonName(bookingForName) : checkoutInfo.completedBy}
+        personDob={checkoutInfo.personDob}
         bookingId=""
         focusAreas={focusAreas}
         onSubmitted={(formId) => startCheckout(formId)}

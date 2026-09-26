@@ -17,6 +17,7 @@ import { suggestExercises } from "@/lib/exercise-suggestions";
 import { SuggestedExercises } from "@/components/suggested-exercises";
 import { BodyChart } from "@/components/body-chart";
 import { assignExercise, getAssignedExercises } from "@/lib/recovery";
+import { formatAge } from "@/lib/age";
 
 interface LinkedBooking {
   id: string;
@@ -74,6 +75,13 @@ const clinicalAreaLabels: Record<PatientAssessmentFormRecord["subjective"]["clin
   paediatric: "Paediatric assessment",
   general: "General or not sure",
 };
+
+function patientNameWithAge(form: PatientAssessmentFormRecord) {
+  const age = typeof form.patientAge === "number"
+    ? `${form.patientAge} yr${form.patientAge === 1 ? "" : "s"}`
+    : formatAge(form.patientDob);
+  return age ? `${form.patientName} · Age ${age}` : form.patientName;
+}
 
 function formatDate(date: Date | null) {
   if (!date) return "Date not recorded";
@@ -280,7 +288,7 @@ export function AdminAssessmentReviewItem({
               <div><h3 id={`story-${form.id}`}>Presenting story</h3><p>What the patient reported and how symptoms behave.</p></div>
             </div>
             <dl className="assessment-detail-grid">
-              <div><dt>Patient</dt><dd>{form.patientName}</dd></div>
+              <div><dt>Patient</dt><dd>{patientNameWithAge(form)}</dd></div>
               <div><dt>Completed by</dt><dd>{form.completedBy} ({form.relationshipToPatient || "relationship not recorded"})</dd></div>
               <div><dt>Started</dt><dd>{form.symptomStartDate || "Not recorded"} ({form.onsetPattern.replace("_", " ")})</dd></div>
               <div><dt>Clinical area</dt><dd>{clinicalAreaLabels[form.subjective.clinicalArea]}</dd></div>

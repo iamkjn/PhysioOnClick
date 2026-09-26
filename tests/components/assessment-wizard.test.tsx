@@ -15,7 +15,7 @@ vi.mock("@/lib/assessment-forms", async () => {
 
 import { AssessmentWizard } from "@/components/assessment-wizard";
 
-function renderWizard(focusAreas: Array<"Back & neck" | "Shoulder"> = []) {
+function renderWizard(focusAreas: Array<"Back & neck" | "Shoulder"> = [], personDob = "") {
   const onSubmitted = vi.fn();
   render(
     <AssessmentWizard
@@ -23,6 +23,7 @@ function renderWizard(focusAreas: Array<"Back & neck" | "Shoulder"> = []) {
       personId="self"
       displayName="Jane Doe"
       personName="Jane Doe"
+      personDob={personDob}
       bookingId="bk1"
       focusAreas={focusAreas}
       onSubmitted={onSubmitted}
@@ -76,6 +77,18 @@ describe("AssessmentWizard", () => {
     await waitForWizard();
     expect(screen.getByText(/already added from your booking/i)).toBeInTheDocument();
     expect(screen.getByText("Back & neck, Shoulder")).toBeInTheDocument();
+  });
+
+  it("shows and stores the patient age when date of birth is available", async () => {
+    renderWizard([], "1990-01-01");
+    await completeHappyPath();
+    expect(screen.getByText(/for jane doe.*age/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /submit assessment/i }));
+
+    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
+    const [, , input] = submitMock.mock.calls[0];
+    expect(input.patientDob).toBe("1990-01-01");
+    expect(input.patientAge).toEqual(expect.any(Number));
   });
 
   it("keeps the first stage blocked until the concern is complete", async () => {

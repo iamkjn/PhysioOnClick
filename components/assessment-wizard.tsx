@@ -38,6 +38,7 @@ import {
   describeRegions,
   type HowLong,
 } from "@/lib/body-chart";
+import { calcAge, formatAge } from "@/lib/age";
 import type { FocusArea } from "@/lib/cal-services";
 import { formatPersonName } from "@/lib/name-format";
 import { regionToConditionGroups } from "@/lib/red-flag-groups";
@@ -48,6 +49,7 @@ interface Props {
   personId: string;
   displayName: string;
   personName: string;
+  personDob?: string;
   bookingId: string;
   formType?: AssessmentFormType;
   focusAreas?: FocusArea[];
@@ -263,6 +265,7 @@ export function AssessmentWizard({
   personId,
   displayName,
   personName,
+  personDob = "",
   bookingId,
   formType = "initial",
   focusAreas = [],
@@ -272,6 +275,8 @@ export function AssessmentWizard({
   const toast = useToast();
   const displayPersonName = formatPersonName(personName);
   const displayCompletedBy = formatPersonName(displayName);
+  const patientAge = calcAge(personDob);
+  const patientAgeLabel = formatAge(personDob);
   const [stepIdx, setStepIdx] = useState(0);
   const [state, setState] = useState<WizardState>(INITIAL);
   const [hydrated, setHydrated] = useState(false);
@@ -458,6 +463,8 @@ export function AssessmentWizard({
       consultationMode: "online",
       completedVia: "online_form",
       patientName: displayPersonName,
+      patientDob: personDob,
+      patientAge,
       completedBy: displayCompletedBy,
       relationshipToPatient: displayPersonName === displayCompletedBy ? "self" : "",
       presentingComplaint: state.story.trim(),
@@ -568,7 +575,7 @@ export function AssessmentWizard({
           <p>Short, secure and saved as you go. Open any section to review or change your answers before submitting.</p>
         </div>
         <div className="assessment-wizard__header-meta" aria-label="Assessment context">
-          <span>For {displayPersonName}</span>
+          <span>For {displayPersonName}{patientAgeLabel ? ` · Age ${patientAgeLabel}` : ""}</span>
           <span>About 3 minutes</span>
         </div>
       </header>

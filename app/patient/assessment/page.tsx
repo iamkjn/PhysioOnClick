@@ -13,6 +13,7 @@ import { useToast } from "@/components/toast-provider";
 import { getPatientBookings } from "@/lib/patient-bookings";
 import { selectTargetBooking, type GateBooking } from "@/lib/assessment-gate";
 import { formatPersonName } from "@/lib/name-format";
+import { getPatientPersonDob } from "@/lib/patient-person";
 
 function AssessmentPageInner() {
   const router = useRouter();
@@ -22,6 +23,7 @@ function AssessmentPageInner() {
   const toast = useToast();
   const [uid, setUid] = useState<string | null | undefined>(undefined);
   const [displayName, setDisplayName] = useState("");
+  const [personDob, setPersonDob] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
   const [target, setTarget] = useState<GateBooking | null | undefined>(undefined);
 
@@ -49,6 +51,14 @@ function AssessmentPageInner() {
   useEffect(() => {
     if (!uid || !personId) return;
     let cancelled = false;
+    setPersonDob("");
+    getPatientPersonDob(uid, personId)
+      .then((dob) => {
+        if (!cancelled) setPersonDob(dob);
+      })
+      .catch(() => {
+        if (!cancelled) setPersonDob("");
+      });
     setTarget(undefined);
     getPatientBookings(uid, personId)
       .then((bookings) => {
@@ -133,6 +143,7 @@ function AssessmentPageInner() {
             personId={personId as string}
             displayName={displayName}
             personName={personName}
+            personDob={personDob}
             bookingId={target.id}
             onSubmitted={handleSubmitted}
           />
