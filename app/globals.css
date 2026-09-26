@@ -12057,6 +12057,17 @@ textarea:focus {
   color: #043246;
 }
 
+.assessment-wizard__suggestion-preview {
+  display: block;
+  padding: 0.55rem 0.65rem;
+  border: 1px dashed #b8dce8;
+  border-radius: 8px;
+  background: #f8fdff;
+  color: #55727c;
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
 .assessment-wizard__field--wide {
   grid-column: 1 / -1;
 }

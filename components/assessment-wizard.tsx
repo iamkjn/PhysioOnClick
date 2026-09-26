@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import { BodyChart } from "@/components/body-chart";
 import { useToast } from "@/components/toast-provider";
@@ -284,7 +284,6 @@ export function AssessmentWizard({
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [awaitingPayment, setAwaitingPayment] = useState(false);
-  const lastAutoSuggestion = useRef({ key: "", story: "", impact: "" });
 
   const step = STEPS[stepIdx]!.id;
   const patch = (next: Partial<WizardState>) => setState((current) => ({
@@ -308,6 +307,7 @@ export function AssessmentWizard({
     () => suggestionKey(state.regions, focusAreas),
     [state.regions, focusAreas],
   );
+  const hasSuggestion = currentSuggestionKey !== "";
 
   const safetyItems = useMemo(() => {
     const seen = new Set<string>();
@@ -391,30 +391,17 @@ export function AssessmentWizard({
     }
   }, [state, hydrated, uid, personId, bookingId]);
 
-  useEffect(() => {
-    if (!hydrated || currentSuggestionKey === "") return;
-    setState((current) => {
-      const previous = lastAutoSuggestion.current;
-      const shouldUpdateStory = current.story.trim() === "" || current.story === previous.story;
-      const shouldUpdateImpact = current.impact.trim() === "" || current.impact === previous.impact;
-      lastAutoSuggestion.current = {
-        key: currentSuggestionKey,
-        story: currentSuggestion.story,
-        impact: currentSuggestion.impact,
-      };
-      if (!shouldUpdateStory && !shouldUpdateImpact) return current;
-      return {
-        ...current,
-        story: shouldUpdateStory ? currentSuggestion.story : current.story,
-        impact: shouldUpdateImpact ? currentSuggestion.impact : current.impact,
-        signature: current.signature ? "" : current.signature,
-      };
-    });
-  }, [currentSuggestion.story, currentSuggestion.impact, currentSuggestionKey, hydrated]);
-
   function goToStep(index: number) {
     if (index < 0 || index >= STEPS.length) return;
     setStepIdx(index);
+  }
+
+  function acceptSuggestionOnTab(event: KeyboardEvent<HTMLTextAreaElement>, field: "story" | "impact") {
+    if (event.key !== "Tab" || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return;
+    const suggestion = currentSuggestion[field].trim();
+    if (!hasSuggestion || !suggestion || state[field] === suggestion) return;
+    event.preventDefault();
+    patch({ [field]: suggestion });
   }
 
   function toggleSafetyItem(item: SafetyItem) {
@@ -641,7 +628,7 @@ export function AssessmentWizard({
               {(state.regions.length > 0 || focusAreas.length > 0) ? (
                 <div className="assessment-wizard__suggestion-note assessment-wizard__field--wide" role="note">
                   <strong>Suggested from your selected area</strong>
-                  <span>We have added likely causes and precautions to save typing. Please edit the text so it matches exactly what is happening for you.</span>
+                  <span>Press Tab inside either text box to use its suggestion, then edit the wording so it matches exactly what is happening for you.</span>
                 </div>
               ) : null}
 
@@ -653,8 +640,14 @@ export function AssessmentWizard({
                   maxLength={ASSESSMENT_LIMITS.symptoms}
                   value={state.story}
                   onChange={(event) => patch({ story: event.target.value })}
+                  onKeyDown={(event) => acceptSuggestionOnTab(event, "story")}
                   placeholder="For example: a sharp pain in my right shoulder when I lift my arm overhead."
                 />
+                {hasSuggestion ? (
+                  <small className="assessment-wizard__suggestion-preview">
+                    Suggested: {currentSuggestion.story}
+                  </small>
+                ) : null}
               </label>
 
               <fieldset className="assessment-wizard__chips assessment-wizard__field--wide">
@@ -694,8 +687,14 @@ export function AssessmentWizard({
                   maxLength={ASSESSMENT_LIMITS.functionalImpact}
                   value={state.impact}
                   onChange={(event) => patch({ impact: event.target.value })}
+                  onKeyDown={(event) => acceptSuggestionOnTab(event, "impact")}
                   placeholder="For example: sleeping on that side, driving or going to the gym."
                 />
+                {hasSuggestion ? (
+                  <small className="assessment-wizard__suggestion-preview">
+                    Suggested: {currentSuggestion.impact}
+                  </small>
+                ) : null}
               </label>
             </div>
           </AssessmentStage>

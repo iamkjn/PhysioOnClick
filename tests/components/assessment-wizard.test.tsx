@@ -130,26 +130,28 @@ describe("AssessmentWizard", () => {
     expect(screen.queryByLabelText(/type confirm to submit/i)).not.toBeInTheDocument();
   });
 
-  it("prefills editable concern text from the booking focus and selected body area", async () => {
+  it("adds editable suggestion text with Tab from the booking focus and selected body area", async () => {
     renderWizard(["Shoulder"]);
     await waitForWizard();
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/what.s going on/i)).toHaveValue();
-    });
-    expect(screen.getByLabelText<HTMLInputElement | HTMLTextAreaElement>(/what.s going on/i).value).toMatch(
+    const story = screen.getByLabelText<HTMLTextAreaElement>(/what.s going on/i);
+    const impact = screen.getByLabelText<HTMLTextAreaElement>(/what is it stopping you doing/i);
+    expect(story).toHaveValue("");
+    expect(impact).toHaveValue("");
+    expect(screen.getByText(/press tab inside either text box/i)).toBeInTheDocument();
+
+    fireEvent.keyDown(story, { key: "Tab", code: "Tab" });
+    fireEvent.keyDown(impact, { key: "Tab", code: "Tab" });
+    expect(story.value).toMatch(
       /shoulder|rotator cuff|tendon/i,
     );
-    expect(screen.getByLabelText<HTMLInputElement | HTMLTextAreaElement>(/what is it stopping you doing/i).value).toMatch(
+    expect(impact.value).toMatch(
       /reaching overhead|lifting/i,
     );
 
     fireEvent.click(screen.getByRole("button", { name: /^neck$/i }));
-    await waitFor(() => {
-      expect(screen.getByLabelText<HTMLInputElement | HTMLTextAreaElement>(/what.s going on/i).value).toMatch(
-        /neck|posture|nerve/i,
-      );
-    });
+    fireEvent.keyDown(story, { key: "Tab", code: "Tab" });
+    expect(story.value).toMatch(/neck|posture|nerve/i);
     expect(screen.getByText(/suggested from your selected area/i)).toBeInTheDocument();
   });
 
