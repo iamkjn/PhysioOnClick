@@ -33,7 +33,7 @@ describe('Terms & Conditions page', () => {
     for (const link of emailLinks) {
       expect(link).toHaveAttribute('href', 'mailto:hello@physioonclick.co.uk')
     }
-    const cancellationLinks = screen.getAllByRole('link', { name: /cancellation policy/i })
+    const cancellationLinks = screen.getAllByRole('link', { name: /cancellation & refund policy/i })
     expect(cancellationLinks).toHaveLength(2)
     for (const link of cancellationLinks) {
       expect(link).toHaveAttribute('href', '/cancellation-policy')

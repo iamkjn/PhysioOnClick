@@ -26,7 +26,7 @@ export default function TermsPage() {
         <div className="page-hero-aside">
           <strong>Last updated</strong>
           <p className="muted">
-            <time dateTime="2026-06">June 2026</time>
+            <time dateTime="2026-09">September 2026</time>
           </p>
         </div>
       </section>
@@ -86,11 +86,15 @@ export default function TermsPage() {
         <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Payment &amp; cancellation</h2>
           <p>
-            Payment is taken at the time of the appointment, not online. Please provide at least 24 hours&apos;
-            notice to cancel or rearrange. Late cancellations and non-attendance may be charged in full.
-            See our{" "}
-            <Link href="/cancellation-policy" style={inlineLinkStyle}>Cancellation Policy</Link> for full
-            details.
+            Appointments and packages are paid for online when you book, through our secure payment provider,
+            Stripe. We never see or store your full card details. Your appointment is confirmed once payment
+            has gone through, and you will receive a receipt by email that you can use for insurance claims.
+          </p>
+          <p>
+            Please give at least 24 hours&apos; notice to cancel or rearrange. Cancellations with enough notice
+            are refunded in full; late cancellations and missed appointments are not normally refunded. See our{" "}
+            <Link href="/cancellation-policy" style={inlineLinkStyle}>Cancellation &amp; Refund Policy</Link> for
+            full details.
           </p>
         </article>
 
@@ -101,7 +105,7 @@ export default function TermsPage() {
             the Consumer Contracts Regulations 2013. If you ask us to begin your consultation within that
             period and it is fully carried out, you lose the right to cancel that appointment. This does not
             affect the notice periods in our{" "}
-            <Link href="/cancellation-policy" style={inlineLinkStyle}>Cancellation Policy</Link>.
+            <Link href="/cancellation-policy" style={inlineLinkStyle}>Cancellation &amp; Refund Policy</Link>.
           </p>
         </article>
 

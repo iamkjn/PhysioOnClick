@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
           <div className="page-hero-aside">
             <strong>Last updated</strong>
             <p className="muted">
-              <time dateTime="2026-07">July 2026</time>
+              <time dateTime="2026-09">September 2026</time>
             </p>
           </div>
         </section>
@@ -58,7 +58,8 @@ export default function PrivacyPolicyPage() {
             <li><strong>Clinical information:</strong> condition notes, session records, progress data, and exercise assignments entered through the patient portal</li>
             <li><strong>Dependant details:</strong> where you manage care for a child or another person, the details you add for them</li>
             <li><strong>Enquiry &amp; chat content:</strong> messages you send through the contact form and the on-site chat assistant</li>
-            <li><strong>Payment:</strong> payment is taken at the time of your appointment, not online, so we do not collect or store online payment card data</li>
+            <li><strong>Payment:</strong> payment is taken online when you book, through Stripe. We receive confirmation of payment, the amount and your billing name and email, but we never see or store your full card details</li>
+            <li><strong>Movement check (optional):</strong> if you use the camera-based movement check in the patient portal, your video is processed on your own device only and is never recorded, uploaded or stored. We save only the resulting movement scores to your record</li>
             <li><strong>Usage data:</strong> pages visited and session activity, collected anonymously via analytics only where you have consented</li>
           </ul>
         </article>
@@ -95,13 +96,16 @@ export default function PrivacyPolicyPage() {
             <li><strong>Google Gemini:</strong> powers the on-site chat assistant; the content of your chat messages is processed to generate replies</li>
             <li><strong>Resend:</strong> sends transactional emails such as sign-in links and enquiry notifications</li>
             <li><strong>Google Analytics:</strong> anonymous usage statistics, loaded only after you accept analytics cookies</li>
+            <li><strong>Stripe:</strong> processes your online payment and holds your card details securely; we never see your full card number</li>
+            <li><strong>Trustpilot:</strong> after a completed session we may share your name, email and a booking reference with Trustpilot so it can invite you to leave an independent review. Leaving a review is entirely optional</li>
+            <li><strong>Cloudflare:</strong> hosts and protects this website; it processes technical data such as your IP address to deliver pages securely and block abuse</li>
           </ul>
         </article>
 
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>International data transfers</h2>
           <p>
-            Some of our processors (including Google and Cal.com) may store or process data on servers
+            Some of our processors (including Google, Cal.com, Stripe, Trustpilot and Cloudflare) may store or process data on servers
             outside the UK. Where data is transferred outside the UK, it is protected by appropriate
             safeguards — the UK International Data Transfer Agreement or Addendum, UK adequacy regulations,
             or Standard Contractual Clauses — so your data receives an equivalent level of protection.
