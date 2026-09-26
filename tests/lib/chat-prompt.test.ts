@@ -19,4 +19,12 @@ describe("buildSystemPrompt - exercise library awareness", () => {
     expect(prompt).toMatch(/redirect/i);
     expect(prompt).toMatch(/self-management|what exercises|exercises for/i);
   });
+
+  it("covers website features beyond services", () => {
+    expect(prompt).toContain("## Website features");
+    expect(prompt).toMatch(/patient portal/i);
+    expect(prompt).toMatch(/exercise plans/i);
+    expect(prompt).toMatch(/invoices/i);
+    expect(prompt).toMatch(/assessment form/i);
+  });
 });

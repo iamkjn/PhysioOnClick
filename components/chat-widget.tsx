@@ -4,11 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { track } from "@/lib/analytics";
+import { auth } from "@/lib/firebase";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type Msg = { isBot: boolean; text: string };
+type ChatAction = { type: string; label: string; url: string };
+type Msg = { isBot: boolean; text: string; action?: ChatAction };
 type ChipAction =
+  | "ask"
   | "services"
   | "pricing"
   | "book"
@@ -20,6 +23,12 @@ type ChipAction =
   | "appointments"
   | "serviceDetail";
 type Chip = { emoji: string; label: string; action: ChipAction; text?: string };
+type ChatApiResponse = {
+  reply?: string;
+  sessionId?: string;
+  action?: ChatAction;
+  error?: string;
+};
 
 // ─── Content ─────────────────────────────────────────────────────────────────
 
@@ -62,15 +71,15 @@ const PRICING_TEXT =
   "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
 
 const GREETING =
-  "Hi! I'm your PhysioOnClick assistant 👋\n\nHow can I help you today?";
+  "Hi! I'm your PhysioOnClick assistant.\n\nAsk me about services, pricing, online appointments, exercise plans, invoices, bookings, or which physio service may fit your situation.";
 
 const HOME_CHIPS: Chip[] = [
+  { emoji: "?", label: "Which service is right?", action: "ask", text: "Which PhysioOnClick service is right for me?" },
+  { emoji: "?", label: "How online physio works", action: "ask", text: "How does online physiotherapy work at PhysioOnClick?" },
   { emoji: "🏃", label: "Our services", action: "services" },
   { emoji: "💰", label: "Pricing", action: "pricing" },
   { emoji: "📅", label: "Book appointment", action: "book" },
-  { emoji: "📍", label: "Location", action: "location" },
-  { emoji: "📞", label: "Contact us", action: "contact" },
-  { emoji: "❌", label: "Cancellation policy", action: "cancellation" },
+  { emoji: "!", label: "Cancellation policy", action: "cancellation" },
 ];
 
 const BACK_CHIPS: Chip[] = [
@@ -85,6 +94,9 @@ export function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [chips, setChips] = useState<Chip[]>([]);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
@@ -197,6 +209,64 @@ export function ChatWidget() {
     router.push("/book");
   }
 
+  async function sendMessage(text: string) {
+    const clean = text.trim();
+    if (!clean || sending) return;
+
+    const history = msgs.map((m) => ({
+      role: m.isBot ? "model" : "user",
+      text: m.text,
+    }));
+
+    setInput("");
+    setSending(true);
+    setMsgs((prev) => [...prev, { isBot: false, text: clean }]);
+    setChips([]);
+
+    try {
+      const token = await auth?.currentUser?.getIdToken().catch(() => null);
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ message: clean, history, sessionId }),
+      });
+      const data = (await response.json().catch(() => ({}))) as ChatApiResponse;
+      if (!response.ok) throw new Error(data.error ?? "Chat failed");
+      if (data.sessionId) setSessionId(data.sessionId);
+      setMsgs((prev) => [
+        ...prev,
+        {
+          isBot: true,
+          text: data.reply?.trim() || "I can help with services, pricing, booking, online physio, exercise plans and account questions.",
+          action: data.action,
+        },
+      ]);
+      setChips([
+        { emoji: "📅", label: "Book appointment", action: "book" },
+        { emoji: "🏃", label: "Our services", action: "services" },
+        { emoji: "🏠", label: "Main menu", action: "home" },
+      ]);
+    } catch {
+      setMsgs((prev) => [
+        ...prev,
+        {
+          isBot: true,
+          text: `Sorry, I could not reach the smart assistant just now. You can still book online, browse services, or email ${EMAIL}.`,
+        },
+      ]);
+      setChips([
+        { emoji: "📅", label: "Book appointment", action: "book" },
+        { emoji: "🏃", label: "Our services", action: "services" },
+        { emoji: "📞", label: "Contact us", action: "contact" },
+      ]);
+    } finally {
+      setSending(false);
+    }
+  }
+
   function tapLocation() {
     addBot(
       "We're based in Glasgow, UK and also offer online physiotherapy across the whole UK via secure video call.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.",
@@ -241,6 +311,10 @@ export function ChatWidget() {
   }
 
   function onChipClick(chip: Chip) {
+    if (chip.action === "ask" && chip.text) {
+      void sendMessage(chip.text);
+      return;
+    }
     const silent = ["Copy email", "Main menu", "Back to services"];
     if (!silent.includes(chip.label)) addUser(chip.label);
     if (chip.action === "services") tapServices();
@@ -298,12 +372,12 @@ export function ChatWidget() {
         <div ref={drawerRef} className="chat-drawer" role="dialog" aria-modal="true" aria-label="PhysioOnClick chat assistant">
           {/* Header */}
           <div className="chat-header">
-            <div className="chat-header-avatar">🛡️</div>
+            <div className="chat-header-avatar">P</div>
             <div>
               <div className="chat-header-title">PhysioOnClick Assistant</div>
               <div className="chat-header-status">
                 <span className="chat-header-status-dot" />
-                Online · Always here to help
+                Smart help for services, booking and care questions
               </div>
             </div>
           </div>
@@ -312,12 +386,54 @@ export function ChatWidget() {
           <div className="chat-messages" role="log" aria-live="polite">
             {msgs.map((m, i) => (
               <div key={i} className={`chat-message-row ${m.isBot ? "is-bot" : "is-user"}`}>
-                {m.isBot && <div className="chat-message-avatar">🛡️</div>}
-                <div className={`chat-bubble ${m.isBot ? "is-bot" : "is-user"}`}>{m.text}</div>
+                {m.isBot && <div className="chat-message-avatar">P</div>}
+                <div className={`chat-bubble ${m.isBot ? "is-bot" : "is-user"}`}>
+                  {m.text}
+                  {m.action && (
+                    <button
+                      type="button"
+                      className="chat-action"
+                      onClick={() => router.push(m.action!.url)}
+                    >
+                      {m.action.label}
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
+            {sending && (
+              <div className="chat-message-row is-bot">
+                <div className="chat-message-avatar">P</div>
+                <div className="chat-bubble is-bot chat-typing" aria-label="Assistant is typing">
+                  <span className="chat-dot" />
+                  <span className="chat-dot" />
+                  <span className="chat-dot" />
+                </div>
+              </div>
+            )}
             <div ref={bottomRef} />
           </div>
+
+          <form
+            className="chat-input-row"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void sendMessage(input);
+            }}
+          >
+            <label className="sr-only" htmlFor="chat-assistant-input">Ask the PhysioOnClick assistant</label>
+            <input
+              id="chat-assistant-input"
+              value={input}
+              maxLength={1000}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder="Ask about services, pricing, exercises..."
+              disabled={sending}
+            />
+            <button type="submit" disabled={sending || !input.trim()}>
+              Send
+            </button>
+          </form>
 
           {/* Chips */}
           <div className="chat-chips">
