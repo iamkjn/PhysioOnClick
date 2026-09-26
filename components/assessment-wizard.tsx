@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { BodyChart } from "@/components/body-chart";
 import { useToast } from "@/components/toast-provider";
@@ -145,10 +145,6 @@ function hasSelectedSafetyItem(state: WizardState) {
   );
 }
 
-function hasTypedConfirmation(value: string) {
-  return value.trim().toUpperCase() === "CONFIRM";
-}
-
 function canAdvance(step: StepId, state: WizardState): boolean {
   switch (step) {
     case "concern":
@@ -171,8 +167,7 @@ function canAdvance(step: StepId, state: WizardState): boolean {
         state.consent.care &&
         state.consent.data &&
         state.consent.privacy &&
-        state.consent.safety &&
-        hasTypedConfirmation(state.signature)
+        state.consent.safety
       );
   }
 }
@@ -185,10 +180,82 @@ function restoreDraft(raw: string): WizardState {
     redFlags: { ...defaultRedFlags, ...(saved.redFlags ?? {}) },
     conditionalFlags: saved.conditionalFlags ?? {},
     consent: { ...INITIAL.consent, ...(saved.consent ?? {}) },
-    // Older drafts stored the patient's typed name here. Do not carry that
-    // forward now that the acknowledgement is the word CONFIRM.
-    signature: hasTypedConfirmation(saved.signature ?? "") ? "CONFIRM" : "",
+    // Older drafts stored a typed confirmation/name here. The current flow
+    // only needs the consent checkboxes.
+    signature: "",
   };
+}
+
+function suggestionKey(regions: string[], focusAreas: FocusArea[]) {
+  if (regions.length > 0) return regions.join("|");
+  return focusAreas.join("|");
+}
+
+function suggestionCategory(regions: string[], focusAreas: FocusArea[]) {
+  const text = [...regions, ...focusAreas].join(" ").toLowerCase();
+  if (text.includes("shoulder") || text.includes("upper-arm")) return "shoulder";
+  if (text.includes("neck") || text.includes("back")) return "back-neck";
+  if (text.includes("post-surgery") || text.includes("since-op")) return "post-surgery";
+  if (text.includes("sports")) return "sports";
+  if (text.includes("neuro")) return "neuro";
+  if (text.includes("paediatric")) return "paediatric";
+  if (text.includes("knee")) return "knee";
+  if (text.includes("hip")) return "hip";
+  if (text.includes("ankle") || text.includes("foot")) return "ankle-foot";
+  if (text.includes("elbow") || text.includes("wrist") || text.includes("hand") || text.includes("forearm")) return "arm-hand";
+  return "general";
+}
+
+function suggestedAssessmentCopy(regions: string[], focusAreas: FocusArea[]) {
+  const area = regions.length > 0 ? describeRegions(regions) : focusAreas.join(", ") || "this area";
+  const category = suggestionCategory(regions, focusAreas);
+  const copies: Record<string, { story: string; impact: string }> = {
+    "back-neck": {
+      story: `I have pain or stiffness around ${area}. It may be linked to posture, a strain, joint irritation or nerve sensitivity. I am avoiding sudden heavy lifting, sharp painful movements and long static positions until I am assessed.`,
+      impact: "It is stopping me from sitting comfortably, sleeping well, driving, working at a desk or doing normal exercise.",
+    },
+    shoulder: {
+      story: `I have pain or restriction around ${area}. It may be linked to a rotator cuff or tendon irritation, overload, stiffness or a strain. I am avoiding heavy lifting, sudden reaching and pushing through sharp pain until I am assessed.`,
+      impact: "It is stopping me from reaching overhead, lifting, dressing, sleeping on that side or doing gym/work tasks.",
+    },
+    knee: {
+      story: `I have pain, stiffness or swelling around ${area}. It may be linked to joint irritation, tendon overload, a twist or recovery after activity. I am avoiding running, jumping, twisting and forcing painful bending until I am assessed.`,
+      impact: "It is stopping me from stairs, walking, squatting, kneeling, running or standing for long periods.",
+    },
+    hip: {
+      story: `I have pain or tightness around ${area}. It may be linked to tendon irritation, joint stiffness, muscle overload or referred pain. I am avoiding pushing through sharp pain, deep painful positions and sudden increases in walking or exercise until I am assessed.`,
+      impact: "It is stopping me from walking, stairs, getting in and out of a car, sleeping on that side or exercising.",
+    },
+    "ankle-foot": {
+      story: `I have pain, swelling or stiffness around ${area}. It may be linked to a sprain, tendon irritation, overload or reduced balance. I am avoiding unstable surfaces, running, jumping and pushing through sharp pain until I am assessed.`,
+      impact: "It is stopping me from walking normally, stairs, standing, sport, work duties or wearing usual footwear.",
+    },
+    "arm-hand": {
+      story: `I have pain, weakness or stiffness around ${area}. It may be linked to tendon irritation, joint stiffness, nerve sensitivity or overload. I am avoiding heavy gripping, repetitive painful tasks and forcing movements until I am assessed.`,
+      impact: "It is stopping me from lifting, gripping, typing, driving, household tasks or work duties.",
+    },
+    "post-surgery": {
+      story: `I am recovering after surgery and have symptoms around ${area}. This may be linked to normal healing, swelling, weakness or stiffness, but I want guidance on safe progression. I am following precautions and avoiding movements or loads I have not been cleared for.`,
+      impact: "It is stopping me from walking, stairs, sleeping, daily tasks, work or returning to exercise confidently.",
+    },
+    sports: {
+      story: `I have a sports-related problem around ${area}. It may be linked to overload, a strain, tendon irritation or a recent twist/change in training. I am avoiding sprinting, jumping, heavy loading and pushing through sharp pain until I am assessed.`,
+      impact: "It is stopping me from training, match play, running, gym work or returning to my usual sport level.",
+    },
+    neuro: {
+      story: `I have a neurological or movement-related concern affecting ${area}. It may involve balance, coordination, strength, sensation or walking confidence. I am avoiding unsafe tasks without support and want guidance on safe exercises.`,
+      impact: "It is stopping me from walking confidently, balance tasks, transfers, stairs, daily activities or exercise.",
+    },
+    paediatric: {
+      story: `There is a movement, pain or activity concern around ${area}. It may relate to growth, strength, coordination, posture, sport or daily activity. We are avoiding activities that cause sharp pain or clear limping until assessed.`,
+      impact: "It is stopping school, play, sport, walking, stairs or normal daily activities.",
+    },
+    general: {
+      story: `I have symptoms around ${area}. It may be linked to strain, overload, stiffness, irritation or a change in activity. I am avoiding movements that cause sharp pain and want advice on what is safe to do.`,
+      impact: "It is stopping normal daily activities, sleep, work, exercise or hobbies.",
+    },
+  };
+  return copies[category] ?? copies.general;
 }
 
 export function AssessmentWizard({
@@ -212,6 +279,7 @@ export function AssessmentWizard({
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [awaitingPayment, setAwaitingPayment] = useState(false);
+  const lastAutoSuggestion = useRef({ key: "", story: "", impact: "" });
 
   const step = STEPS[stepIdx]!.id;
   const patch = (next: Partial<WizardState>) => setState((current) => ({
@@ -227,6 +295,14 @@ export function AssessmentWizard({
   }));
   const relevantConditionGroups = useMemo(() => regionToConditionGroups(state.regions), [state.regions]);
   const urgent = levelOfConcern(state.redFlags, state.conditionalFlags) === "emergency";
+  const currentSuggestion = useMemo(
+    () => suggestedAssessmentCopy(state.regions, focusAreas),
+    [state.regions, focusAreas],
+  );
+  const currentSuggestionKey = useMemo(
+    () => suggestionKey(state.regions, focusAreas),
+    [state.regions, focusAreas],
+  );
 
   const safetyItems = useMemo(() => {
     const seen = new Set<string>();
@@ -309,6 +385,27 @@ export function AssessmentWizard({
       // Draft saving is best-effort.
     }
   }, [state, hydrated, uid, personId, bookingId]);
+
+  useEffect(() => {
+    if (!hydrated || currentSuggestionKey === "") return;
+    setState((current) => {
+      const previous = lastAutoSuggestion.current;
+      const shouldUpdateStory = current.story.trim() === "" || current.story === previous.story;
+      const shouldUpdateImpact = current.impact.trim() === "" || current.impact === previous.impact;
+      lastAutoSuggestion.current = {
+        key: currentSuggestionKey,
+        story: currentSuggestion.story,
+        impact: currentSuggestion.impact,
+      };
+      if (!shouldUpdateStory && !shouldUpdateImpact) return current;
+      return {
+        ...current,
+        story: shouldUpdateStory ? currentSuggestion.story : current.story,
+        impact: shouldUpdateImpact ? currentSuggestion.impact : current.impact,
+        signature: current.signature ? "" : current.signature,
+      };
+    });
+  }, [currentSuggestion.story, currentSuggestion.impact, currentSuggestionKey, hydrated]);
 
   function goToStep(index: number) {
     if (index < 0 || index >= STEPS.length) return;
@@ -534,6 +631,13 @@ export function AssessmentWizard({
             </div>
 
             <div className="assessment-wizard__field-grid">
+              {(state.regions.length > 0 || focusAreas.length > 0) ? (
+                <div className="assessment-wizard__suggestion-note assessment-wizard__field--wide" role="note">
+                  <strong>Suggested from your selected area</strong>
+                  <span>We have added likely causes and precautions to save typing. Please edit the text so it matches exactly what is happening for you.</span>
+                </div>
+              ) : null}
+
               <label className="assessment-wizard__field assessment-wizard__field--wide">
                 <span>What is happening?</span>
                 <textarea
@@ -748,23 +852,6 @@ export function AssessmentWizard({
                   </span>
                 </label>
               ))}
-              <label className="assessment-wizard__field assessment-wizard__signature">
-                <span>Type confirm to submit</span>
-                <input
-                  type="text"
-                  aria-label="Type confirm to submit"
-                  aria-describedby="assessment-confirmation-help"
-                  autoComplete="off"
-                  spellCheck={false}
-                  value={state.signature}
-                  maxLength={ASSESSMENT_LIMITS.signature}
-                  onChange={(event) => patch({ signature: event.target.value })}
-                  placeholder="Type confirm"
-                />
-                <small id="assessment-confirmation-help">
-                  Enter the word confirm after checking your answers. Capital letters are not required.
-                </small>
-              </label>
             </div>
           </AssessmentStage>
         ) : null}

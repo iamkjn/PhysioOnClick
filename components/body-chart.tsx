@@ -99,6 +99,10 @@ export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }
       </div>
 
       <div className="body-chart__figure">
+        <div className="body-chart__side-labels" aria-hidden="true">
+          <span>{view === "front" ? "Your right" : "Your left"}</span>
+          <span>{view === "front" ? "Your left" : "Your right"}</span>
+        </div>
         <svg className="body-chart__svg" viewBox={VIEWBOX[view]} role="group" aria-label={`Body chart, ${view} view`}>
           <Skeleton view={view} />
 

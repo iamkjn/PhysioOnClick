@@ -60,7 +60,6 @@ async function completeHappyPath() {
   fireEvent.click(screen.getByRole("checkbox", { name: /none of these apply/i }));
   fireEvent.click(screen.getByRole("button", { name: /review my answers/i }));
   screen.getAllByRole("checkbox").forEach((checkbox) => fireEvent.click(checkbox));
-  fireEvent.change(screen.getByLabelText(/type confirm to submit/i), { target: { value: "confirm" } });
 }
 
 describe("AssessmentWizard", () => {
@@ -109,13 +108,36 @@ describe("AssessmentWizard", () => {
     expect(screen.getByLabelText(/^name$/i)).toBeEnabled();
   });
 
-  it("does not reuse a name stored by the previous confirmation flow", async () => {
+  it("does not show the old typed confirmation field", async () => {
     localStorage.setItem("poc-assessment-draft-bk1", JSON.stringify({ signature: "Jane Doe" }));
     renderWizard();
     await waitForWizard();
     fireEvent.click(screen.getByRole("button", { name: /review.*needs attention/i }));
 
-    expect(screen.getByLabelText(/type confirm to submit/i)).toHaveValue("");
+    expect(screen.queryByLabelText(/type confirm to submit/i)).not.toBeInTheDocument();
+  });
+
+  it("prefills editable concern text from the booking focus and selected body area", async () => {
+    renderWizard(["Shoulder"]);
+    await waitForWizard();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/what.s going on/i)).toHaveValue();
+    });
+    expect(screen.getByLabelText<HTMLInputElement | HTMLTextAreaElement>(/what.s going on/i).value).toMatch(
+      /shoulder|rotator cuff|tendon/i,
+    );
+    expect(screen.getByLabelText<HTMLInputElement | HTMLTextAreaElement>(/what is it stopping you doing/i).value).toMatch(
+      /reaching overhead|lifting/i,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /^neck$/i }));
+    await waitFor(() => {
+      expect(screen.getByLabelText<HTMLInputElement | HTMLTextAreaElement>(/what.s going on/i).value).toMatch(
+        /neck|posture|nerve/i,
+      );
+    });
+    expect(screen.getByText(/suggested from your selected area/i)).toBeInTheDocument();
   });
 
   it("reuses stable details from the latest assessment", async () => {
@@ -190,36 +212,31 @@ describe("AssessmentWizard", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/NHS 111/);
     fireEvent.click(screen.getByRole("button", { name: /review my answers/i }));
     screen.getAllByRole("checkbox").forEach((checkbox) => fireEvent.click(checkbox));
-    fireEvent.change(screen.getByLabelText(/type confirm to submit/i), { target: { value: "CONFIRM" } });
     fireEvent.click(screen.getByRole("button", { name: /submit assessment/i }));
     await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
     const [, , input] = submitMock.mock.calls[0];
     expect(input.redFlags.chestPainBreathlessness).toBe(true);
   });
 
-  it("requires every section plus the confirm acknowledgement before submission", async () => {
+  it("requires every section before submission", async () => {
     renderWizard();
     await waitForWizard();
     fireEvent.click(screen.getByRole("button", { name: /review.*needs attention/i }));
     screen.getAllByRole("checkbox").forEach((checkbox) => fireEvent.click(checkbox));
-    fireEvent.change(screen.getByLabelText(/type confirm to submit/i), { target: { value: "CONFIRM" } });
 
     expect(screen.getByRole("button", { name: /submit assessment/i })).toBeDisabled();
     expect(screen.getByText(/complete your concern, health details, safety check/i)).toBeInTheDocument();
   });
 
-  it("clears the confirmation when the patient changes an answer", async () => {
+  it("keeps submission disabled when a completed answer is changed", async () => {
     renderWizard();
     await completeHappyPath();
-    expect(screen.getByLabelText(/type confirm to submit/i)).toHaveValue("confirm");
+    expect(screen.getByRole("button", { name: /submit assessment/i })).toBeEnabled();
 
     fireEvent.click(screen.getByRole("button", { name: /edit your concern/i }));
-    fireEvent.change(screen.getByLabelText(/what.s going on/i), {
-      target: { value: "A changed description of the right side neck pain." },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /review.*needs attention/i }));
+    fireEvent.change(screen.getByLabelText(/what is it stopping you doing/i), { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: /review\./i }));
 
-    expect(screen.getByLabelText(/type confirm to submit/i)).toHaveValue("");
     expect(screen.getByRole("button", { name: /submit assessment/i })).toBeDisabled();
   });
 });
