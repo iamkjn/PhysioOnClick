@@ -208,7 +208,13 @@ export async function POST(req: NextRequest) {
     }
     if (!response) throw lastError;
 
-    const reply = response.text();
+    // The model sometimes answers a tool call (e.g. redirect) with no text;
+    // never send an empty bubble.
+    const reply =
+      response.text().trim() ||
+      (actionForClient
+        ? "Yes, we can help with that. You can take the next step here:"
+        : "Sorry, I couldn't answer that just now. Please use the contact form or call us.");
 
     // Persist to Firestore for logged-in patients. Scoped in its own try/catch so a
     // write failure is logged but doesn't discard an already-generated valid reply.
