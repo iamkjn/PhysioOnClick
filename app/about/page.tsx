@@ -41,7 +41,7 @@ const specialisms = [
 ];
 
 const highlights = [
-  "4+ years of clinical physiotherapy experience",
+  "More than 6 years of clinical physiotherapy experience",
   "NHS Tayside placement and orthopaedic rehab exposure",
   "Online physiotherapy support across the UK",
   "Evidence-based approach with calm, practical treatment planning"
@@ -173,7 +173,7 @@ export default function AboutPage() {
         </div>
         <div className="about-story-stats">
           <div className="about-stat-card">
-            <strong>4+</strong>
+            <strong>6+</strong>
             <span>Years of experience</span>
           </div>
           <div className="about-stat-card">

@@ -437,7 +437,7 @@ export const pricing: PricingItem[] = [
 export const testimonials: Testimonial[] = [];
 
 export const stats = [
-  { label: "Years of clinical experience", value: "4+" },
+  { label: "Years of clinical experience", value: "6+" },
   { label: "Services across Glasgow and online", value: "6" },
   { label: "Guided blog resources available", value: "100+" },
   { label: "Response time for enquiries", value: "24h" }
