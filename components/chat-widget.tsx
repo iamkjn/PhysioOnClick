@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import { track } from "@/lib/analytics";
@@ -86,6 +87,67 @@ const BACK_CHIPS: Chip[] = [
   { emoji: "📅", label: "Book appointment", action: "book" },
   { emoji: "🏠", label: "Main menu", action: "home" },
 ];
+
+function renderInlineText(text: string): ReactNode {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+}
+
+function renderChatText(text: string): ReactNode {
+  const sections: ReactNode[] = [];
+  const lines = text.replace(/\r\n/g, "\n").split("\n");
+  let paragraph: string[] = [];
+  let bullets: string[] = [];
+
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    const content = paragraph.join(" ").trim();
+    if (content) {
+      sections.push(<p key={`p-${sections.length}`}>{renderInlineText(content)}</p>);
+    }
+    paragraph = [];
+  };
+
+  const flushBullets = () => {
+    if (!bullets.length) return;
+    sections.push(
+      <ul key={`ul-${sections.length}`}>
+        {bullets.map((item, index) => (
+          <li key={index}>{renderInlineText(item)}</li>
+        ))}
+      </ul>,
+    );
+    bullets = [];
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      flushParagraph();
+      flushBullets();
+      continue;
+    }
+
+    const bullet = line.match(/^(?:[-*•]\s+)(.+)$/);
+    if (bullet) {
+      flushParagraph();
+      bullets.push(bullet[1].trim());
+      continue;
+    }
+
+    flushBullets();
+    paragraph.push(line);
+  }
+
+  flushParagraph();
+  flushBullets();
+
+  return sections.length ? sections : renderInlineText(text);
+}
 
 // ─── Widget ───────────────────────────────────────────────────────────────────
 
@@ -397,7 +459,7 @@ export function ChatWidget() {
               <div key={i} className={`chat-message-row ${m.isBot ? "is-bot" : "is-user"}`}>
                 {m.isBot && <div className="chat-message-avatar">P</div>}
                 <div className={`chat-bubble ${m.isBot ? "is-bot" : "is-user"}`}>
-                  {m.text}
+                  {m.isBot ? <div className="chat-rich-text">{renderChatText(m.text)}</div> : m.text}
                   {m.action && (
                     <button
                       type="button"

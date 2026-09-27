@@ -7739,11 +7739,11 @@ textarea:focus {
   padding: 11px 14px;
   font-size: 13.5px;
   line-height: 1.6;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 .chat-bubble.is-bot {
+  white-space: normal;
   border-radius: 18px 18px 18px 4px;
   background: var(--color-surface);
   color: var(--book-rail-top);
@@ -7751,10 +7751,36 @@ textarea:focus {
 }
 
 .chat-bubble.is-user {
+  white-space: pre-wrap;
   border-radius: 18px 18px 4px 18px;
   background: var(--gradient-primary);
   color: white;
   box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 28%, transparent);
+}
+
+.chat-rich-text {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.chat-rich-text p,
+.chat-rich-text ul {
+  margin: 0;
+}
+
+.chat-rich-text ul {
+  display: grid;
+  gap: 0.42rem;
+  padding-left: 1.1rem;
+}
+
+.chat-rich-text li {
+  padding-left: 0.08rem;
+}
+
+.chat-rich-text strong {
+  color: var(--color-navy);
+  font-weight: 900;
 }
 
 .chat-action {
