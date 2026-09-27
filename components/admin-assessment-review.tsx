@@ -145,6 +145,68 @@ function goalStatement(form: PatientAssessmentFormRecord) {
   return `In ${form.goalsPlan.timeframeWeeks} weeks: ${form.goalsPlan.meaningfulGoal}. Baseline: ${form.goalsPlan.baseline || "not recorded"}. Target: ${form.goalsPlan.target || "not recorded"}.`;
 }
 
+function buildAssessmentReviewDraft(form: PatientAssessmentFormRecord) {
+  const urgent = hasUrgentRedFlags(form.redFlags);
+  const selectedSafety = selectedRedFlags(form);
+  const clinicalArea = clinicalAreaLabels[form.subjective.clinicalArea];
+  const selectedRegions = form.bodyRegions?.length ? ` Selected body regions: ${form.bodyRegions.join(", ")}.` : "";
+  const symptoms = form.symptoms.trim() ? ` Symptoms reported: ${form.symptoms.trim()}.` : "";
+  const impact = form.functionalImpact.trim() ? ` Functional impact: ${form.functionalImpact.trim()}.` : "";
+  const goals = form.goals.trim() ? ` Patient goal: ${form.goals.trim()}.` : "";
+  const aggravating = form.aggravatingFactors.trim() ? ` Aggravated by ${form.aggravatingFactors.trim()}.` : "";
+  const easing = form.easingFactors.trim() ? ` Eased by ${form.easingFactors.trim()}.` : "";
+  const medical = form.medicalHistory.trim() && form.medicalHistory.trim().toLowerCase() !== "none"
+    ? ` Medical context noted: ${form.medicalHistory.trim()}.`
+    : "";
+  const previousCare = form.previousTreatment.trim() ? ` Previous care: ${form.previousTreatment.trim()}.` : "";
+  const consent = ` Consent reviewed: core consent ${form.consent.careConsent && form.consent.dataConsent && form.consent.privacyConsent && form.consent.safetySharing ? "complete" : "incomplete"}; video consent ${form.consent.videoConsent ? "confirmed" : "not confirmed"}.`;
+
+  const clinicianNotes = [
+    `${form.formType === "checkup" ? "Check-up" : "Initial assessment"} reviewed for ${patientNameWithAge(form)}: ${form.presentingComplaint || form.bodyArea || "presenting concern"} in ${clinicalArea.toLowerCase()}.`,
+    `Pain is ${form.painScore}/10 with severity ${form.subjective.severity}/10, irritability ${form.subjective.irritability}/10 and confidence ${form.outcomes.confidenceScore}/10.`,
+    symptoms.trim(),
+    impact.trim(),
+    goals.trim(),
+    aggravating.trim(),
+    easing.trim(),
+    selectedRegions.trim(),
+    medical.trim(),
+    previousCare.trim(),
+    consent.trim(),
+    urgent
+      ? `Safety screen needs clinician review: ${selectedSafety}.`
+      : `Safety screen reviewed: ${selectedSafety}. Suitable to continue online if live assessment matches the submitted history.`,
+  ].filter(Boolean).join(" ");
+
+  const riskPlan = urgent
+    ? `Positive safety item(s) require documented clinical reasoning before exercise progression: ${selectedSafety}. Confirm current symptoms during the session, decide whether online care remains appropriate, and record any urgent signposting, GP/111/A&E advice or referral given.`
+    : [
+        "No urgent red flags selected in the submitted assessment.",
+        "Confirm symptoms have not changed since submission, keep advice within online physiotherapy scope, and safety-net the patient to seek urgent help if new weakness, saddle-area numbness, bladder or bowel changes, chest pain, breathlessness, fainting, fever, unexplained worsening pain, or unsafe symptoms develop.",
+      ].join(" ");
+
+  return { clinicianNotes, riskPlan };
+}
+
+function SuggestedReviewText({
+  text,
+  buttonLabel,
+  onUse,
+}: {
+  text: string;
+  buttonLabel: string;
+  onUse: () => void;
+}) {
+  return (
+    <div className="summary-draft-helper">
+      <p>{text}</p>
+      <button type="button" className="session-text-button" onClick={onUse}>
+        {buttonLabel}
+      </button>
+    </div>
+  );
+}
+
 // Short (v2.0) patient wizard submissions don't collect the clinician-grade
 // subjective/objective/goal detail — the physiotherapist captures those at the
 // session. Show "Not provided by patient" rather than a misleading blank.
@@ -172,13 +234,42 @@ export function AdminAssessmentReviewItem({
   const [error, setError] = useState<string | null>(null);
   const [assignedIds, setAssignedIds] = useState<string[]>([]);
   const [assigningId, setAssigningId] = useState<string | null>(null);
+  const [manualReviewEdits, setManualReviewEdits] = useState({
+    clinicianNotes: Boolean(form.clinicianNotes.trim()),
+    riskPlan: Boolean(form.riskPlan.trim()),
+  });
+  const [lastSuggestedReview, setLastSuggestedReview] = useState({ clinicianNotes: "", riskPlan: "" });
+  const suggestedReview = useMemo(() => buildAssessmentReviewDraft(form), [form]);
 
   useEffect(() => {
     setReviewStatus(form.reviewStatus === "awaiting_review" ? "reviewed" : form.reviewStatus);
     setClinicianNotes(form.clinicianNotes);
     setRiskPlan(form.riskPlan);
     setNextCheckupDate(form.nextCheckupDate);
+    setManualReviewEdits({
+      clinicianNotes: Boolean(form.clinicianNotes.trim()),
+      riskPlan: Boolean(form.riskPlan.trim()),
+    });
+    setLastSuggestedReview({ clinicianNotes: "", riskPlan: "" });
   }, [form]);
+
+  useEffect(() => {
+    const draftChanged = suggestedReview.clinicianNotes !== lastSuggestedReview.clinicianNotes ||
+      suggestedReview.riskPlan !== lastSuggestedReview.riskPlan;
+    if (!draftChanged) return;
+
+    setClinicianNotes((current) => {
+      const shouldUpdate = !manualReviewEdits.clinicianNotes &&
+        (!current.trim() || current === lastSuggestedReview.clinicianNotes);
+      return shouldUpdate ? suggestedReview.clinicianNotes : current;
+    });
+    setRiskPlan((current) => {
+      const shouldUpdate = !manualReviewEdits.riskPlan &&
+        (!current.trim() || current === lastSuggestedReview.riskPlan);
+      return shouldUpdate ? suggestedReview.riskPlan : current;
+    });
+    setLastSuggestedReview(suggestedReview);
+  }, [suggestedReview, lastSuggestedReview, manualReviewEdits]);
 
   useEffect(() => {
     if (!showExerciseSuggestions) return;
@@ -417,9 +508,20 @@ export function AdminAssessmentReviewItem({
               className="input"
               rows={3}
               value={clinicianNotes}
-              onChange={(e) => setClinicianNotes(e.target.value)}
+              onChange={(e) => {
+                setManualReviewEdits((current) => ({ ...current, clinicianNotes: true }));
+                setClinicianNotes(e.target.value);
+              }}
               maxLength={ASSESSMENT_LIMITS.clinicianNotes}
               placeholder="Clinical interpretation, limitations, advice already given, information needed"
+            />
+            <SuggestedReviewText
+              text={suggestedReview.clinicianNotes}
+              buttonLabel={clinicianNotes.trim() ? "Refresh suggested notes" : "Use suggested notes"}
+              onUse={() => {
+                setClinicianNotes(suggestedReview.clinicianNotes);
+                setManualReviewEdits((current) => ({ ...current, clinicianNotes: false }));
+              }}
             />
           </label>
           <label>
@@ -428,9 +530,20 @@ export function AdminAssessmentReviewItem({
               className="input"
               rows={3}
               value={riskPlan}
-              onChange={(e) => setRiskPlan(e.target.value)}
+              onChange={(e) => {
+                setManualReviewEdits((current) => ({ ...current, riskPlan: true }));
+                setRiskPlan(e.target.value);
+              }}
               maxLength={ASSESSMENT_LIMITS.riskPlan}
               placeholder="Escalation, GP/111/A&E advice, adaptations for online care, referral plan"
+            />
+            <SuggestedReviewText
+              text={suggestedReview.riskPlan}
+              buttonLabel={riskPlan.trim() ? "Refresh safety plan" : "Use suggested safety plan"}
+              onUse={() => {
+                setRiskPlan(suggestedReview.riskPlan);
+                setManualReviewEdits((current) => ({ ...current, riskPlan: false }));
+              }}
             />
           </label>
           <label>
