@@ -399,7 +399,7 @@ export function AdminAssessmentReviewItem({
                 <span>02</span>
                 <div><h3 id={`body-map-${form.id}`}>Body map</h3><p>Areas selected by the patient.</p></div>
               </div>
-              <BodyChart value={form.bodyRegions ?? []} readOnly compactReadOnly idPrefix={`rev-${form.id}`} />
+              <BodyChart value={form.bodyRegions ?? []} readOnly idPrefix={`rev-${form.id}`} />
             </section>
           )}
 

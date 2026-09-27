@@ -11883,10 +11883,10 @@ textarea:focus {
 }
 .body-chart__side-labels {
   position: absolute;
-  top: 2.5rem;
+  top: 0.8rem;
   left: 50%;
   z-index: 2;
-  width: calc(100% + 4.2rem);
+  width: min(100%, 360px);
   display: flex;
   justify-content: space-between;
   transform: translateX(-50%);
@@ -11903,6 +11903,43 @@ textarea:focus {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 4px 12px rgba(4, 50, 70, 0.06);
+}
+.body-chart__visual {
+  position: relative;
+  width: min(100%, 360px);
+  aspect-ratio: 220 / 520;
+  margin: 0 auto;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 20%, var(--color-border));
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 253, 255, 0.9)),
+    radial-gradient(circle at 50% 25%, rgba(14, 165, 233, 0.08), transparent 42%);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55), 0 14px 34px rgba(4, 50, 70, 0.08);
+  overflow: visible;
+}
+.body-chart__body-svg {
+  position: absolute;
+  inset: 7% 16% 4%;
+  width: 68%;
+  height: 89%;
+  overflow: visible;
+}
+.body-chart__body-shadow ellipse {
+  fill: rgba(4, 50, 70, 0.12);
+}
+.body-chart__body-shape > * {
+  fill: #d96d5b;
+  stroke: rgba(116, 35, 38, 0.32);
+  stroke-width: 1.2;
+}
+.body-chart[data-view="back"] .body-chart__body-shape > * {
+  fill: #c95d58;
+}
+.body-chart__body-lines path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.62);
+  stroke-width: 2.2;
+  stroke-linecap: round;
 }
 .body-chart__svg {
   width: 100%;
@@ -11930,6 +11967,14 @@ textarea:focus {
   transform: translate(-50%, -50%);
   cursor: pointer;
   transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+.body-chart__zone span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 .body-chart__zone:hover {
   border-color: color-mix(in srgb, var(--color-primary) 72%, transparent);
