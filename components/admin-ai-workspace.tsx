@@ -273,35 +273,33 @@ export function AdminAiWorkspace({ adminUid }: { adminUid: string }) {
     }
     setEmailing(true);
     try {
-      for (const item of selectedPlan) {
-        const source = exerciseById(item.id);
-        await fetch("/api/admin/library/share-exercise", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            toEmail: targetEmail,
-            toName: targetName,
-            exerciseTitle: item.title,
-            exerciseSlug: item.slug,
-            exerciseDescription: source?.description ?? item.reason,
-            setup: source?.setup ?? "",
-            steps: source?.steps ?? [],
-            cues: source?.cues ?? [],
-            note: [item.reason, item.dosageLabel, note].filter(Boolean).join("\n\n"),
-          }),
-        }).then(async (res) => {
-          if (!res.ok) {
-            const data = (await res.json().catch(() => ({}))) as { error?: string };
-            throw new Error(data.error || "Email failed");
-          }
-        });
-      }
-      toast.show(`${selectedPlan.length} exercise email${selectedPlan.length === 1 ? "" : "s"} sent.`, "success");
+      const response = await fetch("/api/admin/assistant/email-plan", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          toEmail: targetEmail,
+          patientName: targetName,
+          note,
+          exercises: selectedPlan.map((item) => ({
+            id: item.id,
+            dosage: item.dosage,
+            reason: item.reason,
+          })),
+        }),
+      });
+      const data = (await response.json().catch(() => ({}))) as { error?: string; sent?: boolean; exercises?: number };
+      if (!response.ok) throw new Error(data.error || "Email failed");
+      toast.show(
+        data.sent
+          ? `Exercise plan PDF sent with ${data.exercises ?? selectedPlan.length} exercises.`
+          : "Exercise plan PDF created, but email service is not configured on this environment.",
+        data.sent ? "success" : "info",
+      );
     } catch (error) {
-      toast.show(error instanceof Error ? error.message : "Could not email all exercises.", "error");
+      toast.show(error instanceof Error ? error.message : "Could not email the exercise plan PDF.", "error");
     } finally {
       setEmailing(false);
     }
@@ -427,7 +425,7 @@ export function AdminAiWorkspace({ adminUid }: { adminUid: string }) {
             <Send aria-hidden="true" />
             <div>
               <h2>Assign or send</h2>
-              <p>Select an existing patient account, or use any email address.</p>
+              <p>Select an existing patient account, or use any email address. Email sends one combined PDF attachment.</p>
             </div>
           </div>
 
@@ -491,7 +489,7 @@ export function AdminAiWorkspace({ adminUid }: { adminUid: string }) {
             </button>
             <button type="button" className="button admin-hero-primary" onClick={() => void emailSelected()} disabled={emailing || !targetEmail || selectedPlan.length === 0}>
               <Mail aria-hidden="true" />
-              {emailing ? "Sending..." : "Email selected"}
+              {emailing ? "Sending PDF..." : "Email plan PDF"}
             </button>
           </div>
         </section>

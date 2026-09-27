@@ -16,6 +16,7 @@ export type ExercisePlanCard = {
 
 export type ExercisePlanPdfInput = {
   patientName: string;
+  patientEmail?: string | null;
   physioName: string;
   sessionDateISO: string | null;
   cards: ExercisePlanCard[];
@@ -359,6 +360,7 @@ function drawCover(page: PDFPage, input: ExercisePlanPdfInput, font: PDFFont, bo
   page.drawText("Your Exercise Plan", { x: MARGIN, y: height - 60, size: 22, font: bold, color: WHITE });
 
   const patient = pdfSafe(input.patientName) || "you";
+  const patientEmail = pdfSafe(input.patientEmail ?? "");
   const physio = pdfSafe(input.physioName) || "your physiotherapist";
   const dstr = fmtDate(input.sessionDateISO);
   const sessionLine = dstr
@@ -366,10 +368,14 @@ function drawCover(page: PDFPage, input: ExercisePlanPdfInput, font: PDFFont, bo
     : `For ${patient} ${DOT} from your session with ${physio}`;
   page.drawText(pdfSafe(sessionLine), { x: MARGIN, y: height - 80, size: 10, font, color: TAGLINE });
 
+  if (patientEmail) {
+    page.drawText(`Patient email: ${patientEmail}`, { x: MARGIN, y: height - 94, size: 8.5, font, color: COVER_META });
+  }
+
   const creds = pdfSafe(
     `${founder.credentials[0]} ${DOT} ${founder.credentials[1]} ${DOT} Move Better ${DOT} Live Brighter`,
   );
-  page.drawText(creds, { x: MARGIN, y: height - 96, size: 8.5, font, color: COVER_META });
+  page.drawText(creds, { x: MARGIN, y: patientEmail ? height - 108 : height - 96, size: 8.5, font, color: COVER_META });
 }
 
 function drawFooters(pdf: PDFDocument, font: PDFFont): void {
