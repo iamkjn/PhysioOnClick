@@ -870,6 +870,62 @@ p {
   border-radius: var(--radius-card);
 }
 
+.insurance-section {
+  background: #f6fbfd;
+  border-block: 1px solid #dcebf2;
+}
+
+.insurance-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+}
+
+.insurance-copy {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.insurance-copy h2 {
+  margin: 0;
+}
+
+.insurance-copy p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-lg);
+  line-height: 1.65;
+}
+
+.insurance-steps {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.insurance-steps article {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid #d7e7ee;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(4, 50, 70, 0.06);
+}
+
+.insurance-steps strong {
+  color: #043246;
+  font-size: var(--text-md);
+}
+
+.insurance-steps span {
+  color: #60747d;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
 .simple-service-card h3,
 .simple-blog-card h2,
 .simple-price-card h3,
@@ -4875,6 +4931,23 @@ textarea:focus {
   font-size: var(--text-lg);
 }
 
+.admin-library-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.admin-library-editor-actions .button {
+  min-height: 42px;
+}
+
+.admin-library-editor-actions svg,
+.admin-library-share-compose .button svg {
+  width: 17px;
+  height: 17px;
+}
+
 .admin-library-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4894,6 +4967,88 @@ textarea:focus {
   min-height: auto;
   resize: vertical;
   line-height: 1.45;
+}
+
+.admin-library-share {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid #cfe2eb;
+  border-radius: 8px;
+  background: #f7fbfd;
+}
+
+.admin-library-share-head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.admin-library-share-head h3 {
+  margin: var(--space-1) 0 0;
+  color: #043246;
+  font-size: var(--text-md);
+}
+
+.admin-library-share-head p {
+  margin: 0.25rem 0 0;
+  color: #60747d;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.admin-library-share-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--space-4);
+}
+
+.admin-library-share-picker,
+.admin-library-share-compose {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+}
+
+.admin-library-share-results {
+  display: grid;
+  gap: var(--space-2);
+  max-height: 260px;
+  overflow: auto;
+}
+
+.admin-library-share-results button {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin-library-share-results button:hover,
+.admin-library-share-results button:focus-visible {
+  border-color: #85d2f2;
+  background: #eff9fd;
+}
+
+.admin-library-share-results strong {
+  color: #043246;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.admin-library-share-results span,
+.admin-library-share-results small {
+  overflow: hidden;
+  color: #60747d;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 1180px) {
@@ -5017,7 +5172,9 @@ textarea:focus {
   .admin-patient-hero,
   .admin-directory-toolbar,
   .admin-library-toolbar,
-  .admin-library-layout {
+  .admin-library-layout,
+  .admin-library-share-grid,
+  .insurance-layout {
     grid-template-columns: 1fr;
   }
 
@@ -5044,6 +5201,10 @@ textarea:focus {
 
   .admin-library-list {
     max-height: none;
+  }
+
+  .admin-library-share-head {
+    display: grid;
   }
 }
 
@@ -5102,6 +5263,14 @@ textarea:focus {
 
   .admin-library-status {
     justify-self: start;
+  }
+
+  .admin-library-editor-actions {
+    justify-content: flex-start;
+  }
+
+  .insurance-copy p {
+    font-size: var(--text-base);
   }
 }
 

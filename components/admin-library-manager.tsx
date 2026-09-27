@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { collection, doc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
-import { CheckCircle2, Plus, Search } from "lucide-react";
+import { CheckCircle2, Mail, Plus, Search, Send } from "lucide-react";
 import { db, auth } from "@/lib/firebase";
 import { exercises, type Exercise } from "@/lib/exercises";
 import { selfTests, type SelfTest, type SelfTestStep } from "@/lib/self-tests";
@@ -70,6 +70,23 @@ type SavedRecord = Partial<Omit<ExerciseFields, "steps"> & Omit<SelfTestFields, 
   source?: "catalogue" | "draft";
   sourceId?: string;
   kind?: LibraryKind;
+};
+
+type ShareRecipient = {
+  key: string;
+  name: string;
+  email: string;
+  description: string;
+};
+
+type SharePanelState = {
+  open: boolean;
+  exercise: ExerciseRecord | null;
+  email: string;
+  name: string;
+  note: string;
+  search: string;
+  sending: boolean;
 };
 
 const EMPTY_EXERCISE: ExerciseFields = {
@@ -245,6 +262,10 @@ function statusLabel(status: ReviewStatus) {
   return "Draft";
 }
 
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
 export function AdminLibraryManager() {
   const toast = useToast();
   const [activeKind, setActiveKind] = useState<LibraryKind>("exercise");
@@ -269,6 +290,17 @@ export function AdminLibraryManager() {
     negativeResult: "",
     positiveResult: "",
     tips: "",
+  });
+  const [shareRecipients, setShareRecipients] = useState<ShareRecipient[]>([]);
+  const [shareRecipientsLoaded, setShareRecipientsLoaded] = useState(false);
+  const [sharePanel, setSharePanel] = useState<SharePanelState>({
+    open: false,
+    exercise: null,
+    email: "",
+    name: "",
+    note: "",
+    search: "",
+    sending: false,
   });
 
   useEffect(() => {
@@ -296,6 +328,58 @@ export function AdminLibraryManager() {
       live = false;
     };
   }, [toast]);
+
+  useEffect(() => {
+    if (!db) {
+      setShareRecipientsLoaded(true);
+      return;
+    }
+    let live = true;
+    Promise.all([
+      getDocs(collection(db, "patients")),
+      getDocs(collection(db, "dependents")),
+    ])
+      .then(([patientsSnap, dependentsSnap]) => {
+        if (!live) return;
+        const owners = new Map<string, { name: string; email: string }>();
+        const patients: ShareRecipient[] = patientsSnap.docs.map((d) => {
+          const data = d.data();
+          const name = String(data.displayName || "Unnamed patient").trim();
+          const email = String(data.email || "").trim();
+          owners.set(d.id, { name, email });
+          return {
+            key: `patient:${d.id}`,
+            name,
+            email,
+            description: "Primary patient account",
+          };
+        });
+        const dependents: ShareRecipient[] = dependentsSnap.docs.map((d) => {
+          const data = d.data();
+          const owner = owners.get(String(data.ownerId || ""));
+          const name = String(data.name || "Unnamed dependent").trim();
+          return {
+            key: `dependent:${d.id}`,
+            name,
+            email: owner?.email ?? "",
+            description: `${String(data.relationship || "Dependent")} on ${owner?.name ?? "primary account"}`,
+          };
+        });
+        setShareRecipients(
+          [...patients, ...dependents]
+            .filter((recipient) => recipient.email)
+            .sort((a, b) => a.name.localeCompare(b.name))
+        );
+        setShareRecipientsLoaded(true);
+      })
+      .catch(() => {
+        if (!live) return;
+        setShareRecipientsLoaded(true);
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
 
   const exerciseRows = useMemo(() => {
     const staticRows = exercises.map(exerciseFromStatic).map((row) => mergeExercise(row, savedExercises[row.key]));
@@ -495,6 +579,80 @@ export function AdminLibraryManager() {
     }
   }
 
+  function openSharePanel(exercise: ExerciseRecord) {
+    setSharePanel({
+      open: true,
+      exercise,
+      email: "",
+      name: "",
+      note: "",
+      search: "",
+      sending: false,
+    });
+  }
+
+  function selectShareRecipient(recipient: ShareRecipient) {
+    setSharePanel((prev) => ({
+      ...prev,
+      email: recipient.email,
+      name: recipient.name,
+      search: recipient.name,
+    }));
+  }
+
+  async function sendExerciseShare() {
+    const exercise = sharePanel.exercise;
+    const email = sharePanel.email.trim().toLowerCase();
+    if (!exercise) return;
+    if (!isValidEmail(email)) {
+      toast.show("Enter a valid recipient email.", "error");
+      return;
+    }
+    const token = await auth?.currentUser?.getIdToken().catch(() => null);
+    if (!token) {
+      toast.show("Please sign in again before sending.", "error");
+      return;
+    }
+    setSharePanel((prev) => ({ ...prev, sending: true }));
+    try {
+      const response = await fetch("/api/admin/library/share-exercise", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          toEmail: email,
+          toName: sharePanel.name,
+          exerciseTitle: exercise.title,
+          exerciseSlug: exercise.slug,
+          exerciseDescription: exercise.description,
+          setup: exercise.setup,
+          steps: exercise.steps,
+          cues: exercise.cues,
+          note: sharePanel.note,
+        }),
+      });
+      const data = (await response.json().catch(() => ({}))) as { error?: string; sent?: boolean; reason?: string };
+      if (!response.ok) throw new Error(data.error || "Could not send exercise.");
+      toast.show(data.sent ? "Exercise shared by email." : "Exercise share saved; email service is not configured on this environment.", data.sent ? "success" : "info");
+      setSharePanel((prev) => ({ ...prev, open: false, sending: false }));
+    } catch (error) {
+      toast.show(error instanceof Error ? error.message : "Could not send this exercise.", "error");
+      setSharePanel((prev) => ({ ...prev, sending: false }));
+    }
+  }
+
+  const filteredShareRecipients = useMemo(() => {
+    const q = sharePanel.search.trim().toLowerCase();
+    if (!q) return shareRecipients.slice(0, 8);
+    return shareRecipients
+      .filter((recipient) =>
+        [recipient.name, recipient.email, recipient.description].join(" ").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+  }, [sharePanel.search, shareRecipients]);
+
   return (
     <div className="admin-library">
       <section className="admin-page-hero admin-page-hero--compact">
@@ -590,6 +748,17 @@ export function AdminLibraryManager() {
                 onFormChange={setExerciseForm}
                 onTextChange={setExerciseText}
                 onSave={() => void saveExercise()}
+                onShare={() => openSharePanel({
+                  ...exerciseForm,
+                  key: selectedExercise?.key ?? (exerciseForm.id || exerciseForm.slug),
+                  tags: csv(exerciseText.tags),
+                  equipment: lines(exerciseText.equipment),
+                  steps: lines(exerciseText.steps),
+                  cues: lines(exerciseText.cues),
+                  mistakes: lines(exerciseText.mistakes),
+                  source: selectedExercise?.source ?? "draft",
+                  saved: selectedExercise?.saved ?? false,
+                })}
                 saving={saving}
               />
             ) : (
@@ -602,6 +771,17 @@ export function AdminLibraryManager() {
                 saving={saving}
               />
             )}
+            {sharePanel.open && sharePanel.exercise ? (
+              <ExerciseSharePanel
+                exercise={sharePanel.exercise}
+                panel={sharePanel}
+                recipients={filteredShareRecipients}
+                recipientsLoaded={shareRecipientsLoaded}
+                onPanelChange={setSharePanel}
+                onSelectRecipient={selectShareRecipient}
+                onSend={() => void sendExerciseShare()}
+              />
+            ) : null}
           </section>
         </div>
       )}
@@ -624,6 +804,7 @@ function ExerciseEditor({
   onFormChange,
   onTextChange,
   onSave,
+  onShare,
   saving,
 }: {
   form: ExerciseFields;
@@ -631,6 +812,7 @@ function ExerciseEditor({
   onFormChange: (next: ExerciseFields) => void;
   onTextChange: (next: { tags: string; equipment: string; steps: string; cues: string; mistakes: string }) => void;
   onSave: () => void;
+  onShare: () => void;
   saving: boolean;
 }) {
   return (
@@ -640,9 +822,15 @@ function ExerciseEditor({
           <span className="dashboard-eyebrow">Exercise editor</span>
           <h2>{form.title || "Select or add an exercise"}</h2>
         </div>
-        <button type="button" className="button admin-hero-primary" onClick={onSave} disabled={saving}>
-          {saving ? "Saving..." : "Save draft"}
-        </button>
+        <div className="admin-library-editor-actions">
+          <button type="button" className="button secondary" onClick={onShare} disabled={!form.title.trim()}>
+            <Mail aria-hidden="true" />
+            Share
+          </button>
+          <button type="button" className="button admin-hero-primary" onClick={onSave} disabled={saving}>
+            {saving ? "Saving..." : "Save draft"}
+          </button>
+        </div>
       </div>
       <div className="admin-library-form-grid">
         <Field label="Title"><input className="input" value={form.title} onChange={(e) => onFormChange({ ...form, title: e.target.value, slug: form.slug || slugify(e.target.value) })} /></Field>
@@ -669,6 +857,98 @@ function ExerciseEditor({
       <Field label="Mistakes / stop notes, one per line"><textarea className="input" rows={4} value={text.mistakes} onChange={(e) => onTextChange({ ...text, mistakes: e.target.value })} /></Field>
       <Field label="Clinical review notes"><textarea className="input" rows={3} value={form.reviewNotes} onChange={(e) => onFormChange({ ...form, reviewNotes: e.target.value })} /></Field>
     </>
+  );
+}
+
+function ExerciseSharePanel({
+  exercise,
+  panel,
+  recipients,
+  recipientsLoaded,
+  onPanelChange,
+  onSelectRecipient,
+  onSend,
+}: {
+  exercise: ExerciseRecord;
+  panel: SharePanelState;
+  recipients: ShareRecipient[];
+  recipientsLoaded: boolean;
+  onPanelChange: (next: SharePanelState | ((prev: SharePanelState) => SharePanelState)) => void;
+  onSelectRecipient: (recipient: ShareRecipient) => void;
+  onSend: () => void;
+}) {
+  return (
+    <div className="admin-library-share" role="region" aria-label="Share exercise by email">
+      <div className="admin-library-share-head">
+        <div>
+          <span className="dashboard-eyebrow">Share exercise</span>
+          <h3>{exercise.title}</h3>
+          <p>Send this exercise to a patient account or any email address.</p>
+        </div>
+        <button type="button" className="button secondary" onClick={() => onPanelChange((prev) => ({ ...prev, open: false }))}>
+          Close
+        </button>
+      </div>
+      <div className="admin-library-share-grid">
+        <div className="admin-library-share-picker">
+          <Field label="Search patients">
+            <input
+              className="input"
+              value={panel.search}
+              onChange={(event) => onPanelChange((prev) => ({ ...prev, search: event.target.value }))}
+              placeholder="Search patient, dependent or email..."
+            />
+          </Field>
+          <div className="admin-library-share-results" role="list" aria-label="Matching patients">
+            {!recipientsLoaded ? (
+              <p className="muted">Loading patients...</p>
+            ) : recipients.length === 0 ? (
+              <p className="muted">No matching patient emails. You can still enter an email manually.</p>
+            ) : (
+              recipients.map((recipient) => (
+                <button key={recipient.key} type="button" onClick={() => onSelectRecipient(recipient)}>
+                  <strong>{recipient.name}</strong>
+                  <span>{recipient.email}</span>
+                  <small>{recipient.description}</small>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+        <div className="admin-library-share-compose">
+          <Field label="Recipient email">
+            <input
+              className="input"
+              type="email"
+              value={panel.email}
+              onChange={(event) => onPanelChange((prev) => ({ ...prev, email: event.target.value }))}
+              placeholder="patient@example.com"
+            />
+          </Field>
+          <Field label="Recipient name, optional">
+            <input
+              className="input"
+              value={panel.name}
+              onChange={(event) => onPanelChange((prev) => ({ ...prev, name: event.target.value }))}
+              placeholder="Patient name"
+            />
+          </Field>
+          <Field label="Optional note">
+            <textarea
+              className="input"
+              rows={3}
+              value={panel.note}
+              onChange={(event) => onPanelChange((prev) => ({ ...prev, note: event.target.value }))}
+              placeholder="Add any dosage, frequency or context you want the patient to see."
+            />
+          </Field>
+          <button type="button" className="button admin-hero-primary" onClick={onSend} disabled={panel.sending}>
+            <Send aria-hidden="true" />
+            {panel.sending ? "Sending..." : "Send exercise"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

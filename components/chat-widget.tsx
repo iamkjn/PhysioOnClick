@@ -15,6 +15,7 @@ type ChipAction =
   | "ask"
   | "services"
   | "pricing"
+  | "insurance"
   | "book"
   | "location"
   | "contact"
@@ -22,6 +23,7 @@ type ChipAction =
   | "home"
   | "copyEmail"
   | "appointments"
+  | "invoices"
   | "serviceDetail";
 type Chip = { emoji: string; label: string; action: ChipAction; text?: string };
 type ChatApiResponse = {
@@ -71,14 +73,18 @@ const SERVICES = [
 const PRICING_TEXT =
   "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
 
+const INSURANCE_TEXT =
+  "Yes, PhysioOnClick provides insurance-ready PDF invoices for paid sessions.\n\nHow to claim:\n• Download your invoice from your patient account under Invoices, or use the copy emailed after payment.\n• Submit the PDF to your UK health insurer through their claim portal or app.\n• Add your policy number, claim reference and any extra details your insurer asks for.\n\nReimbursement depends on your own policy, so it is worth checking your cover before booking if you are unsure.";
+
 const GREETING =
-  "Welcome to PhysioOnClick.\n\nI can help you choose the right online physio service, understand pricing, prepare for your appointment, find exercise and self-test guidance, or get to the right booking/account page.";
+  "Welcome to PhysioOnClick.\n\nI can help you choose the right online physio service, understand pricing and insurance invoices, prepare for your appointment, find exercise and self-test guidance, or get to the right booking/account page.";
 
 const HOME_CHIPS: Chip[] = [
   { emoji: "?", label: "Which service is right?", action: "ask", text: "Which PhysioOnClick service is right for me?" },
   { emoji: "?", label: "How online physio works", action: "ask", text: "How does online physiotherapy work at PhysioOnClick?" },
   { emoji: "🏃", label: "Our services", action: "services" },
   { emoji: "💰", label: "Pricing", action: "pricing" },
+  { emoji: "🧾", label: "Insurance claims", action: "insurance" },
   { emoji: "📅", label: "Book appointment", action: "book" },
   { emoji: "!", label: "Cancellation policy", action: "cancellation" },
 ];
@@ -270,6 +276,14 @@ export function ChatWidget() {
     addBot(PRICING_TEXT, BACK_CHIPS);
   }
 
+  function tapInsurance() {
+    addBot(INSURANCE_TEXT, [
+      { emoji: "🧾", label: "My invoices", action: "invoices" },
+      { emoji: "📅", label: "Book appointment", action: "book" },
+      { emoji: "🏠", label: "Main menu", action: "home" },
+    ]);
+  }
+
   function tapBook() {
     router.push("/book");
   }
@@ -384,12 +398,14 @@ export function ChatWidget() {
     if (!silent.includes(chip.label)) addUser(chip.label);
     if (chip.action === "services") tapServices();
     if (chip.action === "pricing") tapPricing();
+    if (chip.action === "insurance") tapInsurance();
     if (chip.action === "book") tapBook();
     if (chip.action === "location") tapLocation();
     if (chip.action === "contact") tapContact();
     if (chip.action === "cancellation") tapCancellation();
     if (chip.action === "home") tapHome();
     if (chip.action === "appointments") router.push("/patient/appointments");
+    if (chip.action === "invoices") router.push("/patient/invoices");
     if (chip.action === "serviceDetail" && chip.text) tapServiceDetail(chip.label, chip.text);
     if (chip.action === "copyEmail") {
       navigator.clipboard.writeText(EMAIL).catch(() => {});

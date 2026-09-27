@@ -12,7 +12,16 @@ import { TrustpilotReviews } from "@/components/trustpilot-reviews";
 // Title/description/openGraph are inherited from the root layout — metadata
 // merges per field, so declaring only `alternates` here leaves those intact.
 export const metadata: Metadata = {
-  alternates: { canonical: "/" }
+  alternates: { canonical: "/" },
+  description:
+    "Online physiotherapy across the UK with HCPC-registered care, personalised exercise plans, insurance-ready invoices and clear guidance on claiming through private health insurance.",
+  keywords: [
+    "online physiotherapy UK",
+    "private physiotherapy insurance invoice",
+    "physiotherapy receipt for insurance",
+    "claim physiotherapy through health insurance",
+    "HCPC online physio",
+  ],
 };
 
 export default async function HomePage() {
@@ -152,6 +161,36 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
+      <section className="page-section insurance-section">
+        <Reveal direction="up">
+          <div className="site-shell insurance-layout">
+            <div className="insurance-copy">
+              <span className="eyebrow">Private health insurance</span>
+              <h2>Claiming your PhysioOnClick invoice</h2>
+              <p>
+                If your UK health insurance policy includes physiotherapy, you can usually submit
+                your paid session invoice to your insurer for reimbursement. Every paid booking
+                creates an insurance-ready PDF invoice and receipt automatically.
+              </p>
+            </div>
+            <div className="insurance-steps" aria-label="Insurance claim steps">
+              <article>
+                <strong>1. Book and pay online</strong>
+                <span>Your payment receipt and invoice are generated after the session is confirmed.</span>
+              </article>
+              <article>
+                <strong>2. Download your invoice</strong>
+                <span>Find it in your patient account under invoices, or use the copy sent by email.</span>
+              </article>
+              <article>
+                <strong>3. Submit to your insurer</strong>
+                <span>Upload the PDF through your insurer portal with any policy or claim reference they ask for.</span>
+              </article>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
       <section className="page-section simple-section">
         <Reveal direction="up">
           <div className="site-shell section-heading">
@@ -173,7 +212,7 @@ export default async function HomePage() {
           </details>
           <details>
             <summary>Can I claim this back through insurance?</summary>
-            <p>Yes &mdash; every paid session generates an insurance-ready receipt and invoice automatically, emailed to you and available any time from your account.</p>
+            <p>Yes &mdash; every paid session generates an insurance-ready receipt and PDF invoice automatically. Download it from your patient account, then submit it to your UK private health insurer through their claim portal or app. Check your policy first, because reimbursement depends on your insurer and level of cover.</p>
           </details>
         </div>
       </section>
