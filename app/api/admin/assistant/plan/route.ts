@@ -34,6 +34,8 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "hello@physioonclick.co.uk";
 const CHAT_MODELS = ["gemini-3.5-flash", "gemini-3.1-flash-lite"];
 const MAX_REQUEST_CHARS = 1600;
 const MAX_SELECTED = 10;
+const MAX_AI_CATALOGUE = 42;
+const AI_TIMEOUT_MS = 9000;
 
 function isAdmin(decoded: DecodedIdToken): boolean {
   return decoded.admin === true || (!!decoded.email && decoded.email === ADMIN_EMAIL);
@@ -89,12 +91,8 @@ function buildExercise(exercise: Exercise, reason: string, dosage?: ExerciseDosa
 }
 
 function fallbackPlan(request: string, selectedIds: string[]): PlanResponse {
-  const catalogue = exercises.filter((exercise) => !exercise.retired);
-  const selected = selectedIds
-    .map((id) => catalogue.find((exercise) => exercise.id === id))
-    .filter((exercise): exercise is Exercise => Boolean(exercise));
-  const ranked = catalogue
-    .map((exercise) => ({ exercise, score: scoreExercise(exercise, request) }))
+  const selected = selectedExercises(selectedIds);
+  const ranked = rankedExercises(request, selectedIds)
     .filter(({ score, exercise }) => score > 0 && !selected.some((item) => item.id === exercise.id))
     .sort((a, b) => b.score - a.score)
     .slice(0, Math.max(0, 6 - selected.length))
@@ -156,10 +154,35 @@ function normaliseAiPlan(text: string, request: string, selectedIds: string[]): 
   }
 }
 
-function systemPrompt(): string {
-  const catalogue = exercises
-    .filter((exercise) => !exercise.retired)
-    .slice(0, 220)
+function selectedExercises(selectedIds: string[]): Exercise[] {
+  const catalogue = exercises.filter((exercise) => !exercise.retired);
+  return selectedIds
+    .map((id) => catalogue.find((exercise) => exercise.id === id))
+    .filter((exercise): exercise is Exercise => Boolean(exercise));
+}
+
+function rankedExercises(request: string, selectedIds: string[]): Array<{ exercise: Exercise; score: number }> {
+  const selected = new Set(selectedIds);
+  return exercises
+    .filter((exercise) => !exercise.retired && !selected.has(exercise.id))
+    .map((exercise) => ({ exercise, score: scoreExercise(exercise, request) }))
+    .sort((a, b) => b.score - a.score || a.exercise.title.localeCompare(b.exercise.title));
+}
+
+function catalogueForAi(request: string, selectedIds: string[]): Exercise[] {
+  const selected = selectedExercises(selectedIds);
+  const ranked = rankedExercises(request, selectedIds)
+    .filter(({ score }) => score > 0)
+    .slice(0, Math.max(0, MAX_AI_CATALOGUE - selected.length))
+    .map(({ exercise }) => exercise);
+  const withFallback = ranked.length
+    ? ranked
+    : rankedExercises(request, selectedIds).slice(0, Math.max(0, MAX_AI_CATALOGUE - selected.length)).map(({ exercise }) => exercise);
+  return [...selected, ...withFallback].slice(0, MAX_AI_CATALOGUE);
+}
+
+function systemPrompt(aiCatalogue: Exercise[]): string {
+  const catalogue = aiCatalogue
     .map((exercise) => ({
       id: exercise.id,
       title: exercise.title,
@@ -195,6 +218,22 @@ Return JSON only:
 }`;
 }
 
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("AI_TIMEOUT")), timeoutMs);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
 export async function POST(req: NextRequest) {
   if (await isRateLimited("CHAT_RATE_LIMITER", clientIp(req))) {
     return NextResponse.json({ error: "Too many assistant requests. Please wait a minute and try again." }, { status: 429 });
@@ -215,6 +254,8 @@ export async function POST(req: NextRequest) {
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return NextResponse.json(fallbackPlan(request || patientName || "exercise plan", selectedIds));
+  const aiCatalogue = catalogueForAi(request || patientName || "exercise plan", selectedIds);
+  if (aiCatalogue.length === 0) return NextResponse.json(fallbackPlan(request || patientName || "exercise plan", selectedIds));
 
   const userPrompt = [
     patientName ? `Patient: ${patientName}` : "",
@@ -225,11 +266,12 @@ export async function POST(req: NextRequest) {
   const genAI = new GoogleGenerativeAI(apiKey);
   for (const modelName of CHAT_MODELS) {
     try {
-      const model = genAI.getGenerativeModel({ model: modelName, systemInstruction: systemPrompt() });
-      const result = await model.generateContent(userPrompt);
+      const model = genAI.getGenerativeModel({ model: modelName, systemInstruction: systemPrompt(aiCatalogue) });
+      const result = await withTimeout(model.generateContent(userPrompt), AI_TIMEOUT_MS);
       return NextResponse.json(normaliseAiPlan(result.response.text(), request, selectedIds));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      if (message === "AI_TIMEOUT") return NextResponse.json(fallbackPlan(request || patientName || "exercise plan", selectedIds));
       if (!/\[(404|429|500|503)\b/.test(message)) break;
     }
   }
