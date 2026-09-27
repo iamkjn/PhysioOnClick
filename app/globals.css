@@ -5051,6 +5051,268 @@ textarea:focus {
   white-space: nowrap;
 }
 
+.admin-ai-workspace {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.admin-ai-workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(420px, 1.35fr) minmax(280px, 0.88fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.admin-ai-card {
+  display: grid;
+  gap: var(--space-4);
+  border-radius: 8px;
+}
+
+.admin-ai-card-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.admin-ai-card-head > svg {
+  width: 22px;
+  height: 22px;
+  color: #0a77a8;
+}
+
+.admin-ai-card-head h2 {
+  margin: 0;
+  color: #043246;
+  font-size: var(--text-lg);
+}
+
+.admin-ai-card-head p {
+  margin: 0.25rem 0 0;
+  color: #60747d;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.admin-ai-card .button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.admin-ai-manual-add {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid #e3edf1;
+}
+
+.admin-ai-mini-list,
+.admin-ai-recipient-list {
+  display: grid;
+  gap: var(--space-2);
+  max-height: 310px;
+  overflow: auto;
+}
+
+.admin-ai-mini-list button,
+.admin-ai-recipient-list button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.15rem 0.55rem;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin-ai-recipient-list button {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.admin-ai-mini-list button:hover,
+.admin-ai-mini-list button:focus-visible,
+.admin-ai-recipient-list button:hover,
+.admin-ai-recipient-list button:focus-visible,
+.admin-ai-recipient-list button.is-selected {
+  border-color: #85d2f2;
+  background: #eff9fd;
+}
+
+.admin-ai-mini-list svg {
+  grid-row: span 2;
+  width: 15px;
+  height: 15px;
+  margin-top: 0.12rem;
+  color: #0a77a8;
+}
+
+.admin-ai-mini-list span,
+.admin-ai-recipient-list strong {
+  overflow: hidden;
+  color: #043246;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-ai-mini-list small,
+.admin-ai-recipient-list span,
+.admin-ai-recipient-list small {
+  overflow: hidden;
+  color: #60747d;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-ai-plan-card {
+  min-width: 0;
+}
+
+.admin-ai-plan-summary {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid #d7e7ee;
+  border-radius: 8px;
+  background: #f7fbfd;
+  color: #244654;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.admin-ai-safety-list {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  color: #775a13;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.admin-ai-plan-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.admin-ai-plan-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.admin-ai-plan-item.is-selected {
+  border-color: #85d2f2;
+  box-shadow: 0 8px 22px rgba(4, 50, 70, 0.07);
+}
+
+.admin-ai-plan-item .exercise-figure-tile {
+  width: 76px;
+  height: 76px;
+  border-radius: 7px;
+}
+
+.admin-ai-plan-item-copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.admin-ai-plan-item-copy label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: #043246;
+  font-family: var(--font-sans);
+  font-weight: 800;
+}
+
+.admin-ai-plan-item-copy span,
+.admin-ai-plan-item-copy p {
+  margin: 0;
+  color: #60747d;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
+.admin-ai-dose-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+  gap: var(--space-2);
+}
+
+.admin-ai-dose-grid input,
+.admin-ai-dose-grid button {
+  min-height: 38px;
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: #fff;
+  color: #043246;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+}
+
+.admin-ai-dose-grid input {
+  min-width: 0;
+  padding: 0 0.55rem;
+}
+
+.admin-ai-dose-grid button {
+  width: 38px;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  color: #b42318;
+}
+
+.admin-ai-dose-grid svg {
+  width: 15px;
+  height: 15px;
+}
+
+.admin-ai-dose-note {
+  grid-column: 1 / -1;
+}
+
+.admin-ai-or {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: #7c8f99;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-ai-or::before,
+.admin-ai-or::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: #e3edf1;
+}
+
+.admin-ai-action-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
 @media (max-width: 1180px) {
   .admin-quick-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5174,6 +5436,7 @@ textarea:focus {
   .admin-library-toolbar,
   .admin-library-layout,
   .admin-library-share-grid,
+  .admin-ai-workspace-grid,
   .insurance-layout {
     grid-template-columns: 1fr;
   }
@@ -5205,6 +5468,11 @@ textarea:focus {
 
   .admin-library-share-head {
     display: grid;
+  }
+
+  .admin-ai-mini-list,
+  .admin-ai-recipient-list {
+    max-height: none;
   }
 }
 
@@ -5257,7 +5525,8 @@ textarea:focus {
   }
 
   .admin-library-form-grid,
-  .admin-library-row {
+  .admin-library-row,
+  .admin-ai-plan-item {
     grid-template-columns: 1fr;
   }
 
@@ -5271,6 +5540,14 @@ textarea:focus {
 
   .insurance-copy p {
     font-size: var(--text-base);
+  }
+
+  .admin-ai-dose-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-ai-dose-grid button {
+    width: 100%;
   }
 }
 
