@@ -57,6 +57,8 @@ import { SkeletonRow } from "@/components/skeleton";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminSelfTestSelector } from "@/components/admin-self-test-selector";
 import { AdminAssessmentReviewItem } from "@/components/admin-assessment-review";
+import { AdminClinicalAssistant } from "@/components/admin-clinical-assistant";
+import type { AdminClinicalAssistantContext, AdminClinicalSummaryPatch } from "@/lib/admin-clinical-assistant";
 
 function getPainColor(score: number): string {
   if (score <= 3) return "var(--color-success)";
@@ -131,6 +133,18 @@ function exerciseTitles(ids: string[]) {
   return unique
     .map((id) => exercises.find((exercise) => exercise.id === id)?.title)
     .filter((title): title is string => Boolean(title));
+}
+
+function positiveFlagLabels(flags: AssessmentRedFlags, conditionalFlags: ConditionalRedFlags) {
+  const common = (Object.keys(flags) as (keyof AssessmentRedFlags)[])
+    .filter((key) => key !== "none" && flags[key])
+    .map((key) => RED_FLAG_FIELD_LABELS[key] ?? key);
+  const conditional = Object.entries(conditionalFlags).flatMap(([group, fields]) =>
+    Object.entries(fields ?? {})
+      .filter(([, selected]) => selected === true)
+      .map(([field]) => `${CONDITION_GROUP_LABELS[group as ConditionGroup] ?? group}: ${RED_FLAG_FIELD_LABELS[field] ?? field}`),
+  );
+  return [...common, ...conditional];
 }
 
 function testResultLines(results: SelfTestResult[]) {
@@ -637,6 +651,110 @@ export function StartSessionFlow({ bookingId }: Props) {
       ),
     [form, confirmedSlugs, assignedIds]
   );
+
+  const assistantContext: AdminClinicalAssistantContext = useMemo(() => ({
+    bookingId,
+    currentStep: STEPS[step - 1]?.label ?? "Session",
+    booking: {
+      patientName: booking?.patientName ?? "",
+      service: booking?.service ?? "",
+      sessionDate: booking?.sessionDate?.toISOString?.() ?? "",
+    },
+    assessment: form ? {
+      patientAge: form.patientAge,
+      bodyArea: form.bodyArea,
+      bodyRegions: form.bodyRegions,
+      presentingComplaint: form.presentingComplaint,
+      symptoms: form.symptoms,
+      functionalImpact: form.functionalImpact,
+      goals: form.goals,
+      painScore: form.painScore,
+      clinicalArea: form.subjective.clinicalArea,
+      irritability: form.subjective.irritability,
+      severity: form.subjective.severity,
+      yellowFlags: form.subjective.yellowFlags,
+      medicalHistory: form.medicalHistory,
+      medications: form.medications,
+      previousTreatment: form.previousTreatment,
+    } : null,
+    screening: {
+      concern,
+      positiveFlags: positiveFlagLabels(flags, conditionalFlags),
+      riskPlanText,
+      screeningGateSatisfied,
+    },
+    selfTests: {
+      selected: candidateTests.map((test) => test.name),
+      results: selfTestResults.map((result) => ({
+        name: selfTests.find((test) => test.slug === result.slug)?.name ?? result.slug,
+        result: result.result,
+        notes: result.notes,
+      })),
+    },
+    clinicalImpression: diagnosis.map((item) => ({
+      label: item.label,
+      confirmed: item.confirmedByAdmin,
+    })),
+    exercises: {
+      assigned: exerciseTitles(sessionAssignedIds.length > 0 ? sessionAssignedIds : assignedIds),
+      suggested: suggestions.slice(0, 8).map((item) => ({
+        title: item.exercise.title,
+        reason: item.reason,
+        stage: item.exercise.stage,
+        bodyArea: item.exercise.bodyPart,
+      })),
+    },
+    summary: {
+      painScore: summary.painScore,
+      recoveryPercent: summary.recoveryPercent,
+      sessionOutcome: summary.sessionOutcome,
+      workedOn: summary.workedOn,
+      nextSteps: summary.nextSteps,
+      followUpWeeks: summary.followUpWeeks,
+      safetyNettingProvided,
+      safetyNettingNotes,
+    },
+  }), [
+    assignedIds,
+    booking,
+    bookingId,
+    candidateTests,
+    conditionalFlags,
+    concern,
+    diagnosis,
+    flags,
+    form,
+    riskPlanText,
+    safetyNettingNotes,
+    safetyNettingProvided,
+    screeningGateSatisfied,
+    selfTestResults,
+    sessionAssignedIds,
+    step,
+    suggestions,
+    summary.followUpWeeks,
+    summary.nextSteps,
+    summary.painScore,
+    summary.recoveryPercent,
+    summary.sessionOutcome,
+    summary.workedOn,
+  ]);
+
+  function applyAssistantSummaryPatch(patch: AdminClinicalSummaryPatch) {
+    setSummary((current) => ({
+      ...current,
+      workedOn: patch.workedOn?.trim() ? patch.workedOn : current.workedOn,
+      nextSteps: patch.nextSteps?.trim() ? patch.nextSteps : current.nextSteps,
+    }));
+    if (patch.safetyNettingNotes?.trim()) setSafetyNettingNotes(patch.safetyNettingNotes);
+    setManualSummaryEdits((current) => ({
+      ...current,
+      workedOn: patch.workedOn?.trim() ? true : current.workedOn,
+      nextSteps: patch.nextSteps?.trim() ? true : current.nextSteps,
+      safetyNettingNotes: patch.safetyNettingNotes?.trim() ? true : current.safetyNettingNotes,
+    }));
+    toast.show("Clinical co-pilot text applied. Review before publishing.", "success");
+  }
 
   async function handleExerciseAssignmentChange(exerciseId: string, action: "assigned" | "removed") {
     setAssignedIds((current) =>
@@ -1346,6 +1464,11 @@ export function StartSessionFlow({ bookingId }: Props) {
           )}
         </main>
       </div>
+      <AdminClinicalAssistant
+        bookingId={bookingId}
+        context={assistantContext}
+        onApplySummaryPatch={applyAssistantSummaryPatch}
+      />
     </div>
   );
 }

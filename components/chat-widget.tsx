@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { track } from "@/lib/analytics";
 import { auth } from "@/lib/firebase";
@@ -153,6 +153,7 @@ function renderChatText(text: string): ReactNode {
 
 export function ChatWidget() {
   const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [chips, setChips] = useState<Chip[]>([]);
@@ -231,6 +232,8 @@ export function ChatWidget() {
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [open]);
+
+  if (pathname?.startsWith("/admin")) return null;
 
   // ── Tap handlers ───────────────────────────────────────────────────────────
 
