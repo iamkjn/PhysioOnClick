@@ -382,7 +382,7 @@ export function ChatWidget() {
           <div className="chat-header">
             <div className="chat-header-avatar">P</div>
             <div>
-              <div className="chat-header-eyebrow">UK&apos;s #1 online physio platform</div>
+              <div className="chat-header-eyebrow">Online physiotherapy across the UK</div>
               <div className="chat-header-title">PhysioOnClick Assistant</div>
               <div className="chat-header-status">
                 <span className="chat-header-status-dot" />
