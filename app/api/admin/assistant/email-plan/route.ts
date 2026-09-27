@@ -101,7 +101,9 @@ export async function POST(request: Request) {
   const imageByExerciseId: Record<string, Uint8Array | null> = {};
   await Promise.all(
     selected.map(async ({ exercise }) => {
-      imageByExerciseId[exercise.id] = await downloadObject(`exercise-images/${exercise.id}-pdf.png`).catch(() => null);
+      imageByExerciseId[exercise.id] =
+        (await downloadObject(`exercise-images/${exercise.id}-pdf.png`).catch(() => null)) ??
+        (await downloadObject(`exercise-images/${exercise.id}.png`).catch(() => null));
     }),
   );
 
@@ -113,6 +115,7 @@ export async function POST(request: Request) {
       index: index + 1,
       title: exercise.title,
       imageBytes: imageByExerciseId[exercise.id] ?? null,
+      pose: exercise.pose,
       setup: exercise.setup ?? exercise.description ?? null,
       steps: exercise.steps ?? [],
       cues: (exercise.cues ?? []).slice(0, 3),
@@ -128,6 +131,7 @@ export async function POST(request: Request) {
     physioName: founder.name,
     sessionDateISO: new Date().toISOString(),
     cards,
+    oneExercisePerPage: true,
   });
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://physioonclick.co.uk";

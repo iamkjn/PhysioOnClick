@@ -23,6 +23,7 @@ export function buildPlanCards(
       index: cards.length + 1,
       title: ex.title,
       imageBytes: imageByExerciseId[a.exerciseId] ?? null,
+      pose: ex.pose,
       setup: ex.setup ?? ex.description ?? null,
       steps: ex.steps ?? [],
       cues: (ex.cues ?? []).slice(0, 3),

@@ -1,4 +1,5 @@
 import { PDFDocument, rgb, StandardFonts, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
+import { POSE_SPECS, POSE_VIEWBOX, resolvePose } from "@/lib/exercise-poses";
 import { invoiceIssuer, founder } from "@/lib/site-data";
 import { PRACTICE_PHONE } from "@/lib/structured-data";
 
@@ -6,6 +7,7 @@ export type ExercisePlanCard = {
   index: number;
   title: string;
   imageBytes: Uint8Array | null;
+  pose?: string | null;
   setup: string | null;
   steps: string[];
   cues: string[];
@@ -20,6 +22,7 @@ export type ExercisePlanPdfInput = {
   physioName: string;
   sessionDateISO: string | null;
   cards: ExercisePlanCard[];
+  oneExercisePerPage?: boolean;
 };
 
 const DOT = "·"; // middle dot — WinAnsi-safe separator
@@ -43,6 +46,7 @@ const MARGIN = 40;
 const PAD = 16; // card inner padding
 const BADGE = 24; // number-badge diameter
 const IMG = 108; // embedded illustration box (square)
+const IMG_LARGE = 174; // admin-shared PDFs favour one clear exercise per page
 const IMG_GAP = 16;
 const CARD_GAP = 13;
 const COVER_H = 128;
@@ -141,7 +145,8 @@ function layoutCard(
   font: PDFFont,
   bold: PDFFont,
   pageWidth: number,
-  withVisual: boolean
+  withVisual: boolean,
+  visualSize: number,
 ): CardLayout {
   const innerLeft = MARGIN + PAD;
   const innerRight = pageWidth - MARGIN - PAD;
@@ -150,10 +155,10 @@ function layoutCard(
 
   // Two zones: text sits in the narrow column beside the figure until it has
   // flowed past the figure's height, then reclaims the full card width.
-  const narrowX = withVisual ? innerLeft + IMG + IMG_GAP : innerLeft;
+  const narrowX = withVisual ? innerLeft + visualSize + IMG_GAP : innerLeft;
   const narrowW = innerRight - narrowX;
   const fullW = innerRight - innerLeft;
-  const figureZone = withVisual ? IMG + 2 : 0;
+  const figureZone = withVisual ? visualSize + 2 : 0;
 
   const titleLines = wrapText(pdfSafe(card.title) || "Exercise", bold, T_TITLE, titleWidth);
 
@@ -252,6 +257,54 @@ function drawCheck(page: PDFPage, x: number, y: number, s: number, color: Return
   page.drawLine({ start: { x: x + s * 0.38, y }, end: { x: x + s, y: y + s * 0.92 }, thickness: 1.3, color });
 }
 
+function drawExerciseFigure(
+  page: PDFPage,
+  x: number,
+  y: number,
+  size: number,
+  card: ExercisePlanCard,
+): void {
+  page.drawSvgPath(roundedRectPath(size, size, 14), {
+    x,
+    y: y + size,
+    color: WHITE,
+    borderColor: CARD_BORDER,
+    borderWidth: 1,
+  });
+
+  const pose = POSE_SPECS[resolvePose(card.pose, card.title)];
+  const scale = Math.min((size * 0.74) / POSE_VIEWBOX.w, (size * 0.74) / POSE_VIEWBOX.h);
+  const drawnW = POSE_VIEWBOX.w * scale;
+  const drawnH = POSE_VIEWBOX.h * scale;
+  const offsetX = x + (size - drawnW) / 2;
+  const topY = y + size - (size - drawnH) / 2;
+  const point = (px: number, py: number) => ({
+    x: offsetX + px * scale,
+    y: topY - py * scale,
+  });
+  const stroke = Math.max(2, size * 0.018);
+
+  for (const [cx, cy, r] of pose.circles) {
+    const c = point(cx, cy);
+    page.drawCircle({
+      x: c.x,
+      y: c.y,
+      size: r * scale,
+      color: WHITE,
+      borderColor: SKY,
+      borderWidth: stroke,
+    });
+  }
+  for (const [x1, y1, x2, y2] of pose.segments) {
+    page.drawLine({
+      start: point(x1, y1),
+      end: point(x2, y2),
+      thickness: stroke,
+      color: SKY,
+    });
+  }
+}
+
 function drawCard(
   page: PDFPage,
   topY: number,
@@ -260,7 +313,8 @@ function drawCard(
   font: PDFFont,
   bold: PDFFont,
   image: PDFImage | null,
-  pageWidth: number
+  pageWidth: number,
+  visualSize: number,
 ): void {
   const cardLeft = MARGIN;
   const cardWidth = pageWidth - MARGIN * 2;
@@ -300,9 +354,13 @@ function drawCard(
   const titleRowH = Math.max(BADGE, layout.titleLines.length * leading(T_TITLE));
   const bodyTop = topY - PAD - titleRowH - GAP_TITLE_BODY;
 
-  // Left gutter: the real illustration, when we have one.
-  if (layout.hasVisual && image) {
-    page.drawImage(image, { x: innerLeft, y: bodyTop - IMG, width: IMG, height: IMG });
+  if (layout.hasVisual) {
+    const imageY = bodyTop - visualSize;
+    if (image) {
+      page.drawImage(image, { x: innerLeft, y: imageY, width: visualSize, height: visualSize });
+    } else {
+      drawExerciseFigure(page, innerLeft, imageY, visualSize, card);
+    }
   }
 
   const drawRow = (row: Row): void => {
@@ -416,6 +474,7 @@ export async function buildExercisePlanPdf(input: ExercisePlanPdfInput): Promise
 
   drawCover(page, input, font, bold);
   let y = height - COVER_H - 12;
+  const visualSize = input.oneExercisePerPage ? IMG_LARGE : IMG;
 
   for (const card of input.cards) {
     // Embed the illustration, tolerating a corrupt PNG (render as if no image).
@@ -428,19 +487,21 @@ export async function buildExercisePlanPdf(input: ExercisePlanPdfInput): Promise
       }
     }
 
-    // No stick-figure fallback: a card only reserves the illustration gutter
-    // when a real image embedded successfully, otherwise text reclaims the
-    // full card width.
-    const layout = layoutCard(card, font, bold, width, image != null);
+    // Always keep a visual area. Uploaded images get priority; otherwise the
+    // same pose figure used in the web exercise library is drawn as PDF vectors.
+    const layout = layoutCard(card, font, bold, width, true, visualSize);
 
     // A card taller than a whole page still gets drawn (overflowing the
     // footer) — it only triggers one page break, never an infinite loop.
-    if (y - layout.height < BOTTOM_MARGIN) {
+    if (
+      y - layout.height < BOTTOM_MARGIN ||
+      (input.oneExercisePerPage && card.index > 1)
+    ) {
       page = pdf.addPage(PAGE);
       y = height - TOP_MARGIN;
     }
 
-    drawCard(page, y, card, layout, font, bold, image, width);
+    drawCard(page, y, card, layout, font, bold, image, width, visualSize);
     y -= layout.height + CARD_GAP;
   }
 
