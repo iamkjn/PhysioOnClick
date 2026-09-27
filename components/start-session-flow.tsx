@@ -6,7 +6,8 @@
 // section remains directly accessible throughout the appointment.
 //
 // Persists to sessionRecords/{bookingId} (lib/session-records.ts) so leaving
-// and returning mid-session resumes at `currentStep`.
+// and returning keeps saved clinical state, while each Start Session entry
+// deliberately opens at step 1 for clinician re-review.
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -409,14 +410,15 @@ export function StartSessionFlow({ bookingId }: Props) {
       const rec = await getOrCreateSessionRecord(bookingId, snapshot);
       if (!live) return;
       setRecord(rec);
-      const restoredStep = rec.workflowVersion >= 2
+      const savedStep = rec.workflowVersion >= 2
         ? Math.min(STEPS.length, Math.max(1, rec.currentStep || 1))
         : Math.min(STEPS.length, Math.max(1, (rec.currentStep || 1) + 1));
-      setStep(restoredStep);
-      setHighestVisitedStep(restoredStep);
+      const landingStep = 1;
+      setStep(landingStep);
+      setHighestVisitedStep(Math.max(landingStep, savedStep));
       if (rec.workflowVersion < 2) {
         try {
-          await updateSessionRecordStep(bookingId, { workflowVersion: 2, currentStep: restoredStep });
+          await updateSessionRecordStep(bookingId, { workflowVersion: 2, currentStep: savedStep });
         } catch {
           /* best effort migration; the session can still be reviewed */
         }
