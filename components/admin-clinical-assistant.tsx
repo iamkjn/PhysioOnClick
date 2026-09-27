@@ -26,25 +26,25 @@ type QuickPrompt = {
 
 const QUICK_PROMPTS: QuickPrompt[] = [
   {
-    label: "Audit missing steps",
-    prompt: "Audit this session for missing UK-standard safety, assessment, documentation and follow-up steps. Prioritise anything I should address before publishing.",
+    label: "Smart next steps",
+    prompt: "Using the live PhysioOnClick session context, tell me exactly what to do next in this Start Session screen. Focus on missing self-tests, clinical impression, exercise-library assignments, safety-netting, follow-up and summary fields.",
   },
   {
-    label: "Suggest tests",
-    prompt: "Based on this presentation and current findings, suggest relevant self-check or objective tests I should consider and explain why.",
+    label: "Pick self-tests",
+    prompt: "Use the PhysioOnClick self-test library in the session context. Which exact tests should I record or add for this patient, and why?",
   },
   {
-    label: "Suggest exercises",
-    prompt: "Based on the assessment, tests, impression and current exercise plan, suggest exercise priorities and anything to avoid or progress cautiously.",
+    label: "Pick exercises",
+    prompt: "Use the PhysioOnClick exercise suggestions in the session context. Recommend exact exercise-library items to assign or avoid, including stage and dose if present.",
   },
   {
-    label: "Draft summary",
-    prompt: "Draft concise session summary wording for what we worked on, next steps and safety-netting. Make it suitable for the patient record.",
+    label: "Autofill summary",
+    prompt: "Draft ready-to-apply text for the session summary fields using the current assessment, self-tests, clinical impression and assigned/suggested exercises. Return summaryPatch for workedOn, nextSteps and safetyNettingNotes.",
   },
 ];
 
 const GREETING =
-  "Clinical co-pilot ready. I can audit the session for missing safety, assessment, exercise, documentation and follow-up steps, then draft text you can apply to the summary.";
+  "Clinical co-pilot ready. I can use this session's assessment, self-test library, exercise library and summary fields to suggest exact next steps and applyable summary text.";
 
 function renderInlineText(text: string): ReactNode {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
@@ -167,12 +167,19 @@ export function AdminClinicalAssistant({
         },
       ]);
     } catch {
+      const exerciseText = context.exercises.suggested.slice(0, 3).map((item) => item.title).join(", ");
+      const testText = context.selfTests.recommended.slice(0, 3).map((item) => item.name).join(", ");
       setMessages((prev) => [
         ...prev,
         {
           isBot: true,
           priority: "attention",
-          text: "I could not reach the clinical assistant just now. Manually check red flags, objective findings, exercise suitability, safety-netting and follow-up before publishing.",
+          text: [
+            "I could not reach the clinical assistant just now, but here is the local session checklist.",
+            testText ? `Consider recording these self-tests from the library: ${testText}.` : "Check whether any self-tests need recording before impression.",
+            exerciseText ? `Exercise-library suggestions currently include: ${exerciseText}.` : "No exercise-library suggestions are in context yet; confirm impression or search the library.",
+            "Before publishing, confirm safety-netting, follow-up, and that summary fields reflect the assessment and plan.",
+          ].join("\n\n"),
         },
       ]);
     } finally {

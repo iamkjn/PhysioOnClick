@@ -135,6 +135,21 @@ function exerciseTitles(ids: string[]) {
     .filter((title): title is string => Boolean(title));
 }
 
+function formatExerciseDosage(dosage: typeof exercises[number]["defaultDosage"]) {
+  if (!dosage) return undefined;
+  const parts = [
+    dosage.sets ? `${dosage.sets} sets` : "",
+    dosage.reps ? `${dosage.reps} reps` : "",
+    dosage.holdSeconds ? `${dosage.holdSeconds}s hold` : "",
+    dosage.minutes ? `${dosage.minutes} min` : "",
+    dosage.perDay ? `${dosage.perDay}/day` : "",
+    dosage.perWeek ? `${dosage.perWeek}/week` : "",
+    dosage.tempo ? `tempo ${dosage.tempo}` : "",
+    dosage.notes ?? "",
+  ].filter(Boolean);
+  return parts.length ? parts.join(", ") : undefined;
+}
+
 function positiveFlagLabels(flags: AssessmentRedFlags, conditionalFlags: ConditionalRedFlags) {
   const common = (Object.keys(flags) as (keyof AssessmentRedFlags)[])
     .filter((key) => key !== "none" && flags[key])
@@ -684,7 +699,17 @@ export function StartSessionFlow({ bookingId }: Props) {
       screeningGateSatisfied,
     },
     selfTests: {
-      selected: candidateTests.map((test) => test.name),
+      recommended: recommendedTests.slice(0, 8).map((test) => ({
+        name: test.name,
+        slug: test.slug,
+        bodyArea: test.bodyArea,
+        checks: test.whatItChecks,
+      })),
+      selected: candidateTests.map((test) => ({
+        name: test.name,
+        slug: test.slug,
+        checks: test.whatItChecks,
+      })),
       results: selfTestResults.map((result) => ({
         name: selfTests.find((test) => test.slug === result.slug)?.name ?? result.slug,
         result: result.result,
@@ -699,9 +724,12 @@ export function StartSessionFlow({ bookingId }: Props) {
       assigned: exerciseTitles(sessionAssignedIds.length > 0 ? sessionAssignedIds : assignedIds),
       suggested: suggestions.slice(0, 8).map((item) => ({
         title: item.exercise.title,
+        slug: item.exercise.slug,
         reason: item.reason,
         stage: item.exercise.stage,
         bodyArea: item.exercise.bodyPart,
+        condition: item.exercise.condition,
+        dosage: formatExerciseDosage(item.exercise.defaultDosage),
       })),
     },
     summary: {
@@ -725,6 +753,7 @@ export function StartSessionFlow({ bookingId }: Props) {
     flags,
     form,
     riskPlanText,
+    recommendedTests,
     safetyNettingNotes,
     safetyNettingProvided,
     screeningGateSatisfied,

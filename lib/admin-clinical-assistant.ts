@@ -43,13 +43,22 @@ export type AdminClinicalAssistantContext = {
     screeningGateSatisfied: boolean;
   };
   selfTests: {
-    selected: string[];
+    recommended: Array<{ name: string; slug: string; bodyArea?: string; checks?: string }>;
+    selected: Array<{ name: string; slug: string; checks?: string }>;
     results: Array<{ name: string; result: string; notes?: string }>;
   };
   clinicalImpression: Array<{ label: string; confirmed: boolean }>;
   exercises: {
     assigned: string[];
-    suggested: Array<{ title: string; reason: string; stage?: string; bodyArea?: string }>;
+    suggested: Array<{
+      title: string;
+      slug?: string;
+      reason: string;
+      stage?: string;
+      bodyArea?: string;
+      condition?: string;
+      dosage?: string;
+    }>;
   };
   summary: {
     painScore: number;
