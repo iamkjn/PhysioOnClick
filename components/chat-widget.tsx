@@ -71,7 +71,7 @@ const PRICING_TEXT =
   "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
 
 const GREETING =
-  "Hi! I'm your PhysioOnClick assistant.\n\nAsk me about services, pricing, online appointments, exercise plans, invoices, bookings, or which physio service may fit your situation.";
+  "Welcome to PhysioOnClick.\n\nI can help you choose the right online physio service, understand pricing, prepare for your appointment, find exercise and self-test guidance, or get to the right booking/account page.";
 
 const HOME_CHIPS: Chip[] = [
   { emoji: "?", label: "Which service is right?", action: "ask", text: "Which PhysioOnClick service is right for me?" },
@@ -352,19 +352,27 @@ export function ChatWidget() {
         }
         aria-label={open ? "Close chat" : "Open chat assistant"}
       >
-        <svg
-          width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
-        >
-          {open ? (
-            <>
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </>
-          ) : (
-            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-          )}
-        </svg>
+        <span className="chat-trigger-icon" aria-hidden="true">
+          <svg
+            width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          >
+            {open ? (
+              <>
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </>
+            ) : (
+              <>
+                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                <path d="M8 12h.01" />
+                <path d="M12 12h.01" />
+                <path d="M16 12h.01" />
+              </>
+            )}
+          </svg>
+        </span>
+        {!open && <span className="chat-trigger-label">Ask our physio assistant</span>}
       </button>
 
       {/* Drawer */}
@@ -374,10 +382,11 @@ export function ChatWidget() {
           <div className="chat-header">
             <div className="chat-header-avatar">P</div>
             <div>
+              <div className="chat-header-eyebrow">UK&apos;s #1 online physio platform</div>
               <div className="chat-header-title">PhysioOnClick Assistant</div>
               <div className="chat-header-status">
                 <span className="chat-header-status-dot" />
-                Smart help for services, booking and care questions
+                Smart help for services, booking, recovery and account questions
               </div>
             </div>
           </div>

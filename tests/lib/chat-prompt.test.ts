@@ -27,4 +27,9 @@ describe("buildSystemPrompt - exercise library awareness", () => {
     expect(prompt).toMatch(/invoices/i);
     expect(prompt).toMatch(/assessment form/i);
   });
+
+  it("sets a premium platform tone for the assistant", () => {
+    expect(prompt).toMatch(/UK's #1 online physiotherapy platform/i);
+    expect(prompt).toMatch(/premium UK online physio platform/i);
+  });
 });
