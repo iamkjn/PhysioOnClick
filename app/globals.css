@@ -12670,7 +12670,7 @@ textarea:focus {
 }
 
 .assessment-wizard__section .body-chart__figure {
-  max-width: 280px;
+  max-width: min(100%, 760px);
 }
 
 .assessment-wizard__section .body-chart__view-btn,
@@ -13134,7 +13134,7 @@ textarea:focus {
   }
 
   .assessment-wizard__section .body-chart__figure {
-    max-width: 240px;
+    max-width: 100%;
   }
 
   .assessment-wizard__field--wide,
