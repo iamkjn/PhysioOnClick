@@ -230,6 +230,8 @@ export default async function ServiceDetailPage({
             href="/book?service=initial-assessment"
             serviceSlug="cta_band"
             source="service_detail_cta_band"
+            extraEvent="book_now_click"
+            extraSource="service_detail"
           >
             Book assessment
           </TrackedBookLink>

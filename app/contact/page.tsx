@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { Avatar } from "@/components/avatar";
 import { ContactForm } from "@/components/contact-form";
 import { Reveal } from "@/components/reveal";
+import { TrackedBookLink } from "@/components/tracked-book-link";
 import { founder } from "@/lib/site-data";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/structured-data";
 
@@ -89,9 +89,14 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <Link className="button primary full-width contact-cta" href="/book">
+            <TrackedBookLink
+              className="button primary full-width contact-cta"
+              href="/book"
+              source="contact_page"
+              event="book_now_click"
+            >
               Book an appointment
-            </Link>
+            </TrackedBookLink>
           </div>
         </Reveal>
 

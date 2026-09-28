@@ -5,6 +5,7 @@ import { allSelfTestSlugs, getSelfTest } from "@/lib/exercise-library";
 import type { SelfTest } from "@/lib/exercise-library";
 import { breadcrumbs } from "@/lib/structured-data";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { TrackView } from "@/components/track-view";
 
 // The self-check index is one static page: it reads only the static records, so
 // without force-static the Worker would re-run every lookup per request.
@@ -63,6 +64,7 @@ export default function SelfTestsIndexPage() {
 
   return (
     <div className="site-shell">
+      <TrackView event="library_selftest_view" slug="self-test-index" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

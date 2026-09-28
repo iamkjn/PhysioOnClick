@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { TrackedBookLink } from "@/components/tracked-book-link";
 import { practiceRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
@@ -55,9 +56,14 @@ export default function GlasgowPage() {
             secure online booking, with no clinic visit required.
           </p>
           <div className="button-row">
-            <Link className="button primary" href="/book">
+            <TrackedBookLink
+              className="button primary"
+              href="/book"
+              source="glasgow_page"
+              event="book_now_click"
+            >
               Book your session
-            </Link>
+            </TrackedBookLink>
           </div>
         </div>
         <div className="page-hero-aside checklist-panel">

@@ -15,6 +15,7 @@ import { ConditionCard } from "@/components/exercise-library/condition-card";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { TrackView } from "@/components/track-view";
 
 // One statically-exported page per curated body area. Same reasoning as the
 // exercise and condition detail routes: without force-static the Worker re-runs
@@ -99,6 +100,7 @@ export default async function ExerciseAreaPage({
 
   return (
     <div className="site-shell">
+      <TrackView event="library_area_view" slug={area.key} />
       <nav aria-label="Breadcrumb">
         <Link href="/">Home</Link>
         <span className="muted" aria-hidden="true">

@@ -124,6 +124,8 @@ export default function ServicesPage() {
             href="/book?service=initial-assessment"
             serviceSlug="cta_band"
             source="services_cta_band"
+            extraEvent="book_now_click"
+            extraSource="service_list"
           >
             Book assessment
           </TrackedBookLink>

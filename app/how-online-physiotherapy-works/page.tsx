@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Reveal } from "@/components/reveal";
+import { TrackedBookLink } from "@/components/tracked-book-link";
 import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
@@ -128,9 +129,14 @@ export default function HowOnlinePhysiotherapyWorksPage() {
             Every plan starts with a full assessment, delivered online across the UK by an{" "}
             <Link href="/professional-standards">HCPC-registered physiotherapist</Link>.
           </p>
-          <Link className="button secondary cta-white" href="/book">
+          <TrackedBookLink
+            className="button secondary cta-white"
+            href="/book"
+            source="how_it_works_page"
+            event="book_now_click"
+          >
             Book your session
-          </Link>
+          </TrackedBookLink>
         </div>
       </section>
     </div>

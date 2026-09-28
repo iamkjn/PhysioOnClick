@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import type { User } from "firebase/auth";
 
 import { SkeletonStatGrid, SkeletonText } from "@/components/skeleton";
+import { track } from "@/lib/analytics";
 
 // home-dashboard.tsx's own tree (person-switcher.tsx -> lib/dependents.ts,
 // recovery-percent-card.tsx -> lib/recovery.ts) does `import { db } from
@@ -110,7 +111,12 @@ export function HomeHeroSection({
             across the UK.
           </p>
           <div className="button-row">
-            <Link className="button primary" href="/book" prefetch>
+            <Link
+              className="button primary"
+              href="/book"
+              prefetch
+              onClick={() => track("book_now_click", { source: "homepage_hero" })}
+            >
               Book Your Session
             </Link>
             <Link className="button secondary inverted" href="/services" prefetch>

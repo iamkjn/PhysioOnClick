@@ -20,6 +20,7 @@ import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
 import { SavedPlanList } from "@/components/exercise-library/saved-plan-list";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { TrackView } from "@/components/track-view";
 
 // The library index is one static page: it reads only the static catalogue, so
 // without force-static the Worker would re-run every lookup per request.
@@ -91,6 +92,7 @@ export default function ExerciseLibraryIndexPage() {
 
   return (
     <div className="site-shell">
+      <TrackView event="library_hub_view" slug="exercises" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

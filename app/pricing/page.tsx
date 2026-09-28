@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getPublicPricing } from "@/lib/public-content";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
+import { TrackedBookLink } from "@/components/tracked-book-link";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/pricing" },
@@ -137,9 +138,14 @@ export default function PricingPage() {
           <span className="eyebrow">Ready to book?</span>
           <h2>Schedule your appointment online</h2>
           <p>Pick a time that suits you. Confirmation is sent to your email instantly once the slot is confirmed.</p>
-          <Link className="button secondary cta-white" href="/book">
+          <TrackedBookLink
+            className="button secondary cta-white"
+            href="/book"
+            source="pricing_page"
+            event="book_now_click"
+          >
             Book now
-          </Link>
+          </TrackedBookLink>
         </div>
       </section>
     </div>
