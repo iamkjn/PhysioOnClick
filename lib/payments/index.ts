@@ -7,6 +7,10 @@ export type BookingIntent = {
   email: string;
   timeZone: string;
   focusAreas?: string[];
+  discountCode?: string;
+  discountPercent?: string;
+  originalAmountPence?: string;
+  discountAmountPence?: string;
   /** Pre-payment self-assessment, submitted before checkout — see booking-step-time.tsx. */
   assessmentUid?: string;
   assessmentPersonId?: string;
@@ -34,6 +38,10 @@ export function intentToMetadata(intent: BookingIntent): Record<string, string> 
     email: intent.email,
     timeZone: intent.timeZone,
     focusAreas: (intent.focusAreas ?? []).join(", "),
+    ...(intent.discountCode ? { discountCode: intent.discountCode } : {}),
+    ...(intent.discountPercent ? { discountPercent: intent.discountPercent } : {}),
+    ...(intent.originalAmountPence ? { originalAmountPence: intent.originalAmountPence } : {}),
+    ...(intent.discountAmountPence ? { discountAmountPence: intent.discountAmountPence } : {}),
     ...(intent.assessmentUid ? { assessmentUid: intent.assessmentUid } : {}),
     ...(intent.assessmentPersonId ? { assessmentPersonId: intent.assessmentPersonId } : {}),
     ...(intent.assessmentFormId ? { assessmentFormId: intent.assessmentFormId } : {}),
@@ -55,6 +63,10 @@ export function metadataToIntent(meta: Record<string, string> | undefined): Book
     email,
     timeZone,
     focusAreas,
+    ...(meta.discountCode ? { discountCode: meta.discountCode } : {}),
+    ...(meta.discountPercent ? { discountPercent: meta.discountPercent } : {}),
+    ...(meta.originalAmountPence ? { originalAmountPence: meta.originalAmountPence } : {}),
+    ...(meta.discountAmountPence ? { discountAmountPence: meta.discountAmountPence } : {}),
     ...(meta.assessmentUid ? { assessmentUid: meta.assessmentUid } : {}),
     ...(meta.assessmentPersonId ? { assessmentPersonId: meta.assessmentPersonId } : {}),
     ...(meta.assessmentFormId ? { assessmentFormId: meta.assessmentFormId } : {}),

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { normaliseDiscountCode, validateCheckoutDiscount } from "@/lib/checkout-discounts";
 import { createStripeCheckout } from "@/lib/payments/stripe";
 import type { BookingIntent } from "@/lib/payments";
 
@@ -14,6 +15,7 @@ type Body = {
   email?: unknown;
   timeZone?: unknown;
   focusAreas?: unknown;
+  discountCode?: unknown;
   assessmentUid?: unknown;
   assessmentPersonId?: unknown;
   assessmentFormId?: unknown;
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
     return bad("Invalid request body.");
   }
 
-  const { service, start, name, email, timeZone, focusAreas, assessmentUid, assessmentPersonId, assessmentFormId } =
+  const { service, start, name, email, timeZone, focusAreas, discountCode, assessmentUid, assessmentPersonId, assessmentFormId } =
     body;
 
   if (!isBookServiceId(service)) return bad("Invalid or missing service.");
@@ -52,6 +54,7 @@ export async function POST(request: Request) {
   if (!trimmedEmail || trimmedEmail.length > 200 || !EMAIL_PATTERN.test(trimmedEmail)) {
     return bad("Invalid or missing email.");
   }
+  const normalizedEmail = trimmedEmail.toLowerCase();
 
   let resolvedTimeZone = DEFAULT_TIMEZONE;
   if (timeZone !== undefined && timeZone !== null) {
@@ -69,7 +72,27 @@ export async function POST(request: Request) {
     : undefined;
 
   const svc = bookServiceFor(service);
-  const amountPence = Math.round(svc.price * 100);
+  const originalAmountPence = Math.round(svc.price * 100);
+  let amountPence = originalAmountPence;
+  let appliedDiscount:
+    | { code: string; percent: number; amountPence: number }
+    | null = null;
+
+  const cleanedDiscountCode = normaliseDiscountCode(discountCode);
+  if (cleanedDiscountCode) {
+    const discount = await validateCheckoutDiscount({
+      code: cleanedDiscountCode,
+      email: normalizedEmail,
+      service,
+    });
+    if (!discount.ok) return bad(discount.error);
+    amountPence = discount.amountPence;
+    appliedDiscount = {
+      code: discount.code,
+      percent: discount.percent,
+      amountPence: discount.discountAmountPence,
+    };
+  }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -84,9 +107,17 @@ export async function POST(request: Request) {
     service,
     startISO: startDate.toISOString(),
     name: trimmedName,
-    email: trimmedEmail,
+    email: normalizedEmail,
     timeZone: resolvedTimeZone,
     focusAreas: cleanedFocus,
+    ...(appliedDiscount
+      ? {
+          discountCode: appliedDiscount.code,
+          discountPercent: String(appliedDiscount.percent),
+          originalAmountPence: String(originalAmountPence),
+          discountAmountPence: String(appliedDiscount.amountPence),
+        }
+      : {}),
     ...(isIdLike(assessmentUid) ? { assessmentUid } : {}),
     ...(isIdLike(assessmentPersonId) ? { assessmentPersonId } : {}),
     ...(isIdLike(assessmentFormId) ? { assessmentFormId } : {}),

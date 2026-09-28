@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/payments/stripe", () => ({
   createStripeCheckout: vi.fn(),
@@ -22,6 +22,7 @@ const VALID = {
   timeZone: "Europe/London",
 };
 
+beforeEach(() => vi.clearAllMocks());
 afterEach(() => vi.restoreAllMocks());
 
 describe("POST /api/checkout/create", () => {
@@ -58,5 +59,31 @@ describe("POST /api/checkout/create", () => {
     await POST(req({ ...VALID, amountPence: 1 }));
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(arg.amountPence).toBe(5000);
+  });
+
+  it("applies the new patient discount code server-side", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://site.test");
+    (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true, url: "https://checkout.stripe.com/c/cs_1", sessionId: "cs_1",
+    });
+
+    const res = await POST(req({ ...VALID, discountCode: "new10" }));
+
+    expect(res.status).toBe(200);
+    const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(arg.amountPence).toBe(4500);
+    expect(arg.intent.discountCode).toBe("NEW10");
+    expect(arg.intent.discountPercent).toBe("10");
+    expect(arg.intent.originalAmountPence).toBe("5000");
+    expect(arg.intent.discountAmountPence).toBe("500");
+  });
+
+  it("rejects unknown discount codes before Stripe checkout", async () => {
+    const res = await POST(req({ ...VALID, discountCode: "SAVE99" }));
+    const json = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(json.error).toBe("Discount code not recognised.");
+    expect(createStripeCheckout).not.toHaveBeenCalled();
   });
 });
