@@ -37,11 +37,11 @@ export async function sendExercisePlanEmail(input: {
   planUrl: string;
   exerciseCount: number;
   pdf: { filename: string; base64: string };
-}): Promise<{ sent: boolean }> {
+}): Promise<{ sent: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.log("[exercise-plan-email] RESEND_API_KEY unset; skipping");
-    return { sent: false };
+    return { sent: false, error: "Email service is not configured on this environment." };
   }
   const from = process.env.ENQUIRY_EMAIL_FROM || "PhysioOnClick <onboarding@resend.dev>";
   const html = buildExercisePlanEmailHtml({
@@ -71,12 +71,13 @@ export async function sendExercisePlanEmail(input: {
       }),
     });
     if (!response.ok) {
-      console.error("[exercise-plan-email] Resend error", response.status);
-      return { sent: false };
+      const body = await response.text().catch(() => "");
+      console.error("[exercise-plan-email] Resend error", response.status, body);
+      return { sent: false, error: "Email provider rejected the exercise plan email." };
     }
     return { sent: true };
   } catch (error) {
     console.error("[exercise-plan-email] send failed", error);
-    return { sent: false };
+    return { sent: false, error: "Email provider could not be reached." };
   }
 }

@@ -10,6 +10,7 @@ import { exercises as catalogue, formatDosage, type Exercise, type ExerciseDosag
 import { formatPersonName } from "@/lib/name-format";
 import { useToast } from "@/components/toast-provider";
 import { ExerciseImage } from "@/components/exercise-image";
+import { validateEmail } from "@/lib/validation";
 
 type Recipient = {
   key: string;
@@ -262,6 +263,10 @@ export function AdminAiWorkspace({ adminUid }: { adminUid: string }) {
       toast.show("Add a recipient email or select a patient.", "error");
       return;
     }
+    if (validateEmail(targetEmail)) {
+      toast.show("Enter a valid recipient email address.", "error");
+      return;
+    }
     if (selectedPlan.length === 0) {
       toast.show("Select at least one exercise.", "error");
       return;
@@ -293,10 +298,8 @@ export function AdminAiWorkspace({ adminUid }: { adminUid: string }) {
       const data = (await response.json().catch(() => ({}))) as { error?: string; sent?: boolean; exercises?: number };
       if (!response.ok) throw new Error(data.error || "Email failed");
       toast.show(
-        data.sent
-          ? `Exercise plan PDF sent with ${data.exercises ?? selectedPlan.length} exercises.`
-          : "Exercise plan PDF created, but email service is not configured on this environment.",
-        data.sent ? "success" : "info",
+        `Exercise plan PDF sent with ${data.exercises ?? selectedPlan.length} exercises.`,
+        "success",
       );
     } catch (error) {
       toast.show(error instanceof Error ? error.message : "Could not email the exercise plan PDF.", "error");

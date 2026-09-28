@@ -22,6 +22,7 @@ type RequestBody = {
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "hello@physioonclick.co.uk";
 const MAX_EXERCISES = 12;
+const MAX_EMBEDDED_IMAGE_BYTES = 900_000;
 
 function isAdmin(decoded: DecodedIdToken): boolean {
   return decoded.admin === true || (!!decoded.email && decoded.email === ADMIN_EMAIL);
@@ -58,10 +59,23 @@ function cleanDosage(value: unknown): ExerciseDosage | undefined {
 
 function bytesToBase64(bytes: Uint8Array): string {
   let bin = "";
-  bytes.forEach((byte) => {
-    bin += String.fromCharCode(byte);
-  });
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
   return btoa(bin);
+}
+
+async function downloadPdfImage(exerciseId: string): Promise<Uint8Array | null> {
+  const bytes =
+    (await downloadObject(`exercise-images/${exerciseId}-pdf.png`).catch(() => null)) ??
+    (await downloadObject(`exercise-images/${exerciseId}.png`).catch(() => null));
+  if (!bytes) return null;
+  if (bytes.byteLength > MAX_EMBEDDED_IMAGE_BYTES) {
+    console.warn("[admin-assistant-email] exercise image too large for PDF embed; using vector fallback", exerciseId, bytes.byteLength);
+    return null;
+  }
+  return bytes;
 }
 
 export async function POST(request: Request) {
@@ -101,9 +115,7 @@ export async function POST(request: Request) {
   const imageByExerciseId: Record<string, Uint8Array | null> = {};
   await Promise.all(
     selected.map(async ({ exercise }) => {
-      imageByExerciseId[exercise.id] =
-        (await downloadObject(`exercise-images/${exercise.id}-pdf.png`).catch(() => null)) ??
-        (await downloadObject(`exercise-images/${exercise.id}.png`).catch(() => null));
+      imageByExerciseId[exercise.id] = await downloadPdfImage(exercise.id);
     }),
   );
 
@@ -125,14 +137,20 @@ export async function POST(request: Request) {
     };
   });
 
-  const pdf = await buildExercisePlanPdf({
-    patientName,
-    patientEmail: toEmail,
-    physioName: founder.name,
-    sessionDateISO: new Date().toISOString(),
-    cards,
-    oneExercisePerPage: true,
-  });
+  let pdf: Uint8Array;
+  try {
+    pdf = await buildExercisePlanPdf({
+      patientName,
+      patientEmail: toEmail,
+      physioName: founder.name,
+      sessionDateISO: new Date().toISOString(),
+      cards,
+      oneExercisePerPage: true,
+    });
+  } catch (error) {
+    console.error("[admin-assistant-email] PDF generation failed", error);
+    return NextResponse.json({ error: "Could not create the exercise plan PDF. Please try again." }, { status: 500 });
+  }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://physioonclick.co.uk";
   const result = await sendExercisePlanEmail({
@@ -145,6 +163,10 @@ export async function POST(request: Request) {
       base64: bytesToBase64(pdf),
     },
   });
+
+  if (!result.sent) {
+    return NextResponse.json({ error: result.error || "Email failed. Please try again." }, { status: 502 });
+  }
 
   return NextResponse.json({ ok: true, sent: result.sent, exercises: cards.length });
 }
