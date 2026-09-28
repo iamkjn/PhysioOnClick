@@ -857,7 +857,7 @@ export function BookingStepTime({
                 placeholder="Enter code"
                 value={discountCode}
                 onChange={(e) => {
-                  setDiscountCode(e.target.value);
+                  setDiscountCode(e.target.value.toUpperCase());
                   setDiscountApplied(false);
                   setDiscountedAmountPence(null);
                   setDiscountMessage(null);
