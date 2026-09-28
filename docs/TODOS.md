@@ -4,7 +4,7 @@ Produced by auditing the actual code against every requirement in [docs/PRD.md](
 
 ## Open — post-launch follow-ups (added 2026-09-26)
 
-- [ ] **ICO registration: APPLIED 2026-09-26** (application C2043703, Tier 1, direct debit). Waiting for the `ZA…` registration number by email. Required for a business processing health data. Register at ico.org.uk/fee, then add the `ZA…` number to the "Who we are" section of `app/privacy-policy/page.tsx` (the "registered with the ICO" sentence was removed on 2026-09-26 because it wasn't true yet).
+- [x] **ICO registration: COMPLETE.** Registration reference ZC258927 confirmed by ICO 2026-09-28 (Direct Debit set-up letter, application C2043703, Tier 1, £52/year less £5 direct debit discount, first collection ~2026-10-08). Added to the "Who we are" section of `app/privacy-policy/page.tsx`.
 - [ ] **Show real reviews.** Trustpilot API display needs a paid plan (£119+/mo); currently 1 review. Once there are about 10 good reviews, either add genuine ones by hand (with patient permission and a Trustpilot link) or upgrade and set `TRUSTPILOT_API_KEY` + `TRUSTPILOT_BUSINESS_UNIT_ID`. Never reintroduce placeholder testimonials.
 - [ ] **Full Content-Security-Policy (script/connect/frame allow-list).** Only structural CSP is live (`next.config.mjs`). Build the allow-list for Stripe, Firebase, GA, Trustpilot, Google Fonts and video embeds, then test against a real payment.
 - [ ] **Dependency advisories needing major upgrades:** firebase / firebase-admin chains (websocket-driver, node-forge, @grpc/grpc-js), sharp, postcss via Next 16. None run in the Worker bundle, but upgrade and retest.
