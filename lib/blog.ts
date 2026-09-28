@@ -426,29 +426,65 @@ function readTimeFor(sections: { body: string[] }[]) {
 }
 
 // Targeted PAA-style Q&A sections for specific (category, topic) pairs where
-// real Search Console data showed exact-phrase question queries ("why is my
-// back stiff in the morning", "is sciatica worse in the morning") already
+// real Search Console data showed exact-phrase question queries already
 // matching these articles' intent but ranking poorly (position 66-100,
 // 2026-09-27 gsc_question_queries.py run) — likely because nothing on the
 // page states the question as literally as the searcher typed it. Answers
-// are hand-written per pair, not derived from the shared topicInfo snippet
-// above, so the two articles that both cover "Morning stiffness" don't end
-// up with duplicate Q&A text.
-const faqSections: Partial<Record<string, { heading: string; body: string[] }>> = {
-  "Back pain|Morning stiffness": {
-    heading: "Why is my back stiff when I wake up?",
-    body: [
-      "Lying still for hours reduces how much fluid moves through the discs and soft tissue of the spine, and the surrounding muscles tend to guard and tighten from holding one position overnight, especially if a mattress or pillow doesn't support a fairly neutral spine position. Both effects are strongest right at waking and typically ease within the first thirty to sixty minutes of moving around, which is why a short, gentle movement routine before getting fully upright tends to help more than staying still until it 'feels ready'.",
-      "This everyday pattern is different from stiffness that takes several hours to ease or is worse on rest days — that pattern points toward an inflammatory rather than purely mechanical cause and is worth raising with a GP alongside physiotherapy."
-    ]
-  },
-  "Sciatica|Morning stiffness": {
-    heading: "Is sciatica worse in the morning?",
-    body: [
-      "For many people, yes — spinal discs absorb fluid overnight while lying down and are at their most swollen first thing in the morning, which can transiently increase pressure on a nearby irritated nerve root before the disc redistributes load again through normal daytime movement and loading. That's a different mechanism from general morning back stiffness, which is driven more by muscle guarding and reduced tissue fluid movement than by disc fluid changes specifically.",
-      "If mornings are consistently the worst part of the day, that pattern itself is useful information for a physiotherapy assessment — it helps distinguish disc-related nerve irritation from other causes of leg pain that don't follow the same daily rhythm."
-    ]
-  }
+// are hand-written per entry, not derived from the shared topicInfo snippet
+// above, so articles sharing a topic never end up with duplicate Q&A text.
+// One key can carry more than one Q&A block where multiple distinct
+// low-volume questions genuinely belong on the same article.
+const faqSections: Partial<Record<string, { heading: string; body: string[] }[]>> = {
+  "Back pain|Morning stiffness": [
+    {
+      heading: "Why is my back stiff when I wake up?",
+      body: [
+        "Lying still for hours reduces how much fluid moves through the discs and soft tissue of the spine, and the surrounding muscles tend to guard and tighten from holding one position overnight, especially if a mattress or pillow doesn't support a fairly neutral spine position. Both effects are strongest right at waking and typically ease within the first thirty to sixty minutes of moving around, which is why a short, gentle movement routine before getting fully upright tends to help more than staying still until it 'feels ready'.",
+        "This everyday pattern is different from stiffness that takes several hours to ease or is worse on rest days — that pattern points toward an inflammatory rather than purely mechanical cause and is worth raising with a GP alongside physiotherapy."
+      ]
+    },
+    {
+      heading: "How do you relieve back pain after waking up?",
+      body: [
+        "A few minutes of gentle, low-load movement before getting fully upright — knees rocking side to side, a gentle pelvic tilt, or a slow knee-to-chest stretch while still lying down — tends to ease morning stiffness faster than getting straight up and moving normally, because it restores movement gradually rather than immediately loading a stiff spine. Following that with a short walk in the first half hour of the day extends the effect for most people.",
+        "Applying heat (a warm shower or a heat pack for ten minutes) before moving can also help by relaxing guarded muscle, though it works best as a companion to gentle movement rather than a replacement for it. If mornings stay difficult despite a consistent routine like this for a couple of weeks, that's a reasonable point to bring it to a physiotherapy assessment rather than continuing to self-manage indefinitely."
+      ]
+    }
+  ],
+  "Sciatica|Morning stiffness": [
+    {
+      heading: "Is sciatica worse in the morning?",
+      body: [
+        "For many people, yes — spinal discs absorb fluid overnight while lying down and are at their most swollen first thing in the morning, which can transiently increase pressure on a nearby irritated nerve root before the disc redistributes load again through normal daytime movement and loading. That's a different mechanism from general morning back stiffness, which is driven more by muscle guarding and reduced tissue fluid movement than by disc fluid changes specifically.",
+        "If mornings are consistently the worst part of the day, that pattern itself is useful information for a physiotherapy assessment — it helps distinguish disc-related nerve irritation from other causes of leg pain that don't follow the same daily rhythm."
+      ]
+    }
+  ],
+  "Sciatica|Nerve-related symptoms": [
+    {
+      heading: "What causes sciatica?",
+      body: [
+        "Sciatica isn't a diagnosis in itself — it's a pattern of symptoms caused by irritation or compression of the sciatic nerve or one of the nerve roots that forms it, most commonly from a disc bulge or herniation pressing on a nerve root as it exits the spine. Less commonly, spinal stenosis (narrowing of the space around the nerves, usually with age-related change) or, rarely, a muscle in the buttock (piriformis) irritating the nerve can produce a similar pattern.",
+        "What these causes share is that the nerve itself is being irritated or compressed, not just a joint or muscle — which is why symptoms travel down the leg, sometimes past the knee, rather than staying localised to the back. UK guidance, including NICE, is reassuring on outlook: most disc-related sciatica settles within weeks to a few months as the disc irritation and any associated inflammation reduce, with surgery reserved for cases that don't improve or that show worsening nerve function."
+      ]
+    }
+  ],
+  "Sciatica|Walking tolerance": [
+    {
+      heading: "Is standing good for sciatica?",
+      body: [
+        "It depends on the underlying cause rather than being universally good or bad. For typical disc-related sciatica, alternating between sitting, standing and walking — avoiding any single position for very long stretches — tends to work better than either prolonged standing or prolonged sitting. If standing consistently eases symptoms while sitting or bending forward worsens them, that pattern is actually useful diagnostic information for a physiotherapy assessment.",
+        "The exception is spinal stenosis, where the opposite pattern is common: standing and walking often worsen symptoms, while sitting or leaning forward (which opens up the space around the nerve) tends to ease them. This is one of the clearest ways a physiotherapist distinguishes disc-related sciatica from a stenosis-driven presentation, and it changes which advice actually helps."
+      ]
+    },
+    {
+      heading: "Does elevating your legs help sciatica?",
+      body: [
+        "For some people, yes, temporarily — lying with the knees bent and lower legs supported (on a chair seat or a pile of cushions) reduces tension through the lower back and can ease nerve irritation enough to be genuinely comfortable, particularly during a painful flare-up. It works best as a short-term comfort measure rather than something to rely on for hours at a time, since prolonged inactivity in any single position, including this one, tends to increase stiffness once you do move.",
+        "If leg elevation reliably eases symptoms, that's useful information to share with a physiotherapist — positions that consistently help or worsen symptoms say something real about what's driving them, and that pattern helps shape a more targeted rehabilitation plan rather than generic advice."
+      ]
+    }
+  ]
 };
 
 function articleSections(category: Category, topic: Topic, index: number) {
@@ -495,8 +531,7 @@ function articleSections(category: Category, topic: Topic, index: number) {
   // a distinct, skimmable Q&A block rather than blending into the essay-style
   // sections above it — that literal-question structure is what Google's PAA
   // matching favours.
-  const faq = faqSections[`${category}|${topic}`];
-  const faqTail = faq ? [faq] : [];
+  const faqTail = faqSections[`${category}|${topic}`] ?? [];
 
   if (variant === 0) {
     return [whyThisMatters, assessmentSection, practicalSection, redFlagSection, homeAdviceSection, ...faqTail];
