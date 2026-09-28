@@ -3788,13 +3788,18 @@ textarea:focus {
   position: sticky;
   top: 0;
   z-index: 120;
-  height: 100vh;
-  min-height: 640px;
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--space-4) var(--space-3);
   background: #043246;
   color: white;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-sidebar-brand {
