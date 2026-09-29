@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { getPublicServices } from "@/lib/public-content";
@@ -8,6 +7,7 @@ import { pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { TrackedContentLink } from "@/components/tracked-content-link";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/services" },
@@ -54,7 +54,17 @@ export default function ServicesPage() {
                 blurDataURL={medicalImagePlaceholder}
               />
               <h2>
-                <Link href={`/services/${service.slug}`}>{service.title}</Link>
+                <TrackedContentLink
+                  href={`/services/${service.slug}`}
+                  event="service_click"
+                  params={{
+                    source: "services_title",
+                    service_slug: service.slug,
+                    service_title: service.title,
+                  }}
+                >
+                  {service.title}
+                </TrackedContentLink>
               </h2>
               <p>{service.summary}</p>
               <h3 className="service-subhead">Treatment Approach</h3>
@@ -92,10 +102,19 @@ export default function ServicesPage() {
                 </>
               ) : null}
               <div className="service-split-cta">
-                <Link className="button secondary" href={`/services/${service.slug}`}>
+                <TrackedContentLink
+                  className="button secondary"
+                  href={`/services/${service.slug}`}
+                  event="service_click"
+                  params={{
+                    source: "services_read_more",
+                    service_slug: service.slug,
+                    service_title: service.title,
+                  }}
+                >
                   Read more
                   <span className="sr-only"> about {service.title}</span>
-                </Link>
+                </TrackedContentLink>
                 <TrackedBookLink
                   className="button primary"
                   href={`/book?service=initial-assessment`}

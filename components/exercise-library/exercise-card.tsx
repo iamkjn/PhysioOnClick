@@ -2,14 +2,25 @@
 // Server component - the whole <Link> is the tap target; "Full instructions" is
 // a visual affordance, not a nested link.
 
-import Link from "next/link";
-
 import { ExerciseImage } from "@/components/exercise-image";
+import { TrackedContentLink } from "@/components/tracked-content-link";
 import type { Exercise } from "@/lib/exercise-library";
 
 export function ExerciseCard({ exercise }: { exercise: Exercise }) {
   return (
-    <Link href={`/exercises/${exercise.slug}`} className="exlib-ex-card">
+    <TrackedContentLink
+      href={`/exercises/${exercise.slug}`}
+      className="exlib-ex-card"
+      event="exercise_click"
+      params={{
+        source: "exercise_card",
+        exercise_id: exercise.id,
+        exercise_slug: exercise.slug,
+        exercise_title: exercise.title,
+        body_part: exercise.bodyPart,
+        stage: exercise.stage,
+      }}
+    >
       <ExerciseImage
         exerciseId={exercise.id}
         name={exercise.title}
@@ -29,6 +40,6 @@ export function ExerciseCard({ exercise }: { exercise: Exercise }) {
       <span className="exlib-ex-card__more">
         View details <span aria-hidden>&rarr;</span>
       </span>
-    </Link>
+    </TrackedContentLink>
   );
 }

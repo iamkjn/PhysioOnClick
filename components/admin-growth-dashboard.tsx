@@ -21,7 +21,10 @@ const EVENT_LABELS: Record<string, string> = {
   page_view: "Page view",
   book_now_click: "Book Now click",
   service_view: "Service viewed",
+  service_click: "Service clicked",
   library_view: "Library viewed",
+  exercise_click: "Exercise clicked",
+  condition_click: "Exercise area clicked",
   booking_service_selected: "Service selected",
   booking_focus_selected: "Focus selected",
   booking_step_completed: "Booking step done",
@@ -62,6 +65,10 @@ function lastPathSegment(path: string) {
   return segment ? segment.replaceAll("-", " ") : "Home";
 }
 
+function formatLabel(value: string) {
+  return value.replaceAll("-", " ");
+}
+
 function isPatientJourneyEvent(event: GrowthEvent) {
   return !(
     event.path === "/admin" ||
@@ -99,14 +106,60 @@ export function AdminGrowthDashboard() {
     const sessionIds = new Set(list.map((event) => event.sessionId).filter(Boolean));
     const counts = new Map<string, number>();
     const pages = new Map<string, number>();
-    const services = new Map<string, number>();
+    const services = new Map<string, { label: string; count: number; note: string }>();
+    const exercises = new Map<string, { label: string; count: number; note: string }>();
+
+    const bump = (
+      map: Map<string, { label: string; count: number; note: string }>,
+      key: string,
+      label: string,
+      note: string,
+    ) => {
+      const current = map.get(key);
+      map.set(key, {
+        label: label || formatLabel(key),
+        note,
+        count: (current?.count ?? 0) + 1,
+      });
+    };
 
     for (const event of list) {
       counts.set(event.event, (counts.get(event.event) ?? 0) + 1);
       if (event.event === "page_view") pages.set(event.path, (pages.get(event.path) ?? 0) + 1);
-      const slug = String(event.params?.service_slug ?? event.params?.slug ?? "");
-      if (slug && (event.event === "service_view" || event.event === "booking_service_selected")) {
-        services.set(slug, (services.get(slug) ?? 0) + 1);
+      const serviceSlug = String(event.params?.service_slug ?? event.params?.service ?? "");
+      if (
+        serviceSlug &&
+        (event.event === "service_click" ||
+          event.event === "service_view" ||
+          event.event === "booking_service_selected" ||
+          event.event === "book_now_click")
+      ) {
+        bump(
+          services,
+          serviceSlug,
+          String(event.params?.service_title ?? ""),
+          event.event === "service_click" ? "Clicked by patient" : EVENT_LABELS[event.event] ?? "Service activity",
+        );
+      }
+
+      const exerciseSlug = String(event.params?.exercise_slug ?? "");
+      if (exerciseSlug && event.event === "exercise_click") {
+        bump(
+          exercises,
+          exerciseSlug,
+          String(event.params?.exercise_title ?? ""),
+          String(event.params?.body_part ?? "Exercise library"),
+        );
+      }
+
+      const conditionSlug = String(event.params?.condition_slug ?? "");
+      if (conditionSlug && event.event === "condition_click") {
+        bump(
+          exercises,
+          conditionSlug,
+          String(event.params?.condition_name ?? ""),
+          String(event.params?.body_part ?? "Exercise programme"),
+        );
       }
     }
 
@@ -119,7 +172,8 @@ export function AdminGrowthDashboard() {
       chatLeads: (counts.get("chat_booking_intent") ?? 0) + (counts.get("chat_message_sent") ?? 0),
       funnel: FUNNEL.map((event) => ({ event, count: counts.get(event) ?? 0 })),
       pages: [...pages.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6),
-      services: [...services.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5),
+      services: [...services.entries()].sort((a, b) => b[1].count - a[1].count).slice(0, 6),
+      exercises: [...exercises.entries()].sort((a, b) => b[1].count - a[1].count).slice(0, 6),
     };
   }, [events]);
 
@@ -199,17 +253,31 @@ export function AdminGrowthDashboard() {
         </section>
 
         <section className="admin-growth-card">
-          <h3>Service interest</h3>
+          <h3>Service clicks</h3>
           {stats.services.length ? (
             <ol className="admin-growth-list">
-              {stats.services.map(([slug, count]) => (
+              {stats.services.map(([slug, item]) => (
                 <li key={slug}>
-                  <span><strong>{slug.replaceAll("-", " ")}</strong><small>Service/library interest</small></span>
-                  <b>{count}</b>
+                  <span><strong>{item.label}</strong><small>{item.note}</small></span>
+                  <b>{item.count}</b>
                 </li>
               ))}
             </ol>
-          ) : <p className="muted">Service interest will appear as visitors browse.</p>}
+          ) : <p className="muted">Service clicks will appear as patients browse.</p>}
+        </section>
+
+        <section className="admin-growth-card">
+          <h3>Exercise clicks</h3>
+          {stats.exercises.length ? (
+            <ol className="admin-growth-list">
+              {stats.exercises.map(([slug, item]) => (
+                <li key={slug}>
+                  <span><strong>{item.label}</strong><small>{item.note}</small></span>
+                  <b>{item.count}</b>
+                </li>
+              ))}
+            </ol>
+          ) : <p className="muted">Exercise clicks will appear as patients use the library.</p>}
         </section>
 
         <section className="admin-growth-card">

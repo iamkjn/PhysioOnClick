@@ -12,6 +12,7 @@ import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 import { TrackGrowthView } from "@/components/track-view";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { TrackedContentLink } from "@/components/tracked-content-link";
 
 // Same reasoning as /blog/[slug]: build the six service pages once so the
 // route never re-runs the (static) content lookup per-request.
@@ -193,9 +194,20 @@ export default async function ServiceDetailPage({
           <ul className="service-approach-list">
             {service.relatedConditionSlugs.map((conditionSlug) => (
               <li key={conditionSlug}>
-                <Link href={`/exercises/for/${conditionSlug}`} prefetch>
+                <TrackedContentLink
+                  href={`/exercises/for/${conditionSlug}`}
+                  prefetch
+                  event="condition_click"
+                  params={{
+                    source: "service_detail_related_condition",
+                    service_slug: service.slug,
+                    service_title: service.title,
+                    condition_slug: conditionSlug,
+                    condition_name: getCondition(conditionSlug)?.name,
+                  }}
+                >
                   {getCondition(conditionSlug)?.name} exercises
-                </Link>
+                </TrackedContentLink>
               </li>
             ))}
           </ul>

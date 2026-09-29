@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { ExerciseImage } from "@/components/exercise-image";
 import type { Exercise } from "@/lib/exercise-library";
+import { trackGrowthEvent } from "@/lib/growth-tracking";
 
 type BrowserExercise = Pick<
   Exercise,
@@ -60,6 +61,17 @@ function searchableText(exercise: BrowserExercise): string {
 
 function firstUsefulSteps(exercise: BrowserExercise): string[] {
   return (exercise.steps ?? []).slice(0, 3);
+}
+
+function trackExerciseClick(exercise: BrowserExercise, source: string) {
+  trackGrowthEvent("exercise_click", {
+    source,
+    exercise_id: exercise.id,
+    exercise_slug: exercise.slug,
+    exercise_title: exercise.title,
+    body_part: exercise.bodyPart,
+    stage: exercise.stage,
+  });
 }
 
 export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBrowserProps) {
@@ -167,7 +179,10 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
                   type="button"
                   className="exlib-browser__row"
                   data-active={exercise.slug === selected.slug}
-                  onClick={() => setSelectedSlug(exercise.slug)}
+                  onClick={() => {
+                    trackExerciseClick(exercise, "exercise_browser_preview");
+                    setSelectedSlug(exercise.slug);
+                  }}
                 >
                   <ExerciseImage
                     exerciseId={exercise.id}
@@ -248,10 +263,20 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
             ) : null}
 
             <div className="exlib-browser__actions">
-              <Link className="button primary" href={`/exercises/${selected.slug}`}>
+              <Link
+                className="button primary"
+                href={`/exercises/${selected.slug}`}
+                onClick={() => trackExerciseClick(selected, "exercise_browser_open_full")}
+              >
                 Open full guide
               </Link>
-              <Link className="button secondary" href="/book">
+              <Link
+                className="button secondary"
+                href="/book"
+                onClick={() => {
+                  trackGrowthEvent("book_now_click", { source: "exercise_browser" });
+                }}
+              >
                 Ask a physio
               </Link>
             </div>
@@ -266,6 +291,7 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
                     key={exercise.slug}
                     className="exlib-browser__suggested-card"
                     href={`/exercises/${exercise.slug}`}
+                    onClick={() => trackExerciseClick(exercise, "exercise_browser_suggested")}
                   >
                     <ExerciseImage
                       exerciseId={exercise.id}
