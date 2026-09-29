@@ -23,6 +23,9 @@ export interface BookingRecord {
   paid: boolean;
   assessmentCompletedAt: Date | null;
   assessmentFormId?: string;
+  packageId?: string;
+  packageSessionNumber?: number;
+  packageTotalSessions?: number;
   // Owning account + person, so an admin screen that only has a bookingId
   // (e.g. app/admin/session/[bookingId]/page.tsx, reached from a notification)
   // can look up the rest of that person's history without a second read.
@@ -77,6 +80,9 @@ function toBookingRecord(id: string, data: Record<string, unknown>): BookingReco
     paid: data.paid === true,
     assessmentCompletedAt: resolveAssessmentCompletedAt(data),
     assessmentFormId: typeof data.assessmentFormId === "string" ? data.assessmentFormId : undefined,
+    packageId: typeof data.packageId === "string" ? data.packageId : undefined,
+    packageSessionNumber: typeof data.packageSessionNumber === "number" ? data.packageSessionNumber : undefined,
+    packageTotalSessions: typeof data.packageTotalSessions === "number" ? data.packageTotalSessions : undefined,
     bookedBy: typeof data.bookedBy === "string" ? data.bookedBy : undefined,
     patientId: typeof data.patientId === "string" ? data.patientId : undefined,
   };

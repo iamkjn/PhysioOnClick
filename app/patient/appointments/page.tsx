@@ -14,6 +14,18 @@ import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 import { getFollowUps, type FollowUp } from "@/lib/follow-ups";
 import { formatPersonName } from "@/lib/name-format";
 
+type SessionPackage = {
+  id: string;
+  title: string;
+  patientName: string;
+  totalSessions: number;
+  usedSessions: number;
+  remainingSessions: number;
+  status: string;
+};
+
+type SlotMap = Record<string, string[]>;
+
 function resolveStatus(booking: BookingRecord): BookingRecord["status"] {
   if (booking.status === "cancelled") return "cancelled";
   return booking.sessionDate < new Date() ? "completed" : "upcoming";
@@ -31,6 +43,22 @@ function prettyDueDate(dueDate: string): string {
   });
 }
 
+function dateKey(d: Date) {
+  return d.toLocaleDateString("en-CA");
+}
+
+function slotLabel(iso: string) {
+  const date = new Date(iso);
+  return date.toLocaleString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/London",
+  });
+}
+
 export default function AppointmentsPage() {
   const [uid, setUid] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
@@ -39,6 +67,8 @@ export default function AppointmentsPage() {
   const [syncDone, setSyncDone] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
+  const [packages, setPackages] = useState<SessionPackage[]>([]);
+  const [packagesReload, setPackagesReload] = useState(0);
   const router = useRouter();
   // Shared with the rest of the app (home dashboard, recovery) via
   // PersonProvider, so switching person here or elsewhere stays in sync.
@@ -89,6 +119,24 @@ export default function AppointmentsPage() {
       .catch(() => setFollowUps([]));
   }, [uid, personId]);
 
+  useEffect(() => {
+    if (!uid) return;
+    let live = true;
+    const auth = getAuth();
+    auth.currentUser?.getIdToken()
+      .then((token) => fetch("/api/package-sessions", { headers: { Authorization: `Bearer ${token}` } }))
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+      .then((data: { packages?: SessionPackage[] }) => {
+        if (live) setPackages(data.packages ?? []);
+      })
+      .catch(() => {
+        if (live) setPackages([]);
+      });
+    return () => {
+      live = false;
+    };
+  }, [uid, packagesReload]);
+
   const resolved = bookings.map((b) => ({ ...b, displayStatus: resolveStatus(b) }));
   const upcoming = resolved.filter((b) => b.displayStatus === "upcoming");
   const past = resolved.filter((b) => b.displayStatus !== "upcoming");
@@ -133,6 +181,12 @@ export default function AppointmentsPage() {
               </p>
             ))}
           </div>
+        </section>
+      )}
+
+      {packages.length > 0 && (
+        <section className="page-section">
+          <SessionPackagesPanel packages={packages} onBooked={() => setPackagesReload((value) => value + 1)} />
         </section>
       )}
 
@@ -221,6 +275,9 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
           </strong>
           <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
             {booking.service} · {date}
+            {booking.packageSessionNumber && booking.packageTotalSessions
+              ? ` · Package ${booking.packageSessionNumber}/${booking.packageTotalSessions}`
+              : ""}
           </span>
         </div>
         {booking.displayStatus === "cancelled" ? (
@@ -271,6 +328,131 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
           Complete your assessment before this appointment →
         </Link>
       )}
+    </div>
+  );
+}
+
+function SessionPackagesPanel({
+  packages,
+  onBooked,
+}: {
+  packages: SessionPackage[];
+  onBooked: () => void;
+}) {
+  const [activePackageId, setActivePackageId] = useState<string | null>(null);
+  const [slots, setSlots] = useState<string[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [bookingSlot, setBookingSlot] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function loadSlots(packageId: string) {
+    setActivePackageId(packageId);
+    setMessage(null);
+    setLoadingSlots(true);
+    setSlots([]);
+    const start = new Date();
+    const end = new Date();
+    end.setDate(end.getDate() + 45);
+    try {
+      const params = new URLSearchParams({
+        service: "follow-up",
+        start: dateKey(start),
+        end: dateKey(end),
+      });
+      const res = await fetch(`/api/cal/slots?${params}`);
+      const data = (await res.json()) as { slots?: SlotMap; error?: string };
+      if (!res.ok) throw new Error(data.error || "Could not load times.");
+      const nextSlots = Object.values(data.slots ?? {}).flat().slice(0, 10);
+      setSlots(nextSlots);
+      if (!nextSlots.length) setMessage("No follow-up times are available right now. Please check again later.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not load package booking times.");
+    } finally {
+      setLoadingSlots(false);
+    }
+  }
+
+  async function bookPackageSlot(packageId: string, iso: string) {
+    setBookingSlot(iso);
+    setMessage(null);
+    try {
+      const token = await getAuth().currentUser?.getIdToken();
+      if (!token) throw new Error("Please sign in again to book your package session.");
+      const res = await fetch("/api/package-sessions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          packageId,
+          start: iso,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) throw new Error(data.error || "Could not book this package session.");
+      setMessage("Package session booked. It will appear in your upcoming appointments.");
+      setSlots([]);
+      setActivePackageId(null);
+      onBooked();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not book this package session.");
+    } finally {
+      setBookingSlot(null);
+    }
+  }
+
+  return (
+    <div className="panel stack">
+      <div className="section-heading" style={{ marginBottom: 0 }}>
+        <h2>Session packages</h2>
+        <p className="muted">Use your paid bundle credits to book follow-up sessions without paying again.</p>
+      </div>
+      {packages.map((pack) => {
+        const progress = pack.totalSessions ? Math.round((pack.usedSessions / pack.totalSessions) * 100) : 0;
+        const canBook = pack.remainingSessions > 0 && pack.status !== "complete";
+        return (
+          <article key={pack.id} className="panel" style={{ boxShadow: "none" }}>
+            <div style={{ display: "flex", gap: "1rem", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+              <div>
+                <strong style={{ display: "block", color: "var(--color-text-primary)" }}>{pack.title}</strong>
+                <span className="muted" style={{ fontSize: "var(--text-sm)" }}>
+                  {pack.patientName} · {pack.usedSessions} of {pack.totalSessions} used · {pack.remainingSessions} remaining
+                </span>
+              </div>
+              {canBook ? (
+                <button type="button" className="button small" onClick={() => loadSlots(pack.id)}>
+                  Book next session
+                </button>
+              ) : (
+                <span className="pill-link" aria-label="Package complete">Complete</span>
+              )}
+            </div>
+            <div style={{ height: 8, borderRadius: 999, background: "var(--color-border)", overflow: "hidden", marginTop: "0.875rem" }}>
+              <span style={{ display: "block", width: `${Math.min(100, progress)}%`, height: "100%", background: "var(--color-primary)" }} />
+            </div>
+            {activePackageId === pack.id && (
+              <div className="stack" style={{ marginTop: "1rem" }}>
+                {loadingSlots ? <p className="muted">Loading available follow-up times...</p> : null}
+                {slots.length > 0 ? (
+                  <div className="book-chip-row" role="group" aria-label="Package follow-up times">
+                    {slots.map((iso) => (
+                      <button
+                        key={iso}
+                        type="button"
+                        className="book-chip"
+                        disabled={bookingSlot === iso}
+                        onClick={() => bookPackageSlot(pack.id, iso)}
+                      >
+                        {bookingSlot === iso ? "Booking..." : slotLabel(iso)}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </article>
+        );
+      })}
+      {message ? <p className="muted" role="status">{message}</p> : null}
     </div>
   );
 }

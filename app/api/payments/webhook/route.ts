@@ -169,6 +169,9 @@ export async function POST(request: Request) {
   }
 
   const invoiceNumber = makeInvoiceNumber(session.id);
+  const purchasedService = bookServiceFor(intent.service);
+  const isPackage = purchasedService.sessions > 1;
+  const packageId = isPackage ? session.id : "";
 
   await paymentRef.set({
     provider: "stripe",
@@ -182,7 +185,35 @@ export async function POST(request: Request) {
     createdAt: FieldValue.serverTimestamp(),
     invoiceNumber,
     paidAt: new Date().toISOString(),
+    ...(isPackage
+      ? {
+          packageId,
+          packageTotalSessions: purchasedService.sessions,
+          packageUsedSessions: 1,
+          packageRemainingSessions: purchasedService.sessions - 1,
+        }
+      : {}),
   });
+
+  if (isPackage) {
+    await db.collection("sessionPackages").doc(packageId).set({
+      ownerUid: intent.assessmentUid ?? "",
+      patientId: intent.assessmentPersonId ?? intent.assessmentUid ?? "",
+      patientName: intent.name,
+      email: intent.email,
+      serviceId: intent.service,
+      title: purchasedService.title,
+      totalSessions: purchasedService.sessions,
+      usedSessions: 1,
+      remainingSessions: purchasedService.sessions - 1,
+      status: "active",
+      firstCalBookingUid: booking.uid,
+      bookingUids: [booking.uid],
+      stripeSessionId: session.id,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  }
 
   // Reconcile: if cal-webhook already created the bookings doc, stamp it paid.
   // If it hasn't yet, cal-webhook will find this payment doc (Task 6).
@@ -197,6 +228,13 @@ export async function POST(request: Request) {
         paid: true,
         amountPaidPence: session.amount_total ?? 0,
         paymentProvider: "stripe",
+        ...(isPackage
+          ? {
+              packageId,
+              packageSessionNumber: 1,
+              packageTotalSessions: purchasedService.sessions,
+            }
+          : {}),
       });
     }
   } catch (error) {
@@ -263,7 +301,7 @@ export async function POST(request: Request) {
   // though it doesn't depend on the PDF succeeding. Each step now has its own
   // try/catch so one failure can't take the other down with it.
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const serviceLabel = bookServiceFor(intent.service).title;
+  const serviceLabel = purchasedService.title;
 
   let pdfBytes: Uint8Array | undefined;
   try {

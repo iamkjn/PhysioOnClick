@@ -97,6 +97,11 @@ export default function AppointmentDetailPage() {
           <div>
             <h2 style={{ margin: 0, color: "var(--color-text-primary)" }}>{booking.patientName}</h2>
             <p className="muted" style={{ margin: "4px 0 0" }}>{booking.service}</p>
+            {booking.packageSessionNumber && booking.packageTotalSessions ? (
+              <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--text-sm)" }}>
+                Package session {booking.packageSessionNumber} of {booking.packageTotalSessions}
+              </p>
+            ) : null}
             <p style={{ margin: "2px 0 0", color: "var(--color-primary-dark)", fontWeight: 600, fontSize: "var(--text-sm)" }}>
               {date}
             </p>

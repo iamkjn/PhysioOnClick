@@ -92,7 +92,14 @@ export function AdminUpcomingSessions() {
                 return (
                   <tr key={b.id} className={`admin-table-row${soon ? " admin-table-row-soon" : ""}`}>
                     <td style={{ fontFamily: "var(--font-sans)" }}>{b.patientName}</td>
-                    <td style={{ fontFamily: "var(--font-sans)" }}>{b.service}</td>
+                    <td style={{ fontFamily: "var(--font-sans)" }}>
+                      {b.service}
+                      {b.packageSessionNumber && b.packageTotalSessions ? (
+                        <small style={{ display: "block", color: "var(--color-text-secondary)" }}>
+                          Package {b.packageSessionNumber}/{b.packageTotalSessions}
+                        </small>
+                      ) : null}
+                    </td>
                     <td style={{ fontFamily: "var(--font-sans)" }}>
                       {b.sessionDate.toLocaleString("en-GB", {
                         day: "numeric",

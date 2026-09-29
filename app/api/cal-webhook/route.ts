@@ -139,6 +139,8 @@ export async function POST(request: NextRequest) {
             const pay = paymentSnap.docs[0].data() as {
               amountPence?: number;
               status?: string;
+              packageId?: string;
+              packageTotalSessions?: number;
               assessmentUid?: string;
               assessmentPersonId?: string;
               assessmentFormId?: string;
@@ -148,6 +150,13 @@ export async function POST(request: NextRequest) {
                 paid: true,
                 amountPaidPence: pay.amountPence ?? 0,
                 paymentProvider: "stripe",
+                ...(pay.packageId && pay.packageTotalSessions
+                  ? {
+                      packageId: pay.packageId,
+                      packageSessionNumber: 1,
+                      packageTotalSessions: pay.packageTotalSessions,
+                    }
+                  : {}),
               });
             }
             // Pre-payment self-assessment (see components/booking-step-time.tsx):
