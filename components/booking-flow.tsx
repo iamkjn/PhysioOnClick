@@ -11,6 +11,7 @@ import { founder } from "@/lib/site-data";
 import { allBookServices, bookServiceFor, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
 import { getDependents, type Dependent } from "@/lib/dependents";
+import { accountUserOrNull } from "@/lib/guest-booking";
 import { usePerson } from "@/components/person-provider";
 import { BookingStepService } from "@/components/booking-step-service";
 import { BookingStepTime } from "@/components/booking-step-time";
@@ -103,7 +104,10 @@ export function BookingFlow() {
       setUser(null);
       return;
     }
-    return onAuthStateChanged(auth, setUser);
+    // A guest-checkout (anonymous) session is not an account: treat it as
+    // signed out so a returning guest sees the normal name/email form, not
+    // "Booking as". booking-step-time reuses the session itself if it fits.
+    return onAuthStateChanged(auth, (u) => setUser(accountUserOrNull(u)));
   }, []);
 
   // Only already-signed-in users get the "Booking for" picker (guests who

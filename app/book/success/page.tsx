@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+import { GuestClaimAccount, useGuestBookingEmail } from "@/components/guest-claim-account";
+
 type Status = "pending" | "processing" | "paid" | "slot_unavailable" | "booking_failed";
 
 function BookingResult() {
@@ -11,6 +13,9 @@ function BookingResult() {
   const sessionId = params.get("session_id") ?? "";
   const [status, setStatus] = useState<Status>("pending");
   const [timedOut, setTimedOut] = useState(false);
+  // Set only for a guest checkout (no account yet) — they get a "save your
+  // booking" offer instead of a portal link they can't use yet.
+  const guestEmail = useGuestBookingEmail();
 
   useEffect(() => {
     if (!sessionId) return;
@@ -57,9 +62,12 @@ function BookingResult() {
             <p className="book-result-text">
               Thank you. We&apos;ve confirmed your session and a confirmation email is on its way.
             </p>
+            {guestEmail ? <GuestClaimAccount email={guestEmail} /> : null}
             <div className="book-result-actions">
-              <Link href="/" className="book-result-btn">Back to home</Link>
-              <Link href="/patient/appointments" className="book-result-link">View my appointments</Link>
+              <Link href="/" className={guestEmail ? "book-result-link" : "book-result-btn"}>Back to home</Link>
+              {guestEmail ? null : (
+                <Link href="/patient/appointments" className="book-result-link">View my appointments</Link>
+              )}
               <Link href={`/book/receipt/${sessionId}`} className="book-result-link">
                 View / print your receipt
               </Link>

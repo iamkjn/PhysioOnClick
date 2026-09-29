@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createCalBooking } from "@/lib/cal-booking";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
+import { guestBookingOwnerFields } from "@/lib/guest-booking";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
@@ -230,6 +231,20 @@ export async function POST(request: Request) {
           assessmentFormId: intent.assessmentFormId,
           assessmentCompletedAt: FieldValue.serverTimestamp(),
         });
+        // Guest checkout (lib/guest-booking.ts): cal-webhook only sets
+        // bookedBy when an account matches the attendee email, so an
+        // unclaimed guest booking has none and every admin screen would show
+        // its assessment as "Not submitted". Attach it to the uid whose
+        // assessment form the update above just proved exists.
+        if (!bookingSnap.docs[0].data().bookedBy) {
+          await bookingSnap.docs[0].ref.update(
+            guestBookingOwnerFields({
+              assessmentUid: intent.assessmentUid,
+              assessmentPersonId: intent.assessmentPersonId,
+              patientName: intent.name,
+            })
+          );
+        }
       }
       // If cal-webhook hasn't created the bookings doc yet, it reconciles
       // this from the payments doc itself — see app/api/cal-webhook/route.ts.

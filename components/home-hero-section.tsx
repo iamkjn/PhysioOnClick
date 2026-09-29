@@ -8,6 +8,7 @@ import type { User } from "firebase/auth";
 
 import { SkeletonStatGrid, SkeletonText } from "@/components/skeleton";
 import { track } from "@/lib/analytics";
+import { accountUserOrNull } from "@/lib/guest-booking";
 
 // home-dashboard.tsx's own tree (person-switcher.tsx -> lib/dependents.ts,
 // recovery-percent-card.tsx -> lib/recovery.ts) does `import { db } from
@@ -50,7 +51,9 @@ export function HomeHeroSection({
         }
         unsubscribe = onAuthStateChanged(auth, (u) => {
           setResolvedAuth(true);
-          setUser(u);
+          // A guest-checkout (anonymous) session gets the marketing hero, not
+          // an empty patient dashboard.
+          setUser(accountUserOrNull(u));
         });
       }
     );

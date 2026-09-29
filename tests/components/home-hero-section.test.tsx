@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 
 let authStateCallback: ((user: any) => void) | null = null
@@ -25,5 +25,24 @@ describe('HomeHeroSection', () => {
     render(<HomeHeroSection founderName="Jane" />)
     expect(screen.getByText('Expert Physiotherapy,')).toBeInTheDocument()
     expect(document.querySelector('.skeleton-hero')).not.toBeInTheDocument()
+  })
+
+  // Guest checkout (lib/guest-booking.ts) leaves an anonymous Firebase session
+  // behind; it must get the marketing hero, not an empty patient dashboard.
+  it('keeps the marketing hero for an anonymous guest-checkout session', async () => {
+    authStateCallback = null
+    render(<HomeHeroSection founderName="Jane" />)
+    await waitFor(() => expect(authStateCallback).not.toBeNull())
+    act(() => authStateCallback!({ uid: 'anon-1', isAnonymous: true }))
+    expect(screen.getByText('Expert Physiotherapy,')).toBeInTheDocument()
+    expect(screen.queryByText('Dashboard')).not.toBeInTheDocument()
+  })
+
+  it('still shows the dashboard for a real signed-in account', async () => {
+    authStateCallback = null
+    render(<HomeHeroSection founderName="Jane" />)
+    await waitFor(() => expect(authStateCallback).not.toBeNull())
+    act(() => authStateCallback!({ uid: 'u-1', isAnonymous: false }))
+    expect(await screen.findByText('Dashboard')).toBeInTheDocument()
   })
 })

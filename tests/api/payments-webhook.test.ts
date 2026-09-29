@@ -2,6 +2,9 @@ import crypto from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const bookingDoc = { update: vi.fn().mockResolvedValue(undefined) };
+// What the existing bookings doc holds when the webhook reads it (cal-webhook
+// may or may not have already matched it to an account via bookedBy).
+const bookingData: { current: Record<string, unknown> } = { current: {} };
 const assessmentDoc = { update: vi.fn().mockResolvedValue(undefined) };
 const paymentDocRef = {
   get: vi.fn(),
@@ -18,7 +21,9 @@ const db = {
     }
     // bookings lookup by calBookingUid
     return {
-      where: () => ({ limit: () => ({ get: async () => ({ empty: false, docs: [{ ref: bookingDoc }] }) }) }),
+      where: () => ({
+        limit: () => ({ get: async () => ({ empty: false, docs: [{ ref: bookingDoc, data: () => bookingData.current }] }) }),
+      }),
     };
   }),
 };
@@ -206,5 +211,57 @@ describe("POST /api/payments/webhook", () => {
     expect(bookingDoc.update).toHaveBeenCalledWith(
       expect.objectContaining({ assessmentFormId: "form_1", assessmentCompletedAt: "TS" }),
     );
+  });
+
+  // Guest checkout (lib/guest-booking.ts): an unclaimed guest has no account
+  // for cal-webhook to match by email, so the booking must be attached to the
+  // uid that wrote its assessment — otherwise admin screens show it as
+  // "Not submitted".
+  describe("guest checkout bookedBy fallback", () => {
+    const eventFor = (assessmentUid: string) => ({
+      ...EVENT,
+      data: {
+        object: {
+          ...EVENT.data.object,
+          metadata: {
+            ...EVENT.data.object.metadata,
+            assessmentUid,
+            assessmentPersonId: assessmentUid,
+            assessmentFormId: "form_1",
+          },
+        },
+      },
+    });
+
+    beforeEach(() => {
+      bookingDoc.update.mockClear();
+      assessmentDoc.update.mockClear();
+      bookingData.current = {};
+    });
+
+    it("attaches a booking with no account to the assessment owner", async () => {
+      await POST(signedRequest(eventFor("anon_1")));
+      expect(bookingDoc.update).toHaveBeenCalledWith({
+        bookedBy: "anon_1",
+        patientType: "self",
+        patientId: "anon_1",
+        patientName: "Ada Lovelace",
+        patientAvatarUrl: "",
+      });
+    });
+
+    it("never overrides a booking cal-webhook already matched to an account", async () => {
+      bookingData.current = { bookedBy: "real_uid" };
+      await POST(signedRequest(eventFor("anon_1")));
+      expect(bookingDoc.update).toHaveBeenCalledWith(expect.objectContaining({ assessmentFormId: "form_1" }));
+      expect(bookingDoc.update).not.toHaveBeenCalledWith(expect.objectContaining({ bookedBy: expect.anything() }));
+    });
+
+    it("does not attach the booking when the assessment form could not be linked", async () => {
+      assessmentDoc.update.mockRejectedValueOnce(new Error("NOT_FOUND"));
+      const res = await POST(signedRequest(eventFor("anon_1")));
+      expect(res.status).toBe(200);
+      expect(bookingDoc.update).not.toHaveBeenCalledWith(expect.objectContaining({ bookedBy: expect.anything() }));
+    });
   });
 });

@@ -85,10 +85,14 @@ describe('BookingFlow', () => {
 
     expect(screen.getByText('Step 2 of 3')).toBeInTheDocument()
     expect(screen.getByLabelText('Create a password')).toBeInTheDocument()
-    await waitFor(() => expect(fetch).toHaveBeenCalled())
-    expect(String((fetch as ReturnType<typeof vi.fn>).mock.calls[0][0])).toContain(
-      'service=initial-assessment'
-    )
+    // Other requests (e.g. /api/growth/track funnel events) can fire first, so
+    // find the availability request itself rather than assuming calls[0].
+    const slotsRequest = () =>
+      (fetch as ReturnType<typeof vi.fn>).mock.calls
+        .map(([url]) => String(url))
+        .find((url) => url.includes('/api/cal/slots'))
+    await waitFor(() => expect(slotsRequest()).toBeDefined())
+    expect(slotsRequest()).toContain('service=initial-assessment')
   })
 
   it('lets a returning patient sign in instead of creating a password', async () => {

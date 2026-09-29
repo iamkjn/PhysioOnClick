@@ -6,6 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Auth, User } from "firebase/auth";
 import { track } from "@/lib/analytics";
+// Types-only Firebase import inside, so this keeps the header's lazy-Auth split.
+import { accountUserOrNull } from "@/lib/guest-booking";
 
 // notification-bell.tsx statically imports "@/lib/firebase" + "firebase/auth"
 // itself, so a plain top-level import here would silently re-introduce the
@@ -162,7 +164,10 @@ export function SiteHeader() {
       ([{ auth }, { onAuthStateChanged }]) => {
         if (cancelled || !auth) return;
         authRef.current = auth;
-        unsubscribe = onAuthStateChanged(auth, (u) => {
+        unsubscribe = onAuthStateChanged(auth, (rawUser) => {
+          // A guest-checkout (anonymous) session is not a patient account —
+          // show the logged-out header and don't set the poc-auth cookie.
+          const u = accountUserOrNull(rawUser);
           setUser(u);
           // Mirror auth state into a cookie the server can read, so the `/` home
           // renders a dashboard loader (not the logged-out hero) for returning

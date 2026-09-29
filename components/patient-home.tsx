@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { auth } from "@/lib/firebase";
+import { accountUserOrNull } from "@/lib/guest-booking";
 import { ensurePatientRecord } from "@/lib/patient-account";
 import { AuthPanel } from "@/components/auth-panel";
 import { SkeletonRow } from "@/components/skeleton";
@@ -25,7 +26,11 @@ export function PatientHome() {
       setUid(null);
       return;
     }
-    return onAuthStateChanged(auth, (user) => {
+    return onAuthStateChanged(auth, (rawUser) => {
+      // A guest-checkout (anonymous) session is shown the sign-in panel and
+      // must NOT get a users/patients record written for it here (see
+      // lib/guest-booking.ts) — /auth/verify creates those when it's claimed.
+      const user = accountUserOrNull(rawUser);
       if (user) {
         void ensurePatientRecord(user).catch((err) =>
           console.error("ensurePatientRecord failed on portal gate", err)

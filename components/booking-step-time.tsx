@@ -3,8 +3,11 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type RefObject } from "react";
 import {
   createUserWithEmailAndPassword,
+  signInAnonymously,
   signInWithEmailAndPassword,
+  signOut,
   updateProfile,
+  type Auth,
   type User
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
@@ -22,6 +25,7 @@ import { LIMITS, validateEmail, validateName } from "@/lib/validation";
 import { formatPersonName } from "@/lib/name-format";
 import { PasswordInput } from "@/components/password-input";
 import { AssessmentWizard } from "@/components/assessment-wizard";
+import { guestBookingMatches, rememberGuestBooking } from "@/lib/guest-booking";
 
 type Props = {
   service: CalService & PricingItem;
@@ -91,6 +95,23 @@ function authErrorMessage(error: unknown) {
   return "We couldn't complete that. Please check your details and try again.";
 }
 
+/**
+ * Guest checkout (see lib/guest-booking.ts): returns an anonymous Firebase
+ * user to book under, so the pre-payment assessment is written exactly as it
+ * is for a full account. Reuses this browser's existing guest session only if
+ * it was started for the same email; any other anonymous session (e.g. a
+ * different person on a shared computer) is signed out first so two people's
+ * bookings and assessments never share a uid. Throws if anonymous sign-in is
+ * unavailable — the caller falls back to the password path.
+ */
+async function startGuestSession(firebaseAuth: Auth, email: string): Promise<User> {
+  const current = firebaseAuth.currentUser;
+  if (current && guestBookingMatches(current, email)) return current;
+  if (current?.isAnonymous) await signOut(firebaseAuth);
+  const credential = await signInAnonymously(firebaseAuth);
+  return credential.user;
+}
+
 export function BookingStepTime({
   service,
   focusAreas,
@@ -130,6 +151,10 @@ export function BookingStepTime({
   const [password, setPassword] = useState("");
   // Guests default to creating an account; returning patients switch to "signin".
   const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
+  // Flips on if Firebase refuses anonymous sign-in (e.g. the provider is
+  // disabled for the project). The form then behaves exactly as it did before
+  // guest checkout existed: the password becomes required again.
+  const [guestUnavailable, setGuestUnavailable] = useState(false);
   const [editingDetails, setEditingDetails] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -161,6 +186,9 @@ export function BookingStepTime({
 
   const signedIn = Boolean(user);
   const signingIn = !signedIn && authMode === "signin";
+  // New visitors may leave the password blank to book as a guest (a third
+  // path next to "create an account" and "sign in", both unchanged).
+  const offerGuest = !signedIn && authMode === "signup" && !guestUnavailable;
 
   // Signed-in patients book as themselves, so prefill from their account.
   // Some accounts (e.g. magic-link sign-ins) never captured a display name —
@@ -389,6 +417,43 @@ export function BookingStepTime({
             attendeeEmail = credential.user.email ?? trimmedEmail;
           } catch (authError) {
             setError(authErrorMessage(authError));
+            return;
+          }
+        } else if (offerGuest && !password) {
+          // Guest checkout: password left blank, so book under an anonymous
+          // session instead of creating an account. Name and email were
+          // validated above exactly as for account creation. No users/patients
+          // doc is written here on purpose: cal-webhook matches bookings to
+          // accounts by users.email, and a guest record must never compete
+          // with a real account for that email. /auth/verify creates the
+          // records if the guest later claims an account.
+          const trimmedName = formatPersonName(name, "");
+          if (!trimmedName || !trimmedEmail) {
+            setError("Please enter your name and email.");
+            return;
+          }
+          try {
+            const guest = await startGuestSession(auth, trimmedEmail);
+            try {
+              await updateProfile(guest, { displayName: trimmedName });
+            } catch {
+              // Non-fatal — the name still travels with the booking itself.
+            }
+            rememberGuestBooking(guest.uid, trimmedEmail);
+            accountUser = guest;
+            attendeeName = trimmedName;
+            attendeeEmail = trimmedEmail;
+          } catch (guestError) {
+            if (guestError instanceof FirebaseError && guestError.code === "auth/network-request-failed") {
+              setError("We couldn't reach our booking system. Please check your connection and try again.");
+              return;
+            }
+            // Anonymous sign-in is switched off or refused — fall back to the
+            // account path, which is exactly how this form worked before.
+            setGuestUnavailable(true);
+            setError(
+              "Booking without an account isn't available just now. Please create a password below to continue — it only takes a moment."
+            );
             return;
           }
         } else {
@@ -817,19 +882,27 @@ export function BookingStepTime({
               </div>
               {!signedIn ? (
                 <div className="book-field book-field-full">
+                  {offerGuest ? <span className="book-optional-tag">Optional</span> : null}
                   <label className="book-label" htmlFor="book-password">
                     {signingIn ? "Password" : "Create a password"}
                   </label>
                   <PasswordInput
                     id="book-password"
                     className="book-input"
-                    required
+                    required={!offerGuest}
                     minLength={signingIn ? undefined : 6}
                     autoComplete={signingIn ? "current-password" : "new-password"}
                     placeholder={signingIn ? "Your password" : "At least 6 characters"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    aria-describedby={offerGuest ? "book-password-guest-hint" : undefined}
                   />
+                  {offerGuest ? (
+                    <p id="book-password-guest-hint" className="book-field-hint">
+                      Skip it to book as a guest. After paying you can save your booking to an account — no
+                      password needed.
+                    </p>
+                  ) : null}
                 </div>
               ) : null}
               {!signedIn ? (

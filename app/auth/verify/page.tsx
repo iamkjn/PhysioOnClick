@@ -3,12 +3,21 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FirebaseError } from "firebase/app";
-import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import {
+  EmailAuthProvider,
+  isSignInWithEmailLink,
+  linkWithCredential,
+  signInWithEmailLink,
+  signOut,
+  type Auth,
+  type UserCredential,
+} from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
 import { ensurePatientRecord } from "@/lib/patient-account";
 import { validateEmail, LIMITS } from "@/lib/validation";
+import { forgetGuestBooking, guestBookingMatches } from "@/lib/guest-booking";
 
 type Stage = "verifying" | "needs-email" | "signing-in" | "success" | "error";
 
@@ -19,6 +28,41 @@ const ALLOWED_RETURN_PATHS = new Set<string>(["/book", "/patient", "/patient/ass
 
 function sanitizeReturnPath(value: string | null): string {
   return value && ALLOWED_RETURN_PATHS.has(value) ? value : "/patient";
+}
+
+/**
+ * Completes the magic link. If this browser holds the anonymous session of a
+ * guest checkout made with this same email (see lib/guest-booking.ts), the
+ * email is LINKED to that session instead of signing in fresh — the uid stays
+ * the same, so the pre-payment assessment and booking written under it become
+ * this permanent account's with no migration. Everyone else (including a
+ * different person on a shared browser) gets the normal signInWithEmailLink.
+ */
+async function signInOrClaimGuestAccount(
+  firebaseAuth: Auth,
+  email: string,
+  href: string,
+): Promise<UserCredential> {
+  // auth.currentUser is null until the persisted session has been restored.
+  await firebaseAuth.authStateReady();
+  const current = firebaseAuth.currentUser;
+  if (current && guestBookingMatches(current, email)) {
+    try {
+      const upgraded = await linkWithCredential(current, EmailAuthProvider.credentialWithLink(email, href));
+      forgetGuestBooking();
+      return upgraded;
+    } catch (error) {
+      const code = error instanceof FirebaseError ? error.code : "";
+      if (code !== "auth/email-already-in-use" && code !== "auth/credential-already-in-use") throw error;
+      // The email already belongs to a full account (a returning patient who
+      // booked as a guest): sign in to that account instead. Dropping the
+      // guest session first means a retry with a fresh link can't loop back
+      // into this branch if the failed link attempt used up this one.
+      forgetGuestBooking();
+      await signOut(firebaseAuth);
+    }
+  }
+  return signInWithEmailLink(firebaseAuth, email, href);
 }
 
 function VerifyPage() {
@@ -61,7 +105,7 @@ function VerifyPage() {
     if (!auth) return;
     setStage("signing-in");
     try {
-      const credential = await signInWithEmailLink(auth, email, href);
+      const credential = await signInOrClaimGuestAccount(auth, email, href);
       await ensurePatientRecord(credential.user, credential.user.displayName || "");
       const idToken = await credential.user.getIdToken();
       await fetch("/api/auth/link-bookings", {

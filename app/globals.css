@@ -7780,6 +7780,27 @@ textarea:focus {
   color: var(--book-paper-muted);
 }
 
+/* Guest checkout: the password is optional for new visitors. The tag floats
+   onto the label's line (it sits before the <label> in the DOM so the label
+   text itself stays exactly "Create a password"). */
+.book-optional-tag {
+  float: right;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--book-paper-muted);
+  background: var(--book-accent-light);
+  border-radius: 999px;
+  padding: 0 8px;
+}
+
+.book-field-hint {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--book-paper-muted);
+}
+
 .book-consent {
   display: flex;
   align-items: flex-start;
@@ -7915,6 +7936,53 @@ textarea:focus {
   font: 600 0.9rem var(--font-sans);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* Guest checkout: post-payment "save your booking to an account" offer. */
+.book-claim {
+  margin: 0 0 1.6rem;
+  padding: 1.15rem 1.25rem 1.3rem;
+  background: #fff;
+  border: 1.5px solid var(--book-paper-border);
+  border-radius: var(--radius-chip);
+  text-align: left;
+}
+
+.book-claim-title {
+  font: 700 1rem var(--font-sans);
+  margin: 0 0 0.35rem;
+}
+
+.book-claim-text {
+  color: var(--book-paper-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0 0 0.9rem;
+}
+
+.book-claim-text:last-child {
+  margin-bottom: 0;
+}
+
+.book-claim-error {
+  color: var(--color-error);
+  font-size: 0.84rem;
+  font-weight: 600;
+  margin: 0 0 0.8rem;
+}
+
+.book-claim-btn {
+  border: 0;
+  cursor: pointer;
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.book-claim-btn:disabled {
+  cursor: progress;
+  opacity: 0.75;
+  transform: none;
 }
 
 .book-result-icon {

@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
+import { guestBookingOwnerFields } from "@/lib/guest-booking";
 
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
   if (!secret || !signature) return false;
@@ -124,6 +125,10 @@ export async function POST(request: NextRequest) {
         // a payment for this Cal booking, stamp the booking as paid. If the
         // payment webhook arrives later, it stamps the booking itself (see
         // app/api/payments/webhook/route.ts).
+        // Set once the pre-payment assessment is linked below — i.e. once the
+        // form update has proved that uid wrote it. Used only as the guest-
+        // checkout fallback for `bookedBy` further down.
+        let assessmentOwner: { assessmentUid: string; assessmentPersonId: string } | null = null;
         try {
           const paymentSnap = await db
             .collection("payments")
@@ -162,6 +167,10 @@ export async function POST(request: NextRequest) {
                 assessmentFormId: pay.assessmentFormId,
                 assessmentCompletedAt: FieldValue.serverTimestamp(),
               });
+              assessmentOwner = {
+                assessmentUid: pay.assessmentUid,
+                assessmentPersonId: pay.assessmentPersonId,
+              };
             }
           }
         } catch (error) {
@@ -212,6 +221,15 @@ export async function POST(request: NextRequest) {
               patientAvatarUrl: "",
             });
           }
+        } else if (assessmentOwner) {
+          // Guest checkout (lib/guest-booking.ts): no account has this email
+          // yet, so attach the booking to the (anonymous) uid that submitted
+          // its assessment. Without a bookedBy, every admin screen shows the
+          // assessment as "Not submitted". If the guest later claims an
+          // account in the same browser, that uid becomes permanent.
+          await bookingRef.update(
+            guestBookingOwnerFields({ ...assessmentOwner, patientName: attendee.name })
+          );
         }
       }
     } else if (triggerEvent === "BOOKING_CANCELLED" && booking) {
