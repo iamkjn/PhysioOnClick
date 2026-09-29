@@ -69,6 +69,13 @@ function formatLabel(value: string) {
   return value.replaceAll("-", " ");
 }
 
+function exerciseSlugFromPath(path: string) {
+  const segments = path.split("/").filter(Boolean);
+  if (segments[0] !== "exercises" || segments.length !== 2) return "";
+  if (["area", "for", "tests", "how-we-make-this"].includes(segments[1])) return "";
+  return segments[1];
+}
+
 function isPatientJourneyEvent(event: GrowthEvent) {
   return !(
     event.path === "/admin" ||
@@ -149,6 +156,19 @@ export function AdminGrowthDashboard() {
           exerciseSlug,
           String(event.params?.exercise_title ?? ""),
           String(event.params?.body_part ?? "Exercise library"),
+        );
+      }
+
+      const viewedExerciseSlug =
+        event.event === "library_view" || event.event === "page_view"
+          ? String(event.params?.slug ?? "") || exerciseSlugFromPath(event.path)
+          : "";
+      if (viewedExerciseSlug) {
+        bump(
+          exercises,
+          viewedExerciseSlug,
+          "",
+          event.event === "library_view" ? "Exercise guide viewed" : "Exercise page viewed",
         );
       }
 
@@ -267,7 +287,7 @@ export function AdminGrowthDashboard() {
         </section>
 
         <section className="admin-growth-card">
-          <h3>Exercise clicks</h3>
+          <h3>Exercise interest</h3>
           {stats.exercises.length ? (
             <ol className="admin-growth-list">
               {stats.exercises.map(([slug, item]) => (
@@ -277,7 +297,7 @@ export function AdminGrowthDashboard() {
                 </li>
               ))}
             </ol>
-          ) : <p className="muted">Exercise clicks will appear as patients use the library.</p>}
+          ) : <p className="muted">Exercise views and clicks will appear as patients use the library.</p>}
         </section>
 
         <section className="admin-growth-card">
