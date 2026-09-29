@@ -25,6 +25,23 @@ type SessionPackage = {
 };
 
 type SlotMap = Record<string, string[]>;
+type PackageCheckIn = {
+  painScore: number;
+  progress: "better" | "same" | "worse";
+  exercises: "yes" | "partly" | "no";
+  newSymptoms: boolean;
+  changeNote: string;
+  focus: string;
+};
+
+const defaultCheckIn: PackageCheckIn = {
+  painScore: 5,
+  progress: "same",
+  exercises: "partly",
+  newSymptoms: false,
+  changeNote: "",
+  focus: "",
+};
 
 function resolveStatus(booking: BookingRecord): BookingRecord["status"] {
   if (booking.status === "cancelled") return "cancelled";
@@ -244,8 +261,9 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
     month: "short",
     year: "numeric",
   });
+  const isPackageFollowUp = Boolean(booking.packageSessionNumber && booking.packageSessionNumber > 1);
   const needsAssessment =
-    booking.paid && booking.assessmentCompletedAt === null && booking.displayStatus === "upcoming";
+    booking.paid && !isPackageFollowUp && booking.assessmentCompletedAt === null && booking.displayStatus === "upcoming";
   return (
     <div>
       <Link href={`/patient/appointments/${booking.id}`} style={{ textDecoration: "none" }}>
@@ -343,6 +361,8 @@ function SessionPackagesPanel({
   const [slots, setSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [bookingSlot, setBookingSlot] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [checkIn, setCheckIn] = useState<PackageCheckIn>(defaultCheckIn);
   const [message, setMessage] = useState<string | null>(null);
 
   async function loadSlots(packageId: string) {
@@ -350,6 +370,8 @@ function SessionPackagesPanel({
     setMessage(null);
     setLoadingSlots(true);
     setSlots([]);
+    setSelectedSlot(null);
+    setCheckIn(defaultCheckIn);
     const start = new Date();
     const end = new Date();
     end.setDate(end.getDate() + 45);
@@ -372,8 +394,12 @@ function SessionPackagesPanel({
     }
   }
 
-  async function bookPackageSlot(packageId: string, iso: string) {
-    setBookingSlot(iso);
+  async function bookPackageSlot(packageId: string) {
+    if (!selectedSlot) {
+      setMessage("Choose a time first.");
+      return;
+    }
+    setBookingSlot(selectedSlot);
     setMessage(null);
     try {
       const token = await getAuth().currentUser?.getIdToken();
@@ -383,8 +409,9 @@ function SessionPackagesPanel({
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           packageId,
-          start: iso,
+          start: selectedSlot,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          checkIn,
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -392,6 +419,8 @@ function SessionPackagesPanel({
       setMessage("Package session booked. It will appear in your upcoming appointments.");
       setSlots([]);
       setActivePackageId(null);
+      setSelectedSlot(null);
+      setCheckIn(defaultCheckIn);
       onBooked();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not book this package session.");
@@ -433,19 +462,117 @@ function SessionPackagesPanel({
               <div className="stack" style={{ marginTop: "1rem" }}>
                 {loadingSlots ? <p className="muted">Loading available follow-up times...</p> : null}
                 {slots.length > 0 ? (
-                  <div className="book-chip-row" role="group" aria-label="Package follow-up times">
-                    {slots.map((iso) => (
-                      <button
-                        key={iso}
-                        type="button"
-                        className="book-chip"
-                        disabled={bookingSlot === iso}
-                        onClick={() => bookPackageSlot(pack.id, iso)}
-                      >
-                        {bookingSlot === iso ? "Booking..." : slotLabel(iso)}
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    <div>
+                      <strong style={{ display: "block", color: "var(--color-text-primary)", marginBottom: "0.5rem" }}>
+                        Choose a follow-up time
+                      </strong>
+                      <div className="book-chip-row" role="group" aria-label="Package follow-up times">
+                        {slots.map((iso) => (
+                          <button
+                            key={iso}
+                            type="button"
+                            aria-pressed={selectedSlot === iso}
+                            className={`book-chip${selectedSlot === iso ? " is-selected" : ""}`}
+                            disabled={bookingSlot === iso}
+                            onClick={() => setSelectedSlot(iso)}
+                          >
+                            {slotLabel(iso)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    {selectedSlot ? (
+                      <div className="panel stack" style={{ boxShadow: "none", background: "var(--color-bg)" }}>
+                        <div>
+                          <strong style={{ display: "block", color: "var(--color-text-primary)" }}>
+                            Quick follow-up check-in
+                          </strong>
+                          <p className="muted" style={{ margin: "0.25rem 0 0", fontSize: "var(--text-sm)" }}>
+                            This replaces the full assessment for package follow-ups and helps your physio prepare.
+                          </p>
+                        </div>
+                        <label className="book-label">
+                          Pain today: {checkIn.painScore}/10
+                          <input
+                            type="range"
+                            min={0}
+                            max={10}
+                            value={checkIn.painScore}
+                            onChange={(event) => setCheckIn((current) => ({ ...current, painScore: Number(event.target.value) }))}
+                          />
+                        </label>
+                        <div className="book-chip-row" role="group" aria-label="Progress since last session">
+                          {[
+                            ["better", "Better"],
+                            ["same", "Same"],
+                            ["worse", "Worse"],
+                          ].map(([value, label]) => (
+                            <button
+                              key={value}
+                              type="button"
+                              className={`book-chip${checkIn.progress === value ? " is-selected" : ""}`}
+                              onClick={() => setCheckIn((current) => ({ ...current, progress: value as PackageCheckIn["progress"] }))}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="book-chip-row" role="group" aria-label="Exercise completion">
+                          {[
+                            ["yes", "Exercises done"],
+                            ["partly", "Some done"],
+                            ["no", "Not done"],
+                          ].map(([value, label]) => (
+                            <button
+                              key={value}
+                              type="button"
+                              className={`book-chip${checkIn.exercises === value ? " is-selected" : ""}`}
+                              onClick={() => setCheckIn((current) => ({ ...current, exercises: value as PackageCheckIn["exercises"] }))}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                        <label className="book-checkbox" style={{ alignItems: "flex-start" }}>
+                          <input
+                            type="checkbox"
+                            checked={checkIn.newSymptoms}
+                            onChange={(event) => setCheckIn((current) => ({ ...current, newSymptoms: event.target.checked }))}
+                          />
+                          <span>New or worsening symptoms since the last session</span>
+                        </label>
+                        <label className="book-label">
+                          What changed since last time?
+                          <textarea
+                            className="book-input"
+                            rows={3}
+                            value={checkIn.changeNote}
+                            onChange={(event) => setCheckIn((current) => ({ ...current, changeNote: event.target.value }))}
+                            placeholder="Short update: pain, function, flare-ups, exercise response..."
+                          />
+                        </label>
+                        <label className="book-label">
+                          What should we focus on in this session?
+                          <textarea
+                            className="book-input"
+                            rows={3}
+                            value={checkIn.focus}
+                            onChange={(event) => setCheckIn((current) => ({ ...current, focus: event.target.value }))}
+                            placeholder="Example: walking tolerance, shoulder movement, exercise progression..."
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          className="button"
+                          disabled={bookingSlot === selectedSlot}
+                          onClick={() => bookPackageSlot(pack.id)}
+                        >
+                          {bookingSlot === selectedSlot ? "Booking..." : "Confirm included session"}
+                        </button>
+                      </div>
+                    ) : null}
+                  </>
                 ) : null}
               </div>
             )}

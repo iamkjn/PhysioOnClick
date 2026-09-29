@@ -26,6 +26,7 @@ export interface BookingRecord {
   packageId?: string;
   packageSessionNumber?: number;
   packageTotalSessions?: number;
+  packageFollowUpCheckInId?: string;
   // Owning account + person, so an admin screen that only has a bookingId
   // (e.g. app/admin/session/[bookingId]/page.tsx, reached from a notification)
   // can look up the rest of that person's history without a second read.
@@ -83,6 +84,7 @@ function toBookingRecord(id: string, data: Record<string, unknown>): BookingReco
     packageId: typeof data.packageId === "string" ? data.packageId : undefined,
     packageSessionNumber: typeof data.packageSessionNumber === "number" ? data.packageSessionNumber : undefined,
     packageTotalSessions: typeof data.packageTotalSessions === "number" ? data.packageTotalSessions : undefined,
+    packageFollowUpCheckInId: typeof data.packageFollowUpCheckInId === "string" ? data.packageFollowUpCheckInId : undefined,
     bookedBy: typeof data.bookedBy === "string" ? data.bookedBy : undefined,
     patientId: typeof data.patientId === "string" ? data.patientId : undefined,
   };

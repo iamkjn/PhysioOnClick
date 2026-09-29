@@ -18,6 +18,38 @@ type PackageDoc = {
   bookingUids?: string[];
 };
 
+type FollowUpCheckIn = {
+  painScore: number;
+  progress: "better" | "same" | "worse";
+  exercises: "yes" | "partly" | "no";
+  newSymptoms: boolean;
+  changeNote: string;
+  focus: string;
+};
+
+function cleanString(value: unknown, max = 600) {
+  return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+
+function cleanCheckIn(value: unknown): FollowUpCheckIn | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const input = value as Record<string, unknown>;
+  const painScore = Number(input.painScore);
+  const progress = cleanString(input.progress, 20);
+  const exercises = cleanString(input.exercises, 20);
+  if (!Number.isFinite(painScore) || painScore < 0 || painScore > 10) return null;
+  if (!["better", "same", "worse"].includes(progress)) return null;
+  if (!["yes", "partly", "no"].includes(exercises)) return null;
+  return {
+    painScore: Math.round(painScore),
+    progress: progress as FollowUpCheckIn["progress"],
+    exercises: exercises as FollowUpCheckIn["exercises"],
+    newSymptoms: input.newSymptoms === true,
+    changeNote: cleanString(input.changeNote),
+    focus: cleanString(input.focus),
+  };
+}
+
 function toLondonParts(isoString: string) {
   const date = new Date(isoString);
   const londonStr = date.toLocaleString("en-GB", { timeZone: "Europe/London" });
@@ -88,9 +120,9 @@ export async function POST(request: NextRequest) {
   const db = getAdminDb();
   if (!db) return NextResponse.json({ error: "Server not configured" }, { status: 500 });
 
-  let body: { packageId?: unknown; start?: unknown; timeZone?: unknown };
+  let body: { packageId?: unknown; start?: unknown; timeZone?: unknown; checkIn?: unknown };
   try {
-    body = (await request.json()) as { packageId?: unknown; start?: unknown; timeZone?: unknown };
+    body = (await request.json()) as { packageId?: unknown; start?: unknown; timeZone?: unknown; checkIn?: unknown };
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
@@ -103,6 +135,8 @@ export async function POST(request: NextRequest) {
   if (!start || Number.isNaN(startDate.getTime()) || startDate.getTime() <= Date.now()) {
     return NextResponse.json({ error: "Choose a future time." }, { status: 400 });
   }
+  const checkIn = cleanCheckIn(body.checkIn);
+  if (!checkIn) return NextResponse.json({ error: "Complete the follow-up check-in first." }, { status: 400 });
 
   const packageRef = db.collection("sessionPackages").doc(packageId);
   const packageSnap = await packageRef.get();
@@ -135,6 +169,22 @@ export async function POST(request: NextRequest) {
 
   const { date, appointmentDate, appointmentTime, appointmentLabel } = toLondonParts(startDate.toISOString());
   const sessionNumber = used + 1;
+  const checkInRef = await db.collection("packageFollowUpCheckIns").add({
+    packageId,
+    ownerUid: user.uid,
+    patientId: pack.patientId || user.uid,
+    patientName: name,
+    email: email.trim().toLowerCase(),
+    sessionNumber,
+    totalSessions: total,
+    calBookingUid: booking.uid,
+    appointmentDate,
+    appointmentTime,
+    sessionDate: date,
+    ...checkIn,
+    createdAt: FieldValue.serverTimestamp(),
+  });
+
   await db.collection("bookings").add({
     fullName: name,
     email: email.trim().toLowerCase(),
@@ -159,6 +209,7 @@ export async function POST(request: NextRequest) {
     packageId,
     packageSessionNumber: sessionNumber,
     packageTotalSessions: total,
+    packageFollowUpCheckInId: checkInRef.id,
     createdAt: FieldValue.serverTimestamp(),
   });
 
