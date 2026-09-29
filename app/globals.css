@@ -5423,12 +5423,15 @@ textarea:focus {
 .admin-growth-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: start;
   gap: var(--space-4);
 }
 
 .admin-growth-card {
   display: grid;
+  align-content: start;
   gap: var(--space-4);
+  height: fit-content;
   padding: var(--space-5);
 }
 
@@ -5534,6 +5537,16 @@ textarea:focus {
   align-items: flex-start;
   flex-direction: column;
   gap: 0.15rem;
+}
+
+.admin-growth-timeline {
+  max-height: min(620px, calc(100vh - 340px));
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.admin-growth-timeline:empty {
+  max-height: none;
 }
 
 @media (max-width: 1180px) {
