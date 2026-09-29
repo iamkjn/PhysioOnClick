@@ -79,6 +79,10 @@ function deviceFromUserAgent(userAgent: string) {
   return "desktop";
 }
 
+function shouldIgnorePath(path: string) {
+  return path === "/admin" || path.startsWith("/admin/") || path.startsWith("/codex-");
+}
+
 export async function POST(request: Request) {
   const ip = clientIp(request);
   if (await isRateLimited("CHAT_RATE_LIMITER", `growth:${ip}`)) {
@@ -101,6 +105,10 @@ export async function POST(request: Request) {
   if (!sessionId) {
     return NextResponse.json({ error: "Missing session id." }, { status: 400 });
   }
+  const path = cleanPath(body.path);
+  if (shouldIgnorePath(path)) {
+    return NextResponse.json({ ok: true, saved: false, reason: "internal-path" });
+  }
 
   const db = getAdminDb();
   if (!db) {
@@ -111,7 +119,7 @@ export async function POST(request: Request) {
   await db.collection("growthEvents").add({
     event,
     sessionId,
-    path: cleanPath(body.path),
+    path,
     referrer: cleanPath(body.referrer),
     params: cleanParams(body.params),
     device: deviceFromUserAgent(userAgent),

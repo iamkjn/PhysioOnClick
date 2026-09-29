@@ -62,6 +62,15 @@ function lastPathSegment(path: string) {
   return segment ? segment.replaceAll("-", " ") : "Home";
 }
 
+function isPatientJourneyEvent(event: GrowthEvent) {
+  return !(
+    event.path === "/admin" ||
+    event.path.startsWith("/admin/") ||
+    event.path.startsWith("/codex-") ||
+    event.params?.source === "smoke_test"
+  );
+}
+
 export function AdminGrowthDashboard() {
   const [events, setEvents] = useState<GrowthEvent[] | null>(null);
   const [error, setError] = useState("");
@@ -86,7 +95,7 @@ export function AdminGrowthDashboard() {
   }, []);
 
   const stats = useMemo(() => {
-    const list = events ?? [];
+    const list = (events ?? []).filter(isPatientJourneyEvent);
     const sessionIds = new Set(list.map((event) => event.sessionId).filter(Boolean));
     const counts = new Map<string, number>();
     const pages = new Map<string, number>();
@@ -113,6 +122,8 @@ export function AdminGrowthDashboard() {
       services: [...services.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5),
     };
   }, [events]);
+
+  const patientEvents = useMemo(() => (events ?? []).filter(isPatientJourneyEvent), [events]);
 
   if (events === null) {
     return <SkeletonStatGrid count={3} />;
@@ -203,9 +214,9 @@ export function AdminGrowthDashboard() {
 
         <section className="admin-growth-card">
           <h3>Latest interactions</h3>
-          {events.length ? (
+          {patientEvents.length ? (
             <ul className="admin-growth-timeline">
-              {events.slice(0, 12).map((event) => (
+              {patientEvents.slice(0, 12).map((event) => (
                 <li key={event.id}>
                   <span>{EVENT_LABELS[event.event] ?? event.event}</span>
                   <strong>{event.path}</strong>

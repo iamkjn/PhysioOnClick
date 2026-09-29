@@ -59,11 +59,13 @@ function cleanParams(params: GrowthEventParams = {}) {
 
 export function trackGrowthEvent(event: GrowthEventName, params?: GrowthEventParams) {
   if (typeof window === "undefined") return;
+  const path = cleanPath(window.location.pathname);
+  if (path === "/admin" || path.startsWith("/admin/")) return;
 
   const payload = {
     event,
     sessionId: sessionId(),
-    path: cleanPath(window.location.pathname),
+    path,
     referrer: document.referrer ? cleanPath(document.referrer) : "",
     params: cleanParams(params),
   };
