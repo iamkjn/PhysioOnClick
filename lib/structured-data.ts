@@ -150,6 +150,12 @@ export function personNode() {
       }
     ],
     memberOf: { "@type": "Organization", name: "Chartered Society of Physiotherapy", alternateName: "CSP" },
+    // Independent profiles that corroborate the practitioner entity. The CSP
+    // member profile backs up the memberOf claim above and links back here.
+    sameAs: [
+      "https://www.linkedin.com/in/dr-shivaliba-zala/",
+      "https://www.csp.org.uk/user/zalashivali1998gmailcom"
+    ],
     knowsAbout: services.map((service) => service.title)
   };
 }

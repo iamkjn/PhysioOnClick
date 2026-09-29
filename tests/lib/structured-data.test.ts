@@ -8,6 +8,7 @@ import {
   exerciseVideoObject,
   selfTestWebPage,
   personRef,
+  personNode,
 } from '@/lib/structured-data'
 
 const ex = exercises.find((e) => e.slug === 'clam-shell')!
@@ -142,5 +143,15 @@ describe('structured-data: selfTestWebPage', () => {
     expect(typeof node.description).toBe('string')
     expect((node.description as string).length).toBeGreaterThan(0)
     expect((node.description as string).length).toBeLessThanOrEqual(160)
+  })
+})
+
+describe('structured-data: personNode', () => {
+  it('links the practitioner to their independent LinkedIn and CSP profiles', () => {
+    const node = personNode() as Record<string, unknown>
+    expect(node.sameAs).toEqual([
+      'https://www.linkedin.com/in/dr-shivaliba-zala/',
+      'https://www.csp.org.uk/user/zalashivali1998gmailcom',
+    ])
   })
 })
