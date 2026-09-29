@@ -11,6 +11,7 @@ import {
   CalendarCheck2,
   CalendarDays,
   FileText,
+  LineChart,
   MessageSquare,
   Users,
   type LucideIcon,
@@ -19,9 +20,10 @@ import { db } from "@/lib/firebase";
 import { AdminShell } from "@/components/admin-shell";
 import { AdminBookingsTable } from "@/components/admin-bookings-table";
 import { AdminEnquiriesTable } from "@/components/admin-enquiries-table";
+import { AdminGrowthDashboard } from "@/components/admin-growth-dashboard";
 import { AdminLiveStats } from "@/components/admin-live-stats";
 
-type Tab = "bookings" | "enquiries" | "stats";
+type Tab = "bookings" | "enquiries" | "stats" | "growth";
 
 type QuickAction = {
   href: string;
@@ -52,6 +54,7 @@ export function AdminDashboard() {
     { key: "bookings", label: "Bookings", icon: CalendarCheck2 },
     { key: "enquiries", label: "Enquiries", icon: MessageSquare },
     { key: "stats", label: "Live stats", icon: BarChart3 },
+    { key: "growth", label: "Growth", icon: LineChart },
   ];
 
   function handleTabKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
@@ -164,6 +167,9 @@ export function AdminDashboard() {
             </div>
             <div id="admin-tabpanel-stats" role="tabpanel" aria-labelledby="admin-tab-stats" hidden={activeTab !== "stats"}>
               {activeTab === "stats" && <AdminLiveStats />}
+            </div>
+            <div id="admin-tabpanel-growth" role="tabpanel" aria-labelledby="admin-tab-growth" hidden={activeTab !== "growth"}>
+              {activeTab === "growth" && <AdminGrowthDashboard />}
             </div>
           </div>
         </section>

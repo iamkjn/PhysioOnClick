@@ -6,6 +6,7 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 
 import { auth } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
+import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { founder } from "@/lib/site-data";
 import { allBookServices, bookServiceFor, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
@@ -145,16 +146,19 @@ export function BookingFlow() {
 
   // Slots are per-event-type, so a service change invalidates the chosen slot.
   const handleServiceChange = useCallback((next: BookServiceId) => {
+    trackGrowthEvent("booking_service_selected", { service_id: next });
     setServiceId(next);
     setSelectedSlot(null);
   }, []);
 
   const toggleFocusArea = useCallback((area: FocusArea) => {
+    trackGrowthEvent("booking_focus_selected", { focus_area: area });
     setFocusAreas((prev) => (prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]));
   }, []);
 
   const handleConfirmed = useCallback(
     (next: BookingConfirmation) => {
+      trackGrowthEvent("booking_confirmed", { service_id: serviceId, for_dependent: Boolean(bookingForId) });
       track("booking_confirmed", { service_id: serviceId, for_dependent: Boolean(bookingForId) });
       setConfirmation(next);
       setStep(3);
@@ -253,6 +257,7 @@ export function BookingFlow() {
           onServiceChange={handleServiceChange}
           onToggleFocusArea={toggleFocusArea}
           onContinue={() => {
+            trackGrowthEvent("booking_step_completed", { step: "service", service_id: serviceId, focus_areas: focusAreas.length });
             track("booking_step_service_done", { service_id: serviceId, focus_areas: focusAreas.length });
             setStep(2);
           }}
@@ -264,7 +269,15 @@ export function BookingFlow() {
           focusAreas={focusAreas}
           user={user}
           selectedSlot={selectedSlot}
-          onSelectSlot={setSelectedSlot}
+          onSelectSlot={(iso) => {
+            setSelectedSlot(iso);
+            if (iso) {
+              trackGrowthEvent("booking_slot_selected", {
+                service_id: service.id,
+                slot_date: iso.slice(0, 10),
+              });
+            }
+          }}
           onBack={() => setStep(1)}
           onConfirmed={handleConfirmed}
           titleRef={panelTitleRef}

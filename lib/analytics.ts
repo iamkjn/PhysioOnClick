@@ -18,6 +18,7 @@
 //   trackPageView(path)        -- log a SPA "page_view" on route change.
 
 import { firebaseApp, firebaseMeasurementId } from "./firebase";
+import { trackGrowthEvent } from "./growth-tracking";
 import type { Analytics } from "firebase/analytics";
 
 type AnalyticsModule = typeof import("firebase/analytics");
@@ -130,6 +131,7 @@ export function trackPageView(path: string): void {
   const page_location =
     typeof window !== "undefined" ? `${window.location.origin}${path}` : undefined;
   const page_title = typeof document !== "undefined" ? document.title : undefined;
+  trackGrowthEvent("page_view", { source: "route_change" });
   track("page_view", {
     page_path: path,
     ...(page_location ? { page_location } : {}),

@@ -5318,6 +5318,224 @@ textarea:focus {
   gap: var(--space-2);
 }
 
+.admin-growth {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.admin-growth-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.admin-growth-head h2,
+.admin-growth-card h3 {
+  margin: 0;
+  color: #043246;
+  font-family: var(--font-serif);
+  letter-spacing: 0;
+}
+
+.admin-growth-head p {
+  max-width: 720px;
+  margin: var(--space-1) 0 0;
+  color: #667a83;
+}
+
+.admin-growth-live {
+  flex: 0 0 auto;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0 var(--space-3);
+  border: 1px solid #bee9d4;
+  border-radius: 999px;
+  background: #ecfdf3;
+  color: #087443;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-growth-live span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.admin-growth-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-3);
+}
+
+.admin-growth-stat,
+.admin-growth-card {
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 14px 36px rgba(4, 50, 70, 0.06);
+}
+
+.admin-growth-stat {
+  min-height: 136px;
+  display: grid;
+  align-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.admin-growth-stat.is-primary {
+  background: #043246;
+  color: white;
+}
+
+.admin-growth-stat svg {
+  width: 22px;
+  height: 22px;
+  color: #0ea5e9;
+}
+
+.admin-growth-stat.is-primary svg,
+.admin-growth-stat.is-primary span,
+.admin-growth-stat.is-primary strong {
+  color: white;
+}
+
+.admin-growth-stat span {
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-growth-stat strong {
+  color: #043246;
+  font-family: var(--font-sans);
+  font-size: 36px;
+  line-height: 1;
+}
+
+.admin-growth-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: var(--space-4);
+}
+
+.admin-growth-card {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+.admin-growth-funnel {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.admin-growth-funnel-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.45rem var(--space-3);
+  align-items: center;
+  font-family: var(--font-sans);
+}
+
+.admin-growth-funnel-row span {
+  color: #35515d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-growth-funnel-row strong {
+  color: #043246;
+  font-size: 14px;
+}
+
+.admin-growth-funnel-row div {
+  grid-column: 1 / -1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef4f6;
+}
+
+.admin-growth-funnel-row div span {
+  display: block;
+  height: 100%;
+  min-width: 6px;
+  border-radius: inherit;
+  background: #0ea5e9;
+}
+
+.admin-growth-list,
+.admin-growth-timeline {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-growth-list li,
+.admin-growth-timeline li {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid #edf2f4;
+  border-radius: 7px;
+  background: #fbfdfd;
+}
+
+.admin-growth-list span,
+.admin-growth-timeline li {
+  min-width: 0;
+}
+
+.admin-growth-list strong,
+.admin-growth-timeline span {
+  display: block;
+  overflow: hidden;
+  color: #043246;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.admin-growth-list small,
+.admin-growth-timeline small,
+.admin-growth-timeline strong {
+  display: block;
+  overflow: hidden;
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-growth-list b {
+  flex: 0 0 auto;
+  color: #0a77a8;
+  font-family: var(--font-sans);
+}
+
+.admin-growth-timeline li {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 @media (max-width: 1180px) {
   .admin-quick-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5365,6 +5583,16 @@ textarea:focus {
   .admin-app-shell.is-nav-open .admin-nav-scrim {
     opacity: 1;
     pointer-events: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-growth-head {
+    flex-direction: column;
+  }
+
+  .admin-growth-grid {
+    grid-template-columns: 1fr;
   }
 }
 

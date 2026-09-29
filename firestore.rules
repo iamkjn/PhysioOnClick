@@ -480,6 +480,10 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    match /growthEvents/{eventId} {
+      allow read, write: if isAdmin();
+    }
+
     // Upcoming-session alerts for the admin bell (components/admin-notification-bell.tsx),
     // written server-side by the notifyAdminUpcomingSessions Cloud Function via the
     // Admin SDK (bypasses these rules). The client only ever flips `read` to true.

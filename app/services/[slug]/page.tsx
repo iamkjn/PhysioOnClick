@@ -10,6 +10,7 @@ import { founder, pricing, services } from "@/lib/site-data";
 import { breadcrumbs, serviceSchema } from "@/lib/structured-data";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
+import { TrackGrowthView } from "@/components/track-view";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 
 // Same reasoning as /blog/[slug]: build the six service pages once so the
@@ -65,6 +66,7 @@ export default async function ServiceDetailPage({
 
   return (
     <div className="site-shell">
+      <TrackGrowthView event="service_view" params={{ service_slug: service.slug }} />
       {/* MedicalTherapy links back to the practice entity by @id (declared once
           sitewide in app/layout.tsx), so the six service pages read as one
           business offering six services rather than six unrelated entities.

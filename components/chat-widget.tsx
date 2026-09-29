@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { track } from "@/lib/analytics";
 import { auth } from "@/lib/firebase";
+import { trackGrowthEvent } from "@/lib/growth-tracking";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -285,6 +286,7 @@ export function ChatWidget() {
   }
 
   function tapBook() {
+    trackGrowthEvent("chat_booking_intent", { source: "chat_chip" });
     router.push("/book");
   }
 
@@ -301,6 +303,13 @@ export function ChatWidget() {
     setSending(true);
     setMsgs((prev) => [...prev, { isBot: false, text: clean }]);
     setChips([]);
+    trackGrowthEvent("chat_message_sent", {
+      message_length: clean.length,
+      intent: /book|appointment|price|cost|pain|physio|service/i.test(clean) ? "commercial_or_clinical" : "general",
+    });
+    if (/book|appointment|checkout|assessment/i.test(clean)) {
+      trackGrowthEvent("chat_booking_intent", { source: "free_text" });
+    }
 
     try {
       const token = await auth?.currentUser?.getIdToken().catch(() => null);
@@ -427,7 +436,10 @@ export function ChatWidget() {
         className="chat-trigger"
         onClick={() =>
           setOpen(o => {
-            if (!o) track("chat_open", { source: "widget" });
+            if (!o) {
+              trackGrowthEvent("chat_opened", { source: "widget" });
+              track("chat_open", { source: "widget" });
+            }
             return !o;
           })
         }

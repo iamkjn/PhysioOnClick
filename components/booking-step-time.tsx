@@ -11,6 +11,7 @@ import { FirebaseError } from "firebase/app";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
 import { auth, db } from "@/lib/firebase";
+import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { ensurePatientRecord } from "@/lib/patient-account";
 import { getPatientPersonDob } from "@/lib/patient-person";
 import type { Dependent } from "@/lib/dependents";
@@ -468,6 +469,14 @@ export function BookingStepTime({
         assessmentUid: accountUser?.uid ?? "",
         assessmentPersonId: bookingForId ?? accountUser?.uid ?? "",
       });
+      trackGrowthEvent("booking_details_completed", {
+        service_id: service.id,
+        for_dependent: bookingForDependent,
+      });
+      trackGrowthEvent("assessment_started", {
+        service_id: service.id,
+        focus_areas: focusAreas.length,
+      });
       setPhase("assessment");
     } catch {
       setError("Something went wrong booking your session. Please try again.");
@@ -481,6 +490,11 @@ export function BookingStepTime({
     setSubmitting(true);
     setError(null);
     try {
+      trackGrowthEvent("checkout_started", {
+        service_id: service.id,
+        amount_pence: checkoutAmountPence,
+        discount_code: discountApplied ? discountCode.trim() : "",
+      });
       const res = await fetch("/api/checkout/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -549,6 +563,11 @@ export function BookingStepTime({
       setDiscountedAmountPence(data.discount.amountPence);
       setDiscountApplied(true);
       setDiscountMessage("Discount applied.");
+      trackGrowthEvent("discount_applied", {
+        discount_code: cleaned,
+        service_id: service.id,
+        amount_pence: data.discount.amountPence,
+      });
     } catch {
       setDiscountMessage("That discount code could not be checked. Please try again.");
     } finally {
