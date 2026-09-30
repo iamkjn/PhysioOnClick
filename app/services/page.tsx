@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ProtectedImageFrame } from "@/components/image-protection";
+import { LibraryCopyrightNotice } from "@/components/exercise-library/library-copyright-notice";
 
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { getPublicServices } from "@/lib/public-content";
@@ -39,20 +41,23 @@ export default function ServicesPage() {
           <Reveal key={service.slug} direction="up" delay={i * 80}>
           <article className="service-split-card" id={service.slug}>
             <div className="service-split-left">
-              <Image
-                className="service-split-image"
-                src={service.image}
-                alt=""
-                width={900}
-                height={520}
-                unoptimized
-                // The first card's image is the LCP element on this page.
-                // next/image lazy-loads by default, which was costing ~2.6s of
-                // pure load delay on mobile before the paint could happen.
-                priority={i === 0}
-                placeholder="blur"
-                blurDataURL={medicalImagePlaceholder}
-              />
+              <ProtectedImageFrame watermark>
+                <Image
+                  className="service-split-image"
+                  src={service.image}
+                  alt=""
+                  width={900}
+                  height={520}
+                  unoptimized
+                  draggable={false}
+                  // The first card's image is the LCP element on this page.
+                  // next/image lazy-loads by default, which was costing ~2.6s of
+                  // pure load delay on mobile before the paint could happen.
+                  priority={i === 0}
+                  placeholder="blur"
+                  blurDataURL={medicalImagePlaceholder}
+                />
+              </ProtectedImageFrame>
               <h2>
                 <TrackedContentLink
                   href={`/services/${service.slug}`}
@@ -150,6 +155,8 @@ export default function ServicesPage() {
           </TrackedBookLink>
         </div>
       </section>
+
+      <LibraryCopyrightNotice content="Our service descriptions and images are" inset />
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ProtectedImageFrame } from "@/components/image-protection";
+import { LibraryCopyrightNotice } from "@/components/exercise-library/library-copyright-notice";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -115,17 +117,20 @@ export default async function ServiceDetailPage({
         <Reveal direction="up">
           <article className="service-split-card">
             <div className="service-split-left">
-              <Image
-                className="service-split-image"
-                src={service.image}
-                alt=""
-                width={900}
-                height={520}
-                unoptimized
-                priority
-                placeholder="blur"
-                blurDataURL={medicalImagePlaceholder}
-              />
+              <ProtectedImageFrame watermark>
+                <Image
+                  className="service-split-image"
+                  src={service.image}
+                  alt=""
+                  width={900}
+                  height={520}
+                  unoptimized
+                  draggable={false}
+                  priority
+                  placeholder="blur"
+                  blurDataURL={medicalImagePlaceholder}
+                />
+              </ProtectedImageFrame>
               <h3 className="service-subhead">Treatment Approach</h3>
               <ul className="service-approach-list">
                 {service.approach.map((step) => (
@@ -251,6 +256,8 @@ export default async function ServiceDetailPage({
           </TrackedBookLink>
         </div>
       </section>
+
+      <LibraryCopyrightNotice content="This page and its images are" inset />
     </div>
   );
 }

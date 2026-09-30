@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ProtectedImageFrame } from "@/components/image-protection";
 import Link from "next/link";
 import { cookies } from "next/headers";
 
@@ -91,14 +92,17 @@ export default async function HomePage() {
           {homeServices.map((service, i) => (
             <Reveal key={service.slug} direction="up" delay={i * 75}>
               <article className="simple-service-card">
-                <Image
-                  className="simple-service-image"
-                  src={service.image}
-                  alt={service.title}
-                  width={720}
-                  height={420}
-                  unoptimized
-                />
+                <ProtectedImageFrame>
+                  <Image
+                    className="simple-service-image"
+                    src={service.image}
+                    alt={service.title}
+                    width={720}
+                    height={420}
+                    unoptimized
+                    draggable={false}
+                  />
+                </ProtectedImageFrame>
                 <h3>{service.title}</h3>
                 <p>{service.summary}</p>
                 <Link href={`/services#${service.slug}`} prefetch aria-label={`Learn more about ${service.title}`}>Learn more →</Link>
