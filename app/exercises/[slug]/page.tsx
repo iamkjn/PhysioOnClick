@@ -11,6 +11,7 @@ import {
   relatedExercises,
 } from "@/lib/exercise-library";
 import { formatDosage, hasPrescribedDose, resolveDosage } from "@/lib/exercises";
+import { splitMistakes } from "@/lib/exercise-safety-line";
 import { initialAssessmentPrice } from "@/lib/site-data";
 import { breadcrumbs, exerciseWebPage } from "@/lib/structured-data";
 import { AddToPlanButton } from "@/components/exercise-library/add-to-plan-button";
@@ -71,25 +72,6 @@ export async function generateMetadata({
       images: [`/exercise-og/${slug}`],
     },
   };
-}
-
-// The safety line is the final `mistakes` entry when it reads as a caution
-// ("stop", "seek", "pain", "don't push"); otherwise every mistake renders
-// normally and the callout carries a generic caution. Deterministic so the
-// static export and the test agree.
-const SAFETY_CAUTION = /\b(stop|seek|pain|don'?t push|do not push)\b/i;
-const GENERIC_SAFETY =
-  "Stop and seek advice if an exercise causes sharp or lasting pain.";
-
-function splitMistakes(mistakes: string[]): {
-  ordinary: string[];
-  safety: string;
-} {
-  const last = mistakes[mistakes.length - 1];
-  if (last && SAFETY_CAUTION.test(last)) {
-    return { ordinary: mistakes.slice(0, -1), safety: last };
-  }
-  return { ordinary: mistakes, safety: GENERIC_SAFETY };
 }
 
 export default async function ExerciseDetailPage({
