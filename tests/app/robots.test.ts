@@ -21,23 +21,24 @@ describe("app/robots.ts", () => {
     expect(result.sitemap).toBe("https://physioonclick.co.uk/sitemap.xml");
   });
 
-  it("disallows the bare SVG cover-image routes on production, to avoid soft-404 false positives", async () => {
+  it("leaves the SVG image routes crawlable so Google can see their noindex header", async () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://physioonclick.co.uk");
     const robots = await loadRobots();
 
     const result = robots();
     const disallow = (result.rules as { disallow?: string[] }).disallow ?? [];
-    expect(disallow).toEqual(
-      expect.arrayContaining(["/service-images", "/blog-images", "/specialism-images"])
-    );
+    for (const route of ["/service-images", "/blog-images", "/specialism-images", "/exercise-og"]) {
+      expect(disallow).not.toContain(route);
+    }
+    expect(disallow).toEqual(expect.arrayContaining(["/admin", "/patient", "/api", "/auth"]));
   });
 
-  it("disallows everything on the dev worker host, with no sitemap", async () => {
+  it("allows crawling on the dev worker host (so its noindex is seen), with no sitemap", async () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://dev.physioonclick.co.uk");
     const robots = await loadRobots();
 
     const result = robots();
-    expect(result.rules).toEqual({ userAgent: "*", disallow: "/" });
+    expect(result.rules).toEqual({ userAgent: "*", allow: "/" });
     expect(result.sitemap).toBeUndefined();
   });
 });

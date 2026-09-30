@@ -43,9 +43,10 @@ const nextConfig = {
     // dev.physioonclick.co.uk (see wrangler.jsonc's env.dev + scripts/deploy-dev.sh,
     // the only place NEXT_PUBLIC_SITE_URL is set to this host) got indexed by
     // Google — it's a testing environment, never meant to be crawled. This
-    // header is the belt to app/layout.tsx's noindex meta tag and
-    // app/robots.ts's full disallow (braces since headers() only sees the env
-    // this specific build was run with — dev and prod are separate builds).
+    // header (with app/layout.tsx's noindex meta tag) is what removes it;
+    // app/robots.ts deliberately still allows crawling there, since a robots
+    // block would stop Google ever seeing the noindex. headers() only sees the
+    // env this specific build was run with — dev and prod are separate builds.
     const isDevWorker = (process.env.NEXT_PUBLIC_SITE_URL || "").includes("dev.physioonclick.co.uk");
     const devNoIndexHeaders = isDevWorker
       ? [
@@ -55,8 +56,26 @@ const nextConfig = {
           },
         ]
       : [];
+    // Generated image routes (cover art, social-share cards). Google was
+    // indexing these SVGs as if they were pages (Search Console listed them
+    // under "Indexed" and "Duplicate without user-selected canonical"). A
+    // noindex header drops them while still letting social networks fetch the
+    // share images. Crawling them must stay ALLOWED in app/robots.ts, or
+    // Google can never see this header.
+    const imageRouteNoIndexHeaders = [
+      "/exercise-og/:path*",
+      "/condition-og/:path*",
+      "/self-test-og/:path*",
+      "/blog-images/:path*",
+      "/service-images/:path*",
+      "/specialism-images/:path*",
+    ].map((source) => ({
+      source,
+      headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+    }));
     return [
       ...devNoIndexHeaders,
+      ...imageRouteNoIndexHeaders,
       // --- Security headers (every route) ---------------------------------
       {
         source: "/:path*",
