@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { track } from "@/lib/analytics";
-import { trackGrowthEvent } from "@/lib/growth-tracking";
+import { trackGrowthEvent, type GrowthEventName, type GrowthEventParams } from "@/lib/growth-tracking";
 
 /**
  * A drop-in <Link> that logs an analytics event before navigating. Defaults to
@@ -28,6 +28,8 @@ export function TrackedBookLink({
   source,
   event = "service_book_click",
   params,
+  growthEvent,
+  growthParams,
   extraEvent,
   extraSource,
   children,
@@ -38,6 +40,8 @@ export function TrackedBookLink({
   source: string;
   event?: string;
   params?: Record<string, unknown>;
+  growthEvent?: GrowthEventName;
+  growthParams?: GrowthEventParams;
   extraEvent?: string;
   extraSource?: string;
   children: ReactNode;
@@ -50,7 +54,15 @@ export function TrackedBookLink({
         trackGrowthEvent("book_now_click", {
           source,
           ...(serviceSlug ? { service_slug: serviceSlug } : {}),
+          ...growthParams,
         });
+        if (growthEvent) {
+          trackGrowthEvent(growthEvent, {
+            source,
+            ...(serviceSlug ? { service_slug: serviceSlug } : {}),
+            ...growthParams,
+          });
+        }
         track(event, {
           ...(serviceSlug ? { service_slug: serviceSlug } : {}),
           source,

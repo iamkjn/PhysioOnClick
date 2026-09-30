@@ -2,7 +2,7 @@
 
 import { collection, limit, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, ArrowDownRight, CalendarCheck2, MessageSquare, MousePointerClick } from "lucide-react";
+import { Activity, ArrowDownRight, BookmarkCheck, CalendarCheck2, Dumbbell, MessageSquare, MousePointerClick } from "lucide-react";
 
 import { db } from "@/lib/firebase";
 import { SkeletonStatGrid } from "@/components/skeleton";
@@ -19,33 +19,44 @@ type GrowthEvent = {
 
 const EVENT_LABELS: Record<string, string> = {
   page_view: "Page view",
-  book_now_click: "Book Now click",
-  service_view: "Service viewed",
-  service_click: "Service clicked",
-  library_view: "Library viewed",
-  exercise_click: "Exercise clicked",
-  condition_click: "Exercise area clicked",
-  booking_service_selected: "Service selected",
-  booking_focus_selected: "Focus selected",
-  booking_step_completed: "Booking step done",
-  booking_slot_selected: "Slot selected",
-  booking_details_completed: "Details completed",
-  assessment_started: "Assessment started",
+  book_now_click: "Booking CTA clicked",
+  service_view: "Service page viewed",
+  service_click: "Service card clicked",
+  library_view: "Exercise guide viewed",
+  exercise_click: "Exercise opened",
+  exercise_plan_saved: "Exercise saved to plan",
+  exercise_booking_intent: "Exercise-to-booking click",
+  saved_plan_booking_intent: "Saved-plan booking click",
+  condition_click: "Condition programme opened",
+  booking_service_selected: "Booking service chosen",
+  booking_focus_selected: "Booking focus chosen",
+  booking_step_completed: "Booking step completed",
+  booking_slot_selected: "Booking slot chosen",
+  booking_details_completed: "Patient details completed",
+  assessment_started: "Assessment form started",
   checkout_started: "Checkout started",
   discount_applied: "Discount applied",
   booking_confirmed: "Booking confirmed",
   chat_opened: "Chat opened",
-  chat_message_sent: "Chat message",
-  chat_booking_intent: "Chat booking intent",
+  chat_message_sent: "Patient chat message",
+  chat_booking_intent: "Chat booking intent captured",
 };
 
 const FUNNEL = [
   "book_now_click",
   "booking_service_selected",
   "booking_slot_selected",
-  "assessment_started",
   "checkout_started",
   "booking_confirmed",
+];
+
+const EXERCISE_CONVERSION = [
+  "library_view",
+  "exercise_click",
+  "exercise_plan_saved",
+  "exercise_booking_intent",
+  "saved_plan_booking_intent",
+  "checkout_started",
 ];
 
 function formatTime(value?: string) {
@@ -66,7 +77,7 @@ function lastPathSegment(path: string) {
 }
 
 function formatLabel(value: string) {
-  return value.replaceAll("-", " ");
+  return value.replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function exerciseSlugFromPath(path: string) {
@@ -150,12 +161,16 @@ export function AdminGrowthDashboard() {
       }
 
       const exerciseSlug = String(event.params?.exercise_slug ?? "");
-      if (exerciseSlug && event.event === "exercise_click") {
+      if (exerciseSlug && ["exercise_click", "exercise_plan_saved", "exercise_booking_intent"].includes(event.event)) {
         bump(
           exercises,
           exerciseSlug,
           String(event.params?.exercise_title ?? ""),
-          String(event.params?.body_part ?? "Exercise library"),
+          event.event === "exercise_booking_intent"
+            ? "Clicked booking from exercise"
+            : event.event === "exercise_plan_saved"
+              ? "Saved to plan"
+              : String(event.params?.body_part ?? "Exercise library"),
         );
       }
 
@@ -189,8 +204,12 @@ export function AdminGrowthDashboard() {
       bookClicks: counts.get("book_now_click") ?? 0,
       checkouts: counts.get("checkout_started") ?? 0,
       bookings: counts.get("booking_confirmed") ?? 0,
+      exerciseViews: counts.get("library_view") ?? 0,
+      exerciseSaves: counts.get("exercise_plan_saved") ?? 0,
+      exerciseBookingClicks: counts.get("exercise_booking_intent") ?? 0,
       chatLeads: (counts.get("chat_booking_intent") ?? 0) + (counts.get("chat_message_sent") ?? 0),
       funnel: FUNNEL.map((event) => ({ event, count: counts.get(event) ?? 0 })),
+      exerciseConversion: EXERCISE_CONVERSION.map((event) => ({ event, count: counts.get(event) ?? 0 })),
       pages: [...pages.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6),
       services: [...services.entries()].sort((a, b) => b[1].count - a[1].count).slice(0, 6),
       exercises: [...exercises.entries()].sort((a, b) => b[1].count - a[1].count).slice(0, 6),
@@ -238,6 +257,16 @@ export function AdminGrowthDashboard() {
           <strong>{stats.bookings}</strong>
         </article>
         <article className="admin-growth-stat">
+          <Dumbbell aria-hidden="true" />
+          <span>Exercise views</span>
+          <strong>{stats.exerciseViews}</strong>
+        </article>
+        <article className="admin-growth-stat">
+          <BookmarkCheck aria-hidden="true" />
+          <span>Saved exercises</span>
+          <strong>{stats.exerciseSaves}</strong>
+        </article>
+        <article className="admin-growth-stat">
           <MessageSquare aria-hidden="true" />
           <span>Chat leads</span>
           <strong>{stats.chatLeads}</strong>
@@ -245,10 +274,23 @@ export function AdminGrowthDashboard() {
       </div>
 
       <div className="admin-growth-grid">
-        <section className="admin-growth-card">
+        <section className="admin-growth-card admin-growth-card--span">
           <h3>Booking funnel</h3>
           <div className="admin-growth-funnel">
             {stats.funnel.map((item) => (
+              <div key={item.event} className="admin-growth-funnel-row">
+                <span>{EVENT_LABELS[item.event]}</span>
+                <strong>{item.count}</strong>
+                <div><span style={{ width: `${Math.min(100, item.count * 18)}%` }} /></div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="admin-growth-card">
+          <h3>Exercise conversion</h3>
+          <div className="admin-growth-funnel admin-growth-funnel--compact">
+            {stats.exerciseConversion.map((item) => (
               <div key={item.event} className="admin-growth-funnel-row">
                 <span>{EVENT_LABELS[item.event]}</span>
                 <strong>{item.count}</strong>
@@ -273,7 +315,7 @@ export function AdminGrowthDashboard() {
         </section>
 
         <section className="admin-growth-card">
-          <h3>Service clicks</h3>
+          <h3>Service interest</h3>
           {stats.services.length ? (
             <ol className="admin-growth-list">
               {stats.services.map(([slug, item]) => (
@@ -283,7 +325,7 @@ export function AdminGrowthDashboard() {
                 </li>
               ))}
             </ol>
-          ) : <p className="muted">Service clicks will appear as patients browse.</p>}
+          ) : <p className="muted">Service views and clicks will appear as patients browse.</p>}
         </section>
 
         <section className="admin-growth-card">
@@ -300,7 +342,7 @@ export function AdminGrowthDashboard() {
           ) : <p className="muted">Exercise views and clicks will appear as patients use the library.</p>}
         </section>
 
-        <section className="admin-growth-card">
+        <section className="admin-growth-card admin-growth-card--wide">
           <h3>Latest interactions</h3>
           {patientEvents.length ? (
             <ul className="admin-growth-timeline">

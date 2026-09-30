@@ -12,6 +12,7 @@ import {
   removeFromPlan,
 } from "@/lib/exercise-plan-store";
 import { trackLibraryEvent } from "@/lib/analytics";
+import { trackGrowthEvent } from "@/lib/growth-tracking";
 
 export function AddToPlanButton({
   exerciseSlug,
@@ -32,8 +33,15 @@ export function AddToPlanButton({
       setInPlan(removeFromPlan(exerciseSlug).includes(exerciseSlug));
       return;
     }
-    setInPlan(addToPlan(exerciseSlug).includes(exerciseSlug));
+    const nextPlan = addToPlan(exerciseSlug);
+    setInPlan(nextPlan.includes(exerciseSlug));
     trackLibraryEvent("library_add_to_plan", exerciseSlug);
+    trackGrowthEvent("exercise_plan_saved", {
+      source: "exercise_detail",
+      exercise_slug: exerciseSlug,
+      exercise_title: exerciseTitle,
+      saved_count: nextPlan.length,
+    });
   }
 
   return (

@@ -31,6 +31,23 @@ function initials(name: string) {
   return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase();
 }
 
+type BookingContext = {
+  source: string;
+  exercise: string;
+  bodyPart: string;
+};
+
+function focusAreaFromBodyPart(value: string): FocusArea | null {
+  const body = value.toLowerCase();
+  if (/(back|neck|spine|lumbar|thoracic|sciatic)/.test(body)) return "Back & neck";
+  if (/(shoulder|arm|elbow|wrist|hand)/.test(body)) return "Shoulder";
+  if (/(surgery|post.?op|operation|acl|replacement)/.test(body)) return "Post-surgery";
+  if (/(sport|running|hamstring|groin|ankle|knee|hip|calf|tendon)/.test(body)) return "Sports injury";
+  if (/(neuro|balance|gait|stroke|parkinson)/.test(body)) return "Neuro";
+  if (/(child|paediatric|pediatric)/.test(body)) return "Paediatric";
+  return null;
+}
+
 /** "Thu 16 Jul 2026 · 10:00 · GMT (UK)" — the rail chip from the spec. */
 export function formatSlotChip(iso: string) {
   const d = new Date(iso);
@@ -68,6 +85,7 @@ export function BookingFlow() {
   const [focusAreas, setFocusAreas] = useState<FocusArea[]>(["Back & neck"]);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
+  const [bookingContext, setBookingContext] = useState<BookingContext | null>(null);
 
   // undefined = auth still resolving, null = guest, User = signed in
   const [user, setUser] = useState<User | null | undefined>(undefined);
@@ -139,10 +157,25 @@ export function BookingFlow() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const raw = new URLSearchParams(window.location.search).get("service");
+    const params = new URLSearchParams(window.location.search);
     const valid: BookServiceId[] = ["initial-assessment", "follow-up", "bundle-4", "bundle-8"];
     if (raw && (valid as string[]).includes(raw)) {
       setServiceId(raw as BookServiceId);
       setSelectedSlot(null);
+    }
+    const exercise = params.get("exercise")?.trim() ?? "";
+    const bodyPart = params.get("body_part")?.trim() ?? "";
+    const source = params.get("source")?.trim() ?? "";
+    if (exercise || bodyPart || source === "saved-exercise-plan") {
+      setBookingContext({ exercise, bodyPart, source });
+      const mappedFocus = focusAreaFromBodyPart(bodyPart || exercise);
+      if (mappedFocus) setFocusAreas([mappedFocus]);
+      trackGrowthEvent("booking_focus_selected", {
+        source: source || "exercise_context",
+        focus_area: mappedFocus ?? bodyPart ?? exercise,
+        exercise_slug: exercise || undefined,
+        body_part: bodyPart || undefined,
+      });
     }
   }, []);
 
@@ -258,6 +291,7 @@ export function BookingFlow() {
           services={services}
           serviceId={serviceId}
           focusAreas={focusAreas}
+          bookingContext={bookingContext}
           onServiceChange={handleServiceChange}
           onToggleFocusArea={toggleFocusArea}
           onContinue={() => {

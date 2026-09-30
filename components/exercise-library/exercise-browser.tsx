@@ -272,12 +272,22 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
               </Link>
               <Link
                 className="button secondary"
-                href="/book"
+                href={`/book?service=initial-assessment&source=exercise-browser&exercise=${encodeURIComponent(selected.slug)}&body_part=${encodeURIComponent(selected.bodyPart)}`}
                 onClick={() => {
-                  trackGrowthEvent("book_now_click", { source: "exercise_browser" });
+                  const params = {
+                    source: "exercise_browser",
+                    service_slug: "initial-assessment",
+                    exercise_slug: selected.slug,
+                    exercise_title: selected.title,
+                    body_part: selected.bodyPart,
+                    stage: selected.stage,
+                    booking_context: "exercise_browser_preview",
+                  };
+                  trackGrowthEvent("book_now_click", params);
+                  trackGrowthEvent("exercise_booking_intent", params);
                 }}
               >
-                Ask a physio
+                Check this with a physio
               </Link>
             </div>
           </div>

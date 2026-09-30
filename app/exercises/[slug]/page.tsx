@@ -102,6 +102,7 @@ export default async function ExerciseDetailPage({
   const programmes = programmesForExercise(slug);
   const helpsWith = exercise.helpsWith ?? [];
   const dose = formatDosage(resolveDosage(exercise));
+  const bookingHref = `/book?service=initial-assessment&source=exercise-detail&exercise=${encodeURIComponent(exercise.slug)}&body_part=${encodeURIComponent(exercise.bodyPart)}`;
   const { ordinary: ordinaryMistakes, safety: safetyLine } = splitMistakes(
     exercise.mistakes ?? [],
   );
@@ -226,13 +227,21 @@ export default async function ExerciseDetailPage({
           <div className="exlib-detail-hero__actions">
             <TrackedBookLink
               className="button primary"
-              href="/book"
-              serviceSlug={exercise.slug}
+              href={bookingHref}
+              serviceSlug="initial-assessment"
               source="exercise-page"
               event="library_cta_click"
               params={{ slug: exercise.slug }}
+              growthEvent="exercise_booking_intent"
+              growthParams={{
+                exercise_slug: exercise.slug,
+                exercise_title: exercise.title,
+                body_part: exercise.bodyPart,
+                stage: exercise.stage,
+                booking_context: "exercise_detail_primary",
+              }}
             >
-              Get a plan personalized to you
+              Check if this is right for me
             </TrackedBookLink>
             <AddToPlanButton
               exerciseSlug={exercise.slug}
@@ -355,9 +364,17 @@ export default async function ExerciseDetailPage({
           </p>
           <TrackedBookLink
             className="button secondary cta-white"
-            href="/book"
-            serviceSlug="cta_band"
+            href={bookingHref}
+            serviceSlug="initial-assessment"
             source="exercise-page-cta-band"
+            growthEvent="exercise_booking_intent"
+            growthParams={{
+              exercise_slug: exercise.slug,
+              exercise_title: exercise.title,
+              body_part: exercise.bodyPart,
+              stage: exercise.stage,
+              booking_context: "exercise_detail_bottom",
+            }}
           >
             Get my personalized plan
           </TrackedBookLink>

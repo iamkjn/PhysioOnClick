@@ -9,16 +9,28 @@ type Props = {
   services: Array<CalService & PricingItem>;
   serviceId: BookServiceId;
   focusAreas: FocusArea[];
+  bookingContext?: {
+    source: string;
+    exercise: string;
+    bodyPart: string;
+  } | null;
   onServiceChange: (id: BookServiceId) => void;
   onToggleFocusArea: (area: FocusArea) => void;
   onContinue: () => void;
   titleRef?: RefObject<HTMLHeadingElement | null>;
 };
 
+function readableSlug(value: string) {
+  return value
+    .replaceAll("-", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 export function BookingStepService({
   services,
   serviceId,
   focusAreas,
+  bookingContext,
   onServiceChange,
   onToggleFocusArea,
   onContinue,
@@ -41,6 +53,21 @@ export function BookingStepService({
       </h1>
 
       <div className="book-panel-body">
+        {bookingContext ? (
+          <div className="book-context-note" role="note">
+            <strong>
+              {bookingContext.source === "saved-exercise-plan"
+                ? "Ready to turn your saved exercises into a safe plan?"
+                : "We carried your exercise interest into booking."}
+            </strong>
+            <span>
+              {bookingContext.exercise
+                ? `${readableSlug(bookingContext.exercise)}${bookingContext.bodyPart ? ` · ${bookingContext.bodyPart}` : ""}`
+                : "Your physiotherapist can review what you saved and build the right plan for your stage."}
+            </span>
+          </div>
+        ) : null}
+
         <div className="book-service-grid" role="group" aria-label="Service">
           {services.map((s) => {
             const selected = s.id === serviceId;
