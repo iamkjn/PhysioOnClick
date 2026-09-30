@@ -40,4 +40,13 @@ describe('Terms & Conditions page', () => {
     }
     expect(screen.getByRole('link', { name: /privacy policy/i })).toHaveAttribute('href', '/privacy-policy')
   })
+
+  it('grants an embed-only licence at #embedding', () => {
+    const { container } = render(<TermsPage />)
+    const clause = container.querySelector('#embedding')
+    expect(clause).not.toBeNull()
+    expect(clause?.textContent).toMatch(/embed individual exercises/i)
+    expect(clause?.textContent).toMatch(/credit link/i)
+    expect(clause?.textContent).toMatch(/covers embedding only/i)
+  })
 })

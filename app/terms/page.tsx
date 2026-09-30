@@ -157,6 +157,14 @@ export default function TermsPage() {
             <Link href="/contact" style={inlineLinkStyle}>contact us</Link>. We will ask for unauthorised copies
             to be removed, including by notifying the hosting provider and search engines.
           </p>
+          <p id="embedding">
+            <strong>Embedding our exercises.</strong> You may embed individual exercises from our{" "}
+            <Link href="/exercises" style={inlineLinkStyle}>exercise library</Link> on your website, free of charge,
+            using the embed code provided on each exercise page. The code must be used unchanged, including the
+            credit link to PhysioOnClick, and must not suggest that we endorse your organisation. Embedded exercises
+            remain our content and we may change or withdraw them at any time. This permission covers embedding only;
+            any other use described above still needs our written permission.
+          </p>
         </article>
 
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
