@@ -52,7 +52,7 @@ const SERVICE_REVIEW_IDS: Record<string, string[]> = {
 
 /** Reviews about the care in general (no specific service), shown on the
  *  /services overview page. */
-const SERVICES_OVERVIEW_REVIEW_IDS = ["curated-anish-thomas"];
+const SERVICES_OVERVIEW_REVIEW_IDS = ["curated-anish-thomas", "curated-hemal-patel"];
 
 function reviewsByIds(ids: string[]): TrustpilotReview[] {
   return curatedTrustpilotReviews.filter((r) => ids.includes(r.id));

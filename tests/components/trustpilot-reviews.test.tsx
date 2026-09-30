@@ -55,6 +55,7 @@ describe("ServiceReviews", () => {
 
     rerender(<ServiceReviews reviews={curatedReviewsForServicesOverview()} />);
     expect(container).toHaveTextContent("Anish Thomas");
+    expect(container).toHaveTextContent("Hemal Patel");
     expect(container).not.toHaveTextContent("Seena Rachel George");
 
     rerender(<ServiceReviews reviews={curatedReviewsForService("paediatric-physiotherapy")} />);
