@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ExerciseFigure } from "@/components/exercise-figure";
 import { exerciseImageUrl, type ExerciseImageVariant } from "@/lib/exercise-images";
 import { hasUploadedImage } from "@/lib/exercise-image-prompts";
+import { ImageWatermark, preventImageSave, WATERMARK_MIN_SIZE } from "@/components/image-protection";
 
 export function ExerciseImage({
   exerciseId,
@@ -41,8 +42,15 @@ export function ExerciseImage({
   // Small tiles (list/card views) fetch the 320px thumbnail; anything larger
   // (the exercise detail hero) fetches the 960px enlarged version.
   const resolvedVariant = variant ?? (size <= 140 ? "thumb" : "full");
+  // The watermark is a CSS overlay, never burned into the image file, so the
+  // illustration itself is untouched. Thumbnails are too small to carry it.
+  const watermarked = size >= WATERMARK_MIN_SIZE;
   return (
-    <span className={classes} style={style}>
+    <span
+      className={[classes, "protected-image"].join(" ")}
+      style={style}
+      onContextMenu={preventImageSave}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element -- needs onError fall-through to <ExerciseFigure>; images.unoptimized is on repo-wide */}
       <img
         src={exerciseImageUrl(exerciseId, resolvedVariant)}
@@ -51,8 +59,10 @@ export function ExerciseImage({
         height={size}
         loading={resolvedVariant === "thumb" ? "lazy" : "eager"}
         style={{ width: "100%", height: "100%", objectFit: imageFit }}
+        draggable={false}
         onError={() => setFailed(true)}
       />
+      {watermarked ? <ImageWatermark /> : null}
     </span>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { exerciseImageUrl } from "@/lib/exercise-images";
 import { hasUploadedSelfTestImage } from "@/lib/self-test-image-prompts";
+import { ImageWatermark, preventImageSave } from "@/components/image-protection";
 
 /**
  * The photo for one self-check test step.
@@ -48,14 +49,16 @@ export function SelfTestImage({
   }
 
   return (
-    <div className="exlib-selftest-photo">
+    <div className="exlib-selftest-photo protected-image" onContextMenu={preventImageSave}>
       {/* eslint-disable-next-line @next/next/no-img-element -- needs onError fall-through to the placeholder; images.unoptimized is on repo-wide */}
       <img
         src={exerciseImageUrl(imageId)}
         alt=""
         loading="lazy"
+        draggable={false}
         onError={() => setFailed(true)}
       />
+      <ImageWatermark />
     </div>
   );
 }

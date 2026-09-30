@@ -1,3 +1,4 @@
+import { LibraryCopyrightNotice } from "@/components/exercise-library/library-copyright-notice";
 import { PlanTray } from "@/components/exercise-library/plan-tray";
 
 // Wraps every /exercises/** route (and nothing else) so the sticky "my plan"
@@ -12,6 +13,7 @@ export default function ExercisesLayout({
   return (
     <>
       {children}
+      <LibraryCopyrightNotice />
       <PlanTray />
     </>
   );

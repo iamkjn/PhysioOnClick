@@ -226,6 +226,12 @@ function shortDescription(text: string, max = 152): string {
   return `${cut || slice.trimEnd()}...`;
 }
 
+/** Ownership claim carried by every exercise-library page. */
+const LIBRARY_COPYRIGHT = {
+  copyrightHolder: { "@id": PRACTICE_ID },
+  copyrightNotice: "© PhysioOnClick. Personal use only; professional reuse requires written permission."
+} as const;
+
 /** `MedicalWebPage` for a single exercise page. Reuses the sitewide
  *  practitioner node by @id (`personRef()`) for both `author` and `reviewedBy`
  *  rather than re-declaring the Person here. */
@@ -242,6 +248,7 @@ export function exerciseWebPage(ex: Exercise, path: string): object {
       : {}),
     author: personRef(),
     reviewedBy: personRef(),
+    ...LIBRARY_COPYRIGHT,
     lastReviewed: REVIEW_DATE,
     inLanguage: "en-GB",
     isPartOf: { "@id": absoluteUrl("/exercises") }
@@ -266,6 +273,7 @@ export function conditionWebPage(c: Condition, path: string): object {
     },
     author: personRef(),
     reviewedBy: personRef(),
+    ...LIBRARY_COPYRIGHT,
     lastReviewed: c.reviewedOn,
     inLanguage: "en-GB",
     mainEntity: c.faqs.map((f) => ({
@@ -299,6 +307,7 @@ export function selfTestWebPage(t: SelfTest, path: string): object {
       : {}),
     author: personRef(),
     reviewedBy: personRef(),
+    ...LIBRARY_COPYRIGHT,
     lastReviewed: t.reviewedOn,
     inLanguage: "en-GB",
     isPartOf: { "@id": absoluteUrl("/exercises/tests") }

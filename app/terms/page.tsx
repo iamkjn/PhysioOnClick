@@ -131,12 +131,29 @@ export default function TermsPage() {
           </p>
         </article>
 
-        <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
+        <article
+          id="intellectual-property"
+          className="panel stack soft-panel"
+          style={{ maxWidth: "70ch", lineHeight: 1.6 }}
+        >
           <h2>Intellectual property</h2>
           <p>
-            Content on this website, and any exercise programmes or materials provided to you, are for your
-            personal use in connection with your care and may not be copied, redistributed or resold without
-            permission.
+            All content on this website is owned by PhysioOnClick and protected by copyright. That includes our{" "}
+            <Link href="/exercises" style={inlineLinkStyle}>exercise library</Link>: the exercise descriptions,
+            illustrations, self-check guides, condition programmes and downloadable handouts. It also includes
+            any exercise programmes or materials provided to you as part of your care.
+          </p>
+          <p>
+            You may view this content and use it for your own personal care. You may not copy, screenshot,
+            download, redistribute, resell or adapt it, in whole or in part. That applies in particular to use in
+            professional, clinical, educational or commercial settings, such as handouts for other patients,
+            other clinics&apos; websites or apps, courses, or training data for AI systems. Any of these requires
+            our prior written permission.
+          </p>
+          <p>
+            Healthcare professionals and organisations who would like to use or license our content can{" "}
+            <Link href="/contact" style={inlineLinkStyle}>contact us</Link>. We will ask for unauthorised copies
+            to be removed, including by notifying the hosting provider and search engines.
           </p>
         </article>
 
