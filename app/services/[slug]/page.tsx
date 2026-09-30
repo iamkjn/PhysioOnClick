@@ -12,6 +12,7 @@ import { founder, pricing, services } from "@/lib/site-data";
 import { breadcrumbs, serviceSchema } from "@/lib/structured-data";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
+import { ServiceReviews } from "@/components/service-reviews";
 import { TrackGrowthView } from "@/components/track-view";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { TrackedContentLink } from "@/components/tracked-content-link";
@@ -187,6 +188,8 @@ export default async function ServiceDetailPage({
           </article>
         </Reveal>
       </section>
+
+      <ServiceReviews serviceSlug={service.slug} />
 
       {service.relatedConditionSlugs?.length ? (
         <section className="page-section stack simple-services-list">

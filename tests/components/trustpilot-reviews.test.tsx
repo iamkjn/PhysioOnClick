@@ -38,3 +38,17 @@ describe("curatedTrustpilotReviews", () => {
     ]);
   });
 });
+
+describe("ServiceReviews", () => {
+  it("shows Seena's review on the musculoskeletal service page only", async () => {
+    const { ServiceReviews } = await import("@/components/service-reviews");
+    const { container, rerender } = render(<ServiceReviews serviceSlug="musculoskeletal-physiotherapy" />);
+    expect(container).toHaveTextContent("What patients say");
+    expect(container).toHaveTextContent("Seena Rachel George");
+    expect(container).toHaveTextContent("Morton's neuroma");
+    expect(container).not.toHaveTextContent("Anish Thomas");
+
+    rerender(<ServiceReviews serviceSlug="paediatric-physiotherapy" />);
+    expect(container).toBeEmptyDOMElement();
+  });
+});

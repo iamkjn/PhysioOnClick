@@ -760,6 +760,11 @@ p {
 .tp-summary-meta strong {
   color: var(--ink);
 }
+.service-reviews-link {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
 .tp-review-title {
   font-weight: 600 !important;
   font-size: 1.05rem !important;

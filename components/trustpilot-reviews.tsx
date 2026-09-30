@@ -7,7 +7,7 @@ interface Props {
   limit?: number;
 }
 
-function Stars({ value }: { value: number }) {
+export function Stars({ value }: { value: number }) {
   return (
     <span className="tp-stars" aria-hidden="true">
       {Array.from({ length: 5 }, (_, i) => (

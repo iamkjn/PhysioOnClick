@@ -43,3 +43,14 @@ export const curatedTrustpilotReviews: TrustpilotReview[] = [
     author: "Hemal Patel",
   },
 ];
+
+/** Which curated reviews appear on which service page, by review id. Only map
+ *  a review to a service the patient was actually treated under. */
+const SERVICE_REVIEW_IDS: Record<string, string[]> = {
+  "musculoskeletal-physiotherapy": ["curated-seena-rachel-george"],
+};
+
+export function curatedReviewsForService(serviceSlug: string): TrustpilotReview[] {
+  const ids = SERVICE_REVIEW_IDS[serviceSlug] ?? [];
+  return curatedTrustpilotReviews.filter((r) => ids.includes(r.id));
+}
