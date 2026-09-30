@@ -10,7 +10,8 @@ import {
   programmesForExercise,
   relatedExercises,
 } from "@/lib/exercise-library";
-import { formatDosage, resolveDosage } from "@/lib/exercises";
+import { formatDosage, hasPrescribedDose, resolveDosage } from "@/lib/exercises";
+import { initialAssessmentPrice } from "@/lib/site-data";
 import { breadcrumbs, exerciseWebPage } from "@/lib/structured-data";
 import { AddToPlanButton } from "@/components/exercise-library/add-to-plan-button";
 import { ByLine } from "@/components/exercise-library/by-line";
@@ -44,8 +45,15 @@ export async function generateMetadata({
     return {};
   }
 
-  const title = `${exercise.title} exercise: how to do it | PhysioOnClick`;
-  const description = exercise.setup ?? exercise.description;
+  // These pages already rank on page 1 for exercise-name queries but earn few
+  // clicks, so the snippet promises what the searcher wants: the how-to plus
+  // the dose (sets/reps), from a named professional.
+  const dosage = resolveDosage(exercise);
+  const name = /exercise$/i.test(exercise.title) ? exercise.title : `${exercise.title} exercise`;
+  const title = `${name}: how-to${hasPrescribedDose(dosage) ? ", sets & reps" : " guide"} | PhysioOnClick`;
+  const description = hasPrescribedDose(dosage)
+    ? `How to do the ${exercise.title}: steps, form cues, common mistakes and typical dose (${formatDosage(dosage)}). By an HCPC-registered physio.`
+    : `How to do the ${exercise.title}: steps, form cues and common mistakes. By an HCPC-registered physiotherapist.`;
 
   return {
     title,
@@ -358,9 +366,9 @@ export default async function ExerciseDetailPage({
           <span className="eyebrow">This exercise is generic - you&apos;re not</span>
           <h2>Get a plan personalized to you</h2>
           <p>
-            Book an online assessment with an HCPC-registered physiotherapist and
-            get a rehab plan matched to your condition and stage - not a generic
-            starting point.
+            Book a £{initialAssessmentPrice} online assessment with an
+            HCPC-registered physiotherapist and get a rehab plan matched to your
+            condition and stage - not a generic starting point.
           </p>
           <TrackedBookLink
             className="button secondary cta-white"

@@ -7,6 +7,7 @@ import {
   getCondition,
   getSelfTest,
 } from "@/lib/exercise-library";
+import { initialAssessmentPrice } from "@/lib/site-data";
 import { breadcrumbs, selfTestWebPage } from "@/lib/structured-data";
 import { ByLine } from "@/components/exercise-library/by-line";
 import { SelfTestResults } from "@/components/exercise-library/self-test-results";
@@ -28,19 +29,6 @@ export function generateStaticParams() {
 // informational triage, not diagnosis (spec 11a "Positioning"). ASCII only.
 const DISCLAIMER =
   "This is a guide, not a diagnosis. It cannot rule a problem in or out - a physiotherapist can. If your symptoms are severe, spreading, or you feel unwell, see a doctor.";
-
-/** Trim `text` to one tidy ~155-char sentence for a meta description. Adds
- *  "..." (never the U+2026 glyph) only when it actually truncated. */
-function shortSentence(text: string, max = 155): string {
-  const clean = text.replace(/\s+/g, " ").trim();
-  if (clean.length <= max) return clean;
-  const slice = clean.slice(0, max);
-  const cut = slice
-    .slice(0, slice.lastIndexOf(" "))
-    .trimEnd()
-    .replace(/[.,;:]$/, "");
-  return `${cut || slice.trimEnd()}...`;
-}
 
 // Every `whoShouldNotDoThis` string already opens "Do not do this test if ...".
 // Strip that lead so it becomes the callout heading and the string does not read
@@ -65,8 +53,8 @@ export async function generateMetadata({
     return {};
   }
 
-  const title = `${test.name} self-check test | PhysioOnClick`;
-  const description = shortSentence(test.whatItChecks);
+  const title = `${test.name}: how to do it & what it means | PhysioOnClick`;
+  const description = `How to do the ${test.name} at home, step by step: what it checks, what a positive result means and when to see a physio. By an HCPC-registered physiotherapist.`;
 
   return {
     title,
@@ -221,9 +209,9 @@ export default async function SelfTestPage({
         <div className="exlib-selftest-cta" data-selftest-cta>
           <h2 className="exlib-selftest-cta__title">Reproduced your pain?</h2>
           <p className="exlib-selftest-cta__body">
-            A positive result is worth getting looked at. Book an online
-            assessment with an HCPC-registered physiotherapist, wherever you are
-            in the UK.
+            A positive result is worth getting looked at. Book a
+            £{initialAssessmentPrice} online assessment with an HCPC-registered
+            physiotherapist, wherever you are in the UK.
           </p>
           <TrackedBookLink
             className="button primary"
@@ -243,8 +231,9 @@ export default async function SelfTestPage({
           <span className="eyebrow">Not sure what your result means?</span>
           <h2>Get it checked properly</h2>
           <p>
-            Book an online assessment with an HCPC-registered physiotherapist and
-            get a clear answer and a plan matched to your problem.
+            Book a £{initialAssessmentPrice} online assessment with an
+            HCPC-registered physiotherapist and get a clear answer and a plan
+            matched to your problem.
           </p>
           <TrackedBookLink
             className="button secondary cta-white"

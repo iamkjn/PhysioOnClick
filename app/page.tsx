@@ -4,18 +4,19 @@ import { ProtectedImageFrame } from "@/components/image-protection";
 import Link from "next/link";
 import { cookies } from "next/headers";
 
-import { founder } from "@/lib/site-data";
+import { founder, initialAssessmentPrice } from "@/lib/site-data";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
 import { Reveal } from "@/components/reveal";
 import { TrustpilotReviews } from "@/components/trustpilot-reviews";
 
-// Title/description/openGraph are inherited from the root layout — metadata
-// merges per field, so declaring only `alternates` here leaves those intact.
+// openGraph is inherited from the root layout — metadata merges per field.
+// Title keeps "Online Physiotherapy" first (already ranking for it) and adds
+// the price, which most ranking competitors show and ours undercuts.
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
-  description:
-    "Online physiotherapy across the UK with HCPC-registered care, personalised exercise plans, insurance-ready invoices and clear guidance on claiming through private health insurance.",
+  title: `Online Physiotherapy UK – Video Assessment £${initialAssessmentPrice} | PhysioOnClick`,
+  description: `Online physiotherapy across the UK with an HCPC-registered physio: £${initialAssessmentPrice} video assessment, no GP referral, tailored exercise plans and insurance-ready invoices.`,
   keywords: [
     "online physiotherapy UK",
     "private physiotherapy insurance invoice",

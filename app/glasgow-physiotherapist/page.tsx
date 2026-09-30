@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { initialAssessmentPrice } from "@/lib/site-data";
 import { practiceRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/glasgow-physiotherapist" },
   title: "Online Physiotherapist for Glasgow Patients | PhysioOnClick",
-  description:
-    "Online physiotherapy for patients in Glasgow — evidence-based rehab and assessments, booked securely online. No clinic visit required."
+  description: `Online physiotherapy for Glasgow patients, including neurological physio — seen by video within days, no GP referral or clinic visit. £${initialAssessmentPrice} initial assessment.`
 };
 
 const faqItems = [
@@ -25,6 +25,11 @@ const faqItems = [
     question: "What conditions do you treat?",
     answer:
       "Common areas include back pain, knee injuries, shoulder rehab, post-surgical recovery, neurological rehabilitation and mobility concerns."
+  },
+  {
+    question: "Do you offer neurological physiotherapy for Glasgow patients?",
+    answer:
+      "Yes, by video. Neuro physiotherapy sessions cover stroke recovery, Parkinson's-related mobility, balance and falls risk, with a family member or carer welcome to join. Sessions are online only — if hands-on or home-visit neuro physio is needed, you'll be told at triage."
   }
 ];
 
@@ -73,6 +78,12 @@ export default function GlasgowPage() {
             <li>Every session delivered by secure video call</li>
             <li>Clear pricing and secure booking</li>
             <li>Same-week appointments, no travel required</li>
+            <li>
+              <Link href="/services/neurological-rehabilitation" prefetch>
+                Neurological physiotherapy
+              </Link>{" "}
+              by video, for stroke, Parkinson&rsquo;s and balance problems
+            </li>
           </ul>
         </div>
       </section>

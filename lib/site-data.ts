@@ -19,6 +19,9 @@ export type Service = {
    * meaningful exercise-library overlap.
    */
   relatedConditionSlugs?: string[];
+  /** Search-facing H1 when it should differ from `title` (which stays the short
+   *  name used in cards, breadcrumbs and booking). Falls back to `title`. */
+  headline?: string;
   seoTitle: string;
   seoDescription: string;
 };
@@ -131,9 +134,9 @@ export const services: Service[] = [
       "patellofemoral-pain",
       "achilles-tendinopathy"
     ],
-    seoTitle: "Physiotherapist Glasgow for Back, Neck and Joint Pain",
+    seoTitle: "Online Physio for Back, Neck & Joint Pain | PhysioOnClick",
     seoDescription:
-      "Evidence-based musculoskeletal physiotherapy in Glasgow and online across the UK."
+      "Video physiotherapy for back, neck, shoulder, knee and tendon pain with an HCPC-registered physio, UK-wide."
   },
   {
     slug: "post-surgical-rehabilitation",
@@ -186,9 +189,9 @@ export const services: Service[] = [
       "after-acl-reconstruction",
       "acl-rehabilitation"
     ],
-    seoTitle: "Post-Surgical Physiotherapy Glasgow | PhysioOnClick",
+    seoTitle: "Online Rehab After Knee, Hip & ACL Surgery | PhysioOnClick",
     seoDescription:
-      "Rehabilitation after knee or hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery — delivered online from Glasgow, UK-wide."
+      "Physio-led online rehab after knee or hip replacement, ACL reconstruction, rotator cuff repair and fractures."
   },
   {
     slug: "neurological-rehabilitation",
@@ -233,11 +236,17 @@ export const services: Service[] = [
         question: "What conditions is this appropriate for?",
         answer:
           "Post-stroke recovery, Parkinson's-related mobility challenges, balance and falls-risk concerns, and general neurological deconditioning are all commonly supported this way — triage at booking confirms it's a good fit for your specific situation."
+      },
+      {
+        question: "I'm in Glasgow — can I see you in person?",
+        answer:
+          "Appointments are online only, by video. That means Glasgow and the rest of Scotland are seen as quickly as anywhere else in the UK, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. If you need hands-on or home-visit neuro physiotherapy, you'll be told so at triage."
       }
     ],
-    seoTitle: "Neurological Physiotherapy Glasgow | PhysioOnClick",
+    headline: "Online Neurological Physiotherapy for Glasgow, Scotland & the UK",
+    seoTitle: "Online Neuro Physiotherapy – Glasgow & UK | PhysioOnClick",
     seoDescription:
-      "Personalised neurological rehabilitation in Glasgow and through UK-wide online appointments."
+      "Neurological physiotherapy by video for Glasgow, Scotland and UK-wide: stroke, Parkinson's, balance and mobility."
   },
   {
     slug: "paediatric-physiotherapy",
@@ -284,9 +293,9 @@ export const services: Service[] = [
           "Yes — always framed as play and daily routine rather than a formal exercise sheet, so it's realistic to keep up between sessions."
       }
     ],
-    seoTitle: "Paediatric Physiotherapy Glasgow | PhysioOnClick",
+    seoTitle: "Online Paediatric Physiotherapy UK | PhysioOnClick",
     seoDescription:
-      "Compassionate and structured paediatric physiotherapy support for families in Glasgow and online."
+      "Play-based paediatric physiotherapy by video, with parents guided through every session, UK-wide."
   },
   {
     slug: "gait-and-mobility-assessment",
@@ -334,9 +343,9 @@ export const services: Service[] = [
       }
     ],
     relatedConditionSlugs: ["falls-prevention"],
-    seoTitle: "Gait Assessment Glasgow | PhysioOnClick",
+    seoTitle: "Online Gait & Mobility Assessment | PhysioOnClick",
     seoDescription:
-      "Walking and mobility assessments designed to improve confidence, function and independence."
+      "Video walking, balance and falls-risk assessment to rebuild confidence, function and independence."
   },
   {
     slug: "online-rehab-programmes",
@@ -391,9 +400,9 @@ export const services: Service[] = [
       "gluteal-tendinopathy",
       "achilles-tendinopathy"
     ],
-    seoTitle: "Online Physio UK | PhysioOnClick",
+    seoTitle: "Online Rehab Programmes & Exercise Plans | PhysioOnClick",
     seoDescription:
-      "Book online physiotherapy anywhere in the UK with secure support and rehab tracking."
+      "Structured online rehab with weekly physio reviews, progress tracking and guided exercise plans, UK-wide."
   }
 ];
 
@@ -431,6 +440,11 @@ export const pricing: PricingItem[] = [
     mode: "Package"
   }
 ];
+
+/** Price of the first appointment — what a new patient actually pays, so it's
+ *  the figure quoted in page titles and descriptions (not the cheaper follow-up). */
+export const initialAssessmentPrice =
+  pricing.find((item) => item.id === "initial-assessment")?.price ?? 0;
 
 // Deliberately empty: only genuine, verifiable patient reviews may appear on the
 // site (fake/placeholder reviews are unlawful under the DMCC Act 2024). Real

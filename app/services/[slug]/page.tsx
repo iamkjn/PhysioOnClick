@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 import { articlesForServiceSlug } from "@/lib/blog";
 import { getCondition } from "@/lib/exercise-library";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
-import { founder, pricing, services } from "@/lib/site-data";
+import { founder, initialAssessmentPrice, pricing, services } from "@/lib/site-data";
 import { breadcrumbs, serviceSchema } from "@/lib/structured-data";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
@@ -38,14 +38,16 @@ export async function generateMetadata({
     return {};
   }
 
+  const description = `${service.seoDescription} Video assessment £${initialAssessmentPrice}, no GP referral needed.`;
+
   return {
     title: service.seoTitle,
-    description: service.seoDescription,
+    description,
     alternates: { canonical: `/services/${slug}` },
     openGraph: {
       type: "website",
       title: service.seoTitle,
-      description: service.seoDescription,
+      description,
       url: `/services/${slug}`
     }
   };
@@ -111,7 +113,7 @@ export default async function ServiceDetailPage({
 
       <section className="simple-page-hero">
         <span>Physiotherapy Service</span>
-        <h1>{service.title}</h1>
+        <h1>{service.headline ?? service.title}</h1>
         <p>{service.summary}</p>
       </section>
 

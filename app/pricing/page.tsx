@@ -2,14 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getPublicPricing } from "@/lib/public-content";
+import { initialAssessmentPrice, pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 
+const followUp = pricing.find((item) => item.id === "follow-up")?.price ?? 0;
+
+// Price-led title: nearly every online competitor that ranks shows its price
+// in the snippet, and ours undercuts most of them.
 export const metadata: Metadata = {
   alternates: { canonical: "/pricing" },
-  title: "Pricing | PhysioOnClick",
-  description: "Transparent, online physiotherapy pricing with no hidden fees."
+  title: `Online Physio Prices: £${initialAssessmentPrice} Assessment, £${followUp} Follow-Up | PhysioOnClick`,
+  description: `Online physio with an HCPC-registered physio: £${initialAssessmentPrice} video assessment, £${followUp} follow-ups, bundles to save more. No GP referral; insurance-ready invoices.`
 };
 
 export const dynamic = "force-static";
@@ -120,11 +125,15 @@ export default function PricingPage() {
         <div className="site-shell service-faqs">
           <details>
             <summary>Can I claim this back on health insurance?</summary>
-            <p>Yes. Every paid session generates an insurance-ready receipt and a proper PDF invoice automatically, emailed to you and available in your account any time you need to submit a claim.</p>
+            <p>If your policy covers physiotherapy, usually yes. Every paid session generates a receipt and a PDF invoice showing the physiotherapist&rsquo;s HCPC registration number, emailed to you and available in your account any time you need to submit a claim. Check with your insurer first whether they need pre-authorisation.</p>
           </details>
           <details>
-            <summary>Is online physiotherapy cheaper than an in-person clinic?</summary>
-            <p>Sessions are priced comparably to private in-person physiotherapy in the UK, but without travel time or clinic overheads passed on to you &mdash; and the rehab packages above reduce the per-session cost further for anyone committing to a structured plan.</p>
+            <summary>How much does private physiotherapy cost in the UK?</summary>
+            <p>A first private physiotherapy appointment in the UK commonly costs anywhere from about &pound;45 to over &pound;100, depending on the clinic and location. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time &mdash; and the rehab packages above reduce the per-session cost further for anyone committing to a structured plan.</p>
+          </details>
+          <details>
+            <summary>Do I need a GP referral, and how quickly can I be seen?</summary>
+            <p>No referral is needed &mdash; you book a live slot yourself, usually within days. For comparison, only 52.4% of NHS Scotland musculoskeletal patients were seen within the four-week target between August 2025 and March 2026 (<a href="https://www.publichealthscotland.scot/publications/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland-quarterly-and-monthly-data-to-31-march-2026/" target="_blank" rel="noopener noreferrer">Public Health Scotland</a>).</p>
           </details>
           <details>
             <summary>What&rsquo;s the cancellation policy?</summary>

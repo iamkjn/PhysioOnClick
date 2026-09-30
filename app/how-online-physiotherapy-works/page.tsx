@@ -3,13 +3,13 @@ import Link from "next/link";
 
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { initialAssessmentPrice } from "@/lib/site-data";
 import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/how-online-physiotherapy-works" },
   title: "How Online Physiotherapy Works | PhysioOnClick",
-  description:
-    "What actually happens when you book online physiotherapy with PhysioOnClick — from choosing a service through to your video consultation and exercise plan."
+  description: `How a video physio appointment works: book a live slot (no GP referral), a £${initialAssessmentPrice} assessment, then a personalised exercise plan and insurance-ready invoice.`
 };
 
 // Steps mirror the real booking flow (components/booking-flow.tsx) and payment/
@@ -52,6 +52,21 @@ const practicalQuestions = [
   {
     question: "Can I reschedule?",
     answer: "Yes, free of charge up to 24 hours before your appointment."
+  },
+  {
+    question: "Do I need a GP referral?",
+    answer: "No. You can book private physiotherapy yourself — there's no referral letter or waiting list."
+  },
+  {
+    question: "How quickly can I be seen compared with the NHS?",
+    answer:
+      "Usually within days — you choose a live slot when you book. In NHS Scotland, only 52.4% of musculoskeletal patients were seen within the four-week target between August 2025 and March 2026 (Public Health Scotland, June 2026).",
+    sourceUrl:
+      "https://www.publichealthscotland.scot/publications/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland-quarterly-and-monthly-data-to-31-march-2026/"
+  },
+  {
+    question: "What does it cost, and can I claim it on insurance?",
+    answer: `An initial assessment is £${initialAssessmentPrice}. Every paid session comes with a receipt plus a PDF invoice showing the physiotherapist's HCPC registration number, which you can submit to your health insurer — check your policy covers physiotherapy first.`
   }
   // TODO(shivaliba): add a question in your own words on why an online
   // assessment works well for the conditions you treat, if you'd like one here
@@ -114,7 +129,17 @@ export default function HowOnlinePhysiotherapyWorksPage() {
             {practicalQuestions.map((item) => (
               <details key={item.question}>
                 <summary>{item.question}</summary>
-                <p>{item.answer}</p>
+                <p>
+                  {item.answer}
+                  {"sourceUrl" in item ? (
+                    <>
+                      {" "}
+                      <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">
+                        Source
+                      </a>
+                    </>
+                  ) : null}
+                </p>
               </details>
             ))}
           </div>
