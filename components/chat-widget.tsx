@@ -72,7 +72,7 @@ const SERVICES = [
 ];
 
 const PRICING_TEXT =
-  "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £50\n• Online Follow-Up (30 min) — £40\n\nPackages:\n• 4-Session Bundle — £180\n• 8-Session Bundle — £340\n\nNo GP referral required — you can self-refer.";
+  "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £35\n• Online Follow-Up (30 min) — £25\n\nPackages:\n• 4-Session Bundle — £150\n• 8-Session Bundle — £250\n\nNo GP referral required — you can self-refer.";
 
 const INSURANCE_TEXT =
   "Yes, PhysioOnClick provides insurance-ready PDF invoices for paid sessions.\n\nHow to claim:\n• Download your invoice from your patient account under Invoices, or use the copy emailed after payment.\n• Submit the PDF to your UK health insurer through their claim portal or app.\n• Add your policy number, claim reference and any extra details your insurer asks for.\n\nReimbursement depends on your own policy, so it is worth checking your cover before booking if you are unsure.";
