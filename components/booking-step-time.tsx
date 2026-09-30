@@ -941,12 +941,15 @@ export function BookingStepTime({
             <label className="book-label" htmlFor="book-discount-code">
               Discount code
             </label>
+            <p className="book-discount-hint">
+              New patient? Use <strong>NEW10</strong> for 10% off your first booking.
+            </p>
             <div className="book-discount-row">
               <input
                 id="book-discount-code"
                 className="book-input"
                 autoComplete="off"
-                placeholder="Enter code"
+                placeholder="NEW10"
                 value={discountCode}
                 onChange={(e) => {
                   setDiscountCode(e.target.value.toUpperCase());

@@ -69,6 +69,7 @@
   --radius-input: 10px;
   --radius-chip:  10px;
   --radius-pill:  999px;
+  --offer-strip-height: 38px;
 
   /* Type scale — covers headings, section titles and card titles only;
      body copy sizes are untouched until a broader pass reaches them. */
@@ -217,9 +218,49 @@ p {
   margin: 0 auto;
 }
 
-.header-wrap {
+.site-offer-strip {
   position: sticky;
   top: 0;
+  z-index: 41;
+  background: #043246;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.site-offer-strip__inner {
+  min-height: var(--offer-strip-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 0.45rem 0;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.site-offer-strip__inner span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-offer-strip strong {
+  color: #b7ecff;
+  letter-spacing: 0.04em;
+}
+
+.site-offer-strip a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.header-wrap {
+  position: sticky;
+  top: var(--offer-strip-height);
   z-index: 40;
   background: white;
   border-bottom: 1px solid var(--line);
@@ -827,6 +868,38 @@ p {
 
 .simple-page-hero h1 span {
   color: var(--primary);
+}
+
+.pricing-offer-card {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 0.25rem;
+  margin: 1.15rem auto 0;
+  padding: 0.95rem 1.1rem;
+  border: 1px solid rgba(14, 165, 233, 0.28);
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 32px rgba(4, 50, 70, 0.08);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+.pricing-offer-card strong {
+  color: var(--primary);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pricing-offer-card span {
+  color: var(--ink);
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.pricing-offer-card b {
+  color: var(--primary-dark);
+  letter-spacing: 0.04em;
 }
 
 .simple-card-grid,
@@ -6161,6 +6234,21 @@ textarea:focus {
 }
 
 @media (max-width: 960px) {
+  :root {
+    --offer-strip-height: 34px;
+  }
+
+  .site-offer-strip__inner {
+    gap: 0.55rem;
+    padding-block: 0.35rem;
+    font-size: 0.78rem;
+    line-height: 1.2;
+  }
+
+  .site-offer-strip a {
+    display: none;
+  }
+
   .nav-row,
   .simple-card-grid,
   .service-split-card,
@@ -7944,6 +8032,17 @@ textarea:focus {
 .book-discount {
   margin-top: 18px;
   max-width: 420px;
+}
+
+.book-discount-hint {
+  margin: -4px 0 8px;
+  color: var(--book-paper-muted);
+  font-size: 0.84rem;
+}
+
+.book-discount-hint strong {
+  color: var(--book-accent-dark);
+  letter-spacing: 0.04em;
 }
 
 .book-discount-row {

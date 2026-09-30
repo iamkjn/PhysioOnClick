@@ -35,6 +35,10 @@ export default function PricingPage() {
           Transparent <span>Pricing</span>
         </h1>
         <p>Clear, competitive pricing with no hidden fees. All sessions include a personalised treatment plan.</p>
+        <div className="pricing-offer-card">
+          <strong>New patient offer</strong>
+          <span>Use code <b>NEW10</b> at checkout for 10% off your first booking.</span>
+        </div>
       </section>
 
       <section className="page-section stack pricing-sections">

@@ -224,6 +224,14 @@ export function SiteHeader() {
 
   return (
     <>
+      <div className="site-offer-strip" role="note">
+        <div className="site-shell site-offer-strip__inner">
+          <span>New patient offer: use code <strong>NEW10</strong> for 10% off your first booking.</span>
+          <Link href="/book" onClick={() => track("book_now_click", { source: "new10_header_strip" })}>
+            Book with NEW10
+          </Link>
+        </div>
+      </div>
       <header ref={headerRef} className={`header-wrap simple-header${scrolled ? " header-wrap--scrolled" : ""}`}>
         <div className="site-shell">
           <div className="nav-row simple-nav">

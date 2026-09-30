@@ -31,7 +31,7 @@ export function generateStaticParams() {
 }
 
 // Same derivation as app/services/[slug]/page.tsx: the online "from" price is
-// the cheapest Online pricing item (currently the £25 follow-up).
+// the cheapest Online pricing item (currently the £30 follow-up).
 const ONLINE_FROM_PRICE = Math.min(
   ...pricing.filter((item) => item.mode === "Online").map((item) => item.price),
 );
