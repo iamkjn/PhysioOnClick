@@ -12,12 +12,14 @@ import {
 } from "@/lib/exercise-library";
 import { formatDosage, hasPrescribedDose, resolveDosage } from "@/lib/exercises";
 import { splitMistakes } from "@/lib/exercise-safety-line";
+import { buildEmbedSnippet, EMBEDS_ENABLED, embedPath } from "@/lib/exercise-embed";
 import { initialAssessmentPrice } from "@/lib/site-data";
 import { breadcrumbs, exerciseWebPage } from "@/lib/structured-data";
 import { AddToPlanButton } from "@/components/exercise-library/add-to-plan-button";
 import { ByLine } from "@/components/exercise-library/by-line";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
+import { EmbedExerciseButton } from "@/components/exercise-library/embed-exercise-button";
 import { ExerciseImage } from "@/components/exercise-image";
 import { ExerciseVideo } from "@/components/exercise-library/exercise-video";
 import { Reveal } from "@/components/reveal";
@@ -237,6 +239,14 @@ export default async function ExerciseDetailPage({
               exerciseSlug={exercise.slug}
               exerciseTitle={exercise.title}
             />
+            {EMBEDS_ENABLED ? (
+              <EmbedExerciseButton
+                slug={exercise.slug}
+                title={exercise.title}
+                snippet={buildEmbedSnippet(exercise)}
+                previewSrc={embedPath(exercise.slug)}
+              />
+            ) : null}
           </div>
         </div>
       </section>

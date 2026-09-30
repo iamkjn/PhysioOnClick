@@ -90,7 +90,7 @@ All `library_*` events go through the typed `trackLibraryEvent()` wrapper
 | Page | Events |
 |---|---|
 | `app/exercises/page.tsx` | `page_view`. `library_hub_view` `{ slug: "exercises" }` on mount (`<TrackView>`, the library's own top-level index — reuses the same event condition-hub pages use, distinguished by the constant slug `"exercises"`). |
-| `app/exercises/[slug]/page.tsx` | `page_view`. `library_exercise_view` `{ slug: exercise.slug }` on mount. `library_add_to_plan` `{ slug: exerciseSlug }` from `components/exercise-library/add-to-plan-button.tsx`. |
+| `app/exercises/[slug]/page.tsx` | `page_view`. `library_exercise_view` `{ slug: exercise.slug }` on mount. `library_add_to_plan` `{ slug: exerciseSlug }` from `components/exercise-library/add-to-plan-button.tsx`. `library_embed_copy` `{ slug }` from `components/exercise-library/embed-exercise-button.tsx`. |
 | `app/exercises/area/[bodyArea]/page.tsx` | `page_view`. `library_area_view` `{ slug: area.key }` on mount (new event — body-area filter pages are a distinct page type from a condition hub or the top-level index). |
 | `app/exercises/for/[condition]/page.tsx` | `page_view`. `library_hub_view` `{ slug: condition.slug }` on mount. `library_pdf_request` `{ slug: conditionSlug }` from `components/exercise-library/condition-pdf-form.tsx`. |
 | `app/exercises/how-we-make-this/page.tsx` | `page_view` only. |

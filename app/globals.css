@@ -11767,6 +11767,107 @@ textarea:focus {
   }
 }
 
+/* Embed this exercise — secondary text action + dialog */
+.exlib-embed-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.exlib-embed-btn:hover,
+.exlib-embed-btn:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+.exlib-embed-dialog {
+  box-sizing: border-box;
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  border: 0;
+  border-radius: var(--radius-panel);
+  padding: var(--space-5);
+  background: var(--color-surface, #fffdf8);
+  color: var(--color-text-primary, #14213d);
+}
+
+.exlib-embed-dialog::backdrop {
+  background: rgba(20, 33, 61, 0.45);
+}
+
+.exlib-embed-dialog__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.exlib-embed-dialog__head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.exlib-embed-dialog__close {
+  background: none;
+  border: 0;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+}
+
+.exlib-embed-dialog__preview {
+  display: block;
+  width: 100%;
+  height: 360px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  margin: var(--space-3) 0;
+}
+
+.exlib-embed-dialog__label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+.exlib-embed-dialog textarea {
+  box-sizing: border-box;
+  width: 100%;
+  font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: var(--space-3);
+  border-radius: var(--radius-input);
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: inherit;
+  resize: vertical;
+}
+
+.exlib-embed-dialog__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.exlib-embed-dialog__licence {
+  font-size: var(--text-sm);
+  margin-top: var(--space-3);
+}
+
 /* ──────────────────────────────────────────────────────────────
    Condition hub — /exercises/for/[condition]  (.exlib-hub, .exlib-cta-card,
    .exlib-redflags, .exlib-guidance, .exlib-pdf-form)
