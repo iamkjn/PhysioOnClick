@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ProtectedImageFrame } from "@/components/image-protection";
 import { useMemo, useState } from "react";
 
 import type { BlogArticle } from "@/lib/blog";
@@ -106,15 +107,18 @@ export function BlogDirectory({
             <div className="simple-blog-card-top">
               <span className="simple-category-pill">{article.category}</span>
             </div>
-            <Image
-              src={article.image}
-              alt={article.title}
-              width={720}
-              height={420}
-              unoptimized
-              placeholder="blur"
-              blurDataURL={medicalImagePlaceholder}
-            />
+            <ProtectedImageFrame>
+              <Image
+                src={article.image}
+                alt={article.title}
+                width={720}
+                height={420}
+                unoptimized
+                draggable={false}
+                placeholder="blur"
+                blurDataURL={medicalImagePlaceholder}
+              />
+            </ProtectedImageFrame>
             <h2>{article.title}</h2>
             <p>{article.excerpt}</p>
             <time className="muted" dateTime={article.publishedAt}>

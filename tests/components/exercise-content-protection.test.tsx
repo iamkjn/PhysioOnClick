@@ -44,3 +44,33 @@ describe("exercise page schema", () => {
     expect(page.copyrightNotice).toMatch(/PhysioOnClick/);
   });
 });
+
+describe("ProtectedImageFrame", () => {
+  it("blocks the save-image menu and watermarks only when asked", async () => {
+    const { ProtectedImageFrame } = await import("@/components/image-protection");
+    const { container, rerender } = render(
+      <ProtectedImageFrame watermark>
+        <img src="/cover.png" alt="" />
+      </ProtectedImageFrame>,
+    );
+    expect(fireEvent.contextMenu(container.firstChild as Element)).toBe(false);
+    expect(screen.getByText(/physioonclick\.co\.uk/)).toBeInTheDocument();
+
+    rerender(
+      <ProtectedImageFrame>
+        <img src="/cover.png" alt="" />
+      </ProtectedImageFrame>,
+    );
+    expect(screen.queryByText(/physioonclick\.co\.uk/)).toBeNull();
+  });
+});
+
+describe("LibraryCopyrightNotice for blog articles", () => {
+  it("names the article as the protected content", () => {
+    const { container } = render(
+      <LibraryCopyrightNotice content="This article and its images are" inset />,
+    );
+    expect(container).toHaveTextContent("This article and its images are our original work");
+    expect(container.querySelector(".site-shell")).toBeNull();
+  });
+});

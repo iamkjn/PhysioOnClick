@@ -140,8 +140,9 @@ export default function TermsPage() {
           <p>
             All content on this website is owned by PhysioOnClick and protected by copyright. That includes our{" "}
             <Link href="/exercises" style={inlineLinkStyle}>exercise library</Link>: the exercise descriptions,
-            illustrations, self-check guides, condition programmes and downloadable handouts. It also includes
-            any exercise programmes or materials provided to you as part of your care.
+            illustrations, self-check guides, condition programmes and downloadable handouts. It also covers our{" "}
+            <Link href="/blog" style={inlineLinkStyle}>blog</Link> articles and their images, and any exercise
+            programmes or materials provided to you as part of your care.
           </p>
           <p>
             You may view this content and use it for your own personal care. You may not copy, screenshot,

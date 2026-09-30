@@ -11,7 +11,12 @@ import { services } from "@/lib/site-data";
 import { fetchDynamicBlogBySlug } from "@/lib/firestore-content";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { Reveal } from "@/components/reveal";
+import { ProtectedImageFrame } from "@/components/image-protection";
+import { LibraryCopyrightNotice } from "@/components/exercise-library/library-copyright-notice";
 import { breadcrumbs, personRef, practiceRef } from "@/lib/structured-data";
+
+const BLOG_COPYRIGHT_NOTICE =
+  "© PhysioOnClick. Personal use only; professional reuse requires written permission.";
 
 // Article bodies come from generateStaticParams at build time. Without this the
 // route stays dynamic and every request re-runs the content lookup inside the
@@ -86,7 +91,9 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             dateModified: article.lastReviewedAt,
             author: personRef(),
             reviewedBy: personRef(),
-            publisher: practiceRef()
+            publisher: practiceRef(),
+            copyrightHolder: practiceRef(),
+            copyrightNotice: BLOG_COPYRIGHT_NOTICE
           })
         }}
       />
@@ -134,15 +141,18 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
 
       <section className="page-section article-content article-content-premium">
         <Reveal direction="up" className="article-feature-media">
-          <Image
-            src={article.image}
-            alt={article.title}
-            width={1200}
-            height={680}
-            unoptimized
-            placeholder="blur"
-            blurDataURL={medicalImagePlaceholder}
-          />
+          <ProtectedImageFrame watermark className="article-feature-frame">
+            <Image
+              src={article.image}
+              alt={article.title}
+              width={1200}
+              height={680}
+              unoptimized
+              draggable={false}
+              placeholder="blur"
+              blurDataURL={medicalImagePlaceholder}
+            />
+          </ProtectedImageFrame>
         </Reveal>
         <div className="article-reading-column">
           {article.sections.map((section, i) => (
@@ -172,6 +182,8 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           </Reveal>
         </section>
       ) : null}
+
+      <LibraryCopyrightNotice content="This article and its images are" inset />
     </article>
   );
 }
