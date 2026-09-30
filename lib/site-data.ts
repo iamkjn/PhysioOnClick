@@ -81,6 +81,7 @@ export const services: Service[] = [
       "Assessment and rehabilitation for joint, tendon, spine and muscle pain with a practical, evidence-based treatment plan.",
     conditions: [
       "Back and neck pain",
+      "Foot pain, including Morton's neuroma",
       "Shoulder impingement",
       "Tendon pain",
       "Persistent sports injuries",
