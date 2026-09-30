@@ -12815,7 +12815,7 @@ textarea:focus {
 .body-chart__figure {
   position: relative;
   width: 100%;
-  max-width: 760px;
+  max-width: 300px;
 }
 .body-chart__view-title {
   display: flex;
@@ -12914,10 +12914,10 @@ textarea:focus {
 }
 .body-chart__side-labels {
   position: absolute;
-  top: 0.8rem;
+  top: 2.5rem;
   left: 50%;
   z-index: 2;
-  width: min(100%, 360px);
+  width: calc(100% + 4.2rem);
   display: flex;
   justify-content: space-between;
   transform: translateX(-50%);

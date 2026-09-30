@@ -1,9 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+// components/body-chart.tsx
+// Anatomical body chart: a stylised skeleton underlay + interactive muscle
+// regions (front / back). Muscle path data from the `body-muscles` package
+// (Apache-2.0, Copyright 2024 Ivan Vulović). Every region is a keyboard-
+// operable button with a hover/focus tooltip giving its plain and clinical
+// names.
 
+import { useMemo, useRef, useState } from "react";
+import { FRONT_MUSCLES, BACK_MUSCLES } from "body-muscles";
 import {
   BODY_REGIONS,
+  REGION_MUSCLES,
   SOMEWHERE_ELSE,
   regionClinical,
   regionLabel,
@@ -14,199 +22,31 @@ interface Props {
   value: string[];
   onChange?: (next: string[]) => void;
   readOnly?: boolean;
-  compactReadOnly?: boolean;
   idPrefix?: string;
 }
 
-type RegionColumn = "right" | "centre" | "left";
-
-interface Zone {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
+interface MusclePath {
+  id: string;
+  path: string;
 }
+const MUSCLE_PATH = new Map<string, string>(
+  ([...FRONT_MUSCLES, ...BACK_MUSCLES] as MusclePath[]).map((m) => [m.id, m.path])
+);
 
-const VIEW_REGIONS: Record<ChartView, Record<RegionColumn, string[]>> = {
-  front: {
-    right: [
-      "shoulder-right",
-      "upper-arm-right",
-      "elbow-right",
-      "forearm-right",
-      "hand-right",
-      "side-right",
-      "hip-right",
-      "thigh-right",
-      "knee-right",
-      "lower-leg-right",
-      "foot-right",
-    ],
-    centre: ["head-jaw", "neck", "chest", "abdomen"],
-    left: [
-      "shoulder-left",
-      "upper-arm-left",
-      "elbow-left",
-      "forearm-left",
-      "hand-left",
-      "side-left",
-      "hip-left",
-      "thigh-left",
-      "knee-left",
-      "lower-leg-left",
-      "foot-left",
-    ],
-  },
-  back: {
-    right: [
-      "shoulder-right",
-      "upper-arm-right",
-      "elbow-right",
-      "forearm-right",
-      "hand-right",
-      "hip-right",
-      "buttock-right",
-      "thigh-right",
-      "knee-right",
-      "lower-leg-right",
-      "foot-right",
-    ],
-    centre: ["head-jaw", "neck", "upper-back", "mid-back", "lower-back"],
-    left: [
-      "shoulder-left",
-      "upper-arm-left",
-      "elbow-left",
-      "forearm-left",
-      "hand-left",
-      "hip-left",
-      "buttock-left",
-      "thigh-left",
-      "knee-left",
-      "lower-leg-left",
-      "foot-left",
-    ],
-  },
-};
+const VIEWBOX: Record<ChartView, string> = { front: "0 0 35 93", back: "37 0 35 93" };
 
-const BODY_MAP_ZONES: Record<ChartView, Record<string, Zone>> = {
-  front: {
-    "head-jaw": { x: 50, y: 8, w: 18, h: 10 },
-    neck: { x: 50, y: 17, w: 14, h: 7 },
-    chest: { x: 50, y: 29, w: 30, h: 13 },
-    abdomen: { x: 50, y: 43, w: 25, h: 16 },
-    "side-right": { x: 35, y: 43, w: 10, h: 18 },
-    "side-left": { x: 65, y: 43, w: 10, h: 18 },
-    "shoulder-right": { x: 31, y: 25, w: 15, h: 10 },
-    "shoulder-left": { x: 69, y: 25, w: 15, h: 10 },
-    "upper-arm-right": { x: 22, y: 38, w: 12, h: 17 },
-    "upper-arm-left": { x: 78, y: 38, w: 12, h: 17 },
-    "elbow-right": { x: 19, y: 50, w: 10, h: 8 },
-    "elbow-left": { x: 81, y: 50, w: 10, h: 8 },
-    "forearm-right": { x: 17, y: 61, w: 12, h: 18 },
-    "forearm-left": { x: 83, y: 61, w: 12, h: 18 },
-    "hand-right": { x: 16, y: 75, w: 12, h: 10 },
-    "hand-left": { x: 84, y: 75, w: 12, h: 10 },
-    "hip-right": { x: 41, y: 58, w: 16, h: 11 },
-    "hip-left": { x: 59, y: 58, w: 16, h: 11 },
-    "thigh-right": { x: 41, y: 72, w: 15, h: 20 },
-    "thigh-left": { x: 59, y: 72, w: 15, h: 20 },
-    "knee-right": { x: 41, y: 83, w: 13, h: 9 },
-    "knee-left": { x: 59, y: 83, w: 13, h: 9 },
-    "lower-leg-right": { x: 40, y: 93, w: 14, h: 18 },
-    "lower-leg-left": { x: 60, y: 93, w: 14, h: 18 },
-    "foot-right": { x: 38, y: 98, w: 15, h: 7 },
-    "foot-left": { x: 62, y: 98, w: 15, h: 7 },
-  },
-  back: {
-    "head-jaw": { x: 50, y: 8, w: 18, h: 10 },
-    neck: { x: 50, y: 17, w: 14, h: 7 },
-    "upper-back": { x: 50, y: 29, w: 34, h: 15 },
-    "mid-back": { x: 50, y: 43, w: 31, h: 15 },
-    "lower-back": { x: 50, y: 55, w: 27, h: 12 },
-    "shoulder-right": { x: 31, y: 25, w: 15, h: 10 },
-    "shoulder-left": { x: 69, y: 25, w: 15, h: 10 },
-    "upper-arm-right": { x: 22, y: 38, w: 12, h: 17 },
-    "upper-arm-left": { x: 78, y: 38, w: 12, h: 17 },
-    "elbow-right": { x: 19, y: 50, w: 10, h: 8 },
-    "elbow-left": { x: 81, y: 50, w: 10, h: 8 },
-    "forearm-right": { x: 17, y: 61, w: 12, h: 18 },
-    "forearm-left": { x: 83, y: 61, w: 12, h: 18 },
-    "hand-right": { x: 16, y: 75, w: 12, h: 10 },
-    "hand-left": { x: 84, y: 75, w: 12, h: 10 },
-    "hip-right": { x: 41, y: 61, w: 16, h: 11 },
-    "hip-left": { x: 59, y: 61, w: 16, h: 11 },
-    "buttock-right": { x: 41, y: 66, w: 16, h: 12 },
-    "buttock-left": { x: 59, y: 66, w: 16, h: 12 },
-    "thigh-right": { x: 41, y: 76, w: 15, h: 20 },
-    "thigh-left": { x: 59, y: 76, w: 15, h: 20 },
-    "knee-right": { x: 41, y: 85, w: 13, h: 9 },
-    "knee-left": { x: 59, y: 85, w: 13, h: 9 },
-    "lower-leg-right": { x: 40, y: 94, w: 14, h: 18 },
-    "lower-leg-left": { x: 60, y: 94, w: 14, h: 18 },
-    "foot-right": { x: 38, y: 98, w: 15, h: 7 },
-    "foot-left": { x: 62, y: 98, w: 15, h: 7 },
-  },
-};
-
-function BodyMapFigure({ view, idPrefix }: { view: ChartView; idPrefix: string }) {
-  const gradientId = `${idPrefix}-${view}-muscle`;
-  const lineId = `${idPrefix}-${view}-line`;
-  return (
-    <svg className="body-chart__body-svg" viewBox="0 0 220 520" role="img" aria-label={`${view} body anatomy guide`}>
-      <defs>
-        <linearGradient id={gradientId} x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="#f6b08f" />
-          <stop offset="52%" stopColor="#e8795d" />
-          <stop offset="100%" stopColor="#b84d4a" />
-        </linearGradient>
-        <linearGradient id={lineId} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#fff7ed" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#fef2f2" stopOpacity="0.65" />
-        </linearGradient>
-      </defs>
-
-      <g className="body-chart__body-shadow">
-        <ellipse cx="110" cy="500" rx="66" ry="13" />
-      </g>
-      <g className="body-chart__body-shape">
-        <ellipse cx="110" cy="45" rx="29" ry="35" />
-        <path d="M92 78h36l9 28-8 22H91l-8-22 9-28Z" />
-        <path d="M74 117c8-13 22-20 36-20s28 7 36 20c10 24 14 54 11 92l-12 80H75l-12-80c-3-38 1-68 11-92Z" />
-        <path d="M70 122c-25 15-37 45-43 92l-10 76c-1 9 6 17 15 17 8 0 14-6 15-14l11-70c4-24 10-43 21-55l5-26-14-20Z" />
-        <path d="M150 122c25 15 37 45 43 92l10 76c1 9-6 17-15 17-8 0-14-6-15-14l-11-70c-4-24-10-43-21-55l-5-26 14-20Z" />
-        <path d="M82 288h55l16 191c1 12-8 22-20 22-10 0-18-7-20-17l-10-89-10 89c-2 10-10 17-20 17-12 0-21-10-20-22l16-191Z" />
-      </g>
-      <g className="body-chart__body-lines">
-        <path d="M110 95v192" />
-        <path d="M83 130c17 14 37 14 54 0" />
-        <path d="M78 190c21 10 43 10 64 0" />
-        <path d="M76 252c22 9 46 9 68 0" />
-        <path d="M91 300c5 42 7 82 6 122" />
-        <path d="M129 300c-5 42-7 82-6 122" />
-        <path d="M58 219c-12 16-18 38-19 66" />
-        <path d="M162 219c12 16 18 38 19 66" />
-        {view === "back" ? (
-          <>
-            <path d="M82 116c17 36 39 36 56 0" />
-            <path d="M83 161c17 17 37 17 54 0" />
-            <path d="M88 221c15 12 29 12 44 0" />
-          </>
-        ) : (
-          <>
-            <path d="M78 118c20 24 44 24 64 0" />
-            <path d="M88 154c15 16 29 16 44 0" />
-            <path d="M91 205c12 14 26 14 38 0" />
-          </>
-        )}
-      </g>
-    </svg>
-  );
-}
-
-export function BodyChart({ value, onChange, readOnly = false, compactReadOnly = false, idPrefix = "bc" }: Props) {
+export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }: Props) {
   const [view, setView] = useState<ChartView>("front");
+  const [showBones, setShowBones] = useState(false);
   const [hover, setHover] = useState<string | null>(null);
+  const [tip, setTip] = useState<{ x: number; y: number } | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const selected = useMemo(() => new Set(value), [value]);
+
+  const viewKey = view;
+  const figureRegions = BODY_REGIONS.filter(
+    (r) => (REGION_MUSCLES[r.key]?.[viewKey]?.length ?? 0) > 0
+  );
 
   function toggle(key: string) {
     if (readOnly || !onChange) return;
@@ -220,32 +60,23 @@ export function BodyChart({ value, onChange, readOnly = false, compactReadOnly =
     onChange([...next]);
   }
 
-  const chips = value.map((key) => ({ key, label: regionLabel(key) }));
-  const visibleRegionKeys = VIEW_REGIONS[view].right.concat(VIEW_REGIONS[view].centre, VIEW_REGIONS[view].left);
-
-  if (readOnly && compactReadOnly) {
-    return (
-      <div className="body-chart body-chart--readonly-summary">
-        {chips.length > 0 ? (
-          <ul className="body-chart__chips" aria-label="Selected areas">
-            {chips.map((chip) => (
-              <li key={chip.key} className="body-chart__chip">
-                {chip.label}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="muted">No body areas selected.</p>
-        )}
-      </div>
-    );
+  function onMove(e: React.MouseEvent) {
+    const rect = wrapRef.current?.getBoundingClientRect();
+    if (rect) setTip({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   }
+
+  const chips = value.map((k) => ({ key: k, label: regionLabel(k) }));
 
   return (
     <div
-      className={`body-chart body-chart--picker${readOnly ? " is-readonly" : ""}`}
+      className={`body-chart${showBones ? " show-bones" : ""}${readOnly ? " is-readonly" : ""}`}
+      ref={wrapRef}
+      onMouseMove={onMove}
       data-view={view}
     >
+      {/* Front/back is view-only navigation, not data editing, so it stays
+          interactive even in readOnly mode. "Show bones" and "somewhere
+          else" do edit chart state/selection, so those stay gated below. */}
       <div className="body-chart__toolbar">
         <div className="body-chart__views" role="group" aria-label="Body view">
           <button type="button" className="body-chart__view-btn" aria-pressed={view === "front"} onClick={() => setView("front")}>
@@ -255,57 +86,67 @@ export function BodyChart({ value, onChange, readOnly = false, compactReadOnly =
             Back
           </button>
         </div>
+        {!readOnly && (
+          <button
+            type="button"
+            className="body-chart__bones-btn"
+            aria-pressed={showBones}
+            onClick={() => setShowBones((b) => !b)}
+          >
+            {showBones ? "Hide bones" : "Show bones"}
+          </button>
+        )}
       </div>
 
       <div className="body-chart__figure">
-        <div className="body-chart__view-title">
-          <strong>{view === "front" ? "Front view" : "Back view"}</strong>
-          <span>Tap the body area involved.</span>
+        <div className="body-chart__side-labels" aria-hidden="true">
+          <span>{view === "front" ? "Your right" : "Your left"}</span>
+          <span>{view === "front" ? "Your left" : "Your right"}</span>
         </div>
+        <svg className="body-chart__svg" viewBox={VIEWBOX[view]} role="group" aria-label={`Body chart, ${view} view`}>
+          <Skeleton view={view} />
 
-        <div className="body-chart__visual" role="group" aria-label={`Body chart, ${view} view`}>
-          <div className="body-chart__side-labels" aria-hidden="true">
-            <span>{view === "front" ? "Patient right" : "Patient left"}</span>
-            <span>{view === "front" ? "Patient left" : "Patient right"}</span>
-          </div>
-          <BodyMapFigure view={view} idPrefix={idPrefix} />
-          <div className="body-chart__zones">
-            {visibleRegionKeys.map((key) => {
-              const region = BODY_REGIONS.find((item) => item.key === key);
-              const zone = BODY_MAP_ZONES[view][key];
-              if (!region || !zone) return null;
-              const on = selected.has(region.key);
+          <g className="body-chart__regions">
+            {figureRegions.map((r) => {
+              const ids = REGION_MUSCLES[r.key][viewKey] ?? [];
+              const on = selected.has(r.key);
               return (
-                <button
-                  key={region.key}
-                  id={`${idPrefix}-${region.key}`}
-                  type="button"
-                  className={`body-chart__zone${on ? " is-selected" : ""}`}
-                  style={{ left: `${zone.x}%`, top: `${zone.y}%`, width: `${zone.w}%`, height: `${zone.h}%` }}
-                  aria-label={region.label}
+                <g
+                  key={r.key}
+                  id={`${idPrefix}-${r.key}`}
+                  className={`body-chart__region${on ? " is-selected" : ""}`}
+                  role="button"
+                  aria-label={r.label}
                   aria-pressed={on}
                   tabIndex={readOnly ? -1 : 0}
-                  onClick={() => toggle(region.key)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      toggle(region.key);
+                  onClick={() => toggle(r.key)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      toggle(r.key);
                     }
                   }}
-                  onMouseEnter={() => setHover(region.key)}
-                  onMouseLeave={() => setHover((h) => (h === region.key ? null : h))}
-                  onFocus={() => setHover(region.key)}
-                  onBlur={() => setHover((h) => (h === region.key ? null : h))}
+                  onMouseEnter={() => setHover(r.key)}
+                  onMouseLeave={() => setHover((h) => (h === r.key ? null : h))}
+                  onFocus={() => setHover(r.key)}
+                  onBlur={() => setHover((h) => (h === r.key ? null : h))}
                 >
-                  <span>{region.label}</span>
-                </button>
+                  {ids.map((mid) => {
+                    const d = MUSCLE_PATH.get(mid);
+                    return d ? <path key={mid} d={d} /> : null;
+                  })}
+                </g>
               );
             })}
-          </div>
-        </div>
+          </g>
+        </svg>
 
         {hover && (
-          <div className="body-chart__tooltip" role="status">
+          <div
+            className="body-chart__tooltip"
+            role="status"
+            style={tip ? { left: tip.x, top: tip.y } : { left: "50%", top: 8, transform: "translateX(-50%)" }}
+          >
             <strong>{regionLabel(hover)}</strong>
             {regionClinical(hover) && <span>{regionClinical(hover)}</span>}
           </div>
@@ -325,12 +166,12 @@ export function BodyChart({ value, onChange, readOnly = false, compactReadOnly =
 
       {chips.length > 0 && (
         <ul className="body-chart__chips" aria-label="Selected areas">
-          {chips.map((chip) => (
-            <li key={chip.key} className="body-chart__chip">
-              {chip.label}
+          {chips.map((c) => (
+            <li key={c.key} className="body-chart__chip">
+              {c.label}
               {!readOnly && (
-                <button type="button" aria-label={`Remove ${chip.label}`} onClick={() => toggle(chip.key)}>
-                  x
+                <button type="button" aria-label={`Remove ${c.label}`} onClick={() => toggle(c.key)}>
+                  ×
                 </button>
               )}
             </li>
@@ -338,5 +179,157 @@ export function BodyChart({ value, onChange, readOnly = false, compactReadOnly =
         </ul>
       )}
     </div>
+  );
+}
+
+// ── Stylised skeleton ──────────────────────────────────────────────────────
+// Joint coordinates measured from the body-muscles figure so the bones
+// register with the muscle regions. L / R are image-left / image-right.
+
+interface Frame {
+  cx: number;
+  skull: [number, number];
+  shoulderL: [number, number]; shoulderR: [number, number];
+  elbowL: [number, number]; elbowR: [number, number];
+  wristL: [number, number]; wristR: [number, number];
+  hipL: [number, number]; hipR: [number, number];
+  kneeL: [number, number]; kneeR: [number, number];
+  ankleL: [number, number]; ankleR: [number, number];
+  spineTop: number; spineBottom: number;
+  ribcage: boolean;
+}
+
+const FRAMES: Record<ChartView, Frame> = {
+  front: {
+    cx: 16, skull: [16, 3.6],
+    shoulderL: [22.5, 17], shoulderR: [9.5, 17],
+    elbowL: [28.5, 30], elbowR: [3.5, 30],
+    wristL: [27.5, 43], wristR: [4.5, 43],
+    hipL: [19.5, 49], hipR: [12.5, 49],
+    kneeL: [20, 66], kneeR: [12, 66],
+    ankleL: [20, 86], ankleR: [12.5, 86],
+    spineTop: 8, spineBottom: 46, ribcage: true,
+  },
+  back: {
+    cx: 52.5, skull: [52.5, 5],
+    shoulderL: [45.5, 17], shoulderR: [59.5, 17],
+    elbowL: [42, 30], elbowR: [63, 30],
+    wristL: [42, 43], wristR: [63, 43],
+    hipL: [48.5, 49], hipR: [56.5, 49],
+    kneeL: [49, 66], kneeR: [56, 66],
+    ankleL: [50, 86], ankleR: [55, 86],
+    spineTop: 9, spineBottom: 46, ribcage: false,
+  },
+};
+
+function bone(a: [number, number], b: [number, number], key: string) {
+  return <line key={key} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} />;
+}
+
+function Skeleton({ view }: { view: ChartView }) {
+  const f = FRAMES[view];
+  const [sx, sy] = f.skull;
+  const mid = (a: [number, number], b: [number, number]): [number, number] => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+
+  return (
+    <g className="body-chart__skeleton" aria-hidden="true">
+      {/* skull + jaw */}
+      <ellipse cx={sx} cy={sy} rx={3.9} ry={4.3} />
+      <path d={`M ${sx - 3} ${sy + 1} Q ${sx} ${sy + 5.5} ${sx + 3} ${sy + 1}`} fill="none" />
+
+      {/* spine, segmented */}
+      {Array.from({ length: Math.round((f.spineBottom - f.spineTop) / 2.2) }, (_, i) => {
+        const y = f.spineTop + i * 2.2;
+        const w = y < 15 ? 1.1 : y < 34 ? 1.6 : 2.1;
+        return <rect key={i} x={f.cx - w / 2} y={y} width={w} height={1.4} rx={0.5} />;
+      })}
+
+      {/* clavicles (front) / scapulae (back) */}
+      {f.ribcage ? (
+        <>
+          <path d={`M ${f.cx - 0.6} 15 Q ${(f.cx + f.shoulderL[0]) / 2} 14 ${f.shoulderL[0]} ${f.shoulderL[1]}`} fill="none" />
+          <path d={`M ${f.cx + 0.6} 15 Q ${(f.cx + f.shoulderR[0]) / 2} 14 ${f.shoulderR[0]} ${f.shoulderR[1]}`} fill="none" />
+          {/* sternum */}
+          <rect x={f.cx - 0.9} y={15} width={1.8} height={13} rx={0.6} />
+          {/* ribs */}
+          {[0, 1, 2, 3, 4].map((i) => {
+            const y = 17.5 + i * 3;
+            const r = 7.2 - i * 0.5;
+            return (
+              <g key={i}>
+                <path d={`M ${f.cx - 0.8} ${y} Q ${f.cx - r} ${y + 1} ${f.cx - r + 1.2} ${y + 5}`} fill="none" />
+                <path d={`M ${f.cx + 0.8} ${y} Q ${f.cx + r} ${y + 1} ${f.cx + r - 1.2} ${y + 5}`} fill="none" />
+              </g>
+            );
+          })}
+        </>
+      ) : (
+        <>
+          <path d={`M ${f.cx - 1.5} 16.5 L ${f.shoulderL[0] - 1.5} 17 L ${f.cx - 2.5} 25 Z`} fill="none" />
+          <path d={`M ${f.cx + 1.5} 16.5 L ${f.shoulderR[0] + 1.5} 17 L ${f.cx + 2.5} 25 Z`} fill="none" />
+        </>
+      )}
+
+      {/* pelvis — iliac wings + sacrum + pubic rami */}
+      <path
+        d={`M ${f.hipR[0] - 1} ${f.spineBottom - 3}
+            C ${f.hipR[0] - 4} ${f.spineBottom - 2} ${f.hipR[0] - 4} ${f.hipR[1] - 1} ${f.hipR[0]} ${f.hipR[1] + 1}
+            L ${f.cx} ${f.hipR[1] + 2}
+            L ${f.hipL[0]} ${f.hipL[1] + 1}
+            C ${f.hipL[0] + 4} ${f.hipL[1] - 1} ${f.hipL[0] + 4} ${f.spineBottom - 2} ${f.hipL[0] + 1} ${f.spineBottom - 3}
+            Q ${f.cx} ${f.spineBottom - 1} ${f.hipR[0] - 1} ${f.spineBottom - 3} Z`}
+        fill="none"
+      />
+      <circle cx={f.hipL[0]} cy={f.hipL[1]} r={1.1} />
+      <circle cx={f.hipR[0]} cy={f.hipR[1]} r={1.1} />
+
+      {/* arms */}
+      {bone(f.shoulderL, f.elbowL, "hL")}
+      {bone(f.shoulderR, f.elbowR, "hR")}
+      <circle cx={f.elbowL[0]} cy={f.elbowL[1]} r={1.1} />
+      <circle cx={f.elbowR[0]} cy={f.elbowR[1]} r={1.1} />
+      {bone([f.elbowL[0] - 0.6, f.elbowL[1]], [f.wristL[0] - 0.6, f.wristL[1]], "rL")}
+      {bone([f.elbowL[0] + 0.6, f.elbowL[1]], [f.wristL[0] + 0.6, f.wristL[1]], "uL")}
+      {bone([f.elbowR[0] - 0.6, f.elbowR[1]], [f.wristR[0] - 0.6, f.wristR[1]], "rR")}
+      {bone([f.elbowR[0] + 0.6, f.elbowR[1]], [f.wristR[0] + 0.6, f.wristR[1]], "uR")}
+      {/* hands: metacarpals fanning from the wrist */}
+      {([f.wristL, f.wristR] as [number, number][]).map((w, wi) => {
+        const dir = wi === 0 ? 1 : -1;
+        return (
+          <g key={`hand${wi}`}>
+            {[0, 1, 2, 3, 4].map((k) => (
+              <line
+                key={k}
+                x1={w[0]}
+                y1={w[1] + 0.5}
+                x2={w[0] + dir * (1.5 + k * 0.9)}
+                y2={w[1] + 5 - (k === 4 ? 2 : k === 0 ? 1 : 0)}
+              />
+            ))}
+          </g>
+        );
+      })}
+
+      {/* legs */}
+      {bone(f.hipL, f.kneeL, "fL")}
+      {bone(f.hipR, f.kneeR, "fR")}
+      <circle cx={f.kneeL[0]} cy={f.kneeL[1]} r={1.3} />
+      <circle cx={f.kneeR[0]} cy={f.kneeR[1]} r={1.3} />
+      {bone([f.kneeL[0] - 0.7, f.kneeL[1]], [f.ankleL[0] - 0.7, f.ankleL[1]], "tL")}
+      {bone([f.kneeL[0] + 0.7, f.kneeL[1]], [f.ankleL[0] + 0.7, f.ankleL[1]], "fibL")}
+      {bone([f.kneeR[0] - 0.7, f.kneeR[1]], [f.ankleR[0] - 0.7, f.ankleR[1]], "tR")}
+      {bone([f.kneeR[0] + 0.7, f.kneeR[1]], [f.ankleR[0] + 0.7, f.ankleR[1]], "fibR")}
+      {/* feet */}
+      {([f.ankleL, f.ankleR] as [number, number][]).map((an, ai) => {
+        const t = mid(an, an);
+        return (
+          <path
+            key={`foot${ai}`}
+            d={`M ${an[0] - 1.5} ${an[1] + 1} L ${t[0]} ${an[1] + 5.5} L ${an[0] + 1.5} ${an[1] + 1} Z`}
+            fill="none"
+          />
+        );
+      })}
+    </g>
   );
 }
