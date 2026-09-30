@@ -40,15 +40,24 @@ describe("curatedTrustpilotReviews", () => {
 });
 
 describe("ServiceReviews", () => {
-  it("shows Seena's review on the musculoskeletal service page only", async () => {
+  it("shows Seena on the musculoskeletal page and Anish on the services overview", async () => {
     const { ServiceReviews } = await import("@/components/service-reviews");
-    const { container, rerender } = render(<ServiceReviews serviceSlug="musculoskeletal-physiotherapy" />);
+    const { curatedReviewsForService, curatedReviewsForServicesOverview } = await import(
+      "@/lib/trustpilot-curated"
+    );
+
+    const { container, rerender } = render(
+      <ServiceReviews reviews={curatedReviewsForService("musculoskeletal-physiotherapy")} />,
+    );
     expect(container).toHaveTextContent("What patients say");
     expect(container).toHaveTextContent("Seena Rachel George");
-    expect(container).toHaveTextContent("Morton's neuroma");
     expect(container).not.toHaveTextContent("Anish Thomas");
 
-    rerender(<ServiceReviews serviceSlug="paediatric-physiotherapy" />);
+    rerender(<ServiceReviews reviews={curatedReviewsForServicesOverview()} />);
+    expect(container).toHaveTextContent("Anish Thomas");
+    expect(container).not.toHaveTextContent("Seena Rachel George");
+
+    rerender(<ServiceReviews reviews={curatedReviewsForService("paediatric-physiotherapy")} />);
     expect(container).toBeEmptyDOMElement();
   });
 });

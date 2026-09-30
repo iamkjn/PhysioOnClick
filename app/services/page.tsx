@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ProtectedImageFrame } from "@/components/image-protection";
 import { LibraryCopyrightNotice } from "@/components/exercise-library/library-copyright-notice";
+import { ServiceReviews } from "@/components/service-reviews";
+import { curatedReviewsForServicesOverview } from "@/lib/trustpilot-curated";
 
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { getPublicServices } from "@/lib/public-content";
@@ -137,6 +139,8 @@ export default function ServicesPage() {
           );
         })}
       </section>
+
+      <ServiceReviews reviews={curatedReviewsForServicesOverview()} />
 
       <section className="simple-cta-band" id="book">
         <div className="site-shell simple-cta-inner">

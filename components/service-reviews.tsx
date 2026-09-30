@@ -1,14 +1,14 @@
 // components/service-reviews.tsx
-// "What patients say" block on a service page: the owner-confirmed Trustpilot
-// excerpts mapped to that service in lib/trustpilot-curated.ts. Server
-// component; renders nothing for services with no mapped review.
+// "What patients say" block for the services pages: renders the given
+// owner-confirmed Trustpilot excerpts (see lib/trustpilot-curated.ts). Server
+// component; renders nothing when there are none.
 
 import { Reveal } from "@/components/reveal";
 import { Stars } from "@/components/trustpilot-reviews";
-import { curatedReviewsForService, TRUSTPILOT_PROFILE_URL } from "@/lib/trustpilot-curated";
+import type { TrustpilotReview } from "@/lib/trustpilot";
+import { TRUSTPILOT_PROFILE_URL } from "@/lib/trustpilot-curated";
 
-export function ServiceReviews({ serviceSlug }: { serviceSlug: string }) {
-  const reviews = curatedReviewsForService(serviceSlug);
+export function ServiceReviews({ reviews }: { reviews: TrustpilotReview[] }) {
   if (reviews.length === 0) return null;
 
   return (

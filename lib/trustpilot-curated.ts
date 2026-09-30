@@ -50,7 +50,18 @@ const SERVICE_REVIEW_IDS: Record<string, string[]> = {
   "musculoskeletal-physiotherapy": ["curated-seena-rachel-george"],
 };
 
-export function curatedReviewsForService(serviceSlug: string): TrustpilotReview[] {
-  const ids = SERVICE_REVIEW_IDS[serviceSlug] ?? [];
+/** Reviews about the care in general (no specific service), shown on the
+ *  /services overview page. */
+const SERVICES_OVERVIEW_REVIEW_IDS = ["curated-anish-thomas"];
+
+function reviewsByIds(ids: string[]): TrustpilotReview[] {
   return curatedTrustpilotReviews.filter((r) => ids.includes(r.id));
+}
+
+export function curatedReviewsForService(serviceSlug: string): TrustpilotReview[] {
+  return reviewsByIds(SERVICE_REVIEW_IDS[serviceSlug] ?? []);
+}
+
+export function curatedReviewsForServicesOverview(): TrustpilotReview[] {
+  return reviewsByIds(SERVICES_OVERVIEW_REVIEW_IDS);
 }
