@@ -37,6 +37,17 @@ describe("app/exercises/for/[condition] generateStaticParams", () => {
 });
 
 describe("app/exercises/for/[condition] page", () => {
+  it("links to the matching online physiotherapy landing page when one exists", async () => {
+    const { container } = await renderPage("sciatica");
+    expect(
+      container.querySelector('a[href="/online-physiotherapy-for/sciatica"]'),
+    ).not.toBeNull();
+    const none = await renderPage("hamstring-strain");
+    expect(
+      none.container.querySelector('a[href^="/online-physiotherapy-for/"]'),
+    ).toBeNull();
+  });
+
   it("renders '<name> exercises' as the h1", async () => {
     const { container } = await renderPage(SLUG);
     expect(container.querySelector("h1")?.textContent).toBe(

@@ -642,3 +642,8 @@ export function getOnlinePhysioPage(slug: string): OnlinePhysioPage | null {
 export function allOnlinePhysioSlugs(): string[] {
   return onlinePhysioPages.map((p) => p.slug);
 }
+
+/** Reverse lookup: the landing page whose exercise hub is `hubSlug` (a slug in lib/conditions.ts). */
+export function onlinePhysioPageForHub(hubSlug: string): OnlinePhysioPage | null {
+  return onlinePhysioPages.find((p) => p.exerciseHubSlug === hubSlug) ?? null;
+}

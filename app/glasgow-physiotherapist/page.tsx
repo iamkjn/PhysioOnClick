@@ -79,6 +79,12 @@ export default function GlasgowPage() {
             <li>Clear pricing and secure booking</li>
             <li>Same-week appointments, no travel required</li>
             <li>
+              Living elsewhere in Scotland?{" "}
+              <Link href="/online-physiotherapy-scotland" prefetch>
+                Online physio in Scotland
+              </Link>
+            </li>
+            <li>
               <Link href="/services/neurological-rehabilitation" prefetch>
                 Neurological physiotherapy
               </Link>{" "}

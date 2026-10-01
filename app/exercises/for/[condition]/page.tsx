@@ -8,6 +8,7 @@ import {
   programForCondition,
   selfTestsForCondition,
 } from "@/lib/exercise-library";
+import { onlinePhysioPageForHub } from "@/lib/online-physio-pages";
 import { pricing } from "@/lib/site-data";
 import { breadcrumbs, conditionWebPage } from "@/lib/structured-data";
 import { ByLine } from "@/components/exercise-library/by-line";
@@ -100,6 +101,7 @@ export default async function ConditionHubPage({
     .map((relatedSlug) => getCondition(relatedSlug))
     .filter((item): item is NonNullable<typeof item> => item !== null);
   const priceLabel = `from £${ONLINE_FROM_PRICE}`;
+  const onlinePhysio = onlinePhysioPageForHub(condition.slug);
 
   return (
     <div className="site-shell">
@@ -279,6 +281,14 @@ export default async function ConditionHubPage({
             <p className="exlib-cta-card__price">
               Online physiotherapy {priceLabel} a session.
             </p>
+            {onlinePhysio ? (
+              <p className="exlib-cta-card__body">
+                Want a physio to guide you?{" "}
+                <Link href={`/online-physiotherapy-for/${onlinePhysio.slug}`}>
+                  Online physiotherapy for {onlinePhysio.name.toLowerCase()}
+                </Link>
+              </p>
+            ) : null}
             <ConditionPdfForm
               conditionSlug={condition.slug}
               conditionName={condition.name}

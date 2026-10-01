@@ -125,11 +125,11 @@ export default function PricingPage() {
         <div className="site-shell service-faqs">
           <details>
             <summary>Can I claim this back on health insurance?</summary>
-            <p>If your policy covers physiotherapy, usually yes. Every paid session generates a receipt and a PDF invoice showing the physiotherapist&rsquo;s HCPC registration number, emailed to you and available in your account any time you need to submit a claim. Check with your insurer first whether they need pre-authorisation.</p>
+            <p>If your policy covers physiotherapy, usually yes. Every paid session generates a receipt and a PDF invoice showing the physiotherapist&rsquo;s HCPC registration number, emailed to you and available in your account any time you need to submit a claim. Check with your insurer first whether they need pre-authorisation. <Link href="/guides/claim-physiotherapy-on-health-insurance">How to claim physiotherapy on health insurance</Link>.</p>
           </details>
           <details>
             <summary>How much does private physiotherapy cost in the UK?</summary>
-            <p>A first private physiotherapy appointment in the UK commonly costs anywhere from about &pound;45 to over &pound;100, depending on the clinic and location. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time.</p>
+            <p>A first private physiotherapy appointment in the UK commonly costs anywhere from about &pound;45 to over &pound;100, depending on the clinic and location. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time. <Link href="/guides/private-physiotherapy-cost-uk">Private physiotherapy cost in the UK, explained</Link>.</p>
           </details>
           <details>
             <summary>Do I need a GP referral, and how quickly can I be seen?</summary>

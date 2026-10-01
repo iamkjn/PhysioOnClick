@@ -115,6 +115,10 @@ export default function HowOnlinePhysiotherapyWorksPage() {
             </article>
           </Reveal>
         ))}
+        <p>
+          Wondering how well it works?{" "}
+          <Link href="/guides/does-online-physiotherapy-work">Does online physiotherapy work?</Link>
+        </p>
       </section>
 
       <section className="page-section stack">

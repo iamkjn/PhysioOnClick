@@ -1,4 +1,4 @@
-import { onlinePhysioPages, getOnlinePhysioPage, allOnlinePhysioSlugs } from "@/lib/online-physio-pages";
+import { onlinePhysioPages, getOnlinePhysioPage, allOnlinePhysioSlugs, onlinePhysioPageForHub } from "@/lib/online-physio-pages";
 import { getCondition, getSelfTest } from "@/lib/exercise-library";
 import { getArticle } from "@/lib/blog";
 import { getGuide } from "@/lib/guides";
@@ -79,6 +79,24 @@ describe("online physio landing pages", () => {
       for (const para of [...p.howOnlineWorks, ...p.typicalPlan]) {
         expect(seen.has(para), `${p.slug} reuses a paragraph from ${seen.get(para)}`).toBe(false);
         seen.set(para, p.slug);
+      }
+    }
+  });
+});
+
+describe("phase B internal linking helpers", () => {
+  it("onlinePhysioPageForHub reverse-looks-up by exercise hub slug", () => {
+    expect(onlinePhysioPageForHub("sciatica")?.slug).toBe("sciatica");
+    expect(onlinePhysioPageForHub("nope")).toBeNull();
+  });
+  it("every service onlinePhysioSlugs entry resolves", () => {
+    const withSlugs = services.filter((s) => s.onlinePhysioSlugs?.length);
+    expect(withSlugs.map((s) => s.slug).sort()).toEqual(
+      ["musculoskeletal-physiotherapy", "online-rehab-programmes"],
+    );
+    for (const s of withSlugs) {
+      for (const slug of s.onlinePhysioSlugs!) {
+        expect(getOnlinePhysioPage(slug), `${s.slug}/${slug}`).not.toBeNull();
       }
     }
   });

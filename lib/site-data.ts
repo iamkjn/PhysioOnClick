@@ -19,6 +19,12 @@ export type Service = {
    * meaningful exercise-library overlap.
    */
   relatedConditionSlugs?: string[];
+  /**
+   * Slugs from `lib/online-physio-pages.ts` to list as "Online physiotherapy by
+   * condition" on the service page. Optional; every slug must resolve via
+   * `getOnlinePhysioPage`. Omit (or `[]`) when none are relevant.
+   */
+  onlinePhysioSlugs?: string[];
   /** Search-facing H1 when it should differ from `title` (which stays the short
    *  name used in cards, breadcrumbs and booking). Falls back to `title`. */
   headline?: string;
@@ -78,6 +84,16 @@ export const invoiceIssuer = {
 export const services: Service[] = [
   {
     slug: "musculoskeletal-physiotherapy",
+    onlinePhysioSlugs: [
+      "sciatica",
+      "low-back-pain",
+      "neck-pain",
+      "shoulder-pain",
+      "knee-pain",
+      "plantar-fasciitis",
+      "tennis-elbow",
+      "hip-pain",
+    ],
     title: "Musculoskeletal Physiotherapy",
     image: serviceImagePath("musculoskeletal-physiotherapy"),
     summary:
@@ -349,6 +365,7 @@ export const services: Service[] = [
   },
   {
     slug: "online-rehab-programmes",
+    onlinePhysioSlugs: ["low-back-pain", "neck-pain", "knee-pain", "shoulder-pain"],
     title: "Online Rehab Programmes",
     image: serviceImagePath("online-rehab-programmes"),
     summary:
