@@ -521,7 +521,7 @@ export const guides: Guide[] = [
         heading: "What the trial does not tell us",
         paragraphs: [
           "PEAK studied adults with knee osteoarthritis, in Australia. It does not tell us that video care works equally well for every condition, every person or every stage of recovery, and we do not claim that it does.",
-          "We use it as one good piece of evidence for a common problem, not as proof for everything. If you have knee pain, our [online physiotherapy for knee pain](/services/musculoskeletal-physiotherapy) is the closest match to what was tested."
+          "We use it as one good piece of evidence for a common problem, not as proof for everything. PEAK studied knee osteoarthritis, not knee pain in general. If that is your problem, our [musculoskeletal physiotherapy service](/services/musculoskeletal-physiotherapy) is the closest match to what was tested."
         ]
       },
       {
@@ -535,7 +535,7 @@ export const guides: Guide[] = [
       {
         heading: "What UK professional guidance says",
         paragraphs: [
-          "The Chartered Society of Physiotherapy supports a personalised, flexible mix of remote and in-person physiotherapy. It also says that for some people, in some situations, in-person services are the better option.",
+          "The Chartered Society of Physiotherapy supports a personalised, flexible mix of remote and in-person physiotherapy. It also says a mix works because remote care will not suit everyone, and in-person care is sometimes the better choice.",
           "NHS England's guide to remote consultations in adult musculoskeletal physiotherapy describes remote care as suitable for people who do not need an in-person physical examination, or who have less complex problems. It says that where diagnostic tests might be needed, suitability should be carefully considered.",
           "In other words, the question is not whether online or in-person is better in general. It is which suits you and your problem."
         ]
@@ -543,8 +543,8 @@ export const guides: Guide[] = [
       {
         heading: "Who online physiotherapy tends to suit",
         paragraphs: [
-          "Based on that guidance, video care fits people whose main need is assessment, explanation and a progressive exercise plan, and who can set up a safe space at home to move in. Joint and muscle pain such as back, neck, shoulder, hip and knee problems are common examples. See [how online physiotherapy works](/how-online-physiotherapy-works) for what a session involves.",
-          "It also suits people who value being able to go through exercises in their own home, where they will actually do them, with a physiotherapist watching and correcting."
+          "The guidance supports remote care for people who do not need an in-person physical examination or who have less complex problems. In our own approach, that usually means people whose main need is assessment, explanation and a progressive exercise plan, and who can set up a safe space at home to move in. See [how online physiotherapy works](/how-online-physiotherapy-works) for what a session involves.",
+          "In our sessions you go through the exercises in your own home, with a physiotherapist watching and correcting your technique."
         ]
       },
       {
@@ -633,8 +633,8 @@ export const guides: Guide[] = [
       {
         heading: "What video cannot establish",
         paragraphs: [
-          "Some things need hands. A physiotherapist in a clinic can feel for swelling, tenderness or tightness, test the strength of a muscle with resistance, and check how a joint feels when it is moved for you. We cannot do that through a screen.",
-          "Video also cannot show what is happening inside the body. It cannot confirm a fracture, a tear or nerve damage the way a scan or other test can."
+          "Some things need hands. In our assessments, we cannot feel for swelling or tenderness, test muscle strength against resistance, or check how a joint feels when we move it for you. That needs an in-person examination.",
+          "Video also cannot show what is happening inside the body. We cannot confirm things like a fracture or a tear from a video call, and we do not claim to."
         ]
       },
       {
@@ -648,7 +648,7 @@ export const guides: Guide[] = [
         heading: "When imaging or a hands-on exam is needed",
         paragraphs: [
           "If something about your story or your movement suggests a problem that needs a scan, a blood test or a hands-on examination, we will say so and suggest you see your GP or an in-person clinician. We do not order scans ourselves, and we would rather send you on than guess.",
-          "Imaging is not always the answer either. NICE advises that imaging is not routinely offered in a non-specialist setting for low back pain with or without sciatica. A careful history and examination of movement often gives the information needed to plan treatment."
+          "For low back pain, NICE advises that imaging is not routinely offered in a non-specialist setting, with or without sciatica. That guideline covers back pain only."
         ]
       },
       {
@@ -661,7 +661,7 @@ export const guides: Guide[] = [
       {
         heading: "Is a working diagnosis enough?",
         paragraphs: [
-          "For many joint and muscle problems, a clear history plus guided movement testing is enough to explain what is likely going on and start a sensible plan of exercises and advice. We describe this as a working clinical picture that we keep checking as you respond.",
+          "In our assessments, a clear history plus guided movement testing is often enough for us to explain what is likely going on and start a plan of exercises and advice. We treat this as a working clinical picture that we keep checking as you respond.",
           "If you are not improving as expected, or new symptoms appear, we revisit the picture and may suggest in-person review. You can read more about the limits in our [guide to what online physiotherapy cannot do](/guides/what-online-physiotherapy-cannot-do), or see [how online physiotherapy works](/how-online-physiotherapy-works)."
         ]
       }
@@ -673,7 +673,7 @@ export const guides: Guide[] = [
       },
       {
         q: "Will I need a scan?",
-        a: "Often not. NICE advises against routinely offering imaging in a non-specialist setting for low back pain. If your history or movement suggests a scan or other test is needed, we point you to your GP or an in-person clinician."
+        a: "For low back pain, NICE advises against routinely offering imaging in a non-specialist setting. For other problems, if your history or movement suggests a scan or other test is needed, we point you to your GP or an in-person clinician."
       },
       {
         q: "What equipment do I need for a video assessment?",
@@ -720,7 +720,7 @@ export const guides: Guide[] = [
       {
         heading: "Why we publish this page",
         paragraphs: [
-          "We are an online-only service, and video care is not right for everyone. Professional guidance from the Chartered Society of Physiotherapy says that for some people, in some situations, in-person services are the better option. We would rather say that plainly than keep you in a plan that does not fit.",
+          "We are an online-only service, and video care is not right for everyone. The Chartered Society of Physiotherapy backs a flexible blend of remote and in-person care, which means in-person care is the right answer for some people. We would rather say that plainly than keep you in a plan that does not fit.",
           "Below are the main things we cannot do, and what we suggest instead."
         ]
       },
@@ -736,7 +736,7 @@ export const guides: Guide[] = [
         heading: "Sudden injury or a suspected fracture",
         paragraphs: [
           "If you have had a recent fall or accident and think you may have broken a bone, you need to be seen in person. We cannot examine a limb or order an X-ray over video.",
-          "What to do instead: go to A&E or call 111 for advice. For back pain after a serious accident, the NHS says to call 999 or go to A&E. Once you have been assessed and cleared, we can help with the exercise-based rehab that follows."
+          "What to do instead: get in-person medical care straight away. For back pain after a serious accident, the NHS says to call 999 or go to A&E. Once you have been assessed and cleared, we can help with the exercise-based rehab that follows."
         ]
       },
       {
@@ -749,22 +749,22 @@ export const guides: Guide[] = [
       {
         heading: "Sudden neurological symptoms and complex presentations",
         paragraphs: [
-          "Sudden facial drooping, sudden weakness, slurred speech or a fall with injury is a medical emergency. Call 999 or go to A&E. It is not a physiotherapy appointment.",
-          "Our neurological rehabilitation guidance says online sessions are for ongoing guided practice once you are medically stable and any acute care is arranged. Some complex neurological presentations may need hands-on handling or an in-person team, and we say so at triage. See our [neurological rehabilitation service](/services/neurological-rehabilitation) for more."
+          "Our neurological service guidance treats sudden new symptoms such as facial drooping, sudden weakness, slurred speech or a fall with injury as a medical emergency. Call 999 or go to A&E. It is not a physiotherapy appointment.",
+          "In our neurological rehabilitation guidance, online sessions are for ongoing guided practice once you are medically stable and acute care is arranged, alongside your wider medical team. If we think you need hands-on assessment, we will tell you at triage. See our [neurological rehabilitation service](/services/neurological-rehabilitation) for more."
         ]
       },
       {
         heading: "Babies and very young children",
         paragraphs: [
-          "Our paediatric service guidance says very young infants and complex multi-system conditions are often better served by an in-person paediatric specialist team, and that we discuss this openly before booking.",
+          "In our paediatric service guidance, we explain that very young infants and complex conditions affecting several body systems are often better seen by an in-person paediatric specialist team, and we talk this through before booking.",
           "If a child has a new or worsening symptom, loss of a skill they had gained, unexplained pain or signs of injury, they need a GP or A&E assessment, not an online appointment. Read more about our [paediatric physiotherapy service](/services/paediatric-physiotherapy)."
         ]
       },
       {
         heading: "After surgery and with falls or mobility problems",
         paragraphs: [
-          "Wound checks, stitch or staple removal and any complication such as signs of infection, excessive swelling or a joint that is not progressing need in-person medical review by your surgical team. Online sessions pick up once you are medically cleared to begin exercise-based rehab. See [post-surgical rehabilitation](/services/post-surgical-rehabilitation).",
-          "For gait and mobility, a recent fall with injury or sudden weakness needs urgent in-person assessment first. Formal falls-risk tools that need hands-on testing, or a home hazard assessment, are better done by an in-person team. See our [gait and mobility assessment](/services/gait-and-mobility-assessment)."
+          "Our post-surgical guidance sends wound checks, removal of stitches or staples, and any complication back to your surgical team for in-person review. Online sessions begin once you are medically cleared to start exercise-based rehab. See [post-surgical rehabilitation](/services/post-surgical-rehabilitation).",
+          "For gait and mobility, our service guidance says a recent fall with injury, sudden weakness or acute pain affecting walking needs urgent in-person medical assessment first. It also says falls-risk tools that need hands-on testing, or a home hazard check, are better done in person. See our [gait and mobility assessment](/services/gait-and-mobility-assessment)."
         ]
       },
       {
@@ -782,11 +782,11 @@ export const guides: Guide[] = [
       },
       {
         q: "What if I think I have broken a bone?",
-        a: "Get in-person care straight away. Go to A&E or call 111 for advice. We cannot examine or X-ray a suspected fracture over video."
+        a: "Get in-person medical care straight away. We cannot examine a suspected fracture over video."
       },
       {
         q: "What symptoms mean I should not book a video appointment?",
-        a: "For back pain or sciatica, the NHS says to call 999 or go to A&E for weakness or numbness in both legs, numbness around the genitals or anus, bladder or bowel changes, or back pain after a serious accident. Sudden facial drooping, sudden weakness or slurred speech also needs 999."
+        a: "For back pain or sciatica, the NHS says to call 999 or go to A&E for weakness or numbness in both legs, numbness around the genitals or anus, bladder or bowel changes, or back pain after a serious accident. Our neurological service guidance also treats sudden facial drooping, sudden weakness or slurred speech as an emergency: call 999."
       },
       {
         q: "Will you tell me if online physio is not right for me?",
