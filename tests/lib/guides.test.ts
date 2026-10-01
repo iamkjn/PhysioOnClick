@@ -53,4 +53,16 @@ describe("guides data", () => {
       expect(/£\d/.test(t), `${g.slug}: hardcoded price - interpolate from site-data instead`).toBe(false);
     }
   });
+  it("no paragraph is reused across guides", () => {
+    const seen = new Map<string, string>();
+    for (const g of guides) for (const s of g.sections) for (const p of s.paragraphs) {
+      expect(seen.has(p), `${g.slug} repeats a paragraph from ${seen.get(p)}`).toBe(false);
+      seen.set(p, g.slug);
+    }
+  });
+  it("has the phase B2 guides", () => {
+    for (const s of ["private-physiotherapy-cost-uk", "claim-physiotherapy-on-health-insurance",
+      "do-i-need-a-gp-referral-for-physiotherapy", "how-many-physiotherapy-sessions-do-i-need",
+      "nhs-physio-waiting-times-scotland"]) expect(getGuide(s), s).not.toBeNull();
+  });
 });
