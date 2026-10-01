@@ -36,6 +36,10 @@ export const dynamic = "force-static";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "https://physioonclick.co.uk";
 
+  // The dev worker is noindexed (app/layout.tsx); advertising its URLs in a
+  // sitemap only invites crawling of a site that should never be in results.
+  if (base.includes("dev.physioonclick.co.uk")) return [];
+
   // No `lastModified` on the static routes: there is no real content-change
   // date to report, and stamping `new Date()` on every build told crawlers that
   // all twelve pages changed every time the site was deployed. An absent
