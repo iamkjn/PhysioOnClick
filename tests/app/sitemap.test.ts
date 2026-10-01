@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 
 import ServiceDetailPage from "@/app/services/[slug]/page";
 import { blogArticles } from "@/lib/blog";
+import { guides } from "@/lib/guides";
 import { services } from "@/lib/site-data";
 import {
   allBodyAreaKeys,
@@ -91,6 +92,12 @@ describe("app/sitemap.ts", () => {
     }
   });
 
+  it("lists the guides index and one URL per guide", async () => {
+    const urls = (await entries()).map((entry) => entry.url);
+    expect(urls).toContain(`${BASE}/guides`);
+    for (const g of guides) expect(urls).toContain(`${BASE}/guides/${g.slug}`);
+  });
+
   it("adds exactly the exercise-library entries and nothing else", async () => {
     const all = await entries();
 
@@ -108,7 +115,12 @@ describe("app/sitemap.ts", () => {
     expect(exerciseLibEntries.length).toBe(exerciseLibCount);
 
     expect(all.length).toBe(
-      STATIC_ROUTE_COUNT + services.length + blogArticles.length + exerciseLibCount,
+      STATIC_ROUTE_COUNT +
+        services.length +
+        blogArticles.length +
+        exerciseLibCount +
+        1 +
+        guides.length,
     );
   });
 });

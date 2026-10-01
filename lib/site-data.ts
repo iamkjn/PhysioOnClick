@@ -446,6 +446,16 @@ export const pricing: PricingItem[] = [
 export const initialAssessmentPrice =
   pricing.find((item) => item.id === "initial-assessment")?.price ?? 0;
 
+export const followUpPrice = pricing.find((item) => item.id === "follow-up")?.price ?? 0;
+
+/** Swap {INITIAL_PRICE}/{FOLLOW_UP_PRICE} tokens in static copy for live prices,
+ *  so content data never hardcodes a price that the owner later changes. */
+export function withPrices(text: string): string {
+  return text
+    .replaceAll("{INITIAL_PRICE}", `£${initialAssessmentPrice}`)
+    .replaceAll("{FOLLOW_UP_PRICE}", `£${followUpPrice}`);
+}
+
 // Deliberately empty: only genuine, verifiable patient reviews may appear on the
 // site (fake/placeholder reviews are unlawful under the DMCC Act 2024). Real
 // reviews come from Trustpilot via components/trustpilot-reviews.tsx.

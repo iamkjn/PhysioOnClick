@@ -17,7 +17,7 @@
 //   - sameAs for Facebook once the page is created
 
 import { absoluteUrl } from "@/lib/utils";
-import { founder, services } from "@/lib/site-data";
+import { founder, services, withPrices } from "@/lib/site-data";
 // Import the conditions array directly, not `getCondition` from the
 // `@/lib/exercise-library` barrel: this module is pulled into app/layout.tsx
 // (siteEntityGraph), so a value import from the barrel would drag the whole
@@ -25,6 +25,7 @@ import { founder, services } from "@/lib/site-data";
 // `lib/conditions.ts` is dependency-free pure data.
 import { conditions } from "@/lib/conditions";
 import type { Exercise } from "@/lib/exercises";
+import type { Guide } from "@/lib/guides";
 import type { Condition } from "@/lib/conditions";
 import type { SelfTest } from "@/lib/self-tests";
 
@@ -326,5 +327,29 @@ export function exerciseVideoObject(ex: Exercise): object | null {
     "@context": "https://schema.org",
     "@type": "VideoObject",
     ...video
+  };
+}
+
+/** MedicalWebPage for an editorial guide. FAQs ride along as Question/Answer
+ *  nodes (no FAQPage markup: Google retired that rich result). */
+export function guideWebPage(g: Guide, path: string): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    name: g.seoTitle,
+    headline: g.title,
+    description: g.seoDescription,
+    url: absoluteUrl(path),
+    author: personRef(),
+    reviewedBy: personRef(),
+    datePublished: g.publishedOn,
+    lastReviewed: g.reviewedOn,
+    inLanguage: "en-GB",
+    citation: g.sources.map((s) => s.url),
+    mainEntity: g.faqs.map((f) => ({
+      "@type": "Question",
+      name: withPrices(f.q),
+      acceptedAnswer: { "@type": "Answer", text: withPrices(f.a) }
+    }))
   };
 }

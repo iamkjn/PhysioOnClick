@@ -81,6 +81,8 @@ Below, "custom events" means events beyond these three sitewide ones.
 |---|---|
 | `app/blog/page.tsx` | `page_view` only (index/listing). |
 | `app/blog/[slug]/page.tsx` | `page_view`. `blog_read_complete` `{ slug }` (`components/blog-detail-actions.tsx`, fires once the reader reaches the end of the article). |
+| `app/guides/page.tsx` | `page_view` only (index/listing). |
+| `app/guides/[slug]/page.tsx` | `page_view`. CTA band: `service_book_click` `{ service_slug: "initial-assessment", source: "guide-cta-band" }` **and** `book_now_click` `{ source: "guide-cta-band" }` (same click). |
 
 ## Exercise library
 

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { services } from "@/lib/site-data";
 import { blogArticles } from "@/lib/blog";
+import { guides } from "@/lib/guides";
 import {
   allBodyAreaKeys,
   allConditionSlugs,
@@ -100,10 +101,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
+  // Editorial guides carry a truthful lastModified (their review date).
+  const guideEntries = [
+    { url: `${base}/guides` },
+    ...guides.map((g) => ({
+      url: `${base}/guides/${g.slug}`,
+      lastModified: new Date(g.reviewedOn),
+    })),
+  ];
+
   return [
     ...staticEntries,
     ...serviceEntries,
     ...blogEntries,
+    ...guideEntries,
     ...exerciseLibraryEntries,
     ...conditionEntries,
     ...exerciseEntries,
