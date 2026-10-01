@@ -13,7 +13,7 @@ export function InlineText({ text }: { text: string }) {
     const [whole, label, href] = match;
     const start = match.index ?? 0;
     if (start > last) parts.push(text.slice(last, start));
-    const internal = href.startsWith("/") && !href.startsWith("//");
+    const internal = href.startsWith("/") && !href.startsWith("//") && !href.startsWith("/\\");
     parts.push(internal ? <Link key={start} href={href}>{label}</Link> : label);
     last = start + whole.length;
   }

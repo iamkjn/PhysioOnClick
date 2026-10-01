@@ -19,4 +19,9 @@ describe("InlineText", () => {
     expect(container.querySelector("a")).toBeNull();
     expect(container.textContent).toBe("x and y");
   });
+  it("does not link backslash-prefixed targets", () => {
+    const { container } = render(<p><InlineText text="[z](/\\evil.example)" /></p>);
+    expect(container.querySelector("a")).toBeNull();
+    expect(container.textContent).toBe("z");
+  });
 });

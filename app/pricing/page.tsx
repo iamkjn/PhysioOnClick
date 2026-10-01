@@ -129,7 +129,7 @@ export default function PricingPage() {
           </details>
           <details>
             <summary>How much does private physiotherapy cost in the UK?</summary>
-            <p>A first private physiotherapy appointment in the UK commonly costs anywhere from about &pound;45 to over &pound;100, depending on the clinic and location. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time &mdash; and the rehab packages above reduce the per-session cost further for anyone committing to a structured plan.</p>
+            <p>A first private physiotherapy appointment in the UK commonly costs anywhere from about &pound;45 to over &pound;100, depending on the clinic and location. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time.</p>
           </details>
           <details>
             <summary>Do I need a GP referral, and how quickly can I be seen?</summary>
