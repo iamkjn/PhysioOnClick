@@ -45,9 +45,9 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "Can sciatica be treated online? How a video physio assessment works for leg pain from the back, what the plan involves, and when to be seen in person.",
     answer:
-      "For most people with back and leg pain, a video assessment is a sensible first step. Your physiotherapist asks about your symptoms, watches you move and checks for signs of nerve irritation, then builds a plan you do at home. It is not suitable if you have red flag symptoms, such as weakness or numbness in both legs or bladder or bowel changes.",
+      "If your symptoms fit, a video assessment is a reasonable first step. Your physiotherapist asks about your symptoms, watches you move and checks for signs of nerve irritation, then builds a plan you do at home. It is not suitable if you have red flag symptoms, such as weakness or numbness in both legs or bladder or bowel changes. Those need emergency care in person.",
     howOnlineWorks: [
-      "Sciatica is pain that travels from the back or buttock down the leg. Much of the assessment is a careful conversation plus watching how you move, and both of those work well over video. You describe where the pain goes, what sets it off and what eases it, and your physiotherapist can see how you bend, walk, sit and stand in your own space.",
+      "Sciatica is pain that travels from the back or buttock down the leg. In our assessments, much of the work is a careful conversation plus watching how you move, and both of those can be done over video. You describe where the pain goes, what sets it off and what eases it, and your physiotherapist can see how you bend, walk, sit and stand in your own space.",
       "You also get to try things in the setting where your symptoms actually happen. If sitting at your desk or driving is the problem, we can look at your chair, your posture and the positions that settle things, rather than working it out in a clinic room that looks nothing like your day.",
       "Between sessions the plan is yours to carry out. Our approach is to keep you moving and doing your normal activities as far as your symptoms allow, with a small set of exercises that you can repeat at home. NICE guidance on low back pain and sciatica encourages people to carry on with normal activities, and lists exercise among its recommended non-invasive options.",
       "There are limits, and we will be open about them. We cannot touch your back or leg by video. NICE says manual therapy should only be used as part of a package that includes exercise, so in our plans exercise and advice are the core of the treatment rather than an add-on. If we think you need hands-on examination, tests or a doctor's opinion, we will tell you so plainly.",
@@ -67,19 +67,20 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "We will also talk about the things around the pain, such as sleep, work set-up, driving and how to build walking back up. For a longer look at how many appointments to expect, see our guide on [how many physiotherapy sessions you may need](/guides/how-many-physiotherapy-sessions-do-i-need).",
     ],
     timeline:
-      "The NHS describes sciatica as something that tends to settle over a period of weeks to a few months, and says to carry on with your normal activities where you can. Progress is often uneven, with better days and worse days along the way. If your symptoms are not improving, or they are getting worse, tell us or your GP rather than waiting.",
+      "According to the NHS, sciatica often eases within weeks, though for some people recovery runs into a few months, and it advises carrying on with your normal activities where you can. If your symptoms are not settling, or they are getting worse, tell us or ask your GP rather than waiting.",
     inPersonInstead: [
       "Go to A&E or call 999 if you have sciatica on both sides, or pain, tingling, weakness or numbness in both legs, especially if it is severe or getting worse.",
       "Go to A&E or call 999 if you have numbness or loss of feeling around or under your genitals, or around your anus or bottom.",
       "Go to A&E or call 999 if you find it hard to start peeing, cannot pee, or cannot control when you pee.",
       "Go to A&E or call 999 if you cannot control your bowels or do not notice when you poo, and this is not normal for you.",
-      "Get in-person medical care straight away if your back pain started after a serious accident, or you have chest pain or changes in sexual feeling or function.",
-      "Get in-person medical care straight away if weakness in a leg or foot is getting worse, for example a foot that catches on the ground or a leg that gives way.",
+      "Go to A&E or call 999 if your back pain started after a serious accident, or you have back pain with chest pain or changes in sexual feeling or function.",
+      "Do not drive yourself to A&E for any of the above. Ask someone to drive you, or call 999.",
+      "Get in-person medical care straight away if weakness in one leg is getting worse.",
     ],
     faqs: [
       {
         q: "Can sciatica be treated online?",
-        a: "For many people, yes. Assessment is mostly your history and watching you move, which works over video, and the treatment is largely advice and exercise you do at home. It is not right for everyone: we cannot examine you hands-on, and red flag symptoms need emergency care in person. We screen for those at the start of your assessment.",
+        a: "A video assessment lets us ask about your symptoms and watch you move, and in our plans the treatment is mainly advice and exercise you do at home. We will tell you if you need to be seen in person. We cannot examine you hands-on, and red flag symptoms need emergency care in person. We screen for those at the start of your assessment.",
       },
       {
         q: "Do I need a scan before I book?",
@@ -95,7 +96,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Is online physio as effective as seeing someone in person?",
-        a: "We cannot promise that for sciatica. The published trial comparing video with in-person physiotherapy that we draw on was about knee osteoarthritis, so we do not apply it to sciatica. What we can say is that a video assessment covers your history, movement and an exercise plan, and that we will tell you if you need to be seen in person.",
+        a: "We cannot promise that for sciatica. What we can say is that a video assessment covers your history, movement and an exercise plan, and that we will tell you if you need to be seen in person.",
       },
     ],
     sources: [
