@@ -15571,3 +15571,21 @@ textarea:focus {
   height: 1px;
   overflow: hidden;
 }
+
+/* Shown only on dev.physioonclick.co.uk (app/layout.tsx). */
+.dev-site-banner {
+  position: relative;
+  z-index: 50;
+  padding: 0.6rem 1rem;
+  background: #b42318;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.dev-site-banner a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+}

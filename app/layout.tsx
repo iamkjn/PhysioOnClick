@@ -118,6 +118,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <a className="skip-link" href="#main-content">
               Skip to content
             </a>
+            {isDevWorker ? (
+              // Testing environment only: anyone who lands here (old search
+              // result, shared link) must not mistake it for the real practice.
+              // Bookings here use Stripe test mode and the dev calendar.
+              <div className="dev-site-banner" role="alert">
+                This is a <strong>test site</strong> &mdash; appointments booked here are not real.{" "}
+                <a href="https://physioonclick.co.uk">Go to physioonclick.co.uk</a> to book.
+              </div>
+            ) : null}
             <SiteHeader />
             <main id="main-content">{children}</main>
             <SiteFooter />
