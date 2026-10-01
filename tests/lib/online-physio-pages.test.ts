@@ -22,6 +22,14 @@ describe("online physio landing pages", () => {
     }
     expect(getOnlinePhysioPage("nope")).toBeNull();
   });
+  it("includes the back, neck, shoulder and knee pages", () => {
+    for (const s of ["low-back-pain", "neck-pain", "shoulder-pain", "knee-pain"]) {
+      expect(allOnlinePhysioSlugs(), s).toContain(s);
+    }
+    expect(getOnlinePhysioPage("shoulder-pain")?.blogSlugs).toContain("online-physiotherapy-for-frozen-shoulder");
+    expect(getOnlinePhysioPage("knee-pain")?.sources.some((s) => s.url.includes("S0140-6736(23)02630-2"))).toBe(true);
+    expect(getOnlinePhysioPage("low-back-pain")?.howOnlineWorks.join(" ")).toContain("/online-physiotherapy-for/sciatica");
+  });
   it("SEO length rules", () => {
     for (const p of onlinePhysioPages) {
       expect(p.seoTitle.endsWith("| PhysioOnClick"), p.slug).toBe(true);
