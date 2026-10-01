@@ -266,7 +266,7 @@ export const guides: Guide[] = [
       {
         heading: "Referring yourself to the NHS in England",
         paragraphs: [
-          "NHS pages on common problems such as sciatica and tennis elbow say that in many areas you may be able to get help from NHS community musculoskeletal services without a referral from a GP.",
+          "The NHS sciatica page says that in many areas you may be able to get help from NHS community musculoskeletal services without a referral from a GP.",
           "The words many areas matter here. Services are run locally, so some places still ask for a GP referral. Search for your local musculoskeletal service, or ask your GP practice reception how to get seen."
         ]
       },
