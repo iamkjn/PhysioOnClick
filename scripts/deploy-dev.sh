@@ -48,6 +48,10 @@ echo "  cal username     : ${NEXT_PUBLIC_CAL_USERNAME}"
 rm -rf .next
 
 npx opennextjs-cloudflare build
+# Same post-build patch as `npm run deploy`. Without it every request that
+# passes through middleware.ts throws "Dynamic require ... not supported" in
+# workerd, and the whole dev site returns 500.
+node scripts/patch-opennext-worker.mjs
 npx opennextjs-cloudflare deploy -e dev
 
 cat <<'WARN'
