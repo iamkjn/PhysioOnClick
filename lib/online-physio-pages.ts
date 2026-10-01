@@ -443,7 +443,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "When it is worst, for example on the first steps in the morning, after sitting, or at the end of a long day on your feet.",
       "What you wear on your feet at home, at work and for exercise, and how much walking or standing you do.",
       "How you stand, walk and rise onto your toes, and how your ankle and calf move, filmed from the front and the side.",
-      "Whether you have any tingling, numbness or loss of feeling in the foot, and whether you have diabetes, because the NHS says foot problems can be more serious with diabetes.",
+      "Whether you have any tingling, numbness or loss of feeling in the foot, and whether you have diabetes, because the NHS advises seeing a GP if you have diabetes and heel pain.",
       "The red flag questions listed below, including any recent injury, which we ask at the start of every appointment.",
     ],
     typicalPlan: [
@@ -456,6 +456,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "The NHS says to see a GP if foot pain has not improved after treating it yourself for 2 weeks, so we use that as a checkpoint. We cannot give you an exact recovery time for your heel. We review how your pain, walking and daily tasks are changing at each follow-up, and we will suggest a GP review if things are not moving in the right direction.",
     inPersonInstead: [
       "Call NHS 111 if you have severe heel pain after an injury, such as a fall or a jump.",
+      "Call NHS 111 if you feel faint, dizzy or sick from the pain.",
       "Call NHS 111 if your foot or ankle has changed shape or is at an odd angle, or you heard a snap, grinding or popping noise when you hurt it.",
       "Call NHS 111 if you cannot walk, cannot walk on your tiptoes or cannot climb stairs after an injury, or you have swelling and bruising in your calf and ankle.",
       "Call NHS 111 or ask for an urgent GP appointment if your heel is hot and swollen and you have a high temperature or feel unwell.",
@@ -521,11 +522,12 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     timeline:
       "According to the NHS, tennis elbow often settles with rest but can sometimes last more than a year, and physiotherapy may help if symptoms have not improved after 6 weeks of home treatment. It also says to see a GP if you still have elbow pain after at least 2 weeks of resting the elbow and trying self-care. We review progress at each follow-up and suggest a GP review if you are not improving.",
     inPersonInstead: [
-      "Go to A&E or call 999 if, after an arm injury, your arm or wrist is numb, tingling or has pins and needles.",
-      "Go to A&E or call 999 if, after an arm injury, your arm or wrist has changed shape or is at an odd angle, a bone is sticking out, or you have a bad cut bleeding heavily.",
+      "Go to A&E or call 999 if, after an arm injury, your arm or wrist is numb, tingling or has pins and needles. Do not drive yourself to A&E; ask someone to take you or call 999.",
+      "Go to A&E or call 999 if, after an arm injury, your arm or wrist has changed shape or is at an odd angle, a bone is sticking out, or you have a bad cut bleeding heavily. Do not drive yourself to A&E; ask someone to take you or call 999.",
       "Get help from NHS 111 if, after an injury, the arm is very painful, you cannot use it because of the pain, or the pain is getting worse.",
       "Get help from NHS 111 if your elbow pain comes with a high temperature or other signs of infection.",
-      "See a GP promptly if you have numbness or tingling in your fingers or hand. If it started after an injury, go to A&E instead.",
+      "If numbness or weakness comes on suddenly, especially with a drooping face or trouble speaking, call 999.",
+      "If you have numbness or tingling in your fingers or hand that came on gradually, get medical advice from your GP. If it started after an injury, go to A&E instead.",
       "See a GP if you still have elbow pain after resting it and trying self-care for at least 2 weeks.",
     ],
     faqs: [
@@ -543,7 +545,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "What if I hurt my arm and it is swollen or looks different?",
-        a: "Do not book a video appointment first. After an arm injury, the NHS says to go to A&E or call 999 if the arm or wrist is numb, tingling or has pins and needles, or has changed shape or is at an odd angle. Get help from NHS 111 if the arm is very painful or you cannot use it.",
+        a: "Do not book a video appointment first. After an arm injury, the NHS says to go to A&E or call 999 if the arm or wrist is numb, tingling or has pins and needles, or has changed shape or is at an odd angle. Do not drive yourself to A&E; ask someone to take you or call 999. Get help from NHS 111 if the arm is very painful or you cannot use it.",
       },
     ],
     sources: [
@@ -565,7 +567,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How a video physio appointment works for hip pain, including gluteal tendinopathy and hip osteoarthritis: what we check on camera and when to get urgent care.",
     answer:
-      "If your hip pain has built up gradually, a video appointment lets your physiotherapist ask about it, watch you stand, walk and balance, and set up exercises to do at home. It is not the right route after a fall or injury, if you cannot put weight on the leg, or if the hip is hot and swollen. Those need 999, A&E, 111 or an urgent GP.",
+      "If your hip pain fits, a video appointment lets your physiotherapist ask about it, watch you stand, walk and balance, and set up exercises to do at home. It is not the right route after a fall or injury, if you cannot put weight on the leg, or if the hip is hot and swollen. Those need 999, A&E, 111 or an urgent GP.",
     howOnlineWorks: [
       "Hip pain has several possible causes, and we ask about them on video. This page covers two we see in our plans: pain on the outer side of the hip linked to the tendons and muscles there, known as gluteal tendinopathy, and hip osteoarthritis. We ask where the pain is, what brings it on, such as stairs, lying on that side or walking, and what you have already tried.",
       "We watch how you move. You stand up from a chair, walk, climb a step if you have one and stand on one leg with support nearby. We use the [Trendelenburg mirror check](/exercises/tests/trendelenburg-mirror-check) as a guided self-check, if it is safe for you, to see how the muscles on the outside of your hip cope with single-leg standing. It cannot confirm a cause, only a hands-on assessment can do that.",
@@ -595,7 +597,8 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Ask for an urgent GP appointment or get help from NHS 111 if you have severe hip pain that started suddenly and you have not had a fall or injured the hip.",
       "Ask for an urgent GP appointment or get help from NHS 111 if your hip is swollen and feels hot, or the skin around it has changed colour.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you have hip pain, feel generally unwell and have a high temperature.",
-      "See a GP if you have hip stiffness for more than 30 minutes after waking, or if you have had cancer and have new hip pain.",
+      "See a GP if you have hip stiffness for more than 30 minutes after waking.",
+      "We will ask you to see your GP first if you have had cancer and have new hip pain.",
     ],
     faqs: [
       {
