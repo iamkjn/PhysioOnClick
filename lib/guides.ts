@@ -499,6 +499,333 @@ export const guides: Guide[] = [
     // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
     reviewedOn: "2026-10-01"
   }
+  ,
+  {
+    slug: "does-online-physiotherapy-work",
+    title: "Does online physiotherapy work?",
+    seoTitle: "Does Online Physiotherapy Work? The Evidence | PhysioOnClick",
+    seoDescription:
+      "Is online physio as good as in person? What a knee osteoarthritis trial and a review of musculoskeletal studies found, who it suits, and who needs a clinic.",
+    answer:
+      "For some problems, the evidence says yes. A 2024 trial in adults with knee osteoarthritis found video physiotherapy was non-inferior to in-person care for pain and function, and a review of musculoskeletal studies found live video care appears comparable. That does not cover every condition, so we check suitability before you start.",
+    sections: [
+      {
+        heading: "What a major knee trial found",
+        paragraphs: [
+          "One key piece of evidence is the PEAK trial, published in The Lancet in 2024. It enrolled 394 adults with chronic knee pain consistent with osteoarthritis, recruited from 27 clinics in Australia. About half had in-person consultations and about half had video consultations with a physiotherapist.",
+          "Both groups had five consultations over three months, covering strengthening exercise, physical activity and education. The researchers measured knee pain and physical function at three months. They concluded that video physiotherapy was non-inferior to in-person care for both pain and function, which means it did not do meaningfully worse.",
+          "The study also looked at safety. Adverse events were similar between the groups, and none were serious."
+        ]
+      },
+      {
+        heading: "What the trial does not tell us",
+        paragraphs: [
+          "PEAK studied adults with knee osteoarthritis, in Australia. It does not tell us that video care works equally well for every condition, every person or every stage of recovery, and we do not claim that it does.",
+          "We use it as one good piece of evidence for a common problem, not as proof for everything. If you have knee pain, our [online physiotherapy for knee pain](/services/musculoskeletal-physiotherapy) is the closest match to what was tested."
+        ]
+      },
+      {
+        heading: "What a wider review found",
+        paragraphs: [
+          "A 2017 systematic review in Clinical Rehabilitation pulled together 13 studies with 1,520 people in total. It looked at real-time telerehabilitation for musculoskeletal conditions, such as joint and muscle problems, and found it appears effective and comparable to conventional delivery for physical function and pain.",
+          "In that review, treatment given only by telerehabilitation was equivalent to face-to-face care for physical function. Pain improvement was comparable between groups.",
+          "There is a caveat. The studies were few and varied a lot from one to the next. So the honest summary is that live video care appears comparable for musculoskeletal problems, not that it is proven to be."
+        ]
+      },
+      {
+        heading: "What UK professional guidance says",
+        paragraphs: [
+          "The Chartered Society of Physiotherapy supports a personalised, flexible mix of remote and in-person physiotherapy. It also says that for some people, in some situations, in-person services are the better option.",
+          "NHS England's guide to remote consultations in adult musculoskeletal physiotherapy describes remote care as suitable for people who do not need an in-person physical examination, or who have less complex problems. It says that where diagnostic tests might be needed, suitability should be carefully considered.",
+          "In other words, the question is not whether online or in-person is better in general. It is which suits you and your problem."
+        ]
+      },
+      {
+        heading: "Who online physiotherapy tends to suit",
+        paragraphs: [
+          "Based on that guidance, video care fits people whose main need is assessment, explanation and a progressive exercise plan, and who can set up a safe space at home to move in. Joint and muscle pain such as back, neck, shoulder, hip and knee problems are common examples. See [how online physiotherapy works](/how-online-physiotherapy-works) for what a session involves.",
+          "It also suits people who value being able to go through exercises in their own home, where they will actually do them, with a physiotherapist watching and correcting."
+        ]
+      },
+      {
+        heading: "Who may need in-person care instead",
+        paragraphs: [
+          "Some problems need to be seen and handled in person. That includes red-flag symptoms, suspected fractures, recent serious injury, and problems where hands-on treatment is the main thing needed. Our [guide to what online physiotherapy cannot do](/guides/what-online-physiotherapy-cannot-do) goes through each of these and what to do instead.",
+          "If you are unsure how to read a symptom, the NHS pages for your problem list the signs that need urgent help. For anything that feels like an emergency, call 999 or go to A&E rather than booking an appointment."
+        ]
+      },
+      {
+        heading: "How we decide at triage",
+        paragraphs: [
+          "Before we treat anyone, we ask about your symptoms, your history and your goals, and check whether video care is suitable. In our service, if something suggests you need a different route, we tell you plainly and point you to your GP, urgent care or an in-person clinician instead of keeping you in an online plan that is not the right fit.",
+          "That approach matches CSP guidance that safe remote services need good triage and a way to refer people for in-person assessment when they need it. You can see our [assessment and pricing](/pricing) before you decide to book, and you can [book an appointment](/book) when you are ready."
+        ]
+      }
+    ],
+    faqs: [
+      {
+        q: "Is online physio as good as in person?",
+        a: "For knee osteoarthritis, one large trial found video care non-inferior to in-person care for pain and function. A review of musculoskeletal studies found live video care appears comparable. This does not apply to every condition, so suitability is checked first."
+      },
+      {
+        q: "Does online physiotherapy work for back pain or shoulder pain?",
+        a: "The trial we cite was in knee osteoarthritis only. The wider review covered musculoskeletal conditions in general and found video care appears comparable. We assess your individual problem and tell you if video is not suitable."
+      },
+      {
+        q: "Is video physiotherapy safe?",
+        a: "In the PEAK trial, adverse events were similar between video and in-person groups, and none were serious. Safe remote care also needs good triage and clear routes to in-person help, which is how we work."
+      },
+      {
+        q: "Will I be told if I need to be seen in person?",
+        a: "Yes. If triage or your assessment suggests video is not right for you, we say so plainly and point you towards your GP, urgent care or an in-person clinician."
+      }
+    ],
+    sources: [
+      {
+        label: "Hinman et al, The Lancet 2024: PEAK telerehabilitation vs in-person trial (Europe PMC)",
+        url: "https://europepmc.org/article/MED/38461844"
+      },
+      {
+        label: "Cottrell et al, Clinical Rehabilitation 2017: telerehabilitation for musculoskeletal conditions (Europe PMC)",
+        url: "https://europepmc.org/article/MED/27141087"
+      },
+      {
+        label: "CSP: remote consultations guidance for your practice",
+        url: "https://www.csp.org.uk/professional-clinical/professional-guidance/remote-consultations/csp-guidance"
+      },
+      {
+        label: "NHS England: guide to adopting remote consultations in adult MSK physiotherapy services",
+        url: "https://www.england.nhs.uk/long-read/guide-to-adopting-remote-consultations-in-adult-musculoskeletal-physiotherapy-services/"
+      }
+    ],
+    related: [
+      { label: "How online physiotherapy works", href: "/how-online-physiotherapy-works" },
+      { label: "What online physiotherapy cannot do", href: "/guides/what-online-physiotherapy-cannot-do" },
+      { label: "Can a physio diagnose over video?", href: "/guides/can-a-physio-diagnose-over-video" }
+    ],
+    publishedOn: "2026-10-01",
+    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
+    reviewedOn: "2026-10-01"
+  },
+  {
+    slug: "can-a-physio-diagnose-over-video",
+    title: "Can a physiotherapist diagnose you over video?",
+    seoTitle: "Can a Physio Diagnose You Over Video? | PhysioOnClick",
+    seoDescription:
+      "What a video physiotherapy assessment can and cannot establish: your history, guided movement tests, when imaging or a hands-on exam is needed, and self-checks.",
+    answer:
+      "A physiotherapist can often form a working clinical picture over video, using your history and guided movement tests, and build a plan from it. Video cannot replace a hands-on examination or imaging when those are needed. If your problem is unclear or needs tests, we tell you and point you to the right next step.",
+    sections: [
+      {
+        heading: "What a video assessment is made of",
+        paragraphs: [
+          "A good physiotherapy assessment starts with listening. We ask when your problem began, what makes it better or worse, what you have tried, your health history and what you want to get back to doing. This part works the same way on video as in a clinic.",
+          "Then comes the movement part. We watch how you move, which is something a camera does well when it is set up properly."
+        ]
+      },
+      {
+        heading: "Guided movement tests",
+        paragraphs: [
+          "On video we can guide you through simple tests and watch the result. Examples include how far you can bend or turn, how you rise from a chair, how you balance on one leg, how you walk, or how a joint moves as you lift or reach.",
+          "We ask you to place your camera so we can see your whole body, and we talk you through each step. Many of these checks are ones you can also try yourself. Our free [self-tests](/exercises/tests) let you measure how you are moving and see change over time."
+        ]
+      },
+      {
+        heading: "What video cannot establish",
+        paragraphs: [
+          "Some things need hands. A physiotherapist in a clinic can feel for swelling, tenderness or tightness, test the strength of a muscle with resistance, and check how a joint feels when it is moved for you. We cannot do that through a screen.",
+          "Video also cannot show what is happening inside the body. It cannot confirm a fracture, a tear or nerve damage the way a scan or other test can."
+        ]
+      },
+      {
+        heading: "What the guidance says about uncertain cases",
+        paragraphs: [
+          "NHS England's guide to remote consultations in adult musculoskeletal physiotherapy says remote care is suitable for people who do not need an in-person physical examination. It also says that where diagnostic tests may be needed, suitability of a remote consultation should be carefully considered, because remote examination may lead to imaging being requested more often than needed, especially in complex or uncertain cases.",
+          "The Chartered Society of Physiotherapy adds that safe remote services need good triage and urgent referral routes for in-person assessment or investigation."
+        ]
+      },
+      {
+        heading: "When imaging or a hands-on exam is needed",
+        paragraphs: [
+          "If something about your story or your movement suggests a problem that needs a scan, a blood test or a hands-on examination, we will say so and suggest you see your GP or an in-person clinician. We do not order scans ourselves, and we would rather send you on than guess.",
+          "Imaging is not always the answer either. NICE advises that imaging is not routinely offered in a non-specialist setting for low back pain with or without sciatica. A careful history and examination of movement often gives the information needed to plan treatment."
+        ]
+      },
+      {
+        heading: "Red flags come first",
+        paragraphs: [
+          "Some symptoms need urgent in-person care and not a video appointment. For back pain, the NHS says to call 999 or go to A&E if you have pain, tingling, weakness or numbness in both legs, a loss of feeling around your genitals or anus, changes in your bladder or bowels, or if it started after a serious accident.",
+          "If you have symptoms like these, do not book a video session. Get emergency help first."
+        ]
+      },
+      {
+        heading: "Is a working diagnosis enough?",
+        paragraphs: [
+          "For many joint and muscle problems, a clear history plus guided movement testing is enough to explain what is likely going on and start a sensible plan of exercises and advice. We describe this as a working clinical picture that we keep checking as you respond.",
+          "If you are not improving as expected, or new symptoms appear, we revisit the picture and may suggest in-person review. You can read more about the limits in our [guide to what online physiotherapy cannot do](/guides/what-online-physiotherapy-cannot-do), or see [how online physiotherapy works](/how-online-physiotherapy-works)."
+        ]
+      }
+    ],
+    faqs: [
+      {
+        q: "Can a physiotherapist diagnose me over video?",
+        a: "A physiotherapist can often form a working clinical picture from your history and guided movement tests. Video cannot replace a hands-on examination or imaging when those are needed, and we tell you when that is the case."
+      },
+      {
+        q: "Will I need a scan?",
+        a: "Often not. NICE advises against routinely offering imaging in a non-specialist setting for low back pain. If your history or movement suggests a scan or other test is needed, we point you to your GP or an in-person clinician."
+      },
+      {
+        q: "What equipment do I need for a video assessment?",
+        a: "A phone, tablet or computer with a camera and a space where we can see you move. We guide you on camera placement during the session."
+      },
+      {
+        q: "Can I check how I am moving before I book?",
+        a: "Yes. Our free self-tests in the exercise library let you try simple movement checks at home and track change over time."
+      }
+    ],
+    sources: [
+      {
+        label: "NHS England: guide to adopting remote consultations in adult MSK physiotherapy services",
+        url: "https://www.england.nhs.uk/long-read/guide-to-adopting-remote-consultations-in-adult-musculoskeletal-physiotherapy-services/"
+      },
+      {
+        label: "CSP: how to ensure remote consultation services are safe",
+        url: "https://www.csp.org.uk/professional-clinical/professional-guidance/remote-consultations/csp-guidance-2"
+      },
+      {
+        label: "NICE NG59: low back pain and sciatica in over 16s",
+        url: "https://www.nice.org.uk/guidance/ng59/chapter/Recommendations"
+      },
+      { label: "NHS: back pain", url: "https://www.nhs.uk/conditions/back-pain/" }
+    ],
+    related: [
+      { label: "Self-tests", href: "/exercises/tests" },
+      { label: "How online physiotherapy works", href: "/how-online-physiotherapy-works" },
+      { label: "Does online physiotherapy work?", href: "/guides/does-online-physiotherapy-work" }
+    ],
+    publishedOn: "2026-10-01",
+    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
+    reviewedOn: "2026-10-01"
+  },
+  {
+    slug: "what-online-physiotherapy-cannot-do",
+    title: "What online physiotherapy cannot do",
+    seoTitle: "What Online Physiotherapy Cannot Do | PhysioOnClick",
+    seoDescription:
+      "An honest list of what video physiotherapy cannot do, from hands-on treatment to red-flag symptoms, with what to do instead in each case.",
+    answer:
+      "Online physiotherapy cannot give hands-on treatment, handle emergencies, or replace in-person assessment when a problem needs it. We work by video only, with no home visits, manual therapy or acupuncture. If you need hands-on care or urgent help, we say so and tell you where to go instead.",
+    sections: [
+      {
+        heading: "Why we publish this page",
+        paragraphs: [
+          "We are an online-only service, and video care is not right for everyone. Professional guidance from the Chartered Society of Physiotherapy says that for some people, in some situations, in-person services are the better option. We would rather say that plainly than keep you in a plan that does not fit.",
+          "Below are the main things we cannot do, and what we suggest instead."
+        ]
+      },
+      {
+        heading: "Hands-on treatment",
+        paragraphs: [
+          "We cannot give manual therapy, such as hands-on joint mobilisation, or acupuncture, because everything we do is by video. We have no in-person clinic and do not make home visits.",
+          "Our service guidance says that if hands-on joint mobilisation is the main treatment a problem needs, you will be told at triage and pointed towards an in-person clinician or your GP. If you want hands-on care, look for a registered in-person physiotherapist. Check that they are on the HCPC Register, because physiotherapist is a protected title.",
+          "It is worth knowing that national guidance is cautious about some hands-on approaches. NICE says manual therapy for low back pain should only be part of a package that includes exercise, and it advises against acupuncture for low back pain and for osteoarthritis."
+        ]
+      },
+      {
+        heading: "Sudden injury or a suspected fracture",
+        paragraphs: [
+          "If you have had a recent fall or accident and think you may have broken a bone, you need to be seen in person. We cannot examine a limb or order an X-ray over video.",
+          "What to do instead: go to A&E or call 111 for advice. For back pain after a serious accident, the NHS says to call 999 or go to A&E. Once you have been assessed and cleared, we can help with the exercise-based rehab that follows."
+        ]
+      },
+      {
+        heading: "Red-flag symptoms",
+        paragraphs: [
+          "Some symptoms are warning signs that need urgent medical care. For back pain and sciatica, the NHS says to call 999 or go to A&E if you have weakness or numbness in both legs, numbness around your genitals or anus, changes in your bladder or bowels, or if it started after a serious accident. The NHS also says not to drive yourself to A&E.",
+          "A video appointment is not the right route for any of these. Our service guidance also lists unexplained weight loss, night pain that does not ease and progressive weakness as reasons to be pointed towards in-person care or your GP."
+        ]
+      },
+      {
+        heading: "Sudden neurological symptoms and complex presentations",
+        paragraphs: [
+          "Sudden facial drooping, sudden weakness, slurred speech or a fall with injury is a medical emergency. Call 999 or go to A&E. It is not a physiotherapy appointment.",
+          "Our neurological rehabilitation guidance says online sessions are for ongoing guided practice once you are medically stable and any acute care is arranged. Some complex neurological presentations may need hands-on handling or an in-person team, and we say so at triage. See our [neurological rehabilitation service](/services/neurological-rehabilitation) for more."
+        ]
+      },
+      {
+        heading: "Babies and very young children",
+        paragraphs: [
+          "Our paediatric service guidance says very young infants and complex multi-system conditions are often better served by an in-person paediatric specialist team, and that we discuss this openly before booking.",
+          "If a child has a new or worsening symptom, loss of a skill they had gained, unexplained pain or signs of injury, they need a GP or A&E assessment, not an online appointment. Read more about our [paediatric physiotherapy service](/services/paediatric-physiotherapy)."
+        ]
+      },
+      {
+        heading: "After surgery and with falls or mobility problems",
+        paragraphs: [
+          "Wound checks, stitch or staple removal and any complication such as signs of infection, excessive swelling or a joint that is not progressing need in-person medical review by your surgical team. Online sessions pick up once you are medically cleared to begin exercise-based rehab. See [post-surgical rehabilitation](/services/post-surgical-rehabilitation).",
+          "For gait and mobility, a recent fall with injury or sudden weakness needs urgent in-person assessment first. Formal falls-risk tools that need hands-on testing, or a home hazard assessment, are better done by an in-person team. See our [gait and mobility assessment](/services/gait-and-mobility-assessment)."
+        ]
+      },
+      {
+        heading: "How to decide what to do next",
+        paragraphs: [
+          "If you think it might be an emergency, call 999 or go to A&E. If you are not sure, call 111 or speak to your GP. If your problem is not urgent but may need hands-on care, an in-person physiotherapist is the right choice.",
+          "If it is a problem where exercise, advice and guided movement are the main treatment, video may well suit you. Read the evidence in our guide on [whether online physiotherapy works](/guides/does-online-physiotherapy-work), and [book an appointment](/book) if you want to go ahead."
+        ]
+      }
+    ],
+    faqs: [
+      {
+        q: "Do you offer manual therapy or acupuncture?",
+        a: "No. We work by video only, so we cannot give hands-on treatment such as manual therapy or acupuncture, and we do not make home visits. If you need hands-on care, we point you to an in-person clinician."
+      },
+      {
+        q: "What if I think I have broken a bone?",
+        a: "Get in-person care straight away. Go to A&E or call 111 for advice. We cannot examine or X-ray a suspected fracture over video."
+      },
+      {
+        q: "What symptoms mean I should not book a video appointment?",
+        a: "For back pain or sciatica, the NHS says to call 999 or go to A&E for weakness or numbness in both legs, numbness around the genitals or anus, bladder or bowel changes, or back pain after a serious accident. Sudden facial drooping, sudden weakness or slurred speech also needs 999."
+      },
+      {
+        q: "Will you tell me if online physio is not right for me?",
+        a: "Yes. If triage shows that you need hands-on care or urgent help, we tell you plainly and point you to your GP, urgent care or an in-person clinician."
+      }
+    ],
+    sources: [
+      {
+        label: "CSP news: mix of in-person and remote consultations",
+        url: "https://www.csp.org.uk/news/2022-02-09-mix-person-remote-consultations-best-csp"
+      },
+      {
+        label: "CSP: how to ensure remote consultation services are safe",
+        url: "https://www.csp.org.uk/professional-clinical/professional-guidance/remote-consultations/csp-guidance-2"
+      },
+      { label: "NHS: back pain", url: "https://www.nhs.uk/conditions/back-pain/" },
+      { label: "NHS: sciatica", url: "https://www.nhs.uk/conditions/sciatica/" },
+      {
+        label: "NICE NG59: low back pain and sciatica in over 16s",
+        url: "https://www.nice.org.uk/guidance/ng59/chapter/Recommendations"
+      },
+      {
+        label: "NICE NG226: osteoarthritis in over 16s",
+        url: "https://www.nice.org.uk/guidance/ng226/chapter/Recommendations"
+      },
+      {
+        label: "HCPC: professions and protected titles",
+        url: "https://www.hcpc-uk.org/about-us/who-we-regulate/the-professions/"
+      }
+    ],
+    related: [
+      { label: "How online physiotherapy works", href: "/how-online-physiotherapy-works" },
+      { label: "Does online physiotherapy work?", href: "/guides/does-online-physiotherapy-work" },
+      { label: "Musculoskeletal physiotherapy", href: "/services/musculoskeletal-physiotherapy" }
+    ],
+    publishedOn: "2026-10-01",
+    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
+    reviewedOn: "2026-10-01"
+  }
 ];
 
 export function getGuide(slug: string): Guide | null {

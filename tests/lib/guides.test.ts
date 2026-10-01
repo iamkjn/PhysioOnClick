@@ -65,4 +65,8 @@ describe("guides data", () => {
       "do-i-need-a-gp-referral-for-physiotherapy", "how-many-physiotherapy-sessions-do-i-need",
       "nhs-physio-waiting-times-scotland"]) expect(getGuide(s), s).not.toBeNull();
   });
+  it("has the phase B3 guides", () => {
+    for (const s of ["does-online-physiotherapy-work", "can-a-physio-diagnose-over-video",
+      "what-online-physiotherapy-cannot-do"]) expect(getGuide(s), s).not.toBeNull();
+  });
 });
