@@ -129,7 +129,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How a video physio appointment works for lower back pain: what we check, what a plan of exercise and advice involves, and when you need urgent care in person.",
     answer:
-      "If your lower back pain fits, a video appointment lets your physiotherapist ask about your pain, watch how you bend and move, and set up an exercise and advice plan you follow at home. We screen for red flags first. Weakness or numbness in both legs, numbness around your genitals or anus, or bladder or bowel changes need emergency care in person, not a video call.",
+      "If your lower back pain fits, a video appointment lets your physiotherapist ask about your pain, watch how you bend and move, and set up an exercise and advice plan you follow at home. Call 999 or go to A&E, instead of booking, if you have weakness or numbness in both legs, numbness around your genitals or anus, or bladder or bowel changes. See the full list below.",
     howOnlineWorks: [
       "Lower back pain is a good example of a problem where the story matters as much as any hands-on test. On video we spend the first part of the appointment on how it started, what the pain does through the day, what it stops you doing and what you are worried about. Then we ask you to show us the movements that bother you, from bending to pick something up to getting out of a chair.",
       "Because you are at home, we can look at the real setting. Your bed, your desk chair, the car seat you sit in for the commute and the way you lift a laundry basket are all things we can talk through with you in the room where they happen. Our advice is built around that, so it is easier to carry out the next morning.",
@@ -209,7 +209,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How a video physio consultation works for neck pain: what we look at on camera, the exercises and advice in a typical plan, and symptoms that need urgent care.",
     answer:
-      "If your neck pain fits, a video consultation lets your physiotherapist watch how your neck and shoulders move, ask about your daily set-up and give you exercises to do at home. It is not the right route if you have arm weakness or numbness in both arms, balance changes, dizziness or visual symptoms with neck movement, or neck pain after an injury.",
+      "If your neck pain fits, a video consultation lets your physiotherapist watch how your neck and shoulders move, ask about your daily set-up and give you exercises to do at home. It is not the right route if you have arm weakness or numbness, balance changes, dizziness or visual symptoms, or neck pain after an injury. Those need 999, A&E or 111.",
     howOnlineWorks: [
       "Neck pain often shows up in how you hold and turn your head, and a camera is well placed to see that. We ask you to sit side-on and then face-on to the screen so that we can watch you turn, tilt and look up and down, and see how your shoulders and upper back share the work.",
       "Your own space is part of the assessment. We ask you to show us how you sit at your desk, where your screen is, how you hold your phone and what your pillow set-up looks like. Changes to those are easy to try straight away, and you can tell us in the same call whether they made a difference.",
@@ -234,10 +234,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     timeline:
       "According to the NHS, most neck pain only lasts a few weeks. If it has not gone after a few weeks, or it is getting worse, see a GP rather than waiting, and let us know if you are already working with us.",
     inPersonInstead: [
-      "Get in-person medical care straight away if you have weakness or numbness in both arms.",
-      "Get in-person medical care straight away if you notice changes in your balance or co-ordination.",
-      "Get in-person medical care straight away if your neck pain started after an accident or injury.",
-      "Get in-person medical care straight away if you have dizziness or visual symptoms when you move your neck.",
+      "Call 999 if you have chest pain that spreads to your neck, jaw or arms, or chest pain that feels tight or squeezing. Do not drive yourself.",
+      "Call 999 if you have weakness or numbness in your arms, face or speech changes, blurred vision or loss of sight, or sudden dizziness, as these can be signs of a stroke. Do not drive yourself to A&E.",
+      "Call 999 or go to A&E, or call 111 if you are not sure, if you notice changes in your balance or co-ordination.",
+      "Call 999 or go to A&E, or call 111 if you are not sure, if your neck pain started after an accident or injury.",
+      "Call 999 or go to A&E, or call 111 if you are not sure, if you have dizziness or visual symptoms when you move your neck.",
       "See a GP if you have pins and needles, or an arm that feels cold, or if your neck pain has not gone after a few weeks.",
       "If you are not sure whether your symptoms are urgent, call 111 or speak to a GP rather than waiting for a video appointment.",
     ],
@@ -256,11 +257,13 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "What if I get pins and needles in my arm?",
-        a: "Tell us at booking and at the start of the session. The NHS says to see a GP for pins and needles or a cold arm. Weakness or numbness in both arms needs in-person medical care straight away and is not suited to a video appointment.",
+        a: "Tell us at booking and at the start of the session. The NHS says to see a GP for pins and needles or a cold arm. Weakness or numbness in both arms, or dizziness or blurred vision, needs a 999 call (these can be stroke signs). Neck pain after an injury, or with balance changes, needs A&E or a 111 call. None of these are suited to a video appointment.",
       },
     ],
     sources: [
       { label: "NHS: Neck pain", url: "https://www.nhs.uk/symptoms/neck-pain-and-stiff-neck/" },
+      { label: "NHS: Heart attack", url: "https://www.nhs.uk/conditions/heart-attack/" },
+      { label: "NHS: Stroke symptoms", url: "https://www.nhs.uk/conditions/stroke/symptoms/" },
       {
         label: "NHS England: Guide to adopting remote consultations in adult MSK physiotherapy services",
         url: "https://www.england.nhs.uk/long-read/guide-to-adopting-remote-consultations-in-adult-musculoskeletal-physiotherapy-services/",
@@ -281,7 +284,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How video physiotherapy works for shoulder pain: the movements we check on camera, what an exercise plan involves, and when to get urgent in-person care.",
     answer:
-      "If your shoulder pain fits, a video appointment lets your physiotherapist watch you lift and rotate your arm, try a few self-checks, and plan exercises you do at home. It is not suitable after a dislocation, or after a fall where you cannot lift your arm. Sudden or very bad shoulder pain needs urgent medical help, not a video call.",
+      "If your shoulder pain fits, a video appointment lets your physiotherapist watch you lift and rotate your arm, try a few self-checks, and plan exercises you do at home. It is not suitable with chest pain or breathlessness (call 999), after a dislocation, or after a fall where you cannot lift your arm (A&E). Sudden or very bad pain needs an urgent GP or 111.",
     howOnlineWorks: [
       "A shoulder is a joint you can watch working. On video we see how high your arm goes, whether your shoulder blade moves with it and where in the movement the pain starts. We ask you to move both sides, so we can compare your sore shoulder with your other one.",
       "Most of what we learn comes from a handful of simple movements. You reach overhead, out to the side and behind your back, and we watch for where the movement stops or the pain kicks in. We also ask you to try a few self-checks, such as the [painful arc self-check](/exercises/tests/painful-arc-self-check), if it is safe for you.",
@@ -301,21 +304,21 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Plans for shoulder pain usually start with advice on what to keep doing and what to ease off for now, followed by controlled exercises for the rotator cuff muscles and shoulder blade. As the shoulder copes better, we add reaching, lifting and the particular movements your work or sport needs.",
       "In our plans a typical course for shoulder pain is 4 to 6 sessions across 6 to 10 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. This is a guide only, and we review it with you at each follow-up.",
       "The plan relies on you doing the exercises regularly. The NHS suggests 6 to 8 weeks of shoulder exercises, so we talk early about how to fit them into your day and how to tell whether your shoulder is coping.",
-      "Our [rotator cuff exercise library](/exercises/for/rotator-cuff-tendinopathy) shows exercises you may be given, and you can read how our approach compares with other options in [what online physiotherapy cannot do](/guides/what-online-physiotherapy-cannot-do).",
+      "Our [rotator cuff exercise library](/exercises/for/rotator-cuff-tendinopathy) shows exercises you may be given, and our guide to [what online physiotherapy cannot do](/guides/what-online-physiotherapy-cannot-do) explains what a video appointment cannot cover.",
     ],
     timeline:
       "The NHS says to try shoulder exercises for 6 to 8 weeks to help stop shoulder pain coming back. Frozen shoulder is different. The NHS describes it as painful and stiff for months, and sometimes years. If your shoulder is not improving, or is getting worse, speak to a GP.",
     inPersonInstead: [
-      "Get in-person medical care straight away if your shoulder has come out of its socket or you think you have dislocated it.",
-      "Get in-person medical care straight away if you fell and now cannot lift your arm.",
-      "Get in-person medical care straight away if you have chest pain or breathlessness along with shoulder pain.",
-      "Get urgent help from a GP or by calling 111 if your shoulder pain is sudden or very bad.",
+      "Call 999 or go to A&E if you have chest pain, chest tightness or breathlessness together with shoulder pain. Do not drive yourself.",
+      "Go to A&E if your shoulder looks out of place or has changed shape, or you think you have dislocated it. Call 999 if you cannot get there yourself. Do not drive yourself.",
+      "Go to A&E if you fell and now cannot move or lift your arm. Call 999 if you cannot get there yourself.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if your shoulder pain is sudden or very bad, or started after an injury such as a fall.",
       "If you are not sure how urgent your symptoms are, call 111 or speak to a GP before booking a video appointment.",
     ],
     faqs: [
       {
         q: "Can shoulder pain be assessed by video?",
-        a: "A lot of shoulder assessment is watching movement, which a camera does well. You show us how you lift, reach and rotate, and we choose exercises from that. We cannot examine or scan the joint, and we will tell you if you need that or need to be seen in person.",
+        a: "On video we watch how you lift, reach and rotate your arm, and we choose exercises from that. We cannot examine or scan the joint, and we will tell you if you need that or need to be seen in person.",
       },
       {
         q: "How long should I do shoulder exercises for?",
@@ -327,12 +330,14 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "When should I go to A&E or see someone in person?",
-        a: "Get in-person medical care straight away after a dislocation, after a fall where you cannot lift your arm, or if you have chest pain or breathlessness. For sudden or very bad shoulder pain, get urgent help from a GP or call 111.",
+        a: "Call 999 or go to A&E if you have chest pain, chest tightness or breathlessness with shoulder pain, and do not drive yourself. Go to A&E after a dislocation, or after a fall where you cannot move your arm. For sudden or very bad shoulder pain, ask for an urgent GP appointment or call 111.",
       },
     ],
     sources: [
       { label: "NHS: Shoulder pain", url: "https://www.nhs.uk/symptoms/shoulder-pain/" },
       { label: "NHS: Frozen shoulder", url: "https://www.nhs.uk/conditions/frozen-shoulder/" },
+      { label: "NHS: Dislocated shoulder", url: "https://www.nhs.uk/conditions/dislocated-shoulder/" },
+      { label: "NHS: Heart attack", url: "https://www.nhs.uk/conditions/heart-attack/" },
     ],
     exerciseHubSlug: "rotator-cuff-tendinopathy",
     selfTestSlugs: ["full-can-test", "hawkins-kennedy-test", "painful-arc-self-check"],
@@ -352,11 +357,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     answer:
       "For long-lasting knee pain that fits osteoarthritis, a video appointment lets your physiotherapist watch you squat and step, then set up a strengthening and activity plan. A 2024 trial found video care was non-inferior to in-person care for this group. A locked, giving-way or hot swollen knee needs to be seen in person.",
     howOnlineWorks: [
-      "The strongest evidence for physiotherapy by video is in knee osteoarthritis. The PEAK trial, published in The Lancet in 2024, enrolled 394 adults with chronic knee pain consistent with osteoarthritis at 27 clinics in Australia. Both groups had five consultations over three months covering strengthening, physical activity and education. Video care was non-inferior to in-person care for pain and for function at three months.",
-      "That finding is specific. It covers adults with chronic knee pain consistent with osteoarthritis in that trial, not every knee problem, and it does not describe our service. We mention it because it tells you what the research most clearly supports, and our plans for knee osteoarthritis follow the same ground: exercise, activity and education.",
+      "One randomised trial, PEAK, looked at video physiotherapy for knee osteoarthritis. It was published in The Lancet in 2024 and enrolled 394 adults with chronic knee pain consistent with osteoarthritis at 27 clinics in Australia. Both groups had five consultations over three months covering strengthening, physical activity and education. Video care was non-inferior to in-person care for pain and for function at three months.",
+      "That finding is specific. It covers adults with chronic knee pain consistent with osteoarthritis in that trial, not every knee problem, and it does not describe our service. We mention it because it is relevant to knee pain from osteoarthritis, and our plans for knee osteoarthritis follow the same ground: exercise, activity and education.",
       "NICE guidance on osteoarthritis lists therapeutic exercise, and weight management where appropriate, as core treatments, with information and support. Our plans start there. On camera we watch how you rise from a chair, climb a step and lower into a squat, and we use what we see to choose exercises for the muscles around your knee.",
       "Knee pain has other causes, and we ask about them. If your pain is mainly at the front of the knee, we assess that too, using the [single leg decline squat check](/exercises/tests/single-leg-decline-squat-check) where it is safe for you to try.",
-      "We cannot feel your knee or test its ligaments by hand. If you have had an injury, or the knee locks or gives way, we will ask you to be seen in person instead.",
+      "We cannot feel your knee or test its ligaments by hand. If you have had an injury, or the knee locks or gives way, the NHS advises calling 111, and we will ask you to be seen in person instead of by video.",
     ],
     assessmentChecks: [
       "Where the pain is felt, whether at the front, the sides or all around the joint, and what brings it on, such as stairs, walking or sitting for long.",
@@ -370,14 +375,14 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "A knee plan centres on strengthening the thigh, hip and calf muscles in steps, with advice on pacing activity and what to do on sore days. We show you each exercise on camera and give you a small number to start with, so that the plan is not so big that you stop doing it.",
       "In our plans a typical course for knee pain is 4 to 6 sessions across 8 to 12 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a guide only. In PEAK, both groups had five consultations over three months, but that was a research design and we do not treat it as a promise for you.",
       "The NHS advises that more severe osteoarthritis may need a structured exercise plan with a physiotherapist, and suggests aiming for 150 minutes of moderate activity a week plus strength exercises. We talk about how to build toward that in a way that your knee tolerates.",
-      "NICE says not to offer acupuncture or dry needling for osteoarthritis, and not to offer glucosamine or strong opioids. Nothing in our service involves needles, and we do not prescribe medicines. If you have questions about medicines, speak to your GP or pharmacist.",
+      "NICE says not to offer acupuncture or dry needling for osteoarthritis, and not to offer glucosamine or strong opioids. If you have questions about medicines, speak to your GP or pharmacist.",
     ],
     timeline:
-      "Our aim is a plan that gets you moving and that you can keep going. In PEAK, results were measured at three months. Knee pain from other causes can behave differently, and we review your progress with you and say so if the plan needs to change.",
+      "Knee osteoarthritis is a long-term condition, according to the NHS, so we cannot give you a reliable recovery range. Our aim is a plan that gets you moving and that you can keep going. We review how your pain, walking and daily tasks are changing at each follow-up, and adjust the exercises or suggest further help from your GP if progress stalls. In PEAK, results were measured at three months, and knee pain from other causes can behave differently.",
     inPersonInstead: [
-      "Get in-person medical care straight away if your knee joint is hot and swollen.",
-      "Get in-person medical care straight away if your knee locks and will not bend or straighten.",
-      "Get in-person medical care straight away if your knee gives way after an injury.",
+      "Call 111 if you have a very high temperature, or feel hot, cold or shivery, and have redness or heat around your knee.",
+      "Call 111 if your knee is badly swollen or has changed shape, or you cannot move it or put any weight on it.",
+      "Call 111 if your knee locks, gives way or painfully clicks.",
       "Call 111 if your knee pain is very bad.",
       "If you are not sure how urgent your symptoms are, call 111 or speak to a GP before booking a video appointment.",
     ],
@@ -392,11 +397,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Can you help with pain at the front of my knee?",
-        a: "Yes, we assess it on video, including how the knee moves on stairs and squats. We cannot examine the joint by hand, so if a diagnosis is uncertain or you have had an injury, we will tell you plainly and suggest in-person care.",
+        a: "We assess it on video, including how the knee moves on stairs and squats. We cannot examine the joint by hand, so if a diagnosis is uncertain or you have had an injury, we will tell you plainly and suggest in-person care.",
       },
       {
         q: "Should I stop exercising if my knee hurts?",
-        a: "Not necessarily. The NHS suggests regular activity and strength exercises for osteoarthritis, and our plans pace them to your knee. If your knee locks, gives way after an injury, or becomes hot and swollen, get in-person medical care straight away.",
+        a: "Not necessarily. The NHS suggests regular activity and strength exercises for osteoarthritis, and our plans pace them to your knee. If your knee locks, gives way, is badly swollen, or you have a high temperature with redness or heat around it, call 111.",
       },
     ],
     sources: [
