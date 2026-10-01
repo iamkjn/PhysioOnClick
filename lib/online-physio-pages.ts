@@ -423,6 +423,213 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
     reviewedOn: "2026-10-01",
   },
+  {
+    slug: "plantar-fasciitis",
+    name: "Plantar fasciitis",
+    h1: "Online physiotherapy for plantar fasciitis (heel pain)",
+    seoTitle: "Online Physiotherapy for Plantar Fasciitis | PhysioOnClick",
+    seoDescription:
+      "How a video physio appointment works for plantar fasciitis and heel pain: what we check on camera, the exercises in a plan, and when to get urgent help.",
+    answer:
+      "If your heel pain fits plantar fasciitis, a video appointment lets your physiotherapist ask about your symptoms, watch you stand and walk, and set up foot and calf exercises to do at home. It is not the right route after a heel injury, with a hot swollen heel and fever, or with tingling or loss of feeling in the foot. Those need NHS 111 or a GP.",
+    howOnlineWorks: [
+      "Plantar fasciitis is pain under the heel or along the sole of the foot. Much of what we learn comes from the story: when the pain is worst, how it behaves after rest, what footwear you wear and how much time you spend on your feet. All of that can be covered by video, and you can show us the shoes you wear every day on camera.",
+      "We also watch you move. We ask you to stand, walk across the room in bare feet or in your usual shoes, and rise onto your toes, so we can see how your foot and ankle share the load. Seeing you in your own home or workplace set-up helps us talk about the floors, shoes and routines that you actually have.",
+      "The NHS says plantar fasciitis can usually be eased with self-care, and that regular gentle exercises to stretch the sole of the foot and heel can help. It also says a physiotherapist can show you exercises. Our plans start from that: a small set of foot and calf exercises, shown on camera and corrected as you do them, and advice on pacing your standing and walking.",
+      "There are limits to video. We cannot feel the heel or the sole of your foot, and we cannot scan it. If your story does not fit plantar fasciitis, or you have any of the warning signs below, we will tell you plainly and point you to in-person care instead of carrying on with a plan.",
+    ],
+    assessmentChecks: [
+      "Where exactly the pain is felt, and whether it sits under the heel, along the arch or somewhere else in the foot.",
+      "When it is worst, for example on the first steps in the morning, after sitting, or at the end of a long day on your feet.",
+      "What you wear on your feet at home, at work and for exercise, and how much walking or standing you do.",
+      "How you stand, walk and rise onto your toes, and how your ankle and calf move, filmed from the front and the side.",
+      "Whether you have any tingling, numbness or loss of feeling in the foot, and whether you have diabetes, because the NHS says foot problems can be more serious with diabetes.",
+      "The red flag questions listed below, including any recent injury, which we ask at the start of every appointment.",
+    ],
+    typicalPlan: [
+      "A first plan for heel pain usually has three parts: advice on easing off whatever sets the pain off for now, regular gentle stretches for the sole of the foot and the calf, and gradual strengthening for the foot and calf as it settles. We show each exercise on camera and give you only a few to start with, so that you can keep them going.",
+      "In our plans a typical course for heel pain is 2 to 5 sessions across 4 to 8 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a guide only. We review it with you at each follow-up rather than booking a block in advance, and some people need fewer sessions and some need more.",
+      "We will also talk about footwear, how to build walking and standing back up, and how to tell a sore day from a worsening one. Nothing in your plan depends on us touching your foot.",
+      "For questions about cost, referrals and insurance, see our guide to [private physiotherapy cost in the UK](/guides/private-physiotherapy-cost-uk). We cannot promise that any insurer will pay, so check with yours before you book.",
+    ],
+    timeline:
+      "The NHS says to see a GP if foot pain has not improved after treating it yourself for 2 weeks, so we use that as a checkpoint. We cannot give you an exact recovery time for your heel. We review how your pain, walking and daily tasks are changing at each follow-up, and we will suggest a GP review if things are not moving in the right direction.",
+    inPersonInstead: [
+      "Call NHS 111 if you have severe heel pain after an injury, such as a fall or a jump.",
+      "Call NHS 111 if your foot or ankle has changed shape or is at an odd angle, or you heard a snap, grinding or popping noise when you hurt it.",
+      "Call NHS 111 if you cannot walk, cannot walk on your tiptoes or cannot climb stairs after an injury, or you have swelling and bruising in your calf and ankle.",
+      "Call NHS 111 or ask for an urgent GP appointment if your heel is hot and swollen and you have a high temperature or feel unwell.",
+      "See a GP if you have any tingling or loss of feeling in your foot, or if you have diabetes and heel pain.",
+      "See a GP if the pain is severe or stops you doing normal activities, is getting worse or keeps coming back, or has not improved after 2 weeks of looking after it yourself. Tell us if the pain is there at night or at rest, and speak to your GP before relying on a video plan.",
+    ],
+    faqs: [
+      {
+        q: "Can plantar fasciitis be assessed by video?",
+        a: "We can ask about your pain, watch how you stand and walk, and look at your footwear, then give you exercises. We cannot examine your foot by hand, and some symptoms need in-person care. We screen for those at the start and will tell you if a video appointment is not right.",
+      },
+      {
+        q: "What exercises help heel pain?",
+        a: "The NHS says regular gentle exercises to stretch the sole of the foot and heel can help, and that a physiotherapist can show you exercises. In our plans we choose and pace them after watching you move, and we show each one on camera.",
+      },
+      {
+        q: "How long should I try self-care before seeing someone?",
+        a: "The NHS says to see a GP if foot pain has not improved after 2 weeks of treating it yourself, or sooner if it is severe, getting worse or you have tingling or loss of feeling. If you are unsure, ask your GP or call 111 before booking.",
+      },
+      {
+        q: "I hurt my heel in a fall. Can I still book?",
+        a: "Please do not book a video appointment first. The NHS advises calling 111 for severe heel pain after an injury, and especially if the foot has changed shape, you heard a snap or pop, or you cannot walk. Once you have been checked, we can help with the recovery.",
+      },
+    ],
+    sources: [
+      { label: "NHS: Plantar fasciitis", url: "https://www.nhs.uk/conditions/plantar-fasciitis/" },
+      { label: "NHS: Heel pain", url: "https://www.nhs.uk/symptoms/foot-pain/heel-pain/" },
+    ],
+    guideSlugs: ["private-physiotherapy-cost-uk", "can-a-physio-diagnose-over-video"],
+    serviceSlug: "musculoskeletal-physiotherapy",
+    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
+    reviewedOn: "2026-10-01",
+  },
+  {
+    slug: "tennis-elbow",
+    name: "Tennis elbow",
+    h1: "Online physiotherapy for tennis elbow",
+    seoTitle: "Online Physiotherapy for Tennis Elbow | PhysioOnClick",
+    seoDescription:
+      "How video physiotherapy works for tennis elbow: the grip and wrist checks we do on camera, what the exercise plan involves, and when to get urgent care.",
+    answer:
+      "If your elbow pain fits tennis elbow, a video appointment lets your physiotherapist watch how you grip, lift and move your wrist, try a guided self-check, and set up forearm exercises to do at home. It is not the right route after an arm injury with numbness, tingling or a changed shape (A&E or 999), or if pain comes with a high temperature (111).",
+    howOnlineWorks: [
+      "In our assessments, tennis elbow means pain on the outer side of the elbow that shows up when you grip, lift or twist. On video we ask what sets it off, such as typing, carrying shopping or using tools, and we watch you do a few of those movements in your own space, so we see the real triggers rather than a clinic version of them.",
+      "We use one guided self-check, the [resisted wrist extension test](/exercises/tests/resisted-wrist-extension-test), if it is safe for you to try. You do it yourself on camera while we watch. It cannot confirm a diagnosis, and our self-check page says only a hands-on assessment can tell you for sure.",
+      "The NHS says tennis elbow often settles with rest, though it can sometimes last more than a year. It says physiotherapy may help if symptoms have not improved after 6 weeks of home treatment, and that treatment may include stretching and strengthening for the wrist and forearm. Our plans are built around that kind of exercise, shown on camera and adjusted as your elbow responds.",
+      "We cannot touch the elbow by video, and we cannot scan it. If what you describe does not fit tennis elbow, or you have any of the warning signs below, we will say so and help you decide where to go next.",
+    ],
+    assessmentChecks: [
+      "Where the pain sits, and whether it stays at the outer elbow or spreads down the forearm.",
+      "Which tasks set it off, such as gripping, lifting with the palm down, typing, using a mouse or carrying bags.",
+      "How far you can bend, straighten and rotate the elbow and wrist on both sides, and whether the sore side moves normally.",
+      "The resisted wrist extension test, done as a guided self-check on camera if it is safe, to see whether loading the wrist tendons brings on the pain.",
+      "How your work, sport or hobbies load the forearm, and how much rest the elbow has had.",
+      "The red flag questions listed below, including any recent injury, tingling or numbness, which we ask at the start of every appointment.",
+    ],
+    typicalPlan: [
+      "A first plan for tennis elbow usually combines advice on adjusting the tasks that flare it up, gentle stretches for the wrist and forearm, and strengthening that you build up gradually as the elbow copes. We show each exercise on camera and change the load at follow-ups depending on what your elbow does afterwards.",
+      "In our plans a typical course for tennis elbow is 3 to 6 sessions across 6 to 12 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a guide only. Given that the NHS says tennis elbow can sometimes last over a year, we review the plan with you rather than booking a block up front.",
+      "We will talk about grip, tool and keyboard set-up, how to share load between both arms, and how to return to sport or heavier work in steps. Nothing in the plan depends on us touching your arm.",
+      "Our [tennis elbow exercise library](/exercises/for/tennis-elbow) shows the kind of exercises you may be given. For what a video appointment can and cannot cover, see our guide to [what online physiotherapy cannot do](/guides/what-online-physiotherapy-cannot-do).",
+    ],
+    timeline:
+      "According to the NHS, tennis elbow often settles with rest but can sometimes last more than a year, and physiotherapy may help if symptoms have not improved after 6 weeks of home treatment. It also says to see a GP if you still have elbow pain after at least 2 weeks of resting the elbow and trying self-care. We review progress at each follow-up and suggest a GP review if you are not improving.",
+    inPersonInstead: [
+      "Go to A&E or call 999 if, after an arm injury, your arm or wrist is numb, tingling or has pins and needles.",
+      "Go to A&E or call 999 if, after an arm injury, your arm or wrist has changed shape or is at an odd angle, a bone is sticking out, or you have a bad cut bleeding heavily.",
+      "Get help from NHS 111 if, after an injury, the arm is very painful, you cannot use it because of the pain, or the pain is getting worse.",
+      "Get help from NHS 111 if your elbow pain comes with a high temperature or other signs of infection.",
+      "See a GP promptly if you have numbness or tingling in your fingers or hand. If it started after an injury, go to A&E instead.",
+      "See a GP if you still have elbow pain after resting it and trying self-care for at least 2 weeks.",
+    ],
+    faqs: [
+      {
+        q: "Can tennis elbow be treated online?",
+        a: "In our plans, treatment is mainly advice plus stretching and strengthening exercises you do yourself, which the NHS lists among treatments for tennis elbow. A video appointment lets us watch your grip and movement and guide you. We cannot examine the elbow by hand, and we will tell you if you need to be seen in person.",
+      },
+      {
+        q: "How long does tennis elbow last?",
+        a: "The NHS says it often settles with rest but can sometimes last more than a year. We cannot give you an exact timeline, so we review how it is going at each appointment and suggest a GP review if you are not improving.",
+      },
+      {
+        q: "When should I start physiotherapy for tennis elbow?",
+        a: "The NHS says physiotherapy may help if your symptoms have not improved after 6 weeks of home treatment, and to see a GP if you still have pain after at least 2 weeks of self-care. You can book with us before then if you would like help with exercises, but check with your GP if you are unsure.",
+      },
+      {
+        q: "What if I hurt my arm and it is swollen or looks different?",
+        a: "Do not book a video appointment first. After an arm injury, the NHS says to go to A&E or call 999 if the arm or wrist is numb, tingling or has pins and needles, or has changed shape or is at an odd angle. Get help from NHS 111 if the arm is very painful or you cannot use it.",
+      },
+    ],
+    sources: [
+      { label: "NHS: Tennis elbow", url: "https://www.nhs.uk/conditions/tennis-elbow/" },
+      { label: "NHS: Broken arm or wrist", url: "https://www.nhs.uk/conditions/broken-arm-or-wrist/" },
+    ],
+    exerciseHubSlug: "tennis-elbow",
+    selfTestSlugs: ["resisted-wrist-extension-test"],
+    guideSlugs: ["what-online-physiotherapy-cannot-do", "how-many-physiotherapy-sessions-do-i-need"],
+    serviceSlug: "musculoskeletal-physiotherapy",
+    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
+    reviewedOn: "2026-10-01",
+  },
+  {
+    slug: "hip-pain",
+    name: "Hip pain",
+    h1: "Online physiotherapy for hip pain",
+    seoTitle: "Online Physiotherapy for Hip Pain | PhysioOnClick",
+    seoDescription:
+      "How a video physio appointment works for hip pain, including gluteal tendinopathy and hip osteoarthritis: what we check on camera and when to get urgent care.",
+    answer:
+      "If your hip pain has built up gradually, a video appointment lets your physiotherapist ask about it, watch you stand, walk and balance, and set up exercises to do at home. It is not the right route after a fall or injury, if you cannot put weight on the leg, or if the hip is hot and swollen. Those need 999, A&E, 111 or an urgent GP.",
+    howOnlineWorks: [
+      "Hip pain has several possible causes, and we ask about them on video. This page covers two we see in our plans: pain on the outer side of the hip linked to the tendons and muscles there, known as gluteal tendinopathy, and hip osteoarthritis. We ask where the pain is, what brings it on, such as stairs, lying on that side or walking, and what you have already tried.",
+      "We watch how you move. You stand up from a chair, walk, climb a step if you have one and stand on one leg with support nearby. We use the [Trendelenburg mirror check](/exercises/tests/trendelenburg-mirror-check) as a guided self-check, if it is safe for you, to see how the muscles on the outside of your hip cope with single-leg standing. It cannot confirm a cause, only a hands-on assessment can do that.",
+      "The NHS says to try gentle hip stretching exercises, and lists physiotherapy for more help with exercises and stretches. For osteoarthritis generally, NICE guidance lists therapeutic exercise as a core treatment, with weight management where appropriate and with information and support. Our hip plans are built on exercise, advice on pacing and shown-on-camera movements.",
+      "We cannot feel the hip or scan it. If your story does not fit, or you have any of the warning signs below, we will say so and point you to the right in-person care.",
+    ],
+    assessmentChecks: [
+      "Where the hip pain is felt, whether it is on the outer side, in the groin or in the buttock, and whether it spreads down the thigh.",
+      "What brings it on or eases it, such as walking, stairs, sitting in low chairs, lying on that side or getting out of bed.",
+      "The [Trendelenburg mirror check](/exercises/tests/trendelenburg-mirror-check), done on camera as a guided self-check if it is safe, to see how your pelvis stays level on one leg.",
+      "How you stand up, walk and balance, and how far each hip moves, compared with the other side.",
+      "Whether the hip is stiff for a long time after waking, and how the pain affects your sleep and normal activities.",
+      "The red flag questions listed below, including any recent fall, which we ask at the start of every appointment.",
+    ],
+    typicalPlan: [
+      "A first plan for hip pain usually starts with advice on what to ease for now, such as positions that set it off, and a few gentle movements for the hip and thigh. We then build strengthening and walking in steps, showing each exercise on camera and changing the load at follow-ups depending on how the hip responds.",
+      "In our plans a typical course for hip pain is 4 to 6 sessions across 8 to 12 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a guide only, and we review it with you rather than booking a block in advance.",
+      "We will also talk about footwear, chairs and bed height, how to pace walking and stairs, and how to fit exercises into your day. Our [hip exercise library](/exercises/for/gluteal-tendinopathy) shows the kind of exercises you may be given.",
+      "If you have had cancer in the past, tell us when you book. Our approach is to ask you to speak to your GP before we start a plan. For what a video appointment can and cannot cover, see our guide to [can a physio diagnose over video](/guides/can-a-physio-diagnose-over-video).",
+    ],
+    timeline:
+      "We cannot give you a reliable recovery time for hip pain, because the cause matters. The NHS says to see a GP if hip pain has not improved after treating it at home for 2 weeks, if it is getting worse or keeps coming back, or if it stops you doing normal activities or affects your sleep. We review progress at each follow-up and suggest a GP review if you are not improving.",
+    inPersonInstead: [
+      "Call 999 or go to A&E if you have severe hip pain after a fall or injury, whatever your age.",
+      "Call 999 or go to A&E if you cannot walk or put weight on your leg.",
+      "Call 999 or go to A&E if you have tingling or loss of feeling in your hip or leg after an injury.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if you have severe hip pain that started suddenly and you have not had a fall or injured the hip.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if your hip is swollen and feels hot, or the skin around it has changed colour.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if you have hip pain, feel generally unwell and have a high temperature.",
+      "See a GP if you have hip stiffness for more than 30 minutes after waking, or if you have had cancer and have new hip pain.",
+    ],
+    faqs: [
+      {
+        q: "Can hip pain be assessed over video?",
+        a: "We can ask about your pain, watch how you stand, walk and balance, and guide you through a self-check, then give you exercises. We cannot examine the hip by hand or scan it. Some symptoms need in-person care, and we screen for them at the start of your appointment.",
+      },
+      {
+        q: "Do you treat gluteal tendinopathy and hip osteoarthritis?",
+        a: "Yes, we assess hip pain that fits either picture and build an exercise plan around it. NICE lists therapeutic exercise as a core treatment for osteoarthritis. We cannot confirm a diagnosis by video, and we will tell you if you need a hands-on check or tests first.",
+      },
+      {
+        q: "I fell and my hip hurts. Should I book?",
+        a: "No. The NHS says to call 999 or go to A&E for severe hip pain after a fall or injury, if you cannot walk or put weight on the leg, or if you have tingling or loss of feeling in the hip or leg after an injury. Once you have been checked, we can help with recovery.",
+      },
+      {
+        q: "When should I see a GP about hip pain?",
+        a: "The NHS says to see a GP if hip pain is stopping you doing normal activities or affecting your sleep, is getting worse or keeps coming back, has not improved after 2 weeks at home, or comes with stiffness for more than 30 minutes after waking.",
+      },
+    ],
+    sources: [
+      { label: "NHS: Hip pain in adults", url: "https://www.nhs.uk/symptoms/hip-pain/" },
+      {
+        label: "NICE NG226: Osteoarthritis in over 16s, recommendations",
+        url: "https://www.nice.org.uk/guidance/ng226/chapter/Recommendations",
+      },
+      { label: "NHS: Osteoarthritis", url: "https://www.nhs.uk/conditions/osteoarthritis/" },
+    ],
+    exerciseHubSlug: "gluteal-tendinopathy",
+    selfTestSlugs: ["trendelenburg-mirror-check"],
+    guideSlugs: ["can-a-physio-diagnose-over-video", "does-online-physiotherapy-work"],
+    serviceSlug: "musculoskeletal-physiotherapy",
+    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
+    reviewedOn: "2026-10-01",
+  },
 ];
 
 export function getOnlinePhysioPage(slug: string): OnlinePhysioPage | null {

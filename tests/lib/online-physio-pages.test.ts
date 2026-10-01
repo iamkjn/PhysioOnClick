@@ -30,6 +30,14 @@ describe("online physio landing pages", () => {
     expect(getOnlinePhysioPage("knee-pain")?.sources.some((s) => s.url.includes("S0140-6736(23)02630-2"))).toBe(true);
     expect(getOnlinePhysioPage("low-back-pain")?.howOnlineWorks.join(" ")).toContain("/online-physiotherapy-for/sciatica");
   });
+  it("includes the heel, elbow and hip pages", () => {
+    for (const s of ["plantar-fasciitis", "tennis-elbow", "hip-pain"]) {
+      expect(allOnlinePhysioSlugs(), s).toContain(s);
+    }
+    expect(getOnlinePhysioPage("plantar-fasciitis")?.exerciseHubSlug).toBeUndefined();
+    expect(getOnlinePhysioPage("tennis-elbow")?.exerciseHubSlug).toBe("tennis-elbow");
+    expect(getOnlinePhysioPage("hip-pain")?.exerciseHubSlug).toBe("gluteal-tendinopathy");
+  });
   it("SEO length rules", () => {
     for (const p of onlinePhysioPages) {
       expect(p.seoTitle.endsWith("| PhysioOnClick"), p.slug).toBe(true);
