@@ -49,14 +49,15 @@ describe("next.config.mjs headers", () => {
 });
 
 const nodeRequire = createRequire(import.meta.url);
-const { pathToRegexp } = nodeRequire("next/dist/compiled/path-to-regexp") as {
-  pathToRegexp: (source: string, keys?: unknown[]) => RegExp;
+// Match rules exactly as Next does in production (strict, case-insensitive, "/" delimiter).
+const { buildCustomRoute } = nodeRequire("next/dist/lib/build-custom-route") as {
+  buildCustomRoute: (type: "header", rule: HeaderRule) => { regex: string };
 };
 
 function headersFor(rules: HeaderRule[], path: string) {
   const out: Record<string, string> = {};
   for (const rule of rules) {
-    if (pathToRegexp(rule.source, []).test(path)) {
+    if (new RegExp(buildCustomRoute("header", rule).regex).test(path)) {
       for (const h of rule.headers) out[h.key] = h.value;
     }
   }
@@ -81,5 +82,22 @@ describe("framing headers", () => {
       expect(h["X-Frame-Options"], path).toBe("SAMEORIGIN");
       expect(h["Content-Security-Policy"], path).toContain("frame-ancestors 'self'");
     }
+  });
+
+  it("keeps /embed/* frameable on the dev worker too", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://dev.physioonclick.co.uk");
+    const rules = await loadHeaders();
+    const embed = headersFor(rules, "/embed/exercises/x");
+    expect(embed["X-Frame-Options"]).toBeUndefined();
+    expect(embed["Content-Security-Policy"]).toContain("frame-ancestors *");
+  });
+
+  it("bare /embed stays same-origin only", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://physioonclick.co.uk");
+    const rules = await loadHeaders();
+    const h = headersFor(rules, "/embed");
+    expect(h["X-Frame-Options"]).toBe("SAMEORIGIN");
+    expect(h["Content-Security-Policy"]).toContain("frame-ancestors 'self'");
+    expect(h["Content-Security-Policy"]).not.toContain("frame-ancestors *");
   });
 });

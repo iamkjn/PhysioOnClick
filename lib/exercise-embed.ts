@@ -35,7 +35,7 @@ export function buildEmbedSnippet(exercise: Exercise): string {
   const page = escapeHtml(exercisePageUrl(exercise.slug));
   const home = escapeHtml(absoluteUrl("/"));
   return (
-    `<iframe src="${src}" title="${title} exercise – PhysioOnClick" width="100%" height="760" loading="lazy" style="border:0;max-width:520px;width:100%"></iframe>\n` +
+    `<iframe src="${src}" title="${title} exercise - PhysioOnClick" width="100%" height="900" loading="lazy" style="border:0;max-width:520px;width:100%"></iframe>\n` +
     `<p style="font-size:14px;margin:6px 0 0"><a href="${page}">${title} exercise</a> by <a href="${home}">PhysioOnClick</a></p>`
   );
 }
@@ -44,20 +44,20 @@ export function buildEmbedSnippet(exercise: Exercise): string {
 // fonts only so the embed makes no third-party font requests.
 const STYLES = `
 *{box-sizing:border-box}
-body{margin:0;background:#fffdf8;color:#14213d;font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.card{max-width:520px;margin:0 auto;padding:16px}
+body{margin:0;background:#fffdf8;color:#14213d;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.card{max-width:520px;margin:0 auto;padding:12px 16px}
 .media{position:relative;border-radius:14px;overflow:hidden;background:#eaf6fb;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.media img{display:block;width:100%;height:auto;pointer-events:none}
+.media img{display:block;width:100%;max-height:200px;object-fit:contain;pointer-events:none}
 .wm{position:absolute;right:10px;bottom:10px;padding:3px 8px;border-radius:999px;background:rgba(255,253,248,.78);color:#14213d;font-size:11px;font-weight:600;opacity:.8}
-h1{font-size:20px;line-height:1.25;margin:14px 0 6px}
-p{margin:0 0 10px}
-ol{margin:0 0 10px;padding-left:22px}
-li{margin-bottom:4px}
+h1{font-size:19px;line-height:1.25;margin:10px 0 4px}
+p{margin:0 0 8px}
+ol{margin:0 0 8px;padding-left:22px}
+li{margin-bottom:2px}
 .dose{font-weight:600}
-.safety{background:#fff4f2;border:1px solid #f3d6d0;color:#a83a2c;border-radius:10px;padding:8px 12px;font-size:14px}
+.safety{background:#fff4f2;border:1px solid #f3d6d0;color:#a83a2c;border-radius:10px;padding:6px 12px;font-size:13px}
 .cta{display:inline-block;margin-top:4px;color:#0369a1;font-weight:600;text-decoration:none}
 .cta:hover{text-decoration:underline}
-.foot{margin-top:10px;font-size:12px;color:#64737d}
+.foot{margin:8px 0 0;font-size:12px;color:#64737d}
 `;
 
 function documentShell(exercise: Exercise, body: string): string {
@@ -68,7 +68,7 @@ function documentShell(exercise: Exercise, body: string): string {
     `<meta name="viewport" content="width=device-width,initial-scale=1">` +
     `<meta name="robots" content="noindex">` +
     `<link rel="canonical" href="${canonical}">` +
-    `<title>${title} exercise – PhysioOnClick</title>` +
+    `<title>${title} exercise - PhysioOnClick</title>` +
     `<style>${STYLES}</style></head><body>${body}</body></html>`
   );
 }

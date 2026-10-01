@@ -54,4 +54,14 @@ describe("EmbedExerciseButton", () => {
     fireEvent.click(screen.getByRole("button", { name: /copy code/i }));
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(/ctrl\/cmd\+c/i));
   });
+
+  it("closes when the backdrop (the dialog itself) is clicked, not its content", () => {
+    const { container } = render(<EmbedExerciseButton {...props} />);
+    fireEvent.click(screen.getByRole("button", { name: /embed this exercise/i }));
+    const dialog = container.querySelector("dialog") as HTMLDialogElement;
+    fireEvent.click(screen.getByLabelText(/embed code/i));
+    expect(HTMLDialogElement.prototype.close).not.toHaveBeenCalled();
+    fireEvent.click(dialog);
+    expect(HTMLDialogElement.prototype.close).toHaveBeenCalled();
+  });
 });

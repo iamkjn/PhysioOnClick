@@ -11793,7 +11793,8 @@ textarea:focus {
   box-sizing: border-box;
   width: min(640px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
-  overflow-y: auto;
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
   border: 0;
   border-radius: var(--radius-panel);
   padding: var(--space-5);

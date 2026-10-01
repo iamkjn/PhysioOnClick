@@ -26,6 +26,12 @@ describe("exercise embed", () => {
     expect(afterIframe).toContain('<a href="https://physioonclick.co.uk/">PhysioOnClick</a>');
   });
 
+  it("snippet is pure ASCII for an ASCII title and is 900px tall", () => {
+    const snippet = buildEmbedSnippet({ ...clam, title: "Clam Shell" });
+    expect(/^[\x00-\x7F]*$/.test(snippet)).toBe(true);
+    expect(snippet).toContain('height="900"');
+  });
+
   it("escapes hostile titles", () => {
     const evil = { ...clam, title: `A "b" <c> & d` };
     const snippet = buildEmbedSnippet(evil);

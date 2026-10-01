@@ -149,7 +149,7 @@ const nextConfig = {
       {
         // Embeddable exercise cards: framable anywhere, never indexed (the
         // canonical exercise page is the one that should rank).
-        source: "/embed/:path*",
+        source: "/embed/:path+",
         headers: [
           {
             key: "Content-Security-Policy",

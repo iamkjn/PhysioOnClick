@@ -26,7 +26,6 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": "public, max-age=86400",
-      "X-Robots-Tag": "noindex",
     },
   });
 }

@@ -57,6 +57,9 @@ export function EmbedExerciseButton({
         className="exlib-embed-dialog"
         aria-labelledby="exlib-embed-title"
         onClose={() => setOpen(false)}
+        onClick={(e) => {
+          if (e.target === dialogRef.current) closeDialog();
+        }}
       >
         <div className="exlib-embed-dialog__head">
           <h2 id="exlib-embed-title">Embed this exercise on your website</h2>

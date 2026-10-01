@@ -10,7 +10,6 @@ describe("GET /embed/exercises/[slug]", () => {
     const res = await GET(req(), ctx("clam-shell"));
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toBe("text/html; charset=utf-8");
-    expect(res.headers.get("x-robots-tag")).toBe("noindex");
     expect(res.headers.get("cache-control")).toContain("max-age=86400");
     const body = await res.text();
     expect(body).toContain("<!doctype html>");
