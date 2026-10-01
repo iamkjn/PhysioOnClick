@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import ServiceDetailPage from "@/app/services/[slug]/page";
 import { blogArticles } from "@/lib/blog";
 import { guides } from "@/lib/guides";
+import { onlinePhysioPages } from "@/lib/online-physio-pages";
 import { services } from "@/lib/site-data";
 import {
   allBodyAreaKeys,
@@ -98,6 +99,15 @@ describe("app/sitemap.ts", () => {
     for (const g of guides) expect(urls).toContain(`${BASE}/guides/${g.slug}`);
   });
 
+  it("lists one online-physiotherapy-for URL per record, stamped with its review date", async () => {
+    const all = await entries();
+    for (const p of onlinePhysioPages) {
+      const entry = all.find((e) => e.url === `${BASE}/online-physiotherapy-for/${p.slug}`);
+      expect(entry, `missing ${p.slug}`).toBeDefined();
+      expect(entry?.lastModified).toEqual(new Date(p.reviewedOn));
+    }
+  });
+
   it("adds exactly the exercise-library entries and nothing else", async () => {
     const all = await entries();
 
@@ -120,7 +130,8 @@ describe("app/sitemap.ts", () => {
         blogArticles.length +
         exerciseLibCount +
         1 +
-        guides.length,
+        guides.length +
+        onlinePhysioPages.length,
     );
   });
 });

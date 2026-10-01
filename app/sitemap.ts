@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next";
 import { services } from "@/lib/site-data";
 import { blogArticles } from "@/lib/blog";
 import { guides } from "@/lib/guides";
+import { onlinePhysioPages } from "@/lib/online-physio-pages";
 import {
   allBodyAreaKeys,
   allConditionSlugs,
@@ -110,11 +111,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
+  // Condition landing pages carry a truthful lastModified (their review date).
+  const onlinePhysioEntries = onlinePhysioPages.map((p) => ({
+    url: `${base}/online-physiotherapy-for/${p.slug}`,
+    lastModified: new Date(p.reviewedOn),
+  }));
+
   return [
     ...staticEntries,
     ...serviceEntries,
     ...blogEntries,
     ...guideEntries,
+    ...onlinePhysioEntries,
     ...exerciseLibraryEntries,
     ...conditionEntries,
     ...exerciseEntries,

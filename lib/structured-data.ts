@@ -25,6 +25,7 @@ import { founder, services, withPrices } from "@/lib/site-data";
 // `lib/conditions.ts` is dependency-free pure data.
 import { conditions } from "@/lib/conditions";
 import type { Exercise } from "@/lib/exercises";
+import type { OnlinePhysioPage } from "@/lib/online-physio-pages";
 import type { Guide } from "@/lib/guides";
 import type { Condition } from "@/lib/conditions";
 import type { SelfTest } from "@/lib/self-tests";
@@ -347,6 +348,30 @@ export function guideWebPage(g: Guide, path: string): object {
     inLanguage: "en-GB",
     citation: g.sources.map((s) => s.url),
     mainEntity: g.faqs.map((f) => ({
+      "@type": "Question",
+      name: withPrices(f.q),
+      acceptedAnswer: { "@type": "Answer", text: withPrices(f.a) }
+    }))
+  };
+}
+
+/** MedicalWebPage for an "online physiotherapy for [condition]" landing page.
+ *  Same shape as guideWebPage, plus the condition it is about. */
+export function onlinePhysioWebPage(p: OnlinePhysioPage, path: string): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    name: p.seoTitle,
+    headline: p.h1,
+    description: p.seoDescription,
+    url: absoluteUrl(path),
+    about: { "@type": "MedicalCondition", name: p.name },
+    author: personRef(),
+    reviewedBy: personRef(),
+    lastReviewed: p.reviewedOn,
+    inLanguage: "en-GB",
+    citation: p.sources.map((s) => s.url),
+    mainEntity: p.faqs.map((f) => ({
       "@type": "Question",
       name: withPrices(f.q),
       acceptedAnswer: { "@type": "Answer", text: withPrices(f.a) }

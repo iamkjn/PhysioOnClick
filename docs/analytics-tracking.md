@@ -83,6 +83,7 @@ Below, "custom events" means events beyond these three sitewide ones.
 | `app/blog/[slug]/page.tsx` | `page_view`. `blog_read_complete` `{ slug }` (`components/blog-detail-actions.tsx`, fires once the reader reaches the end of the article). |
 | `app/guides/page.tsx` | `page_view` only (index/listing). |
 | `app/guides/[slug]/page.tsx` | `page_view`. CTA band: `service_book_click` `{ service_slug: "initial-assessment", source: "guide-cta-band" }` **and** `book_now_click` `{ source: "guide-cta-band" }` (same click). |
+| `app/online-physiotherapy-for/[slug]/page.tsx` | `page_view`. Primary and CTA-band booking links: `service_book_click` `{ service_slug: "initial-assessment", source: "online-physio-landing" \| "online-physio-cta-band", slug }` **and** `book_now_click` `{ source }` (same click). |
 
 ## Exercise library
 
