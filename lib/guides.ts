@@ -142,16 +142,16 @@ export const guides: Guide[] = [
     seoDescription:
       "How physio insurance claims usually work, what Bupa, AXA Health, Vitality and Aviva say on their own sites, and what to check before you book and pay.",
     answer:
-      "Often, but not always. Whether your insurer pays for physiotherapy depends on your policy, and some insurers also want a referral, a pre-authorisation code or a practitioner on their recognised list. We are not on every insurer's recognised list, so check with your insurer before booking if you plan to claim.",
+      "Check your policy first. Whether your insurer pays for physiotherapy depends on your cover, and your insurer may also want a referral, a pre-authorisation code or a practitioner on its recognised list. We are not on every insurer's recognised list, so check with your insurer before booking if you plan to claim.",
     sections: [
       {
         heading: "How a physio insurance claim usually works",
         paragraphs: [
           "Every insurer has its own rules, but most claims follow the same few steps. Doing them in this order can save you from paying for a session that is not covered.",
-          "First, check that your policy includes outpatient therapies such as physiotherapy. Some policies only cover treatment in hospital, and some cap the number of sessions or the amount you can claim in a year.",
+          "First, check that your policy includes outpatient therapies such as physiotherapy. Check whether it covers treatment outside hospital, and whether it caps the number of sessions or the amount you can claim in a year.",
           "Second, find out whether you need a GP referral or a pre-authorisation code before your first session. Some insurers let you go straight to a physiotherapist, and some do not.",
-          "Third, ask whether the insurer only pays practitioners on its own recognised list. Some will pay any registered physiotherapist, and some will not.",
-          "Finally, pay for the session, keep the invoice, and send it to your insurer with your claim form. Ask how long the insurer allows for sending a claim in, because the time limit varies."
+          "Third, ask whether the insurer only pays practitioners on its own recognised list. Check whether yours pays any registered physiotherapist, or only those on its list.",
+          "Finally, pay for the session, keep the invoice, and send it to your insurer with your claim form. Ask how long the insurer allows for sending a claim in."
         ]
       },
       {
@@ -176,7 +176,7 @@ export const guides: Guide[] = [
         heading: "What our invoice shows",
         paragraphs: [
           "After a paid session we send you an invoice as a PDF. It lists our HCPC registration number and the session you paid for, itemised, so you can see exactly what the charge covers.",
-          "Insurers differ in what they want to see on an invoice, so send your insurer what it asks for. If it wants something that is not on our invoice, tell us and we will see whether we can help.",
+          "Insurers differ in what they want to see on an invoice, so send your insurer what it asks for. If your insurer asks for something that isn't on the invoice, contact us.",
           "You can check how our online sessions work in [how online physiotherapy works](/how-online-physiotherapy-works), and see what a first appointment costs on the [pricing page](/pricing). If you are deciding between private and NHS care, our guide on [whether you need a GP referral](/guides/do-i-need-a-gp-referral-for-physiotherapy) may help."
         ]
       }
@@ -336,10 +336,10 @@ export const guides: Guide[] = [
       {
         heading: "Typical ranges by situation",
         paragraphs: [
-          "No honest physiotherapist can give one number for everyone. How many sessions you need depends on how long the problem has been there, what is causing it, and how well it responds to the first few weeks of exercise.",
-          "For most back, neck, shoulder and tendon pain, our plans usually run 4 to 8 sessions across 6 to 10 weeks. Many people begin to notice less pain on the movements that used to trigger it within 2 to 3 weekly sessions, once the right movement and loading plan is in place.",
-          "Persistent tendon problems and long-standing pain usually need 6 to 8 weeks of gradually increasing load before the change lasts. That is why we review and adjust the plan at each session instead of handing over one sheet and leaving you to it.",
-          "After surgery the timeline is set mainly by the operation. Knee and hip replacement typically follow a 3 to 6 month arc to confident daily function, rotator cuff repair 4 to 6 months, and ACL reconstruction 9 to 12 months to full sports clearance. These are recovery timelines, not session counts. Rehab changes how strong and confident you are at each stage, and your surgical team's advice always comes first.",
+          "There is no single number that fits everyone. How many sessions you need depends on how long the problem has been there, what is causing it, and how well it responds to the first few weeks of exercise.",
+          "For most back, neck, shoulder and tendon pain, our plans usually run 4 to 8 sessions across 6 to 10 weeks. In our experience of these problems, pain on the movements that used to trigger it often starts to ease within 2 to 3 weekly sessions, once the right movement and loading plan is in place.",
+          "For persistent tendon problems and long-standing pain, our plans build up the load gradually over 6 to 8 weeks, so we review and adjust the plan at each session.",
+          "After surgery the timeline is set mainly by the operation. Our service guidance puts knee and hip replacement at roughly 3 to 6 months to confident daily function, rotator cuff repair at 4 to 6 months, and ACL reconstruction at 9 to 12 months to full sports clearance. These are recovery timelines, not session counts, and your surgical team's advice always comes first.",
           "For neurological conditions, progress builds in small steps. Better balance confidence within a few weeks is common, with gains in everyday movement building over 8 to 12 weeks of regular practice."
         ]
       },
@@ -354,9 +354,9 @@ export const guides: Guide[] = [
       {
         heading: "What speeds up progress",
         paragraphs: [
-          "The biggest factor is what you do between sessions. A short exercise routine done most days usually matters more than any single appointment, and our [exercise library](/exercises) has videos and instructions you can follow at home.",
-          "Starting with a clear explanation helps too. When you understand what is going on, you are more likely to keep moving and less likely to stop the exercises the moment the pain eases.",
-          "Tell us honestly what is hard to do. A plan that fits your week gets followed, and a perfect plan that does not fit your week does not."
+          "The biggest factor is what you do between sessions. In our plans we ask you to do a short routine of exercises between appointments, and our [exercise library](/exercises) has videos and instructions you can follow at home.",
+          "We start with a clear explanation of what is going on, so that you know why each exercise is in your plan.",
+          "Tell us what is hard to do, and we will adjust the plan so that it fits into your week."
         ]
       },
       {
@@ -382,7 +382,7 @@ export const guides: Guide[] = [
       },
       {
         q: "Is one physio session enough?",
-        a: "Sometimes. A first session gives you an explanation and a plan, and some people do well on their own from there. If the problem has lasted a long time, or you need your plan adjusted as you improve, you will probably want follow-ups."
+        a: "Possibly. A first session gives you an explanation and a plan to follow yourself. If the problem has lasted a long time, or you want your plan adjusted as you improve, follow-ups can help."
       },
       {
         q: "How long does recovery after surgery take?",
@@ -422,7 +422,7 @@ export const guides: Guide[] = [
         heading: "What the latest figures show",
         paragraphs: [
           "Public Health Scotland published its latest report on allied health professional musculoskeletal waiting times on 23 June 2026, with data to 31 March 2026. Allied health professional services include physiotherapy, but also other professions, so the figures do not describe physiotherapy on its own.",
-          "Between August 2025, when new guidance took full effect for completed waits, and March 2026, on average 52.4% of patients were seen within four weeks of referral. This figure counts patients who have already been seen.",
+          "Between August 2025, when new guidance took full effect for completed waits, and March 2026, on average 52.4% of patients were seen within four weeks. This figure counts patients who have already been seen.",
           "At 31 March 2026, there were 75,128 patients waiting to be seen. A separate figure, 36.5%, covers people who were still waiting rather than those already seen, and it is a different measure from the 52.4%. We do not mix the two here, and you should be careful if you see them side by side elsewhere."
         ]
       },
@@ -452,7 +452,7 @@ export const guides: Guide[] = [
       {
         heading: "Going private is an option",
         paragraphs: [
-          "Some people use the NHS for some needs and book a private service when they want to be seen sooner. That is a personal choice, and you can still join the NHS list at the same time.",
+          "Some people use the NHS for some needs and book a private service when they want to be seen sooner. That is a personal choice. If you are already on an NHS waiting list, ask your health board whether you can stay on it while you see someone privately.",
           "PhysioOnClick offers video appointments with a physiotherapist, and you do not need a referral. Online care does not suit every problem, and we will tell you if you need to be seen in person. See [how online physiotherapy works](/how-online-physiotherapy-works) and the [pricing page](/pricing) to decide whether it suits you."
         ]
       }
