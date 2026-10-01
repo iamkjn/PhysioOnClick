@@ -29,13 +29,30 @@ function exercisePageUrl(slug: string): string {
   return absoluteUrl(`/exercises/${encodeURIComponent(slug)}`);
 }
 
+/**
+ * Iframe height for this exercise, so short exercises don't sit above a blank
+ * gap and long ones don't scroll inside the box. Fitted (with headroom) to
+ * rendered heights at a 360px-wide phone column, the tallest case:
+ * clam-shell 665px, sit-to-stand-control 747px, full-body-stretch-routine 932px.
+ */
+export function embedHeight(exercise: Exercise): number {
+  const steps = exercise.steps ?? [];
+  const chars =
+    (exercise.setup?.length ?? 0) +
+    steps.reduce((sum, step) => sum + step.length, 0) +
+    splitMistakes(exercise.mistakes ?? []).safety.length +
+    formatDosage(resolveDosage(exercise)).length;
+  const estimate = 464 + 0.42 * chars + 8 * steps.length;
+  return Math.min(1100, Math.max(600, Math.ceil(estimate / 20) * 20));
+}
+
 export function buildEmbedSnippet(exercise: Exercise): string {
   const title = escapeHtml(exercise.title);
   const src = escapeHtml(absoluteUrl(embedPath(exercise.slug)));
   const page = escapeHtml(exercisePageUrl(exercise.slug));
   const home = escapeHtml(absoluteUrl("/"));
   return (
-    `<iframe src="${src}" title="${title} exercise - PhysioOnClick" width="100%" height="900" loading="lazy" style="border:0;max-width:520px;width:100%"></iframe>\n` +
+    `<iframe src="${src}" title="${title} exercise - PhysioOnClick" width="100%" height="${embedHeight(exercise)}" loading="lazy" style="border:0;max-width:520px;width:100%"></iframe>\n` +
     `<p style="font-size:14px;margin:6px 0 0"><a href="${page}">${title} exercise</a> by <a href="${home}">PhysioOnClick</a></p>`
   );
 }
@@ -79,7 +96,9 @@ function fullGuideUrl(slug: string): string {
 
 export function renderEmbedHtml(exercise: Exercise): string {
   const title = escapeHtml(exercise.title);
-  const image = escapeHtml(absoluteUrl(exerciseImageUrl(exercise.id, "full")));
+  // Relative on purpose: the embed document is always served from our own
+  // origin, so this resolves there regardless of which host built the page.
+  const image = escapeHtml(exerciseImageUrl(exercise.id, "full"));
   const steps = (exercise.steps ?? []).map((s) => `<li>${escapeHtml(s)}</li>`).join("");
   const dose = formatDosage(resolveDosage(exercise));
   const { safety } = splitMistakes(exercise.mistakes ?? []);

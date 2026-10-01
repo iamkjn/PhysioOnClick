@@ -4,6 +4,7 @@ import { getExerciseBySlug } from "@/lib/exercise-library";
 import type { Exercise } from "@/lib/exercises";
 import {
   buildEmbedSnippet,
+  embedHeight,
   embedPath,
   escapeHtml,
   renderEmbedDisabledHtml,
@@ -26,10 +27,10 @@ describe("exercise embed", () => {
     expect(afterIframe).toContain('<a href="https://physioonclick.co.uk/">PhysioOnClick</a>');
   });
 
-  it("snippet is pure ASCII for an ASCII title and is 900px tall", () => {
+  it("snippet is pure ASCII for an ASCII title and sized to its content", () => {
     const snippet = buildEmbedSnippet({ ...clam, title: "Clam Shell" });
     expect(/^[\x00-\x7F]*$/.test(snippet)).toBe(true);
-    expect(snippet).toContain('height="900"');
+    expect(snippet).toContain(`height="${embedHeight(clam)}"`);
   });
 
   it("escapes hostile titles", () => {
@@ -46,7 +47,7 @@ describe("exercise embed", () => {
     expect(html).toContain('<meta name="robots" content="noindex">');
     expect(html).toContain('<link rel="canonical" href="https://physioonclick.co.uk/exercises/clam-shell">');
     expect(html).toContain("© physioonclick.co.uk");
-    expect(html).toContain("/exercise-images/");
+    expect(html).toMatch(/<img src="\/exercise-images\//);
     expect(html).toContain("utm_source=embed");
     expect(html).toContain('target="_blank"');
     expect(html.toLowerCase()).not.toContain("<script");
@@ -75,5 +76,18 @@ describe("splitMistakes", () => {
     expect(splitMistakes(["Rushing"]).safety).toBe(
       "Stop and seek advice if an exercise causes sharp or lasting pain.",
     );
+  });
+});
+
+describe("embedHeight", () => {
+  // Rendered heights measured in a browser at a 360px-wide column.
+  it.each([
+    ["clam-shell", 665],
+    ["sit-to-stand-control", 747],
+    ["full-body-stretch-routine", 932],
+  ])("leaves room for %s (%ipx at 360px wide)", (slug, measured) => {
+    const h = embedHeight(getExerciseBySlug(slug) as Exercise);
+    expect(h).toBeGreaterThanOrEqual(measured);
+    expect(h).toBeLessThanOrEqual(measured + 120);
   });
 });
