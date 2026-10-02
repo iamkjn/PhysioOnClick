@@ -427,7 +427,7 @@ export const pricing: PricingItem[] = [
     id: "bundle-4",
     title: "4 Session Bundle",
     duration: "Flexible",
-    price: 150,
+    price: 120,
     description: "Cost-effective package for structured rehabilitation.",
     mode: "Package"
   },
@@ -435,7 +435,7 @@ export const pricing: PricingItem[] = [
     id: "bundle-8",
     title: "8 Session Bundle",
     duration: "Flexible",
-    price: 280,
+    price: 225,
     description: "Longer-term rehabilitation plan with review milestones.",
     mode: "Package"
   }
@@ -445,6 +445,21 @@ export const pricing: PricingItem[] = [
  *  the figure quoted in page titles and descriptions (not the cheaper follow-up). */
 export const initialAssessmentPrice =
   pricing.find((item) => item.id === "initial-assessment")?.price ?? 0;
+
+const followUpItemPrice = pricing.find((item) => item.id === "follow-up")?.price ?? 0;
+
+/** Sessions in a package, read from its title ("4 Session Bundle" -> 4). */
+export function bundleSessionCount(item: PricingItem): number {
+  return Number(item.title.match(/\d+/)?.[0] ?? 0);
+}
+
+/** What the same sessions cost booked one at a time. A bundle's first session
+ *  is the 60-min initial assessment (see lib/cal-services.ts), the rest are
+ *  follow-ups — so a bundle only "saves" if it beats this figure. */
+export function payAsYouGoPrice(sessionCount: number): number {
+  if (sessionCount <= 0) return 0;
+  return initialAssessmentPrice + (sessionCount - 1) * followUpItemPrice;
+}
 
 // Deliberately empty: only genuine, verifiable patient reviews may appear on the
 // site (fake/placeholder reviews are unlawful under the DMCC Act 2024). Real
