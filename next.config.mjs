@@ -88,7 +88,6 @@ const nextConfig = {
           },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
           // Deny-by-default Permissions-Policy. Camera is re-enabled only
           // for /patient/:path* below, where components/motion-check.tsx
           // and components/face-motion-check.tsx call
@@ -106,6 +105,13 @@ const nextConfig = {
               "camera=(), microphone=(), geolocation=(), usb=(), midi=(), payment=(self)",
           },
         ],
+      },
+      {
+        // Everything except the embeddable exercise cards (/embed/*), which
+        // exist to be framed by other sites. X-Frame-Options has no
+        // allow-all value, so /embed simply doesn't get it.
+        source: "/:path((?!embed/).*)",
+        headers: [{ key: "X-Frame-Options", value: "SAMEORIGIN" }],
       },
       {
         // Re-enable camera for the patient portal only (see above).
@@ -131,13 +137,25 @@ const nextConfig = {
       //                             redirect, listed only as a safety margin)
       //   upgrade-insecure-requests — never load http:// subresources
       {
-        source: "/:path*",
+        source: "/:path((?!embed/).*)",
         headers: [
           {
             key: "Content-Security-Policy",
             value:
               "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; upgrade-insecure-requests",
           },
+        ],
+      },
+      {
+        // Embeddable exercise cards: framable anywhere, never indexed (the
+        // canonical exercise page is the one that should rank).
+        source: "/embed/:path+",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors *; object-src 'none'; base-uri 'self'; upgrade-insecure-requests",
+          },
+          { key: "X-Robots-Tag", value: "noindex" },
         ],
       },
 

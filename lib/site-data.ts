@@ -444,7 +444,7 @@ export const pricing: PricingItem[] = [
     id: "bundle-4",
     title: "4 Session Bundle",
     duration: "Flexible",
-    price: 150,
+    price: 120,
     description: "Cost-effective package for structured rehabilitation.",
     mode: "Package"
   },
@@ -452,7 +452,7 @@ export const pricing: PricingItem[] = [
     id: "bundle-8",
     title: "8 Session Bundle",
     duration: "Flexible",
-    price: 280,
+    price: 225,
     description: "Longer-term rehabilitation plan with review milestones.",
     mode: "Package"
   }
@@ -471,6 +471,19 @@ export function withPrices(text: string): string {
   return text
     .replaceAll("{INITIAL_PRICE}", `£${initialAssessmentPrice}`)
     .replaceAll("{FOLLOW_UP_PRICE}", `£${followUpPrice}`);
+}
+
+/** Sessions in a package, read from its title ("4 Session Bundle" -> 4). */
+export function bundleSessionCount(item: PricingItem): number {
+  return Number(item.title.match(/\d+/)?.[0] ?? 0);
+}
+
+/** What the same sessions cost booked one at a time. A bundle's first session
+ *  is the 60-min initial assessment (see lib/cal-services.ts), the rest are
+ *  follow-ups — so a bundle only "saves" if it beats this figure. */
+export function payAsYouGoPrice(sessionCount: number): number {
+  if (sessionCount <= 0) return 0;
+  return initialAssessmentPrice + (sessionCount - 1) * followUpPrice;
 }
 
 // Deliberately empty: only genuine, verifiable patient reviews may appear on the

@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { track } from "@/lib/analytics";
 import { auth } from "@/lib/firebase";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
+import { pricing } from "@/lib/site-data";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -71,8 +72,16 @@ const SERVICES = [
   },
 ];
 
-const PRICING_TEXT =
-  "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £40\n• Online Follow-Up (30 min) — £30\n\nPackages:\n• 4-Session Bundle — £150\n• 8-Session Bundle — £280\n\nNew patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.";
+// Built from lib/site-data.ts so the chat can never quote a stale price.
+const PRICING_TEXT = [
+  "Online sessions (UK-wide):",
+  ...pricing.filter((p) => p.mode === "Online").map((p) => `• ${p.title} (${p.duration}) — £${p.price}`),
+  "",
+  "Packages:",
+  ...pricing.filter((p) => p.mode === "Package").map((p) => `• ${p.title} — £${p.price}`),
+  "",
+  "New patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.",
+].join("\n");
 
 const INSURANCE_TEXT =
   "Yes, PhysioOnClick provides insurance-ready PDF invoices for paid sessions.\n\nHow to claim:\n• Download your invoice from your patient account under Invoices, or use the copy emailed after payment.\n• Submit the PDF to your UK health insurer through their claim portal or app.\n• Add your policy number, claim reference and any extra details your insurer asks for.\n\nReimbursement depends on your own policy, so it is worth checking your cover before booking if you are unsure.";

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getPublicPricing } from "@/lib/public-content";
-import { initialAssessmentPrice, pricing } from "@/lib/site-data";
+import { bundleSessionCount, initialAssessmentPrice, payAsYouGoPrice, pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -23,7 +23,6 @@ export default function PricingPage() {
   const pricing = getPublicPricing();
   const online = pricing.filter((item) => item.mode === "Online");
   const packages = pricing.filter((item) => item.mode === "Package");
-  const followUpPrice = online.find((item) => item.id === "follow-up")?.price ?? 0;
   const included = [
     "Personalised treatment plan",
     "Email support between sessions",
@@ -79,8 +78,7 @@ export default function PricingPage() {
           </Reveal>
           <div className="pricing-grid pricing-grid-two">
             {packages.map((item, i) => {
-              const sessionCount = Number(item.title.match(/\d+/)?.[0] ?? 0);
-              const savings = sessionCount * followUpPrice - item.price;
+              const savings = payAsYouGoPrice(bundleSessionCount(item)) - item.price;
               return (
                 <Reveal key={item.id} direction="up" delay={i * 100}>
                   <article className="simple-package-card" style={{ display: "flex", flexDirection: "column" }}>
@@ -133,7 +131,7 @@ export default function PricingPage() {
           </details>
           <details>
             <summary>Do I need a GP referral, and how quickly can I be seen?</summary>
-            <p>No referral is needed &mdash; you book a live slot yourself, usually within days. For comparison, only 52.4% of NHS Scotland musculoskeletal patients were seen within the four-week target between August 2025 and March 2026 (<a href="https://www.publichealthscotland.scot/publications/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland-quarterly-and-monthly-data-to-31-march-2026/" target="_blank" rel="noopener noreferrer">Public Health Scotland</a>).</p>
+            <p>No referral is needed &mdash; you book a live slot yourself, usually within days. For comparison, only 52.4% of patients seen by NHS Scotland musculoskeletal services (physiotherapy, occupational therapy, podiatry and orthotics) between August 2025 and March 2026 had waited four weeks or less (<a href="https://www.publichealthscotland.scot/publications/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland-quarterly-and-monthly-data-to-31-march-2026/" target="_blank" rel="noopener noreferrer">Public Health Scotland</a>).</p>
           </details>
           <details>
             <summary>What&rsquo;s the cancellation policy?</summary>

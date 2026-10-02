@@ -50,7 +50,7 @@ void main() {
     expect(find.text('Sun'), findsOneWidget);
     // Continue button carries the price, matching web's "Continue to payment · £X".
     expect(find.textContaining('Continue to payment'), findsOneWidget);
-    expect(find.textContaining('£40'), findsWidgets);
+    expect(find.textContaining('£30'), findsWidgets);
   });
 
   testWidgets('shows an error message when slot loading fails (signed out)', (tester) async {

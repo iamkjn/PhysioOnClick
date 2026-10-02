@@ -9,14 +9,19 @@ import {
   allExerciseSlugs,
   programmesForExercise,
   relatedExercises,
+  bodyAreaForExercise,
+  moreExercisesInArea,
 } from "@/lib/exercise-library";
 import { formatDosage, hasPrescribedDose, resolveDosage } from "@/lib/exercises";
+import { splitMistakes } from "@/lib/exercise-safety-line";
+import { buildEmbedSnippet, EMBEDS_ENABLED, embedPath } from "@/lib/exercise-embed";
 import { initialAssessmentPrice } from "@/lib/site-data";
 import { breadcrumbs, exerciseWebPage } from "@/lib/structured-data";
 import { AddToPlanButton } from "@/components/exercise-library/add-to-plan-button";
 import { ByLine } from "@/components/exercise-library/by-line";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
+import { EmbedExerciseButton } from "@/components/exercise-library/embed-exercise-button";
 import { ExerciseImage } from "@/components/exercise-image";
 import { ExerciseVideo } from "@/components/exercise-library/exercise-video";
 import { Reveal } from "@/components/reveal";
@@ -73,25 +78,6 @@ export async function generateMetadata({
   };
 }
 
-// The safety line is the final `mistakes` entry when it reads as a caution
-// ("stop", "seek", "pain", "don't push"); otherwise every mistake renders
-// normally and the callout carries a generic caution. Deterministic so the
-// static export and the test agree.
-const SAFETY_CAUTION = /\b(stop|seek|pain|don'?t push|do not push)\b/i;
-const GENERIC_SAFETY =
-  "Stop and seek advice if an exercise causes sharp or lasting pain.";
-
-function splitMistakes(mistakes: string[]): {
-  ordinary: string[];
-  safety: string;
-} {
-  const last = mistakes[mistakes.length - 1];
-  if (last && SAFETY_CAUTION.test(last)) {
-    return { ordinary: mistakes.slice(0, -1), safety: last };
-  }
-  return { ordinary: mistakes, safety: GENERIC_SAFETY };
-}
-
 export default async function ExerciseDetailPage({
   params,
 }: {
@@ -107,6 +93,8 @@ export default async function ExerciseDetailPage({
   const path = `/exercises/${slug}`;
   const hubs = conditionsForExercise(slug);
   const related = relatedExercises(slug, 4);
+  const area = bodyAreaForExercise(slug);
+  const moreInArea = moreExercisesInArea(slug, 12, new Set(related.map((item) => item.slug)));
   const programmes = programmesForExercise(slug);
   const helpsWith = exercise.helpsWith ?? [];
   const dose = formatDosage(resolveDosage(exercise));
@@ -255,6 +243,14 @@ export default async function ExerciseDetailPage({
               exerciseSlug={exercise.slug}
               exerciseTitle={exercise.title}
             />
+            {EMBEDS_ENABLED ? (
+              <EmbedExerciseButton
+                slug={exercise.slug}
+                title={exercise.title}
+                snippet={buildEmbedSnippet(exercise)}
+                previewSrc={embedPath(exercise.slug)}
+              />
+            ) : null}
           </div>
         </div>
       </section>
@@ -354,6 +350,26 @@ export default async function ExerciseDetailPage({
               <ExerciseCard key={item.slug} exercise={item} />
             ))}
           </div>
+        </section>
+      ) : null}
+
+      {area && moreInArea.length ? (
+        <section className="page-section stack">
+          <div className="section-heading">
+            <h2>More {area.label.toLowerCase()} exercises</h2>
+          </div>
+          <ul className="exlib-link-list">
+            {moreInArea.map((item) => (
+              <li key={item.slug}>
+                <Link href={`/exercises/${item.slug}`}>{item.title}</Link>
+              </li>
+            ))}
+          </ul>
+          <p>
+            <Link href={`/exercises/area/${area.key}`}>
+              See all {area.label.toLowerCase()} exercises
+            </Link>
+          </p>
         </section>
       ) : null}
 
