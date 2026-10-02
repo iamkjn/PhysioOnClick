@@ -37,7 +37,7 @@ export const guides: Guide[] = [
     seoDescription:
       "What a private physio session costs in the UK, what changes the price, how online sessions compare, and ways to pay less, with sources and dates checked.",
     answer:
-      "Most UK private physiotherapy appointments cost between about 44 and 125 pounds for a first session, depending on where you go, how long it lasts and whether it is in person or online. At PhysioOnClick, a 60-minute online assessment is {INITIAL_PRICE} and a 30-minute follow-up is {FOLLOW_UP_PRICE}.",
+      "At the four UK providers we checked, prices ranged from 44 pounds (a 30-minute online session) to 125 pounds (a first appointment), depending on where you go, how long it lasts and whether it is in person or online. At PhysioOnClick, a 60-minute online assessment is {INITIAL_PRICE} and a 30-minute follow-up is {FOLLOW_UP_PRICE}.",
     sections: [
       {
         heading: "What changes the price of a physio session",
@@ -71,18 +71,18 @@ export const guides: Guide[] = [
           "Bundles. If you expect to need several sessions, we offer 4 and 8 session bundles, which are a block of sessions booked and paid for together. Work out which option suits you by comparing them with single sessions on the [pricing page](/pricing).",
           "NHS self-referral. Access to NHS musculoskeletal physiotherapy depends on your local health board, which decides whether you can refer yourself or need a referral from a GP. NHS Greater Glasgow and Clyde, for example, lets eligible adults refer themselves. The wait can be long, though. Public Health Scotland reports that between August 2025 and March 2026, on average 52.4% of musculoskeletal patients were seen within four weeks, against a target of 90%. Many people use the NHS for some needs and a private service when they want to be seen sooner.",
           "Health insurance. Some policies pay towards physiotherapy, often with conditions such as pre-authorisation or policy limits. Cover and rules vary, so check with your insurer before you book (see [claiming physiotherapy on health insurance](/guides/claim-physiotherapy-on-health-insurance)). We cannot promise that any insurer will pay.",
-          "Doing the exercises matters as much as the number of sessions. A clear plan that you follow between appointments often means you need fewer visits overall."
+          "Doing the exercises matters as much as the number of sessions. In our plans, we ask you to do your exercises between appointments, and we review progress as we go."
         ]
       }
     ],
     faqs: [
       {
         q: "How much is a physio session in the UK?",
-        a: "A typical private first appointment costs between about 44 and 125 pounds, based on the four providers we checked on 1 October 2026. Follow-ups are usually cheaper. Our own online assessment is {INITIAL_PRICE} and a follow-up is {FOLLOW_UP_PRICE}."
+        a: "At the four providers we checked on 1 October 2026, prices ranged from 44 pounds (a 30-minute online session) to 125 pounds (a first appointment). In the prices we checked, follow-ups cost less than first appointments. Our own online assessment is {INITIAL_PRICE} and a follow-up is {FOLLOW_UP_PRICE}."
       },
       {
         q: "Is online physiotherapy cheaper than seeing a physio in person?",
-        a: "Often, but not always. It depends on the provider. In the prices we checked, one online service charged more than an in-person clinic and another charged less. Compare the session length and what is included, not only the price."
+        a: "It depends on the provider. In the prices we checked, one online service charged more than an in-person clinic and another charged less. Compare the session length and what is included, not only the price."
       },
       {
         q: "Can I get physiotherapy on the NHS instead?",
@@ -331,7 +331,7 @@ export const guides: Guide[] = [
     seoDescription:
       "Honest ranges for how many physiotherapy sessions people need, what speeds up progress, when it is fine to stop, and how our session bundles work.",
     answer:
-      "It depends on your problem. At PhysioOnClick most plans run 4 to 8 sessions across 6 to 10 weeks, with exercises to do on your own in between. Many people start to feel a change within 2 to 3 weekly sessions. Longer-standing problems and recovery after surgery usually take longer.",
+      "It depends on your problem. At PhysioOnClick most plans run 4 to 8 sessions across 6 to 10 weeks, with exercises to do on your own in between. We review progress after 2 to 3 sessions and adjust the plan. Longer-standing problems and recovery after surgery usually take longer.",
     sections: [
       {
         heading: "Typical ranges by situation",

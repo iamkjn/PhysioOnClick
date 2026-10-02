@@ -5,6 +5,7 @@ import { TrackedBookLink } from "@/components/tracked-book-link";
 import { allOnlinePhysioSlugs, getOnlinePhysioPage } from "@/lib/online-physio-pages";
 import { initialAssessmentPrice } from "@/lib/site-data";
 import { practiceRef } from "@/lib/structured-data";
+import { absoluteUrl } from "@/lib/utils";
 
 // CLINICAL REVIEW GATE: draft copy pending Shivaliba Zala's sign-off
 // (docs/seo/phase-b-clinical-review.md). Dev site only until then.
@@ -65,6 +66,8 @@ export default function ScotlandPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebPage",
+            name: "Online Physiotherapy in Scotland",
+            url: absoluteUrl("/online-physiotherapy-scotland"),
             about: practiceRef(),
           }),
         }}
@@ -81,7 +84,7 @@ export default function ScotlandPage() {
           <div className="button-row">
             <TrackedBookLink
               className="button primary"
-              href="/book"
+              href="/book?service=initial-assessment"
               source="scotland_page"
               event="book_now_click"
             >
@@ -130,8 +133,8 @@ export default function ScotlandPage() {
             <a href={NHSGGC_URL} target="_blank" rel="noopener noreferrer">
               lets eligible adults self-refer
             </a>
-            . The NHS is a good first option for many people, and private video physiotherapy is another choice if
-            you would rather book directly.
+            . You can try the NHS route first, and private video physiotherapy is another choice if you would rather
+            book directly.
           </p>
         </section>
       </Reveal>

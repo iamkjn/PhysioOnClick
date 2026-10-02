@@ -235,7 +235,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "According to the NHS, most neck pain only lasts a few weeks. If it has not gone after a few weeks, or it is getting worse, see a GP rather than waiting, and let us know if you are already working with us.",
     inPersonInstead: [
       "Call 999 if you have chest pain that spreads to your neck, jaw or arms, or chest pain that feels tight or squeezing. Do not drive yourself.",
-      "Call 999 if you have weakness or numbness in your arms, face or speech changes, blurred vision or loss of sight, or sudden dizziness, as these can be signs of a stroke. Do not drive yourself to A&E.",
+      "Call 999 if you have sudden weakness or numbness in an arm or down one side of your body, a drooping face or trouble speaking (possible stroke). Do not drive yourself. Call 999 as well for blurred vision, loss of sight or sudden dizziness, which can also be stroke signs.",
       "Call 999 or go to A&E, or call 111 if you are not sure, if you notice changes in your balance or co-ordination.",
       "Call 999 or go to A&E, or call 111 if you are not sure, if your neck pain started after an accident or injury.",
       "Call 999 or go to A&E, or call 111 if you are not sure, if you have dizziness or visual symptoms when you move your neck.",
@@ -257,7 +257,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "What if I get pins and needles in my arm?",
-        a: "Tell us at booking and at the start of the session. The NHS says to see a GP for pins and needles or a cold arm. Weakness or numbness in both arms, or dizziness or blurred vision, needs a 999 call (these can be stroke signs). Neck pain after an injury, or with balance changes, needs A&E or a 111 call. None of these are suited to a video appointment.",
+        a: "Tell us at booking and at the start of the session. The NHS says to see a GP for pins and needles or a cold arm. Call 999 if you have sudden weakness or numbness in an arm or down one side of your body, a drooping face or trouble speaking (possible stroke). Do not drive yourself. Dizziness or blurred vision also needs a 999 call. Neck pain after an injury, or with balance changes, needs A&E or a 111 call. None of these are suited to a video appointment.",
       },
     ],
     sources: [
@@ -313,6 +313,9 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Go to A&E if your shoulder looks out of place or has changed shape, or you think you have dislocated it. Call 999 if you cannot get there yourself. Do not drive yourself.",
       "Go to A&E if you fell and now cannot move or lift your arm. Call 999 if you cannot get there yourself.",
       "Ask for an urgent GP appointment or get help from NHS 111 if your shoulder pain is sudden or very bad, or started after an injury such as a fall.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if you have a hot or cold arm, or no feeling in the arm.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if you have severe pain in both shoulders.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if you are feeling feverish or unwell with your shoulder pain.",
       "If you are not sure how urgent your symptoms are, call 111 or speak to a GP before booking a video appointment.",
     ],
     faqs: [
@@ -361,7 +364,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "That finding is specific. It covers adults with chronic knee pain consistent with osteoarthritis in that trial, not every knee problem, and it does not describe our service. We mention it because it is relevant to knee pain from osteoarthritis, and our plans for knee osteoarthritis follow the same ground: exercise, activity and education.",
       "NICE guidance on osteoarthritis lists therapeutic exercise, and weight management where appropriate, as core treatments, with information and support. Our plans start there. On camera we watch how you rise from a chair, climb a step and lower into a squat, and we use what we see to choose exercises for the muscles around your knee.",
       "Knee pain has other causes, and we ask about them. If your pain is mainly at the front of the knee, we assess that too, using the [single leg decline squat check](/exercises/tests/single-leg-decline-squat-check) where it is safe for you to try.",
-      "We cannot feel your knee or test its ligaments by hand. If you have had an injury, or the knee locks or gives way, the NHS advises calling 111, and we will ask you to be seen in person instead of by video.",
+      "We cannot feel your knee or test its ligaments by hand. If the knee locks, gives way or painfully clicks, the NHS advises getting help from 111, and we will ask you to be seen in person instead of by video.",
     ],
     assessmentChecks: [
       "Where the pain is felt, whether at the front, the sides or all around the joint, and what brings it on, such as stairs, walking or sitting for long.",
