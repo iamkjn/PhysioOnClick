@@ -5564,7 +5564,8 @@ textarea:focus {
 
 .admin-growth-stat.is-primary svg,
 .admin-growth-stat.is-primary span,
-.admin-growth-stat.is-primary strong {
+.admin-growth-stat.is-primary strong,
+.admin-growth-stat.is-primary small {
   color: white;
 }
 
@@ -5580,6 +5581,24 @@ textarea:focus {
   font-family: var(--font-sans);
   font-size: 30px;
   line-height: 1;
+}
+
+.admin-growth-stat small {
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.admin-growth-basis {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.75fr) minmax(0, 1.25fr);
+  gap: var(--space-4);
+}
+
+.admin-growth-basis .admin-growth-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .admin-growth-grid {
@@ -5672,6 +5691,13 @@ textarea:focus {
   background: #fbfdfd;
 }
 
+.admin-growth-timeline li {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.25rem;
+}
+
 .admin-growth-list span,
 .admin-growth-timeline li {
   min-width: 0;
@@ -5697,6 +5723,20 @@ textarea:focus {
   color: #667a83;
   font-family: var(--font-sans);
   font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-growth-timeline em {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: #365563;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 650;
+  line-height: 1.4;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -5780,6 +5820,11 @@ textarea:focus {
   }
 
   .admin-growth-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-growth-basis,
+  .admin-growth-basis .admin-growth-list {
     grid-template-columns: 1fr;
   }
 

@@ -24,6 +24,9 @@ export function renderEmailLayout(input: {
   bodyHtml: string;
 }): string {
   const addressLine = invoiceIssuer.addressLines.filter(Boolean).join(", ");
+  const contactLine = [PRACTICE_PHONE, `<a href="mailto:${invoiceIssuer.contactEmail}" style="color:#7C8FA0;">${invoiceIssuer.contactEmail}</a>`]
+    .filter(Boolean)
+    .join(" &middot; ");
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -64,7 +67,7 @@ export function renderEmailLayout(input: {
                 <p style="margin:0 0 12px; font-size:12.5px; color:#5B7184;">${founder.credentials.join(" &middot; ")}</p>
                 <p style="margin:0; font-size:12px; color:#7C8FA0; line-height:1.6;">
                   ${invoiceIssuer.tradingName}, ${addressLine}<br />
-                  ${PRACTICE_PHONE} &middot; <a href="mailto:${invoiceIssuer.contactEmail}" style="color:#7C8FA0;">${invoiceIssuer.contactEmail}</a>
+                  ${contactLine}
                 </p>
                 <p style="margin:12px 0 0; font-size:11.5px; color:#9AA9B6;">
                   You're receiving this because you have an appointment or account with ${invoiceIssuer.tradingName}.
@@ -85,12 +88,13 @@ export function renderEmailLayout(input: {
  * itself a spam-scoring signal, and it's the accessible fallback besides. */
 export function toPlainText(bodyText: string): string {
   const addressLine = invoiceIssuer.addressLines.filter(Boolean).join(", ");
+  const contactLine = [PRACTICE_PHONE, invoiceIssuer.contactEmail].filter(Boolean).join(" · ");
   return [
     bodyText.trim(),
     "",
     "—",
     `${founder.name}, ${founder.credentials.join(", ")}`,
     `${invoiceIssuer.tradingName}, ${addressLine}`,
-    `${PRACTICE_PHONE} · ${invoiceIssuer.contactEmail}`,
+    contactLine,
   ].join("\n");
 }

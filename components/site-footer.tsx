@@ -43,7 +43,7 @@ export function SiteFooter() {
         <div>
           <h4>Contact</h4>
           <Link href="/glasgow-physiotherapist">Online physio for Glasgow patients</Link>
-          <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>
+          {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a> : null}
           <a href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a>
           <Link href="/contact">Contact form</Link>
         </div>
