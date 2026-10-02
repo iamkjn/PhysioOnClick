@@ -8,6 +8,7 @@ import { getGuide } from "@/lib/guides";
 import {
   allOnlinePhysioSlugs,
   getOnlinePhysioPage,
+  sentenceName,
 } from "@/lib/online-physio-pages";
 import { initialAssessmentPrice, services, withPrices } from "@/lib/site-data";
 import { breadcrumbs, onlinePhysioWebPage } from "@/lib/structured-data";
@@ -131,7 +132,7 @@ export default async function OnlinePhysioLandingPage({
         </p>
 
         <section>
-          <h2>How online physiotherapy works for {page.name.toLowerCase()}</h2>
+          <h2>How online physiotherapy works for {sentenceName(page)}</h2>
           {page.howOnlineWorks.map((p, i) => (
             <p key={i}>
               <InlineText text={withPrices(p)} />

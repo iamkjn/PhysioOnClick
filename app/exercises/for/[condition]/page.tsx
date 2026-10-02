@@ -8,7 +8,7 @@ import {
   programForCondition,
   selfTestsForCondition,
 } from "@/lib/exercise-library";
-import { onlinePhysioPageForHub } from "@/lib/online-physio-pages";
+import { onlinePhysioPageForHub, sentenceName } from "@/lib/online-physio-pages";
 import { pricing } from "@/lib/site-data";
 import { breadcrumbs, conditionWebPage } from "@/lib/structured-data";
 import { ByLine } from "@/components/exercise-library/by-line";
@@ -285,7 +285,7 @@ export default async function ConditionHubPage({
               <p className="exlib-cta-card__body">
                 Want a physio to guide you?{" "}
                 <Link href={`/online-physiotherapy-for/${onlinePhysio.slug}`}>
-                  Online physiotherapy for {onlinePhysio.name.toLowerCase()}
+                  Online physiotherapy for {sentenceName(onlinePhysio)}
                 </Link>
               </p>
             ) : null}

@@ -1,4 +1,4 @@
-import { onlinePhysioPages, getOnlinePhysioPage, allOnlinePhysioSlugs, onlinePhysioPageForHub } from "@/lib/online-physio-pages";
+import { onlinePhysioPages, getOnlinePhysioPage, allOnlinePhysioSlugs, onlinePhysioPageForHub, sentenceName } from "@/lib/online-physio-pages";
 import { getCondition, getSelfTest } from "@/lib/exercise-library";
 import { getArticle } from "@/lib/blog";
 import { getGuide } from "@/lib/guides";
@@ -18,7 +18,7 @@ describe("online physio landing pages", () => {
     for (const p of onlinePhysioPages) {
       expect(p.slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
       expect(getOnlinePhysioPage(p.slug)).toBe(p);
-      expect(p.h1.toLowerCase().startsWith("online physiotherapy for"), p.slug).toBe(true);
+      expect(/^online physiotherapy (for|after) /i.test(p.h1), p.slug).toBe(true);
     }
     expect(getOnlinePhysioPage("nope")).toBeNull();
   });
@@ -84,6 +84,32 @@ describe("online physio landing pages", () => {
   });
 });
 
+describe("phase C post-surgery pages and sentenceName", () => {
+  it("sentenceName uses nameInSentence, else the lowercased name", () => {
+    const base = getOnlinePhysioPage("knee-pain")!;
+    expect(sentenceName({ ...base, name: "Parkinson's", nameInSentence: undefined })).toBe("parkinson's");
+    expect(sentenceName({ ...base, name: "Parkinson's", nameInSentence: "Parkinson's" })).toBe("Parkinson's");
+    expect(sentenceName(getOnlinePhysioPage("knee-replacement-rehab")!)).toBe("knee replacement");
+  });
+  it("the three post-surgery slugs exist with 'after' h1s", () => {
+    for (const s of ["knee-replacement-rehab", "hip-replacement-rehab", "rotator-cuff-repair-rehab"]) {
+      const p = getOnlinePhysioPage(s);
+      expect(p, s).not.toBeNull();
+      expect(p!.h1.startsWith("Online physiotherapy after "), s).toBe(true);
+      expect(p!.serviceSlug).toBe("post-surgical-rehabilitation");
+      const t = allText(p!).toLowerCase();
+      expect(t, s).toContain("surgical team");
+      expect(t, s).toMatch(/999/);
+    }
+    expect(getOnlinePhysioPage("rotator-cuff-repair-rehab")?.blogSlugs ?? []).not.toContain("online-physiotherapy-after-acl-reconstruction");
+    expect(getOnlinePhysioPage("knee-replacement-rehab")?.faqs.map((f) => f.a).join(" ")).toContain("/blog/online-physiotherapy-after-acl-reconstruction");
+  });
+  it("post-surgical service links the three slugs", () => {
+    const svc = services.find((s) => s.slug === "post-surgical-rehabilitation")!;
+    expect(svc.onlinePhysioSlugs).toEqual(["knee-replacement-rehab", "hip-replacement-rehab", "rotator-cuff-repair-rehab"]);
+  });
+});
+
 describe("phase B internal linking helpers", () => {
   it("onlinePhysioPageForHub reverse-looks-up by exercise hub slug", () => {
     expect(onlinePhysioPageForHub("sciatica")?.slug).toBe("sciatica");
@@ -92,7 +118,7 @@ describe("phase B internal linking helpers", () => {
   it("every service onlinePhysioSlugs entry resolves", () => {
     const withSlugs = services.filter((s) => s.onlinePhysioSlugs?.length);
     expect(withSlugs.map((s) => s.slug).sort()).toEqual(
-      ["musculoskeletal-physiotherapy", "online-rehab-programmes"],
+      ["musculoskeletal-physiotherapy", "online-rehab-programmes", "post-surgical-rehabilitation"],
     );
     for (const s of withSlugs) {
       for (const slug of s.onlinePhysioSlugs!) {

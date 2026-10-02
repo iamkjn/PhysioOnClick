@@ -156,6 +156,7 @@ export const services: Service[] = [
   },
   {
     slug: "post-surgical-rehabilitation",
+    onlinePhysioSlugs: ["knee-replacement-rehab", "hip-replacement-rehab", "rotator-cuff-repair-rehab"],
     title: "Post-Surgical Rehabilitation",
     image: serviceImagePath("post-surgical-rehabilitation"),
     summary:
