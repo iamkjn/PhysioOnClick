@@ -676,6 +676,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     inPersonInstead: [
       "Call 999 or go to A&E if you have pain and swelling in your leg and difficulty breathing or chest pains. This could be a blood clot in the lungs.",
       "Do not drive yourself to A&E. Ask someone to drive you, or call 999.",
+      "Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.",
       "Ask for an urgent GP appointment or call NHS 111 if you have had a knee replacement and have throbbing or cramping pain in your leg.",
       "Ask for an urgent GP appointment or call NHS 111 if you have a high temperature, or feel hot, cold or shivery, or if the wound is oozing or has pus.",
       "Ask for an urgent GP appointment or call NHS 111 if the redness, tenderness, swelling or pain in your knee is not getting better or is getting worse. The NHS says these can be signs of infection or a blood clot.",
@@ -712,6 +713,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
         label: "NHS: DVT (deep vein thrombosis)",
         url: "https://www.nhs.uk/conditions/deep-vein-thrombosis-dvt/",
       },
+      { label: "NHS: Pulmonary embolism", url: "https://www.nhs.uk/conditions/pulmonary-embolism/" },
     ],
     exerciseHubSlug: "after-knee-replacement",
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
@@ -756,10 +758,12 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     inPersonInstead: [
       "Call 999 or go to A&E if you have pain and swelling in your hip or leg and difficulty breathing or chest pains. This could be a blood clot in the lungs.",
       "Do not drive yourself to A&E. Ask someone to drive you, or call 999.",
+      "Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.",
+      "If you have fallen and have severe hip pain, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after the fall, the NHS says to call 999 or go to A&E. Do not drive yourself.",
       "Ask for an urgent GP appointment or call NHS 111 if you have throbbing or cramping pain in your hip or leg.",
       "Ask for an urgent GP appointment or call NHS 111 if you have a high temperature, or feel hot, cold or shivery, or if the wound is oozing or has pus.",
       "Ask for an urgent GP appointment or call NHS 111 if the redness, tenderness, swelling or pain in your hip or leg is not getting better or is getting worse. The NHS says these can be signs of infection or a blood clot.",
-      "If you are worried your hip may have dislocated, contact your GP or care team. Wound checks and any complication go back to your surgical team, not to an online rehab session.",
+      "If you are worried your hip may have dislocated, contact your GP or care team. If it follows a fall and you have severe hip pain or cannot put weight on the leg, use the 999 line above instead. Wound checks and any complication go back to your surgical team, not to an online rehab session.",
     ],
     faqs: [
       {
@@ -792,6 +796,8 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
         label: "NHS: DVT (deep vein thrombosis)",
         url: "https://www.nhs.uk/conditions/deep-vein-thrombosis-dvt/",
       },
+      { label: "NHS: Pulmonary embolism", url: "https://www.nhs.uk/conditions/pulmonary-embolism/" },
+      { label: "NHS: Hip pain", url: "https://www.nhs.uk/symptoms/hip-pain/" },
     ],
     exerciseHubSlug: "after-hip-replacement",
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
@@ -835,6 +841,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     inPersonInstead: [
       "Call 999 or go to A&E if you have chest pain that feels tight or squeezing, or chest pain spreading to your arms, neck or jaw, or severe difficulty breathing. Do not drive yourself.",
       "Call 999 or go to A&E if you have pain and swelling in a leg together with difficulty breathing or chest pains. This could be a blood clot in the lungs. Do not drive yourself to A&E.",
+      "Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.",
       "Ask for an urgent GP appointment or call NHS 111 if you have throbbing or cramping pain in one leg, swelling in one leg, or red, blue or darkened skin around a painful area. These can be signs of DVT, a blood clot in a vein.",
       "Contact your surgical team, and ask for an urgent GP appointment or call NHS 111, if you have a high temperature, feel hot, cold or shivery, or the wound is oozing or has pus. NHS pages on joint replacement list these as signs of infection, and the shoulder surgery leaflet we read gives no separate route, so we apply the same routing.",
       "Wound checks, stitch removal and any complication go back to your surgical team, not to an online rehab session.",
@@ -871,6 +878,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
         url: "https://www.nhs.uk/conditions/deep-vein-thrombosis-dvt/",
       },
       { label: "NHS: Heart attack", url: "https://www.nhs.uk/conditions/heart-attack/" },
+      { label: "NHS: Pulmonary embolism", url: "https://www.nhs.uk/conditions/pulmonary-embolism/" },
     ],
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "post-surgical-rehabilitation",
@@ -1086,6 +1094,8 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     inPersonInstead: [
       "Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.",
       "The NHS MS page says to call 999 or go to A&E if you have sudden weakness or numbness in one arm, loss or blurring of vision, or problems with balance and co-ordination, because these could be signs of a stroke. Do not drive to A&E.",
+      "If you have fallen and have severe hip pain, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after the fall, the NHS says to call 999 or go to A&E. Do not drive yourself.",
+      "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
       "If none of the 999 signs above apply and you think you are having a relapse, our approach is to ask you to contact your MS team or GP. We cannot assess a relapse over video, and we pause exercise with us until they have advised you.",
       "If you have symptoms you think could be MS but have no diagnosis, the NHS says to see a GP. Online sessions with us do not replace a diagnosis.",
       "If you need hands-on therapy or equipment set up in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.",
@@ -1116,6 +1126,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       {
         label: "NHS: Stroke symptoms",
         url: "https://www.nhs.uk/conditions/stroke/symptoms/",
+      },
+      { label: "NHS: Hip pain", url: "https://www.nhs.uk/symptoms/hip-pain/" },
+      {
+        label: "NHS: Head injury and concussion",
+        url: "https://www.nhs.uk/conditions/head-injury-and-concussion/",
       },
     ],
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
@@ -1159,6 +1174,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     inPersonInstead: [
       "Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.",
       "Do not assume a sudden new symptom is part of FND. If it matches the stroke signs above, call 999. For other new or changing symptoms, speak to your GP or neurology team rather than waiting for a physio session.",
+      "If you have fallen and have severe hip pain, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after the fall, the NHS says to call 999 or go to A&E. Do not drive yourself.",
       "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
       "If you have symptoms but no diagnosis, speak to your GP. Diagnosis of FND comes from a neurologist, and online sessions with us do not replace that.",
       "If you need hands-on therapy or care in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.",
@@ -1198,6 +1214,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
         label: "NHS: Stroke symptoms",
         url: "https://www.nhs.uk/conditions/stroke/symptoms/",
       },
+      { label: "NHS: Hip pain", url: "https://www.nhs.uk/symptoms/hip-pain/" },
       {
         label: "NHS: Head injury and concussion",
         url: "https://www.nhs.uk/conditions/head-injury-and-concussion/",

@@ -104,6 +104,19 @@ describe("phase C post-surgery pages and sentenceName", () => {
     expect(getOnlinePhysioPage("rotator-cuff-repair-rehab")?.blogSlugs ?? []).not.toContain("online-physiotherapy-after-acl-reconstruction");
     expect(getOnlinePhysioPage("knee-replacement-rehab")?.faqs.map((f) => f.a).join(" ")).toContain("/blog/online-physiotherapy-after-acl-reconstruction");
   });
+  it("every post-surgery page has a standalone breathing/chest 999 line", () => {
+    for (const s of ["knee-replacement-rehab", "hip-replacement-rehab", "rotator-cuff-repair-rehab"]) {
+      const lines = getOnlinePhysioPage(s)!.inPersonInstead;
+      expect(
+        lines.some((l) => /999/.test(l) && /severe difficulty breathing/i.test(l) && /chest or upper back/i.test(l) && /do not drive/i.test(l)),
+        s,
+      ).toBe(true);
+    }
+  });
+  it("hip replacement carries the hip-fall 999 line", () => {
+    const lines = getOnlinePhysioPage("hip-replacement-rehab")!.inPersonInstead;
+    expect(lines.some((l) => /severe hip pain/.test(l) && /call 999 or go to A&E/.test(l))).toBe(true);
+  });
   it("post-surgical service links the three slugs", () => {
     const svc = services.find((s) => s.slug === "post-surgical-rehabilitation")!;
     expect(svc.onlinePhysioSlugs).toEqual(["knee-replacement-rehab", "hip-replacement-rehab", "rotator-cuff-repair-rehab"]);
@@ -112,6 +125,15 @@ describe("phase C post-surgery pages and sentenceName", () => {
 
 describe("phase C neurological pages", () => {
   const slugs = ["stroke-rehabilitation", "parkinsons", "multiple-sclerosis", "functional-neurological-disorder"];
+  it("all four neuro pages carry the hip-fall 999 line and MS has the head-injury block", () => {
+    for (const s of slugs) {
+      const lines = getOnlinePhysioPage(s)!.inPersonInstead;
+      expect(lines.some((l) => /severe hip pain/.test(l) && /call 999 or go to A&E/.test(l)), s).toBe(true);
+    }
+    const ms = getOnlinePhysioPage("multiple-sclerosis")!;
+    expect(ms.inPersonInstead.some((l) => l.startsWith("After a head injury") && /call 999/.test(l))).toBe(true);
+    expect(ms.sources.some((x) => x.url.includes("head-injury-and-concussion"))).toBe(true);
+  });
   it("the four neuro slugs exist, served by the neuro service, with the right h1 and nameInSentence", () => {
     const expected: Record<string, [string, string]> = {
       "stroke-rehabilitation": ["Online physiotherapy for stroke recovery", "stroke recovery"],
