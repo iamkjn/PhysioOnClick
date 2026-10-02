@@ -69,4 +69,14 @@ describe("guides data", () => {
     for (const s of ["does-online-physiotherapy-work", "can-a-physio-diagnose-over-video",
       "what-online-physiotherapy-cannot-do"]) expect(getGuide(s), s).not.toBeNull();
   });
+  it("has the phase C choosing guide, factual and unranked", () => {
+    const g = getGuide("how-to-choose-an-online-physiotherapist-uk");
+    expect(g).not.toBeNull();
+    const t = allText(g!);
+    expect(t).toContain("2 October 2026");
+    expect(t).toMatch(/may have changed/i);
+    expect(t).toContain("in person");
+    expect(t).toContain("{INITIAL_PRICE}");
+    expect(/\b(cheapest|top|ranked|ranking|worst)\b/i.test(t)).toBe(false);
+  });
 });
