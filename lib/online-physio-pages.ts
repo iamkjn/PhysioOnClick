@@ -651,7 +651,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     howOnlineWorks: [
       "Rehab after a knee replacement runs alongside your operation, not instead of it. Your surgical team decides when exercise-based rehab can begin, and our service guidance is that online sessions pick up once you have been medically cleared. Until then, follow the instructions you were given in hospital.",
       "The NHS says a physiotherapist or occupational therapist explains a home exercise programme before you leave hospital, and that following those exercises early helps long-term strength and movement. Our video sessions build on that programme. We watch you stand, walk with your aid, bend and straighten the knee, and then adjust what you do at home.",
-      "Being at home helps with the practical parts of recovery. We can look at the stairs you actually climb, the chair you sit in and the bathroom you use, and plan exercises and pacing around them. If you are still using crutches or a frame, sessions can be done seated or supported.",
+      "Being at home helps with the practical parts of recovery. We can look at the stairs you actually climb, the chair you sit in and the bathroom you use, and plan exercises and pacing around them. If you are still using crutches or a frame, our service guidance says sessions can be adapted to seated or supported positions.",
       "There are things we cannot do by video. We cannot examine the wound, remove stitches or staples, or check the joint by hand. Our service guidance is clear that wound checks and any complication go straight back to your surgical team, and we will tell you if something we see or hear in a session needs that.",
       "If your knee pain started before surgery, or you are still deciding on an operation, our page on [online physiotherapy for knee pain](/online-physiotherapy-for/knee-pain) covers that stage instead.",
     ],
@@ -661,13 +661,13 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "How the knee bends and straightens, how you stand up from a chair, and how you manage steps or stairs at home, as far as it is safe to try them.",
       "How you walk, whether you use a stick, crutches or a frame, and how much the knee swells or aches after activity.",
       "How you are sleeping, what daily tasks and work you want to get back to, and what you are worried about.",
-      "The warning signs listed below, which we ask about at the start of every session after surgery, because they change what the right next step is.",
+      "The warning signs listed below, which we check for during your sessions, because they change what the right next step is.",
     ],
     typicalPlan: [
       "A plan after knee replacement is built from the exercises your hospital team gave you, then progressed in steps as the knee settles. We set milestones with you for movement, strength and walking, and review them at each follow-up. We ask you to follow your surgeon's protocol where it differs from anything we suggest.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. How many sessions you need depends on your operation and recovery, so we review it with you rather than booking a block in advance.",
       "The NHS gives some typical timings, which depend on you and your surgeon. It says people are usually home 1 to 4 days after the operation, may try walking without an aid after about 6 weeks if ready, usually wait at least 6 weeks to drive after a total replacement (3 weeks after a partial one, checking with your doctor), and return to work after about 6 to 12 weeks depending on the job. It also suggests avoiding heavy household lifting for the first 3 months.",
-      "Your follow-up appointment with the surgical team, which the NHS says is usually about 6 weeks after the operation, stays with them. We can write up your progress if you consent, so that the information is ready for that visit.",
+      "Your follow-up appointment with the surgical team, which the NHS says is usually about 6 weeks after the operation, stays with them. Our service guidance says that, with your consent, a written summary of your rehab progress can be shared with your care team.",
     ],
     timeline:
       "According to the NHS, it may take several months or longer to fully recover from a knee replacement, and recovery from a partial replacement should be shorter than from a total one. Our service guidance gives a similar picture, with progress set mostly by the operation itself. We review how your movement, strength and walking are changing at each session, and we suggest you speak to your surgical team if progress stalls.",
@@ -694,7 +694,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Had ACL surgery instead?",
-        a: "We do not have a landing page for that, but we have a blog post: [online physiotherapy after ACL reconstruction](/blog/online-physiotherapy-after-acl-reconstruction). The same rule applies: rehab starts once your surgical team has cleared it, and complications go back to them.",
+        a: "We cover that in a separate guide: [online physiotherapy after ACL reconstruction](/blog/online-physiotherapy-after-acl-reconstruction). The same rule applies: rehab starts once your surgical team has cleared it, and complications go back to them.",
       },
     ],
     sources: [
@@ -728,7 +728,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     answer:
       "Online rehab after a hip replacement starts once your surgical team has cleared you to begin exercise-based rehab. A video session lets your physiotherapist watch you move and progress your home exercises, while any hip precautions come from your surgeon. Wounds and complications go back to your surgical team. Leg or hip pain and swelling with breathing difficulty or chest pain needs 999.",
     howOnlineWorks: [
-      "A hip replacement is followed by a period of protection and then a gradual return to normal movement. Your surgical team decides when exercise-based rehab can begin. Our service guidance is that online sessions begin once you are medically cleared, and not before.",
+      "Your surgical team may set a period of protection before a gradual return to normal movement. Your surgical team decides when exercise-based rehab can begin. Our service guidance is that online sessions begin once you are medically cleared, and not before.",
       "Any hip precautions after your operation, such as how far you may bend the hip or which positions to avoid, are set by your surgical team. We do not set them. If the advice you were given is unclear, ask your surgeon or ward team, and we will work inside whatever limits they give you.",
       "The NHS says your physiotherapist or occupational therapist explains home exercises before you leave hospital, and that following them helps long-term strength and movement. On video we watch the exercises you have been given, check how you get out of bed, sit down, stand and walk, and adjust the plan as your hip settles.",
       "Home is where much of recovery happens, so we can look at your own bed height, chair, toilet and stairs, and talk through how you manage them. That is a practical advantage of video for this stage, although it does not replace in-person care.",
@@ -741,13 +741,13 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "How you get on and off the bed, in and out of a chair, and up and down stairs, within the advice you have been given.",
       "How you walk, whether you use a stick, crutches or a frame, and how much the hip or leg aches or swells after activity.",
       "Your sleep, your work and the daily tasks you want to return to, and what worries you about moving the hip.",
-      "The warning signs listed below, which we ask about at the start of every session after surgery.",
+      "The warning signs listed below, which we check for during your sessions.",
     ],
     typicalPlan: [
       "Your plan starts from the exercises your hospital team gave you, and builds in small steps as your surgeon's advice allows. We set milestones with you for walking, strength and everyday movement, and review them at each follow-up. Where our suggestions and your surgeon's advice differ, follow your surgeon.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Because recovery differs from person to person, we review how many sessions you need as we go.",
       "The NHS gives some typical timings, which vary with the person and the surgeon. It says people are usually home about 1 to 3 days after the operation if generally fit and the surgery went well, are usually told to wait at least 6 weeks before driving (check with your doctor), and often return to work at about 6 weeks depending on the job. A follow-up with your surgical team is usually around 6 to 12 weeks.",
-      "Wound reviews and follow-up visits stay with your surgical team. With your consent, we can write a short summary of your rehab progress for them.",
+      "Wound reviews and follow-up visits stay with your surgical team. Our service guidance says that, with your consent, a written summary of your rehab progress can be shared with your care team.",
     ],
     timeline:
       "The NHS says it may take several months to recover from a hip replacement. Our service guidance gives a similar picture, with the pace set mostly by the operation itself. We review your walking, strength and everyday movement at each session, and we suggest you speak to your surgical team if your hip is not progressing as expected.",
@@ -820,16 +820,16 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Whether you are still wearing the sling, and how you manage dressing, washing and sleeping.",
       "How far you can move the arm within your protocol, and any pain, swelling or stiffness in the shoulder, arm or hand.",
       "What you want to get back to, such as desk work, manual work, driving or sport, and what your surgeon has said about timing.",
-      "The warning signs listed below, which we ask about at the start of every session after surgery.",
+      "The warning signs listed below, which we check for during your sessions.",
     ],
     typicalPlan: [
       "Your plan follows your surgeon's protocol phase by phase. In the early phase this may be limited to the movements and exercises you have been allowed, while later phases add everyday movement and then strength. We set milestones with you and review them at each follow-up.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. The number of sessions depends on your operation and your surgeon's protocol, so we review it as we go.",
       "The same trust's leaflet gives some timings as an example only. It describes exercises two to four times a day that may continue at home for up to nine months, desk-based work often returning at around 6 to 8 weeks, manual work at least 3 to 4 months, no driving until after six weeks with the sling off, and non-contact sport at about six months. Your own timings will come from your surgeon.",
-      "Follow-ups with your surgical team and shoulder physiotherapy specialist stay with them. With your consent, we can write a short summary of your rehab progress to share.",
+      "Follow-ups with your surgical team and shoulder physiotherapy specialist stay with them. Our service guidance says that, with your consent, a written summary of your rehab progress can be shared with your care team.",
     ],
     timeline:
-      "Timings depend on the size of the repair and on your surgeon. The hospital leaflet we read describes exercises continuing for up to nine months, with return to non-contact sport at about six months, but that is one trust's protocol. Our own service guidance gives a shorter range for recovery, so treat any figure as a rough guide and follow your surgeon's protocol. We review your movement and strength at each session.",
+      "Timings depend on the size of the repair and on your surgeon. The hospital leaflet we read describes exercises continuing for up to nine months, with return to non-contact sport at about six months, but that is one trust's protocol. Our service guidance gives a different estimate, so treat any figure as a rough guide and follow your surgeon's protocol. We review your movement and strength at each session.",
     inPersonInstead: [
       "Call 999 or go to A&E if you have chest pain that feels tight or squeezing, or chest pain spreading to your arms, neck or jaw, or severe difficulty breathing. Do not drive yourself.",
       "Call 999 or go to A&E if you have pain and swelling in a leg together with difficulty breathing or chest pains. This could be a blood clot in the lungs. Do not drive yourself to A&E.",
@@ -861,11 +861,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
         url: "https://www.uhs.nhs.uk/departments/trauma-and-orthopaedics/shoulders/patient-information/rotator-cuff-repair/rotator-cuff-repair-after-surgery-care",
       },
       {
-        label: "NHS: Complications of a knee replacement",
+        label: "NHS: Complications of a knee replacement (used for general post-operative warning signs)",
         url: "https://www.nhs.uk/tests-and-treatments/knee-replacement/complications/",
       },
       {
-        label: "NHS: DVT (deep vein thrombosis)",
+        label: "NHS: DVT (deep vein thrombosis) (used for general post-operative warning signs)",
         url: "https://www.nhs.uk/conditions/deep-vein-thrombosis-dvt/",
       },
       { label: "NHS: Heart attack", url: "https://www.nhs.uk/conditions/heart-attack/" },
