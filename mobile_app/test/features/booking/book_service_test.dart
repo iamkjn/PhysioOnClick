@@ -19,7 +19,7 @@ void main() {
     expect(svc.calSlug, 'initial-online-assessment');
     expect(svc.minutes, 60);
     expect(svc.sessions, 1);
-    expect(svc.price, 50);
+    expect(svc.price, 40);
   });
 
   test('bookServiceFor resolves bundle-8 reusing the initial-assessment cal slug', () {

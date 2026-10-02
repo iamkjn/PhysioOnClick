@@ -54,17 +54,13 @@ const _services = [
 ];
 
 const _pricingText =
-    'In-person sessions (Glasgow):\n'
-    '• Initial Assessment (45 min) — £65\n'
-    '• Follow-Up Session (30 min) — £50\n'
-    '• Extended Session (60 min) — £80\n\n'
     'Online sessions (UK-wide):\n'
-    '• Initial Online Assessment (45 min) — £55\n'
-    '• Online Follow-Up (30 min) — £45\n\n'
+    '• Initial Online Assessment (60 min) — £40\n'
+    '• Online Follow-Up (30 min) — £30\n\n'
     'Packages:\n'
-    '• 4-Session Bundle — £180\n'
-    '• 8-Session Bundle — £340\n\n'
-    'No GP referral required — you can self-refer.';
+    '• 4-Session Bundle — £120\n'
+    '• 8-Session Bundle — £225\n\n'
+    'New patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.';
 
 // ─── Chat page ──────────────────────────────────────────────────────────────
 
