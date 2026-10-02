@@ -230,8 +230,8 @@ export default async function ServiceDetailPage({
         <section className="page-section stack simple-services-list">
           <Reveal direction="up">
             <div className="section-heading">
-              <h2>Online physiotherapy by condition</h2>
-              <p>How a video assessment and plan works for the most common problems we see.</p>
+              <h2>Online physiotherapy pages</h2>
+              <p>More detail on how video sessions work for specific conditions and recovery after surgery.</p>
             </div>
           </Reveal>
           <ul className="service-approach-list">

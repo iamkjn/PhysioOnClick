@@ -132,7 +132,7 @@ export default async function OnlinePhysioLandingPage({
         </p>
 
         <section>
-          <h2>How online physiotherapy works for {sentenceName(page)}</h2>
+          <h2>How online physiotherapy works {page.h1.startsWith("Online physiotherapy after ") ? "after" : "for"} {sentenceName(page)}</h2>
           {page.howOnlineWorks.map((p, i) => (
             <p key={i}>
               <InlineText text={withPrices(p)} />
