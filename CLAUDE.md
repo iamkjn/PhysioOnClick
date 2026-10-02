@@ -104,6 +104,7 @@ npm run deploy      # build + deploy to Cloudflare
 npm run cf-typegen  # regenerate cloudflare-env.d.ts from wrangler.jsonc
 ```
 
+- `npm run deploy` first runs `scripts/check-deploy-source.mjs`, which refuses to build unless the checkout is exactly `origin/master` with no uncommitted website changes (`mobile_app/`, `docs/`, `.worktrees/`, `.claude/` are ignored). Prod was overwritten several times on 2026-10-02 by deploys from a stale checkout and from unpushed code. Push first, then deploy from a fresh worktree of `origin/master`. Emergency override: `ALLOW_UNSYNCED_DEPLOY=1`. Roll back with `npx wrangler rollback <version>`, not a redeploy.
 - `wrangler.jsonc` — Worker config. `compatibility_date` must stay ≥ `2025-04-01` or vars stop appearing in `process.env`. Only non-secret vars belong here (the file is committed).
 - `open-next.config.ts` — no incremental cache override; add the R2 one if a route ever uses `revalidate`.
 - Secrets are set with `wrangler secret put NAME` (or the dashboard), never in `wrangler.jsonc`.
