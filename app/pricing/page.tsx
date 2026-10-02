@@ -125,11 +125,11 @@ export default function PricingPage() {
         <div className="site-shell service-faqs">
           <details>
             <summary>Can I claim this back on health insurance?</summary>
-            <p>If your policy covers physiotherapy, usually yes. Every paid session generates a receipt and a PDF invoice showing the physiotherapist&rsquo;s HCPC registration number, emailed to you and available in your account any time you need to submit a claim. Check with your insurer first whether they need pre-authorisation. <Link href="/guides/claim-physiotherapy-on-health-insurance">How to claim physiotherapy on health insurance</Link>.</p>
+            <p>Cover and rules vary between insurers and policies, and we cannot promise that any insurer will pay. Every paid session generates a receipt and a PDF invoice showing the physiotherapist&rsquo;s HCPC registration number, emailed to you and available in your account any time you need to submit a claim. Before you book, check with your insurer whether they need a GP referral, pre-authorisation, or a practitioner on their recognised list. <Link href="/guides/claim-physiotherapy-on-health-insurance">How to claim physiotherapy on health insurance</Link>.</p>
           </details>
           <details>
             <summary>How much does private physiotherapy cost in the UK?</summary>
-            <p>A first private physiotherapy appointment in the UK commonly costs anywhere from about &pound;45 to over &pound;100, depending on the clinic and location. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time. <Link href="/guides/private-physiotherapy-cost-uk">Private physiotherapy cost in the UK, explained</Link>.</p>
+            <p>At the four UK providers we checked, prices ranged from &pound;44 for a 30-minute online session to &pound;125 for a first appointment. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time. <Link href="/guides/private-physiotherapy-cost-uk">Private physiotherapy cost in the UK, explained</Link>.</p>
           </details>
           <details>
             <summary>Do I need a GP referral, and how quickly can I be seen?</summary>
