@@ -838,11 +838,11 @@ export const guides: Guide[] = [
       {
         heading: "A checklist before you book",
         paragraphs: [
-          "Check the HCPC Register. Anyone using the title physiotherapist must be on the HCPC Register, so this is the first check to make. On the HCPC site you pick the profession, then search by surname or registration number. A status of Registered means the person is on the Register with no restrictions. You can start at the [HCPC check the Register page](https://www.hcpc-uk.org/check-the-register/).",
-          "Ask what the CSP says about Chartered status. The Chartered Society of Physiotherapy explains that Chartered physiotherapists are CSP members who are also registered with the HCPC and who agree to follow the CSP's code and quality standards. Its directory lists chartered physiotherapists near you, but it is a directory for finding someone in person. We only describe what the CSP says here; check any provider's own page for what it claims.",
+          "Check the HCPC Register. Anyone using the title physiotherapist must be on the HCPC Register, so this is the first check to make. On the HCPC site you pick the profession, then search by the person's name or their registration number. A status of Registered means the person is on the Register with no restrictions. You can start at the [HCPC check the Register page](https://www.hcpc-uk.org/check-the-register/).",
+          "Ask what the CSP says about Chartered status. The Chartered Society of Physiotherapy explains that Chartered physiotherapists are CSP members who are also registered with the HCPC and who agree to follow the CSP's code and quality standards. Its directory helps you find a chartered physiotherapist near you. We only describe what the CSP says here; check any provider's own page for what it claims.",
           "Look at what the first session includes. This is general advice, not a rule. We would look for a provider that says clearly how long the first session is, whether it covers your history and a movement assessment, and whether you leave with a plan. If a provider does not say, ask before you pay.",
-          "Look for price transparency. A good sign is a price you can see before you book, with the session length next to it. Providers use 30, 45 and 60 minute sessions, so a lower headline price may buy a shorter session.",
-          "Ask what happens if video is not right. Some problems need a hands-on examination or in-person care. Check that the provider tells you this plainly and says what it would do, rather than carrying on regardless. In our case, we tell you at triage or during your assessment, and we point you to your GP or an in-person clinician.",
+          "Look for price transparency. This is general advice: look for a price you can see before you book, with the session length next to it. Providers use 30, 45 and 60 minute sessions, so a lower headline price may buy a shorter session.",
+          "Ask what happens if video is not right. Some problems need a hands-on examination or in-person care. Check that the provider tells you plainly if video is not suitable and what it would do instead. In our case, we tell you at triage or during your assessment, and we point you to your GP or an in-person clinician.",
           "If you plan to claim on health insurance, ask whether you get an itemised invoice, and ask your insurer first. See [claiming physiotherapy on health insurance](/guides/claim-physiotherapy-on-health-insurance) for how to approach it. We cannot promise that any insurer will pay."
         ]
       },
@@ -852,7 +852,7 @@ export const guides: Guide[] = [
           "We read the public price pages of four providers on 2 October 2026. This is a snapshot of published facts, not a league table, and it is not a complete list of UK providers. Prices may have changed since we checked, so look at each provider's own page before you book.",
           "Complete Physio, an online service, lists 125 pounds for a new patient appointment of 45 minutes for self-funding patients. Its follow-ups are 95 pounds for 30 minutes, 125 pounds for 45 minutes and 160 pounds for 60 minutes. Its page says appointments take place by private video call.",
           "PhysioFast Online lists 65 pounds for 45 minutes, which it suggests for a first appointment, and 47 pounds for 30 minutes. Its page describes online video appointments.",
-          "Ascenti lists 44 pounds for a 30-minute online session. Its page describes live one-to-one video consultations through its app.",
+          "Ascenti's page lists 44 pounds for 30 minutes of online physiotherapy. Its page describes live one-to-one video consultations through its app.",
           "Nuffield Health in Glasgow lists in-person physiotherapy for non-members at 72 pounds for a 45-minute initial assessment and 49 pounds for a 30-minute follow-up. We have labelled this price in person. The price page we read did not mention video, so we have not compared it on video.",
           "When you compare these, remember the session lengths differ: some of the prices above are for 30 minutes and some for 45 minutes. The first appointments we found range from 44 pounds for a 30-minute online session to 125 pounds for a 45-minute online one."
         ]
@@ -869,7 +869,7 @@ export const guides: Guide[] = [
     faqs: [
       {
         q: "How do I check a physiotherapist is registered?",
-        a: "Use the HCPC Register search. Choose the profession, then enter the person's surname or registration number. A status of Registered means they are on the Register with no restrictions. Physiotherapist is a protected title in the UK."
+        a: "Use the HCPC Register search. Choose the profession, then search by the person's name or their registration number. A status of Registered means they are on the Register with no restrictions. Physiotherapist is a protected title in the UK."
       },
       {
         q: "What should a first online physio session include?",
@@ -877,7 +877,7 @@ export const guides: Guide[] = [
       },
       {
         q: "What if online physiotherapy turns out not to suit me?",
-        a: "A good provider should tell you straight away. We tell you at triage or during the assessment if you need an in-person clinician or your GP. We do not offer hands-on treatment or home visits, and for emergency symptoms you should call 999 or go to A&E."
+        a: "Check that the provider tells you plainly if video is not suitable and what it would do instead. We tell you at triage or during the assessment if you need an in-person clinician or your GP. We do not offer hands-on treatment or home visits, and for emergency symptoms you should call 999 or go to A&E."
       },
       {
         q: "Are the prices on this page up to date?",
