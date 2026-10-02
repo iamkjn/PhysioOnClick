@@ -125,15 +125,15 @@ export default function PricingPage() {
         <div className="site-shell service-faqs">
           <details>
             <summary>Can I claim this back on health insurance?</summary>
-            <p>If your policy covers physiotherapy, usually yes. Every paid session generates a receipt and a PDF invoice showing the physiotherapist&rsquo;s HCPC registration number, emailed to you and available in your account any time you need to submit a claim. Check with your insurer first whether they need pre-authorisation.</p>
+            <p>Cover and rules vary between insurers and policies, and we cannot promise that any insurer will pay. Every paid session generates a receipt and a PDF invoice showing the physiotherapist&rsquo;s HCPC registration number, emailed to you and available in your account any time you need to submit a claim. Before you book, check with your insurer whether they need a GP referral, pre-authorisation, or a practitioner on their recognised list.</p>
           </details>
           <details>
             <summary>How much does private physiotherapy cost in the UK?</summary>
-            <p>A first private physiotherapy appointment in the UK commonly costs anywhere from about &pound;45 to over &pound;100, depending on the clinic and location. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time &mdash; and the rehab packages above reduce the per-session cost further for anyone committing to a structured plan.</p>
+            <p>At the four UK providers we checked, prices ranged from &pound;44 for a 30-minute online session to &pound;125 for a first appointment. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time.</p>
           </details>
           <details>
             <summary>Do I need a GP referral, and how quickly can I be seen?</summary>
-            <p>No referral is needed &mdash; you book a live slot yourself, usually within days. For comparison, only 52.4% of NHS Scotland musculoskeletal patients were seen within the four-week target between August 2025 and March 2026 (<a href="https://www.publichealthscotland.scot/publications/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland-quarterly-and-monthly-data-to-31-march-2026/" target="_blank" rel="noopener noreferrer">Public Health Scotland</a>).</p>
+            <p>No referral is needed &mdash; you book a live slot yourself, usually within days. For comparison, only 52.4% of patients seen by NHS Scotland musculoskeletal services (physiotherapy, occupational therapy, podiatry and orthotics) between August 2025 and March 2026 had waited four weeks or less (<a href="https://www.publichealthscotland.scot/publications/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland-quarterly-and-monthly-data-to-31-march-2026/" target="_blank" rel="noopener noreferrer">Public Health Scotland</a>).</p>
           </details>
           <details>
             <summary>What&rsquo;s the cancellation policy?</summary>
