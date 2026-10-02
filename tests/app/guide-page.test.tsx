@@ -28,6 +28,18 @@ describe("app/guides/[slug]", () => {
   });
 });
 
+describe("link syntax", () => {
+  it("never leaks into any rendered guide", async () => {
+    for (const g of guides) {
+      const { container, unmount } = render(await GuidePage({ params: Promise.resolve({ slug: g.slug }) }));
+      expect(container.textContent).not.toContain("](/");
+      unmount();
+    }
+    const { container } = render(<GuidesIndex />);
+    expect(container.textContent).not.toContain("](/");
+  });
+});
+
 describe("app/guides index", () => {
   it("links every guide once", () => {
     const { container } = render(<GuidesIndex />);

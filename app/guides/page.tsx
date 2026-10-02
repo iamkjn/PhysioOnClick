@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { guides } from "@/lib/guides";
+import { stripLinks } from "@/lib/content-types";
 import { withPrices } from "@/lib/site-data";
 
 export const metadata: Metadata = {
@@ -33,7 +34,7 @@ export default function GuidesIndex() {
               <h2>
                 <Link href={`/guides/${g.slug}`}>{g.title}</Link>
               </h2>
-              <p>{withPrices(firstSentence(g.answer))}</p>
+              <p>{stripLinks(withPrices(firstSentence(g.answer)))}</p>
             </li>
           ))}
         </ul>

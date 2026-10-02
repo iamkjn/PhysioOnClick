@@ -17,6 +17,7 @@
 //   - sameAs for Facebook once the page is created
 
 import { absoluteUrl } from "@/lib/utils";
+import { stripLinks } from "@/lib/content-types";
 import { founder, services, withPrices } from "@/lib/site-data";
 // Import the conditions array directly, not `getCondition` from the
 // `@/lib/exercise-library` barrel: this module is pulled into app/layout.tsx
@@ -349,8 +350,8 @@ export function guideWebPage(g: Guide, path: string): object {
     citation: g.sources.map((s) => s.url),
     mainEntity: g.faqs.map((f) => ({
       "@type": "Question",
-      name: withPrices(f.q),
-      acceptedAnswer: { "@type": "Answer", text: withPrices(f.a) }
+      name: stripLinks(withPrices(f.q)),
+      acceptedAnswer: { "@type": "Answer", text: stripLinks(withPrices(f.a)) }
     }))
   };
 }
@@ -373,8 +374,8 @@ export function onlinePhysioWebPage(p: OnlinePhysioPage, path: string): object {
     citation: p.sources.map((s) => s.url),
     mainEntity: p.faqs.map((f) => ({
       "@type": "Question",
-      name: withPrices(f.q),
-      acceptedAnswer: { "@type": "Answer", text: withPrices(f.a) }
+      name: stripLinks(withPrices(f.q)),
+      acceptedAnswer: { "@type": "Answer", text: stripLinks(withPrices(f.a)) }
     }))
   };
 }

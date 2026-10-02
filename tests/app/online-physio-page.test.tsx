@@ -11,6 +11,14 @@ describe("app/online-physiotherapy-for/[slug]", () => {
     expect(generateStaticParams()).toEqual(onlinePhysioPages.map((p) => ({ slug: p.slug })));
   });
 
+  it("never leaks link syntax into any landing page", async () => {
+    for (const p of onlinePhysioPages) {
+      const { container, unmount } = render(await OnlinePhysioPage({ params: Promise.resolve({ slug: p.slug }) }));
+      expect(container.textContent).not.toContain("](/");
+      unmount();
+    }
+  });
+
   for (const p of onlinePhysioPages) {
     it(`renders ${p.slug} correctly`, async () => {
       const { container } = render(await OnlinePhysioPage({ params: Promise.resolve({ slug: p.slug }) }));
