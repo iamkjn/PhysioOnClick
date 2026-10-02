@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { founder } from "@/lib/site-data";
-import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { Reveal } from "@/components/reveal";
 import { breadcrumbs, personRef } from "@/lib/structured-data";
 
@@ -43,6 +42,7 @@ const specialisms = [
 const highlights = [
   "More than 6 years of clinical physiotherapy experience",
   "NHS Tayside placement and orthopaedic rehab exposure",
+  "NHS Lothian observership experience",
   "Online physiotherapy support across the UK",
   "Evidence-based approach with calm, practical treatment planning"
 ];
@@ -112,8 +112,6 @@ export default function AboutPage() {
             alt="Clinical physiotherapy consultation"
             width={1200}
             height={980}
-            placeholder="blur"
-            blurDataURL={medicalImagePlaceholder}
           />
           <div className="about-profile-body">
             <strong>{founder.name}</strong>
@@ -146,8 +144,6 @@ export default function AboutPage() {
                 width={900}
                 height={520}
                 unoptimized
-                placeholder="blur"
-                blurDataURL={medicalImagePlaceholder}
               />
               <div className="about-specialism-body">
                 <span className="about-specialism-detail">{item.detail}</span>
@@ -166,9 +162,10 @@ export default function AboutPage() {
           <span className="eyebrow">Clinical background</span>
           <h2>From movement analysis research to practical rehab that patients can actually follow.</h2>
           <p>
-            Shivaliba&apos;s background includes NHS training exposure, EMG and motion analysis research, and an MSc in
-            Orthopaedic & Rehabilitation Technology from the University of Dundee. That combination helps PhysioOnClick
-            balance clinical rigour with clear, realistic rehabilitation plans.
+            Shivaliba&apos;s background includes NHS Tayside placement experience, NHS Lothian observership experience,
+            EMG and motion analysis research, and an MSc in Orthopaedic & Rehabilitation Technology from the University
+            of Dundee. That combination helps PhysioOnClick balance clinical rigour with clear, realistic rehabilitation
+            plans.
           </p>
         </div>
         <div className="about-story-stats">
@@ -183,6 +180,10 @@ export default function AboutPage() {
           <div className="about-stat-card">
             <strong>NHS</strong>
             <span>Tayside placement experience</span>
+          </div>
+          <div className="about-stat-card">
+            <strong>NHS</strong>
+            <span>Lothian observership experience</span>
           </div>
           <div className="about-stat-card">
             <strong>UK-wide</strong>
