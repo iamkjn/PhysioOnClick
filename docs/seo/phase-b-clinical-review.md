@@ -23,8 +23,9 @@ These pages (Phase B, plus the Phase C additions marked "new in Phase C") are li
 10. Are the post-surgery "when to start" and red-flag lines right for your practice (knee replacement, hip replacement, rotator cuff repair)?
 11. Is the comparison guide's competitor price table acceptable to publish?
 12. The multiple sclerosis page's relapse line is our own approach, because the NHS gives no relapse advice. Please confirm it.
-13. The rotator cuff repair complication routing is borrowed from the NHS knee replacement pages by analogy. Please confirm it is right for shoulder surgery.
+13. The rotator cuff repair complication routing is borrowed from the NHS knee replacement pages by analogy. Please confirm it is right for shoulder surgery. Also, the rotator cuff timeline sentence "our service guidance gives a different estimate" should state that estimate (4-6 months) or be dropped. Which do you prefer?
 14. The "How to choose an online physiotherapist" guide names competitors with prices checked on 2 October 2026. Is it OK to publish, and should the prices be re-checked just before going live?
+15. The neurological-rehabilitation service page's typicalOutcomes ("improved balance confidence and reduced fall-catches within a few weeks is common ... 8-12 weeks") and the post-surgical service page's ("patients who follow a progressive loading plan ... report less residual stiffness and a faster return") are unsourced outcome claims, on service pages that the new landing pages link to. Should they be reworded or removed?
 
 # Part 1: Guides
 
@@ -1494,7 +1495,7 @@ The NHS says to see a GP if hip pain is stopping you doing normal activities or 
 
 Online rehab after a knee replacement starts once your surgical team has cleared you to begin exercise-based rehab. A video session lets your physiotherapist watch how you move, set milestones and progress your exercises at home. Wound checks and complications go back to your surgical team. Pain and swelling in the leg with breathing difficulty or chest pain needs 999.
 
-### How online physiotherapy works for knee replacement
+### How online physiotherapy works after knee replacement
 
 Rehab after a knee replacement runs alongside your operation, not instead of it. Your surgical team decides when exercise-based rehab can begin, and our service guidance is that online sessions pick up once you have been medically cleared. Until then, follow the instructions you were given in hospital.
 
@@ -1533,6 +1534,7 @@ According to the NHS, it may take several months or longer to fully recover from
 
 - Call 999 or go to A&E if you have pain and swelling in your leg and difficulty breathing or chest pains. This could be a blood clot in the lungs.
 - Do not drive yourself to A&E. Ask someone to drive you, or call 999.
+- Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.
 - Ask for an urgent GP appointment or call NHS 111 if you have had a knee replacement and have throbbing or cramping pain in your leg.
 - Ask for an urgent GP appointment or call NHS 111 if you have a high temperature, or feel hot, cold or shivery, or if the wound is oozing or has pus.
 - Ask for an urgent GP appointment or call NHS 111 if the redness, tenderness, swelling or pain in your knee is not getting better or is getting worse. The NHS says these can be signs of infection or a blood clot.
@@ -1561,6 +1563,7 @@ We cover that in a separate guide: online physiotherapy after ACL reconstruction
 - NHS: Recovering from a knee replacement: https://www.nhs.uk/tests-and-treatments/knee-replacement/recovery/
 - NHS: Complications of a knee replacement: https://www.nhs.uk/tests-and-treatments/knee-replacement/complications/
 - NHS: DVT (deep vein thrombosis): https://www.nhs.uk/conditions/deep-vein-thrombosis-dvt/
+- NHS: Pulmonary embolism: https://www.nhs.uk/conditions/pulmonary-embolism/
 
 - [ ] Approved by Shivaliba Zala (date: ____)
 
@@ -1576,7 +1579,7 @@ We cover that in a separate guide: online physiotherapy after ACL reconstruction
 
 Online rehab after a hip replacement starts once your surgical team has cleared you to begin exercise-based rehab. A video session lets your physiotherapist watch you move and progress your home exercises, while any hip precautions come from your surgeon. Wounds and complications go back to your surgical team. Leg or hip pain and swelling with breathing difficulty or chest pain needs 999.
 
-### How online physiotherapy works for hip replacement
+### How online physiotherapy works after hip replacement
 
 Your surgical team may set a period of protection before a gradual return to normal movement. Your surgical team decides when exercise-based rehab can begin. Our service guidance is that online sessions begin once you are medically cleared, and not before.
 
@@ -1617,10 +1620,12 @@ The NHS says it may take several months to recover from a hip replacement. Our s
 
 - Call 999 or go to A&E if you have pain and swelling in your hip or leg and difficulty breathing or chest pains. This could be a blood clot in the lungs.
 - Do not drive yourself to A&E. Ask someone to drive you, or call 999.
+- Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.
+- If you have fallen and have severe hip pain, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after the fall, the NHS says to call 999 or go to A&E. Do not drive yourself.
 - Ask for an urgent GP appointment or call NHS 111 if you have throbbing or cramping pain in your hip or leg.
 - Ask for an urgent GP appointment or call NHS 111 if you have a high temperature, or feel hot, cold or shivery, or if the wound is oozing or has pus.
 - Ask for an urgent GP appointment or call NHS 111 if the redness, tenderness, swelling or pain in your hip or leg is not getting better or is getting worse. The NHS says these can be signs of infection or a blood clot.
-- If you are worried your hip may have dislocated, contact your GP or care team. Wound checks and any complication go back to your surgical team, not to an online rehab session.
+- If you are worried your hip may have dislocated, contact your GP or care team. If it follows a fall and you have severe hip pain or cannot put weight on the leg, use the 999 line above instead. Wound checks and any complication go back to your surgical team, not to an online rehab session.
 
 ### Frequently asked questions
 
@@ -1645,6 +1650,8 @@ The NHS says it may take several months. We cannot give you a firm date, and we 
 - NHS: Recovering from a hip replacement: https://www.nhs.uk/tests-and-treatments/hip-replacement/recovering-from-a-hip-replacement/
 - NHS: Complications of a hip replacement: https://www.nhs.uk/tests-and-treatments/hip-replacement/complications-of-a-hip-replacement/
 - NHS: DVT (deep vein thrombosis): https://www.nhs.uk/conditions/deep-vein-thrombosis-dvt/
+- NHS: Pulmonary embolism: https://www.nhs.uk/conditions/pulmonary-embolism/
+- NHS: Hip pain: https://www.nhs.uk/symptoms/hip-pain/
 
 - [ ] Approved by Shivaliba Zala (date: ____)
 
@@ -1660,7 +1667,7 @@ The NHS says it may take several months. We cannot give you a firm date, and we 
 
 Online rehab after rotator cuff repair starts once your surgical team has cleared you to begin exercise-based rehab. Your surgeon sets the sling and protection phases and we work inside them. A video session lets your physiotherapist guide your exercises at home. Wound checks and complications go back to your surgical team. Chest pain with arm or shoulder pain needs 999.
 
-### How online physiotherapy works for rotator cuff repair
+### How online physiotherapy works after rotator cuff repair
 
 Recovery from a rotator cuff repair is slow and protected at first, because the repaired tendon needs time to heal. How long you wear a sling, what you may do with the arm, and when strengthening can begin are all set by your surgeon and depend on the size of the repair. We do not change those instructions.
 
@@ -1699,6 +1706,7 @@ Timings depend on the size of the repair and on your surgeon. The hospital leafl
 
 - Call 999 or go to A&E if you have chest pain that feels tight or squeezing, or chest pain spreading to your arms, neck or jaw, or severe difficulty breathing. Do not drive yourself.
 - Call 999 or go to A&E if you have pain and swelling in a leg together with difficulty breathing or chest pains. This could be a blood clot in the lungs. Do not drive yourself to A&E.
+- Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.
 - Ask for an urgent GP appointment or call NHS 111 if you have throbbing or cramping pain in one leg, swelling in one leg, or red, blue or darkened skin around a painful area. These can be signs of DVT, a blood clot in a vein.
 - Contact your surgical team, and ask for an urgent GP appointment or call NHS 111, if you have a high temperature, feel hot, cold or shivery, or the wound is oozing or has pus. NHS pages on joint replacement list these as signs of infection, and the shoulder surgery leaflet we read gives no separate route, so we apply the same routing.
 - Wound checks, stitch removal and any complication go back to your surgical team, not to an online rehab session.
@@ -1727,6 +1735,7 @@ Ask your surgeon. The leaflet we read describes no driving until after six weeks
 - NHS: Complications of a knee replacement (used for general post-operative warning signs): https://www.nhs.uk/tests-and-treatments/knee-replacement/complications/
 - NHS: DVT (deep vein thrombosis) (used for general post-operative warning signs): https://www.nhs.uk/conditions/deep-vein-thrombosis-dvt/
 - NHS: Heart attack: https://www.nhs.uk/conditions/heart-attack/
+- NHS: Pulmonary embolism: https://www.nhs.uk/conditions/pulmonary-embolism/
 
 - [ ] Approved by Shivaliba Zala (date: ____)
 
@@ -1948,6 +1957,8 @@ We do not promise a timeline or a result, because MS differs between people and 
 
 - Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.
 - The NHS MS page says to call 999 or go to A&E if you have sudden weakness or numbness in one arm, loss or blurring of vision, or problems with balance and co-ordination, because these could be signs of a stroke. Do not drive to A&E.
+- If you have fallen and have severe hip pain, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after the fall, the NHS says to call 999 or go to A&E. Do not drive yourself.
+- After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.
 - If none of the 999 signs above apply and you think you are having a relapse, our approach is to ask you to contact your MS team or GP. We cannot assess a relapse over video, and we pause exercise with us until they have advised you.
 - If you have symptoms you think could be MS but have no diagnosis, the NHS says to see a GP. Online sessions with us do not replace a diagnosis.
 - If you need hands-on therapy or equipment set up in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.
@@ -1974,6 +1985,8 @@ Yes. Our service guidance says a family member or carer can join and help get th
 
 - NHS: Multiple sclerosis: https://www.nhs.uk/conditions/multiple-sclerosis/
 - NHS: Stroke symptoms: https://www.nhs.uk/conditions/stroke/symptoms/
+- NHS: Hip pain: https://www.nhs.uk/symptoms/hip-pain/
+- NHS: Head injury and concussion: https://www.nhs.uk/conditions/head-injury-and-concussion/
 
 - [ ] Approved by Shivaliba Zala (date: ____)
 
@@ -2028,6 +2041,7 @@ NHS inform says outcomes vary: some people benefit a lot and may go into remissi
 
 - Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.
 - Do not assume a sudden new symptom is part of FND. If it matches the stroke signs above, call 999. For other new or changing symptoms, speak to your GP or neurology team rather than waiting for a physio session.
+- If you have fallen and have severe hip pain, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after the fall, the NHS says to call 999 or go to A&E. Do not drive yourself.
 - After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.
 - If you have symptoms but no diagnosis, speak to your GP. Diagnosis of FND comes from a neurologist, and online sessions with us do not replace that.
 - If you need hands-on therapy or care in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.
@@ -2056,6 +2070,7 @@ Yes. Our service guidance says a family member or carer can join and help get th
 - Physio4FMD trial, The Lancet Neurology (2024): https://doi.org/10.1016/S1474-4422(24)00135-2
 - Physio4FMD trial abstract (Europe PMC): https://europepmc.org/article/MED/38768621
 - NHS: Stroke symptoms: https://www.nhs.uk/conditions/stroke/symptoms/
+- NHS: Hip pain: https://www.nhs.uk/symptoms/hip-pain/
 - NHS: Head injury and concussion: https://www.nhs.uk/conditions/head-injury-and-concussion/
 
 - [ ] Approved by Shivaliba Zala (date: ____)
