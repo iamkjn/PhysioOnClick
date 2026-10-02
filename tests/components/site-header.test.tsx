@@ -7,8 +7,9 @@ vi.mock('@/lib/gsap', () => ({
   ScrollTrigger: {},
   prefersReducedMotion: () => false,
 }))
+const nav = vi.hoisted(() => ({ pathname: '/' }))
 vi.mock('next/navigation', () => ({
-  usePathname: () => '/',
+  usePathname: () => nav.pathname,
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }))
 
@@ -16,6 +17,7 @@ import { SiteHeader } from '@/components/site-header'
 
 describe('SiteHeader', () => {
   beforeEach(() => {
+    nav.pathname = '/'
     Object.defineProperty(window, 'scrollY', { value: 0, writable: true })
   })
 
@@ -61,5 +63,30 @@ describe('SiteHeader', () => {
       fireEvent.mouseLeave(aboutLink!)
     }).not.toThrow()
     expect(aboutLink).toBeInTheDocument()
+  })
+
+  it('has a Self-checks link to /exercises/tests directly after Exercises', () => {
+    render(<SiteHeader />)
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' })
+    const hrefs = Array.from(primaryNav.querySelectorAll('a')).map((a) => a.getAttribute('href'))
+    const i = hrefs.indexOf('/exercises')
+    expect(hrefs[i + 1]).toBe('/exercises/tests')
+    expect(primaryNav.querySelector('a[href="/exercises/tests"]')?.textContent).toContain('Self-checks')
+  })
+
+  it('highlights only Self-checks on /exercises/tests/full-can-test', () => {
+    nav.pathname = '/exercises/tests/full-can-test'
+    render(<SiteHeader />)
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' })
+    expect(primaryNav.querySelector('a[href="/exercises/tests"]')?.className).toContain('active')
+    expect(primaryNav.querySelector('a[href="/exercises"]')?.className).not.toContain('active')
+  })
+
+  it('highlights only Exercises on /exercises/wall-slide', () => {
+    nav.pathname = '/exercises/wall-slide'
+    render(<SiteHeader />)
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' })
+    expect(primaryNav.querySelector('a[href="/exercises"]')?.className).toContain('active')
+    expect(primaryNav.querySelector('a[href="/exercises/tests"]')?.className).not.toContain('active')
   })
 })
