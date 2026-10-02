@@ -16,7 +16,7 @@ These pages are live on dev.physioonclick.co.uk only. They go to the live site a
 3. Session-count and recovery ranges are framed as "our plans" (taken from existing service copy). Please confirm they reflect your practice.
 4. In the sessions guide, "the biggest factor is what you do between sessions" and the "when it is fine to stop" advice are unsourced general advice. Approve or reword.
 5. Red-flag routing was set to be at least as urgent as the NHS pages. A few items are by analogy: heel hot/swollen plus fever goes to 111 or an urgent GP; gradual finger numbness with tennis elbow goes to the GP; neck trauma or dizziness goes to 999/A&E, or 111 if unsure. Please confirm.
-6. The shoulder page omits some NHS 111 items (hot or cold arm, no feeling in the arm, both shoulders affected, feeling unwell). Should they be added?
+6. The shoulder page now lists the NHS urgent GP or 111 items for a hot or cold arm, no feeling in the arm, severe pain in both shoulders, and feeling feverish or unwell. Please confirm.
 7. The reviewedOn dates are placeholders (2026-10-01). They will be set to your actual sign-off date before going live.
 8. The NHS neck pain page's next-review date has passed. It will be re-checked before going live.
 
@@ -30,7 +30,7 @@ These pages are live on dev.physioonclick.co.uk only. They go to the live site a
 
 ### Short answer
 
-Most UK private physiotherapy appointments cost between about 44 and 125 pounds for a first session, depending on where you go, how long it lasts and whether it is in person or online. At PhysioOnClick, a 60-minute online assessment is £40 and a 30-minute follow-up is £30.
+At the four UK providers we checked, prices ranged from 44 pounds (a 30-minute online session) to 125 pounds (a first appointment), depending on where you go, how long it lasts and whether it is in person or online. At PhysioOnClick, a 60-minute online assessment is £40 and a 30-minute follow-up is £30.
 
 ### What changes the price of a physio session
 
@@ -68,17 +68,17 @@ NHS self-referral. Access to NHS musculoskeletal physiotherapy depends on your l
 
 Health insurance. Some policies pay towards physiotherapy, often with conditions such as pre-authorisation or policy limits. Cover and rules vary, so check with your insurer before you book (see [claiming physiotherapy on health insurance](/guides/claim-physiotherapy-on-health-insurance)). We cannot promise that any insurer will pay.
 
-Doing the exercises matters as much as the number of sessions. A clear plan that you follow between appointments often means you need fewer visits overall.
+Doing the exercises matters as much as the number of sessions. In our plans, we ask you to do your exercises between appointments, and we review progress as we go.
 
 ### Frequently asked questions
 
 **Q: How much is a physio session in the UK?**
 
-A typical private first appointment costs between about 44 and 125 pounds, based on the four providers we checked on 1 October 2026. Follow-ups are usually cheaper. Our own online assessment is £40 and a follow-up is £30.
+At the four providers we checked on 1 October 2026, prices ranged from 44 pounds (a 30-minute online session) to 125 pounds (a first appointment). In the prices we checked, follow-ups cost less than first appointments. Our own online assessment is £40 and a follow-up is £30.
 
 **Q: Is online physiotherapy cheaper than seeing a physio in person?**
 
-Often, but not always. It depends on the provider. In the prices we checked, one online service charged more than an in-person clinic and another charged less. Compare the session length and what is included, not only the price.
+It depends on the provider. In the prices we checked, one online service charged more than an in-person clinic and another charged less. Compare the session length and what is included, not only the price.
 
 **Q: Can I get physiotherapy on the NHS instead?**
 
@@ -289,7 +289,7 @@ With back pain, weakness or numbness in both legs, numbness around your genitals
 
 ### Short answer
 
-It depends on your problem. At PhysioOnClick most plans run 4 to 8 sessions across 6 to 10 weeks, with exercises to do on your own in between. Many people start to feel a change within 2 to 3 weekly sessions. Longer-standing problems and recovery after surgery usually take longer.
+It depends on your problem. At PhysioOnClick most plans run 4 to 8 sessions across 6 to 10 weeks, with exercises to do on your own in between. We review progress after 2 to 3 sessions and adjust the plan. Longer-standing problems and recovery after surgery usually take longer.
 
 ### Typical ranges by situation
 
@@ -948,7 +948,7 @@ According to the NHS, most neck pain only lasts a few weeks. If it has not gone 
 ### When you need in-person or urgent care instead (red flags)
 
 - Call 999 if you have chest pain that spreads to your neck, jaw or arms, or chest pain that feels tight or squeezing. Do not drive yourself.
-- Call 999 if you have weakness or numbness in your arms, face or speech changes, blurred vision or loss of sight, or sudden dizziness, as these can be signs of a stroke. Do not drive yourself to A&E.
+- Call 999 if you have sudden weakness or numbness in an arm or down one side of your body, a drooping face or trouble speaking (possible stroke). Do not drive yourself. Call 999 as well for blurred vision, loss of sight or sudden dizziness, which can also be stroke signs.
 - Call 999 or go to A&E, or call 111 if you are not sure, if you notice changes in your balance or co-ordination.
 - Call 999 or go to A&E, or call 111 if you are not sure, if your neck pain started after an accident or injury.
 - Call 999 or go to A&E, or call 111 if you are not sure, if you have dizziness or visual symptoms when you move your neck.
@@ -971,7 +971,7 @@ The NHS says most neck pain only lasts a few weeks. We cannot give you an exact 
 
 **Q: What if I get pins and needles in my arm?**
 
-Tell us at booking and at the start of the session. The NHS says to see a GP for pins and needles or a cold arm. Weakness or numbness in both arms, or dizziness or blurred vision, needs a 999 call (these can be stroke signs). Neck pain after an injury, or with balance changes, needs A&E or a 111 call. None of these are suited to a video appointment.
+Tell us at booking and at the start of the session. The NHS says to see a GP for pins and needles or a cold arm. Call 999 if you have sudden weakness or numbness in an arm or down one side of your body, a drooping face or trouble speaking (possible stroke). Do not drive yourself. Dizziness or blurred vision also needs a 999 call. Neck pain after an injury, or with balance changes, needs A&E or a 111 call. None of these are suited to a video appointment.
 
 ### Sources
 
@@ -1035,6 +1035,9 @@ The NHS says to try shoulder exercises for 6 to 8 weeks to help stop shoulder pa
 - Go to A&E if your shoulder looks out of place or has changed shape, or you think you have dislocated it. Call 999 if you cannot get there yourself. Do not drive yourself.
 - Go to A&E if you fell and now cannot move or lift your arm. Call 999 if you cannot get there yourself.
 - Ask for an urgent GP appointment or get help from NHS 111 if your shoulder pain is sudden or very bad, or started after an injury such as a fall.
+- Ask for an urgent GP appointment or get help from NHS 111 if you have a hot or cold arm, or no feeling in the arm.
+- Ask for an urgent GP appointment or get help from NHS 111 if you have severe pain in both shoulders.
+- Ask for an urgent GP appointment or get help from NHS 111 if you are feeling feverish or unwell with your shoulder pain.
 - If you are not sure how urgent your symptoms are, call 111 or speak to a GP before booking a video appointment.
 
 ### Frequently asked questions
@@ -1086,7 +1089,7 @@ NICE guidance on osteoarthritis lists therapeutic exercise, and weight managemen
 
 Knee pain has other causes, and we ask about them. If your pain is mainly at the front of the knee, we assess that too, using the [single leg decline squat check](/exercises/tests/single-leg-decline-squat-check) where it is safe for you to try.
 
-We cannot feel your knee or test its ligaments by hand. If you have had an injury, or the knee locks or gives way, the NHS advises calling 111, and we will ask you to be seen in person instead of by video.
+We cannot feel your knee or test its ligaments by hand. If the knee locks, gives way or painfully clicks, the NHS advises getting help from 111, and we will ask you to be seen in person instead of by video.
 
 ### What the video assessment checks
 
@@ -1415,7 +1418,7 @@ Button: Book your session
 
 Public Health Scotland reports that between August 2025 and March 2026, on average 52.4% of completed waits for allied health professional musculoskeletal services were seen within four weeks. These figures cover all allied health professions in those services, not physiotherapy alone, and they describe people already seen. Read the Public Health Scotland report. Our guide to NHS physio waiting times in Scotland (/guides/nhs-physio-waiting-times-scotland) goes through the figures.
 
-NHS access depends on your health board. NHS inform says each board decides how its MSK services are accessed. NHS Greater Glasgow and Clyde, for example, lets eligible adults self-refer. The NHS is a good first option for many people, and private video physiotherapy is another choice if you would rather book directly.
+NHS access depends on your health board. NHS inform says each board decides how its MSK services are accessed. NHS Greater Glasgow and Clyde, for example, lets eligible adults self-refer. You can try the NHS route first, and private video physiotherapy is another choice if you would rather book directly.
 
 ### Conditions we cover by video
 
