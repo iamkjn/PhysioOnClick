@@ -212,6 +212,7 @@ export const services: Service[] = [
   },
   {
     slug: "neurological-rehabilitation",
+    onlinePhysioSlugs: ["stroke-rehabilitation", "parkinsons", "multiple-sclerosis", "functional-neurological-disorder"],
     title: "Neurological Rehabilitation",
     image: serviceImagePath("neurological-rehabilitation"),
     summary:

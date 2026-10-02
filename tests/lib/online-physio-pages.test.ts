@@ -110,6 +110,60 @@ describe("phase C post-surgery pages and sentenceName", () => {
   });
 });
 
+describe("phase C neurological pages", () => {
+  const slugs = ["stroke-rehabilitation", "parkinsons", "multiple-sclerosis", "functional-neurological-disorder"];
+  it("the four neuro slugs exist, served by the neuro service, with the right h1 and nameInSentence", () => {
+    const expected: Record<string, [string, string]> = {
+      "stroke-rehabilitation": ["Online physiotherapy for stroke recovery", "stroke recovery"],
+      parkinsons: ["Online physiotherapy for Parkinson's", "Parkinson's"],
+      "multiple-sclerosis": ["Online physiotherapy for multiple sclerosis", "MS"],
+      "functional-neurological-disorder": ["Online physiotherapy for functional neurological disorder (FND)", "FND"],
+    };
+    for (const s of slugs) {
+      const p = getOnlinePhysioPage(s);
+      expect(p, s).not.toBeNull();
+      expect(p!.serviceSlug).toBe("neurological-rehabilitation");
+      expect(p!.h1).toBe(expected[s][0]);
+      expect(sentenceName(p!)).toBe(expected[s][1]);
+    }
+  });
+  it("neuro service links the four slugs", () => {
+    const svc = services.find((s) => s.slug === "neurological-rehabilitation")!;
+    expect(svc.onlinePhysioSlugs).toEqual(slugs);
+  });
+  it("every neuro page puts FAST / 999 first, says triage confirms video suits, and avoids specialist claims", () => {
+    for (const s of slugs) {
+      const p = getOnlinePhysioPage(s)!;
+      expect(p.inPersonInstead[0], s).toMatch(/999/);
+      expect(p.inPersonInstead[0], s).toMatch(/face/i);
+      expect(p.inPersonInstead.join(" "), s).toMatch(/do not drive/i);
+      const t = allText(p);
+      expect(t, s).toMatch(/triage/i);
+      expect(t, s).toMatch(/medically stable|stable/i);
+      expect(/neuro(logical)? specialist|specialist neuro|acute/i.test(t.replace(/not (an )?acute|acute care/gi, "")), `${s}: specialist/acute claim`).toBe(false);
+      expect(/\b(reverse|slow(s|ing)? (down )?the (disease|condition)|halt)\b/i.test(t), s).toBe(false);
+    }
+  });
+  it("Parkinson's uses the falls hub and links the gait service; FND frames Physio4FMD honestly", () => {
+    const pd = getOnlinePhysioPage("parkinsons")!;
+    expect(pd.exerciseHubSlug).toBe("falls-prevention");
+    expect(allText(pd)).toContain("/services/gait-and-mobility-assessment");
+    const fnd = getOnlinePhysioPage("functional-neurological-disorder")!;
+    const t = allText(fnd);
+    expect(t).toContain("Physio4FMD");
+    expect(t).not.toContain("Physio4FND");
+    expect(t).toMatch(/neurologist/i);
+    expect(t).toMatch(/did not find a difference/i);
+    expect(/\b(recover(y|ed) rate|will recover|full recovery|guarantee)/i.test(t)).toBe(false);
+  });
+  it("MS page carries the NHS MS 999 routing", () => {
+    const t = getOnlinePhysioPage("multiple-sclerosis")!.inPersonInstead.join(" ");
+    expect(t).toMatch(/one arm|1 arm/i);
+    expect(t).toMatch(/balance/i);
+    expect(t).toMatch(/A&E/);
+  });
+});
+
 describe("phase B internal linking helpers", () => {
   it("onlinePhysioPageForHub reverse-looks-up by exercise hub slug", () => {
     expect(onlinePhysioPageForHub("sciatica")?.slug).toBe("sciatica");
@@ -118,7 +172,7 @@ describe("phase B internal linking helpers", () => {
   it("every service onlinePhysioSlugs entry resolves", () => {
     const withSlugs = services.filter((s) => s.onlinePhysioSlugs?.length);
     expect(withSlugs.map((s) => s.slug).sort()).toEqual(
-      ["musculoskeletal-physiotherapy", "online-rehab-programmes", "post-surgical-rehabilitation"],
+      ["musculoskeletal-physiotherapy", "neurological-rehabilitation", "online-rehab-programmes", "post-surgical-rehabilitation"],
     );
     for (const s of withSlugs) {
       for (const slug of s.onlinePhysioSlugs!) {
