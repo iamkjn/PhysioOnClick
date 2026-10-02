@@ -31,6 +31,8 @@ export type OnlinePhysioPage = {
   faqs: { q: string; a: string }[];
   sources: Source[];
   exerciseHubSlug?: string;
+  /** When false, onlinePhysioPageForHub skips this page (the hub is shown on the page but the hub does not link back). Default true. */
+  hubBacklink?: boolean;
   selfTestSlugs?: string[];
   blogSlugs?: string[];
   guideSlugs?: string[];
@@ -889,21 +891,21 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Our neurological rehabilitation service is for people who are medically stable and whose hospital care has been arranged. It supports your wider team, such as your NHS stroke team, and does not replace it. Our service guidance says online sessions are for guided, ongoing practice once you are stable, and that any new or sudden symptoms are an emergency, not an appointment.",
       "The NHS says a stroke rehabilitation plan may include physiotherapy and exercises to help with movement, and that recovery can take months or years. It also says rehabilitation can be done in person or online, which it calls telerehabilitation, and that your healthcare team should provide equipment and training or technical support if you need them.",
       "NICE guidance on stroke rehabilitation in adults (NG236) says telerehabilitation can be considered instead of, or as well as, face-to-face therapy, but only if the person agrees or it is their preferred type of therapy and it fits their rehabilitation goals. It also says people should have the right equipment and training or support, and should be monitored to check that they are benefiting and are not developing signs of depression. NICE does not endorse our service. We mention the guidance because those conditions are the ones we try to meet.",
-      "In practice that means we ask what you want to be able to do again, whether that is walking to the shops, managing stairs or using your arm for daily tasks. Our service guidance says you are guided through safe, seated or supported movement checks over video, and that a family member or carer is welcome to join and help with the physical setup.",
+      "In practice we start by asking which everyday activities matter most to you, for example getting around outside, using stairs or using your arm at home. Our service guidance says early movement checks over video are done seated or with support, and that a family member or carer can join you and help get the room ready.",
       "Video has limits. We cannot touch the affected limb or catch you if you lose your balance, so we choose movements that can be done safely at home with something solid nearby and, where needed, another person in the room. If a task does not look safe on video, we will say so and suggest in-person therapy through your NHS team instead.",
     ],
     assessmentChecks: [
       "Your stroke history in your own words, when you left hospital, and what your discharge letter or therapy team said about exercise.",
       "Whether you feel well enough to take part now, and whether your doctors have said anything about activity or driving.",
       "How you move around your home: getting out of a chair, walking, using stairs, and which aids you use.",
-      "Balance and strength in the arm and leg, checked through simple seated or supported movements on video.",
+      "Balance and strength in the arm and leg, checked through simple movements done seated or with support.",
       "Who can be with you during the session, such as a family member or carer, and whether your camera and room set-up are safe for the movements we plan.",
       "Your mood, tiredness and confidence, because NICE says people doing telerehabilitation should be monitored for signs of depression, and we will suggest you speak to your GP or stroke team if you are struggling.",
     ],
     typicalPlan: [
-      "Your plan is built around goals you choose, such as walking further, needing less support or using your arm more in daily life. We turn them into a short routine you can repeat at home, usually seated or supported at first, and we change it as you progress.",
+      "Your plan is built around goals you choose, for example getting around more easily or using your arm more in daily life. We turn them into a short routine you can repeat at home, usually seated or supported at first, and we change it as you progress.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Triage at booking confirms whether video suits you, and we will tell you before you pay if it does not.",
-      "Our service guidance says a carer can continue supported practice between sessions. Because stroke recovery varies a great deal from person to person, we do not give a fixed timeline. We review progress against the things you wanted to do again.",
+      "Our service guidance says a carer can help you keep practising in between sessions. In our approach, we do not give a fixed timeline, because stroke recovery looks different for each person we see. We review progress against the things you wanted to do again.",
       "With your consent, we can share a written summary of your progress with your GP or stroke team. The NHS says a review of your progress should happen after about 6 months. We do not replace that review.",
     ],
     timeline:
@@ -911,8 +913,9 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     inPersonInstead: [
       "Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.",
       "A stroke needs urgent medical help in hospital. A sudden new symptom is not something to raise at a physio session.",
-      "If you have hit your head in a fall, the NHS says to call 999 if you were knocked out and did not wake up, cannot stay awake, have a seizure, or have new numbness or weakness, new problems with walking, balance, speaking or understanding, or a change in behaviour. If you are told to go to A&E, do not drive yourself.",
-      "Contact your stroke team or GP about worries that are not an emergency, such as new low mood, swallowing or speech problems, or a plan that no longer feels right. Online sessions are not for acute care.",
+      "If you have fallen and have severe hip pain, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after the fall, the NHS says to call 999 or go to A&E. Do not drive yourself.",
+      "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, or has problems with walking, balance, understanding, speaking or writing. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
+      "Any sudden or new change in your speech, such as slurred or lost words, goes to the 999 line above and does not wait for a session. For worries that are not an emergency, such as new low mood, ongoing swallowing or speech difficulties you already have, or a plan that no longer feels right, contact your stroke team or GP. Online sessions are not for acute care.",
       "If you need hands-on therapy, a home visit or equipment set up in person, we cannot provide it. Triage at booking tells you honestly if video does not suit you.",
     ],
     faqs: [
@@ -926,7 +929,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Can my carer or family come to the session?",
-        a: "Yes. Our service guidance says a family member or carer is welcome to join, help with the physical setup and continue supported practice between sessions.",
+        a: "Yes. Our service guidance says a family member or carer can join, help get the room ready and help you keep practising in between sessions.",
       },
       {
         q: "What should I do if I think I am having another stroke?",
@@ -945,6 +948,14 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       {
         label: "NHS: Stroke symptoms",
         url: "https://www.nhs.uk/conditions/stroke/symptoms/",
+      },
+      {
+        label: "NHS: Hip pain",
+        url: "https://www.nhs.uk/symptoms/hip-pain/",
+      },
+      {
+        label: "NHS: Stroke",
+        url: "https://www.nhs.uk/conditions/stroke/",
       },
       {
         label: "NHS: Head injury and concussion",
@@ -969,13 +980,13 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     howOnlineWorks: [
       "The NHS lists physiotherapy among the supportive therapies for Parkinson's. It says a physiotherapist can work on muscle stiffness and joint pain through movement and exercise, with the aim of making moving easier and improving walking, flexibility and fitness. That is the kind of work we offer by video.",
       "We do not claim that exercise changes the course of Parkinson's. Our aim is practical: movement, walking, balance and confidence in daily life. Your care plan stays with your Parkinson's team, and the NHS says that plan should be agreed with your healthcare team and reviewed regularly, because regular reviews are needed as the condition progresses.",
-      "Our neurological rehabilitation service is for people who are medically stable and supports your wider team. Our service guidance says a family member or carer is welcome to join the session and help with the physical setup.",
-      "If falls are a worry for you, we look at balance and the way you walk. Our [gait and mobility assessment](/services/gait-and-mobility-assessment) covers walking analysis and planning in more detail, and our [falls prevention exercise guide](/exercises/for/falls-prevention) shows balance and strength work that you can read alongside your sessions.",
+      "Our neurological rehabilitation service is for people who are medically stable and supports your wider team. Our service guidance says a family member or carer can join the session and help get the room ready.",
+      "If falls are a worry for you, we look at balance and the way you walk. Our [gait and mobility assessment](/services/gait-and-mobility-assessment) covers walking analysis and planning in more detail.",
       "Video has limits. We cannot catch you if you lose your balance, so we plan movements you can do with something solid nearby and, if needed, another person with you. We cannot adjust medicines or assess how your Parkinson's is progressing; those stay with your Parkinson's team.",
     ],
     assessmentChecks: [
       "What you want to keep doing or get back to, such as walking outdoors, getting up from a chair or turning over in bed.",
-      "How you walk and turn, how you get out of a chair, and whether you feel steady, stiff or hesitant in particular places such as doorways.",
+      "How you walk and turn, how you get out of a chair, and whether you feel steady, stiff or hesitant at certain moments.",
       "Any falls or near-falls, and where and how they tend to happen.",
       "Your current exercise, who is involved in your care, and any advice you have already had from your Parkinson's team.",
       "Whether the room you will use at home is safe for movement checks, and who can be with you.",
@@ -985,14 +996,14 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Your plan starts from your goals and from a few simple movement checks over video. We build a short routine for stiffness, walking and balance that you can repeat at home, and we adjust it as things change.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Triage at booking confirms whether video suits you, and we will say so plainly if it does not.",
       "Because the NHS says Parkinson's care needs regular reviews as the condition progresses, we expect your plan to change over time. We review it with you at follow-ups, and with your consent we can share a written summary with your Parkinson's team or GP.",
-      "Our service guidance says progress is judged on function you can feel, such as walking further or needing less support, rather than a fixed timeline. We use the same approach here.",
+      "Our service guidance says reviews look at everyday change that you notice for yourself, not at a set timetable. We use the same approach here.",
     ],
     timeline:
       "Parkinson's changes over time, so we do not give a timeline or promise a result. We review your walking, balance and daily movement with you at each session, and we suggest you speak to your Parkinson's team if you notice changes in your symptoms or your medicines.",
     inPersonInstead: [
       "Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.",
       "If you have fallen and have severe hip pain, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after the fall, the NHS says to call 999 or go to A&E. Do not drive yourself.",
-      "If you have hit your head in a fall, the NHS says to call 999 if you were knocked out and did not wake up, cannot stay awake, have a seizure, or have new numbness or weakness, new problems with walking, balance, speaking or understanding, or a change in behaviour. If you are told to go to A&E, do not drive yourself.",
+      "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, or has problems with walking, balance, understanding, speaking or writing. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
       "For worries about your medicines, new symptoms or your care plan, speak to your Parkinson's team or GP. The NHS says your plan is agreed with your healthcare team, and we do not change it.",
       "If you cannot move safely at home without hands-on help, or need equipment fitted in person, we cannot provide that by video. Our service is for people who are medically stable, not for acute care.",
     ],
@@ -1033,6 +1044,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
     ],
     exerciseHubSlug: "falls-prevention",
+    hubBacklink: false,
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "neurological-rehabilitation",
     // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
@@ -1051,8 +1063,8 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     howOnlineWorks: [
       "The NHS lists physiotherapy and exercises to help with movement problems and muscle pain among the support for MS symptoms. It says the team around you may include an MS nurse, a neurologist, a physiotherapist and an occupational therapist. We aim to be one part of that team, by video, and not a replacement for it.",
       "We make no claim that physiotherapy changes the course of MS. Our focus is on how you move and what you want to keep doing: walking, balance, stiffness and everyday tasks. Medicines, relapse care and decisions about your condition stay with your MS team.",
-      "Our neurological rehabilitation service is for people who are medically stable. Our service guidance says a family member or carer is welcome to join the session and help with the physical setup, and that you may be guided through safe, seated or supported movement checks.",
-      "The NHS describes relapsing remitting MS as having flare-ups of symptoms, called relapses, that then go away or improve. We cannot judge a relapse over video. If your symptoms change in a way that worries you, your plan with us can wait while your MS team or GP is contacted.",
+      "Our neurological rehabilitation service is for people who are medically stable. Our service guidance says a family member or carer can join the session and help get the room ready, and that early movement checks are done seated or with support.",
+      "The NHS describes relapsing remitting MS as having flare-ups of symptoms, called relapses, that then go away or improve. We cannot judge a relapse over video. If none of the 999 signs on this page apply and you think you are having a relapse, our approach is to ask you to contact your MS team or GP.",
       "Video has limits. We cannot catch you if you lose your balance, so we plan movements that can be done safely at home with something solid nearby and, if needed, another person with you. If a movement does not look safe on camera, we will say so and suggest in-person therapy through your NHS team.",
     ],
     assessmentChecks: [
@@ -1067,14 +1079,14 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Your plan starts from your goals and a few simple movement checks over video. We build a short routine for movement and muscle pain that you can repeat at home, and we adjust it as your needs change.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Triage at booking confirms whether video suits you, and we will say so plainly before you pay if it does not.",
       "MS varies from person to person and over time, so we review your plan with you at each follow-up rather than following a fixed timeline. With your consent we can share a written summary with your MS nurse, neurologist or GP.",
-      "Our service guidance says progress is judged on function you can feel, such as walking further or needing less support. We use the same approach for MS and keep exercise decisions in line with advice from your MS team.",
+      "Our service guidance says reviews look at everyday change that you notice for yourself. We use the same approach for MS and keep exercise decisions in line with advice from your MS team.",
     ],
     timeline:
       "We do not promise a timeline or a result, because MS differs between people and can change over time. We review your movement and daily tasks with you at each session, and we suggest you speak to your MS team if your symptoms change.",
     inPersonInstead: [
       "Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.",
       "The NHS MS page says to call 999 or go to A&E if you have sudden weakness or numbness in one arm, loss or blurring of vision, or problems with balance and co-ordination, because these could be signs of a stroke. Do not drive to A&E.",
-      "If you think you are having a relapse, contact your MS team or GP. We cannot assess or manage a relapse over video, and our approach is to pause exercise until you have been seen.",
+      "If none of the 999 signs above apply and you think you are having a relapse, our approach is to ask you to contact your MS team or GP. We cannot assess a relapse over video, and we pause exercise with us until they have advised you.",
       "If you have symptoms you think could be MS but have no diagnosis, the NHS says to see a GP. Online sessions with us do not replace a diagnosis.",
       "If you need hands-on therapy or equipment set up in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.",
     ],
@@ -1085,7 +1097,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Do you manage MS relapses?",
-        a: "No. If you think you are having a relapse, contact your MS team or GP. If you have sudden weakness or numbness in one arm, loss or blurring of vision, or problems with balance and co-ordination, call 999 or go to A&E and do not drive yourself.",
+        a: "No. If you have sudden weakness or numbness in one arm, loss or blurring of vision, or problems with balance and co-ordination, call 999 or go to A&E and do not drive yourself. If none of those apply and you think you are having a relapse, contact your MS team or GP.",
       },
       {
         q: "Do you work with my MS nurse or neurologist?",
@@ -1093,7 +1105,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Can my carer join the session?",
-        a: "Yes. Our service guidance says a family member or carer is welcome to join and help with the physical setup.",
+        a: "Yes. Our service guidance says a family member or carer can join and help get the room ready.",
       },
     ],
     sources: [
@@ -1124,8 +1136,8 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     howOnlineWorks: [
       "FND is diagnosed by a neurologist. We do not diagnose it, and we ask you to have a diagnosis from a neurologist before we start. If you are unsure whether your symptoms are FND, speak to your GP about seeing a neurologist rather than booking with us.",
       "NHS inform says that specialised physiotherapy can be useful in treating FND, and that it helps remind the body how it should move and helps build up lost strength and stamina. It also says outcomes vary: some people benefit a lot and may go into remission, while others continue to have symptoms despite treatment. We do not promise any outcome, and our online service is general physiotherapy support alongside your neurology team.",
-      "A large UK trial called Physio4FMD, published in The Lancet Neurology in 2024, looked at specialist physiotherapy for functional motor disorder in adults with a neurologist's diagnosis. It did not find a difference in its main measure of physical functioning at 12 months compared with usual care from community neurological physiotherapy. People given the specialist treatment more often rated their motor symptoms as improved, and the authors describe both kinds of physiotherapy as safe and valued for selected patients. The trial did not test video sessions, so it is not evidence about our service.",
-      "Our neurological rehabilitation service is for people who are medically stable and supports your wider team. Our service guidance says a family member or carer is welcome to join the session and help with the physical setup. We work at a pace you can manage and keep your neurologist or GP informed, with your consent.",
+      "A UK trial called Physio4FMD, published in The Lancet Neurology in 2024, looked at specialist physiotherapy for functional motor disorder in adults with a neurologist's diagnosis. It did not find a difference in its main measure of physical functioning at 12 months compared with usual care from community neurological physiotherapy. People given the specialist treatment more often rated their motor symptoms as improved, and the authors describe both kinds of physiotherapy as safe and valued for selected patients. The trial abstract does not describe video sessions, so it is not evidence about our service.",
+      "Our neurological rehabilitation service is for people who are medically stable and supports your wider team. Our service guidance says a family member or carer can join the session and help get the room ready. We work at a pace you can manage and keep your neurologist or GP informed, with your consent.",
       "Video has limits. We cannot examine you by hand, and we cannot catch you if you lose your balance, so we plan movements you can do safely at home. If video does not suit you, we will say so and suggest in-person care through your NHS team.",
     ],
     assessmentChecks: [
@@ -1146,8 +1158,8 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "NHS inform says outcomes vary: some people benefit a lot and may go into remission, and others continue to have symptoms despite treatment. We cannot predict where you will be, so we review your movement and daily tasks with you at each session.",
     inPersonInstead: [
       "Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.",
-      "Do not assume a sudden new symptom is part of FND. A sudden change is a reason to call 999 using the signs above, and not to wait for a physio session.",
-      "If you have hit your head in a fall, the NHS says to call 999 if you were knocked out and did not wake up, cannot stay awake, have a seizure, or have new numbness or weakness, new problems with walking, balance, speaking or understanding, or a change in behaviour. If you are told to go to A&E, do not drive yourself.",
+      "Do not assume a sudden new symptom is part of FND. If it matches the stroke signs above, call 999. For other new or changing symptoms, speak to your GP or neurology team rather than waiting for a physio session.",
+      "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, or has problems with walking, balance, understanding, speaking or writing. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
       "If you have symptoms but no diagnosis, speak to your GP. Diagnosis of FND comes from a neurologist, and online sessions with us do not replace that.",
       "If you need hands-on therapy or care in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.",
     ],
@@ -1166,7 +1178,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Can a carer or family member join?",
-        a: "Yes. Our service guidance says a family member or carer is welcome to join and help with the physical setup.",
+        a: "Yes. Our service guidance says a family member or carer can join and help get the room ready.",
       },
     ],
     sources: [
@@ -1213,5 +1225,5 @@ export function allOnlinePhysioSlugs(): string[] {
 
 /** Reverse lookup: the landing page whose exercise hub is `hubSlug` (a slug in lib/conditions.ts). */
 export function onlinePhysioPageForHub(hubSlug: string): OnlinePhysioPage | null {
-  return onlinePhysioPages.find((p) => p.exerciseHubSlug === hubSlug) ?? null;
+  return onlinePhysioPages.find((p) => p.exerciseHubSlug === hubSlug && p.hubBacklink !== false) ?? null;
 }

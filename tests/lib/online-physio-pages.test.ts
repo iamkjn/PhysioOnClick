@@ -168,6 +168,7 @@ describe("phase B internal linking helpers", () => {
   it("onlinePhysioPageForHub reverse-looks-up by exercise hub slug", () => {
     expect(onlinePhysioPageForHub("sciatica")?.slug).toBe("sciatica");
     expect(onlinePhysioPageForHub("nope")).toBeNull();
+    expect(onlinePhysioPageForHub("falls-prevention")).toBeNull();
   });
   it("every service onlinePhysioSlugs entry resolves", () => {
     const withSlugs = services.filter((s) => s.onlinePhysioSlugs?.length);
