@@ -19,11 +19,17 @@ class AppConfig {
   /// IMPORTANT: this previously pointed at `physioonclick.com`, a domain
   /// that was never registered to this project and never resolved — every
   /// release-build backend call (checkout, Cal.com slots, chat) silently
-  /// failed. Fixed 2026-09-17. Before shipping a real production release,
-  /// change this to `https://physioonclick.co.uk` (the live site, real
-  /// Stripe keys, production Firestore) as a deliberate, reviewed step —
-  /// never as a side effect of an unrelated change.
+  /// failed. Fixed 2026-09-17.
+  ///
+  /// Production (the live site, real Stripe keys, production Firestore) is
+  /// opted into per build with `--dart-define=APP_ENV=prod`, never by editing
+  /// this file. Use scripts/build-release.sh, which also switches the Firebase
+  /// config to the matching project so the two can't disagree.
+  static const appEnv = String.fromEnvironment('APP_ENV', defaultValue: 'dev');
+
   static const apiBaseUrl = kDebugMode
       ? (kIsWeb ? 'http://localhost:3000' : 'http://10.0.2.2:3000')
-      : 'https://dev.physioonclick.co.uk';
+      : (appEnv == 'prod'
+          ? 'https://physioonclick.co.uk'
+          : 'https://dev.physioonclick.co.uk');
 }
