@@ -9,6 +9,8 @@ import {
   allExerciseSlugs,
   programmesForExercise,
   relatedExercises,
+  bodyAreaForExercise,
+  moreExercisesInArea,
 } from "@/lib/exercise-library";
 import { formatDosage, hasPrescribedDose, resolveDosage } from "@/lib/exercises";
 import { splitMistakes } from "@/lib/exercise-safety-line";
@@ -91,6 +93,8 @@ export default async function ExerciseDetailPage({
   const path = `/exercises/${slug}`;
   const hubs = conditionsForExercise(slug);
   const related = relatedExercises(slug, 4);
+  const area = bodyAreaForExercise(slug);
+  const moreInArea = moreExercisesInArea(slug, 12, new Set(related.map((item) => item.slug)));
   const programmes = programmesForExercise(slug);
   const helpsWith = exercise.helpsWith ?? [];
   const dose = formatDosage(resolveDosage(exercise));
@@ -346,6 +350,26 @@ export default async function ExerciseDetailPage({
               <ExerciseCard key={item.slug} exercise={item} />
             ))}
           </div>
+        </section>
+      ) : null}
+
+      {area && moreInArea.length ? (
+        <section className="page-section stack">
+          <div className="section-heading">
+            <h2>More {area.label.toLowerCase()} exercises</h2>
+          </div>
+          <ul className="exlib-link-list">
+            {moreInArea.map((item) => (
+              <li key={item.slug}>
+                <Link href={`/exercises/${item.slug}`}>{item.title}</Link>
+              </li>
+            ))}
+          </ul>
+          <p>
+            <Link href={`/exercises/area/${area.key}`}>
+              See all {area.label.toLowerCase()} exercises
+            </Link>
+          </p>
         </section>
       ) : null}
 
