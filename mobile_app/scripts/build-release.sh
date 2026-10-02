@@ -6,7 +6,8 @@
 #   ./scripts/build-release.sh dev    # dev.physioonclick.co.uk + physioonclick-dev
 #
 # Produces: Android app bundle (.aab) + APK, and an unsigned iOS build check.
-# Store signing (Play upload key, Apple team) is NOT configured here yet.
+# Android is signed with the Play upload key when android/key.properties exists
+# (debug key otherwise). iOS signing (Apple team) is not configured yet.
 # Restores the committed (dev) Firebase config afterwards so prod config is
 # never committed by accident. Run from mobile_app/.
 set -euo pipefail
@@ -20,6 +21,7 @@ fi
 restore() {
   git checkout -- android/app/google-services.json ios/Runner/GoogleService-Info.plist \
     lib/src/core/firebase/firebase_options.dart
+  if [[ "${COPIED_KEY_PROPS:-0}" == 1 ]]; then rm -f android/key.properties; fi
 }
 trap restore EXIT
 
@@ -29,6 +31,20 @@ expected="physioonclick-$ENV"
 if ! grep -q "projectId: '$expected'" lib/src/core/firebase/firebase_options.dart; then
   echo "SAFETY STOP: firebase_options.dart is not $expected" >&2
   exit 1
+fi
+
+# The Play upload key lives outside the repo (never commit it). If the owner's
+# key.properties exists there, use it for this build only.
+KEY_PROPS="$HOME/keys/physioonclick-key.properties"
+COPIED_KEY_PROPS=0
+if [[ ! -f android/key.properties && -f "$KEY_PROPS" ]]; then
+  cp "$KEY_PROPS" android/key.properties
+  COPIED_KEY_PROPS=1
+fi
+
+if [[ "$ENV" == "prod" && ! -f android/key.properties ]]; then
+  echo "WARNING: android/key.properties not found - Android builds will be signed" >&2
+  echo "with the DEBUG key. Fine for testing on a phone; Google Play will reject it." >&2
 fi
 
 DEFINE="--dart-define=APP_ENV=$ENV"
