@@ -123,7 +123,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
       "Surgeons' individual protocols vary by procedure, and physiotherapy should follow the specific guidance given for that operation. Within that framework, the physiotherapist's role is to progress range of motion, strength and function as the tissue allows, while addressing the very common drop in confidence that follows any operation."
     ],
     assessment: "Assessment reviews the surgical procedure and any surgeon-specific precautions, wound healing, swelling, current range of movement against expected milestones for that stage of recovery, and functional goals — return to work, driving, sport or specific hobbies.",
-    redFlags: "Increasing redness, warmth, discharge or fever around a surgical site, a sudden increase in swelling or pain, or symptoms of a blood clot (calf swelling, tenderness, breathlessness) need urgent medical review rather than physiotherapy in the first instance."
+    redFlags: "Increasing redness, warmth, discharge or fever around a surgical site, or a sudden increase in swelling or pain need an urgent GP appointment or NHS 111 rather than physiotherapy. Throbbing or cramping pain or swelling in one leg can be a blood clot and needs an urgent GP appointment or NHS 111; with breathlessness or chest pain, call 999 or go to A&E (possible clot in the lung), and do not drive yourself."
   },
   "Home exercise advice": {
     mechanism: [
@@ -667,7 +667,7 @@ const aclReconstructionSections: BlogArticle["sections"] = [
   {
     heading: "Red flags and when in-person review is needed",
     body: [
-      "A knee that gives way or buckles unexpectedly during rehab, a sudden increase in swelling or a popping sensation during an exercise, or a new, sharp block to movement should prompt a pause and a physiotherapy review rather than continuing the plan as written. Signs of infection at the surgical site — increasing redness, warmth, discharge or fever — or symptoms suggestive of a blood clot, such as calf swelling, tenderness or breathlessness, need urgent same-day medical assessment rather than physiotherapy. Persistent inability to fully straighten the knee more than a few weeks after surgery is also worth flagging early, since it becomes progressively harder to resolve the longer it's left unaddressed."
+      "A knee that gives way or buckles unexpectedly during rehab, a sudden increase in swelling or a popping sensation during an exercise, or a new, sharp block to movement should prompt a pause and a physiotherapy review rather than continuing the plan as written. Signs of infection at the surgical site — increasing redness, warmth, discharge or fever — need an urgent GP appointment or NHS 111 rather than physiotherapy. Throbbing or cramping pain or swelling in one calf can be a blood clot and needs an urgent GP appointment or NHS 111. If you also have breathlessness or chest pain, call 999 or go to A&E (possible clot in the lung), and do not drive yourself. Persistent inability to fully straighten the knee more than a few weeks after surgery is also worth flagging early, since it becomes progressively harder to resolve the longer it's left unaddressed."
     ]
   },
   {
