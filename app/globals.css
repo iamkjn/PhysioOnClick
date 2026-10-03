@@ -334,6 +334,15 @@ p {
   transition: background-color 120ms ease, color 120ms ease;
 }
 
+/* Nine nav items (incl. Self-checks) overlap the brand and Book Now between
+   the 960px column breakpoint and ~1180px; tighten link spacing there only. */
+@media (min-width: 961px) and (max-width: 1180px) {
+  .simple-nav-links a {
+    padding: 0.55rem 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+
 .simple-nav-links a:hover {
   background: var(--surface-alt);
 }
