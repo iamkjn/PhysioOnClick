@@ -19,6 +19,8 @@ export type OnlinePhysioPage = {
   name: string;
   /** How the condition reads mid-sentence ("Parkinson's", "knee replacement"). Defaults to name.toLowerCase() when omitted. */
   nameInSentence?: string;
+  /** Schema.org type and name for JSON-LD `about`. Defaults to MedicalCondition + name. */
+  about?: { type: "MedicalCondition" | "SurgicalProcedure"; name: string };
   h1: string;
   seoTitle: string;
   seoDescription: string;
@@ -637,6 +639,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "knee-replacement-rehab",
     name: "Knee replacement",
     nameInSentence: "knee replacement",
+    about: { type: "SurgicalProcedure", name: "Knee replacement" },
     h1: "Online physiotherapy after knee replacement",
     seoTitle: "Online Physio After Knee Replacement | PhysioOnClick",
     seoDescription:
@@ -717,6 +720,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "hip-replacement-rehab",
     name: "Hip replacement",
     nameInSentence: "hip replacement",
+    about: { type: "SurgicalProcedure", name: "Hip replacement" },
     h1: "Online physiotherapy after hip replacement",
     seoTitle: "Online Physio After Hip Replacement | PhysioOnClick",
     seoDescription:
@@ -800,6 +804,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "rotator-cuff-repair-rehab",
     name: "Rotator cuff repair",
     nameInSentence: "rotator cuff repair",
+    about: { type: "SurgicalProcedure", name: "Rotator cuff repair" },
     h1: "Online physiotherapy after rotator cuff repair",
     seoTitle: "Online Physio After Rotator Cuff Repair | PhysioOnClick",
     seoDescription:
@@ -879,6 +884,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "stroke-rehabilitation",
     name: "Stroke recovery",
     nameInSentence: "stroke recovery",
+    about: { type: "MedicalCondition", name: "Stroke" },
     h1: "Online physiotherapy for stroke recovery",
     seoTitle: "Online Physiotherapy for Stroke Recovery | PhysioOnClick",
     seoDescription:

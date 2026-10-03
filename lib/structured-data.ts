@@ -366,7 +366,7 @@ export function onlinePhysioWebPage(p: OnlinePhysioPage, path: string): object {
     headline: p.h1,
     description: p.seoDescription,
     url: absoluteUrl(path),
-    about: { "@type": "MedicalCondition", name: p.name },
+    about: { "@type": p.about?.type ?? "MedicalCondition", name: p.about?.name ?? p.name },
     author: personRef(),
     reviewedBy: personRef(),
     lastReviewed: p.reviewedOn,
