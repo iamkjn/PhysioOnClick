@@ -105,7 +105,7 @@ describe("app/exercises/for/[condition] page", () => {
     const { container } = await renderPage("neck-pain");
     const urgent = container.querySelector("[data-urgent-flags]");
     expect(urgent).not.toBeNull();
-    expect(urgent!.querySelector("h2")?.textContent).toBe("Call 999 or go to A&E if");
+    expect(urgent!.querySelector("h2")?.textContent).toBe("Get urgent help now if");
     for (const flag of neck.urgentFlags!) expect(urgent).toHaveTextContent(flag);
     const nonUrgent = container.querySelector("[data-red-flags]")!;
     expect(nonUrgent.textContent).not.toMatch(/999|A&E/);

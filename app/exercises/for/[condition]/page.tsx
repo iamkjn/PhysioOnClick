@@ -173,11 +173,11 @@ export default async function ConditionHubPage({
 
           {/* Coral/danger tint. Must sit in the DOM before the programme so a
               screen-reader or a skim reader meets the safety net first.
-              Emergency signs (999 / A&E) get their own box, ahead of the
+              Urgent signs (each with its own route) get their own box, ahead of the
               non-urgent list, so nothing urgent sits under "first". */}
           {condition.urgentFlags?.length ? (
             <div className="exlib-redflags exlib-redflags--urgent" data-urgent-flags>
-              <h2 className="exlib-redflags__title">Call 999 or go to A&amp;E if</h2>
+              <h2 className="exlib-redflags__title">Get urgent help now if</h2>
               <ul className="exlib-redflags__list">
                 {condition.urgentFlags.map((flag, i) => (
                   <li key={i}>{flag}</li>
