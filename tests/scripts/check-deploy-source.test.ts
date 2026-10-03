@@ -61,3 +61,16 @@ describe("parsePorcelain", () => {
     ]);
   });
 });
+
+describe("deployBlockers: node_modules symlink", () => {
+  it("blocks a checkout whose node_modules is a symlink (the 2026-10-03 prod outage)", () => {
+    const reasons = deployBlockers({ ...clean, nodeModulesSymlink: true });
+    expect(reasons).toHaveLength(1);
+    expect(reasons[0]).toMatch(/node_modules is a symlink/);
+    expect(reasons[0]).toMatch(/cp -cR/);
+  });
+
+  it("allows a real node_modules directory", () => {
+    expect(deployBlockers({ ...clean, nodeModulesSymlink: false })).toEqual([]);
+  });
+});

@@ -7,10 +7,17 @@
 // embeds), and once by a deploy built from code that wasn't pushed yet, so the
 // next deploy from master silently dropped it. Both are caught here.
 //
+// Also: on 2026-10-03 every page 500'd for ~3.5h because prod was built in a
+// worktree whose node_modules was a SYMLINK. OpenNext copies the link into the
+// bundle instead of the real packages, so its next-server.js patch never applies
+// and the Worker throws "Dynamic require of /.next/server/middleware-manifest.json".
+// verify-opennext-build.mjs checks the built output for the same failure.
+//
 // Emergency override (prints a loud warning): ALLOW_UNSYNCED_DEPLOY=1 npm run deploy
 // Rolling back a bad release doesn't need this: use `npx wrangler rollback <version>`.
 
 import { execFileSync } from "node:child_process";
+import { lstatSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 /** Paths that never reach the website build, so uncommitted edits there are fine. */
@@ -20,8 +27,14 @@ export const IGNORED_PREFIXES = ["mobile_app/", "docs/", ".worktrees/", ".claude
  * Pure decision: given the git state, return the reasons this checkout must not
  * be deployed to production ([] means it's safe).
  */
-export function deployBlockers({ head, originMaster, behind, ahead, dirtyPaths }) {
+export function deployBlockers({ head, originMaster, behind, ahead, dirtyPaths, nodeModulesSymlink = false }) {
   const reasons = [];
+  if (nodeModulesSymlink) {
+    reasons.push(
+      "node_modules is a symlink. OpenNext would bundle the link instead of the real packages and every page " +
+        "would 500 in production. Replace it with a real copy: rm node_modules && cp -cR <main checkout>/node_modules node_modules",
+    );
+  }
   if (!originMaster) {
     reasons.push(
       "Could not read origin/master (no network or no 'origin' remote), so freshness can't be checked.",
@@ -80,7 +93,13 @@ function readGitState() {
     ahead = a;
   }
   const dirtyPaths = parsePorcelain(git(["status", "--porcelain", "--untracked-files=all"]));
-  return { head, originMaster, behind, ahead, dirtyPaths };
+  let nodeModulesSymlink = false;
+  try {
+    nodeModulesSymlink = lstatSync("node_modules").isSymbolicLink();
+  } catch {
+    // A missing node_modules fails the build on its own.
+  }
+  return { head, originMaster, behind, ahead, dirtyPaths, nodeModulesSymlink };
 }
 
 function main() {
