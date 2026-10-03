@@ -96,6 +96,27 @@ function deviceFromUserAgent(userAgent: string) {
   return "desktop";
 }
 
+function countryFromHeaders(headers: Headers) {
+  const code = cleanString(
+    headers.get("x-vercel-ip-country") ||
+      headers.get("cf-ipcountry") ||
+      headers.get("cloudfront-viewer-country") ||
+      headers.get("x-country-code"),
+    8,
+  ).toUpperCase();
+
+  if (!/^[A-Z]{2}$/.test(code) || code === "XX") {
+    return { countryCode: "", countryName: "" };
+  }
+
+  try {
+    const countryName = new Intl.DisplayNames(["en"], { type: "region" }).of(code) ?? code;
+    return { countryCode: code, countryName };
+  } catch {
+    return { countryCode: code, countryName: code };
+  }
+}
+
 function shouldIgnorePath(path: string) {
   return path === "/admin" || path.startsWith("/admin/") || path.startsWith("/codex-");
 }
@@ -133,6 +154,7 @@ export async function POST(request: Request) {
   }
 
   const userAgent = cleanString(request.headers.get("user-agent"), 260);
+  const country = countryFromHeaders(request.headers);
   await db.collection("growthEvents").add({
     event,
     sessionId,
@@ -140,6 +162,8 @@ export async function POST(request: Request) {
     referrer: cleanPath(body.referrer),
     params: cleanParams(body.params),
     device: deviceFromUserAgent(userAgent),
+    countryCode: country.countryCode,
+    countryName: country.countryName,
     userAgent,
     createdAt: FieldValue.serverTimestamp(),
     createdAtIso: new Date().toISOString(),

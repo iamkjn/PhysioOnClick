@@ -58,17 +58,19 @@ export default function ContactPage() {
                   <a className="contact-info-link" href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a>
                 </div>
               </li>
-              <li>
-                <span className="contact-info-icon">
-                  <svg {...iconProps}><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L20 13l2 5v1a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 1-2Z" /></svg>
-                </span>
-                <div>
-                  <strong>Phone</strong>
-                  <a className="contact-info-link" href={PRACTICE_PHONE_HREF}>
-                    {PRACTICE_PHONE}
-                  </a>
-                </div>
-              </li>
+              {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
+                <li>
+                  <span className="contact-info-icon">
+                    <svg {...iconProps}><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L20 13l2 5v1a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 1-2Z" /></svg>
+                  </span>
+                  <div>
+                    <strong>Phone</strong>
+                    <a className="contact-info-link" href={PRACTICE_PHONE_HREF}>
+                      {PRACTICE_PHONE}
+                    </a>
+                  </div>
+                </li>
+              ) : null}
               <li>
                 <span className="contact-info-icon">
                   <svg {...iconProps}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>

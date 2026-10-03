@@ -205,7 +205,7 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Uint8A
   textAt(`HCPC ${issuerField(invoiceIssuer.hcpcNumber)}  |  CSP ${issuerField(invoiceIssuer.cspNumber)}`, ix, by - 100, {
     size: 9.2,
   });
-  textAt(`${PRACTICE_PHONE}  |  ${invoiceIssuer.contactEmail}`, ix, by - 116, { size: 8.5, color: MUTED });
+  textAt([PRACTICE_PHONE, invoiceIssuer.contactEmail].filter(Boolean).join("  |  "), ix, by - 116, { size: 8.5, color: MUTED });
 
   // ── Payment summary strip ────────────────────────────────────────────
   let y = cardBottom - 26;
@@ -275,7 +275,7 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Uint8A
   rule(footerY + 28, FOOTER_RULE);
   textAt(founder.name, MARGIN, footerY + 2, { f: bold, size: 13 });
   textAt(`${founder.credentials[0]}  |  ${founder.credentials[1]}`, MARGIN, footerY - 15, { size: 8.8, color: MUTED });
-  textRight(`${PRACTICE_PHONE}  |  ${invoiceIssuer.contactEmail}  |  physioonclick.co.uk`, right, footerY + 1, {
+  textRight([PRACTICE_PHONE, invoiceIssuer.contactEmail, "physioonclick.co.uk"].filter(Boolean).join("  |  "), right, footerY + 1, {
     size: 8.7,
     color: MUTED,
   });
