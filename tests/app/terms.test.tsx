@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest'
 
 // Next.js Link renders as <a> in tests — no mock needed
 import TermsPage from '@/app/terms/page'
+import { EXERCISE_DISCLAIMER } from '@/lib/exercise-disclaimer'
 
 describe('Terms & Conditions page', () => {
   it('renders all 9 required section headings', () => {
@@ -58,5 +59,15 @@ describe('Terms & Conditions page', () => {
     expect(text).toMatch(/under 18/)
     expect(text).toMatch(/outside the area we cover/)
     expect(text).not.toMatch(/\bclinic\b|premises|insur/i)
+  })
+
+  it('has the exercise and health information clause using the shared wording', () => {
+    const { container } = render(<TermsPage />)
+    expect(screen.getByRole('heading', { name: 'Use of exercise and health information' })).toBeInTheDocument()
+    const clause = container.querySelector('#exercise-and-health-information')
+    expect(clause?.textContent).toContain(EXERCISE_DISCLAIMER)
+    expect(clause?.textContent).toMatch(/at your own risk/)
+    expect(clause?.textContent).toMatch(/cannot be limited by law/)
+    expect(clause?.textContent).not.toMatch(/exclude all liability|accepts no responsibility/i)
   })
 })

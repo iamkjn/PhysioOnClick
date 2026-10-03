@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { EXERCISE_DISCLAIMER } from "@/lib/exercise-disclaimer";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
@@ -132,6 +133,21 @@ export default function TermsPage() {
             Act 2018. See our{" "}
             <Link href="/privacy-policy" style={inlineLinkStyle}>Privacy Policy</Link> for details on what we
             collect, how we use it, and your rights.
+          </p>
+        </article>
+
+        <article
+          id="exercise-and-health-information"
+          className="panel stack soft-panel"
+          style={{ maxWidth: "70ch", lineHeight: 1.6 }}
+        >
+          <h2>Use of exercise and health information</h2>
+          <p>{EXERCISE_DISCLAIMER}</p>
+          <p>
+            The exercises, self-check guides, articles and other health information on this site are not a
+            substitute for an assessment of your own condition. If you choose to use them without an
+            assessment from a physiotherapist, you do so at your own risk. Nothing in these terms limits
+            liability that cannot be limited by law.
           </p>
         </article>
 

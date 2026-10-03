@@ -1,3 +1,4 @@
+import { ExerciseUseDisclaimer } from "@/components/exercise-library/exercise-safety-note";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -185,6 +186,7 @@ export default async function SelfTestPage({
           <p className="exlib-selftest-disclaimer" data-disclaimer>
             {DISCLAIMER}
           </p>
+          <ExerciseUseDisclaimer />
         </div>
 
         {hubs.length ? (

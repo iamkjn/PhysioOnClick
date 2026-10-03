@@ -1,3 +1,4 @@
+import { ExerciseUseDisclaimer } from "@/components/exercise-library/exercise-safety-note";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -104,6 +105,7 @@ export default function SelfTestsIndexPage() {
           step.
         </p>
         <p className="exlib-selftest-disclaimer">{DISCLAIMER}</p>
+        <ExerciseUseDisclaimer />
       </section>
 
       {groups.map((group) => (
