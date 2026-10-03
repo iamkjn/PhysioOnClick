@@ -4,6 +4,7 @@ import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
 import { normaliseDiscountCode, validateCheckoutDiscount } from "@/lib/checkout-discounts";
 import { createStripeCheckout } from "@/lib/payments/stripe";
 import type { BookingIntent } from "@/lib/payments";
+import { DEFAULT_VISIT_TYPE, isVisitType, validateHomeVisit, type VisitType } from "@/lib/home-visit";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_TIMEZONE = "Europe/London";
@@ -19,6 +20,9 @@ type Body = {
   assessmentUid?: unknown;
   assessmentPersonId?: unknown;
   assessmentFormId?: unknown;
+  visitType?: unknown;
+  homeAddressLine?: unknown;
+  homePostcode?: unknown;
 };
 
 /** A Firestore auto-id / uid: alphanumeric, reasonable length. */
@@ -38,8 +42,21 @@ export async function POST(request: Request) {
     return bad("Invalid request body.");
   }
 
-  const { service, start, name, email, timeZone, focusAreas, discountCode, assessmentUid, assessmentPersonId, assessmentFormId } =
-    body;
+  const {
+    service,
+    start,
+    name,
+    email,
+    timeZone,
+    focusAreas,
+    discountCode,
+    assessmentUid,
+    assessmentPersonId,
+    assessmentFormId,
+    visitType,
+    homeAddressLine,
+    homePostcode,
+  } = body;
 
   if (!isBookServiceId(service)) return bad("Invalid or missing service.");
   if (typeof start !== "string" || start.trim() === "") return bad("Invalid or missing start time.");
@@ -62,6 +79,21 @@ export async function POST(request: Request) {
       return bad("Invalid timeZone.");
     }
     resolvedTimeZone = timeZone;
+  }
+
+  // Home visits (Glasgow area) cost the same and use the same calendar; they
+  // only add a required address. Any address sent with a video booking is
+  // ignored so it is never stored. Errors never echo the address back.
+  let resolvedVisitType: VisitType = DEFAULT_VISIT_TYPE;
+  if (visitType !== undefined && visitType !== null) {
+    if (!isVisitType(visitType)) return bad("Invalid visit type.");
+    resolvedVisitType = visitType;
+  }
+  let homeVisitAddress: string | undefined;
+  if (resolvedVisitType === "home") {
+    const home = validateHomeVisit(homeAddressLine, homePostcode);
+    if (!home.ok) return bad(home.error);
+    homeVisitAddress = home.homeVisitAddress;
   }
 
   const cleanedFocus = Array.isArray(focusAreas)
@@ -110,6 +142,8 @@ export async function POST(request: Request) {
     email: normalizedEmail,
     timeZone: resolvedTimeZone,
     focusAreas: cleanedFocus,
+    visitType: resolvedVisitType,
+    ...(homeVisitAddress ? { homeVisitAddress } : {}),
     ...(appliedDiscount
       ? {
           discountCode: appliedDiscount.code,

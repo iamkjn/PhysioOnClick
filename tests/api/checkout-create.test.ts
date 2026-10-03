@@ -87,3 +87,72 @@ describe("POST /api/checkout/create", () => {
     expect(createStripeCheckout).not.toHaveBeenCalled();
   });
 });
+
+describe("POST /api/checkout/create — visit type", () => {
+  function okStripe() {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://site.test");
+    (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true, url: "https://checkout.stripe.com/c/cs_1", sessionId: "cs_1",
+    });
+  }
+  function lastIntent() {
+    return (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].intent;
+  }
+  function lastAmount() {
+    return (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].amountPence;
+  }
+
+  it("defaults to a video call and needs no address", async () => {
+    okStripe();
+    const res = await POST(req(VALID));
+    expect(res.status).toBe(200);
+    expect(lastIntent().visitType).toBe("video");
+    expect(lastIntent()).not.toHaveProperty("homeVisitAddress");
+  });
+
+  it("ignores any address sent with a video booking", async () => {
+    okStripe();
+    const res = await POST(req({ ...VALID, visitType: "video", homeAddressLine: "7 Example Street", homePostcode: "G31 4HS" }));
+    expect(res.status).toBe(200);
+    expect(lastIntent().visitType).toBe("video");
+    expect(lastIntent()).not.toHaveProperty("homeVisitAddress");
+  });
+
+  it("rejects an unknown visit type", async () => {
+    const res = await POST(req({ ...VALID, visitType: "clinic" }));
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toMatch(/visit type/i);
+    expect(createStripeCheckout).not.toHaveBeenCalled();
+  });
+
+  it("rejects a home visit without an address", async () => {
+    const res = await POST(req({ ...VALID, visitType: "home", homePostcode: "G31 4HS" }));
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toMatch(/address/i);
+    expect(createStripeCheckout).not.toHaveBeenCalled();
+  });
+
+  it("rejects a home visit without a valid postcode", async () => {
+    const missing = await POST(req({ ...VALID, visitType: "home", homeAddressLine: "7 Example Street" }));
+    expect(missing.status).toBe(400);
+    expect((await missing.json()).error).toMatch(/postcode/i);
+    const malformed = await POST(req({ ...VALID, visitType: "home", homeAddressLine: "7 Example Street", homePostcode: "12345" }));
+    expect(malformed.status).toBe(400);
+    expect(createStripeCheckout).not.toHaveBeenCalled();
+  });
+
+  it("rejects an address over 120 characters", async () => {
+    const res = await POST(req({ ...VALID, visitType: "home", homeAddressLine: "x".repeat(121), homePostcode: "G31 4HS" }));
+    expect(res.status).toBe(400);
+  });
+
+  it("accepts a home visit at the same price and carries the address into the intent", async () => {
+    okStripe();
+    const res = await POST(req({ ...VALID, visitType: "home", homeAddressLine: " 7 Example Street ", homePostcode: "g31 4hs" }));
+    expect(res.status).toBe(200);
+    expect(lastIntent().visitType).toBe("home");
+    expect(lastIntent().homeVisitAddress).toBe("7 Example Street, G31 4HS");
+    const { bookServiceFor } = await import("@/lib/cal-services");
+    expect(lastAmount()).toBe(Math.round(bookServiceFor("initial-assessment").price * 100));
+  });
+});

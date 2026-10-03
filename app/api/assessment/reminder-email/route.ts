@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { sendAssessmentLinkEmail } from "@/lib/emails/assessment-link-email";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import { isVisitType } from "@/lib/home-visit";
 
 type Booking = {
   email: string;
@@ -10,6 +11,8 @@ type Booking = {
   service?: string;
   meetingUrl?: string;
   appointmentLabel?: string;
+  visitType?: string;
+  homeVisitAddress?: string;
 };
 
 export async function POST(request: Request) {
@@ -59,6 +62,11 @@ export async function POST(request: Request) {
     assessmentUrl,
     meetingUrl: booking.meetingUrl,
     appointmentLabel: booking.appointmentLabel,
+    // A home visit's email names the address and drops the video join link.
+    ...(isVisitType(booking.visitType) ? { visitType: booking.visitType } : {}),
+    ...(booking.visitType === "home" && booking.homeVisitAddress
+      ? { homeVisitAddress: booking.homeVisitAddress }
+      : {}),
   });
 
   return NextResponse.json({ sent: result.sent }, { status: 200 });

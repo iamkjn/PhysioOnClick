@@ -47,4 +47,24 @@ describe("sendReceiptEmail", () => {
     expect(body.attachments[0].filename).toBe("invoice-INV-2026-AB12CD34.pdf");
     expect(body.attachments[0].content).toBe("JVBERi0x");
   });
+
+  it("names the home visit address for a home visit", async () => {
+    vi.stubEnv("RESEND_API_KEY", "re_test");
+    const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    await sendReceiptEmail({ ...INPUT, visitType: "home", homeVisitAddress: "7 Example <Street>, G31 4HS" });
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.html).toContain("Home visit at 7 Example &lt;Street&gt;, G31 4HS");
+    expect(body.text).toContain("Home visit at 7 Example <Street>, G31 4HS");
+    expect(body.html).not.toContain("Join your appointment");
+  });
+
+  it("adds no visit line for a video booking", async () => {
+    vi.stubEnv("RESEND_API_KEY", "re_test");
+    const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    await sendReceiptEmail({ ...INPUT, visitType: "video" });
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.html).not.toContain("Home visit");
+  });
 });

@@ -144,12 +144,18 @@ export async function POST(request: NextRequest) {
               assessmentUid?: string;
               assessmentPersonId?: string;
               assessmentFormId?: string;
+              visitType?: string;
+              homeVisitAddress?: string;
             };
             if (pay.status === "paid") {
               await bookingRef.update({
                 paid: true,
                 amountPaidPence: pay.amountPence ?? 0,
                 paymentProvider: "stripe",
+                // Glasgow-area home visit recorded by the payments webhook.
+                ...(pay.visitType === "home" && pay.homeVisitAddress
+                  ? { visitType: "home", homeVisitAddress: pay.homeVisitAddress }
+                  : {}),
                 ...(pay.packageId && pay.packageTotalSessions
                   ? {
                       packageId: pay.packageId,

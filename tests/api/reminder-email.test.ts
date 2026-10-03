@@ -67,4 +67,24 @@ describe("POST /api/assessment/reminder-email", () => {
     expect(call.meetingUrl).toBe("https://meet.example.com/x");
     expect(call.appointmentLabel).toBe("3 Aug, 10:00");
   });
+
+  it("passes a home visit's type and address to the email (which then drops the join link)", async () => {
+    sendAssessmentLinkEmail.mockClear();
+    bookingGet.mockResolvedValue({
+      exists: true,
+      data: () => ({
+        email: "patient@example.com",
+        patientName: "Jane Doe",
+        service: "Initial Assessment",
+        meetingUrl: "https://meet.example.com/x",
+        visitType: "home",
+        homeVisitAddress: "7 Example Street, G31 4HS",
+      }),
+    });
+    await POST(req({ "x-cron-secret": "test-secret" }, { bookingId: "b1" }));
+    expect(sendAssessmentLinkEmail.mock.calls[0][0]).toMatchObject({
+      visitType: "home",
+      homeVisitAddress: "7 Example Street, G31 4HS",
+    });
+  });
 });

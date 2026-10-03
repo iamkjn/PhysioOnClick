@@ -1,4 +1,5 @@
 import type { BookServiceId } from "@/lib/site-data";
+import { isVisitType, type VisitType } from "@/lib/home-visit";
 
 export type BookingIntent = {
   service: BookServiceId;
@@ -15,6 +16,10 @@ export type BookingIntent = {
   assessmentUid?: string;
   assessmentPersonId?: string;
   assessmentFormId?: string;
+  /** "video" (default) or "home" (Glasgow-area home visit). Absent on legacy sessions = video. */
+  visitType?: VisitType;
+  /** "<address line>, <POSTCODE>" — home visits only (<= 132 chars, well under Stripe's 500). */
+  homeVisitAddress?: string;
 };
 
 export type CreateCheckoutInput = {
@@ -45,6 +50,10 @@ export function intentToMetadata(intent: BookingIntent): Record<string, string> 
     ...(intent.assessmentUid ? { assessmentUid: intent.assessmentUid } : {}),
     ...(intent.assessmentPersonId ? { assessmentPersonId: intent.assessmentPersonId } : {}),
     ...(intent.assessmentFormId ? { assessmentFormId: intent.assessmentFormId } : {}),
+    ...(intent.visitType ? { visitType: intent.visitType } : {}),
+    ...(intent.visitType === "home" && intent.homeVisitAddress
+      ? { homeVisitAddress: intent.homeVisitAddress }
+      : {}),
   };
 }
 
@@ -70,5 +79,10 @@ export function metadataToIntent(meta: Record<string, string> | undefined): Book
     ...(meta.assessmentUid ? { assessmentUid: meta.assessmentUid } : {}),
     ...(meta.assessmentPersonId ? { assessmentPersonId: meta.assessmentPersonId } : {}),
     ...(meta.assessmentFormId ? { assessmentFormId: meta.assessmentFormId } : {}),
+    ...(isVisitType(meta.visitType) ? { visitType: meta.visitType } : {}),
+    // An address only means anything on a home visit; drop it otherwise.
+    ...(meta.visitType === "home" && meta.homeVisitAddress
+      ? { homeVisitAddress: meta.homeVisitAddress }
+      : {}),
   };
 }

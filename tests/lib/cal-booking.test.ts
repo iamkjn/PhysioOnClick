@@ -36,4 +36,42 @@ describe("createCalBooking", () => {
     const result = await createCalBooking(OK_INPUT);
     expect(result.ok).toBe(false);
   });
+
+  it("sends visitType and the home address in Cal.com metadata for a home visit", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ data: { uid: "cal_abc" } }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("NEXT_PUBLIC_CAL_USERNAME", "physio");
+
+    await createCalBooking({
+      ...OK_INPUT,
+      focusAreas: ["Back & neck"],
+      visitType: "home",
+      homeVisitAddress: "7 Example Street, G31 4HS",
+    });
+
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.metadata).toEqual({
+      focusAreas: "Back & neck",
+      visitType: "home",
+      homeVisitAddress: "7 Example Street, G31 4HS",
+    });
+  });
+
+  it("keeps a video booking's Cal.com payload unchanged", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ data: { uid: "cal_abc" } }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("NEXT_PUBLIC_CAL_USERNAME", "physio");
+
+    await createCalBooking({ ...OK_INPUT, focusAreas: ["Shoulder"] });
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.metadata).toEqual({ focusAreas: "Shoulder" });
+
+    await createCalBooking(OK_INPUT);
+    const plain = JSON.parse((fetchMock.mock.calls[1][1] as RequestInit).body as string);
+    expect(plain).not.toHaveProperty("metadata");
+  });
 });

@@ -9,6 +9,7 @@ import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const bookingRef = { update: vi.fn().mockResolvedValue(undefined) };
+const payData: { current: Record<string, unknown> } = { current: { amountPence: 5000, status: "paid" } };
 const db = {
   collection: vi.fn((name: string) => {
     if (name === "bookings") {
@@ -21,7 +22,7 @@ const db = {
       return {
         where: () => ({
           limit: () => ({
-            get: async () => ({ empty: false, docs: [{ data: () => ({ amountPence: 5000, status: "paid" }) }] }),
+            get: async () => ({ empty: false, docs: [{ data: () => payData.current }] }),
           }),
         }),
       };
@@ -58,7 +59,11 @@ const BODY = JSON.stringify({
   },
 });
 
-beforeEach(() => vi.stubEnv("CAL_WEBHOOK_SECRET", SECRET));
+beforeEach(() => {
+  vi.stubEnv("CAL_WEBHOOK_SECRET", SECRET);
+  bookingRef.update.mockClear();
+  payData.current = { amountPence: 5000, status: "paid" };
+});
 afterEach(() => vi.restoreAllMocks());
 
 describe("cal-webhook paid reconciliation", () => {
@@ -67,5 +72,19 @@ describe("cal-webhook paid reconciliation", () => {
     expect(res.status).toBe(200);
     const updates = bookingRef.update.mock.calls.map((c) => c[0]);
     expect(updates.some((u) => u.paid === true && u.amountPaidPence === 5000)).toBe(true);
+  });
+
+  it("copies a home visit and its address from the payment onto the booking", async () => {
+    payData.current = { amountPence: 4000, status: "paid", visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS" };
+    await POST(signed(BODY));
+    expect(bookingRef.update).toHaveBeenCalledWith(
+      expect.objectContaining({ paid: true, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS" }),
+    );
+  });
+
+  it("adds no visit fields for a video booking", async () => {
+    await POST(signed(BODY));
+    const updates = bookingRef.update.mock.calls.map((c) => c[0]);
+    expect(updates.some((u) => "visitType" in u || "homeVisitAddress" in u)).toBe(false);
   });
 });

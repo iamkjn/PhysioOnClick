@@ -143,6 +143,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true, warning: "slot_unavailable" }, { status: 200 });
   }
 
+  // Home visits (Glasgow area) share the calendar, event types and prices with
+  // video calls; only the visit type + address travel with them. Video
+  // bookings add nothing here, so they behave exactly as before.
+  const homeVisit =
+    intent.visitType === "home" && intent.homeVisitAddress
+      ? { visitType: "home" as const, homeVisitAddress: intent.homeVisitAddress }
+      : null;
+
   const booking = await createCalBooking({
     service: intent.service,
     startISO: intent.startISO,
@@ -150,6 +158,7 @@ export async function POST(request: Request) {
     email: intent.email,
     timeZone: intent.timeZone,
     focusAreas: intent.focusAreas,
+    ...(homeVisit ?? {}),
   });
 
   if (!booking.ok) {
@@ -185,6 +194,8 @@ export async function POST(request: Request) {
     createdAt: FieldValue.serverTimestamp(),
     invoiceNumber,
     paidAt: new Date().toISOString(),
+    // cal-webhook copies these onto the bookings doc if it is created after this.
+    ...(homeVisit ?? {}),
     ...(isPackage
       ? {
           packageId,
@@ -228,6 +239,7 @@ export async function POST(request: Request) {
         paid: true,
         amountPaidPence: session.amount_total ?? 0,
         paymentProvider: "stripe",
+        ...(homeVisit ?? {}),
         ...(isPackage
           ? {
               packageId,
@@ -333,6 +345,7 @@ export async function POST(request: Request) {
       serviceLabel,
       amountPence: session.amount_total ?? 0,
       receiptUrl: `${siteUrl}/book/receipt/${session.id}`,
+      ...(homeVisit ?? {}),
       ...(pdfBytes
         ? { pdf: { filename: `invoice-${invoiceNumber}.pdf`, base64: Buffer.from(pdfBytes).toString("base64") } }
         : {}),
