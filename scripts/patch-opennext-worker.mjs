@@ -13,14 +13,20 @@ const middlewareManifestPath = join(
 
 const manifest = JSON.parse(readFileSync(middlewareManifestPath, "utf8"));
 const manifestLiteral = JSON.stringify(manifest);
-const source = readFileSync(handlerPath, "utf8");
+const workerPath = join(".open-next", "worker.js");
 
 const helper = `function(x){if(typeof require<"u")return require.apply(this,arguments);throw Error('Dynamic require of "'+x+'" is not supported')}`;
 const patchedHelper = `function(x){if(x==="/.next/server/middleware-manifest.json")return ${manifestLiteral};if(typeof require<"u")return require.apply(this,arguments);throw Error('Dynamic require of "'+x+'" is not supported')}`;
 
-if (!source.includes(helper)) {
-  throw new Error("OpenNext require helper shape changed; middleware-manifest patch was not applied.");
+function patchFile(path) {
+  const source = readFileSync(path, "utf8");
+  if (source.includes(patchedHelper)) return false;
+  if (!source.includes(helper)) {
+    throw new Error(`OpenNext require helper shape changed in ${path}; middleware-manifest patch was not applied.`);
+  }
+  writeFileSync(path, source.replace(helper, patchedHelper));
+  return true;
 }
 
-writeFileSync(handlerPath, source.replace(helper, patchedHelper));
-console.log("Patched OpenNext middleware manifest dynamic require.");
+const patched = [handlerPath, workerPath].filter(patchFile);
+console.log(`Patched OpenNext middleware manifest dynamic require in ${patched.join(", ")}.`);
