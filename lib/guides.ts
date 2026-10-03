@@ -319,7 +319,7 @@ export const guides: Guide[] = [
         paragraphs: [
           "There is no single number that fits everyone. How many sessions you need depends on how long the problem has been there, what is causing it, and how well it responds to the first few weeks of exercise.",
           "It depends on your condition; your physiotherapist will give you an estimate after your assessment. We do not quote a fixed number of sessions or weeks before we have assessed you, and we review the estimate with you at each follow-up.",
-          "NICE guidance on low back pain and sciatica suggests that clinicians think early on about how likely each person is to get better quickly. It suggests lighter support, such as reassurance, advice to keep active and help to manage it yourself, for people likely to improve quickly, and more support, such as exercise programmes, for people at higher risk of a slower recovery. That guidance covers low back pain and sciatica only.",
+          "NICE guidance on low back pain and sciatica suggests that clinicians think early on about how likely each person is to get better quickly. It suggests lighter support, such as reassurance, advice to keep active and help to manage it yourself, for people likely to improve quickly, and more support, such as exercise programmes, for people at higher risk of a poor outcome. That guidance covers low back pain and sciatica only.",
           "For osteoarthritis, NICE guidance recommends telling people that joint pain may go up for a while when they start exercising, and that regular exercise kept up over the long term brings more benefit. That is one reason we focus on a routine you can keep going, rather than on a set number of appointments.",
           "After surgery, recovery is set mainly by the operation and by your surgical team. Rehab starts once your surgical team has confirmed you have no restrictions. The NHS says full recovery from a knee or hip replacement may take several months, and your surgical team's advice always comes first.",
           "For neurological conditions, change differs a great deal between people, so we do not give a timeline. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. In our approach we review change you can notice, such as walking further or needing less support, rather than counting sessions."
@@ -730,7 +730,7 @@ export const guides: Guide[] = [
         heading: "Sudden injury or a suspected fracture",
         paragraphs: [
           "If you have had a recent fall or accident and think you may have broken a bone, you need to be seen in person. We cannot examine a limb or order an X-ray over video.",
-          "What to do instead: get in-person medical care straight away. For back pain after a serious accident, the NHS says to call 999 or go to A&E. Once you have been assessed and cleared, we can help with the exercise-based rehab that follows."
+          "What to do instead: Go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. For back pain after a serious accident, the NHS says to call 999 or go to A&E. Once you have been assessed and cleared, we can help with the exercise-based rehab that follows."
         ]
       },
       {
@@ -776,7 +776,7 @@ export const guides: Guide[] = [
       },
       {
         q: "What if I think I have broken a bone?",
-        a: "Get in-person medical care straight away. We cannot examine a suspected fracture over video."
+        a: "Go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. We cannot examine a suspected fracture over video."
       },
       {
         q: "What symptoms mean I should not book a video appointment?",

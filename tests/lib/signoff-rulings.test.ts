@@ -8,6 +8,7 @@ import { guides, getGuide } from "@/lib/guides";
 import { onlinePhysioPages, getOnlinePhysioPage } from "@/lib/online-physio-pages";
 import { services } from "@/lib/site-data";
 import { PAGE_DISCLAIMER } from "@/lib/exercise-disclaimer";
+import { conditions } from "@/lib/conditions";
 
 const NEURO_CLEARANCE = "Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.";
 const POSTOP_CLEARANCE = "starts once your surgical team has confirmed you have no restrictions";
@@ -47,9 +48,12 @@ describe("Q5: no claims that we work with or coordinate with NHS teams", () => {
     /summary of your (rehab )?progress/i,
     /supports your wider team/i,
     /one part of that team/i,
+    /alongside a patient's wider medical team/i,
+    /close coordination with/i,
+    /(?<!(?:n't|not|never) )coordinat\w* with (a GP|the wider|in-person testing or the surgical)/i,
   ];
   it("none of the banned phrases appear in landing pages, guides, services or public pages", () => {
-    for (const [where, text] of allContent()) {
+    for (const [where, text] of [...allContent(), ["lib/blog.ts", read("lib/blog.ts")] as const]) {
       for (const re of banned) expect(re.test(text), `${where}: ${re}`).toBe(false);
     }
   });
@@ -74,12 +78,38 @@ describe("Q6/Q9: clearance before starting", () => {
     }
     expect(serviceText(services.find((s) => s.slug === "post-surgical-rehabilitation")!)).toContain(POSTOP_CLEARANCE);
   });
+  it("other post-op mentions carry the no-restrictions clearance", () => {
+    const paed = services.find((s) => s.slug === "paediatric-physiotherapy")!;
+    expect(paed.conditions.join(" ")).toMatch(/surgical team has confirmed they have no restrictions/);
+    const gait = services.find((s) => s.slug === "gait-and-mobility-assessment")!;
+    expect(gait.conditions.join(" ") + serviceText(gait)).toMatch(/surgical team has confirmed you have no restrictions/);
+    expect(serviceText(gait)).toContain(POSTOP_CLEARANCE);
+    expect(read("app/glasgow-physiotherapist/page.tsx")).toContain("rehab starts once your surgical team has confirmed you have no restrictions");
+    expect(read("components/chat-widget.tsx")).toContain("Rehab starts once your surgical team has confirmed you have no restrictions.");
+    const firstSession = services.find((s) => s.slug === "post-surgical-rehabilitation")!.firstSession;
+    expect(firstSession).not.toMatch(/stage of healing|next 2, 6 and 12 weeks/);
+  });
+  it("the ACL blog routes breathlessness with calf symptoms to 999 or A&E and needs clearance", () => {
+    const blog = read("lib/blog.ts");
+    expect(blog).not.toMatch(/breathlessness, need urgent same-day medical assessment/);
+    expect(blog).toMatch(/breathlessness or chest pain, call 999 or go to A&E \(possible clot in the lung\), and do not drive yourself/);
+    expect(blog).not.toMatch(/phase-appropriate plan/);
+  });
 });
 
 describe("Q2: no fixed session or recovery ranges presented as our typical plans", () => {
   it("landing pages, guides and services do not quote our own session ranges", () => {
     const re = /\b\d+\s*(?:-|to)\s*\d+\s*(?:weekly\s*)?sessions\b|\btypical course\b|most (of our )?plans run|\d+\s*(?:-|to)\s*\d+\s*month arc/i;
     for (const [where, text] of allContent()) expect(re.test(text), where).toBe(false);
+  });
+  it("exercise-hub recovery timelines use the estimate wording and quote no week or month ranges", () => {
+    for (const c of conditions) {
+      expect(c.recoveryTimeline, c.slug).toContain(
+        "It depends on your condition; your physiotherapist will give you an estimate after your assessment.",
+      );
+      expect(/\b\d+ (?:to|-) \d+ (?:weeks|months)\b/.test(c.recoveryTimeline), c.slug).toBe(false);
+      for (const f of c.faqs) expect(/\b(?:most|many) people[^.]*\d+ (?:to|-) \d+ (?:weeks|months)/i.test(f.a), `${c.slug}: ${f.q}`).toBe(false);
+    }
   });
   it("the sessions guide leads with the depends-on-your-condition estimate", () => {
     expect(getGuide("how-many-physiotherapy-sessions-do-i-need")!.answer).toMatch(
@@ -113,6 +143,18 @@ describe("Q10-15: NICE sources", () => {
   });
   it("never cites the replaced falls guideline CG161", () => {
     for (const [where, text] of allContent()) expect(text.includes("cg161"), where).toBe(false);
+  });
+});
+
+describe("Safety routing from the review", () => {
+  it("neck pain routes meningitis signs to 999 or A&E, cites the NHS page, and sends nerve symptoms to an urgent GP", () => {
+    const p = getOnlinePhysioPage("neck-pain")!;
+    expect(p.inPersonInstead.some((l) => /^Call 999 or go to A&E/.test(l) && /meningitis/.test(l) && /Do not drive yourself/.test(l))).toBe(true);
+    expect(p.sources.some((s) => s.url === "https://www.nhs.uk/conditions/meningitis/")).toBe(true);
+    expect(pageText(p)).not.toMatch(/See a GP if you have pins and needles/);
+  });
+  it("no page uses the vague 'in-person medical care straight away' route", () => {
+    for (const [where, text] of allContent()) expect(/in-person medical care straight away/i.test(text), where).toBe(false);
   });
 });
 

@@ -175,7 +175,7 @@ export const services: Service[] = [
       "Return-to-function coaching"
     ],
     firstSession:
-      "The first session reviews your surgeon's notes or discharge summary if you have them, your current stage of healing, and any specific precautions from your operation. You'll be guided through a safe range-of-motion and strength check over video, and leave with milestone targets for the next 2, 6 and 12 weeks so you know exactly what “on track” looks like — not just a generic exercise sheet.",
+      "Rehab starts once your surgical team has confirmed you have no restrictions. The first session reviews your surgeon's notes or discharge summary if you have them and confirms that clearance. You'll be guided through a safe range-of-motion and strength check over video, and leave with goals we agree together and a plan to work towards them, not just a generic exercise sheet.",
     typicalOutcomes:
       "Recovery time is set mainly by your operation and your surgical team's advice. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan at each session, within any advice from your surgical team.",
     whenInPersonInstead:
@@ -192,7 +192,7 @@ export const services: Service[] = [
       {
         question: "What if I'm still on crutches or can't stand for long?",
         answer:
-          "That's normal in early-stage recovery. Sessions are adapted to seated or supported positions where needed — a walking assessment isn't required to start effective early-stage strength and range-of-motion work."
+          "Rehab starts once your surgical team has confirmed you have no restrictions. If you still use crutches or a frame after that, sessions can be adapted to seated or supported positions, and a walking assessment isn't required to start."
       },
       {
         question: "Do you work with my surgeon or NHS physio team?",
@@ -281,7 +281,7 @@ export const services: Service[] = [
       "Developmental delay",
       "Coordination challenges",
       "Mobility support",
-      "Post-operative paediatric rehab",
+      "Post-operative paediatric rehab (once your child's surgical team has confirmed they have no restrictions)",
       "Strength and endurance building"
     ],
     approach: [
@@ -327,7 +327,7 @@ export const services: Service[] = [
     summary:
       "Movement analysis, walking assessment and rehabilitation planning for confidence and independence.",
     conditions: [
-      "Walking changes after surgery",
+      "Walking changes after surgery (once your surgical team has confirmed you have no restrictions)",
       "Falls risk",
       "Balance confidence issues",
       "Mobility aid review",
@@ -352,7 +352,7 @@ export const services: Service[] = [
       },
       {
         question: "Can this help after joint replacement?",
-        answer: "Yes, gait retraining is a common element of post-operative recovery."
+        answer: "Yes, walking practice can be part of recovery after a joint replacement. Rehab starts once your surgical team has confirmed you have no restrictions."
       },
       {
         question: "Do I need a mobility aid to be assessed?",

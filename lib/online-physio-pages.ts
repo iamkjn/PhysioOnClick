@@ -82,7 +82,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Go to A&E or call 999 if you cannot control your bowels or do not notice when you poo, and this is not normal for you.",
       "Go to A&E or call 999 if your back pain started after a serious accident, or you have back pain with chest pain or changes in sexual feeling or function.",
       "Do not drive yourself to A&E for any of the above. Ask someone to drive you, or call 999.",
-      "Get in-person medical care straight away if weakness in one leg is getting worse.",
+      "If weakness in one leg is getting worse: Go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.",
       "NICE guidance on low back pain and sciatica asks clinicians to rule out specific causes, such as cancer, infection, an injury or inflammatory disease. If you are worried your symptoms could have one of these causes, speak to your GP before booking.",
     ],
     faqs: [
@@ -100,7 +100,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "What if my leg is numb or weak?",
-        a: "Tell us at booking and at the start of the session. Numbness or weakness in both legs, numbness around your genitals or bottom, or bladder or bowel changes need A&E or a 999 call, not a video appointment. Weakness that is getting worse in one leg also needs in-person medical care straight away.",
+        a: "Tell us at booking and at the start of the session. Numbness or weakness in both legs, numbness around your genitals or bottom, or bladder or bowel changes need A&E or a 999 call, not a video appointment. If weakness in one leg is getting worse, go to A&E now, or call NHS 111 straight away if you are not sure where to go.",
       },
       {
         q: "Is online physio as effective as seeing someone in person?",
@@ -246,8 +246,9 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call 999 or go to A&E, or call 111 if you are not sure, if you notice changes in your balance or co-ordination.",
       "Call 999 or go to A&E, or call 111 if you are not sure, if your neck pain started after an accident or injury.",
       "Call 999 or go to A&E, or call 111 if you are not sure, if you have dizziness or visual symptoms when you move your neck.",
-      "NICE Clinical Knowledge Summaries, written for GPs, list some neck pain features as red flags that need medical referral: nerve symptoms such as weakness or numbness, feeling generally unwell or feverish, weight loss you cannot explain, pain that does not let up and disturbs your sleep, and a past history of cancer, neck surgery or a raised risk of osteoporosis. If any of these apply, ask your GP for an urgent appointment instead of booking with us. Sudden weakness or numbness, and neck pain after an accident or injury, follow the 999 and A&E lines above.",
-      "See a GP if you have pins and needles, or an arm that feels cold, or if your neck pain has not gone after a few weeks.",
+      "Call 999 or go to A&E if you have a stiff neck with a high temperature, a very painful headache, confusion, or a rash that does not fade when pressed. These can be signs of meningitis. Do not drive yourself.",
+      "NICE Clinical Knowledge Summaries, written for GPs, list some neck pain features as red flags that need medical referral: nerve symptoms such as pins and needles, weakness or numbness, feeling generally unwell or feverish, weight loss you cannot explain, pain that does not let up and disturbs your sleep, and a past history of cancer, neck surgery or a raised risk of osteoporosis. If you feel feverish or unwell with a stiff neck, use the meningitis line above. For the others, ask your GP for an urgent appointment instead of booking with us. Sudden weakness or numbness, and neck pain after an accident or injury, follow the 999 and A&E lines above.",
+      "Ask your GP for an urgent appointment if you have pins and needles or an arm that feels cold. The NHS lists these for a GP visit, and NICE CKS guidance for clinicians treats nerve symptoms as a red flag, so do not wait. See a GP if your neck pain has not gone after a few weeks.",
       "If you are not sure whether your symptoms are urgent, call 111 or speak to a GP rather than waiting for a video appointment.",
     ],
     faqs: [
@@ -265,11 +266,12 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "What if I get pins and needles in my arm?",
-        a: "Tell us at booking and at the start of the session. The NHS says to see a GP for pins and needles or a cold arm. Call 999 if you have sudden weakness or numbness in an arm or down one side of your body, a drooping face or trouble speaking (possible stroke). Do not drive yourself. Dizziness or blurred vision also needs a 999 call. Neck pain after an injury, or with balance changes, needs A&E or a 111 call. None of these are suited to a video appointment.",
+        a: "Tell us at booking and at the start of the session. The NHS says to see a GP for pins and needles or a cold arm, and NICE CKS guidance for clinicians treats nerve symptoms as a red flag, so ask your GP for an urgent appointment. Call 999 if you have sudden weakness or numbness in an arm or down one side of your body, a drooping face or trouble speaking (possible stroke). Do not drive yourself. Dizziness or blurred vision also needs a 999 call. Neck pain after an injury, or with balance changes, needs A&E or a 111 call. None of these are suited to a video appointment.",
       },
     ],
     sources: [
       { label: "NHS: Neck pain", url: "https://www.nhs.uk/symptoms/neck-pain-and-stiff-neck/" },
+      { label: "NHS: Meningitis", url: "https://www.nhs.uk/conditions/meningitis/" },
       {
         label: "NICE CKS: Neck pain - non-specific",
         url: "https://cks.nice.org.uk/topics/neck-pain-non-specific/",
@@ -325,8 +327,9 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Go to A&E if you fell and now cannot move or lift your arm. Call 999 if you cannot get there yourself.",
       "Ask for an urgent GP appointment or get help from NHS 111 if your shoulder pain is sudden or very bad, or started after an injury such as a fall.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you have a hot or cold arm, or no feeling in the arm.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if you cannot move your arm, or you have pins and needles that do not go away.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you have severe pain in both shoulders.",
-      "Get in-person medical care straight away if your shoulder is red, hot and painful and you have a fever or feel generally unwell. NICE CKS guidance for clinicians says this needs emergency assessment, because it can be a sign of a joint infection.",
+      "If your shoulder is red, hot and painful and you have a fever or feel generally unwell: Go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. NICE CKS guidance for clinicians says this needs emergency assessment, because it can be a sign of a joint infection.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you are feeling feverish or unwell with your shoulder pain.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you notice a lump or new swelling in your shoulder, or several of your joints have become swollen and painful at the same time. NICE CKS guidance for clinicians says these need urgent referral.",
       "If you are not sure how urgent your symptoms are, call 111 or speak to a GP before booking a video appointment.",
@@ -606,11 +609,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     timeline:
       "We cannot give you a reliable recovery time for hip pain, because the cause matters. The NHS says to see a GP if hip pain has not improved after treating it at home for 2 weeks, if it is getting worse or keeps coming back, or if it stops you doing normal activities or affects your sleep. We review progress at each follow-up and suggest a GP review if you are not improving.",
     inPersonInstead: [
-      "Call 999 or go to A&E if you have severe hip pain after a fall or injury, whatever your age.",
+      "Call 999 or go to A&E if you have hip pain after a fall or injury, whatever your age. NICE CKS guidance for clinicians says hip pain after a fall needs emergency referral.",
       "Call 999 or go to A&E if you cannot walk or put weight on your leg.",
       "Call 999 or go to A&E if you have tingling or loss of feeling in your hip or leg after an injury.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you have severe hip pain that started suddenly and you have not had a fall or injured the hip.",
-      "Get in-person medical care straight away if your hip is swollen and feels hot, or you have hip pain and feel generally unwell or have a high temperature. The NHS lists these for an urgent GP appointment or NHS 111, and NICE CKS guidance for clinicians says hip pain with signs of infection or of being generally unwell needs emergency referral, so do not wait.",
+      "If your hip is swollen and feels hot, or you have hip pain and feel generally unwell or have a high temperature: Go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. The NHS lists these for an urgent GP appointment or NHS 111, and NICE CKS guidance for clinicians says hip pain with signs of infection or of being generally unwell needs emergency referral.",
       "Ask for an urgent GP appointment or get help from NHS 111 if the skin around your hip has changed colour.",
       "See a GP if you have hip stiffness for more than 30 minutes after waking.",
       "We will ask you to see your GP first if you have had cancer and have new hip pain. NICE CKS guidance for clinicians says hip pain in someone with a past cancer, where a fracture is suspected, needs emergency referral, so if you also cannot put weight on the leg, call 999 or go to A&E as above.",
@@ -756,15 +759,15 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "If your hip trouble came before surgery, our page on [online physiotherapy for hip pain](/online-physiotherapy-for/hip-pain) covers that stage.",
     ],
     assessmentChecks: [
-      "Confirmation that your surgical team has said you have no restrictions, and any advice they gave you for the weeks ahead.",
+      "Confirmation that your surgical team has said you have no restrictions, and when your next follow-up with them is.",
       "The date of the operation, how you have been recovering since discharge, and what your discharge summary or exercise sheet says.",
-      "How you get on and off the bed, in and out of a chair, and up and down stairs, within the advice you have been given.",
+      "How you get on and off the bed, in and out of a chair, and up and down stairs, and which of these still feel hard.",
       "How you walk, whether you use a stick, crutches or a frame, and how much the hip or leg aches or swells after activity.",
       "Your sleep, your work and the daily tasks you want to return to, and what worries you about moving the hip.",
       "The warning signs listed below, which we check for during your sessions.",
     ],
     typicalPlan: [
-      "Your plan starts from the exercises your hospital team gave you, and builds in small steps as your surgeon's advice allows. We set milestones with you for walking, strength and everyday movement, and review them at each follow-up. Where our suggestions and your surgeon's advice differ, follow your surgeon.",
+      "Your plan starts from the exercises your hospital team gave you, and builds in small steps once your surgical team has confirmed you have no restrictions. We set milestones with you for walking, strength and everyday movement, and review them at each follow-up. Where our suggestions and your surgeon's advice differ, follow your surgeon.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Recovery differs from person to person. It depends on your condition; your physiotherapist will give you an estimate after your assessment.",
       "The NHS gives some typical timings, which vary with the person and the surgeon. It says people are usually home about 1 to 3 days after the operation if generally fit and the surgery went well, are usually told to wait at least 6 weeks before driving (check with your doctor), and often return to work at about 6 weeks depending on the job. A follow-up with your surgical team is usually around 6 to 12 weeks.",
       "Wound reviews and follow-up visits stay with your surgical team. NICE guidance on joint replacement recommends that people who do their rehabilitation on their own have a point of contact for advice and support, and are offered supervised rehabilitation if they struggle with daily activities or are not meeting their goals. It does not cover rehab by video. Keep your GP or specialist team informed about your treatment.",
@@ -788,7 +791,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "What hip precautions should I follow?",
-        a: "Follow your surgeon's advice. Precautions are set by your surgical team and can differ between surgeons, so we do not set or change them. If anything is unclear, ask your surgeon or ward team, and tell us what you were told so that your plan fits it.",
+        a: "Follow your surgeon's advice. Precautions are set by your surgical team and can differ between surgeons, so we do not set or change them. Rehab with us starts only once your surgical team has confirmed you have no restrictions, so if you still have precautions in place, it is too early to book. If anything is unclear, ask your surgeon or ward team.",
       },
       {
         q: "Can you check my wound?",
@@ -843,10 +846,10 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "If your shoulder trouble came before surgery, our page on [online physiotherapy for shoulder pain](/online-physiotherapy-for/shoulder-pain) covers that stage. We have not linked an exercise library hub here, because our tendinopathy exercises are written for shoulders that have not been operated on.",
     ],
     assessmentChecks: [
-      "Confirmation that your surgical team has said you have no restrictions, and what your surgeon's protocol says about the next stage.",
+      "Confirmation that your surgical team has said you have no restrictions, and any further advice they gave you.",
       "The date of your operation, the type and size of the repair if you know them, and what your discharge summary or exercise sheet says.",
       "When you stopped wearing the sling, and how you manage dressing, washing and sleeping.",
-      "How far you can move the arm within your protocol, and any pain, swelling or stiffness in the shoulder, arm or hand.",
+      "How far you can move the arm now, and any pain, swelling or stiffness in the shoulder, arm or hand.",
       "What you want to get back to, such as desk work, manual work, driving or sport, and what your surgeon has said about timing.",
       "The warning signs listed below, which we check for during your sessions.",
     ],
@@ -863,7 +866,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call 999 or go to A&E if you have pain and swelling in a leg together with difficulty breathing or chest pains. This could be a blood clot in the lungs. Do not drive yourself to A&E.",
       "Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.",
       "Ask for an urgent GP appointment or call NHS 111 if you have throbbing or cramping pain in one leg, swelling in one leg, or red, blue or darkened skin around a painful area. These can be signs of DVT, a blood clot in a vein.",
-      "Get in-person medical care straight away if your shoulder is red, hot and painful and you have a fever or feel generally unwell. NICE CKS guidance for clinicians on shoulder pain says this needs emergency assessment.",
+      "If your shoulder is red, hot and painful and you have a fever or feel generally unwell: Go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. NICE CKS guidance for clinicians on shoulder pain says this needs emergency assessment.",
       "Contact your surgical team, and ask for an urgent GP appointment or call NHS 111, if you have a high temperature, feel hot, cold or shivery, or the wound is oozing or has pus. NHS pages on joint replacement list these as signs of infection, and the shoulder surgery leaflet we read gives no separate route, so we apply the same routing.",
       "Wound checks, stitch removal and any complication go back to your surgical team, not to an online rehab session.",
     ],
@@ -1018,7 +1021,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     answer:
       "If you are medically stable, a video session lets your physiotherapist watch how you walk and move and set up exercises for stiffness, walking, balance and falls risk, with a carer welcome to join. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. We make no claim to change the condition itself. Stroke signs mean 999.",
     howOnlineWorks: [
-      "The NHS lists physiotherapy among the supportive therapies for Parkinson's. It says a physiotherapist can work on muscle stiffness and joint pain through movement and exercise, with the aim of making moving easier and improving walking, flexibility and fitness. NICE guidance on Parkinson's recommends Parkinson's-specific physiotherapy for people with balance or movement problems. That is the kind of work we offer by video.",
+      "The NHS lists physiotherapy among the supportive therapies for Parkinson's. It says a physiotherapist can work on muscle stiffness and joint pain through movement and exercise, with the aim of making moving easier and improving walking, flexibility and fitness. NICE guidance recommends Parkinson's-specific physiotherapy for people with balance or movement problems. It does not cover video sessions or our service.",
       "We do not claim that exercise changes the course of Parkinson's. Our aim is practical: movement, walking, balance and confidence in daily life. Your care plan stays with your Parkinson's team, and the NHS says that plan should be agreed with your healthcare team and reviewed regularly, because regular reviews are needed as the condition progresses.",
       "Our neurological rehabilitation service is for people who are medically stable, and it does not replace your Parkinson's team or GP. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. Our service guidance says a family member or carer can join the session and help get the room ready.",
       "If falls are a worry for you, we look at balance and the way you walk. NICE falls guidance, which covers older people and people aged 50 and over at higher risk, recommends a falls prevention exercise programme for those who have fallen in the past year and have a walking or balance problem. Our [gait and mobility assessment](/services/gait-and-mobility-assessment) covers walking analysis and planning in more detail.",
@@ -1044,7 +1047,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.",
       "If you have severe hip pain after a fall or injury, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after a fall or injury, the NHS says to call 999 or go to A&E. Do not drive yourself.",
       "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
-      "If you have fallen in the past year and were hurt, could not get up on your own, blacked out, or have fallen 2 or more times, NICE falls guidance for older people and people aged 50 and over at higher risk says you should be offered a full falls assessment. Ask your GP or local falls service about this rather than relying on video sessions alone.",
+      "If you have fallen in the past year and were hurt, could not get up on your own, blacked out, or have fallen 2 or more times, NICE falls guidance for older people and people aged 50 and over at higher risk recommends offering a full falls assessment to people in that situation. Ask your GP or local falls service about this rather than relying on video sessions alone.",
       "For worries about your medicines, new symptoms or your care plan, speak to your Parkinson's team or GP. The NHS says your plan is agreed with your healthcare team, and we do not change it.",
       "If you cannot move safely at home without hands-on help, or need equipment fitted in person, we cannot provide that by video. Our service is for people who are medically stable, not for acute care.",
     ],
