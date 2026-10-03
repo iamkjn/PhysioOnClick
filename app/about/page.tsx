@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { founder } from "@/lib/site-data";
+import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { Reveal } from "@/components/reveal";
 import { breadcrumbs, personRef } from "@/lib/structured-data";
 
@@ -13,6 +14,12 @@ export const metadata: Metadata = {
 };
 
 const specialisms = [
+  {
+    slug: "msk-physiotherapy",
+    title: "MSK Physiotherapy",
+    text: "Online assessment and rehab for back, neck, shoulder, knee, tendon and muscle pain.",
+    detail: "Joint, tendon, spine and muscle rehabilitation"
+  },
   {
     slug: "arthroplasty-rehabilitation",
     title: "Arthroplasty Rehabilitation",
@@ -30,6 +37,12 @@ const specialisms = [
     title: "Paediatric Physiotherapy",
     text: "Gentle, effective physiotherapy for children with developmental and musculoskeletal conditions.",
     detail: "Play-based movement support and family-led rehab"
+  },
+  {
+    slug: "sports-tendon-rehabilitation",
+    title: "Sports & Tendon Rehabilitation",
+    text: "Progressive loading, pacing and return-to-activity planning for tendon pain and sports injuries.",
+    detail: "Strength, load management and return-to-sport"
   },
   {
     slug: "research-and-innovation",
@@ -106,13 +119,16 @@ export default function AboutPage() {
         </article>
 
         <aside className="about-profile-card">
-          <Image
-            className="about-profile-image"
-            src="https://images.unsplash.com/photo-1666214280391-8ff5bd3c0bf0?auto=format&fit=crop&w=1200&q=80"
-            alt="Clinical physiotherapy consultation"
-            width={1200}
-            height={980}
-          />
+          <div className="about-profile-media">
+            <Image
+              className="about-profile-image"
+              src="/images/shivaliba-zala-thumbnail.svg"
+              alt={`${founder.name}, HCPC registered physiotherapist`}
+              width={640}
+              height={640}
+              unoptimized
+            />
+          </div>
           <div className="about-profile-body">
             <strong>{founder.name}</strong>
             <p>{founder.location}</p>
@@ -139,11 +155,12 @@ export default function AboutPage() {
             <article className="about-specialism-card">
               <Image
                 className="about-specialism-image"
-                src={`/specialism-images/${item.slug}`}
+                src={`/images/specialisms/${item.slug}.webp`}
                 alt={item.title}
-                width={900}
-                height={520}
-                unoptimized
+                width={1800}
+                height={1040}
+                placeholder="blur"
+                blurDataURL={medicalImagePlaceholder}
               />
               <div className="about-specialism-body">
                 <span className="about-specialism-detail">{item.detail}</span>

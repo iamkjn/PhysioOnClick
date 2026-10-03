@@ -1753,10 +1753,24 @@ p {
   font-weight: 600;
 }
 
+.about-profile-media {
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+  padding: 1.5rem;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(28, 160, 209, 0.18), transparent 32%),
+    linear-gradient(145deg, #f6fcff 0%, #eef8fb 48%, #fffaf0 100%);
+}
+
 .about-profile-image {
   width: 100%;
-  height: 340px;
+  max-width: 330px;
+  height: auto;
+  aspect-ratio: 1;
   object-fit: cover;
+  border-radius: 32px;
+  box-shadow: 0 24px 44px rgba(4, 50, 70, 0.14);
 }
 
 .about-profile-body {
