@@ -75,7 +75,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
       "Pain intensity in the first few days is usually a poor guide to injury severity. NICE guidance on the assessment and management of low back pain and sciatica in adults emphasises that imaging rarely changes management for straightforward presentations, and that staying active — within a tolerable range — tends to outperform prolonged rest."
     ],
     assessment: "A physiotherapy assessment for back pain covers how symptoms behave over a full day, which movements ease or aggravate them, muscle strength and control through the trunk and hips, and enough neurological screening to rule out nerve involvement before building a loading plan.",
-    redFlags: "Seek urgent medical review for new bladder or bowel disturbance, saddle-area numbness, progressive leg weakness, unexplained weight loss, fever, or pain that is constant, worsening and unrelated to movement or position — these fall outside straightforward mechanical back pain and need same-day assessment rather than a routine physiotherapy referral."
+    redFlags: "Call 999 or go to A&E if you have back pain with new bladder or bowel changes (such as difficulty peeing, or peeing or pooing yourself), a loss of feeling around your genitals or anus, pain, tingling, weakness or numbness in both legs, chest pain, or if it started after a serious accident, and do not drive yourself. Leg weakness that is getting worse needs A&E now, or a call to NHS 111 if you are not sure where to go. Unexplained weight loss, fever, or pain that is constant, worsening and unrelated to movement or position falls outside straightforward mechanical back pain and needs same-day medical assessment (an urgent GP appointment or NHS 111) rather than a routine physiotherapy referral."
   },
   "Knee injuries": {
     mechanism: [
@@ -83,7 +83,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
       "Swelling, locking, giving way and a clear mechanism of injury point toward a structural cause worth imaging; a gradual ache that builds with specific activities and settles with rest points more toward a load-tolerance problem that usually responds to a structured strengthening programme rather than scans."
     ],
     assessment: "Assessment looks at how the knee was injured (or whether it built up gradually), joint line tenderness, ligament stability tests, quadriceps and hip strength, and functional tasks like a single-leg squat or step-down to see how the whole limb shares load, not just the joint itself.",
-    redFlags: "A knee that is hot, significantly swollen within hours of injury, locked in a fixed position, or unable to bear any weight at all needs prompt medical assessment to rule out a fracture, complete ligament rupture or septic joint before starting rehabilitation."
+    redFlags: "A knee that is hot, red and swollen with a fever needs A&E now, or a call to NHS 111 straight away if you are not sure where to go, to rule out a joint infection. A knee that is significantly swollen within hours of injury, locked in a fixed position, or unable to bear any weight at all needs same-day medical assessment (NHS 111 or an urgent treatment centre) to rule out a fracture or complete ligament rupture before starting rehabilitation."
   },
   "Shoulder rehab": {
     mechanism: [
@@ -91,7 +91,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
       "Pain with overhead reaching, sleeping on the affected side and reduced strength lifting away from the body are the most common complaints. In most non-traumatic presentations, a graded strengthening programme resolves symptoms without surgery, though findings on a scan (partial tears, bursitis) are extremely common in pain-free shoulders too, which is why symptoms — not imaging alone — should drive the treatment plan."
     ],
     assessment: "A shoulder assessment checks active and passive range of motion, resisted strength testing for each rotator cuff muscle, scapular positioning and control, and how symptoms change with specific provocation tests, alongside a history of any dislocation, trauma or instability episodes.",
-    redFlags: "A shoulder that is deformed after a fall, cannot be actively moved at all following trauma, or comes with new numbness down the arm and neck pain needs urgent assessment to rule out dislocation, fracture or a cervical nerve root problem before rehab begins."
+    redFlags: "A shoulder that looks deformed or out of place after a fall, or that cannot be moved at all following trauma, needs A&E to rule out a dislocation or fracture; call 999 if you cannot get there yourself, and do not drive yourself. Shoulder pain with chest pain, chest tightness or breathlessness needs a 999 call, and do not drive yourself. New numbness down the arm with neck pain needs an urgent GP appointment or NHS 111 to check for a cervical nerve root problem before rehab begins."
   },
   Sciatica: {
     mechanism: [
@@ -99,7 +99,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
       "The reassuring evidence is that most disc-related sciatica improves within weeks to a few months without surgery, as the disc irritation and any inflammatory swelling settle. NICE guidance on managing sciatica supports a staged approach: staying appropriately active, targeted exercise and pain management, with imaging and surgical opinion reserved for cases that fail to improve or show worsening neurological signs."
     ],
     assessment: "Assessment includes straight leg raise and neural tension testing, checking reflexes, muscle power and sensation in specific nerve root distributions down the leg, and screening for the alternative pattern of spinal stenosis, where symptoms are usually worse standing and walking and ease with sitting or leaning forward.",
-    redFlags: "Any new saddle numbness, difficulty controlling the bladder or bowel, rapidly progressive leg weakness, or bilateral leg symptoms are cauda equina red flags and require same-day emergency assessment — this is one of the few genuine physiotherapy emergencies."
+    redFlags: "Any new saddle numbness (around your genitals or bottom), difficulty starting or controlling peeing or controlling your bowels, rapidly progressive leg weakness, or sciatica in both legs are cauda equina red flags: call 999 or go to A&E, and do not drive yourself — this is one of the few genuine physiotherapy emergencies."
   },
   "Sports injuries": {
     mechanism: [
@@ -107,7 +107,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
       "The single biggest predictor of re-injury on return to sport isn't how the injury was treated in isolation — it's whether the athlete returns with adequate strength, control and confidence relative to the demands of their sport, tested under fatigue and at speed, not just pain-free at rest."
     ],
     assessment: "Assessment covers the mechanism and history of injury, strength and range of movement compared side-to-side, movement quality under load (jumping, cutting, sprinting mechanics where relevant), and a realistic picture of training volume and competition demands to build a return-to-sport timeline around.",
-    redFlags: "A visibly deformed joint, inability to bear any weight after a lower-limb injury, a loud pop with immediate significant swelling, or numbness/weakness distal to the injury site all warrant same-day medical assessment before any rehab plan is started."
+    redFlags: "A visibly deformed joint or a bone out of place after an injury, or numbness, tingling or weakness below the injury site, needs A&E; call 999 if you cannot get there yourself, and do not drive yourself. Inability to bear any weight after a lower-limb injury, or a loud pop with immediate significant swelling, warrants same-day medical assessment (NHS 111 or an urgent treatment centre) before any rehab plan is started."
   },
   "Neurological conditions": {
     mechanism: [
@@ -115,7 +115,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
       "Symptoms like weakness, altered sensation, balance difficulty or fatigue often fluctuate day to day and can be affected by heat, illness, stress or overexertion in ways that differ from typical musculoskeletal pain, so pacing and monitoring matter as much as the exercises themselves."
     ],
     assessment: "Assessment typically includes standardised balance and mobility measures, muscle tone and strength testing, functional tasks relevant to daily life (transfers, stairs, walking distance), and confirmation that the GP or specialist team managing the underlying neurological condition has said it is safe to begin physiotherapy.",
-    redFlags: "Sudden new weakness, facial drooping, slurred speech, a sudden severe headache, or a rapid, unexplained change in an existing neurological condition are medical emergencies requiring immediate assessment (call 999) rather than a physiotherapy appointment."
+    redFlags: "Sudden new weakness, facial drooping, slurred speech, a sudden severe headache, or a rapid, unexplained change in an existing neurological condition are medical emergencies (possible stroke): call 999 rather than booking a physiotherapy appointment, and do not drive yourself."
   },
   "Post-surgery recovery": {
     mechanism: [
@@ -131,7 +131,7 @@ const categoryInfo: Record<Category, { mechanism: string[]; assessment: string; 
       "A well-designed home programme specifies not just which exercises, but how much (sets, reps, load), how often, and clear criteria for when to progress, hold, or scale back — removing the guesswork that causes people to either under-do it or overdo it on a good day."
     ],
     assessment: "Before prescribing a home programme, a physiotherapist checks baseline strength and movement quality, current activity levels, equipment and space available at home, and any specific goals so the plan is realistic rather than generic.",
-    redFlags: "Sharp new pain during an exercise that doesn't ease with rest, exercises that consistently worsen symptoms the following day, or new neurological symptoms (numbness, weakness) starting during a home programme should prompt a pause and a physiotherapy review, not pushing through."
+    redFlags: "Sharp new pain during an exercise that doesn't ease with rest, exercises that consistently worsen symptoms the following day, or new neurological symptoms (numbness, weakness) starting during a home programme should prompt a pause and a physiotherapy review, not pushing through. Sudden weakness or numbness down one side of the body, a drooping face or trouble speaking is different: call 999 (possible stroke), and do not drive yourself."
   },
   "Workplace ergonomics": {
     mechanism: [
@@ -629,7 +629,7 @@ const frozenShoulderSections: BlogArticle["sections"] = [
   {
     heading: "When to seek urgent or in-person care",
     body: [
-      "Frozen shoulder itself is not an emergency, but a few presentations need ruling out before treating stiffness as straightforward adhesive capsulitis. Sudden, severe shoulder pain following a fall or direct trauma, a visibly deformed shoulder, or complete inability to move the arm following an injury needs same-day medical assessment to rule out a fracture or dislocation rather than physiotherapy. Shoulder pain accompanied by chest pain, breathlessness, sweating or pain spreading to the jaw or left arm needs emergency assessment to rule out a cardiac cause, particularly in anyone with cardiovascular risk factors. A hot, swollen joint with fever, or sudden genuine weakness rather than pain-limited weakness, should also be assessed urgently rather than assumed to be frozen shoulder."
+      "Frozen shoulder itself is not an emergency, but a few presentations need ruling out before treating stiffness as straightforward adhesive capsulitis. Sudden, severe shoulder pain following a fall or direct trauma needs same-day medical assessment (an urgent GP appointment or NHS 111) rather than physiotherapy. A visibly deformed shoulder, or complete inability to move the arm following an injury, needs A&E to rule out a fracture or dislocation; call 999 if you cannot get there yourself, and do not drive yourself. Shoulder pain accompanied by chest pain, breathlessness, sweating or pain spreading to the jaw or arm needs a 999 call to rule out a heart attack, and do not drive yourself. A hot, swollen joint with fever needs A&E now, or a call to NHS 111 straight away if you are not sure where to go. Sudden genuine weakness rather than pain-limited weakness should also be assessed urgently rather than assumed to be frozen shoulder."
     ]
   },
   {
