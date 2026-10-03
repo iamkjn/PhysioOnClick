@@ -87,7 +87,7 @@ export default function TermsPage() {
             <li>Please provide a safe, clear space for the session and safe, reasonable access to it.</li>
             <li>For a patient under 18, a parent, guardian or another responsible adult must be present for the whole visit.</li>
             <li>We may rearrange or decline a visit if the address is outside the area we cover, or if we have a genuine concern for safety at the address.</li>
-            <li>If we decline or cannot attend a visit for either reason, you can choose a full refund or a new appointment, in line with the cancellation and refund terms above. Your own cancellations follow the same notice rules as any other appointment.</li>
+            <li>If we decline or cannot attend a visit for either reason, you can choose a full refund or a new appointment, in line with our Payment &amp; cancellation terms below and the <Link href="/cancellation-policy" style={inlineLinkStyle}>cancellation policy</Link>. Your own cancellations follow the same notice rules as any other appointment.</li>
           </ul>
         </article>
 

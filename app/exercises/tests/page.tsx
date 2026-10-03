@@ -17,10 +17,6 @@ export const dynamic = "force-static";
 const DESCRIPTION =
   "Simple, safe movement tests you can try at home to see what your symptoms might point towards. A guide, not a diagnosis - a positive result is your cue to get assessed.";
 
-// Informational triage, not diagnosis (spec 11a "Positioning"). ASCII only.
-const DISCLAIMER =
-  "This is a guide, not a diagnosis. These tests cannot rule a problem in or out - a physiotherapist can. If your symptoms are severe, spreading, or you feel unwell, see a doctor.";
-
 export function generateMetadata(): Metadata {
   const title = "Self-check tests | PhysioOnClick";
   return {
@@ -104,8 +100,7 @@ export default function SelfTestsIndexPage() {
           possible-problem result look like, and points you to the right next
           step.
         </p>
-        <p className="exlib-selftest-disclaimer">{DISCLAIMER}</p>
-        <ExerciseUseDisclaimer />
+        <ExerciseUseDisclaimer variant="selftest" />
       </section>
 
       {groups.map((group) => (

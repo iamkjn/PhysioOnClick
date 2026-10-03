@@ -13,4 +13,13 @@ export const EXERCISE_DISCLAIMER_SENTENCES = [
   "Using them without an assessment is at your own risk.",
 ] as const;
 
+// Self-check test pages: one combined note (guide not diagnosis, see a doctor if
+// severe, and the same own-risk guidance as the shared sentences above).
+export const SELF_TEST_DISCLAIMER = [
+  "This is a guide, not a diagnosis.",
+  "It cannot rule a problem in or out - a physiotherapist can.",
+  "If your symptoms are severe, spreading, or you feel unwell, see a doctor.",
+  "Please do not start exercises based on these tests without guidance from a physiotherapist who has assessed you; doing so is at your own risk.",
+].join(" ");
+
 export const EXERCISE_DISCLAIMER = EXERCISE_DISCLAIMER_SENTENCES.join(" ");

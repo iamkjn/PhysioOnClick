@@ -8,7 +8,7 @@
 //             per-item safety line / red-flags box; here the note is just the
 //             short general framing around them.
 
-import { EXERCISE_DISCLAIMER } from "@/lib/exercise-disclaimer";
+import { EXERCISE_DISCLAIMER, SELF_TEST_DISCLAIMER } from "@/lib/exercise-disclaimer";
 
 const HEADING = "Using these exercises safely";
 
@@ -62,10 +62,10 @@ export function ExerciseSafetyNote({
 }
 
 // Same wording for the self-check test pages, which do not carry the full note.
-export function ExerciseUseDisclaimer() {
+export function ExerciseUseDisclaimer({ variant = "exercise" }: { variant?: "exercise" | "selftest" }) {
   return (
-    <p className="exlib-selftest-disclaimer" data-exercise-disclaimer>
-      {EXERCISE_DISCLAIMER}
+    <p className="exlib-selftest-disclaimer" data-exercise-disclaimer data-disclaimer>
+      {variant === "selftest" ? SELF_TEST_DISCLAIMER : EXERCISE_DISCLAIMER}
     </p>
   );
 }
