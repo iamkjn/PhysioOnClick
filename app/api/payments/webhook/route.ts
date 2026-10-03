@@ -327,6 +327,8 @@ export async function POST(request: Request) {
       patientName: intent.name,
       patientEmail: intent.email,
       sessionDateISO: intent.startISO,
+      // Visit type only (prints the delivery line) — the address stays off the invoice.
+      ...(homeVisit ? { visitType: "home" as const } : {}),
     });
     const pdfPath = `invoices/${invoiceNumber}.pdf`;
     const up = await uploadObject(pdfPath, pdfBytes, "application/pdf");

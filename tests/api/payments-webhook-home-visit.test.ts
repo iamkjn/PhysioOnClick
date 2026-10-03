@@ -38,6 +38,7 @@ vi.mock("@/lib/emails/receipt-email", () => ({
 
 import { createCalBooking } from "@/lib/cal-booking";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
+import { generateInvoicePdf } from "@/lib/invoice-pdf";
 import { POST } from "@/app/api/payments/webhook/route";
 
 const SECRET = "whsec_test";
@@ -119,6 +120,18 @@ describe("POST /api/payments/webhook — home visits", () => {
     expect(sendReceiptEmail).toHaveBeenCalledWith(
       expect.objectContaining({ visitType: "home", homeVisitAddress: ADDRESS }),
     );
+  });
+
+  it("tells the invoice it is a home visit but never gives it the address", async () => {
+    await POST(signedRequest(eventWith({ visitType: "home", homeVisitAddress: ADDRESS })));
+    const invoiceArgs = vi.mocked(generateInvoicePdf).mock.calls[0][0];
+    expect(invoiceArgs.visitType).toBe("home");
+    expect(JSON.stringify(invoiceArgs)).not.toContain("Example Street");
+  });
+
+  it("generates a video invoice with no visit type, as before", async () => {
+    await POST(signedRequest(eventWith({ visitType: "video" })));
+    expect(vi.mocked(generateInvoicePdf).mock.calls[0][0]).not.toHaveProperty("visitType");
   });
 
   it("leaves a video booking exactly as before", async () => {

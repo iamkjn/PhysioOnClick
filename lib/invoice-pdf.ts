@@ -3,6 +3,7 @@ import { invoiceIssuer, founder } from "@/lib/site-data";
 import { PRACTICE_PHONE } from "@/lib/structured-data";
 import { formatGbp, issuerField } from "@/lib/invoice";
 import { INVOICE_AVATAR_PNG_BASE64 } from "@/lib/invoice-avatar";
+import type { VisitType } from "@/lib/home-visit";
 
 export type InvoicePdfInput = {
   invoiceNumber: string;
@@ -12,7 +13,16 @@ export type InvoicePdfInput = {
   patientName: string;
   patientEmail: string;
   sessionDateISO: string | null;
+  /** "home" prints the home-visit delivery line; anything else keeps the video wording. Never pass the address. */
+  visitType?: VisitType;
 };
+
+/** The "how it was delivered" line under the service name. No address, by design. */
+export function invoiceDeliveryLine(visitType?: VisitType): string {
+  return visitType === "home"
+    ? "Delivered as a home visit (Glasgow area)."
+    : "Delivered online via secure video consultation.";
+}
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -226,7 +236,7 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Uint8A
 
   const rowY = y - 46;
   textAt(input.serviceLabel, MARGIN, rowY, { f: bold, size: 12.5 });
-  textAt("Delivered online via secure video consultation.", MARGIN, rowY - 17, { size: 9.3, color: MUTED });
+  textAt(invoiceDeliveryLine(input.visitType), MARGIN, rowY - 17, { size: 9.3, color: MUTED });
   textAt(fmtDate(input.sessionDateISO), MARGIN + 270, rowY, { size: 11.5, color: MUTED });
   textRight(formatGbp(input.amountPence), right, rowY, { f: bold, size: 12.5 });
   rule(rowY - 34);

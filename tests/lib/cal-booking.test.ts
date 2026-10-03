@@ -59,6 +59,45 @@ describe("createCalBooking", () => {
     });
   });
 
+  it("on a 400 retries a home visit without metadata (address dropped) and never logs the error body", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const echoingError = JSON.stringify({ error: "bad metadata", echo: { homeVisitAddress: "7 Example Street, G31 4HS" } });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(echoingError, { status: 400 }))
+      .mockResolvedValueOnce(new Response(echoingError, { status: 400 }));
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("NEXT_PUBLIC_CAL_USERNAME", "physio");
+
+    const result = await createCalBooking({
+      ...OK_INPUT,
+      visitType: "home",
+      homeVisitAddress: "7 Example Street, G31 4HS",
+    });
+
+    expect(result.ok).toBe(false);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const first = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(first.metadata.homeVisitAddress).toBe("7 Example Street, G31 4HS");
+    const retry = JSON.parse((fetchMock.mock.calls[1][1] as RequestInit).body as string);
+    expect(retry).not.toHaveProperty("metadata");
+    expect(JSON.stringify(retry)).not.toContain("Example Street");
+
+    const logged = JSON.stringify(errorSpy.mock.calls);
+    expect(errorSpy).toHaveBeenCalled();
+    expect(logged).not.toContain("Example Street");
+    expect(logged).not.toContain("G31 4HS");
+    expect(logged).not.toContain("bad metadata");
+  });
+
+  it("still logs the Cal.com error body for a video booking", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("slot gone", { status: 500 })));
+    vi.stubEnv("NEXT_PUBLIC_CAL_USERNAME", "physio");
+    await createCalBooking(OK_INPUT);
+    expect(JSON.stringify(errorSpy.mock.calls)).toContain("slot gone");
+  });
+
   it("keeps a video booking's Cal.com payload unchanged", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ data: { uid: "cal_abc" } }), { status: 200 }),
