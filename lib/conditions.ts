@@ -35,7 +35,14 @@ export type Condition = {
   intro: string;
   whoItHelps: string;
   program: ConditionStage[];
+  /** Non-urgent: rendered under "Get checked by a clinician first if". */
   redFlags: string[];
+  /**
+   * Emergency signs the NHS (or NICE CKS) routes to 999 or A&E. Rendered in
+   * their own "Call 999 or go to A&E if" box, never under the non-urgent
+   * heading. Each item states its exact route.
+   */
+  urgentFlags?: string[];
   recoveryTimeline: string;
   progressGuidance: string;
   faqs: { q: string; a: string }[];
@@ -52,9 +59,29 @@ const REVIEWED_ON = "2026-09-08";
 const GENERAL_RED_FLAGS = [
   "The pain followed a significant accident, fall or direct blow and you have not been checked over",
   "You feel unwell with the pain - a fever, night sweats, or losing weight without trying",
-  "The area is hot, very swollen and red, especially if you also feel feverish",
   "Pain that is severe, steadily getting worse, or keeps you awake every night and does not ease with a change of position",
 ];
+
+/**
+ * Emergency signs shared by every hub (rendered in the 999/A&E box). Routes
+ * match lib/online-physio-pages.ts and docs/seo/phase-b-sources.md items 11
+ * and 13.
+ */
+const GENERAL_URGENT_FLAGS = [
+  "The area is hot, very swollen and red, especially if you also feel feverish or unwell - go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.",
+];
+
+/** DVT: NHS routes to an urgent GP appointment or NHS 111 (item 13). */
+const CLOT_GP_FLAG =
+  "Throbbing or cramping pain, swelling, warmth or redness in one calf or leg with no clear cause - ask for an urgent GP appointment or call NHS 111 to rule out a blood clot";
+
+/** Possible pulmonary embolism: NHS routes to 999 or A&E (item 13). */
+const CLOT_URGENT_FLAG =
+  "Sudden breathlessness or chest pain - call 999 or go to A&E, this could be a blood clot in the lungs, especially if you also have pain or swelling in a leg. Do not drive yourself.";
+
+/** Dislocated shoulder: NHS routes to A&E, 999 if you cannot get there (item 11). */
+const SHOULDER_DISLOCATION_FLAG =
+  "Your shoulder looks out of place or has changed shape, or you cannot move your arm after a fall - go to A&E, as it may be dislocated or broken. Call 999 if you cannot get there yourself. Do not drive yourself.";
 
 export const conditions: Condition[] = [
   {
@@ -98,8 +125,11 @@ export const conditions: Condition[] = [
     redFlags: [
       "Your arm became weak or you could not lift it at all straight after an injury - this may be a cuff tear that needs assessing",
       "Pins and needles or weakness spreading down the arm into the hand",
-      "The shoulder looks an odd shape or you cannot move it after a fall - it may be dislocated or fractured",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      SHOULDER_DISLOCATION_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Most people notice a meaningful improvement over 6 to 12 weeks of consistent loading, with fuller recovery over 3 to 6 months. Tendons respond slowly, so steady progress over weeks matters more than any single session.",
@@ -180,8 +210,12 @@ export const conditions: Condition[] = [
       "You cannot put weight through the leg or walk at all",
       "The pain was right up at the sitting bone with rapid heavy bruising - a high hamstring tendon tear needs prompt assessment",
       "Numbness, pins and needles or weakness in the foot",
-      "Calf pain and swelling with warmth or redness, or breathlessness - seek urgent medical advice to rule out a clot",
+      CLOT_GP_FLAG,
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "A low-grade strain often settles enough for a graded return to running in 2 to 4 weeks, with full return to sport around 4 to 8 weeks. Higher-grade tears, or pain near the sitting bone, can take several months. Progress is guided by the return-to-play markers, not the calendar.",
@@ -245,11 +279,14 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Difficulty passing urine, loss of bladder or bowel control, or numbness around the back passage, genitals or inner thighs - go to A&E, this needs same-day assessment",
-      "Progressive weakness, heaviness or numbness in both legs",
       "New back pain with a history of cancer, a weakened immune system, or recent serious infection",
-      "Severe pain after a significant fall or crash, particularly if you have osteoporosis",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Difficulty peeing, peeing or pooing yourself, or a loss of feeling around your genitals, anus or inner thighs - call 999 or go to A&E. Do not drive yourself.",
+      "Pain, tingling, weakness, heaviness or numbness in both legs - call 999 or go to A&E. Do not drive yourself.",
+      "Back pain that started after a serious accident, such as a bad fall or a car crash (especially if you have osteoporosis), or back pain with chest pain - call 999 or go to A&E. Do not drive yourself.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Most episodes improve substantially within 2 to 6 weeks. Some ache or stiffness can linger longer and flare from time to time - that is normal and does not mean harm. Regular activity and the strength work reduce how often flares happen and how long they last.",
@@ -313,11 +350,14 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Difficulty passing or controlling urine, bowel incontinence, or numbness around the saddle area - go to A&E immediately",
-      "Weakness in the leg or foot that is clearly getting worse over days",
-      "Numbness or weakness affecting both legs",
       "Fever, unexplained weight loss, or a history of cancer alongside the pain",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "You find it hard to start peeing, cannot pee or cannot control when you pee, cannot control your bowels, or have numbness around your genitals or bottom - call 999 or go to A&E. Do not drive yourself.",
+      "Sciatica on both sides, or weakness or numbness in both legs, especially if it is severe or getting worse - call 999 or go to A&E. Do not drive yourself.",
+      "Weakness in one leg or foot that is getting worse - go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Leg pain often begins to ease within 4 to 6 weeks, with many people much improved by 6 to 12 weeks. Some numbness or tingling can take longer to fully resolve. A minority with ongoing severe pain or weakness are helped by an injection or surgery.",
@@ -381,11 +421,16 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Significant neck pain straight after a car crash, a heavy fall or a blow to the head",
-      "Weakness, clumsiness or numbness in the hands or legs, or problems with balance and walking",
-      "Dizziness, drop attacks, double vision, slurred speech or facial numbness with neck movement",
-      "Severe headache unlike any you have had before, or neck stiffness with fever and feeling very unwell",
+      "Weakness, clumsiness, pins and needles or numbness in the hands or arms that has come on gradually - ask your GP for an urgent appointment",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Call 999 if you have sudden weakness or numbness in an arm or down one side of your body, slurred speech, numbness in your face, a drooping face or trouble speaking (possible stroke). Do not drive yourself.",
+      "Call 999 if you have dizziness, drop attacks, double or blurred vision or loss of sight, including when you move your neck. These can also be stroke signs. Do not drive yourself.",
+      "Call 999 or go to A&E, or call NHS 111 if you are not sure, if you notice changes in your balance, co-ordination or walking.",
+      "Call 999 or go to A&E, or call NHS 111 if you are not sure, if your neck pain started after a car crash, a heavy fall or a blow to the head. Do not drive yourself if you have hit your head.",
+      "If you have neck pain or stiffness with a high temperature, a very painful headache or a sudden severe headache unlike any you have had before, confusion, a rash that does not fade when pressed, or you feel very unwell or are worried it could be meningitis, call 999 or go to A&E. Do not drive yourself.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Most bouts of neck pain settle within 2 to 6 weeks. Recurrences are common and usually short-lived. Keeping up the strength work and managing sleep, stress and screen habits reduces how often it returns.",
@@ -455,10 +500,12 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "The stiffness began right after a fall, a dislocation or a heavy pull on the arm",
-      "The shoulder or arm looks deformed, or you cannot move it at all",
       "Pins and needles or weakness spreading down the arm into the hand",
-      "The shoulder is hot, very swollen and red, especially with a fever",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      SHOULDER_DISLOCATION_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Frozen shoulder is self-limiting but slow: many people take 1 to 3 years to fully recover, and a small number are left with some lasting stiffness. Pain usually improves well before movement does. Exercise, and in some cases an injection or a hydrodilatation procedure, can speed things along.",
@@ -523,10 +570,12 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Sudden marked weakness lifting the arm after an injury - possible rotator cuff tear",
-      "The shoulder looks an odd shape or cannot be moved after a fall",
       "Pins and needles or weakness spreading into the hand",
-      "The shoulder is hot, red and swollen with a fever",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      SHOULDER_DISLOCATION_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Most people improve over 6 to 12 weeks with consistent exercise, and many settle fully within 3 to 4 months. Surgery is rarely needed and, for this problem, has not been shown to beat a good exercise programme.",
@@ -596,6 +645,9 @@ export const conditions: Condition[] = [
       "Elbow pain after a fall onto the arm that has not been checked",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "Tennis elbow often takes 3 to 6 months to settle, and sometimes up to a year. It usually gets better whatever you do, but a structured loading programme reduces pain faster and lowers the chance of recurrence. Most cases never need an injection or surgery.",
     progressGuidance:
@@ -663,6 +715,9 @@ export const conditions: Condition[] = [
       "Marked swelling, redness or warmth around the joint, especially with a fever",
       "Inner-elbow pain after a fall or a forced twist that has not been checked",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Like tennis elbow, golfer's elbow commonly takes 3 to 6 months to settle and occasionally up to a year. Progressive loading reduces pain faster than rest and lowers the chance of it coming back.",
@@ -732,6 +787,9 @@ export const conditions: Condition[] = [
       "Sudden severe swelling within an hour of an injury",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "Most people who stick with a strengthening programme notice less pain and better function within 6 to 12 weeks, with continued gains over 3 to 6 months. Osteoarthritis is a long-term condition, so keeping some strength work going maintains the benefit. Many people avoid or delay surgery this way.",
     progressGuidance:
@@ -800,6 +858,9 @@ export const conditions: Condition[] = [
       "The kneecap has dislocated or partly slipped out of place",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "Many people improve within 6 to 12 weeks of consistent strengthening, though it can take longer if it has been present for months or years. It can be persistent and prone to flares, so keeping up hip and thigh strength work is worthwhile even after it settles.",
     progressGuidance:
@@ -863,10 +924,12 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Deep pain in the groin rather than the outer hip, especially with a limp or loss of rotation - this points to the hip joint itself",
-      "Outer hip pain after a fall, particularly in older adults or people with osteoporosis - a fracture must be excluded",
-      "The area is hot, red and swollen with a fever",
       "Night pain that is severe, constant and not related to lying position, with feeling generally unwell",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Hip pain after a fall or injury, especially if it is severe, you cannot walk or put weight on the leg, or you have tingling or loss of feeling in the hip or leg - call 999 or go to A&E, as a broken hip must be ruled out. Do not drive yourself.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Gluteal tendinopathy is often slow, taking 3 to 6 months and sometimes longer to settle fully. Night pain and the ability to lie on the side are usually the last things to improve. Load management plus progressive strengthening outperforms rest or injections over the medium term.",
@@ -931,10 +994,14 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Sudden severe pain at the back of the ankle with a snap or a feeling of being kicked, and difficulty walking or pushing off - possible Achilles rupture, seek same-day assessment",
-      "Pain, swelling and warmth in the calf with no clear cause, or breathlessness - seek urgent advice to rule out a clot",
+      CLOT_GP_FLAG,
       "The heel or ankle is hot, red and swollen with a fever",
       "Pain that is worse at rest and at night rather than with activity",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Most cases improve over 3 to 6 months with a consistent loading programme, though the tendon can stay mildly sensitive for longer. Pain in the mid-portion of the tendon usually responds better and faster than pain right at the heel attachment.",
@@ -1001,8 +1068,12 @@ export const conditions: Condition[] = [
       "You cannot put any weight through the ankle, or bony tenderness over the ankle knobbles or the outer midfoot - get an X-ray to rule out a fracture",
       "Obvious deformity of the ankle or foot",
       "Numbness, pins and needles, or the foot looking pale or feeling cold",
-      "Calf pain, swelling and warmth developing over the following days - seek advice to exclude a clot",
+      "Calf pain, swelling and warmth developing over the following days - ask for an urgent GP appointment or call NHS 111 to rule out a blood clot",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "A mild sprain often settles enough for normal walking in 1 to 2 weeks and sport in 2 to 6 weeks. More severe sprains can take 6 to 12 weeks or longer. Balance and strength work should continue for at least 2 to 3 months to reduce the risk of another sprain.",
@@ -1078,6 +1149,9 @@ export const conditions: Condition[] = [
       "Numbness or pins and needles in the foot",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "A dedicated balance and strength programme typically produces noticeable improvement in stability within 6 to 12 weeks, with continued gains over 3 to 6 months. The exercises are worth keeping up long term as a warm-up or twice-weekly maintenance.",
     progressGuidance:
@@ -1151,6 +1225,9 @@ export const conditions: Condition[] = [
       "Marked or rapid swelling of the knee",
       "Pain that is worse at rest and at night rather than with loading",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Patellar tendinopathy is often stubborn, typically taking 3 to 6 months of consistent loading and sometimes a full season. Mid-season management focuses on controlling load and keeping symptoms tolerable; the biggest gains are made in the off-season when heavy strength work can be prioritised.",
@@ -1226,6 +1303,9 @@ export const conditions: Condition[] = [
       "New numbness, pins and needles, or the foot feeling cold or looking pale",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "Non-surgical ACL rehabilitation typically runs 3 to 6 months to return to running and straight-line sport, and 9 to 12 months or more before pivoting sport if that is the goal. After a reconstruction, the timeline is similar from the point of surgery. Progress is measured by strength and control, not the calendar.",
     progressGuidance:
@@ -1295,10 +1375,15 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Pain in a specific spot on a bone that worsens as you run and is tender to press - possible bone stress injury, stop running and get assessed",
-      "Calf pain and swelling with warmth, or breathlessness - seek urgent advice to exclude a clot",
+      CLOT_GP_FLAG,
       "Any joint that locks, gives way or swells after a run",
-      "Chest tightness, undue breathlessness, or dizziness on exertion - seek medical advice before continuing",
+      "Feeling dizzy or unusually short of breath when you exercise, even if it settles with rest - see your GP before you carry on running",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Chest pain that feels tight or squeezing, or spreads to your arms, neck or jaw, during or after a run - stop and call 999. Do not drive yourself.",
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "From a solid walking base, a graded run-walk progression to 30 minutes of continuous running usually takes 4 to 8 weeks. Returning after a bone stress injury or childbirth is slower and should be guided by a clinician. Building from there back to your previous mileage takes several more weeks.",
@@ -1371,8 +1456,12 @@ export const conditions: Condition[] = [
       "Any joint that locks, gives way, or swells after training",
       "Sharp, localised bone pain that worsens with impact and is tender to touch",
       "Pain that is escalating session to session despite sensible load management",
-      "Calf pain and swelling with warmth, or breathlessness - seek urgent advice",
+      CLOT_GP_FLAG,
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "As a bridging phase this typically takes 4 to 12 weeks, depending on the injury and the sport. After major injuries such as an ACL reconstruction it forms the last few months of a 9 to 12 month process. Readiness is defined by meeting the markers, not by elapsed time.",
@@ -1436,11 +1525,15 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Calf pain, swelling, warmth or redness, or sudden breathlessness or chest pain - seek urgent medical help to rule out a clot",
+      CLOT_GP_FLAG,
       "Wound that opens, leaks fluid, or becomes increasingly red, hot and painful, with or without a fever - possible infection",
       "A sudden increase in pain, swelling or inability to bear weight after a fall or twist",
       "The knee will not straighten or bend at all, or feels unstable and gives way",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Most people walk with a stick or unaided within 2 to 6 weeks, return to driving around 6 weeks, and manage most daily activities by 3 months. Strength, stamina and swelling continue to improve for a full 12 months. The final range of movement is usually settled by around 3 months.",
@@ -1505,10 +1598,14 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Sudden severe hip or groin pain, the leg looking shorter or turned out, and inability to weight-bear - possible dislocation, seek urgent assessment",
-      "Calf pain, swelling, warmth or redness, or sudden breathlessness or chest pain - seek urgent help to rule out a clot",
+      CLOT_GP_FLAG,
       "Wound that opens, leaks, or becomes increasingly red, hot and painful, with or without a fever",
       "New numbness, foot drop, or the foot feeling cold or looking pale",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Most people walk with one stick or unaided within 2 to 4 weeks, stop using walking aids around 4 to 6 weeks, return to driving around 6 weeks, and feel largely back to normal daily life by 3 months. Muscle strength and stamina keep improving for up to a year.",
@@ -1579,10 +1676,14 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "The knee locks and cannot be fully straightened - possible graft or meniscal problem, seek prompt review",
-      "Calf pain, swelling, warmth or redness, or sudden breathlessness - seek urgent help to rule out a clot",
+      CLOT_GP_FLAG,
       "Wound that opens, leaks, or becomes increasingly red, hot and painful, with or without a fever",
       "A sudden pop, giving way, or rapid swelling after a twist or fall - seek assessment to check the graft",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Crutches are usually needed for 1 to 3 weeks, full straightening is expected by 2 to 4 weeks, jogging is often introduced around 3 to 4 months, and return to pivoting sport is typically 9 to 12 months, guided by testing. Strength and confidence continue to build into the second year.",
@@ -1648,9 +1749,12 @@ export const conditions: Condition[] = [
     redFlags: [
       "Falls or blackouts with no warning, or fainting, or falls with loss of consciousness - see your GP promptly to check heart and blood pressure causes",
       "A fall causing a head injury, especially if on blood-thinning medication - seek urgent medical assessment",
-      "Sudden weakness, facial droop, slurred speech or confusion - call 999, this could be a stroke",
-      "New or rapidly worsening unsteadiness, dizziness, or leg weakness and numbness",
+      "Unsteadiness, dizziness, or leg weakness or numbness that has come on gradually or is slowly getting worse - see your GP promptly",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Sudden weakness or numbness in the face, an arm or a leg, a drooping face, slurred speech, confusion, or sudden dizziness or loss of balance - call 999, this could be a stroke. Do not drive yourself.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Balance and strength begin to improve within 4 to 8 weeks, but the falls-reduction benefit comes from keeping it going - the evidence is based on at least 3 hours of balance-challenging exercise a week sustained over 6 months or more. It works best as a permanent habit.",
@@ -1716,9 +1820,13 @@ export const conditions: Condition[] = [
     redFlags: [
       "Blood in your urine, or pain or burning passing urine",
       "A feeling of something coming down or a visible bulge in the vagina - this needs assessment for prolapse",
-      "New leakage alongside back or leg weakness, numbness around the saddle area, or bowel control changes - seek urgent assessment",
-      "Being unable to pass urine, or a constant dribble with a full bladder feeling",
+      "A constant dribble of urine with a feeling that your bladder is still full - see your GP promptly",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "New leakage with back pain, weakness or numbness in your legs, numbness around your genitals or bottom, or changes in bowel control - call 999 or go to A&E. Do not drive yourself.",
+      "You cannot pass urine at all - go to A&E now, or call NHS 111 straight away if you are not sure where to go.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "With correct, consistent training most people notice improvement within 6 to 12 weeks, and the recommended course is at least 3 months and often 5 to 6 months before judging the full result. Continuing a maintenance routine keeps the benefit.",
@@ -1792,6 +1900,9 @@ export const conditions: Condition[] = [
       "Fever, pain passing urine, or feeling generally unwell with the pelvic pain",
       "Sudden severe pubic pain with a grinding sensation and inability to walk or lift the leg",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Symptoms usually stay manageable through pregnancy with the right exercises and daily strategies, and most cases improve markedly within days to weeks of giving birth. A minority have pain that persists past the early postnatal months and benefits from ongoing pelvic health physiotherapy.",

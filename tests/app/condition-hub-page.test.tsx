@@ -88,6 +88,21 @@ describe("app/exercises/for/[condition] page", () => {
     ).toBeTruthy();
   });
 
+  it("renders 999/A&E signs in their own urgent box ahead of the non-urgent list", async () => {
+    const neck = getCondition("neck-pain")!;
+    expect(neck.urgentFlags?.length).toBeGreaterThan(0);
+    const { container } = await renderPage("neck-pain");
+    const urgent = container.querySelector("[data-urgent-flags]");
+    expect(urgent).not.toBeNull();
+    expect(urgent!.querySelector("h2")?.textContent).toBe("Call 999 or go to A&E if");
+    for (const flag of neck.urgentFlags!) expect(urgent).toHaveTextContent(flag);
+    const nonUrgent = container.querySelector("[data-red-flags]")!;
+    expect(nonUrgent.textContent).not.toMatch(/999|A&E/);
+    expect(
+      urgent!.compareDocumentPosition(nonUrgent) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it("renders a [data-self-checks] block, before the first stage, for a condition with self-tests", async () => {
     // rotator-cuff-tendinopathy maps to Full Can + Hawkins-Kennedy + Painful Arc.
     const tests = selfTestsForCondition(SLUG);
