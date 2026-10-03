@@ -39,7 +39,7 @@ export type Condition = {
   redFlags: string[];
   /**
    * Emergency signs the NHS (or NICE CKS) routes to 999 or A&E. Rendered in
-   * their own "Call 999 or go to A&E if" box, never under the non-urgent
+   * their own "Get urgent help now if" box, never under the non-urgent
    * heading. Each item states its exact route.
    */
   urgentFlags?: string[];
@@ -640,7 +640,6 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "The elbow locks, catches or gives way",
-      "Marked swelling, redness or warmth around the joint, especially with a fever",
       "Pins and needles or weakness in the hand, or pain that is mainly on the inner side or into the forearm",
       "Elbow pain after a fall onto the arm that has not been checked",
       ...GENERAL_RED_FLAGS,
@@ -712,7 +711,6 @@ export const conditions: Condition[] = [
     redFlags: [
       "Numbness or weakness in the hand, particularly the ring and little fingers, that is marked or getting worse",
       "The elbow locks, catches or gives way",
-      "Marked swelling, redness or warmth around the joint, especially with a fever",
       "Inner-elbow pain after a fall or a forced twist that has not been checked",
       ...GENERAL_RED_FLAGS,
     ],
@@ -782,7 +780,6 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "The knee is locked and will not fully straighten or bend",
-      "It is hot, red and very swollen, particularly with a fever - this needs urgent assessment to rule out infection or gout",
       "Repeated true giving way where the knee collapses under you",
       "Sudden severe swelling within an hour of an injury",
       ...GENERAL_RED_FLAGS,
@@ -993,14 +990,13 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Sudden severe pain at the back of the ankle with a snap or a feeling of being kicked, and difficulty walking or pushing off - possible Achilles rupture, seek same-day assessment",
       CLOT_GP_FLAG,
-      "The heel or ankle is hot, red and swollen with a fever",
       "Pain that is worse at rest and at night rather than with activity",
       ...GENERAL_RED_FLAGS,
     ],
     urgentFlags: [
       CLOT_URGENT_FLAG,
+      "Sudden severe pain at the back of the ankle with a snap or a feeling of being kicked, and difficulty walking or pushing off - possible Achilles rupture - go to an urgent treatment centre or A&E",
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
@@ -1066,13 +1062,13 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "You cannot put any weight through the ankle, or bony tenderness over the ankle knobbles or the outer midfoot - get an X-ray to rule out a fracture",
-      "Obvious deformity of the ankle or foot",
-      "Numbness, pins and needles, or the foot looking pale or feeling cold",
       "Calf pain, swelling and warmth developing over the following days - ask for an urgent GP appointment or call NHS 111 to rule out a blood clot",
       ...GENERAL_RED_FLAGS,
     ],
     urgentFlags: [
       CLOT_URGENT_FLAG,
+      "Obvious deformity of the ankle or foot after an injury - go to A&E now",
+      "Numbness, pins and needles, or the foot looking pale or feeling cold after an injury - go to A&E now",
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
@@ -1220,13 +1216,13 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Sudden inability to straighten the knee or lift it against gravity after a forceful effort - possible tendon rupture, seek urgent assessment",
       "The knee locks, catches or gives way repeatedly",
       "Marked or rapid swelling of the knee",
       "Pain that is worse at rest and at night rather than with loading",
       ...GENERAL_RED_FLAGS,
     ],
     urgentFlags: [
+      "Sudden inability to straighten the knee or lift it against gravity after a forceful effort - possible tendon rupture - go to an urgent treatment centre or A&E",
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
@@ -1299,11 +1295,10 @@ export const conditions: Condition[] = [
     redFlags: [
       "The knee is locked and cannot be fully straightened - this may be a displaced meniscal tear needing prompt review",
       "Repeated true giving way, especially with pain and swelling each time",
-      "A hot, red, very swollen knee with a fever",
-      "New numbness, pins and needles, or the foot feeling cold or looking pale",
       ...GENERAL_RED_FLAGS,
     ],
     urgentFlags: [
+      "Numbness, pins and needles, or the foot looking pale or feeling cold after an injury - go to A&E now",
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
@@ -1526,7 +1521,7 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       CLOT_GP_FLAG,
-      "Wound that opens, leaks fluid, or becomes increasingly red, hot and painful, with or without a fever - possible infection",
+      "Wound that opens, leaks, or becomes increasingly red, hot and painful, with or without a fever - possible infection: contact your surgical team, or ask for an urgent GP appointment or call NHS 111",
       "A sudden increase in pain, swelling or inability to bear weight after a fall or twist",
       "The knee will not straighten or bend at all, or feels unstable and gives way",
       ...GENERAL_RED_FLAGS,
@@ -1597,14 +1592,14 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Sudden severe hip or groin pain, the leg looking shorter or turned out, and inability to weight-bear - possible dislocation, seek urgent assessment",
       CLOT_GP_FLAG,
-      "Wound that opens, leaks, or becomes increasingly red, hot and painful, with or without a fever",
-      "New numbness, foot drop, or the foot feeling cold or looking pale",
+      "Wound that opens, leaks, or becomes increasingly red, hot and painful, with or without a fever - possible infection: contact your surgical team, or ask for an urgent GP appointment or call NHS 111",
       ...GENERAL_RED_FLAGS,
     ],
     urgentFlags: [
       CLOT_URGENT_FLAG,
+      "Sudden severe hip or groin pain, the leg looking shorter or turned out, and inability to weight-bear - possible dislocation - go to A&E, or call 999 if you cannot get there. Do not drive yourself.",
+      "New numbness, pins and needles or foot drop, or the foot looking pale or feeling cold - go to A&E now",
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
@@ -1677,7 +1672,7 @@ export const conditions: Condition[] = [
     redFlags: [
       "The knee locks and cannot be fully straightened - possible graft or meniscal problem, seek prompt review",
       CLOT_GP_FLAG,
-      "Wound that opens, leaks, or becomes increasingly red, hot and painful, with or without a fever",
+      "Wound that opens, leaks, or becomes increasingly red, hot and painful, with or without a fever - possible infection: contact your surgical team, or ask for an urgent GP appointment or call NHS 111",
       "A sudden pop, giving way, or rapid swelling after a twist or fall - seek assessment to check the graft",
       ...GENERAL_RED_FLAGS,
     ],
@@ -1750,6 +1745,7 @@ export const conditions: Condition[] = [
       "Falls or blackouts with no warning, or fainting, or falls with loss of consciousness - see your GP promptly to check heart and blood pressure causes",
       "A fall causing a head injury, especially if on blood-thinning medication - seek urgent medical assessment",
       "Unsteadiness, dizziness, or leg weakness or numbness that has come on gradually or is slowly getting worse - see your GP promptly",
+      "If unsteadiness is getting worse quickly over hours or days, call NHS 111.",
       ...GENERAL_RED_FLAGS,
     ],
     urgentFlags: [
@@ -1825,7 +1821,7 @@ export const conditions: Condition[] = [
     ],
     urgentFlags: [
       "New leakage with back pain, weakness or numbness in your legs, numbness around your genitals or bottom, or changes in bowel control - call 999 or go to A&E. Do not drive yourself.",
-      "You cannot pass urine at all - go to A&E now, or call NHS 111 straight away if you are not sure where to go.",
+      "You cannot pass urine at all, especially if your bladder feels full or painful - go to A&E now, or call NHS 111 straight away if you are not sure where to go.",
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
