@@ -32,6 +32,9 @@ export interface BookingRecord {
   // can look up the rest of that person's history without a second read.
   bookedBy?: string;
   patientId?: string;
+  /** "home" for a Glasgow-area home visit; absent (= video) otherwise. */
+  visitType?: "video" | "home";
+  homeVisitAddress?: string;
 }
 
 // Resolve the booking's start moment from whatever the writer stored. The
@@ -87,6 +90,9 @@ function toBookingRecord(id: string, data: Record<string, unknown>): BookingReco
     packageFollowUpCheckInId: typeof data.packageFollowUpCheckInId === "string" ? data.packageFollowUpCheckInId : undefined,
     bookedBy: typeof data.bookedBy === "string" ? data.bookedBy : undefined,
     patientId: typeof data.patientId === "string" ? data.patientId : undefined,
+    visitType: data.visitType === "home" || data.visitType === "video" ? data.visitType : undefined,
+    homeVisitAddress:
+      data.visitType === "home" && typeof data.homeVisitAddress === "string" ? data.homeVisitAddress : undefined,
   };
 }
 

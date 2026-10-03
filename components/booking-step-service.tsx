@@ -4,6 +4,13 @@ import type { RefObject } from "react";
 
 import { FOCUS_AREAS, type CalService, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId, PricingItem } from "@/lib/site-data";
+import {
+  HOME_ADDRESS_MAX,
+  HOME_POSTCODE_MAX,
+  HOME_VISIT_HINT,
+  VISIT_TYPE_LABELS,
+  type VisitType,
+} from "@/lib/home-visit";
 
 type Props = {
   services: Array<CalService & PricingItem>;
@@ -16,6 +23,14 @@ type Props = {
   } | null;
   onServiceChange: (id: BookServiceId) => void;
   onToggleFocusArea: (area: FocusArea) => void;
+  visitType: VisitType;
+  homeAddressLine: string;
+  homePostcode: string;
+  /** Validation message for the home-visit fields, shown when Continue is blocked. */
+  visitError?: string | null;
+  onVisitTypeChange: (next: VisitType) => void;
+  onHomeAddressLineChange: (value: string) => void;
+  onHomePostcodeChange: (value: string) => void;
   onContinue: () => void;
   titleRef?: RefObject<HTMLHeadingElement | null>;
 };
@@ -33,6 +48,13 @@ export function BookingStepService({
   bookingContext,
   onServiceChange,
   onToggleFocusArea,
+  visitType,
+  homeAddressLine,
+  homePostcode,
+  visitError,
+  onVisitTypeChange,
+  onHomeAddressLineChange,
+  onHomePostcodeChange,
   onContinue,
   titleRef
 }: Props) {
@@ -92,6 +114,73 @@ export function BookingStepService({
             );
           })}
         </div>
+
+        <p className="book-focus-eyebrow" id="visit-type-label">
+          How would you like to be seen?
+        </p>
+        <div className="book-chip-row" role="radiogroup" aria-labelledby="visit-type-label">
+          {(Object.keys(VISIT_TYPE_LABELS) as VisitType[]).map((type) => {
+            const selected = visitType === type;
+            return (
+              <label key={type} className={`book-chip${selected ? " is-selected" : ""}`} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                <input
+                  type="radio"
+                  name="visit-type"
+                  value={type}
+                  checked={selected}
+                  onChange={() => onVisitTypeChange(type)}
+                />
+                {VISIT_TYPE_LABELS[type]}
+              </label>
+            );
+          })}
+        </div>
+
+        {visitType === "home" ? (
+          <div className="book-fields" style={{ marginTop: 12 }}>
+            {visitError ? (
+              <p className="book-error book-field-full" role="alert">
+                {visitError}
+              </p>
+            ) : null}
+            <div className="book-field book-field-full">
+              <label className="book-label" htmlFor="book-home-address">
+                Address
+              </label>
+              <input
+                id="book-home-address"
+                className="book-input"
+                type="text"
+                autoComplete="street-address"
+                required
+                maxLength={HOME_ADDRESS_MAX}
+                value={homeAddressLine}
+                onChange={(e) => onHomeAddressLineChange(e.target.value)}
+                aria-describedby="book-home-hint"
+              />
+            </div>
+            <div className="book-field">
+              <label className="book-label" htmlFor="book-home-postcode">
+                Postcode
+              </label>
+              <input
+                id="book-home-postcode"
+                className="book-input"
+                type="text"
+                autoComplete="postal-code"
+                autoCapitalize="characters"
+                required
+                maxLength={HOME_POSTCODE_MAX}
+                value={homePostcode}
+                onChange={(e) => onHomePostcodeChange(e.target.value)}
+                aria-describedby="book-home-hint"
+              />
+            </div>
+            <p id="book-home-hint" className="book-field-hint book-field-full">
+              {HOME_VISIT_HINT}
+            </p>
+          </div>
+        ) : null}
 
         <p className="book-focus-eyebrow" id="focus-label">
           Focus area (optional)

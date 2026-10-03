@@ -27,9 +27,16 @@ import { PasswordInput } from "@/components/password-input";
 import { AssessmentWizard } from "@/components/assessment-wizard";
 import { guestBookingMatches, rememberGuestBooking } from "@/lib/guest-booking";
 
+/** What step 1 chose: video (UK-wide) or a Glasgow-area home visit with its (already validated) address. */
+export type BookingVisit =
+  | { visitType: "video" }
+  | { visitType: "home"; homeAddressLine: string; homePostcode: string };
+
 type Props = {
   service: CalService & PricingItem;
   focusAreas: FocusArea[];
+  /** Defaults to a video call when omitted. */
+  visit?: BookingVisit;
   user: User | null | undefined;
   selectedSlot: string | null;
   onSelectSlot: (iso: string | null) => void;
@@ -115,6 +122,7 @@ async function startGuestSession(firebaseAuth: Auth, email: string): Promise<Use
 export function BookingStepTime({
   service,
   focusAreas,
+  visit = { visitType: "video" },
   user,
   selectedSlot,
   onSelectSlot,
@@ -559,6 +567,7 @@ export function BookingStepTime({
         service_id: service.id,
         amount_pence: checkoutAmountPence,
         discount_code: discountApplied ? discountCode.trim() : "",
+        visit_type: visit.visitType,
       });
       const res = await fetch("/api/checkout/create", {
         method: "POST",
@@ -570,6 +579,10 @@ export function BookingStepTime({
           email: checkoutInfo.email,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           focusAreas,
+          visitType: visit.visitType,
+          ...(visit.visitType === "home"
+            ? { homeAddressLine: visit.homeAddressLine, homePostcode: visit.homePostcode }
+            : {}),
           ...(discountApplied ? { discountCode: discountCode.trim() } : {}),
           ...(assessmentFormId
             ? {
