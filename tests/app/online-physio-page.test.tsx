@@ -5,6 +5,7 @@ import OnlinePhysioPage, {
 } from "@/app/online-physiotherapy-for/[slug]/page";
 import { onlinePhysioPages } from "@/lib/online-physio-pages";
 import { initialAssessmentPrice } from "@/lib/site-data";
+import { PAGE_DISCLAIMER } from "@/lib/exercise-disclaimer";
 
 describe("app/online-physiotherapy-for/[slug]", () => {
   it("emits one param per record", () => {
@@ -34,6 +35,9 @@ describe("app/online-physiotherapy-for/[slug]", () => {
       expect(book).not.toBeNull();
       expect(book!.textContent).toContain(`£${initialAssessmentPrice}`);
       expect(container.textContent).not.toContain("{INITIAL_PRICE}");
+      const notes = container.querySelectorAll("[data-page-disclaimer]");
+      expect(notes.length).toBe(1);
+      expect(notes[0]!.textContent).toBe(PAGE_DISCLAIMER);
     });
 
     it(`builds ${p.slug} metadata with a relative canonical`, async () => {

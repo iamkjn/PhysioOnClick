@@ -38,7 +38,7 @@ const faqItems = [
   {
     question: "Do you offer neurological physiotherapy for Glasgow patients?",
     answer:
-      "Yes, by video or as a home visit in the Glasgow area, with a family member or carer welcome to join. Sessions cover stroke recovery, Parkinson's-related mobility, balance and falls risk. We ask for clearance from your GP or specialist team before starting neurological physiotherapy, and we'll tell you at triage if another service would suit you better."
+      "Yes, by video or as a home visit in the Glasgow area, with a family member or carer welcome to join. Sessions cover stroke recovery, Parkinson's-related mobility, balance and falls risk. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. We'll tell you at triage if another service would suit you better."
   }
 ];
 
@@ -105,7 +105,7 @@ export default function GlasgowPage() {
               <Link href="/services/neurological-rehabilitation" prefetch>
                 Neurological physiotherapy
               </Link>{" "}
-              by video or home visit, for stroke, Parkinson&rsquo;s and balance problems
+              by video or home visit, for stroke, Parkinson&rsquo;s and balance problems. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.
             </li>
           </ul>
         </div>

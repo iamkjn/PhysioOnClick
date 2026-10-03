@@ -115,7 +115,7 @@ export const services: Service[] = [
     firstSession:
       "Your first appointment is a 60-minute assessment, by video anywhere in the UK or as a home visit in the Glasgow area. Expect a detailed history of how and when the pain started, a movement and functional screen (by video, simple tests you'll be talked through, like reaching, bending or single-leg balance depending on the area; at a home visit we do the screen with you at your home), and screening questions to rule out anything that needs urgent in-person or medical attention. You'll leave with a working diagnosis, a written explanation of what's driving the pain, and your first exercises to start immediately — not a wait-and-see appointment.",
     typicalOutcomes:
-      "Most mechanical back, neck, shoulder and tendon pain starts responding within 2-3 weekly sessions once the right movement and loading plan is in place — noticeably less pain on the movements that used to trigger it, and more confidence moving normally. Persistent tendon issues and long-standing pain patterns typically need 6-8 weeks of graduated loading to see a durable change, which is why plans are reviewed and adjusted at every session rather than handed over once.",
+      "How quickly things change depends on what is causing your pain and how long you have had it. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan at each session, rather than handing you an exercise sheet once.",
     whenInPersonInstead:
       "A video assessment isn't right for everyone. If there are red-flag symptoms (unexplained weight loss, night pain that doesn't ease, saddle numbness, progressive weakness), suspected fracture, or a condition that needs hands-on joint mobilisation as the primary treatment, you'll be told plainly at triage and pointed toward an in-person clinician or your GP rather than kept in a plan that isn't the right fit. If you're in the Glasgow area, you can choose a home visit instead of a video call.",
     faqs: [
@@ -130,12 +130,12 @@ export const services: Service[] = [
       {
         question: "Can online assessment really diagnose back or shoulder pain?",
         answer:
-          "For the large majority of mechanical pain (not caused by a specific traumatic injury or red-flag condition), a guided movement assessment over video is a well-established and accurate way to reach a working diagnosis and start treatment — hands-on assessment adds relatively little for most of these presentations."
+          "For many muscle and joint problems that are not caused by a specific injury or a red-flag condition, a guided movement assessment by video lets us reach a working diagnosis and start a plan. If we think you need a hands-on examination or tests, we'll tell you plainly."
       },
       {
         question: "How many sessions will I need?",
         answer:
-          "It depends on how long the pain has been present and how it responds to the first phase of loading, but most plans run 4-8 sessions across 6-10 weeks, with exercises to do independently in between."
+          "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Between sessions you'll have exercises to do on your own, and we review the estimate with you as you go."
       }
     ],
     relatedConditionSlugs: [
@@ -177,17 +177,17 @@ export const services: Service[] = [
     firstSession:
       "The first session reviews your surgeon's notes or discharge summary if you have them, your current stage of healing, and any specific precautions from your operation. You'll be guided through a safe range-of-motion and strength check over video, and leave with milestone targets for the next 2, 6 and 12 weeks so you know exactly what “on track” looks like — not just a generic exercise sheet.",
     typicalOutcomes:
-      "Recovery timelines are set by the surgery itself, not the rehab: knee and hip replacement typically follow a 3-6 month arc to confident daily function, ACL reconstruction 9-12 months to full sports clearance, rotator cuff repair 4-6 months. What structured rehab changes is how much strength and confidence you have at each of those milestones — patients who follow a progressive loading plan consistently report less residual stiffness and a faster return to normal walking or activity than those managing alone from a handout.",
+      "Recovery time is set mainly by your operation and your surgical team's advice. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan at each session, within any advice from your surgical team.",
     whenInPersonInstead:
-      "Wound checks, staple/suture removal, and any complication (infection signs, excessive swelling, a fall, or a joint that isn't progressing as expected) need in-person medical review — those go straight back to your surgical team, not managed through an online rehab plan. Online sessions pick up once you're medically cleared to begin exercise-based rehab.",
+      "Wound checks, staple/suture removal, and any complication (infection signs, excessive swelling, a fall, or a joint that isn't progressing as expected) need in-person medical review — those go straight back to your surgical team, not managed through an online rehab plan. Rehab starts once your surgical team has confirmed you have no restrictions.",
     faqs: [
       {
         question: "When should physiotherapy start after surgery?",
-        answer: "This varies by procedure, but early guided rehab is often beneficial."
+        answer: "Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the exercises and advice your hospital team gave you."
       },
       {
         question: "Can online rehab work after surgery?",
-        answer: "Yes, for appropriate patients with clear milestones and clinician review."
+        answer: "For some people, once their surgical team has confirmed they have no restrictions. We review your progress regularly and adjust your plan, and we'll tell you if you need to be seen in person instead."
       },
       {
         question: "What if I'm still on crutches or can't stand for long?",
@@ -195,9 +195,9 @@ export const services: Service[] = [
           "That's normal in early-stage recovery. Sessions are adapted to seated or supported positions where needed — a walking assessment isn't required to start effective early-stage strength and range-of-motion work."
       },
       {
-        question: "Will you communicate with my surgeon or NHS physio team?",
+        question: "Do you work with my surgeon or NHS physio team?",
         answer:
-          "With your consent, yes — a written summary of your rehab plan and progress can be shared so your wider care team stays informed, particularly around any milestone check-ups."
+          "No. We're a separate private service and we don't coordinate your care with your surgical or NHS team. Keep your GP or specialist team informed about your treatment. Follow your surgeon's advice."
       }
     ],
     relatedConditionSlugs: [
@@ -233,17 +233,22 @@ export const services: Service[] = [
     firstSession:
       "The first session establishes your current mobility, balance, and functional goals — what you want to be able to do again, whether that's walking to the shops, managing stairs, or returning to a hobby. You'll be guided through safe, seated or supported movement checks over video, and a family member or carer is welcome to join. You'll leave with a short daily practice routine and a clear review date to track change against.",
     typicalOutcomes:
-      "Progress in neurological rehab is typically measured in small, compounding gains rather than a single milestone — improved balance confidence and reduced fall-catches within a few weeks is common, with functional mobility gains building over 8-12 weeks of consistent practice. Recovery trajectories vary a great deal by condition and stage, so reviews focus on function you can feel (walking further, needing less support) rather than a fixed timeline.",
+      "Recovery varies a great deal by condition and stage, so we don't give a fixed timeline. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan, and reviews focus on function you can feel (walking further, needing less support).",
     whenInPersonInstead:
-      "Sudden new neurological symptoms (facial drooping, sudden weakness, slurred speech, a fall with injury) are a medical emergency, not a physiotherapy appointment — call 999 or attend A&E. Online rehab is for guided, ongoing practice once you're medically stable and any acute care has been arranged; it works alongside, not instead of, your wider medical and neuro-rehab team.",
+      "Sudden new neurological symptoms (facial drooping, sudden weakness, slurred speech, a fall with injury) are a medical emergency, not a physiotherapy appointment — call 999 or attend A&E. Online rehab is for guided, ongoing practice once you're medically stable and any acute care has been arranged; it doesn't replace your wider medical or NHS rehab team. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.",
     faqs: [
       {
         question: "Is neurological rehab suitable online?",
-        answer: "Many reviews and guided programmes can be delivered remotely with support."
+        answer: "For some people who are medically stable. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. Triage at booking confirms whether video suits you."
       },
       {
-        question: "Do you liaise with other clinicians?",
-        answer: "Yes, with consent we can work alongside your wider healthcare team."
+        question: "Do you work with my other clinicians?",
+        answer: "No. We're a separate private service and we don't coordinate care with your NHS or specialist team. Keep your GP or specialist team informed about your treatment."
+      },
+      {
+        question: "Do I need clearance before starting?",
+        answer:
+          "Yes. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. If you have MS and have a relapse, we pause sessions until your GP or MS team clears you to restart."
       },
       {
         question: "Can a family member or carer join the sessions?",
@@ -288,7 +293,7 @@ export const services: Service[] = [
     firstSession:
       "The first session is a conversation as much as an assessment — understanding your child's history, what's prompting the referral, and what a good outcome looks like for your family. Movement is assessed through play-based tasks you'll help guide over video, kept short and pitched to your child's age and attention span. You'll leave with simple, playful home activities rather than a clinical exercise list.",
     typicalOutcomes:
-      "Change in paediatric physiotherapy is tracked against real-world function — new coordination or confidence in play, easier movement at school, or steady progress on a specific developmental goal — rather than a single test score. Most families see the first signs of progress within 4-6 weeks of consistent home practice, with review sessions used to adjust activities as your child grows and improves.",
+      "Change in paediatric physiotherapy is tracked against real-world function — new coordination or confidence in play, easier movement at school, or steady progress on a specific developmental goal — rather than a single test score. How quickly things change depends on your child's condition, and your physiotherapist will give you an estimate after the assessment. We review progress regularly and adjust activities as your child grows.",
     whenInPersonInstead:
       "Any new or worsening symptom that could indicate an urgent medical issue (sudden loss of a previously gained skill, unexplained pain, signs of injury) needs GP or A&E assessment, not an online physiotherapy appointment. Very young infants and complex multi-system conditions are often better served by an in-person paediatric specialist team — this will be discussed openly at triage before booking.",
     faqs: [
@@ -337,7 +342,7 @@ export const services: Service[] = [
     firstSession:
       "You'll be guided through a structured walking and mobility assessment over video — filmed from a distance that captures your full gait, plus any mobility aid you currently use. Combined with your history (recent surgery, a fall, or gradual change in confidence), this identifies exactly which part of the walking pattern needs attention, and whether the current aid or support is still right for you.",
     typicalOutcomes:
-      "Most people notice improved walking confidence and reduced hesitation on stairs or uneven ground within 3-4 weeks of targeted strength and balance work. Where a mobility aid review is part of the plan, that adjustment often has an immediate, noticeable effect — the exercise programme is what sustains the improvement afterward.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your walking, balance and confidence regularly and adjust your strength and balance plan.",
     whenInPersonInstead:
       "A recent fall with injury, sudden new weakness, or acute pain affecting walking needs urgent in-person medical assessment first. Formal falls-risk tools that require hands-on testing (or a home hazard assessment) are best done by an in-person team; a video assessment focuses on the movement and strength side, which is often the larger and most modifiable factor.",
     faqs: [
@@ -388,13 +393,13 @@ export const services: Service[] = [
     firstSession:
       "This is the general entry point if you're not sure which specific service fits — the first video call assesses your situation, confirms it's appropriate for remote care, and sets up secure document sharing so exercise videos, progress notes and any reports are all in one place between sessions. If your situation is better matched to one of the specific services above, you'll be pointed there instead.",
     typicalOutcomes:
-      "Structured online rehab works best as an ongoing loop: a weekly or fortnightly review call adjusts the plan based on what's improved and what hasn't, rather than a static exercise sheet you're left to interpret alone. Most patients see steady, trackable progress against their own baseline within the first month, with the review cadence stepping down as independence increases.",
+      "Structured online rehab works best as an ongoing loop: a weekly or fortnightly review call adjusts the plan based on what's improved and what hasn't, rather than a static exercise sheet you're left to interpret alone. We review your progress regularly and adjust your plan, with the review cadence stepping down as independence increases.",
     whenInPersonInstead:
       "If triage identifies red-flag symptoms, a condition needing hands-on treatment as the primary intervention, or a situation better served by one of the specific services above (post-surgical, neurological, paediatric), you'll be redirected there or to an in-person clinician rather than kept in a general programme that isn't the right fit.",
     faqs: [
       {
         question: "Is online physio effective?",
-        answer: "Yes, many musculoskeletal and rehab concerns respond well to remote assessment and guidance."
+        answer: "It depends on your condition. A video assessment lets us check whether remote care suits you, and we'll tell you if you need to be seen in person."
       },
       {
         question: "Do I still get exercises and progress reviews?",

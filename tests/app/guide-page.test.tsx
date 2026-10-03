@@ -3,6 +3,7 @@ import GuidePage, { generateMetadata, generateStaticParams } from "@/app/guides/
 import GuidesIndex from "@/app/guides/page";
 import { guides } from "@/lib/guides";
 import { initialAssessmentPrice } from "@/lib/site-data";
+import { PAGE_DISCLAIMER } from "@/lib/exercise-disclaimer";
 
 const SLUG = guides[0]!.slug;
 
@@ -17,6 +18,15 @@ describe("app/guides/[slug]", () => {
     expect(container.querySelectorAll("[data-sources] a").length).toBe(guides[0]!.sources.length);
     expect(container.textContent).toContain(`£${initialAssessmentPrice}`);
     expect(container.textContent).not.toContain("{INITIAL_PRICE}");
+  });
+  it("renders the shared page disclaimer exactly once on every guide", async () => {
+    for (const g of guides) {
+      const { container, unmount } = render(await GuidePage({ params: Promise.resolve({ slug: g.slug }) }));
+      const notes = container.querySelectorAll("[data-page-disclaimer]");
+      expect(notes.length, g.slug).toBe(1);
+      expect(notes[0]!.textContent, g.slug).toBe(PAGE_DISCLAIMER);
+      unmount();
+    }
   });
   it("builds metadata with a relative canonical", async () => {
     const meta = await generateMetadata({ params: Promise.resolve({ slug: SLUG }) });

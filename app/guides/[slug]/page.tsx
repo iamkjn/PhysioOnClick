@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { allGuideSlugs, getGuide } from "@/lib/guides";
+import { PAGE_DISCLAIMER } from "@/lib/exercise-disclaimer";
 import { initialAssessmentPrice, withPrices } from "@/lib/site-data";
 import { breadcrumbs, guideWebPage } from "@/lib/structured-data";
 import { ByLine } from "@/components/exercise-library/by-line";
@@ -113,6 +114,10 @@ export default async function GuidePage({
           <h2>Common questions</h2>
           <FaqAccordion faqs={faqs} />
         </section>
+
+        <p className="exlib-selftest-disclaimer" data-page-disclaimer role="note">
+          {PAGE_DISCLAIMER}
+        </p>
 
         <section data-sources>
           <h2>Sources</h2>

@@ -38,7 +38,7 @@ export const guides: Guide[] = [
     seoDescription:
       "What a private physio session costs in the UK, what changes the price, how online sessions compare, and ways to pay less, with sources and dates checked.",
     answer:
-      "At the four UK providers we checked, prices ranged from 44 pounds (a 30-minute online session) to 125 pounds (a first appointment), depending on where you go, how long it lasts and whether it is in person or online. At PhysioOnClick, a 60-minute assessment is {INITIAL_PRICE} and a 30-minute follow-up is {FOLLOW_UP_PRICE}, by video or as a home visit in the Glasgow area.",
+      "Among the four UK providers we checked in October 2026, prices ranged from 44 pounds (a 30-minute online session) to 125 pounds (a first appointment), depending on where you go, how long it lasts and whether it is in person or online. At PhysioOnClick, a 60-minute assessment is {INITIAL_PRICE} and a 30-minute follow-up is {FOLLOW_UP_PRICE}, by video or as a home visit in the Glasgow area.",
     sections: [
       {
         heading: "What changes the price of a physio session",
@@ -49,12 +49,11 @@ export const guides: Guide[] = [
         ]
       },
       {
-        heading: "Typical prices at named UK providers",
+        heading: "Typical prices at UK providers",
         paragraphs: [
-          "To give you a real picture, we checked the public price pages of four UK providers on 1 October 2026. Prices change, so treat these as a snapshot and check the provider's own page before you book.",
-          "Nuffield Health in Glasgow lists in-person physiotherapy for non-members at 72 pounds for a 45-minute initial assessment and 49 pounds for a 30-minute follow-up. Complete Physio, an online service, lists 125 pounds for a 45-minute new patient appointment, with follow-ups at 95 pounds for 30 minutes.",
-          "PhysioFast Online lists 65 pounds for a 45-minute video appointment, which it suggests for a first visit, and 47 pounds for 30 minutes. Ascenti lists 44 pounds for a 30-minute online session.",
-          "So first appointments in this sample run from 44 pounds for a short online session to 125 pounds for a longer online one. Prices vary widely, and the sessions are not identical, so compare like with like."
+          "To give you a real picture, we checked the public price pages of four UK providers in October 2026. We have not named them. Prices change, so treat these figures as a snapshot and check a provider's own page before you book.",
+          "Among the four UK providers we checked in October 2026, first appointments ranged from 44 pounds for a 30-minute online session to 125 pounds for a 45-minute online appointment. The one in-person clinic in our sample charged 72 pounds for a 45-minute first assessment and 49 pounds for a 30-minute follow-up.",
+          "Prices vary widely, and the sessions are not identical: some of the prices we saw were for 30 minutes and some for 45 minutes. Compare like with like, and look at what is included as well as the headline figure."
         ]
       },
       {
@@ -72,14 +71,14 @@ export const guides: Guide[] = [
           "Bundles. If you expect to need several sessions, we offer 4 and 8 session bundles, which are a block of sessions booked and paid for together. Work out which option suits you by comparing them with single sessions on the [pricing page](/pricing).",
           "NHS self-referral. Access to NHS musculoskeletal physiotherapy depends on your local health board, which decides whether you can refer yourself or need a referral from a GP. NHS Greater Glasgow and Clyde, for example, lets eligible adults refer themselves. The wait can be long, though. Public Health Scotland reports that between August 2025 and March 2026, on average 52.4% of musculoskeletal patients were seen within four weeks, against a target of 90%. Many people use the NHS for some needs and a private service when they want to be seen sooner.",
           "Health insurance. Some policies pay towards physiotherapy, often with conditions such as pre-authorisation or policy limits. Cover and rules vary, so check with your insurer before you book (see [claiming physiotherapy on health insurance](/guides/claim-physiotherapy-on-health-insurance)). We cannot promise that any insurer will pay.",
-          "Doing the exercises matters as much as the number of sessions. In our plans, we ask you to do your exercises between appointments, and we review progress as we go."
+          "In our plans, we ask you to do your exercises between appointments, and we review progress as we go."
         ]
       }
     ],
     faqs: [
       {
         q: "How much is a physio session in the UK?",
-        a: "At the four providers we checked on 1 October 2026, prices ranged from 44 pounds (a 30-minute online session) to 125 pounds (a first appointment). In the prices we checked, follow-ups cost less than first appointments. Our own online assessment is {INITIAL_PRICE} and a follow-up is {FOLLOW_UP_PRICE}."
+        a: "Among the four UK providers we checked in October 2026, prices ranged from 44 pounds (a 30-minute online session) to 125 pounds (a first appointment). In the prices we checked, follow-ups cost less than first appointments. Our own online assessment is {INITIAL_PRICE} and a follow-up is {FOLLOW_UP_PRICE}."
       },
       {
         q: "Is online physiotherapy cheaper than seeing a physio in person?",
@@ -99,22 +98,6 @@ export const guides: Guide[] = [
       }
     ],
     sources: [
-      {
-        label: "Nuffield Health: Glasgow physiotherapy prices",
-        url: "https://www.nuffieldhealth.com/physiotherapy/glasgow"
-      },
-      {
-        label: "Complete Physio: online physiotherapy fees",
-        url: "https://complete-physio.co.uk/online-physiotherapy/"
-      },
-      {
-        label: "PhysioFast Online: appointment prices",
-        url: "https://physiofastonline.co.uk/"
-      },
-      {
-        label: "Ascenti: online appointments",
-        url: "https://www.ascenti.co.uk/article/online-appointments"
-      },
       {
         label: "Public Health Scotland: AHP musculoskeletal waiting times, data to 31 March 2026",
         url: "https://www.publichealthscotland.scot/publications/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland/allied-health-professionals-musculoskeletal-waiting-times-in-nhs-scotland-quarterly-and-monthly-data-to-31-march-2026/"
@@ -327,24 +310,25 @@ export const guides: Guide[] = [
     title: "How many physiotherapy sessions will I need?",
     seoTitle: "How Many Physio Sessions Will I Need? | PhysioOnClick",
     seoDescription:
-      "Honest ranges for how many physiotherapy sessions people need, what speeds up progress, when it is fine to stop, and how our session bundles work.",
+      "How many physiotherapy sessions you may need, why it depends on your condition, what NHS and NICE guidance says, and how our session bundles work.",
     answer:
-      "It depends on your problem. At PhysioOnClick most plans run 4 to 8 sessions across 6 to 10 weeks, with exercises to do on your own in between. We review progress after 2 to 3 sessions and adjust the plan. Longer-standing problems and recovery after surgery usually take longer.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress at follow-ups and adjust the plan, and you have exercises to do on your own in between. The NHS and NICE give some general reference points for common problems, which we set out below, but they are not a promise for you.",
     sections: [
       {
-        heading: "Typical ranges by situation",
+        heading: "How we estimate the number of sessions",
         paragraphs: [
           "There is no single number that fits everyone. How many sessions you need depends on how long the problem has been there, what is causing it, and how well it responds to the first few weeks of exercise.",
-          "For most back, neck, shoulder and tendon pain, our plans usually run 4 to 8 sessions across 6 to 10 weeks. In our experience of these problems, pain on the movements that used to trigger it often starts to ease within 2 to 3 weekly sessions, once the right movement and loading plan is in place.",
-          "For persistent tendon problems and long-standing pain, our plans build up the load gradually over 6 to 8 weeks, so we review and adjust the plan at each session.",
-          "After surgery the timeline is set mainly by the operation. Our service guidance puts knee and hip replacement at roughly 3 to 6 months to confident daily function, rotator cuff repair at 4 to 6 months, and ACL reconstruction at 9 to 12 months to full sports clearance. These are recovery timelines, not session counts, and your surgical team's advice always comes first.",
-          "For neurological conditions, progress builds in small steps. Better balance confidence within a few weeks is common, with gains in everyday movement building over 8 to 12 weeks of regular practice."
+          "It depends on your condition; your physiotherapist will give you an estimate after your assessment. We do not quote a fixed number of sessions or weeks before we have assessed you, and we review the estimate with you at each follow-up.",
+          "NICE guidance on low back pain and sciatica suggests that clinicians think early on about how likely each person is to get better quickly. It suggests lighter support, such as reassurance, advice to keep active and help to manage it yourself, for people likely to improve quickly, and more support, such as exercise programmes, for people at higher risk of a slower recovery. That guidance covers low back pain and sciatica only.",
+          "For osteoarthritis, NICE guidance recommends telling people that joint pain may go up for a while when they start exercising, and that regular exercise kept up over the long term brings more benefit. That is one reason we focus on a routine you can keep going, rather than on a set number of appointments.",
+          "After surgery, recovery is set mainly by the operation and by your surgical team. Rehab starts once your surgical team has confirmed you have no restrictions. The NHS says full recovery from a knee or hip replacement may take several months, and your surgical team's advice always comes first.",
+          "For neurological conditions, change differs a great deal between people, so we do not give a timeline. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. In our approach we review change you can notice, such as walking further or needing less support, rather than counting sessions."
         ]
       },
       {
         heading: "What the NHS says about timescales",
         paragraphs: [
-          "The NHS gives some useful reference points. Back pain often improves on its own within a few weeks, and sciatica usually gets better in a few weeks to a few months.",
+          "As general information, the NHS gives some reference points. Back pain often improves on its own within a few weeks, and sciatica tends to ease over a period of weeks to months.",
           "For shoulder pain, the NHS suggests trying shoulder exercises for 6 to 8 weeks. Frozen shoulder can stay painful and stiff for months, and physiotherapy for it usually lasts at least 6 weeks. For tennis elbow, it suggests physiotherapy may help if symptoms have not improved after 6 weeks of home treatment.",
           "These are general guides rather than promises. If your problem is not behaving like the usual pattern, that is a good reason to book a review rather than keep waiting."
         ]
@@ -352,17 +336,17 @@ export const guides: Guide[] = [
       {
         heading: "What speeds up progress",
         paragraphs: [
-          "The biggest factor is what you do between sessions. In our plans we ask you to do a short routine of exercises between appointments, and our [exercise library](/exercises) has videos and instructions you can follow at home.",
+          "In our plans, much of the work happens between sessions. We ask you to do a short routine of exercises between appointments, and our [exercise library](/exercises) has videos and instructions you can follow at home.",
           "We start with a clear explanation of what is going on, so that you know why each exercise is in your plan.",
           "Tell us what is hard to do, and we will adjust the plan so that it fits into your week."
         ]
       },
       {
-        heading: "When it is fine to stop",
+        heading: "When to stop",
         paragraphs: [
-          "You can stop when you can do the things you came for, such as walking, lifting, sleeping or playing sport, and you know what to do if it flares up. You do not need to keep booking sessions once you are there.",
+          "In our approach, we talk with you about finishing once you can do the things you came for, such as walking, lifting, sleeping or playing sport, and you know what to do if it flares up. You do not need to keep booking sessions once you are there.",
           "If you are not improving after the first few weeks, or things are getting worse, tell us. We may change the plan, or advise you to see a GP or someone who can examine you in person.",
-          "Some people book a single follow-up after a few weeks to check they are on track. That is a sensible way to use a short appointment."
+          "Some people book a single follow-up after a few weeks to check they are on track."
         ]
       },
       {
@@ -376,7 +360,7 @@ export const guides: Guide[] = [
     faqs: [
       {
         q: "How many physio sessions do I need for back pain?",
-        a: "It varies. Most of our plans for back, neck, shoulder and tendon pain run 4 to 8 sessions across 6 to 10 weeks. The NHS says back pain often improves on its own within a few weeks, and sciatica usually gets better in a few weeks to a few months."
+        a: "It depends on your condition; your physiotherapist will give you an estimate after your assessment. As general information, the NHS says back pain often improves on its own within a few weeks, and sciatica tends to ease over weeks to months."
       },
       {
         q: "Is one physio session enough?",
@@ -384,7 +368,7 @@ export const guides: Guide[] = [
       },
       {
         q: "How long does recovery after surgery take?",
-        a: "It depends on the operation. Typical arcs are 3 to 6 months for knee and hip replacement, 4 to 6 months for rotator cuff repair and 9 to 12 months to full sports clearance after ACL reconstruction. Follow your surgeon's guidance."
+        a: "It depends on the operation and on you. The NHS says recovery from a knee or hip replacement may take several months. Rehab starts once your surgical team has confirmed you have no restrictions. Follow your surgeon's guidance."
       },
       {
         q: "Do session bundles save money?",
@@ -396,7 +380,23 @@ export const guides: Guide[] = [
       { label: "NHS: sciatica", url: "https://www.nhs.uk/conditions/sciatica/" },
       { label: "NHS: shoulder pain", url: "https://www.nhs.uk/symptoms/shoulder-pain/" },
       { label: "NHS: frozen shoulder", url: "https://www.nhs.uk/conditions/frozen-shoulder/" },
-      { label: "NHS: tennis elbow", url: "https://www.nhs.uk/conditions/tennis-elbow/" }
+      { label: "NHS: tennis elbow", url: "https://www.nhs.uk/conditions/tennis-elbow/" },
+      {
+        label: "NICE NG59: low back pain and sciatica in over 16s",
+        url: "https://www.nice.org.uk/guidance/ng59/chapter/Recommendations"
+      },
+      {
+        label: "NICE NG226: osteoarthritis in over 16s",
+        url: "https://www.nice.org.uk/guidance/ng226/chapter/Recommendations"
+      },
+      {
+        label: "NHS: recovering from a knee replacement",
+        url: "https://www.nhs.uk/tests-and-treatments/knee-replacement/recovery/"
+      },
+      {
+        label: "NHS: recovering from a hip replacement",
+        url: "https://www.nhs.uk/tests-and-treatments/hip-replacement/recovering-from-a-hip-replacement/"
+      }
     ],
     related: [
       { label: "Pricing and session bundles", href: "/pricing" },
@@ -744,7 +744,7 @@ export const guides: Guide[] = [
         heading: "Sudden neurological symptoms and complex presentations",
         paragraphs: [
           "Our neurological service guidance treats sudden new symptoms such as facial drooping, sudden weakness, slurred speech or a fall with injury as a medical emergency. Call 999 or go to A&E. It is not a physiotherapy appointment.",
-          "In our neurological rehabilitation guidance, online sessions are for ongoing guided practice once you are medically stable and acute care is arranged, alongside your wider medical team. If we think you need hands-on assessment, we will tell you at triage. See our [neurological rehabilitation service](/services/neurological-rehabilitation) for more."
+          "In our neurological rehabilitation guidance, online sessions are for ongoing guided practice once you are medically stable and urgent hospital care is arranged. They do not replace your NHS or specialist team. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. If we think you need hands-on assessment, we will tell you at triage. See our [neurological rehabilitation service](/services/neurological-rehabilitation) for more."
         ]
       },
       {
@@ -757,7 +757,7 @@ export const guides: Guide[] = [
       {
         heading: "After surgery and with falls or mobility problems",
         paragraphs: [
-          "Our post-surgical guidance sends wound checks, removal of stitches or staples, and any complication back to your surgical team for in-person review. Online sessions begin once you are medically cleared to start exercise-based rehab. See [post-surgical rehabilitation](/services/post-surgical-rehabilitation).",
+          "Our post-surgical guidance sends wound checks, removal of stitches or staples, and any complication back to your surgical team for in-person review. Rehab starts once your surgical team has confirmed you have no restrictions. See [post-surgical rehabilitation](/services/post-surgical-rehabilitation).",
           "For gait and mobility, our service guidance says a recent fall with injury, sudden weakness or acute pain affecting walking needs urgent in-person medical assessment first. It also says falls-risk tools that need hands-on testing, or a home hazard check, are better done in person. See our [gait and mobility assessment](/services/gait-and-mobility-assessment)."
         ]
       },
@@ -840,14 +840,12 @@ export const guides: Guide[] = [
         ]
       },
       {
-        heading: "Prices at some UK providers (checked 2 October 2026)",
+        heading: "Prices at UK providers we checked (October 2026)",
         paragraphs: [
-          "We read the public price pages of four providers on 2 October 2026. This is a snapshot of published facts, not a league table, and it is not a complete list of UK providers. Prices may have changed since we checked, so look at each provider's own page before you book.",
-          "Complete Physio, an online service, lists 125 pounds for a new patient appointment of 45 minutes for self-funding patients. Its follow-ups are 95 pounds for 30 minutes, 125 pounds for 45 minutes and 160 pounds for 60 minutes. Its page says appointments take place by private video call.",
-          "PhysioFast Online lists 65 pounds for 45 minutes, which it suggests for a first appointment, and 47 pounds for 30 minutes. Its page describes online video appointments.",
-          "Ascenti's page lists 44 pounds for 30 minutes of online physiotherapy. Its page describes live one-to-one video consultations through its app.",
-          "Nuffield Health in Glasgow lists in-person physiotherapy for non-members at 72 pounds for a 45-minute initial assessment and 49 pounds for a 30-minute follow-up. We have labelled this price in person. The price page we read did not mention video, so we have not compared it on video.",
-          "When you compare these, remember the session lengths differ: some of the prices above are for 30 minutes and some for 45 minutes. The first appointments we found range from 44 pounds for a 30-minute online session to 125 pounds for a 45-minute online one."
+          "We read the public price pages of four UK providers on 2 October 2026. We do not name them here. This is a snapshot of published facts, not a league table, and it is not a complete list of UK providers. Prices may have changed since we checked, so look at any provider's own page before you book.",
+          "Among the four UK providers we checked in October 2026, first appointments ranged from 44 pounds for a 30-minute online session to 125 pounds for a 45-minute online appointment. Three of the four described video appointments on their pages.",
+          "The fourth provider's price page did not mention video, so we have labelled its price in person: 72 pounds for a 45-minute first assessment and 49 pounds for a 30-minute follow-up.",
+          "When you compare prices, remember the session lengths differ: some of the prices we found are for 30 minutes and some for 45 minutes. A lower headline price may buy a shorter session, so check the length and what is included."
         ]
       },
       {
@@ -884,11 +882,7 @@ export const guides: Guide[] = [
         label: "CSP: choose a Chartered physiotherapist",
         url: "https://www.csp.org.uk/public-patient/find-physiotherapist/why-chartered-physiotherapist"
       },
-      { label: "CSP: find a physiotherapist", url: "https://www.csp.org.uk/public-patient/find-physiotherapist" },
-      { label: "Complete Physio: online physiotherapy fees", url: "https://complete-physio.co.uk/online-physiotherapy/" },
-      { label: "PhysioFast Online: appointment prices", url: "https://physiofastonline.co.uk/" },
-      { label: "Ascenti: online appointments", url: "https://www.ascenti.co.uk/article/online-appointments" },
-      { label: "Nuffield Health: Glasgow physiotherapy prices", url: "https://www.nuffieldhealth.com/physiotherapy/glasgow" }
+      { label: "CSP: find a physiotherapist", url: "https://www.csp.org.uk/public-patient/find-physiotherapist" }
     ],
     related: [
       { label: "Pricing and session bundles", href: "/pricing" },

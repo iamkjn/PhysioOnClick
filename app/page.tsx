@@ -214,7 +214,7 @@ export default async function HomePage() {
           </details>
           <details>
             <summary>Is online physiotherapy actually effective?</summary>
-            <p>For the large majority of musculoskeletal and rehab concerns &mdash; back, neck, shoulder, tendon pain, and post-surgical recovery &mdash; a guided video assessment reaches an accurate working diagnosis and produces the same structured exercise-based treatment that in-person care would. See <Link href="/glasgow-physiotherapist" prefetch>how this works for Glasgow patients specifically</Link>.</p>
+            <p>It depends on your condition. For many muscle and joint problems, a guided video assessment lets us reach a working diagnosis and set up an exercise-based plan, and we review your progress regularly and adjust it. If we think you need to be seen in person, we&rsquo;ll tell you plainly. See <Link href="/glasgow-physiotherapist" prefetch>how this works for Glasgow patients specifically</Link>.</p>
           </details>
           <details>
             <summary>What if online care isn&rsquo;t right for my situation?</summary>

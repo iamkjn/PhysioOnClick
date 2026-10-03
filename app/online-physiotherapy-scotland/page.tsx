@@ -105,7 +105,7 @@ export default function ScotlandPage() {
             </li>
             <li>
               <Link href="/services/neurological-rehabilitation">Neurological rehabilitation</Link> is also
-              available by video.
+              available by video. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.
             </li>
           </ul>
         </div>

@@ -23,3 +23,16 @@ export const SELF_TEST_DISCLAIMER = [
 ].join(" ");
 
 export const EXERCISE_DISCLAIMER = EXERCISE_DISCLAIMER_SENTENCES.join(" ");
+
+// Page-level variant for the editorial guides (app/guides/[slug]) and the
+// "online physiotherapy for" landing pages (app/online-physiotherapy-for/[slug]).
+// Rendered once per page by those two route components. Clinical sign-off
+// (Q17/Q18): general information only, no new programme without advice from
+// someone who knows your condition, stop if pain does not settle.
+export const PAGE_DISCLAIMER_SENTENCES = [
+  "This information is general and not a substitute for an assessment.",
+  "Don't start a new exercise programme without advice from a physiotherapist or doctor who knows your condition.",
+  "If an exercise causes pain that doesn't settle, stop and seek advice.",
+] as const;
+
+export const PAGE_DISCLAIMER = PAGE_DISCLAIMER_SENTENCES.join(" ");

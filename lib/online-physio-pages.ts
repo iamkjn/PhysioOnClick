@@ -69,7 +69,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "A first plan usually has three parts: advice on staying active and finding positions that settle the leg, a few gentle movements aimed at calming nerve sensitivity, and strengthening for the back, hips and legs that you build up over time. We adjust it at each follow-up depending on what your symptoms are doing.",
-      "Our plans for back pain and sciatica commonly run 4 to 8 sessions across 6 to 10 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a guide only. Some people need fewer sessions and some need more, and we review it with you rather than booking a block in advance.",
+      "How many sessions you need for sciatica is not something we can say before we have seen you. It depends on your condition; your physiotherapist will give you an estimate after your assessment. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. We review the estimate with you at each follow-up rather than booking a block in advance.",
       "NICE advises that imaging is not routinely offered in a non-specialist setting for low back pain with or without sciatica, so we do not need a scan to begin a plan. If your symptoms change in a way that suggests you need one, or tests, we will explain that and suggest you speak to your GP.",
       "We will also talk about the things around the pain, such as sleep, work set-up, driving and how to build walking back up. For a longer look at how many appointments to expect, see our guide on [how many physiotherapy sessions you may need](/guides/how-many-physiotherapy-sessions-do-i-need).",
     ],
@@ -83,6 +83,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Go to A&E or call 999 if your back pain started after a serious accident, or you have back pain with chest pain or changes in sexual feeling or function.",
       "Do not drive yourself to A&E for any of the above. Ask someone to drive you, or call 999.",
       "Get in-person medical care straight away if weakness in one leg is getting worse.",
+      "NICE guidance on low back pain and sciatica asks clinicians to rule out specific causes, such as cancer, infection, an injury or inflammatory disease. If you are worried your symptoms could have one of these causes, speak to your GP before booking.",
     ],
     faqs: [
       {
@@ -153,7 +154,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "Most plans begin with a short explanation of what is going on, advice on staying active, and a few simple movements chosen after we have watched how your back moves. From there we add strengthening for the trunk, hips and legs, and a walking or activity routine that you build up at your own pace.",
-      "In our plans for lower back pain, a typical course is 3 to 6 sessions over 4 to 8 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. The numbers are a guide, not a promise, and we review progress with you at each follow-up instead of booking a block up front.",
+      "We do not set a number of sessions for lower back pain in advance. It depends on your condition; your physiotherapist will give you an estimate after your assessment. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. We review progress with you at each follow-up instead of booking a block up front.",
       "NICE recommends that manual therapy is not given on its own, and that it should be part of a package that includes exercise. Because a video appointment has no hands-on element at all, exercise and advice are the whole of our approach. If you want a clinician to treat the area by hand, a video service will not be the right fit.",
       "For questions about cost, referrals and insurance, our guide to [private physiotherapy cost in the UK](/guides/private-physiotherapy-cost-uk) is a good place to start, and we cannot promise that any insurer will pay, so check with yours before you book.",
     ],
@@ -166,6 +167,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call 999 or go to A&E if you have back pain with chest pain, or changes in sexual feeling or function.",
       "Call 999 or go to A&E if your back pain started after a serious accident.",
       "Do not drive yourself to A&E for any of the above. Ask someone to drive you, or call 999.",
+      "NICE guidance on low back pain asks clinicians to think about other causes first, such as cancer, infection, an injury or inflammatory disease. If you think your back pain could be linked to one of these, see your GP before you book with us.",
     ],
     faqs: [
       {
@@ -232,7 +234,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "A first plan for neck pain is usually short. We give you two or three gentle movements to repeat through the day, a change or two to your desk or sleeping set-up, and a plan for gradually adding strengthening for the neck, shoulders and upper back as the pain settles.",
-      "In our plans a typical course for neck pain is 2 to 5 sessions across 3 to 6 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a rough guide. Some people need only a couple of appointments and some need longer, and we review it as we go.",
+      "For neck pain, the number of appointments varies from person to person. It depends on your condition; your physiotherapist will give you an estimate after your assessment. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}, and we review the estimate as we go.",
       "Because we cannot do hands-on treatment over video, nothing in your plan depends on us touching your neck. Everything we give you is something you do yourself, which means you keep it going between sessions and after you finish.",
       "If your arm symptoms are the main issue, or they are not following the pattern we expect from the start, we will tell you honestly and discuss whether a GP review is the better next step.",
     ],
@@ -244,6 +246,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call 999 or go to A&E, or call 111 if you are not sure, if you notice changes in your balance or co-ordination.",
       "Call 999 or go to A&E, or call 111 if you are not sure, if your neck pain started after an accident or injury.",
       "Call 999 or go to A&E, or call 111 if you are not sure, if you have dizziness or visual symptoms when you move your neck.",
+      "NICE Clinical Knowledge Summaries, written for GPs, list some neck pain features as red flags that need medical referral: nerve symptoms such as weakness or numbness, feeling generally unwell or feverish, weight loss you cannot explain, pain that does not let up and disturbs your sleep, and a past history of cancer, neck surgery or a raised risk of osteoporosis. If any of these apply, ask your GP for an urgent appointment instead of booking with us. Sudden weakness or numbness, and neck pain after an accident or injury, follow the 999 and A&E lines above.",
       "See a GP if you have pins and needles, or an arm that feels cold, or if your neck pain has not gone after a few weeks.",
       "If you are not sure whether your symptoms are urgent, call 111 or speak to a GP rather than waiting for a video appointment.",
     ],
@@ -267,6 +270,10 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     sources: [
       { label: "NHS: Neck pain", url: "https://www.nhs.uk/symptoms/neck-pain-and-stiff-neck/" },
+      {
+        label: "NICE CKS: Neck pain - non-specific",
+        url: "https://cks.nice.org.uk/topics/neck-pain-non-specific/",
+      },
       { label: "NHS: Heart attack", url: "https://www.nhs.uk/conditions/heart-attack/" },
       { label: "NHS: Stroke symptoms", url: "https://www.nhs.uk/conditions/stroke/symptoms/" },
       {
@@ -306,7 +313,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "Plans for shoulder pain usually start with advice on what to keep doing and what to ease off for now, followed by controlled exercises for the rotator cuff muscles and shoulder blade. As the shoulder copes better, we add reaching, lifting and the particular movements your work or sport needs.",
-      "In our plans a typical course for shoulder pain is 4 to 6 sessions across 6 to 10 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. This is a guide only, and we review it with you at each follow-up.",
+      "Shoulder problems differ a lot, so we do not quote a course length before we have assessed you. It depends on your condition; your physiotherapist will give you an estimate after your assessment. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. We review the estimate with you at each follow-up.",
       "The plan relies on you doing the exercises regularly. The NHS suggests 6 to 8 weeks of shoulder exercises, so we talk early about how to fit them into your day and how to tell whether your shoulder is coping.",
       "Our [rotator cuff exercise library](/exercises/for/rotator-cuff-tendinopathy) shows exercises you may be given, and our guide to [what online physiotherapy cannot do](/guides/what-online-physiotherapy-cannot-do) explains what a video appointment cannot cover.",
     ],
@@ -319,7 +326,9 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Ask for an urgent GP appointment or get help from NHS 111 if your shoulder pain is sudden or very bad, or started after an injury such as a fall.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you have a hot or cold arm, or no feeling in the arm.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you have severe pain in both shoulders.",
+      "Get in-person medical care straight away if your shoulder is red, hot and painful and you have a fever or feel generally unwell. NICE CKS guidance for clinicians says this needs emergency assessment, because it can be a sign of a joint infection.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you are feeling feverish or unwell with your shoulder pain.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if you notice a lump or new swelling in your shoulder, or several of your joints have become swollen and painful at the same time. NICE CKS guidance for clinicians says these need urgent referral.",
       "If you are not sure how urgent your symptoms are, call 111 or speak to a GP before booking a video appointment.",
     ],
     faqs: [
@@ -342,6 +351,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     sources: [
       { label: "NHS: Shoulder pain", url: "https://www.nhs.uk/symptoms/shoulder-pain/" },
+      { label: "NICE CKS: Shoulder pain", url: "https://cks.nice.org.uk/topics/shoulder-pain/" },
       { label: "NHS: Frozen shoulder", url: "https://www.nhs.uk/conditions/frozen-shoulder/" },
       { label: "NHS: Dislocated shoulder", url: "https://www.nhs.uk/conditions/dislocated-shoulder/" },
       { label: "NHS: Heart attack", url: "https://www.nhs.uk/conditions/heart-attack/" },
@@ -379,9 +389,9 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "A knee plan centres on strengthening the thigh, hip and calf muscles in steps, with advice on pacing activity and what to do on sore days. We show you each exercise on camera and give you a small number to start with, so that the plan is not so big that you stop doing it.",
-      "In our plans a typical course for knee pain is 4 to 6 sessions across 8 to 12 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a guide only. In PEAK, both groups had five consultations over three months, but that was a research design and we do not treat it as a promise for you.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. In PEAK, both groups had five consultations over three months, but that was a research design and we do not treat it as a promise for you.",
       "The NHS advises that more severe osteoarthritis may need a structured exercise plan with a physiotherapist, and suggests aiming for 150 minutes of moderate activity a week plus strength exercises. We talk about how to build toward that in a way that your knee tolerates.",
-      "NICE says not to offer acupuncture or dry needling for osteoarthritis, and not to offer glucosamine or strong opioids. If you have questions about medicines, speak to your GP or pharmacist.",
+      "NICE guidance recommends telling people with osteoarthritis that joint pain may go up for a while when they start exercising, and that regular exercise kept up over time brings more benefit. It says not to offer acupuncture or dry needling for osteoarthritis, and not to offer glucosamine or strong opioids. If you have questions about medicines, speak to your GP or pharmacist.",
     ],
     timeline:
       "Knee osteoarthritis is a long-term condition, according to the NHS, so we cannot give you a reliable recovery range. Our aim is a plan that gets you moving and that you can keep going. We review how your pain, walking and daily tasks are changing at each follow-up, and adjust the exercises or suggest further help from your GP if progress stalls. In PEAK, results were measured at three months, and knee pain from other causes can behave differently.",
@@ -453,12 +463,12 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "A first plan for heel pain usually has three parts: advice on easing off whatever sets the pain off for now, regular gentle stretches for the sole of the foot and the calf, and gradual strengthening for the foot and calf as it settles. We show each exercise on camera and give you only a few to start with, so that you can keep them going.",
-      "In our plans a typical course for heel pain is 2 to 5 sessions across 4 to 8 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a guide only. We review it with you at each follow-up rather than booking a block in advance, and some people need fewer sessions and some need more.",
+      "For heel pain we give you an estimate rather than a fixed course. It depends on your condition; your physiotherapist will give you an estimate after your assessment. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. We review it with you at each follow-up rather than booking a block in advance.",
       "We will also talk about footwear, how to build walking and standing back up, and how to tell a sore day from a worsening one. Nothing in your plan depends on us touching your foot.",
       "For questions about cost, referrals and insurance, see our guide to [private physiotherapy cost in the UK](/guides/private-physiotherapy-cost-uk). We cannot promise that any insurer will pay, so check with yours before you book.",
     ],
     timeline:
-      "The NHS says to see a GP if foot pain has not improved after treating it yourself for 2 weeks, so we use that as a checkpoint. We cannot give you an exact recovery time for your heel. We review how your pain, walking and daily tasks are changing at each follow-up, and we will suggest a GP review if things are not moving in the right direction.",
+      "The NHS says to see a GP if foot pain has not improved after treating it yourself for 2 weeks, so we use that as a checkpoint. NICE Clinical Knowledge Summaries, written for GPs, describe plantar fasciitis as usually settling over time, and suggest considering a specialist referral if symptoms are severe enough to affect daily life or last 3 to 6 months despite care. We cannot give you an exact recovery time for your heel. We review how your pain, walking and daily tasks are changing at each follow-up, and we will suggest a GP review if things are not moving in the right direction.",
     inPersonInstead: [
       "Call NHS 111 if you have severe heel pain after an injury, such as a fall or a jump.",
       "Call NHS 111 if you feel faint, dizzy or sick from the pain.",
@@ -489,6 +499,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     sources: [
       { label: "NHS: Plantar fasciitis", url: "https://www.nhs.uk/conditions/plantar-fasciitis/" },
       { label: "NHS: Heel pain", url: "https://www.nhs.uk/symptoms/foot-pain/heel-pain/" },
+      { label: "NICE CKS: Plantar fasciitis", url: "https://cks.nice.org.uk/topics/plantar-fasciitis/" },
     ],
     guideSlugs: ["private-physiotherapy-cost-uk", "can-a-physio-diagnose-over-video"],
     serviceSlug: "musculoskeletal-physiotherapy",
@@ -519,12 +530,12 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "A first plan for tennis elbow usually combines advice on adjusting the tasks that flare it up, gentle stretches for the wrist and forearm, and strengthening that you build up gradually as the elbow copes. We show each exercise on camera and change the load at follow-ups depending on what your elbow does afterwards.",
-      "In our plans a typical course for tennis elbow is 3 to 6 sessions across 6 to 12 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a guide only. Given that the NHS says tennis elbow can sometimes last over a year, we review the plan with you rather than booking a block up front.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Given that the NHS says tennis elbow can sometimes last over a year, we review the plan with you rather than booking a block up front.",
       "We will talk about grip, tool and keyboard set-up, how to share load between both arms, and how to return to sport or heavier work in steps. Nothing in the plan depends on us touching your arm.",
       "Our [tennis elbow exercise library](/exercises/for/tennis-elbow) shows the kind of exercises you may be given. For what a video appointment can and cannot cover, see our guide to [what online physiotherapy cannot do](/guides/what-online-physiotherapy-cannot-do).",
     ],
     timeline:
-      "According to the NHS, tennis elbow often settles with rest but can sometimes last more than a year, and physiotherapy may help if symptoms have not improved after 6 weeks of home treatment. It also says to see a GP if you still have elbow pain after at least 2 weeks of resting the elbow and trying self-care. We review progress at each follow-up and suggest a GP review if you are not improving.",
+      "According to the NHS, tennis elbow often settles with rest but can sometimes last more than a year, and physiotherapy may help if symptoms have not improved after 6 weeks of home treatment. It also says to see a GP if you still have elbow pain after at least 2 weeks of resting the elbow and trying self-care. NICE Clinical Knowledge Summaries, written for GPs, say tennis elbow usually gets better on its own, in about 80 to 90 percent of people within 12 to 24 months, and suggest a physiotherapy referral if symptoms persist. We review progress at each follow-up and suggest a GP review if you are not improving.",
     inPersonInstead: [
       "Go to A&E or call 999 if, after an arm injury, your arm or wrist is numb, tingling or has pins and needles. Do not drive yourself to A&E; ask someone to take you or call 999.",
       "Go to A&E or call 999 if, after an arm injury, your arm or wrist has changed shape or is at an odd angle, a bone is sticking out, or you have a bad cut bleeding heavily. Do not drive yourself to A&E; ask someone to take you or call 999.",
@@ -554,6 +565,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     sources: [
       { label: "NHS: Tennis elbow", url: "https://www.nhs.uk/conditions/tennis-elbow/" },
+      { label: "NICE CKS: Tennis elbow", url: "https://cks.nice.org.uk/topics/tennis-elbow/" },
       { label: "NHS: Broken arm or wrist", url: "https://www.nhs.uk/conditions/broken-arm-or-wrist/" },
     ],
     exerciseHubSlug: "tennis-elbow",
@@ -587,7 +599,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "A first plan for hip pain usually starts with advice on what to ease for now, such as positions that set it off, and a few gentle movements for the hip and thigh. We then build strengthening and walking in steps, showing each exercise on camera and changing the load at follow-ups depending on how the hip responds.",
-      "In our plans a typical course for hip pain is 4 to 6 sessions across 8 to 12 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a guide only, and we review it with you rather than booking a block in advance.",
+      "Hip pain has several causes, and the cause changes how long a plan takes. It depends on your condition; your physiotherapist will give you an estimate after your assessment. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}, and we review it with you rather than booking a block in advance.",
       "We will also talk about footwear, chairs and bed height, how to pace walking and stairs, and how to fit exercises into your day. Our [hip exercise library](/exercises/for/gluteal-tendinopathy) shows the kind of exercises you may be given.",
       "If you have had cancer in the past, tell us when you book. Our approach is to ask you to speak to your GP before we start a plan. For what a video appointment can and cannot cover, see our guide to [can a physio diagnose over video](/guides/can-a-physio-diagnose-over-video).",
     ],
@@ -598,10 +610,10 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call 999 or go to A&E if you cannot walk or put weight on your leg.",
       "Call 999 or go to A&E if you have tingling or loss of feeling in your hip or leg after an injury.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you have severe hip pain that started suddenly and you have not had a fall or injured the hip.",
-      "Ask for an urgent GP appointment or get help from NHS 111 if your hip is swollen and feels hot, or the skin around it has changed colour.",
-      "Ask for an urgent GP appointment or get help from NHS 111 if you have hip pain, feel generally unwell and have a high temperature.",
+      "Get in-person medical care straight away if your hip is swollen and feels hot, or you have hip pain and feel generally unwell or have a high temperature. The NHS lists these for an urgent GP appointment or NHS 111, and NICE CKS guidance for clinicians says hip pain with signs of infection or of being generally unwell needs emergency referral, so do not wait.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if the skin around your hip has changed colour.",
       "See a GP if you have hip stiffness for more than 30 minutes after waking.",
-      "We will ask you to see your GP first if you have had cancer and have new hip pain.",
+      "We will ask you to see your GP first if you have had cancer and have new hip pain. NICE CKS guidance for clinicians says hip pain in someone with a past cancer, where a fracture is suspected, needs emergency referral, so if you also cannot put weight on the leg, call 999 or go to A&E as above.",
     ],
     faqs: [
       {
@@ -624,6 +636,10 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     sources: [
       { label: "NHS: Hip pain in adults", url: "https://www.nhs.uk/symptoms/hip-pain/" },
       {
+        label: "NICE CKS: Greater trochanteric pain syndrome",
+        url: "https://cks.nice.org.uk/topics/greater-trochanteric-pain-syndrome/",
+      },
+      {
         label: "NICE NG226: Osteoarthritis in over 16s, recommendations",
         url: "https://www.nice.org.uk/guidance/ng226/chapter/Recommendations",
       },
@@ -645,16 +661,16 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How video physiotherapy fits after a knee replacement: when rehab can start, what a session covers, and which symptoms go back to your surgical team or 999.",
     answer:
-      "Online rehab after a knee replacement starts once your surgical team has cleared you to begin exercise-based rehab. A video session lets your physiotherapist watch how you move, set milestones and progress your exercises at home. Wound checks and complications go back to your surgical team. Pain and swelling in the leg with breathing difficulty or chest pain needs 999.",
+      "After a knee replacement, rehab with us starts once your surgical team has confirmed you have no restrictions. A video session lets your physiotherapist watch how you move, set milestones and progress your exercises at home. Wound checks and complications go back to your surgical team. Pain and swelling in the leg with breathing difficulty or chest pain needs 999.",
     howOnlineWorks: [
-      "Rehab after a knee replacement runs alongside your operation, not instead of it. Your surgical team decides when exercise-based rehab can begin, and our service guidance is that online sessions pick up once you have been medically cleared. Until then, follow the instructions you were given in hospital.",
+      "Your surgical team decides when rehab with us can begin. Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the instructions and exercises you were given in hospital.",
       "The NHS says a physiotherapist or occupational therapist explains a home exercise programme before you leave hospital, and that following those exercises early helps long-term strength and movement. Our video sessions build on that programme. We watch you stand, walk with your aid, bend and straighten the knee, and then adjust what you do at home.",
       "Being at home helps with the practical parts of recovery. We can look at the stairs you actually climb, the chair you sit in and the bathroom you use, and plan exercises and pacing around them. If you are still using crutches or a frame, our service guidance says sessions can be adapted to seated or supported positions.",
       "There are things we cannot do by video. We cannot examine the wound, remove stitches or staples, or check the joint by hand. Our service guidance is clear that wound checks and any complication go straight back to your surgical team, and we will tell you if something we see or hear in a session needs that.",
       "If your knee pain started before surgery, or you are still deciding on an operation, our page on [online physiotherapy for knee pain](/online-physiotherapy-for/knee-pain) covers that stage instead.",
     ],
     assessmentChecks: [
-      "Confirmation that your surgical team has cleared you to start exercise-based rehab, and any instructions or limits they gave you.",
+      "Confirmation that your surgical team has said you have no restrictions, and any instructions they gave you.",
       "The date and type of operation, whether it was a total or partial knee replacement, and what your discharge summary or exercise sheet says.",
       "How the knee bends and straightens, how you stand up from a chair, and how you manage steps or stairs at home, as far as it is safe to try them.",
       "How you walk, whether you use a stick, crutches or a frame, and how much the knee swells or aches after activity.",
@@ -663,12 +679,12 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "A plan after knee replacement is built from the exercises your hospital team gave you, then progressed in steps as the knee settles. We set milestones with you for movement, strength and walking, and review them at each follow-up. We ask you to follow your surgeon's protocol where it differs from anything we suggest.",
-      "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. How many sessions you need depends on your operation and recovery, so we review it with you rather than booking a block in advance.",
+      "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review it with you rather than booking a block in advance.",
       "The NHS gives some typical timings, which depend on you and your surgeon. It says people are usually home 1 to 4 days after the operation, may try walking without an aid after about 6 weeks if ready, usually wait at least 6 weeks to drive after a total replacement (3 weeks after a partial one, checking with your doctor), and return to work after about 6 to 12 weeks depending on the job. It also suggests avoiding heavy household lifting for the first 3 months.",
-      "Your follow-up appointment with the surgical team, which the NHS says is usually about 6 weeks after the operation, stays with them. Our service guidance says that, with your consent, a written summary of your rehab progress can be shared with your care team.",
+      "Your follow-up appointment with the surgical team, which the NHS says is usually about 6 weeks after the operation, stays with them. NICE guidance on joint replacement recommends that people doing rehabilitation on their own know their goals and why the exercises matter, and have someone to contact for advice and support. It says nothing about rehab by video, and we do not suggest it does. Keep your GP or specialist team informed about your treatment.",
     ],
     timeline:
-      "According to the NHS, it may take several months or longer to fully recover from a knee replacement, and recovery from a partial replacement should be shorter than from a total one. Our service guidance gives a similar picture, with progress set mostly by the operation itself. We review how your movement, strength and walking are changing at each session, and we suggest you speak to your surgical team if progress stalls.",
+      "According to the NHS, it may take several months or longer to fully recover from a knee replacement, and recovery from a partial replacement should be shorter than from a total one. Progress is set mostly by the operation itself. We review how your movement, strength and walking are changing at each session, and we suggest you speak to your surgical team if progress stalls.",
     inPersonInstead: [
       "Call 999 or go to A&E if you have pain and swelling in your leg and difficulty breathing or chest pains. This could be a blood clot in the lungs.",
       "Do not drive yourself to A&E. Ask someone to drive you, or call 999.",
@@ -681,7 +697,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "When can I start online physio after a knee replacement?",
-        a: "Once your surgical team has cleared you to begin exercise-based rehab. Until then, follow the exercises and advice you were given in hospital. We can talk through where you are at booking, and we will ask you to check with your surgical team if you are unsure.",
+        a: "Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the exercises and advice you were given in hospital. We can talk through where you are at booking, and we will ask you to check with your surgical team if you are unsure.",
       },
       {
         q: "Can you check my wound or remove stitches?",
@@ -693,13 +709,17 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Had ACL surgery instead?",
-        a: "We cover that in a separate guide: [online physiotherapy after ACL reconstruction](/blog/online-physiotherapy-after-acl-reconstruction). The same rule applies: rehab starts once your surgical team has cleared it, and complications go back to them.",
+        a: "We cover that in a separate guide: [online physiotherapy after ACL reconstruction](/blog/online-physiotherapy-after-acl-reconstruction). The same rule applies: rehab starts once your surgical team has confirmed you have no restrictions, and complications go back to them.",
       },
     ],
     sources: [
       {
         label: "NHS: Recovering from a knee replacement",
         url: "https://www.nhs.uk/tests-and-treatments/knee-replacement/recovery/",
+      },
+      {
+        label: "NICE NG157: Joint replacement (primary): hip, knee and shoulder, recommendations",
+        url: "https://www.nice.org.uk/guidance/ng157/chapter/Recommendations",
       },
       {
         label: "NHS: Complications of a knee replacement",
@@ -726,17 +746,17 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How video physiotherapy fits after a hip replacement: when rehab can start, why your surgeon sets the precautions, and which symptoms need urgent care or 999.",
     answer:
-      "Online rehab after a hip replacement starts once your surgical team has cleared you to begin exercise-based rehab. A video session lets your physiotherapist watch you move and progress your home exercises, while any hip precautions come from your surgeon. Wounds and complications go back to your surgical team. Leg or hip pain and swelling with breathing difficulty or chest pain needs 999.",
+      "After a hip replacement, rehab with us starts once your surgical team has confirmed you have no restrictions. A video session lets your physiotherapist watch you move and progress your home exercises, and any hip advice comes from your surgeon. Wounds and complications go back to your surgical team. Leg or hip pain and swelling with breathing difficulty or chest pain needs 999.",
     howOnlineWorks: [
-      "Your surgical team may set a period of protection before a gradual return to normal movement. Your surgical team decides when exercise-based rehab can begin. Our service guidance is that online sessions begin once you are medically cleared, and not before.",
-      "Any hip precautions after your operation, such as how far you may bend the hip or which positions to avoid, are set by your surgical team. We do not set them. If the advice you were given is unclear, ask your surgeon or ward team, and we will work inside whatever limits they give you.",
+      "Your surgical team may set a period of protection before a gradual return to normal movement. Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the advice and any precautions they gave you.",
+      "Any hip precautions after your operation, such as how far you may bend the hip or which positions to avoid, are set by your surgical team. We do not set them. We start once your surgical team has confirmed you have no restrictions, and if they give you new advice later, follow it and tell us.",
       "The NHS says your physiotherapist or occupational therapist explains home exercises before you leave hospital, and that following them helps long-term strength and movement. On video we watch the exercises you have been given, check how you get out of bed, sit down, stand and walk, and adjust the plan as your hip settles.",
       "Home is where much of recovery happens, so we can look at your own bed height, chair, toilet and stairs, and talk through how you manage them. That is a practical advantage of video for this stage, although it does not replace in-person care.",
       "We cannot see or feel the wound or check the joint by hand. If we are worried about the wound, a fall or a hip that is not progressing, we will tell you to contact your surgical team rather than carrying on with exercises.",
       "If your hip trouble came before surgery, our page on [online physiotherapy for hip pain](/online-physiotherapy-for/hip-pain) covers that stage.",
     ],
     assessmentChecks: [
-      "Confirmation that your surgical team has cleared you to begin exercise-based rehab, and the precautions and limits they gave you.",
+      "Confirmation that your surgical team has said you have no restrictions, and any advice they gave you for the weeks ahead.",
       "The date of the operation, how you have been recovering since discharge, and what your discharge summary or exercise sheet says.",
       "How you get on and off the bed, in and out of a chair, and up and down stairs, within the advice you have been given.",
       "How you walk, whether you use a stick, crutches or a frame, and how much the hip or leg aches or swells after activity.",
@@ -745,12 +765,12 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     typicalPlan: [
       "Your plan starts from the exercises your hospital team gave you, and builds in small steps as your surgeon's advice allows. We set milestones with you for walking, strength and everyday movement, and review them at each follow-up. Where our suggestions and your surgeon's advice differ, follow your surgeon.",
-      "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Because recovery differs from person to person, we review how many sessions you need as we go.",
+      "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Recovery differs from person to person. It depends on your condition; your physiotherapist will give you an estimate after your assessment.",
       "The NHS gives some typical timings, which vary with the person and the surgeon. It says people are usually home about 1 to 3 days after the operation if generally fit and the surgery went well, are usually told to wait at least 6 weeks before driving (check with your doctor), and often return to work at about 6 weeks depending on the job. A follow-up with your surgical team is usually around 6 to 12 weeks.",
-      "Wound reviews and follow-up visits stay with your surgical team. Our service guidance says that, with your consent, a written summary of your rehab progress can be shared with your care team.",
+      "Wound reviews and follow-up visits stay with your surgical team. NICE guidance on joint replacement recommends that people who do their rehabilitation on their own have a point of contact for advice and support, and are offered supervised rehabilitation if they struggle with daily activities or are not meeting their goals. It does not cover rehab by video. Keep your GP or specialist team informed about your treatment.",
     ],
     timeline:
-      "The NHS says it may take several months to recover from a hip replacement. Our service guidance gives a similar picture, with the pace set mostly by the operation itself. We review your walking, strength and everyday movement at each session, and we suggest you speak to your surgical team if your hip is not progressing as expected.",
+      "The NHS says it may take several months to recover from a hip replacement, with the pace set mostly by the operation itself. We review your walking, strength and everyday movement at each session, and we suggest you speak to your surgical team if your hip is not progressing as expected.",
     inPersonInstead: [
       "Call 999 or go to A&E if you have pain and swelling in your hip or leg and difficulty breathing or chest pains. This could be a blood clot in the lungs.",
       "Do not drive yourself to A&E. Ask someone to drive you, or call 999.",
@@ -764,7 +784,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "When can I start online physio after a hip replacement?",
-        a: "Once your surgical team has cleared you to begin exercise-based rehab. Until then, follow the advice you were given in hospital. If you are unsure whether you have been cleared, ask your surgical team before booking.",
+        a: "Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the advice you were given in hospital. If you are unsure whether you have been cleared, ask your surgical team before booking.",
       },
       {
         q: "What hip precautions should I follow?",
@@ -783,6 +803,10 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       {
         label: "NHS: Recovering from a hip replacement",
         url: "https://www.nhs.uk/tests-and-treatments/hip-replacement/recovering-from-a-hip-replacement/",
+      },
+      {
+        label: "NICE NG157: Joint replacement (primary): hip, knee and shoulder, recommendations",
+        url: "https://www.nice.org.uk/guidance/ng157/chapter/Recommendations",
       },
       {
         label: "NHS: Complications of a hip replacement",
@@ -810,42 +834,43 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How video physiotherapy fits after rotator cuff repair surgery: sling and protection phases set by your surgeon, what we check, and when to get urgent care.",
     answer:
-      "Online rehab after rotator cuff repair starts once your surgical team has cleared you to begin exercise-based rehab. Your surgeon sets the sling and protection phases and we work inside them. A video session lets your physiotherapist guide your exercises at home. Wound checks and complications go back to your surgical team. Chest pain with arm or shoulder pain needs 999.",
+      "After rotator cuff repair, rehab with us starts once your surgical team has confirmed you have no restrictions. Your surgeon sets the sling and protection phases, and those stay with your surgical team. A video session lets your physiotherapist guide your exercises at home. Wound checks and complications go back to your surgical team. Chest pain with arm or shoulder pain needs 999.",
     howOnlineWorks: [
       "Recovery from a rotator cuff repair is slow and protected at first, because the repaired tendon needs time to heal. How long you wear a sling, what you may do with the arm, and when strengthening can begin are all set by your surgeon and depend on the size of the repair. We do not change those instructions.",
       "To give a sense of the shape, one NHS hospital trust's patient leaflet describes a sling worn for up to six weeks, no weight through the arm for the first three weeks, and physio-led phases that move from protection to regaining everyday movement and then strength. That is one trust's protocol, not a rule for everyone, so follow your own surgeon's protocol.",
-      "Online rehab starts once your surgical team has cleared exercise-based rehab. Our video sessions then help you carry out the exercises you were given, check the movement you can do safely, and progress the plan at the pace your surgeon allows.",
+      "Rehab starts once your surgical team has confirmed you have no restrictions. Before that, the early protected phases stay with your surgical team and the physiotherapy they arrange. Once you are cleared, our video sessions help you build movement and strength step by step, and we follow any further advice your surgeon gives.",
       "Over video, we cannot see the wound, check the repair by hand, or test strength the way an in-person shoulder clinic can. Our service guidance is that wound checks and any complication go back to your surgical team. We will say so if something we see on video suggests that.",
       "If your shoulder trouble came before surgery, our page on [online physiotherapy for shoulder pain](/online-physiotherapy-for/shoulder-pain) covers that stage. We have not linked an exercise library hub here, because our tendinopathy exercises are written for shoulders that have not been operated on.",
     ],
     assessmentChecks: [
-      "Confirmation that your surgical team has cleared you to start exercise-based rehab, which phase of your surgeon's protocol you are in, and what you may and may not do with the arm.",
+      "Confirmation that your surgical team has said you have no restrictions, and what your surgeon's protocol says about the next stage.",
       "The date of your operation, the type and size of the repair if you know them, and what your discharge summary or exercise sheet says.",
-      "Whether you are still wearing the sling, and how you manage dressing, washing and sleeping.",
+      "When you stopped wearing the sling, and how you manage dressing, washing and sleeping.",
       "How far you can move the arm within your protocol, and any pain, swelling or stiffness in the shoulder, arm or hand.",
       "What you want to get back to, such as desk work, manual work, driving or sport, and what your surgeon has said about timing.",
       "The warning signs listed below, which we check for during your sessions.",
     ],
     typicalPlan: [
-      "Your plan follows your surgeon's protocol phase by phase. In the early phase this may be limited to the movements and exercises you have been allowed, while later phases add everyday movement and then strength. We set milestones with you and review them at each follow-up.",
-      "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. The number of sessions depends on your operation and your surgeon's protocol, so we review it as we go.",
+      "Your plan starts once your surgical team has said you have no restrictions, and builds on the exercises you were given. We add everyday movement and then strength in steps, set milestones with you, and review them at each follow-up. Where your surgeon's advice differs from ours, follow your surgeon.",
+      "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Your operation and your surgeon's protocol both matter here. It depends on your condition; your physiotherapist will give you an estimate after your assessment.",
       "The same trust's leaflet gives some timings as an example only. It describes exercises two to four times a day that may continue at home for up to nine months, desk-based work often returning at around 6 to 8 weeks, manual work at least 3 to 4 months, no driving until after six weeks with the sling off, and non-contact sport at about six months. Your own timings will come from your surgeon.",
-      "Follow-ups with your surgical team and shoulder physiotherapy specialist stay with them. Our service guidance says that, with your consent, a written summary of your rehab progress can be shared with your care team.",
+      "Follow-ups with your surgical team and shoulder physiotherapy specialist stay with them. Keep your GP or specialist team informed about your treatment.",
     ],
     timeline:
-      "Timings depend on the size of the repair and on your surgeon. The hospital leaflet we read describes exercises continuing for up to nine months, with return to non-contact sport at about six months, but that is one trust's protocol. Our service guidance gives a different estimate, so treat any figure as a rough guide and follow your surgeon's protocol. We review your movement and strength at each session.",
+      "Timings depend on the size of the repair and on your surgeon. The hospital leaflet we read describes exercises continuing for up to nine months, with return to non-contact sport at about six months, but that is one trust's protocol, so treat any figure as a rough guide and follow your surgeon's protocol. We review your movement and strength at each session.",
     inPersonInstead: [
       "Call 999 or go to A&E if you have chest pain that feels tight or squeezing, or chest pain spreading to your arms, neck or jaw, or severe difficulty breathing. Do not drive yourself.",
       "Call 999 or go to A&E if you have pain and swelling in a leg together with difficulty breathing or chest pains. This could be a blood clot in the lungs. Do not drive yourself to A&E.",
       "Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.",
       "Ask for an urgent GP appointment or call NHS 111 if you have throbbing or cramping pain in one leg, swelling in one leg, or red, blue or darkened skin around a painful area. These can be signs of DVT, a blood clot in a vein.",
+      "Get in-person medical care straight away if your shoulder is red, hot and painful and you have a fever or feel generally unwell. NICE CKS guidance for clinicians on shoulder pain says this needs emergency assessment.",
       "Contact your surgical team, and ask for an urgent GP appointment or call NHS 111, if you have a high temperature, feel hot, cold or shivery, or the wound is oozing or has pus. NHS pages on joint replacement list these as signs of infection, and the shoulder surgery leaflet we read gives no separate route, so we apply the same routing.",
       "Wound checks, stitch removal and any complication go back to your surgical team, not to an online rehab session.",
     ],
     faqs: [
       {
         q: "When can I start online physio after rotator cuff repair?",
-        a: "Once your surgical team has cleared you to begin exercise-based rehab. Your surgeon sets the sling and protection phases, and we work inside them. If you are not sure which phase you are in, ask your surgical team before booking.",
+        a: "Rehab starts once your surgical team has confirmed you have no restrictions. Your surgeon sets the sling and protection phases, and those early phases stay with the team they arrange. If you are not sure whether you have been cleared, ask your surgical team before booking.",
       },
       {
         q: "How long will I wear the sling?",
@@ -875,6 +900,10 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       { label: "NHS: Heart attack", url: "https://www.nhs.uk/conditions/heart-attack/" },
       { label: "NHS: Pulmonary embolism", url: "https://www.nhs.uk/conditions/pulmonary-embolism/" },
+      {
+        label: "NICE CKS: Shoulder pain (used for shoulder infection warning signs)",
+        url: "https://cks.nice.org.uk/topics/shoulder-pain/",
+      },
     ],
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "post-surgical-rehabilitation",
@@ -888,18 +917,18 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     h1: "Online physiotherapy for stroke recovery",
     seoTitle: "Online Physiotherapy for Stroke Recovery | PhysioOnClick",
     seoDescription:
-      "Video physiotherapy to support stroke recovery after hospital discharge: who it suits, what we check, how it sits beside your NHS team and when 999 applies.",
+      "Video physiotherapy to support stroke recovery after hospital discharge: who it suits, the clearance you need first, what we check and when 999 applies.",
     answer:
-      "If you are medically stable after leaving hospital, a video session lets your physiotherapist watch how you move and set up practice for walking, balance and everyday tasks, with a carer welcome to join. We work alongside your NHS stroke team, not instead of it. Triage at booking confirms whether video suits you. Face drooping, arm weakness or slurred speech means 999.",
+      "If you are medically stable after leaving hospital, a video session lets your physiotherapist watch how you move and set up practice for walking, balance and everyday tasks, with a carer welcome to join. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. Face drooping, arm weakness or slurred speech means 999.",
     howOnlineWorks: [
-      "Our neurological rehabilitation service is for people who are medically stable and whose hospital care has been arranged. It supports your wider team, such as your NHS stroke team, and does not replace it. Our service guidance says online sessions are for guided, ongoing practice once you are stable, and that any new or sudden symptoms are an emergency, not an appointment.",
+      "Our neurological rehabilitation service is for people who are medically stable and whose hospital care has been arranged. It does not replace your NHS stroke team or your GP. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. Our service guidance says online sessions are for guided, ongoing practice once you are stable, and that any new or sudden symptoms are an emergency, not an appointment.",
       "The NHS says a stroke rehabilitation plan may include physiotherapy and exercises to help with movement, and that recovery can take months or years. It also says rehabilitation can be done in person or online, which it calls telerehabilitation, and that your healthcare team should provide equipment and training or technical support if you need them.",
       "NICE guidance on stroke rehabilitation in adults (NG236) says telerehabilitation can be considered instead of, or as well as, face-to-face therapy, but only if the person agrees or it is their preferred type of therapy and it fits their rehabilitation goals. It also says people should have the right equipment and training or support, and should be monitored to check that they are benefiting and are not developing signs of depression. NICE does not endorse our service. We mention the guidance because those conditions are the ones we try to meet.",
       "In practice we start by asking which everyday activities matter most to you, for example getting around outside, using stairs or using your arm at home. Our service guidance says early movement checks over video are done seated or with support, and that a family member or carer can join you and help get the room ready.",
       "Video has limits. We cannot touch the affected limb or catch you if you lose your balance, so we choose movements that can be done safely at home with something solid nearby and, where needed, another person in the room. If a task does not look safe on video, we will say so and suggest in-person therapy through your NHS team instead.",
     ],
     assessmentChecks: [
-      "Your stroke history in your own words, when you left hospital, and what your discharge letter or therapy team said about exercise.",
+      "Confirmation that your GP or specialist team has said it is safe for you to begin physiotherapy, your stroke history in your own words, and what your discharge letter said about exercise.",
       "Whether you feel well enough to take part now, and whether your doctors have said anything about activity or driving.",
       "How you move around your home: getting out of a chair, walking, using stairs, and which aids you use.",
       "Balance and strength in the arm and leg, checked through simple movements done seated or with support.",
@@ -910,7 +939,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Your plan is built around goals you choose, for example getting around more easily or using your arm more in daily life. We turn them into a short routine you can repeat at home, usually seated or supported at first, and we change it as you progress.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Triage at booking confirms whether video suits you, and we will tell you before you pay if it does not.",
       "Our service guidance says a carer can help you keep practising in between sessions. In our approach, we do not give a fixed timeline, because stroke recovery looks different for each person we see. We review progress against the things you wanted to do again.",
-      "With your consent, we can share a written summary of your progress with your GP or stroke team. The NHS says a review of your progress should happen after about 6 months. We do not replace that review.",
+      "Keep your GP or specialist team informed about your treatment. The NHS says a review of your progress should happen after about 6 months, and we do not replace that review. NICE guidance on stroke rehabilitation recommends physiotherapy for people with weakness, changes in feeling or balance problems that affect movement after a stroke.",
     ],
     timeline:
       "The NHS says stroke recovery can take months or years, so we do not promise a date. Our service guidance says reviews look at things you can feel, such as walking further or needing less support, rather than a fixed timeline. We review these with you and your carer at each session.",
@@ -929,7 +958,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Does this replace my NHS stroke team?",
-        a: "No. We work alongside your NHS stroke team and any other therapists. With your consent we can share a summary of your progress with them.",
+        a: "No. We are a separate private service and we do not replace your NHS stroke team or any other therapists. Keep your GP or specialist team informed about your treatment.",
+      },
+      {
+        q: "Do I need anyone's go-ahead before I start?",
+        a: "Yes. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. We ask about this at booking, and triage confirms whether video suits you.",
       },
       {
         q: "Can my carer or family come to the session?",
@@ -948,6 +981,10 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       {
         label: "NICE: Stroke rehabilitation in adults (NG236)",
         url: "https://www.nice.org.uk/guidance/ng236",
+      },
+      {
+        label: "NICE NG236: Stroke rehabilitation in adults, recommendations",
+        url: "https://www.nice.org.uk/guidance/ng236/chapter/Recommendations",
       },
       {
         label: "NHS: Stroke symptoms",
@@ -977,28 +1014,28 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     h1: "Online physiotherapy for Parkinson's",
     seoTitle: "Online Physiotherapy for Parkinson's | PhysioOnClick",
     seoDescription:
-      "How video physiotherapy can support movement, walking and balance with Parkinson's: what we check, how it sits beside your NHS team, and when to call 999.",
+      "How video physiotherapy can support movement, walking and balance with Parkinson's: the clearance you need first, what we check, and when to call 999.",
     answer:
-      "If you are medically stable, a video session lets your physiotherapist watch how you walk and move and set up exercises for stiffness, walking, balance and falls risk, with a carer welcome to join. We work alongside your Parkinson's team and make no claim to change the condition itself. Triage at booking confirms whether video suits you. Stroke signs mean 999.",
+      "If you are medically stable, a video session lets your physiotherapist watch how you walk and move and set up exercises for stiffness, walking, balance and falls risk, with a carer welcome to join. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. We make no claim to change the condition itself. Stroke signs mean 999.",
     howOnlineWorks: [
-      "The NHS lists physiotherapy among the supportive therapies for Parkinson's. It says a physiotherapist can work on muscle stiffness and joint pain through movement and exercise, with the aim of making moving easier and improving walking, flexibility and fitness. That is the kind of work we offer by video.",
+      "The NHS lists physiotherapy among the supportive therapies for Parkinson's. It says a physiotherapist can work on muscle stiffness and joint pain through movement and exercise, with the aim of making moving easier and improving walking, flexibility and fitness. NICE guidance on Parkinson's recommends Parkinson's-specific physiotherapy for people with balance or movement problems. That is the kind of work we offer by video.",
       "We do not claim that exercise changes the course of Parkinson's. Our aim is practical: movement, walking, balance and confidence in daily life. Your care plan stays with your Parkinson's team, and the NHS says that plan should be agreed with your healthcare team and reviewed regularly, because regular reviews are needed as the condition progresses.",
-      "Our neurological rehabilitation service is for people who are medically stable and supports your wider team. Our service guidance says a family member or carer can join the session and help get the room ready.",
-      "If falls are a worry for you, we look at balance and the way you walk. Our [gait and mobility assessment](/services/gait-and-mobility-assessment) covers walking analysis and planning in more detail.",
+      "Our neurological rehabilitation service is for people who are medically stable, and it does not replace your Parkinson's team or GP. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. Our service guidance says a family member or carer can join the session and help get the room ready.",
+      "If falls are a worry for you, we look at balance and the way you walk. NICE falls guidance, which covers older people and people aged 50 and over at higher risk, recommends a falls prevention exercise programme for those who have fallen in the past year and have a walking or balance problem. Our [gait and mobility assessment](/services/gait-and-mobility-assessment) covers walking analysis and planning in more detail.",
       "Video has limits. We cannot catch you if you lose your balance, so we plan movements you can do with something solid nearby and, if needed, another person with you. We cannot adjust medicines or assess how your Parkinson's is progressing; those stay with your Parkinson's team.",
     ],
     assessmentChecks: [
       "What you want to keep doing or get back to, such as walking outdoors, getting up from a chair or turning over in bed.",
       "How you walk and turn, how you get out of a chair, and whether you feel steady, stiff or hesitant at certain moments.",
       "Any falls or near-falls, and where and how they tend to happen.",
-      "Your current exercise, who is involved in your care, and any advice you have already had from your Parkinson's team.",
+      "Confirmation that your GP or specialist team has said it is safe for you to begin physiotherapy, your current exercise, and any advice you have already had from your Parkinson's team.",
       "Whether the room you will use at home is safe for movement checks, and who can be with you.",
       "Your energy and confidence, and what you find hard to keep up between sessions.",
     ],
     typicalPlan: [
       "Your plan starts from your goals and from a few simple movement checks over video. We build a short routine for stiffness, walking and balance that you can repeat at home, and we adjust it as things change.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Triage at booking confirms whether video suits you, and we will say so plainly if it does not.",
-      "Because the NHS says Parkinson's care needs regular reviews as the condition progresses, we expect your plan to change over time. We review it with you at follow-ups, and with your consent we can share a written summary with your Parkinson's team or GP.",
+      "Because the NHS says Parkinson's care needs regular reviews as the condition progresses, we expect your plan to change over time. We review it with you at follow-ups. Keep your GP or specialist team informed about your treatment.",
       "Our service guidance says reviews look at everyday change that you notice for yourself, not at a set timetable. We use the same approach here.",
     ],
     timeline:
@@ -1007,6 +1044,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call 999 now if you think you or someone with you is having a stroke. Use FAST: Face drooping, Arm weakness, Speech difficulty, and Time to call 999. Other signs include weakness or numbness down one side, blurred vision or loss of sight, and dizziness. Do not drive yourself to A&E.",
       "If you have severe hip pain after a fall or injury, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after a fall or injury, the NHS says to call 999 or go to A&E. Do not drive yourself.",
       "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
+      "If you have fallen in the past year and were hurt, could not get up on your own, blacked out, or have fallen 2 or more times, NICE falls guidance for older people and people aged 50 and over at higher risk says you should be offered a full falls assessment. Ask your GP or local falls service about this rather than relying on video sessions alone.",
       "For worries about your medicines, new symptoms or your care plan, speak to your Parkinson's team or GP. The NHS says your plan is agreed with your healthcare team, and we do not change it.",
       "If you cannot move safely at home without hands-on help, or need equipment fitted in person, we cannot provide that by video. Our service is for people who are medically stable, not for acute care.",
     ],
@@ -1021,7 +1059,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Do you work with my Parkinson's team?",
-        a: "We work alongside your team and do not replace it. With your consent, we can share a written summary of your progress with them.",
+        a: "No. We are a separate private service and we do not replace your Parkinson's team. Keep your GP or specialist team informed about your treatment.",
+      },
+      {
+        q: "Do I need anyone's go-ahead before I start?",
+        a: "Yes. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. We ask about this at booking, and triage confirms whether video suits you.",
       },
       {
         q: "Can you help with falls?",
@@ -1032,6 +1074,14 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       {
         label: "NHS: Parkinson's disease treatment",
         url: "https://www.nhs.uk/conditions/parkinsons-disease/treatment/",
+      },
+      {
+        label: "NICE NG71: Parkinson's disease in adults, recommendations",
+        url: "https://www.nice.org.uk/guidance/ng71/chapter/Recommendations",
+      },
+      {
+        label: "NICE NG249: Falls - assessment and prevention, recommendations",
+        url: "https://www.nice.org.uk/guidance/ng249/chapter/Recommendations",
       },
       {
         label: "NHS: Stroke symptoms",
@@ -1059,14 +1109,14 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     h1: "Online physiotherapy for multiple sclerosis",
     seoTitle: "Online Physiotherapy for Multiple Sclerosis | PhysioOnClick",
     seoDescription:
-      "How video physiotherapy can support movement problems and muscle pain in multiple sclerosis: how it sits beside your MS team, and when to call 999 or go to A&E.",
+      "How video physiotherapy can support movement problems and muscle pain in multiple sclerosis: the clearance you need first, and when to call 999 or go to A&E.",
     answer:
-      "If you are medically stable, a video session lets your physiotherapist watch how you move and set up exercises for movement problems and muscle pain, with a carer welcome to join. We work alongside your MS team, such as your MS nurse and neurologist, and do not manage relapses. Triage at booking confirms whether video suits you. Sudden arm weakness or vision loss means 999.",
+      "If you are medically stable, a video session lets your physiotherapist watch how you move and set up exercises for movement problems and muscle pain, with a carer welcome to join. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. We do not manage relapses. Sudden arm weakness or vision loss means 999.",
     howOnlineWorks: [
-      "The NHS lists physiotherapy and exercises to help with movement problems and muscle pain among the support for MS symptoms. It says the team around you may include an MS nurse, a neurologist, a physiotherapist and an occupational therapist. We aim to be one part of that team, by video, and not a replacement for it.",
+      "The NHS lists physiotherapy and exercises to help with movement problems and muscle pain among the support for MS symptoms. It says the team around you may include an MS nurse, a neurologist, a physiotherapist and an occupational therapist. We are a separate private service, not part of that team, and we do not replace it. NICE guidance on MS recommends encouraging people with MS to exercise, and says regular exercise may help and will not make MS worse.",
       "We make no claim that physiotherapy changes the course of MS. Our focus is on how you move and what you want to keep doing: walking, balance, stiffness and everyday tasks. Medicines, relapse care and decisions about your condition stay with your MS team.",
-      "Our neurological rehabilitation service is for people who are medically stable. Our service guidance says a family member or carer can join the session and help get the room ready, and that early movement checks are done seated or with support.",
-      "The NHS describes relapsing remitting MS as having flare-ups of symptoms, called relapses, that then go away or improve. We cannot judge a relapse over video. If none of the 999 signs on this page apply and you think you are having a relapse, our approach is to ask you to contact your MS team or GP.",
+      "Our neurological rehabilitation service is for people who are medically stable. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. Our service guidance says a family member or carer can join the session and help get the room ready, and that early movement checks are done seated or with support.",
+      "The NHS describes relapsing remitting MS as having flare-ups of symptoms, called relapses, that then go away or improve. We cannot judge a relapse over video. If none of the 999 signs on this page apply and you think you are having a relapse, our approach is to ask you to contact your MS team or GP. We pause your sessions until your GP or MS team has cleared you to restart.",
       "Video has limits. We cannot catch you if you lose your balance, so we plan movements that can be done safely at home with something solid nearby and, if needed, another person with you. If a movement does not look safe on camera, we will say so and suggest in-person therapy through your NHS team.",
     ],
     assessmentChecks: [
@@ -1074,13 +1124,13 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Where you feel stiffness, muscle pain or weakness, and how it affects walking, standing and everyday tasks.",
       "How you walk, turn and get out of a chair, and what you use for support.",
       "Whether your symptoms have changed suddenly, which we will route to your MS team or the urgent options below instead of continuing.",
-      "Who is in your wider team, such as your MS nurse or neurologist, and what advice they have given about exercise.",
+      "Confirmation that your GP or specialist team has said it is safe for you to begin physiotherapy, and what advice they have given about exercise.",
       "Whether your room and set-up at home are safe for the movements we plan, and who can be with you.",
     ],
     typicalPlan: [
       "Your plan starts from your goals and a few simple movement checks over video. We build a short routine for movement and muscle pain that you can repeat at home, and we adjust it as your needs change.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Triage at booking confirms whether video suits you, and we will say so plainly before you pay if it does not.",
-      "MS varies from person to person and over time, so we review your plan with you at each follow-up rather than following a fixed timeline. With your consent we can share a written summary with your MS nurse, neurologist or GP.",
+      "MS varies from person to person and over time, so we review your plan with you at each follow-up rather than following a fixed timeline. Keep your GP or specialist team informed about your treatment.",
       "Our service guidance says reviews look at everyday change that you notice for yourself. We use the same approach for MS and keep exercise decisions in line with advice from your MS team.",
     ],
     timeline:
@@ -1090,7 +1140,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "The NHS MS page says to call 999 or go to A&E if you have sudden weakness or numbness in one arm, loss or blurring of vision, or problems with balance and co-ordination, because these could be signs of a stroke. Do not drive to A&E.",
       "If you have severe hip pain after a fall or injury, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after a fall or injury, the NHS says to call 999 or go to A&E. Do not drive yourself.",
       "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
-      "If none of the 999 signs above apply and you think you are having a relapse, our approach is to ask you to contact your MS team or GP. We cannot assess a relapse over video, and we pause exercise with us until they have advised you.",
+      "If none of the 999 signs above apply and you think you are having a relapse, our approach is to ask you to contact your MS team or GP. We cannot assess a relapse over video, and we pause your sessions with us until your GP or MS team has cleared you to restart.",
       "If you have symptoms you think could be MS but have no diagnosis, the NHS says to see a GP. Online sessions with us do not replace a diagnosis.",
       "If you need hands-on therapy or equipment set up in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.",
     ],
@@ -1101,11 +1151,15 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Do you manage MS relapses?",
-        a: "No. If you have sudden weakness or numbness in one arm, loss or blurring of vision, or problems with balance and co-ordination, call 999 or go to A&E and do not drive yourself. If none of those apply and you think you are having a relapse, contact your MS team or GP.",
+        a: "No. If you have sudden weakness or numbness in one arm, loss or blurring of vision, or problems with balance and co-ordination, call 999 or go to A&E and do not drive yourself. If none of those apply and you think you are having a relapse, contact your MS team or GP. We pause your sessions until your GP or MS team clears you to restart.",
       },
       {
         q: "Do you work with my MS nurse or neurologist?",
-        a: "We work alongside your MS team and do not replace it. With your consent, we can share a written summary of your progress.",
+        a: "No. We are a separate private service and we do not replace your MS team. Keep your GP or specialist team informed about your treatment.",
+      },
+      {
+        q: "Do I need anyone's go-ahead before I start?",
+        a: "Yes. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. We ask about this at booking, and triage confirms whether video suits you.",
       },
       {
         q: "Can my carer join the session?",
@@ -1116,6 +1170,10 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       {
         label: "NHS: Multiple sclerosis",
         url: "https://www.nhs.uk/conditions/multiple-sclerosis/",
+      },
+      {
+        label: "NICE NG220: Multiple sclerosis in adults, recommendations",
+        url: "https://www.nice.org.uk/guidance/ng220/chapter/Recommendations",
       },
       {
         label: "NHS: Stroke symptoms",
@@ -1140,26 +1198,27 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "What online physiotherapy can and cannot offer for functional neurological disorder (FND): a neurologist diagnoses it, outcomes vary, and when to call 999.",
     answer:
-      "Functional neurological disorder (FND) is diagnosed by a neurologist, not by us. If you already have a diagnosis and are medically stable, a video session lets your physiotherapist work on movement and activity alongside your neurology team. Outcomes vary between people and we promise none. Triage at booking confirms whether video suits you. Stroke signs mean 999.",
+      "Functional neurological disorder (FND) is diagnosed by a neurologist, not by us. If you already have a diagnosis and are medically stable, a video session lets your physiotherapist work on movement and activity. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. Outcomes vary between people and we promise none. Stroke signs mean 999.",
     howOnlineWorks: [
       "FND is diagnosed by a neurologist. We do not diagnose it, and we ask you to have a diagnosis from a neurologist before we start. If you are unsure whether your symptoms are FND, speak to your GP about seeing a neurologist rather than booking with us.",
-      "NHS inform says that specialised physiotherapy can be useful in treating FND, and that it helps remind the body how it should move and helps build up lost strength and stamina. It also says outcomes vary: some people benefit a lot and may go into remission, while others continue to have symptoms despite treatment. We do not promise any outcome, and our online service is general physiotherapy support alongside your neurology team.",
+      "NHS inform says that specialised physiotherapy can be useful in treating FND, and that it helps remind the body how it should move and helps build up lost strength and stamina. It also says outcomes vary: some people benefit a lot and may go into remission, while others continue to have symptoms despite treatment. We do not promise any outcome, and our online service is general physiotherapy support that does not replace care from your neurology team.",
       "A UK trial called Physio4FMD, published in The Lancet Neurology in 2024, looked at specialist physiotherapy for functional motor disorder in adults with a neurologist's diagnosis. It did not find a difference in its main measure of physical functioning at 12 months compared with usual care from community neurological physiotherapy. People given the specialist treatment more often rated their motor symptoms as improved, and the authors describe both kinds of physiotherapy as safe and valued for selected patients. The trial abstract does not describe video sessions, so it is not evidence about our service.",
-      "Our neurological rehabilitation service is for people who are medically stable and supports your wider team. Our service guidance says a family member or carer can join the session and help get the room ready. We work at a pace you can manage and keep your neurologist or GP informed, with your consent.",
+      "Our neurological rehabilitation service is for people who are medically stable. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. Our service guidance says a family member or carer can join the session and help get the room ready. We work at a pace you can manage. Keep your GP or specialist team informed about your treatment.",
+      "NICE guidance on rehabilitation for chronic neurological disorders (NG252, published in 2025) includes FND. It recommends that people with FND are offered activities that encourage and enable recovery of movement and function, built around goals and focused on movement while moving attention away from symptoms. It also says a registered practitioner, such as a physiotherapist, should develop and oversee an exercise programme with the person. NICE does not promise recovery and says nothing about our service.",
       "Video has limits. We cannot examine you by hand, and we cannot catch you if you lose your balance, so we plan movements you can do safely at home. If video does not suit you, we will say so and suggest in-person care through your NHS team.",
     ],
     assessmentChecks: [
-      "Your diagnosis, who made it, and what your neurologist or GP has said about physiotherapy and activity.",
+      "Your diagnosis, who made it, and confirmation that your GP or specialist team has said it is safe for you to begin physiotherapy.",
       "What you want to be able to do, in your own words, and what has become harder.",
       "How your symptoms affect movement, walking, tiredness and daily tasks, and what tends to make them better or worse.",
-      "What other care you are having, such as support from a neurology team or psychological support, so that our plan sits alongside it.",
+      "What other care you are having, such as support from a neurology team or psychological support, so that our plan does not clash with it.",
       "Whether your room and set-up at home are safe for the movements we plan, and who can be with you.",
       "Whether any new symptom has appeared suddenly, which we will route using the urgent options below.",
     ],
     typicalPlan: [
       "We begin with what you want to do and a few gentle movement checks over video. From that we build a short routine to repeat at home, at a pace you can manage, and we change it as you tell us what is working and what is not.",
       "Your first appointment is a 60-minute video assessment at {INITIAL_PRICE}, then 30-minute follow-ups at {FOLLOW_UP_PRICE}. Triage at booking confirms whether video suits you, and we tell you before you pay if it does not.",
-      "Because outcomes vary between people, we do not give a timeline or a prediction. We review the plan with you at each follow-up, and with your consent we can share a written summary with your neurologist or GP.",
+      "Because outcomes vary between people, we do not give a timeline or a prediction. We review the plan with you at each follow-up. Keep your GP or specialist team informed about your treatment.",
       "If a plan is not helping, we will say so and talk about whether a different kind of care, such as in-person therapy through your NHS team, would suit you better.",
     ],
     timeline:
@@ -1175,7 +1234,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "Can you diagnose FND?",
-        a: "No. FND is diagnosed by a neurologist. We ask for a diagnosis before we start, and if you do not have one, speak to your GP.",
+        a: "No. FND is diagnosed by a neurologist. We ask for a diagnosis before we start, and if you do not have one, speak to your GP. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.",
       },
       {
         q: "Does physiotherapy work for FND?",
@@ -1194,6 +1253,14 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       {
         label: "NHS inform: Functional neurological disorder (FND)",
         url: "https://www.nhsinform.scot/illnesses-and-conditions/brain-nerves-and-spinal-cord/functional-neurological-disorder/",
+      },
+      {
+        label: "NICE NG252: Rehabilitation for chronic neurological disorders including acquired brain injury",
+        url: "https://www.nice.org.uk/guidance/ng252",
+      },
+      {
+        label: "NICE NG252: Rehabilitation to maintain, improve or support function",
+        url: "https://www.nice.org.uk/guidance/ng252/chapter/Rehabilitation-to-maintain-improve-or-support-function",
       },
       {
         label: "Physio4FMD trial, The Lancet Neurology (2024)",

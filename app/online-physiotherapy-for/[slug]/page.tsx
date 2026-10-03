@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getArticle } from "@/lib/blog";
 import { getCondition, getSelfTest } from "@/lib/exercise-library";
 import { getGuide } from "@/lib/guides";
+import { PAGE_DISCLAIMER } from "@/lib/exercise-disclaimer";
 import {
   allOnlinePhysioSlugs,
   getOnlinePhysioPage,
@@ -248,6 +249,10 @@ export default async function OnlinePhysioLandingPage({
             </li>
           </ul>
         </section>
+
+        <p className="exlib-selftest-disclaimer" data-page-disclaimer role="note">
+          {PAGE_DISCLAIMER}
+        </p>
 
         <section data-sources>
           <h2>Sources</h2>
