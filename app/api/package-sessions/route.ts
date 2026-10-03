@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { createCalBooking } from "@/lib/cal-booking";
 import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import type { VisitType } from "@/lib/home-visit";
 
 const DEFAULT_TIMEZONE = "Europe/London";
 
@@ -16,6 +17,9 @@ type PackageDoc = {
   remainingSessions?: number;
   status?: string;
   bookingUids?: string[];
+  /** Set by the payments webhook for a bundle bought as a home visit. */
+  visitType?: VisitType;
+  homeVisitAddress?: string;
 };
 
 type FollowUpCheckIn = {
@@ -155,6 +159,13 @@ export async function POST(request: NextRequest) {
   const email = String(pack.email || user.email || "");
   if (!email) return NextResponse.json({ error: "Package email is missing." }, { status: 400 });
 
+  // A bundle bought as a home visit books every later session as a home
+  // visit. The address stays server-side: never logged or returned.
+  const homeVisit =
+    pack.visitType === "home" && typeof pack.homeVisitAddress === "string" && pack.homeVisitAddress.trim()
+      ? { visitType: "home" as const, homeVisitAddress: pack.homeVisitAddress.trim() }
+      : null;
+
   const booking = await createCalBooking({
     service: "follow-up",
     startISO: startDate.toISOString(),
@@ -162,6 +173,7 @@ export async function POST(request: NextRequest) {
     email,
     timeZone,
     focusAreas: ["Package session"],
+    ...(homeVisit ?? {}),
   });
   if (!booking.ok) {
     return NextResponse.json({ error: booking.error }, { status: booking.status || 502 });
@@ -210,6 +222,7 @@ export async function POST(request: NextRequest) {
     packageSessionNumber: sessionNumber,
     packageTotalSessions: total,
     packageFollowUpCheckInId: checkInRef.id,
+    ...(homeVisit ?? {}),
     createdAt: FieldValue.serverTimestamp(),
   });
 

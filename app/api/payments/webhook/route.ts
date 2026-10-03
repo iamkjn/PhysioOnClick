@@ -221,6 +221,9 @@ export async function POST(request: Request) {
       firstCalBookingUid: booking.uid,
       bookingUids: [booking.uid],
       stripeSessionId: session.id,
+      // Server-only (no client rule on sessionPackages): later bundle
+      // sessions are booked from this doc and must stay home visits.
+      ...(homeVisit ?? {}),
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });

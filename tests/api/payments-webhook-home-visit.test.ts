@@ -10,9 +10,11 @@ const paymentDocRef = {
   get: vi.fn(),
   set: vi.fn().mockResolvedValue(undefined),
 };
+const packageDocRef = { set: vi.fn().mockResolvedValue(undefined) };
 const db = {
   collection: vi.fn((name: string) => {
     if (name === "payments") return { doc: vi.fn(() => paymentDocRef) };
+    if (name === "sessionPackages") return { doc: vi.fn(() => packageDocRef) };
     return {
       where: () => ({
         limit: () => ({ get: async () => ({ empty: false, docs: [{ ref: bookingDoc, data: () => ({}) }] }) }),
@@ -154,5 +156,21 @@ describe("POST /api/payments/webhook — home visits", () => {
     const logged = JSON.stringify([...errorSpy.mock.calls, ...logSpy.mock.calls]);
     expect(logged).not.toContain("Example Street");
     expect(logged).not.toContain("G31 4HS");
+  });
+
+  it("keeps the home visit on a bundle's sessionPackages doc for later sessions", async () => {
+    await POST(
+      signedRequest(eventWith({ service: "bundle-4", visitType: "home", homeVisitAddress: ADDRESS })),
+    );
+    expect(packageDocRef.set).toHaveBeenCalledWith(
+      expect.objectContaining({ visitType: "home", homeVisitAddress: ADDRESS, totalSessions: 4 }),
+    );
+  });
+
+  it("stores no visit fields on a video bundle", async () => {
+    await POST(signedRequest(eventWith({ service: "bundle-4", visitType: "video" })));
+    const pack = packageDocRef.set.mock.calls[0][0];
+    expect(pack).not.toHaveProperty("visitType");
+    expect(pack).not.toHaveProperty("homeVisitAddress");
   });
 });
