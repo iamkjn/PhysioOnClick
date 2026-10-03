@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   updateProfile: vi.fn(),
   trackGrowthEvent: vi.fn(),
   track: vi.fn(),
+  wizardProps: [] as Array<Record<string, unknown>>,
 }))
 
 vi.mock('@/lib/firebase', () => ({
@@ -34,6 +35,7 @@ vi.mock('firebase/auth', () => ({
 }))
 vi.mock('@/components/assessment-wizard', () => ({
   AssessmentWizard: (props: { onSubmitted: (formId: string) => void }) => (
+    mocks.wizardProps.push(props as unknown as Record<string, unknown>),
     <button type="button" onClick={() => props.onSubmitted('form-1')}>
       Submit assessment
     </button>
@@ -68,6 +70,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
   vi.clearAllMocks()
   window.localStorage.clear()
+  mocks.wizardProps.length = 0
   window.history.replaceState(null, '', '/')
 })
 
@@ -172,5 +175,29 @@ describe('booking visit type', () => {
     expect(body.visitType).toBe('video')
     expect(body).not.toHaveProperty('homeAddressLine')
     expect(body).not.toHaveProperty('homePostcode')
+  })
+
+  it('words the consent for the chosen visit and passes the visit to the assessment', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: 'Home visit (Glasgow area)' }))
+    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+    await user.type(screen.getByLabelText('Postcode'), 'g31 4hs')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    const consent = await screen.findByRole('checkbox', { name: /consent/i })
+    expect(consent.closest('label')?.textContent).toMatch(/physiotherapy assessment and treatment at a home visit/)
+    expect(consent.closest('label')?.textContent).not.toMatch(/online consultation/)
+    await payAsGuest(user)
+    expect(mocks.wizardProps.at(-1)?.visitType).toBe('home')
+  })
+
+  it('words the consent for a video call', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    const consent = await screen.findByRole('checkbox', { name: /consent/i })
+    expect(consent.closest('label')?.textContent).toMatch(/physiotherapy assessment and treatment by video/)
+    await payAsGuest(user)
+    expect(mocks.wizardProps.at(-1)?.visitType).toBe('video')
   })
 })

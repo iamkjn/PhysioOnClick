@@ -69,6 +69,7 @@ function AssessmentPageInner() {
           assessmentCompletedAt: b.assessmentCompletedAt,
           paid: b.paid,
           status: b.status,
+          visitType: b.visitType,
         }));
         setTarget(selectTargetBooking(list, bookingParam));
       })
@@ -145,6 +146,7 @@ function AssessmentPageInner() {
             personName={personName}
             personDob={personDob}
             bookingId={target.id}
+            visitType={target.visitType}
             onSubmitted={handleSubmitted}
           />
           <section className="page-section">

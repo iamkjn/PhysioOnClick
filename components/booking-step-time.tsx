@@ -665,6 +665,7 @@ export function BookingStepTime({
         focusAreas={focusAreas}
         onSubmitted={(formId) => startCheckout(formId)}
         redirectingToPayment
+        visitType={visit.visitType}
       />
     );
   }
@@ -944,7 +945,8 @@ export function BookingStepTime({
               onChange={(e) => setConsent(e.target.checked)}
             />
             <span>
-              I consent to online consultation and the storage of my personal and clinical data as described in the{" "}
+              I consent to a physiotherapy assessment and treatment{" "}
+              {visit.visitType === "home" ? "at a home visit" : "by video"} and the storage of my personal and clinical data as described in the{" "}
               <a href="/privacy-policy">Privacy Policy</a>, and I accept the{" "}
               <a href="/terms">Terms</a>.
             </span>
