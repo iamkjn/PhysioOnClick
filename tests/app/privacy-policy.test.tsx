@@ -41,7 +41,10 @@ describe('Privacy Policy page', () => {
     expect(text).toMatch(/Home visit address:.*12 months after the last interaction/)
     expect(text).toMatch(/Cal\.com:.*includes the visit address/)
     expect(text).toMatch(/visit address is also recorded against your payment/)
-    expect(text).toMatch(/Resend:.*appointment emails.*include the visit address/)
+    expect(text).toMatch(/Resend:.*payment receipt email includes the visit address/)
+    // The assessment-link email has no live caller (assessment is collected
+    // before payment), so the policy must not list it.
+    expect(text).not.toMatch(/assessment link and reminder/)
     expect(text).toMatch(/booking record and payment record/)
     expect(text).toMatch(/October 2026/)
   })

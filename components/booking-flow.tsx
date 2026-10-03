@@ -23,6 +23,8 @@ export type BookingConfirmation = {
   start: string;
   serviceId: BookServiceId;
   name: string;
+  /** Video unless set; a home visit has no video link to join. */
+  visitType?: VisitType;
 };
 
 function initials(name: string) {

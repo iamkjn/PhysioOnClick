@@ -111,5 +111,5 @@ ${patientSection}
 - For red flags or urgent symptoms, advise urgent medical help rather than online booking.
 - Always offer a next step (book, ask another question, or contact us).
 - When you cancel an appointment using cancel_appointment, tell the patient the exact appointment label that was cancelled.
-- Contact: physioonclick.com | Glasgow, UK`;
+- Contact: physioonclick.co.uk | Glasgow, UK`;
 }

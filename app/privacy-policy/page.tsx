@@ -96,7 +96,7 @@ export default function PrivacyPolicyPage() {
             <li><strong>Cal.com:</strong> used for appointment scheduling; booking data is shared with Cal.com to manage your calendar appointment. For a home visit this includes the visit address you give us</li>
             <li><strong>Google Calendar / Google Meet:</strong> used to create appointment events and video consultation links; attendee details (name, email) are shared with Google to generate the meeting link</li>
             <li><strong>Google Gemini:</strong> powers the on-site chat assistant; the content of your chat messages is processed to generate replies</li>
-            <li><strong>Resend:</strong> sends transactional emails such as sign-in links and enquiry notifications. For a home visit, our appointment emails (receipt, pre-appointment assessment link and reminder) include the visit address</li>
+            <li><strong>Resend:</strong> sends transactional emails such as sign-in links and enquiry notifications. For a home visit, our payment receipt email includes the visit address</li>
             <li><strong>Google Analytics:</strong> anonymous usage statistics, loaded only after you accept analytics cookies</li>
             <li><strong>Stripe:</strong> processes your online payment and holds your card details securely; we never see your full card number. For a home visit, the visit address is also recorded against your payment so the booking can be completed once you have paid</li>
             <li><strong>Trustpilot:</strong> after a completed session we may share your name, email and a booking reference with Trustpilot so it can invite you to leave an independent review. Leaving a review is entirely optional</li>

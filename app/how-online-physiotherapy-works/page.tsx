@@ -23,16 +23,16 @@ const steps = [
     body: "Pick from an initial assessment, a follow-up, or a multi-session bundle, then choose an available slot. Everything runs on UK time and updates in real time as slots are booked."
   },
   {
+    title: "Complete a short assessment as you book",
+    body: "Before you pay, you fill in a short assessment as part of booking, so your physiotherapist has the full picture before your session."
+  },
+  {
     title: "Pay securely and get your receipt",
     body: "Payment is handled by Stripe before the appointment is confirmed. A payment receipt and a PDF invoice — suitable for a health insurance claim — are emailed automatically."
   },
   {
-    title: "Complete a short assessment beforehand",
-    body: "For paid bookings, a short pre-appointment assessment is emailed ahead of your session via a secure sign-in link, so your physiotherapist has the full picture before you speak. A reminder is sent roughly an hour before your appointment if it isn't finished yet."
-  },
-  {
     title: "Attend your video consultation or home visit",
-    body: "For a video appointment, your confirmation email includes a secure video link for your appointment time, and no separate app or account is required to join. If you chose a home visit in the Glasgow area, your confirmation email shows the visit address instead."
+    body: "For a video appointment, your confirmation email includes a secure video link for your appointment time, and no separate app or account is required to join. If you chose a home visit in the Glasgow area, your physiotherapist comes to you at the booked time, and our receipt email shows the visit address."
   },
   {
     title: "Get your plan and keep it in one place",

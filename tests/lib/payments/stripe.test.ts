@@ -54,4 +54,31 @@ describe("createStripeCheckout", () => {
     const result = await createStripeCheckout(INPUT);
     expect(result.ok).toBe(false);
   });
+
+  it("withholds Stripe's error body when the request carries a home address", async () => {
+    // Stripe echoes request params (metadata) in some error bodies.
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+      new Response('{"error":{"message":"bad metadata[homeVisitAddress]=7 Example Street, G31 4HS"}}', { status: 400 }),
+    ));
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_x");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const result = await createStripeCheckout({
+      ...INPUT,
+      intent: { ...INPUT.intent, visitType: "home" as const, homeVisitAddress: "7 Example Street, G31 4HS" },
+    });
+    expect(result.ok).toBe(false);
+    const logged = JSON.stringify(errorSpy.mock.calls);
+    expect(logged).toContain("400");
+    expect(logged).not.toContain("Example Street");
+    expect(logged).not.toContain("G31 4HS");
+  });
+
+  it("still logs Stripe's error body for a video booking", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("no such price", { status: 400 })));
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_x");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await createStripeCheckout(INPUT);
+    expect(JSON.stringify(errorSpy.mock.calls)).toContain("no such price");
+  });
 });
+

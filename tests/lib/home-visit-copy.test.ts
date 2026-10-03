@@ -24,6 +24,10 @@ const DENIALS = [
   "no in-person clinic",
   "online only",
   "online-only",
+  "over video rather than in a clinic",
+  "entirely through video",
+  "entirely through online video",
+  "entirely over video",
 ];
 
 const PAGE_FILES = [
@@ -33,6 +37,8 @@ const PAGE_FILES = [
   "app/glasgow-physiotherapist/page.tsx",
   "components/site-footer.tsx",
   "components/chat-widget.tsx",
+  "lib/blog.ts",
+  "lib/conditions.ts",
 ];
 
 describe("home visit copy", () => {
@@ -54,6 +60,30 @@ describe("home visit copy", () => {
   it("the cannot-do guide points Glasgow-area patients to a home visit", () => {
     const g = guides.find((x) => x.slug === "what-online-physiotherapy-cannot-do");
     expect(JSON.stringify(g)).toMatch(/home visit/i);
+  });
+});
+
+describe("copy accuracy", () => {
+  it("how-it-works describes the assessment before payment, with no reminder", () => {
+    const src = readFileSync("app/how-online-physiotherapy-works/page.tsx", "utf8");
+    expect(src).toMatch(/Before you pay, you fill in a short assessment/);
+    expect(src).not.toMatch(/reminder is sent/i);
+    expect(src).not.toMatch(/emailed ahead of your session/i);
+    expect(src.indexOf("Complete a short assessment")).toBeLessThan(src.indexOf("Pay securely"));
+    expect(src).not.toMatch(/confirmation email shows the visit address/);
+    expect(src).toMatch(/our receipt email shows the visit address/);
+  });
+
+  it("the chat prompt uses the live domain", () => {
+    expect(buildSystemPrompt()).not.toMatch(/physioonclick\.com\b/);
+    expect(buildSystemPrompt()).toMatch(/physioonclick\.co\.uk/);
+  });
+
+  it("blog categories that describe delivery mention Glasgow home visits", () => {
+    const src = readFileSync("lib/blog.ts", "utf8");
+    expect(src).toMatch(/neurological conditions through video consultations, or home visits in the Glasgow area/);
+    expect(src).toMatch(/post-surgery physiotherapy through video consultations, or home visits in the Glasgow area/);
+    expect(src).toMatch(/Knee assessments at PhysioOnClick happen by video, or as a home visit in the Glasgow area/);
   });
 });
 

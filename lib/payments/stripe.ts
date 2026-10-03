@@ -41,7 +41,12 @@ export async function createStripeCheckout(
   }
 
   if (!response.ok) {
-    console.error("Stripe checkout error status", response.status, await response.text().catch(() => ""));
+    // Stripe can echo request params (including metadata) in its error body,
+    // so never log it when the request carries a home-visit address.
+    const detail = input.intent.homeVisitAddress
+      ? "[body withheld: home visit]"
+      : await response.text().catch(() => "");
+    console.error("Stripe checkout error status", response.status, detail);
     return { ok: false, error: "Unable to start payment." };
   }
 
