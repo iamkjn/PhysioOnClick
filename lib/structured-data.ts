@@ -6,8 +6,8 @@
 // appear together in one page's rendered HTML into a single graph instead of
 // treating them as unrelated, duplicate entities.
 //
-// The practice is online-first, with online physiotherapy across the UK and
-// in-person care available in Glasgow. `areaServed` is the whole UK on purpose,
+// The practice offers video physiotherapy across the UK and home visits in the
+// Glasgow area (no clinic or premises). `areaServed` is the whole UK on purpose,
 // while the address below represents the Glasgow business location.
 //
 // OWNER TODO — still missing from the public graph. Do not guess these:
@@ -85,12 +85,31 @@ export function practiceNode() {
     // Change it in one place only.
     telephone: PRACTICE_PHONE,
     email: "hello@physioonclick.co.uk",
-    // Consultations are delivered remotely, never at the address above. Stating
-    // the channel explicitly stops the entity reading as a walk-in clinic.
-    availableChannel: {
-      "@type": "ServiceChannel",
-      serviceType: "Online video consultation",
-      serviceUrl: absoluteUrl("/book")
+    // Video consultations are available UK-wide; home visits are a separate,
+    // Glasgow-only service. There is no clinic or walk-in premises, and no
+    // geo is published (service-area business).
+    availableChannel: [
+      {
+        "@type": "ServiceChannel",
+        serviceType: "Online video consultation",
+        serviceUrl: absoluteUrl("/book")
+      },
+      {
+        "@type": "ServiceChannel",
+        serviceType: "Home visit physiotherapy",
+        serviceUrl: absoluteUrl("/book?visit=home"),
+        availableLanguage: "en-GB"
+      }
+    ],
+    makesOffer: {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: "Home visit physiotherapy",
+        serviceType: "Home visit physiotherapy",
+        areaServed: { "@type": "City", name: "Glasgow" },
+        url: absoluteUrl("/glasgow-physiotherapist")
+      }
     },
     // Mirrors the hours already published on /contact. If those change, change
     // both — contradicting hours are worse than none.

@@ -17,7 +17,7 @@ export function SiteFooter() {
           <Link className="footer-brand-link" href="/">
             <h3>PhysioOnClick</h3>
           </Link>
-          <p>Evidence-based physiotherapy online across the UK. HCPC registered, CSP member.</p>
+          <p>Evidence-based physiotherapy by video across the UK, with home visits in the Glasgow area. HCPC registered, CSP member.</p>
         </div>
         <div>
           <h4>Quick links</h4>
@@ -42,7 +42,7 @@ export function SiteFooter() {
         </div>
         <div>
           <h4>Contact</h4>
-          <Link href="/glasgow-physiotherapist">Online physio for Glasgow patients</Link>
+          <Link href="/glasgow-physiotherapist">Glasgow home visits and online physio</Link>
           <Link href="/online-physiotherapy-scotland">Online physio in Scotland</Link>
           <Link href="/guides">Guides</Link>
           <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>

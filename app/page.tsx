@@ -123,11 +123,12 @@ export default async function HomePage() {
       <section className="page-section simple-section">
         <Reveal direction="up">
           <div className="site-shell section-heading">
-            <span className="eyebrow">No clinic visit required</span>
+            <span className="eyebrow">Video anywhere in the UK, home visits in Glasgow</span>
             <h2>How online physiotherapy works</h2>
             <p>
-              A full assessment, a real diagnosis and a plan you can act on the same day &mdash; all
-              over video, with the same physiotherapist reviewing your progress every session.
+              A full assessment, a real diagnosis and a plan you can act on the same day &mdash; over
+              video anywhere in the UK, or as a home visit in the Glasgow area, with the same physiotherapist
+              reviewing your progress every session.
             </p>
           </div>
         </Reveal>
@@ -141,7 +142,7 @@ export default async function HomePage() {
           <Reveal direction="up" delay={75}>
             <article className="simple-service-card">
               <h3>2. Video assessment</h3>
-              <p>A 60-minute guided assessment: history, a movement or functional screen talked through over video, and red-flag screening to confirm online care is the right fit.</p>
+              <p>A 60-minute guided assessment: history, a movement or functional screen (talked through over video, or done at your home for a Glasgow-area home visit), and red-flag screening to confirm this kind of care is the right fit.</p>
             </article>
           </Reveal>
           <Reveal direction="up" delay={150}>
@@ -208,12 +209,16 @@ export default async function HomePage() {
             <p>No. You can self-refer for private physiotherapy directly &mdash; book an initial assessment whenever you&rsquo;re ready.</p>
           </details>
           <details>
+            <summary>Can I be seen in person?</summary>
+            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit (Glasgow area)&rdquo; when you book, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. We have no clinic or premises, and video appointments are available anywhere in the UK at the same prices.</p>
+          </details>
+          <details>
             <summary>Is online physiotherapy actually effective?</summary>
             <p>For the large majority of musculoskeletal and rehab concerns &mdash; back, neck, shoulder, tendon pain, and post-surgical recovery &mdash; a guided video assessment reaches an accurate working diagnosis and produces the same structured exercise-based treatment that in-person care would. See <Link href="/glasgow-physiotherapist" prefetch>how this works for Glasgow patients specifically</Link>.</p>
           </details>
           <details>
             <summary>What if online care isn&rsquo;t right for my situation?</summary>
-            <p>You&rsquo;ll be told plainly at triage. Red-flag symptoms, suspected fractures, or conditions needing hands-on treatment as the primary intervention are pointed toward an in-person clinician or your GP rather than kept in an online plan that isn&rsquo;t the right fit.</p>
+            <p>You&rsquo;ll be told plainly at triage. Red-flag symptoms, suspected fractures, or conditions needing hands-on treatment as the primary intervention are pointed toward an in-person clinician or your GP rather than kept in a plan that isn&rsquo;t the right fit.</p>
           </details>
           <details>
             <summary>Can I claim this back through insurance?</summary>

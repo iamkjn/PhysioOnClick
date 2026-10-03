@@ -21,6 +21,18 @@ import { TrackedBookLink } from "@/components/tracked-book-link";
 // on OpenNext that 404s every path on deploy (known repo hazard).
 export const dynamic = "force-static";
 
+// Pages for post-operative and neurological care require clearance first (see
+// each page), so the general home-visit line is left off them.
+const NO_HOME_VISIT_LINE = new Set([
+  "knee-replacement-rehab",
+  "hip-replacement-rehab",
+  "rotator-cuff-repair-rehab",
+  "stroke-rehabilitation",
+  "parkinsons",
+  "multiple-sclerosis",
+  "functional-neurological-disorder",
+]);
+
 export function generateStaticParams() {
   return allOnlinePhysioSlugs().map((slug) => ({ slug }));
 }
@@ -131,6 +143,13 @@ export default async function OnlinePhysioLandingPage({
           </TrackedBookLink>
         </p>
 
+        {NO_HOME_VISIT_LINE.has(slug) ? null : (
+          <p>
+            If you&rsquo;re in the Glasgow area, you can{" "}
+            <Link href="/book?visit=home">book a home visit</Link> instead of a video call.
+          </p>
+        )}
+
         <section>
           <h2>How online physiotherapy works {page.h1.startsWith("Online physiotherapy after ") ? "after" : "for"} {sentenceName(page)}</h2>
           {page.howOnlineWorks.map((p, i) => (
@@ -170,8 +189,8 @@ export default async function OnlinePhysioLandingPage({
         <section>
           <h2>When you need to be seen in person instead</h2>
           <p>
-            PhysioOnClick is online only. A video appointment is not the right
-            route for the situations below.
+            A video appointment is not the right route for the situations
+            below, and a home visit is not a substitute for urgent care.
           </p>
           <div className="exlib-redflags" data-in-person>
             <ul className="exlib-redflags__list">

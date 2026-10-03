@@ -13,7 +13,7 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   alternates: { canonical: "/online-physiotherapy-scotland" },
   title: "Online Physiotherapy in Scotland | PhysioOnClick",
-  description: `Video physiotherapy appointments across Scotland with a Glasgow-based HCPC physiotherapist. No GP referral needed. £${initialAssessmentPrice} initial assessment.`,
+  description: `Video physiotherapy across Scotland, plus home visits in the Glasgow area, with a Glasgow-based HCPC physiotherapist. No GP referral. £${initialAssessmentPrice} initial assessment.`,
 };
 
 const PHS_URL =
@@ -27,10 +27,11 @@ const faqItems: { question: string; answer: React.ReactNode }[] = [
     question: "Can I see you in person in Scotland?",
     answer: (
       <>
-        No. PhysioOnClick is online only, so every appointment is by video and we do not offer clinic or home
-        visits anywhere in Scotland. If you need hands-on care, we will tell you at your assessment and suggest you
-        look for an in-person service, for example through your GP or your health board&rsquo;s NHS MSK service.
-        For emergencies, call 999 or go to A&amp;E.
+        Yes, through home visits in the Glasgow area. Elsewhere in Scotland, appointments are by video. We have no
+        clinic or premises, and we&rsquo;ll confirm by email if your address is outside the area we cover for home
+        visits. If you need hands-on care and a home visit is not available to you, we will tell you at your
+        assessment and suggest you look for an in-person service, for example through your GP or your health
+        board&rsquo;s NHS MSK service. For emergencies, call 999 or go to A&amp;E.
       </>
     ),
   },
@@ -77,9 +78,10 @@ export default function ScotlandPage() {
           <span className="eyebrow">Online Physiotherapy in Scotland</span>
           <h1>Online physiotherapy across Scotland</h1>
           <p className="lead">
-            PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. Every appointment is by
-            video, so you can book from anywhere in Scotland with a stable internet connection. You do not need a
-            GP referral, and the initial assessment is £{initialAssessmentPrice}.
+            PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. Video appointments are
+            available across Scotland with a stable internet connection, and home visits are available in the
+            Glasgow area. You do not need a GP referral, and the initial assessment is £{initialAssessmentPrice}
+            for both.
           </p>
           <div className="button-row">
             <TrackedBookLink
@@ -95,11 +97,11 @@ export default function ScotlandPage() {
         <div className="page-hero-aside checklist-panel">
           <h2>What to know first</h2>
           <ul className="clean-list">
-            <li>Video only. We do not offer in-person care anywhere in Scotland.</li>
+            <li>Video appointments across Scotland, and home visits in the Glasgow area only.</li>
             <li>You need a camera, a microphone and a reasonably stable connection.</li>
             <li>
               Local to Glasgow? See our{" "}
-              <Link href="/glasgow-physiotherapist">Glasgow physiotherapist page</Link>.
+              <Link href="/glasgow-physiotherapist">Glasgow physiotherapist page</Link> for home visits.
             </li>
             <li>
               <Link href="/services/neurological-rehabilitation">Neurological rehabilitation</Link> is also
@@ -174,8 +176,8 @@ export default function ScotlandPage() {
         <section className="simple-cta-band" id="book">
           <div className="site-shell simple-cta-inner">
             <span className="eyebrow">Ready to book?</span>
-            <h2>Book online physiotherapy from anywhere in Scotland</h2>
-            <p>Schedule your video appointment now, or get in touch if you have a question first.</p>
+            <h2>Book physiotherapy from anywhere in Scotland</h2>
+            <p>Schedule your video appointment or Glasgow-area home visit now, or get in touch if you have a question first.</p>
             <div className="button-row" style={{ justifyContent: "center" }}>
               <Link className="button secondary cta-white" href="/book">
                 Book your session

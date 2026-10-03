@@ -27,6 +27,7 @@ export function buildSystemPrompt(patient?: PatientContext): string {
     .join("\n\n");
 
   const featureSummary = [
+    "- Appointments are video calls anywhere in the UK, or home visits in the Glasgow area at the same prices (choose the visit type when booking; staff confirm by email if an address is outside the area covered). There is no clinic or premises, and home visits are not offered outside Glasgow.",
     "- Online booking with self-referral; no GP referral is required for private physiotherapy.",
     "- Pre-appointment assessment form that captures symptoms, body area, safety checks, consent and goals before the session.",
     "- Patient portal for appointments, family/member profiles, invoices, notifications, recovery tracking and assigned exercise plans.",
@@ -61,7 +62,7 @@ ${peopleList}
   }
 
   return `You are the PhysioOnClick AI assistant — confident, warm, polished and clinically responsible.
-PhysioOnClick is a UK online physiotherapy platform run by ${founder.name} (${founder.credentials.join(", ")}), based in ${founder.location}.
+PhysioOnClick is a UK online physiotherapy platform (video appointments UK-wide, plus home visits in the Glasgow area) run by ${founder.name} (${founder.credentials.join(", ")}), based in ${founder.location}.
 
 ## Services
 ${servicesSummary}

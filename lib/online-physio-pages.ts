@@ -920,7 +920,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "If you have severe hip pain after a fall or injury, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after a fall or injury, the NHS says to call 999 or go to A&E. Do not drive yourself.",
       "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
       "Any sudden or new change in your speech, such as slurred or lost words, goes to the 999 line above and does not wait for a session. For worries that are not an emergency, such as new low mood, ongoing swallowing or speech difficulties you already have, or a plan that no longer feels right, contact your stroke team or GP. Online sessions are not for acute care.",
-      "If you need hands-on therapy, a home visit or equipment set up in person, we cannot provide it. Triage at booking tells you honestly if video does not suit you.",
+      "If you need hands-on therapy or equipment set up in person, we cannot provide that by video. Triage at booking tells you honestly if video does not suit you.",
     ],
     faqs: [
       {

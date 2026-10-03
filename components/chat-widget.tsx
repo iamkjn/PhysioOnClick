@@ -366,7 +366,7 @@ export function ChatWidget() {
 
   function tapLocation() {
     addBot(
-      "We're based in Glasgow, UK and also offer online physiotherapy across the whole UK via secure video call.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.",
+      "We're based in Glasgow, UK. We offer home visits in the Glasgow area (we have no clinic or premises) and video physiotherapy across the whole UK, at the same prices.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.",
       BACK_CHIPS,
     );
   }

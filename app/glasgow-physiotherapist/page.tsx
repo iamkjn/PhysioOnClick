@@ -7,19 +7,28 @@ import { practiceRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/glasgow-physiotherapist" },
-  title: "Online Physiotherapist for Glasgow Patients | PhysioOnClick",
-  description: `Online physiotherapy for Glasgow patients, including neurological physio — seen by video within days, no GP referral or clinic visit. £${initialAssessmentPrice} initial assessment.`
+  title: "Physiotherapist Glasgow: Home Visits & Online | PhysioOnClick",
+  description: `Physiotherapist in Glasgow offering home visits in the Glasgow area, plus video appointments across the UK. No GP referral needed. £${initialAssessmentPrice} initial assessment.`
 };
 
 const faqItems = [
   {
     question: "Do you treat patients in Glasgow?",
     answer:
-      "Yes. PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist and works with patients in Glasgow (and across the UK) entirely online, through secure video assessments and structured rehab plans."
+      "Yes. PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. Glasgow-area patients can choose a home visit or a video appointment, and video appointments are available anywhere in the UK."
   },
   {
-    question: "Can I book online physiotherapy if I live outside Glasgow?",
-    answer: "Yes. Online physiotherapy assessments and follow-ups are available anywhere in the UK."
+    question: "Can I be seen in person in Glasgow?",
+    answer:
+      "Yes, through home visits in the Glasgow area. We do not have a clinic or premises, so all in-person care happens at your home. Choose \"Home visit (Glasgow area)\" when you book. We'll confirm by email if your address is outside the area we cover."
+  },
+  {
+    question: "How much does a home visit cost?",
+    answer: `Home visits cost the same as video appointments. The initial assessment is £${initialAssessmentPrice}, and follow-up and bundle prices are the same as for video. See the pricing page for the full list.`
+  },
+  {
+    question: "Can I book a video appointment if I live outside Glasgow?",
+    answer: "Yes. Video appointments for assessments and follow-ups are available anywhere in the UK. Home visits are for the Glasgow area only."
   },
   {
     question: "What conditions do you treat?",
@@ -29,7 +38,7 @@ const faqItems = [
   {
     question: "Do you offer neurological physiotherapy for Glasgow patients?",
     answer:
-      "Yes, by video. Neuro physiotherapy sessions cover stroke recovery, Parkinson's-related mobility, balance and falls risk, with a family member or carer welcome to join. Sessions are online only — if hands-on or home-visit neuro physio is needed, you'll be told at triage."
+      "Yes, by video or as a home visit in the Glasgow area, with a family member or carer welcome to join. Sessions cover stroke recovery, Parkinson's-related mobility, balance and falls risk. We ask for clearance from your GP or specialist team before starting neurological physiotherapy, and we'll tell you at triage if another service would suit you better."
   }
 ];
 
@@ -53,31 +62,39 @@ export default function GlasgowPage() {
       }) }} />
       <section className="page-hero page-hero-split">
         <div className="stack">
-          <span className="eyebrow">Online Physiotherapy for Glasgow</span>
-          <h1>Online Physiotherapist for Glasgow Patients</h1>
+          <span className="eyebrow">Physiotherapy in Glasgow</span>
+          <h1>Physiotherapist in Glasgow: home visits and online appointments</h1>
           <p className="lead">
-            PhysioOnClick gives Glasgow patients convenient access to a UK-registered physiotherapist —
-            video physiotherapy consultations with transparent pricing, evidence-based rehabilitation and
-            secure online booking, with no clinic visit required.
+            PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. If you are in the
+            Glasgow area you can book a home visit, and video appointments are available anywhere in the UK.
+            Prices are the same for both, and the initial assessment is £{initialAssessmentPrice}.
           </p>
           <div className="button-row">
             <TrackedBookLink
               className="button primary"
-              href="/book"
-              source="glasgow_page"
+              href="/book?visit=home"
+              source="glasgow_page_home_visit"
               event="book_now_click"
             >
-              Book your session
+              Book a home visit
+            </TrackedBookLink>
+            <TrackedBookLink
+              className="button secondary"
+              href="/book"
+              source="glasgow_page_video"
+              event="book_now_click"
+            >
+              Book a video appointment
             </TrackedBookLink>
           </div>
         </div>
         <div className="page-hero-aside checklist-panel">
-          <h2>Why Glasgow patients choose online physio</h2>
+          <h2>Two ways to be seen</h2>
           <ul className="clean-list">
             <li>Glasgow-based, HCPC registered physiotherapist</li>
-            <li>Every session delivered by secure video call</li>
-            <li>Clear pricing and secure booking</li>
-            <li>Same-week appointments, no travel required</li>
+            <li>Home visits in the Glasgow area, with no clinic or premises</li>
+            <li>Video appointments anywhere in the UK</li>
+            <li>Same prices and the same booking flow for both</li>
             <li>
               Living elsewhere in Scotland?{" "}
               <Link href="/online-physiotherapy-scotland" prefetch>
@@ -88,7 +105,7 @@ export default function GlasgowPage() {
               <Link href="/services/neurological-rehabilitation" prefetch>
                 Neurological physiotherapy
               </Link>{" "}
-              by video, for stroke, Parkinson&rsquo;s and balance problems
+              by video or home visit, for stroke, Parkinson&rsquo;s and balance problems
             </li>
           </ul>
         </div>
@@ -97,27 +114,44 @@ export default function GlasgowPage() {
       <section className="page-section two-col">
         <Reveal direction="up">
           <div className="panel stack soft-panel">
-            <h2>Why Glasgow patients book PhysioOnClick</h2>
+            <h2>What a home visit includes</h2>
             <ul className="clean-list">
-              <li>Online assessments for musculoskeletal and post-surgical care, wherever you are in Glasgow</li>
-              <li>Structured rehabilitation planning with clear milestones and home exercise support</li>
-              <li>Video follow-ups for continuity and convenience</li>
-              <li>Straightforward pricing, no hidden fees</li>
+              <li>A physiotherapy assessment at your home, covering your history and how you move</li>
+              <li>A tailored exercise plan with clear milestones</li>
+              <li>A written summary after your session</li>
+              <li>The same HCPC registered physiotherapist, with follow-ups by home visit or video</li>
             </ul>
+            <p>
+              Home visits are for the Glasgow area. We have no clinic or premises. When you book, choose
+              &ldquo;Home visit (Glasgow area)&rdquo; and enter your address. We&rsquo;ll confirm by email if your
+              address is outside the area we cover.
+            </p>
           </div>
         </Reveal>
         <Reveal direction="up" delay={80}>
           <div className="panel stack image-panel">
-            <h2>How online sessions work</h2>
+            <h2>How video sessions work</h2>
             <ul className="clean-list">
               <li>Book a session online in a few minutes</li>
-              <li>Join your assessment by secure video call</li>
+              <li>Join your assessment by secure video call from anywhere in the UK</li>
               <li>Receive a personalised rehab plan and exercise prescription</li>
               <li>Track progress with follow-up sessions</li>
             </ul>
           </div>
         </Reveal>
       </section>
+
+      <Reveal direction="up">
+        <section className="page-section stack">
+          <h2>Prices are the same for home visits and video</h2>
+          <p>
+            The initial assessment is £{initialAssessmentPrice} whether you choose a home visit or a video call.
+            Follow-ups and bundles are priced the same way for both. See{" "}
+            <Link href="/pricing">pricing</Link> for the full list. If you are not sure which suits you, the{" "}
+            <Link href="/how-online-physiotherapy-works">how it works</Link> page explains the booking steps.
+          </p>
+        </section>
+      </Reveal>
 
       <Reveal direction="up">
         <section className="page-section stack service-faqs">
@@ -135,11 +169,14 @@ export default function GlasgowPage() {
         <section className="simple-cta-band" id="book">
           <div className="site-shell simple-cta-inner">
             <span className="eyebrow">Ready to book?</span>
-            <h2>Book online physiotherapy for Glasgow patients</h2>
-            <p>Schedule your video appointment now, or get in touch if you have a question first.</p>
+            <h2>Book a physiotherapy home visit in Glasgow</h2>
+            <p>Choose a home visit or a video appointment, or get in touch if you have a question first.</p>
             <div className="button-row" style={{ justifyContent: "center" }}>
+              <Link className="button secondary cta-white" href="/book?visit=home">
+                Book a home visit
+              </Link>
               <Link className="button secondary cta-white" href="/book">
-                Book your session
+                Book a video appointment
               </Link>
               <Link className="button inverted" href="/contact">
                 Contact us

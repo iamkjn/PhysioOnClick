@@ -31,8 +31,8 @@ const steps = [
     body: "For paid bookings, a short pre-appointment assessment is emailed ahead of your session via a secure sign-in link, so your physiotherapist has the full picture before you speak. A reminder is sent roughly an hour before your appointment if it isn't finished yet."
   },
   {
-    title: "Attend your video consultation",
-    body: "Your confirmation email includes a secure video link for your appointment time. No separate app or account is required to join."
+    title: "Attend your video consultation or home visit",
+    body: "For a video appointment, your confirmation email includes a secure video link for your appointment time, and no separate app or account is required to join. If you chose a home visit in the Glasgow area, your confirmation email shows the visit address instead."
   },
   {
     title: "Get your plan and keep it in one place",
@@ -52,6 +52,10 @@ const practicalQuestions = [
   {
     question: "Can I reschedule?",
     answer: "Yes, free of charge up to 24 hours before your appointment."
+  },
+  {
+    question: "Can I be seen in person?",
+    answer: "Yes, through home visits in the Glasgow area. We have no clinic or premises. Video appointments are available anywhere in the UK, at the same prices. Choose your visit type when you book, and we'll confirm by email if your address is outside the area we cover."
   },
   {
     question: "Do I need a GP referral?",
@@ -100,7 +104,8 @@ export default function HowOnlinePhysiotherapyWorksPage() {
           </h1>
           <p>
             No clinic visit, no waiting room — just a clear five-step process from booking through to a
-            plan you can follow at home.
+            plan you can follow at home. You can book a video appointment anywhere in the UK, or a home visit
+            in the Glasgow area.
           </p>
         </section>
       </Reveal>

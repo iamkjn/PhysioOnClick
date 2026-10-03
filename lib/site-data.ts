@@ -113,11 +113,11 @@ export const services: Service[] = [
       "Pain education and pacing support"
     ],
     firstSession:
-      "Your first appointment is a 60-minute video assessment. Expect a detailed history of how and when the pain started, a movement and functional screen guided over video (simple tests you'll be talked through, like reaching, bending or single-leg balance depending on the area), and screening questions to rule out anything that needs urgent in-person or medical attention. You'll leave with a working diagnosis, a written explanation of what's driving the pain, and your first exercises to start immediately — not a wait-and-see appointment.",
+      "Your first appointment is a 60-minute assessment, by video anywhere in the UK or as a home visit in the Glasgow area. Expect a detailed history of how and when the pain started, a movement and functional screen (by video, simple tests you'll be talked through, like reaching, bending or single-leg balance depending on the area; at a home visit we do the screen with you at your home), and screening questions to rule out anything that needs urgent in-person or medical attention. You'll leave with a working diagnosis, a written explanation of what's driving the pain, and your first exercises to start immediately — not a wait-and-see appointment.",
     typicalOutcomes:
       "Most mechanical back, neck, shoulder and tendon pain starts responding within 2-3 weekly sessions once the right movement and loading plan is in place — noticeably less pain on the movements that used to trigger it, and more confidence moving normally. Persistent tendon issues and long-standing pain patterns typically need 6-8 weeks of graduated loading to see a durable change, which is why plans are reviewed and adjusted at every session rather than handed over once.",
     whenInPersonInstead:
-      "Online assessment isn't right for everyone. If there are red-flag symptoms (unexplained weight loss, night pain that doesn't ease, saddle numbness, progressive weakness), suspected fracture, or a condition that needs hands-on joint mobilisation as the primary treatment, you'll be told plainly at triage and pointed toward an in-person clinician or your GP rather than kept in an online plan that isn't the right fit.",
+      "A video assessment isn't right for everyone. If there are red-flag symptoms (unexplained weight loss, night pain that doesn't ease, saddle numbness, progressive weakness), suspected fracture, or a condition that needs hands-on joint mobilisation as the primary treatment, you'll be told plainly at triage and pointed toward an in-person clinician or your GP rather than kept in a plan that isn't the right fit. If you're in the Glasgow area, you can choose a home visit instead of a video call.",
     faqs: [
       {
         question: "Do I need a GP referral?",
@@ -258,7 +258,7 @@ export const services: Service[] = [
       {
         question: "I'm in Glasgow — can I see you in person?",
         answer:
-          "Appointments are online only, by video. That means Glasgow and the rest of Scotland are seen as quickly as anywhere else in the UK, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. If you need hands-on or home-visit neuro physiotherapy, you'll be told so at triage."
+          "Yes, through home visits in the Glasgow area, at the same prices as video. Elsewhere in Scotland and the UK, appointments are by video, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. We'll confirm by email if your address is outside the area we cover for home visits, and we'll tell you at triage if another kind of neuro physiotherapy would suit you better."
       }
     ],
     headline: "Online Neurological Physiotherapy for Glasgow, Scotland & the UK",
@@ -339,7 +339,7 @@ export const services: Service[] = [
     typicalOutcomes:
       "Most people notice improved walking confidence and reduced hesitation on stairs or uneven ground within 3-4 weeks of targeted strength and balance work. Where a mobility aid review is part of the plan, that adjustment often has an immediate, noticeable effect — the exercise programme is what sustains the improvement afterward.",
     whenInPersonInstead:
-      "A recent fall with injury, sudden new weakness, or acute pain affecting walking needs urgent in-person medical assessment first. Formal falls-risk tools that require hands-on testing (or a home hazard assessment) are best done by an in-person team; online assessment focuses on the movement and strength side, which is often the larger and most modifiable factor.",
+      "A recent fall with injury, sudden new weakness, or acute pain affecting walking needs urgent in-person medical assessment first. Formal falls-risk tools that require hands-on testing (or a home hazard assessment) are best done by an in-person team; a video assessment focuses on the movement and strength side, which is often the larger and most modifiable factor.",
     faqs: [
       {
         question: "Do you assess falls risk?",
@@ -431,7 +431,7 @@ export const pricing: PricingItem[] = [
     title: "Initial Online Assessment",
     duration: "60 min",
     price: 40,
-    description: "Remote assessment with tailored advice and exercise planning.",
+    description: "Assessment by video or home visit (Glasgow area) with tailored advice and exercise planning.",
     mode: "Online"
   },
   {
@@ -439,7 +439,7 @@ export const pricing: PricingItem[] = [
     title: "Online Follow-Up",
     duration: "30 min",
     price: 30,
-    description: "Ongoing online progression and accountability support.",
+    description: "Ongoing progression and accountability support, by video or home visit (Glasgow area).",
     mode: "Online"
   },
   {
