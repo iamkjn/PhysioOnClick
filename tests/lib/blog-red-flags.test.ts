@@ -59,4 +59,16 @@ describe("blog red flags", () => {
       }
     }
   });
+
+  it("sends sudden severe shoulder pain after trauma to an urgent treatment centre or A&E", () => {
+    const text = JSON.stringify(blogArticles.find((a) => a.slug === "online-physiotherapy-for-frozen-shoulder"));
+    expect(text).toMatch(/following a fall or direct trauma[^.]*go to an urgent treatment centre or A&E/);
+  });
+
+  it("red-flag sentences use ASCII hyphens, not em dashes, in the sciatica category", () => {
+    for (const [, sentence] of redFlagSentences()) {
+      if (/cauda equina/i.test(sentence)) expect(sentence).not.toMatch(/\u2014/);
+    }
+  });
 });
+
