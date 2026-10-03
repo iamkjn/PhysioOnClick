@@ -102,7 +102,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Most people notice a meaningful improvement over 6 to 12 weeks of consistent loading, with fuller recovery over 3 to 6 months. Tendons respond slowly, so steady progress over weeks matters more than any single session.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Tendons tend to respond slowly, so in our plans steady progress over weeks matters more than any single session. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Step up a stage when the current exercises feel controlled and are not leaving you more sore the next morning. Judge each session by how the shoulder feels the following day, not just during the exercise - if it is clearly more irritable for more than 24 hours, drop back the load a little and build up again.",
     faqs: [
@@ -112,7 +112,7 @@ export const conditions: Condition[] = [
       },
       {
         q: "How long until it feels better?",
-        a: "Many people feel the early exercises take the edge off within 2 to 3 weeks. Rebuilding full strength and comfort with overhead activity usually takes a few months of regular work.",
+        a: "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Rebuilding full strength and comfort with overhead activity takes regular work over time.",
       },
       {
         q: "Do I need a scan?",
@@ -184,7 +184,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "A low-grade strain often settles enough for a graded return to running in 2 to 4 weeks, with full return to sport around 4 to 8 weeks. Higher-grade tears, or pain near the sitting bone, can take several months. Progress is guided by the return-to-play markers, not the calendar.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Return to running and sport is guided by the return-to-play markers, not the calendar. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Move up a stage only when the current work is comfortable both during and the day after. Use a simple rule for running: if a session leaves the hamstring more than mildly sore for over 24 hours, repeat the previous level before progressing. Re-injury usually happens when the last two stages are rushed.",
     faqs: [
@@ -252,7 +252,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Most episodes improve substantially within 2 to 6 weeks. Some ache or stiffness can linger longer and flare from time to time - that is normal and does not mean harm. Regular activity and the strength work reduce how often flares happen and how long they last.",
+      "The NHS says back pain often improves on its own within a few weeks. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "You do not have to wait to be pain-free to progress - move on when movement feels easier and less guarded. Expect ups and downs. A flare during recovery is a temporary setback, not damage: drop back to the settle-stage exercises for a few days, then build up again.",
     faqs: [
@@ -320,7 +320,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Leg pain often begins to ease within 4 to 6 weeks, with many people much improved by 6 to 12 weeks. Some numbness or tingling can take longer to fully resolve. A minority with ongoing severe pain or weakness are helped by an injection or surgery.",
+      "The NHS says sciatica tends to ease over a period of weeks to months. It depends on your condition; your physiotherapist will give you an estimate after your assessment. Some numbness or tingling can take longer to settle, so tell us if it is not changing. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Use centralisation as your guide: exercises and positions that pull the pain out of the leg and towards the back are moving you in the right direction, even if the back itself feels a bit more sore. Progress the strength and walking work as the leg quietens, and back off anything that consistently sends pain further down the leg.",
     faqs: [
@@ -388,7 +388,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Most bouts of neck pain settle within 2 to 6 weeks. Recurrences are common and usually short-lived. Keeping up the strength work and managing sleep, stress and screen habits reduces how often it returns.",
+      "The NHS says most neck pain only lasts a few weeks. It depends on your condition; your physiotherapist will give you an estimate after your assessment. Keeping up the strength work and looking at sleep, stress and screen habits is part of our plans. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Progress when the neck moves more freely and the exercises no longer leave it stiffer afterwards. If a flare happens, return to the gentle range work for a few days rather than stopping altogether, then rebuild the strengthening.",
     faqs: [
@@ -461,7 +461,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Frozen shoulder is self-limiting but slow: many people take 1 to 3 years to fully recover, and a small number are left with some lasting stiffness. Pain usually improves well before movement does. Exercise, and in some cases an injection or a hydrodilatation procedure, can speed things along.",
+      "The NHS describes frozen shoulder as painful and stiff for months, and sometimes years. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Let pain guide the intensity. In the freezing phase, keep stretches gentle and frequent. Once pain has clearly settled, you can stretch more firmly and it is safe to feel a strong pull, as long as it eases within 15 to 30 minutes and does not leave the shoulder more painful overnight.",
     faqs: [
@@ -529,7 +529,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Most people improve over 6 to 12 weeks with consistent exercise, and many settle fully within 3 to 4 months. Surgery is rarely needed and, for this problem, has not been shown to beat a good exercise programme.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. In our plans, consistent exercise is the core of treatment. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Progress when the painful arc has shrunk and exercises are not causing a next-day flare. Some discomfort within range is fine. Keep chipping away at the strengthening even once pain has gone, as that is what stops it returning.",
     faqs: [
@@ -597,7 +597,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Tennis elbow often takes 3 to 6 months to settle, and sometimes up to a year. It usually gets better whatever you do, but a structured loading programme reduces pain faster and lowers the chance of recurrence. Most cases never need an injection or surgery.",
+      "The NHS says tennis elbow often settles with rest but can sometimes last more than a year. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Use a 24-hour rule: an exercise level is right if the elbow is no more than mildly sore the next morning and settles quickly. Keep loading through some discomfort - waiting for it to be completely pain-free before you start usually means it never improves.",
     faqs: [
@@ -665,7 +665,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Like tennis elbow, golfer's elbow commonly takes 3 to 6 months to settle and occasionally up to a year. Progressive loading reduces pain faster than rest and lowers the chance of it coming back.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Like tennis elbow, it can be slow to settle, so in our plans progressive loading is built up over time. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Judge each level by how the elbow feels the next day - mild soreness that settles quickly is fine, a lasting flare means drop the load a little. Keep loading through low-level discomfort rather than waiting for it to be pain-free.",
     faqs: [
@@ -733,7 +733,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Most people who stick with a strengthening programme notice less pain and better function within 6 to 12 weeks, with continued gains over 3 to 6 months. Osteoarthritis is a long-term condition, so keeping some strength work going maintains the benefit. Many people avoid or delay surgery this way.",
+      "Osteoarthritis is a long-term condition, so in our plans some strength work keeps going over the long term, and joint pain can go up for a while when you start. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Use the 24-hour rule: mild extra soreness that settles by the next day means the load was about right. Do not be put off by discomfort during exercise - it does not mean the joint is being damaged. Progress the weight or difficulty gradually as the muscles strengthen.",
     faqs: [
@@ -801,7 +801,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Many people improve within 6 to 12 weeks of consistent strengthening, though it can take longer if it has been present for months or years. It can be persistent and prone to flares, so keeping up hip and thigh strength work is worthwhile even after it settles.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. It can be persistent and prone to flares, so in our plans hip and thigh strength work continues even after it settles. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Use the 24-hour rule and let symptoms guide running progression: increase distance or intensity, not both at once, and only when the previous level caused no lasting increase in pain. Strengthening should feel like effort in the muscles, not sharp pain at the kneecap.",
     faqs: [
@@ -869,7 +869,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Gluteal tendinopathy is often slow, taking 3 to 6 months and sometimes longer to settle fully. Night pain and the ability to lie on the side are usually the last things to improve. Load management plus progressive strengthening outperforms rest or injections over the medium term.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Night pain and lying on the side are often among the last things to improve. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Protect the tendon from compression throughout, not just early on. Progress load using the 24-hour rule. If a stretch or exercise involves the leg crossing the midline or the hip dropping, and it flares the pain, modify it to keep the hip in neutral.",
     faqs: [
@@ -937,7 +937,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Most cases improve over 3 to 6 months with a consistent loading programme, though the tendon can stay mildly sensitive for longer. Pain in the mid-portion of the tendon usually responds better and faster than pain right at the heel attachment.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. The tendon can stay mildly sensitive for a while, so in our plans loading is built up gradually. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Some pain during and after loading is acceptable - up to about 3 to 5 out of 10 - provided it settles within 24 hours and the tendon is no stiffer than usual the next morning. Use morning stiffness as your main gauge: if it is increasing week on week, you are progressing too quickly.",
     faqs: [
@@ -1005,7 +1005,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "A mild sprain often settles enough for normal walking in 1 to 2 weeks and sport in 2 to 6 weeks. More severe sprains can take 6 to 12 weeks or longer. Balance and strength work should continue for at least 2 to 3 months to reduce the risk of another sprain.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. In our plans, balance and strength work continues after the pain settles, to help reduce the risk of another sprain. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Move through the stages as swelling settles, range returns and each level feels controlled. Do not stop at the point where daily life is comfortable - the balance and sport-specific work in the final stage is what prevents recurrence and lasting instability.",
     faqs: [
@@ -1079,7 +1079,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "A dedicated balance and strength programme typically produces noticeable improvement in stability within 6 to 12 weeks, with continued gains over 3 to 6 months. The exercises are worth keeping up long term as a warm-up or twice-weekly maintenance.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. The exercises are worth keeping up long term as a warm-up or regular maintenance. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Progress each stage only when the current level is steady, symmetrical and confident. The final stage markers are testable - do not go back to competitive sport until you can meet them, as this is when most recurrences happen.",
     faqs: [
@@ -1153,7 +1153,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Patellar tendinopathy is often stubborn, typically taking 3 to 6 months of consistent loading and sometimes a full season. Mid-season management focuses on controlling load and keeping symptoms tolerable; the biggest gains are made in the off-season when heavy strength work can be prioritised.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. It can be stubborn, so in our plans load is managed through the season and heavier strength work is built up when your sport allows. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Use a single-leg decline squat as your test: pain up to 3 out of 10 during loading that settles within 24 hours and does not increase morning stiffness means the load is right. Progress strength before power, and power before return to sport. Do not add jumping volume in the same week you increase strength load.",
     faqs: [
@@ -1227,7 +1227,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Non-surgical ACL rehabilitation typically runs 3 to 6 months to return to running and straight-line sport, and 9 to 12 months or more before pivoting sport if that is the goal. After a reconstruction, the timeline is similar from the point of surgery. Progress is measured by strength and control, not the calendar.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Progress is measured by strength and control, not the calendar, and after a reconstruction your surgical team's protocol comes first. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Symmetry is the guiding principle. Measure and compare the injured and healthy leg regularly, and only progress toward sport as the gap closes. Rushing the change-of-direction stage before strength is symmetrical is the main cause of re-injury and of the other knee being injured later.",
     faqs: [
@@ -1301,7 +1301,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "From a solid walking base, a graded run-walk progression to 30 minutes of continuous running usually takes 4 to 8 weeks. Returning after a bone stress injury or childbirth is slower and should be guided by a clinician. Building from there back to your previous mileage takes several more weeks.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Returning after a bone stress injury or childbirth is slower and should be guided by a clinician. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Progress only when the current week has gone well with no lasting symptoms. Use the 24-hour rule after every run. When increasing training, change one variable at a time - distance, frequency or speed - and hold the others steady that week.",
     faqs: [
@@ -1375,7 +1375,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "As a bridging phase this typically takes 4 to 12 weeks, depending on the injury and the sport. After major injuries such as an ACL reconstruction it forms the last few months of a 9 to 12 month process. Readiness is defined by meeting the markers, not by elapsed time.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Readiness is defined by meeting the markers, not by elapsed time. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Test regularly and let the numbers lead. Compare injured and healthy sides for strength and hop distance, and only move toward competition as symmetry reaches the target range. If a session causes a next-day reaction, repeat that level before progressing.",
     faqs: [
@@ -1443,17 +1443,17 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Most people walk with a stick or unaided within 2 to 6 weeks, return to driving around 6 weeks, and manage most daily activities by 3 months. Strength, stamina and swelling continue to improve for a full 12 months. The final range of movement is usually settled by around 3 months.",
+      "The NHS says it may take several months or longer to fully recover from a knee replacement. Rehab starts once your surgical team has confirmed you have no restrictions. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Prioritise full straightening early - it is harder to regain later. Expect the knee to feel warm and swollen after exercise in the first months; that is normal if it settles overnight. Progress load as pain and swelling allow, and keep going with strengthening well beyond the point where you feel recovered.",
     faqs: [
       {
         q: "How much knee bend should I aim for?",
-        a: "Around 90 degrees is needed for comfortable walking and sitting, and roughly 110 to 120 degrees for stairs and getting in and out of a car easily. Most people reach a functional range by 6 to 12 weeks with consistent work.",
+        a: "Around 90 degrees is needed for comfortable walking and sitting, and roughly 110 to 120 degrees for stairs and getting in and out of a car easily. How quickly you get there depends on your operation and your recovery, and your physiotherapist will give you an estimate after your assessment.",
       },
       {
         q: "Is it normal for the knee to be warm and swollen for months?",
-        a: "Yes. Warmth and swelling that fluctuate with activity are expected for 6 to 12 months as the joint settles. Elevation, ice, and pacing your activity help. Swelling that comes on suddenly with calf pain is different and needs urgent review.",
+        a: "Yes. Warmth and swelling that fluctuate with activity are expected for 6 to 12 months as the joint settles. Elevation, ice, and pacing your activity help. Swelling that comes on suddenly with throbbing or cramping calf pain can be a blood clot: ask for an urgent GP appointment or call NHS 111. With breathlessness or chest pain, call 999 or go to A&E, and do not drive yourself.",
       },
       {
         q: "When can I kneel on it?",
@@ -1511,7 +1511,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Most people walk with one stick or unaided within 2 to 4 weeks, stop using walking aids around 4 to 6 weeks, return to driving around 6 weeks, and feel largely back to normal daily life by 3 months. Muscle strength and stamina keep improving for up to a year.",
+      "The NHS says it may take several months to recover from a hip replacement. Rehab starts once your surgical team has confirmed you have no restrictions. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "In the first 6 to 12 weeks, keep every exercise within your hip precautions. Aim to take even weight through the new hip from early on, as favouring it prolongs the limp. Progress strengthening load gradually and keep it going beyond the point you feel recovered - residual buttock weakness is common and fixable.",
     faqs: [
@@ -1585,7 +1585,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Crutches are usually needed for 1 to 3 weeks, full straightening is expected by 2 to 4 weeks, jogging is often introduced around 3 to 4 months, and return to pivoting sport is typically 9 to 12 months, guided by testing. Strength and confidence continue to build into the second year.",
+      "Recovery after ACL reconstruction is long and guided by testing, and your surgical team's protocol comes first. Rehab starts once your surgical team has confirmed you have no restrictions. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Follow your surgeon's protocol for the milestones. Protect the graft by respecting weight-bearing and brace instructions in the early weeks. From the strength phase on, use side-to-side symmetry as the main progression gauge, and do not begin cutting and pivoting drills until strength is close to matched.",
     faqs: [
@@ -1653,7 +1653,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Balance and strength begin to improve within 4 to 8 weeks, but the falls-reduction benefit comes from keeping it going - the evidence is based on at least 3 hours of balance-challenging exercise a week sustained over 6 months or more. It works best as a permanent habit.",
+      "In our plans, balance and strength exercises are progressed step by step and tailored to you. It depends on your condition; your physiotherapist will give you an estimate after your assessment. The benefit comes from keeping the exercises going. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Balance training only works if it is hard enough to challenge you, so progress by reducing hand support and narrowing your base of support as you steady. Always have something solid to grab. If you feel light-headed on standing, rise slowly and pause before you walk off.",
     faqs: [
@@ -1721,7 +1721,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "With correct, consistent training most people notice improvement within 6 to 12 weeks, and the recommended course is at least 3 months and often 5 to 6 months before judging the full result. Continuing a maintenance routine keeps the benefit.",
+      "Pelvic floor muscles take time to strengthen, so this is a programme measured in months rather than weeks. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Technique first: if you cannot feel the right muscles working, or you feel a downward push instead of a lift, get checked by a pelvic health physiotherapist before progressing. Build holds and repetitions gradually, and always use the quick squeeze before you cough, lift or jump.",
     faqs: [
@@ -1731,7 +1731,7 @@ export const conditions: Condition[] = [
       },
       {
         q: "How long before I see a difference?",
-        a: "Many people feel some improvement within 6 to 8 weeks, but the muscle keeps strengthening for months. Stick with it for at least 3 to 6 months before deciding whether it has worked.",
+        a: "It depends on your condition; your physiotherapist will give you an estimate after your assessment. The muscle keeps strengthening for months, so stick with it before deciding whether it has worked, and ask a pelvic health physiotherapist if you are unsure.",
       },
       {
         q: "Should I stop drinking so much to reduce leaks?",
@@ -1794,7 +1794,7 @@ export const conditions: Condition[] = [
       ...GENERAL_RED_FLAGS,
     ],
     recoveryTimeline:
-      "Symptoms usually stay manageable through pregnancy with the right exercises and daily strategies, and most cases improve markedly within days to weeks of giving birth. A minority have pain that persists past the early postnatal months and benefits from ongoing pelvic health physiotherapy.",
+      "It depends on your condition; your physiotherapist will give you an estimate after your assessment. If pain carries on after the early weeks following birth, tell your midwife, health visitor or GP. We review your progress regularly and adjust your plan.",
     progressGuidance:
       "Let pain guide you: keep exercises and daily movements within a range that does not sharply provoke the pelvis, and favour symmetrical positions - both feet planted, legs not too far apart. If a support belt reduces pain when walking, it is fine to use. Progress the strengthening as your tolerance allows.",
     faqs: [
