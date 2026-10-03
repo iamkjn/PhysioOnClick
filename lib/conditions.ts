@@ -35,7 +35,14 @@ export type Condition = {
   intro: string;
   whoItHelps: string;
   program: ConditionStage[];
+  /** Non-urgent: rendered under "Get checked by a clinician first if". */
   redFlags: string[];
+  /**
+   * Emergency signs the NHS (or NICE CKS) routes to 999 or A&E. Rendered in
+   * their own "Call 999 or go to A&E if" box, never under the non-urgent
+   * heading. Each item states its exact route.
+   */
+  urgentFlags?: string[];
   recoveryTimeline: string;
   progressGuidance: string;
   faqs: { q: string; a: string }[];
@@ -52,9 +59,29 @@ const REVIEWED_ON = "2026-09-08";
 const GENERAL_RED_FLAGS = [
   "The pain followed a significant accident, fall or direct blow and you have not been checked over",
   "You feel unwell with the pain - a fever, night sweats, or losing weight without trying",
-  "The area is hot, very swollen and red, especially if you also feel feverish",
   "Pain that is severe, steadily getting worse, or keeps you awake every night and does not ease with a change of position",
 ];
+
+/**
+ * Emergency signs shared by every hub (rendered in the 999/A&E box). Routes
+ * match lib/online-physio-pages.ts and docs/seo/phase-b-sources.md items 11
+ * and 13.
+ */
+const GENERAL_URGENT_FLAGS = [
+  "The area is hot, very swollen and red, especially if you also feel feverish or unwell - go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.",
+];
+
+/** DVT: NHS routes to an urgent GP appointment or NHS 111 (item 13). */
+const CLOT_GP_FLAG =
+  "Throbbing or cramping pain, swelling, warmth or redness in one calf or leg with no clear cause - ask for an urgent GP appointment or call NHS 111 to rule out a blood clot";
+
+/** Possible pulmonary embolism: NHS routes to 999 or A&E (item 13). */
+const CLOT_URGENT_FLAG =
+  "Sudden breathlessness or chest pain - call 999 or go to A&E, this could be a blood clot in the lungs, especially if you also have pain or swelling in a leg. Do not drive yourself.";
+
+/** Dislocated shoulder: NHS routes to A&E, 999 if you cannot get there (item 11). */
+const SHOULDER_DISLOCATION_FLAG =
+  "Your shoulder looks out of place or has changed shape, or you cannot move your arm after a fall - go to A&E, as it may be dislocated or broken. Call 999 if you cannot get there yourself. Do not drive yourself.";
 
 export const conditions: Condition[] = [
   {
@@ -98,8 +125,11 @@ export const conditions: Condition[] = [
     redFlags: [
       "Your arm became weak or you could not lift it at all straight after an injury - this may be a cuff tear that needs assessing",
       "Pins and needles or weakness spreading down the arm into the hand",
-      "The shoulder looks an odd shape or you cannot move it after a fall - it may be dislocated or fractured",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      SHOULDER_DISLOCATION_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Tendons tend to respond slowly, so in our plans steady progress over weeks matters more than any single session. We review your progress regularly and adjust your plan.",
@@ -180,8 +210,12 @@ export const conditions: Condition[] = [
       "You cannot put weight through the leg or walk at all",
       "The pain was right up at the sitting bone with rapid heavy bruising - a high hamstring tendon tear needs prompt assessment",
       "Numbness, pins and needles or weakness in the foot",
-      "Calf pain and swelling with warmth or redness, or breathlessness - seek urgent medical advice to rule out a clot",
+      CLOT_GP_FLAG,
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Return to running and sport is guided by the return-to-play markers, not the calendar. We review your progress regularly and adjust your plan.",
@@ -245,11 +279,14 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Difficulty passing urine, loss of bladder or bowel control, or numbness around the back passage, genitals or inner thighs - go to A&E, this needs same-day assessment",
-      "Progressive weakness, heaviness or numbness in both legs",
       "New back pain with a history of cancer, a weakened immune system, or recent serious infection",
-      "Severe pain after a significant fall or crash, particularly if you have osteoporosis",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Difficulty peeing, peeing or pooing yourself, or a loss of feeling around your genitals, anus or inner thighs - call 999 or go to A&E. Do not drive yourself.",
+      "Pain, tingling, weakness, heaviness or numbness in both legs - call 999 or go to A&E. Do not drive yourself.",
+      "Back pain that started after a serious accident, such as a bad fall or a car crash (especially if you have osteoporosis), or back pain with chest pain - call 999 or go to A&E. Do not drive yourself.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "The NHS says back pain often improves on its own within a few weeks. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
@@ -313,11 +350,14 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Difficulty passing or controlling urine, bowel incontinence, or numbness around the saddle area - go to A&E immediately",
-      "Weakness in the leg or foot that is clearly getting worse over days",
-      "Numbness or weakness affecting both legs",
       "Fever, unexplained weight loss, or a history of cancer alongside the pain",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "You find it hard to start peeing, cannot pee or cannot control when you pee, cannot control your bowels, or have numbness around your genitals or bottom - call 999 or go to A&E. Do not drive yourself.",
+      "Sciatica on both sides, or weakness or numbness in both legs, especially if it is severe or getting worse - call 999 or go to A&E. Do not drive yourself.",
+      "Weakness in one leg or foot that is getting worse - go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "The NHS says sciatica tends to ease over a period of weeks to months. It depends on your condition; your physiotherapist will give you an estimate after your assessment. Some numbness or tingling can take longer to settle, so tell us if it is not changing. We review your progress regularly and adjust your plan.",
@@ -381,11 +421,16 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Significant neck pain straight after a car crash, a heavy fall or a blow to the head",
-      "Weakness, clumsiness or numbness in the hands or legs, or problems with balance and walking",
-      "Dizziness, drop attacks, double vision, slurred speech or facial numbness with neck movement",
-      "Severe headache unlike any you have had before, or neck stiffness with fever and feeling very unwell",
+      "Weakness, clumsiness, pins and needles or numbness in the hands or arms that has come on gradually - ask your GP for an urgent appointment",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Call 999 if you have sudden weakness or numbness in an arm or down one side of your body, slurred speech, numbness in your face, a drooping face or trouble speaking (possible stroke). Do not drive yourself.",
+      "Call 999 if you have dizziness, drop attacks, double or blurred vision or loss of sight, including when you move your neck. These can also be stroke signs. Do not drive yourself.",
+      "Call 999 or go to A&E, or call NHS 111 if you are not sure, if you notice changes in your balance, co-ordination or walking.",
+      "Call 999 or go to A&E, or call NHS 111 if you are not sure, if your neck pain started after a car crash, a heavy fall or a blow to the head. Do not drive yourself if you have hit your head.",
+      "If you have neck pain or stiffness with a high temperature, a very painful headache or a sudden severe headache unlike any you have had before, confusion, a rash that does not fade when pressed, or you feel very unwell or are worried it could be meningitis, call 999 or go to A&E. Do not drive yourself.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "The NHS says most neck pain only lasts a few weeks. It depends on your condition; your physiotherapist will give you an estimate after your assessment. Keeping up the strength work and looking at sleep, stress and screen habits is part of our plans. We review your progress regularly and adjust your plan.",
@@ -455,10 +500,12 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "The stiffness began right after a fall, a dislocation or a heavy pull on the arm",
-      "The shoulder or arm looks deformed, or you cannot move it at all",
       "Pins and needles or weakness spreading down the arm into the hand",
-      "The shoulder is hot, very swollen and red, especially with a fever",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      SHOULDER_DISLOCATION_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "The NHS describes frozen shoulder as painful and stiff for months, and sometimes years. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
@@ -523,10 +570,12 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Sudden marked weakness lifting the arm after an injury - possible rotator cuff tear",
-      "The shoulder looks an odd shape or cannot be moved after a fall",
       "Pins and needles or weakness spreading into the hand",
-      "The shoulder is hot, red and swollen with a fever",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      SHOULDER_DISLOCATION_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. In our plans, consistent exercise is the core of treatment. We review your progress regularly and adjust your plan.",
@@ -596,6 +645,9 @@ export const conditions: Condition[] = [
       "Elbow pain after a fall onto the arm that has not been checked",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "The NHS says tennis elbow often settles with rest but can sometimes last more than a year. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
@@ -663,6 +715,9 @@ export const conditions: Condition[] = [
       "Marked swelling, redness or warmth around the joint, especially with a fever",
       "Inner-elbow pain after a fall or a forced twist that has not been checked",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Like tennis elbow, it can be slow to settle, so in our plans progressive loading is built up over time. We review your progress regularly and adjust your plan.",
@@ -732,6 +787,9 @@ export const conditions: Condition[] = [
       "Sudden severe swelling within an hour of an injury",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "Osteoarthritis is a long-term condition, so in our plans some strength work keeps going over the long term, and joint pain can go up for a while when you start. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
     progressGuidance:
@@ -800,6 +858,9 @@ export const conditions: Condition[] = [
       "The kneecap has dislocated or partly slipped out of place",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. It can be persistent and prone to flares, so in our plans hip and thigh strength work continues even after it settles. We review your progress regularly and adjust your plan.",
     progressGuidance:
@@ -863,10 +924,12 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Deep pain in the groin rather than the outer hip, especially with a limp or loss of rotation - this points to the hip joint itself",
-      "Outer hip pain after a fall, particularly in older adults or people with osteoporosis - a fracture must be excluded",
-      "The area is hot, red and swollen with a fever",
       "Night pain that is severe, constant and not related to lying position, with feeling generally unwell",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Hip pain after a fall or injury, especially if it is severe, you cannot walk or put weight on the leg, or you have tingling or loss of feeling in the hip or leg - call 999 or go to A&E, as a broken hip must be ruled out. Do not drive yourself.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Night pain and lying on the side are often among the last things to improve. We review your progress regularly and adjust your plan.",
@@ -931,10 +994,14 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Sudden severe pain at the back of the ankle with a snap or a feeling of being kicked, and difficulty walking or pushing off - possible Achilles rupture, seek same-day assessment",
-      "Pain, swelling and warmth in the calf with no clear cause, or breathlessness - seek urgent advice to rule out a clot",
+      CLOT_GP_FLAG,
       "The heel or ankle is hot, red and swollen with a fever",
       "Pain that is worse at rest and at night rather than with activity",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. The tendon can stay mildly sensitive for a while, so in our plans loading is built up gradually. We review your progress regularly and adjust your plan.",
@@ -1001,8 +1068,12 @@ export const conditions: Condition[] = [
       "You cannot put any weight through the ankle, or bony tenderness over the ankle knobbles or the outer midfoot - get an X-ray to rule out a fracture",
       "Obvious deformity of the ankle or foot",
       "Numbness, pins and needles, or the foot looking pale or feeling cold",
-      "Calf pain, swelling and warmth developing over the following days - seek advice to exclude a clot",
+      "Calf pain, swelling and warmth developing over the following days - ask for an urgent GP appointment or call NHS 111 to rule out a blood clot",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. In our plans, balance and strength work continues after the pain settles, to help reduce the risk of another sprain. We review your progress regularly and adjust your plan.",
@@ -1078,6 +1149,9 @@ export const conditions: Condition[] = [
       "Numbness or pins and needles in the foot",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. The exercises are worth keeping up long term as a warm-up or regular maintenance. We review your progress regularly and adjust your plan.",
     progressGuidance:
@@ -1151,6 +1225,9 @@ export const conditions: Condition[] = [
       "Marked or rapid swelling of the knee",
       "Pain that is worse at rest and at night rather than with loading",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. It can be stubborn, so in our plans load is managed through the season and heavier strength work is built up when your sport allows. We review your progress regularly and adjust your plan.",
@@ -1226,6 +1303,9 @@ export const conditions: Condition[] = [
       "New numbness, pins and needles, or the foot feeling cold or looking pale",
       ...GENERAL_RED_FLAGS,
     ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
+    ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Progress is measured by strength and control, not the calendar, and after a reconstruction your surgical team's protocol comes first. We review your progress regularly and adjust your plan.",
     progressGuidance:
@@ -1295,10 +1375,15 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Pain in a specific spot on a bone that worsens as you run and is tender to press - possible bone stress injury, stop running and get assessed",
-      "Calf pain and swelling with warmth, or breathlessness - seek urgent advice to exclude a clot",
+      CLOT_GP_FLAG,
       "Any joint that locks, gives way or swells after a run",
-      "Chest tightness, undue breathlessness, or dizziness on exertion - seek medical advice before continuing",
+      "Feeling dizzy or unusually short of breath when you exercise, even if it settles with rest - see your GP before you carry on running",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Chest pain that feels tight or squeezing, or spreads to your arms, neck or jaw, during or after a run - stop and call 999. Do not drive yourself.",
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Returning after a bone stress injury or childbirth is slower and should be guided by a clinician. We review your progress regularly and adjust your plan.",
@@ -1371,8 +1456,12 @@ export const conditions: Condition[] = [
       "Any joint that locks, gives way, or swells after training",
       "Sharp, localised bone pain that worsens with impact and is tender to touch",
       "Pain that is escalating session to session despite sensible load management",
-      "Calf pain and swelling with warmth, or breathlessness - seek urgent advice",
+      CLOT_GP_FLAG,
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. Readiness is defined by meeting the markers, not by elapsed time. We review your progress regularly and adjust your plan.",
@@ -1436,11 +1525,15 @@ export const conditions: Condition[] = [
       },
     ],
     redFlags: [
-      "Calf pain, swelling, warmth or redness, or sudden breathlessness or chest pain - seek urgent medical help to rule out a clot",
+      CLOT_GP_FLAG,
       "Wound that opens, leaks fluid, or becomes increasingly red, hot and painful, with or without a fever - possible infection",
       "A sudden increase in pain, swelling or inability to bear weight after a fall or twist",
       "The knee will not straighten or bend at all, or feels unstable and gives way",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "The NHS says it may take several months or longer to fully recover from a knee replacement. Rehab starts once your surgical team has confirmed you have no restrictions. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
@@ -1505,10 +1598,14 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "Sudden severe hip or groin pain, the leg looking shorter or turned out, and inability to weight-bear - possible dislocation, seek urgent assessment",
-      "Calf pain, swelling, warmth or redness, or sudden breathlessness or chest pain - seek urgent help to rule out a clot",
+      CLOT_GP_FLAG,
       "Wound that opens, leaks, or becomes increasingly red, hot and painful, with or without a fever",
       "New numbness, foot drop, or the foot feeling cold or looking pale",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "The NHS says it may take several months to recover from a hip replacement. Rehab starts once your surgical team has confirmed you have no restrictions. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
@@ -1579,10 +1676,14 @@ export const conditions: Condition[] = [
     ],
     redFlags: [
       "The knee locks and cannot be fully straightened - possible graft or meniscal problem, seek prompt review",
-      "Calf pain, swelling, warmth or redness, or sudden breathlessness - seek urgent help to rule out a clot",
+      CLOT_GP_FLAG,
       "Wound that opens, leaks, or becomes increasingly red, hot and painful, with or without a fever",
       "A sudden pop, giving way, or rapid swelling after a twist or fall - seek assessment to check the graft",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      CLOT_URGENT_FLAG,
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Recovery after ACL reconstruction is long and guided by testing, and your surgical team's protocol comes first. Rehab starts once your surgical team has confirmed you have no restrictions. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan.",
@@ -1648,9 +1749,12 @@ export const conditions: Condition[] = [
     redFlags: [
       "Falls or blackouts with no warning, or fainting, or falls with loss of consciousness - see your GP promptly to check heart and blood pressure causes",
       "A fall causing a head injury, especially if on blood-thinning medication - seek urgent medical assessment",
-      "Sudden weakness, facial droop, slurred speech or confusion - call 999, this could be a stroke",
-      "New or rapidly worsening unsteadiness, dizziness, or leg weakness and numbness",
+      "Unsteadiness, dizziness, or leg weakness or numbness that has come on gradually or is slowly getting worse - see your GP promptly",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "Sudden weakness or numbness in the face, an arm or a leg, a drooping face, slurred speech, confusion, or sudden dizziness or loss of balance - call 999, this could be a stroke. Do not drive yourself.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "In our plans, balance and strength exercises are progressed step by step and tailored to you. It depends on your condition; your physiotherapist will give you an estimate after your assessment. The benefit comes from keeping the exercises going. We review your progress regularly and adjust your plan.",
@@ -1716,9 +1820,13 @@ export const conditions: Condition[] = [
     redFlags: [
       "Blood in your urine, or pain or burning passing urine",
       "A feeling of something coming down or a visible bulge in the vagina - this needs assessment for prolapse",
-      "New leakage alongside back or leg weakness, numbness around the saddle area, or bowel control changes - seek urgent assessment",
-      "Being unable to pass urine, or a constant dribble with a full bladder feeling",
+      "A constant dribble of urine with a feeling that your bladder is still full - see your GP promptly",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      "New leakage with back pain, weakness or numbness in your legs, numbness around your genitals or bottom, or changes in bowel control - call 999 or go to A&E. Do not drive yourself.",
+      "You cannot pass urine at all - go to A&E now, or call NHS 111 straight away if you are not sure where to go.",
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "Pelvic floor muscles take time to strengthen, so this is a programme measured in months rather than weeks. How long it takes depends on your condition, and a pelvic health physiotherapist can estimate this after an assessment. We review your progress regularly and adjust your plan.",
@@ -1792,6 +1900,9 @@ export const conditions: Condition[] = [
       "Fever, pain passing urine, or feeling generally unwell with the pelvic pain",
       "Sudden severe pubic pain with a grinding sensation and inability to walk or lift the leg",
       ...GENERAL_RED_FLAGS,
+    ],
+    urgentFlags: [
+      ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
       "How long it takes depends on your condition, and a pelvic health physiotherapist can estimate this after an assessment. If pain carries on after the early weeks following birth, tell your midwife, health visitor or GP. We review your progress regularly and adjust your plan.",
