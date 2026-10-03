@@ -1,5 +1,5 @@
 import { getAdminDb } from "@/lib/firebase-admin";
-import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { isBookServiceId, serviceLabelFor } from "@/lib/cal-services";
 import { formatPersonName } from "@/lib/name-format";
 
 export type ReceiptData = {
@@ -34,11 +34,12 @@ export async function getReceiptBySession(sessionId: string): Promise<ReceiptDat
     service?: string;
     email?: string;
     calBookingUid?: string;
+    visitType?: string;
   };
   if (pay.status !== "paid" || !pay.invoiceNumber) return null;
 
   const service = pay.service ?? "";
-  const serviceLabel = isBookServiceId(service) ? bookServiceFor(service).title : service;
+  const serviceLabel = isBookServiceId(service) ? serviceLabelFor(service, pay.visitType) : service;
 
   let patientName = "";
   let sessionDate: string | null = null;

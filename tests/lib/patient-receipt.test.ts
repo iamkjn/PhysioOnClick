@@ -38,4 +38,20 @@ describe("getReceiptBySession", () => {
     expect(r!.patientName).toBe("Ada Lovelace");
     expect(r!.serviceLabel.length).toBeGreaterThan(0);
   });
+
+  it("labels a home-visit receipt as a home visit and a video receipt as before", async () => {
+    bookingsGet.mockResolvedValue({ empty: true, docs: [] });
+    const pay = (extra: Record<string, unknown>) => ({
+      empty: false,
+      docs: [{ data: () => ({
+        status: "paid", invoiceNumber: "INV-2026-AB12CD", paidAt: "2026-07-31T10:00:00.000Z",
+        amountPence: 4000, service: "initial-assessment", email: "ada@example.com", ...extra,
+      }) }],
+    });
+    paymentsGet.mockResolvedValue(pay({ visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS" }));
+    expect((await getReceiptBySession("cs_h"))!.serviceLabel).toBe("Initial Assessment (home visit)");
+    paymentsGet.mockResolvedValue(pay({}));
+    expect((await getReceiptBySession("cs_v"))!.serviceLabel).toBe("Initial Online Assessment");
+  });
 });
+

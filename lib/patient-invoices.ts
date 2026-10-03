@@ -1,5 +1,5 @@
 import { getAdminDb } from "@/lib/firebase-admin";
-import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { isBookServiceId, serviceLabelFor } from "@/lib/cal-services";
 import { formatPersonName } from "@/lib/name-format";
 
 export type PatientInvoice = {
@@ -52,12 +52,13 @@ export async function getInvoicesForEmail(email: string): Promise<PatientInvoice
         amountPence?: number;
         service?: string;
         calBookingUid?: string;
+        visitType?: string;
         invoicePdfPath?: string;
       };
       if (!pay.invoiceNumber) return null;
 
       const service = pay.service ?? "";
-      const serviceLabel = isBookServiceId(service) ? bookServiceFor(service).title : service;
+      const serviceLabel = isBookServiceId(service) ? serviceLabelFor(service, pay.visitType) : service;
 
       let patientName = "";
       let sessionDate: string | null = null;

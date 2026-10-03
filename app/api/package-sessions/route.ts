@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createCalBooking } from "@/lib/cal-booking";
+import { serviceLabelFor } from "@/lib/cal-services";
 import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import type { VisitType } from "@/lib/home-visit";
 
@@ -201,7 +202,7 @@ export async function POST(request: NextRequest) {
     fullName: name,
     email: email.trim().toLowerCase(),
     phone: "",
-    service: "Online Follow-Up",
+    service: serviceLabelFor("follow-up", homeVisit?.visitType),
     appointmentDate,
     appointmentTime,
     appointmentLabel,

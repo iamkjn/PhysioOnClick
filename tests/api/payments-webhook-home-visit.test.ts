@@ -173,4 +173,17 @@ describe("POST /api/payments/webhook — home visits", () => {
     expect(pack).not.toHaveProperty("visitType");
     expect(pack).not.toHaveProperty("homeVisitAddress");
   });
+
+  it("labels the invoice and receipt email as a home visit", async () => {
+    await POST(signedRequest(eventWith({ visitType: "home", homeVisitAddress: ADDRESS })));
+    expect(vi.mocked(generateInvoicePdf).mock.calls[0][0].serviceLabel).toBe("Initial Assessment (home visit)");
+    expect(vi.mocked(sendReceiptEmail).mock.calls[0][0].serviceLabel).toBe("Initial Assessment (home visit)");
+  });
+
+  it("keeps the video invoice and receipt label as before", async () => {
+    await POST(signedRequest(eventWith({ visitType: "video" })));
+    expect(vi.mocked(generateInvoicePdf).mock.calls[0][0].serviceLabel).toBe("Initial Online Assessment");
+    expect(vi.mocked(sendReceiptEmail).mock.calls[0][0].serviceLabel).toBe("Initial Online Assessment");
+  });
 });
+

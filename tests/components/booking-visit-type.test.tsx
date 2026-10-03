@@ -200,4 +200,14 @@ describe('booking visit type', () => {
     await payAsGuest(user)
     expect(mocks.wizardProps.at(-1)?.visitType).toBe('video')
   })
+
+  it('shows a home-visit title and checklist in the rail', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    expect(document.querySelector('.book-rail-title')?.textContent).toBe('Initial Online Assessment')
+    await user.click(screen.getByRole('radio', { name: 'Home visit (Glasgow area)' }))
+    expect(document.querySelector('.book-rail-title')?.textContent).toBe('Initial Assessment (home visit)')
+    expect(document.querySelector('.book-rail-list')?.textContent).not.toMatch(/video/i)
+  })
 })
+

@@ -8,7 +8,7 @@ import { auth } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { founder } from "@/lib/site-data";
-import { allBookServices, bookServiceFor, type FocusArea } from "@/lib/cal-services";
+import { allBookServices, bookServiceFor, includedFor, serviceLabelFor, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
 import { getDependents, type Dependent } from "@/lib/dependents";
 import { accountUserOrNull } from "@/lib/guest-booking";
@@ -251,7 +251,8 @@ export function BookingFlow() {
     );
   }
 
-  const railChecklist = step === 2 ? service.included.slice(0, 3) : service.included;
+  const included = includedFor(serviceId, visitType);
+  const railChecklist = step === 2 ? included.slice(0, 3) : included;
   const stepAnnouncement =
     step === 1 ? "Step 1 of 3: choose your service." : "Step 2 of 3: time and your details.";
 
@@ -269,7 +270,7 @@ export function BookingFlow() {
         </div>
 
         <p className="book-rail-eyebrow">Your booking</p>
-        <h2 className="book-rail-title">{service.title}</h2>
+        <h2 className="book-rail-title">{serviceLabelFor(serviceId, visitType)}</h2>
         <p className="book-rail-summary">{service.description}</p>
 
         {bookingForId ? (

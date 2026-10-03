@@ -92,6 +92,30 @@ export function bookServiceFor(id: BookServiceId): CalService & PricingItem {
   return { ...item, ...CAL_SERVICES[id] };
 }
 
+/** Home-visit wording for the tiers whose stored title says "Online". */
+const HOME_VISIT_TITLES: Partial<Record<BookServiceId, string>> = {
+  "initial-assessment": "Initial Assessment (home visit)",
+  "follow-up": "Follow-Up (home visit)",
+};
+
+/**
+ * The customer-facing name of a booked service (booking rail, receipt,
+ * invoice). Video keeps the stored pricing title; a home visit never says
+ * "online" or "video". Pricing ids and Cal.com slugs are untouched.
+ */
+export function serviceLabelFor(id: BookServiceId, visitType?: unknown): string {
+  const title = bookServiceFor(id).title;
+  if (visitType !== "home") return title;
+  return HOME_VISIT_TITLES[id] ?? `${title} (home visit)`;
+}
+
+/** The rail's "What's included" list, with the session format matching the visit. */
+export function includedFor(id: BookServiceId, visitType?: unknown): string[] {
+  const included = bookServiceFor(id).included;
+  if (visitType !== "home") return included;
+  return included.map((item) => item.replace(/-minute video consultation$/, "-minute home visit"));
+}
+
 export function allBookServices(): Array<CalService & PricingItem> {
   return pricing.map((p) => ({ ...p, ...CAL_SERVICES[p.id] }));
 }

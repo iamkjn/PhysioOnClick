@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { bookServiceFor, isBookServiceId, serviceLabelFor } from "@/lib/cal-services";
 import { normaliseDiscountCode, validateCheckoutDiscount } from "@/lib/checkout-discounts";
 import { createStripeCheckout } from "@/lib/payments/stripe";
 import type { BookingIntent } from "@/lib/payments";
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
   const result = await createStripeCheckout({
     intent,
     amountPence,
-    serviceLabel: svc.title,
+    serviceLabel: serviceLabelFor(service, resolvedVisitType),
     successUrl: `${siteUrl}/book/success?session_id={CHECKOUT_SESSION_ID}`,
     cancelUrl: `${siteUrl}/book?cancelled=1`,
   });

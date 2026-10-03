@@ -7,7 +7,7 @@ import { guestBookingOwnerFields } from "@/lib/guest-booking";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
-import { bookServiceFor, calServiceFor } from "@/lib/cal-services";
+import { bookServiceFor, calServiceFor, serviceLabelFor } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
 
 type StripeEvent = {
@@ -316,7 +316,7 @@ export async function POST(request: Request) {
   // though it doesn't depend on the PDF succeeding. Each step now has its own
   // try/catch so one failure can't take the other down with it.
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const serviceLabel = purchasedService.title;
+  const serviceLabel = serviceLabelFor(intent.service, homeVisit?.visitType);
 
   let pdfBytes: Uint8Array | undefined;
   try {
