@@ -49,4 +49,14 @@ describe('Terms & Conditions page', () => {
     expect(clause?.textContent).toMatch(/credit link/i)
     expect(clause?.textContent).toMatch(/covers embedding only/i)
   })
+
+  it('has a home visits clause without premises or insurer claims', () => {
+    render(<TermsPage />)
+    expect(screen.getByRole('heading', { name: 'Home visits (Glasgow area)' })).toBeInTheDocument()
+    const text = screen.getByRole('heading', { name: 'Home visits (Glasgow area)' }).closest('article')?.textContent ?? ''
+    expect(text).toMatch(/same prices/)
+    expect(text).toMatch(/under 18/)
+    expect(text).toMatch(/outside the area we cover/)
+    expect(text).not.toMatch(/\bclinic\b|premises|insur/i)
+  })
 })

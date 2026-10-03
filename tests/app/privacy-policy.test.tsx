@@ -31,4 +31,14 @@ describe('Privacy Policy page', () => {
     expect(screen.getAllByText(/Cal\.com/).length).toBeGreaterThan(0)
     expect(screen.getByText(/Google Calendar \/ Google Meet/)).toBeInTheDocument()
   })
+
+  it('covers the home-visit address: what, why, retention', () => {
+    const { container } = render(<PrivacyPolicyPage />)
+    const text = container.textContent ?? ''
+    expect(text).toMatch(/Home address \(home visits only\)/)
+    expect(text).toMatch(/address line and postcode/)
+    expect(text).toMatch(/attend your appointment/)
+    expect(text).toMatch(/Home visit address:.*same period as other booking records/)
+    expect(text).toMatch(/October 2026/)
+  })
 })

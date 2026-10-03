@@ -20,7 +20,7 @@ export default function CancellationPolicyPage() {
         <div className="page-hero-aside">
           <strong>Last updated</strong>
           <p className="muted">
-            <time dateTime="2026-09">September 2026</time>
+            <time dateTime="2026-10">October 2026</time>
           </p>
         </div>
       </section>
@@ -59,6 +59,14 @@ export default function CancellationPolicyPage() {
           </p>
         </article>
         <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
+          <h2>Home visits</h2>
+          <p>
+            If we decline or cannot attend a home visit because your address is outside the area we cover or
+            we have a safety concern at the address, you will get a full refund or a new appointment,
+            whichever you prefer. The notice rules above apply to your own cancellations.
+          </p>
+        </article>
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Session packages</h2>
           <p>
             Each session in a package follows the same 24-hour notice rule. If you decide to stop a package,

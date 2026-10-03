@@ -26,7 +26,7 @@ export default function TermsPage() {
         <div className="page-hero-aside">
           <strong>Last updated</strong>
           <p className="muted">
-            <time dateTime="2026-09">September 2026</time>
+            <time dateTime="2026-10">October 2026</time>
           </p>
         </div>
       </section>
@@ -57,8 +57,8 @@ export default function TermsPage() {
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Nature of the service</h2>
           <p>
-            PhysioOnClick provides physiotherapy consultations online across the UK.
-            Booking a consultation creates a professional clinical relationship. The standard of care provided
+            PhysioOnClick provides physiotherapy consultations online across the UK, and home visits in the
+            Glasgow area. Booking a consultation creates a professional clinical relationship. The standard of care provided
             online is equal to that of an in-person consultation. A lower standard of care is not acceptable
             simply because the interaction is remote.
           </p>
@@ -70,8 +70,24 @@ export default function TermsPage() {
             Services are provided to patients physically located in the United Kingdom at the time of
             consultation. Existing patients temporarily abroad (excluding the USA, Australia, and Canada)
             may continue care with prior agreement. If you are unsure whether your location is covered,
-            contact us before booking.
+            contact us before booking. Home visits are available only in the Glasgow area; see &ldquo;Home visits
+            (Glasgow area)&rdquo; below.
           </p>
+        </article>
+
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
+          <h2>Home visits (Glasgow area)</h2>
+          <p>
+            Home visits are offered in the Glasgow area, booked through the same booking flow as video
+            appointments and at the same prices. When you book a home visit we ask for your address and
+            postcode. We will confirm by email if your address is outside the area we cover.
+          </p>
+          <ul>
+            <li>Please provide a safe, clear space for the session and safe, reasonable access to it.</li>
+            <li>For a patient under 18, a parent, guardian or another responsible adult must be present for the whole visit.</li>
+            <li>We may rearrange or decline a visit if the address is outside the area we cover, or if we have a genuine concern for safety at the address.</li>
+            <li>If we decline or cannot attend a visit for either reason, you can choose a full refund or a new appointment, in line with the cancellation and refund terms above. Your own cancellations follow the same notice rules as any other appointment.</li>
+          </ul>
         </article>
 
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
