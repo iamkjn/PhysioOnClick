@@ -92,6 +92,35 @@ function formatLabel(value: string) {
   return value.replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+/** Readable page name for a tracked path, e.g. "/" -> "Home", "/book" -> "Booking". */
+export function pageLabel(path: string) {
+  const segments = path.split("/").filter(Boolean);
+  if (!segments.length) return "Home";
+
+  if (segments[0] === "book") {
+    if (segments[1] === "success") return "Booking Success";
+    if (segments[1] === "receipt") return "Booking Receipt";
+    return "Booking";
+  }
+  if (segments[0] === "services") {
+    return segments[1] ? `Service: ${formatLabel(segments[1])}` : "Services";
+  }
+  if (segments[0] === "exercises") {
+    if (segments[1] === "area" && segments[2]) return `Exercise Area: ${formatLabel(segments[2])}`;
+    if (segments[1] === "for" && segments[2]) return `Condition Exercises: ${formatLabel(segments[2])}`;
+    if (segments[1] === "tests" && segments[2]) return `Self-test: ${formatLabel(segments[2])}`;
+    if (segments[1] === "tests") return "Self-test Library";
+    if (segments[1]) return `Exercise: ${formatLabel(segments[1])}`;
+    return "Exercise Library";
+  }
+  if (segments[0] === "blog") {
+    return segments[1] ? `Blog: ${formatLabel(segments[1])}` : "Blog";
+  }
+  if (segments[0] === "patient") return "Patient Portal";
+
+  return formatLabel(lastPathSegment(path));
+}
+
 function stringParam(event: GrowthEvent, key: string) {
   const value = event.params?.[key];
   return typeof value === "string" ? value : "";
@@ -113,6 +142,9 @@ function countryLabel(event: GrowthEvent) {
 }
 
 function eventTitle(event: GrowthEvent) {
+  if (event.event === "page_view") {
+    return `${pageLabel(event.path)} page viewed`;
+  }
   if (event.event === "booking_step_completed") {
     const step = stringParam(event, "step");
     return BOOKING_STEP_LABELS[step] ?? `Booking step completed${step ? `: ${formatLabel(step)}` : ""}`;
@@ -444,7 +476,7 @@ export function AdminGrowthDashboard() {
             <ol className="admin-growth-list">
               {stats.pages.map(([path, count]) => (
                 <li key={path}>
-                  <span><strong>{formatLabel(lastPathSegment(path))}</strong><small>{path}</small></span>
+                  <span><strong>{pageLabel(path)}</strong><small>{path}</small></span>
                   <b>{count}</b>
                 </li>
               ))}
