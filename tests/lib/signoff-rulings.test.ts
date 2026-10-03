@@ -104,9 +104,11 @@ describe("Q2: no fixed session or recovery ranges presented as our typical plans
   });
   it("exercise-hub recovery timelines use the estimate wording and quote no week or month ranges", () => {
     for (const c of conditions) {
-      expect(c.recoveryTimeline, c.slug).toContain(
-        "It depends on your condition; your physiotherapist will give you an estimate after your assessment.",
-      );
+      // Pelvic health hubs use neutral wording (no pelvic health service yet).
+      const estimate = c.slug === "stress-urinary-incontinence" || c.slug === "pregnancy-pelvic-girdle-pain"
+        ? "a pelvic health physiotherapist can estimate this after an assessment."
+        : "It depends on your condition; your physiotherapist will give you an estimate after your assessment.";
+      expect(c.recoveryTimeline, c.slug).toContain(estimate);
       expect(/\b\d+ (?:to|-) \d+ (?:weeks|months)\b/.test(c.recoveryTimeline), c.slug).toBe(false);
       for (const f of c.faqs) expect(/\b(?:most|many) people[^.]*\d+ (?:to|-) \d+ (?:weeks|months)/i.test(f.a), `${c.slug}: ${f.q}`).toBe(false);
     }
@@ -149,7 +151,7 @@ describe("Q10-15: NICE sources", () => {
 describe("Safety routing from the review", () => {
   it("neck pain routes meningitis signs to 999 or A&E, cites the NHS page, and sends nerve symptoms to an urgent GP", () => {
     const p = getOnlinePhysioPage("neck-pain")!;
-    expect(p.inPersonInstead.some((l) => /^Call 999 or go to A&E/.test(l) && /meningitis/.test(l) && /Do not drive yourself/.test(l))).toBe(true);
+    expect(p.inPersonInstead.some((l) => /call 999 or go to A&E/i.test(l) && /meningitis/.test(l) && /neck pain or stiffness/.test(l) && /Do not drive yourself/.test(l))).toBe(true);
     expect(p.sources.some((s) => s.url === "https://www.nhs.uk/conditions/meningitis/")).toBe(true);
     expect(pageText(p)).not.toMatch(/See a GP if you have pins and needles/);
   });

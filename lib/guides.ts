@@ -730,7 +730,7 @@ export const guides: Guide[] = [
         heading: "Sudden injury or a suspected fracture",
         paragraphs: [
           "If you have had a recent fall or accident and think you may have broken a bone, you need to be seen in person. We cannot examine a limb or order an X-ray over video.",
-          "What to do instead: Go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. For back pain after a serious accident, the NHS says to call 999 or go to A&E. Once you have been assessed and cleared, we can help with the exercise-based rehab that follows."
+          "What to do instead: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. For back pain after a serious accident, the NHS says to call 999 or go to A&E. Once you have been assessed and cleared, we can help with the exercise-based rehab that follows."
         ]
       },
       {
