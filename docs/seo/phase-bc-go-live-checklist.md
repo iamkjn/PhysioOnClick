@@ -33,17 +33,18 @@ Run this after Shivaliba Zala has signed off `docs/seo/phase-b-clinical-review.m
    ```
 4. Only these 11 known failures are allowed: body-chart; booking-flow (x2); exercise-library-interactive (x2); start-session-flow-status; condition-hub "from" price; exercise-page dose string; checkout-create (x3). Anything else is a regression.
 
-## 5. Deploy dev and verify the 25 URLs
+## 5. Deploy dev and verify the 26 URLs
 
-1. Deploy to the dev site using the dev deploy procedure (dev Firebase project, test Stripe keys).
-2. List the 25 paths (1 guides index + 9 guides + 15 landing pages), derived from data:
+1. Deploy to the dev site from this worktree: copy `../../.env.development` and `../../.env.production` in, run `bash scripts/deploy-dev.sh`, then delete both env files and `.open-next .next`.
+2. List the 26 paths (guides index + Scotland page + 9 guides + 15 landing pages), derived from data. Save the one-liner as `scripts/phase-bc-urls.sh` or run it inline:
    ```
-   node -e 'const fs=require("fs");const s=(f)=>[...fs.readFileSync(f,"utf8").matchAll(/^    slug: "([^"]+)"/gm)].map(m=>m[1]);const u=["/guides",...s("lib/guides.ts").map(x=>"/guides/"+x),...s("lib/online-physio-pages.ts").map(x=>"/online-physiotherapy-for/"+x)];console.log(u.join("\n"));console.error(u.length+" urls")'
+   node -e 'const fs=require("fs");const s=(f)=>[...fs.readFileSync(f,"utf8").matchAll(/^    slug: "([^"]+)"/gm)].map(m=>m[1]);const u=["/guides","/online-physiotherapy-scotland",...s("lib/guides.ts").map(x=>"/guides/"+x),...s("lib/online-physio-pages.ts").map(x=>"/online-physiotherapy-for/"+x)];console.log(u.join("\n"));console.error(u.length+" urls")'
    ```
 3. Check every one returns 200:
    ```
-   BASE=https://<dev-host>; node -e '...(as above)...' 2>/dev/null | while read p; do echo "$(curl -s -o /dev/null -w '%{http_code}' $BASE$p) $p"; done
+   BASE=https://dev.physioonclick.co.uk; node -e 'const fs=require("fs");const s=(f)=>[...fs.readFileSync(f,"utf8").matchAll(/^    slug: "([^"]+)"/gm)].map(m=>m[1]);console.log(["/guides","/online-physiotherapy-scotland",...s("lib/guides.ts").map(x=>"/guides/"+x),...s("lib/online-physio-pages.ts").map(x=>"/online-physiotherapy-for/"+x)].join("\n"))' | while read p; do echo "$(curl -s -o /dev/null -w '%{http_code}' "$BASE$p") $p"; done
    ```
+   Edge propagation can show stale 404s for 1-2 minutes after a deploy; re-run before concluding anything.
 4. Spot-check one page of each kind in a browser: byline date equals the sign-off date, prices come from site-data, 999/111 routing block is present.
 
 ## 6. Merge to master and push
@@ -74,13 +75,13 @@ npx opennextjs-cloudflare deploy
 
 ## 8. Verify live
 
-1. All 25 URLs return 200 (step 5 loop with `BASE=https://physioonclick.co.uk`).
+1. All 26 URLs return 200 (step 5 loop with `BASE=https://physioonclick.co.uk`).
 2. Sitemap includes them: `curl -s https://physioonclick.co.uk/sitemap.xml | grep -c "<loc>"` (compare with the count before this release plus 25), and `grep -c localhost` on it is 0.
 3. No localhost anywhere: `for p in / /guides /pricing; do curl -s https://physioonclick.co.uk$p | grep -c localhost; done` all 0.
 4. `/pricing` shows £120 and £225.
 5. `/exercises` contains "All exercises by body area".
 6. `/embed` returns 200.
-7. Booking slots return 200: `curl -s -o /dev/null -w '%{http_code}\n' "https://physioonclick.co.uk/api/cal/slots?..."` (use the same query the booking page makes).
+7. Booking slots return 200: `S=$(date -u +%Y-%m-%d); E=$(date -u -v+7d +%Y-%m-%d); curl -s -o /dev/null -w '%{http_code}\n' "https://physioonclick.co.uk/api/cal/slots?service=initial-assessment&start=$S&end=$E"` (dates are YYYY-MM-DD; a 400 means the query is wrong, a 503 means the build is missing NEXT_PUBLIC_* vars).
 8. Remove the temporary worktree when done: `git worktree remove .worktrees/prod-release`.
 
 ## 9. Search Console
