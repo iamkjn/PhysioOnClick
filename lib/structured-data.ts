@@ -98,7 +98,7 @@ export function practiceNode() {
         "@type": "ServiceChannel",
         serviceType: "Home visit physiotherapy",
         serviceUrl: absoluteUrl("/book?visit=home"),
-        availableLanguage: "en-GB"
+        availableLanguage: "English"
       }
     ],
     makesOffer: {

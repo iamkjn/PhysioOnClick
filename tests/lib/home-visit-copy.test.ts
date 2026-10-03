@@ -1,4 +1,6 @@
+import { readFileSync } from "node:fs";
 import { describe, it, expect } from "vitest";
+import { buildSystemPrompt } from "@/lib/chat-prompt";
 import { guides } from "@/lib/guides";
 import { onlinePhysioPages } from "@/lib/online-physio-pages";
 import { services, pricing } from "@/lib/site-data";
@@ -20,6 +22,17 @@ const DENIALS = [
   "appointments are online only",
   "we are an online-only",
   "no in-person clinic",
+  "online only",
+  "online-only",
+];
+
+const PAGE_FILES = [
+  "app/page.tsx",
+  "app/how-online-physiotherapy-works/page.tsx",
+  "app/online-physiotherapy-scotland/page.tsx",
+  "app/glasgow-physiotherapist/page.tsx",
+  "components/site-footer.tsx",
+  "components/chat-widget.tsx",
 ];
 
 describe("home visit copy", () => {
@@ -27,6 +40,15 @@ describe("home visit copy", () => {
 
   it.each(DENIALS)("page data never says %j", (phrase) => {
     expect(corpus).not.toContain(phrase);
+  });
+
+  it.each(DENIALS)("chat prompt never says %j", (phrase) => {
+    expect(buildSystemPrompt().toLowerCase()).not.toContain(phrase);
+  });
+
+  it.each(PAGE_FILES)("%s never denies home visits", (file) => {
+    const src = readFileSync(file, "utf8").toLowerCase();
+    for (const phrase of DENIALS) expect(src).not.toContain(phrase);
   });
 
   it("the cannot-do guide points Glasgow-area patients to a home visit", () => {

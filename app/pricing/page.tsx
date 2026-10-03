@@ -48,7 +48,7 @@ export default function PricingPage() {
       <section className="page-section stack pricing-sections">
         <div>
           <Reveal direction="up">
-            <h2>Online Consultations <span>(UK-wide)</span></h2>
+            <h2>Video appointments <span>(UK-wide) or home visits (Glasgow area)</span></h2>
           </Reveal>
           <div className="pricing-grid pricing-grid-two">
             {online.map((item, i) => (

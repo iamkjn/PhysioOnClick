@@ -87,7 +87,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "Can sciatica be treated online?",
-        a: "A video assessment lets us ask about your symptoms and watch you move, and in our plans the treatment is mainly advice and exercise you do at home. We will tell you if you need to be seen in person. We cannot examine you hands-on, and red flag symptoms need emergency care in person. We screen for those at the start of your assessment.",
+        a: "A video assessment lets us ask about your symptoms and watch you move, and in our plans the treatment is mainly advice and exercise you do at home. We will tell you if you need to be seen in person. Over video, we cannot examine you hands-on, and red flag symptoms need emergency care in person. We screen for those at the start of your assessment.",
       },
       {
         q: "Do I need a scan before I book?",
@@ -233,7 +233,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     typicalPlan: [
       "A first plan for neck pain is usually short. We give you two or three gentle movements to repeat through the day, a change or two to your desk or sleeping set-up, and a plan for gradually adding strengthening for the neck, shoulders and upper back as the pain settles.",
       "In our plans a typical course for neck pain is 2 to 5 sessions across 3 to 6 weeks. The first is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. That is a rough guide. Some people need only a couple of appointments and some need longer, and we review it as we go.",
-      "Because we cannot do hands-on treatment, nothing in your plan depends on us touching your neck. Everything we give you is something you do yourself, which means you keep it going between sessions and after you finish.",
+      "Because we cannot do hands-on treatment over video, nothing in your plan depends on us touching your neck. Everything we give you is something you do yourself, which means you keep it going between sessions and after you finish.",
       "If your arm symptoms are the main issue, or they are not following the pattern we expect from the start, we will tell you honestly and discuss whether a GP review is the better next step.",
     ],
     timeline:
@@ -250,7 +250,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "Can neck pain be assessed over video?",
-        a: "We can ask about your symptoms, watch your neck and shoulders move and check your set-up, then give you exercises. We cannot examine you by hand, and certain symptoms need in-person care. We screen for them at the start and will tell you if a video appointment is not right.",
+        a: "We can ask about your symptoms, watch your neck and shoulders move and check your set-up, then give you exercises. Over video, we cannot examine you by hand, and certain symptoms need in-person care. We screen for them at the start and will tell you if a video appointment is not right.",
       },
       {
         q: "Should I wear a neck collar?",
@@ -471,7 +471,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "Can plantar fasciitis be assessed by video?",
-        a: "We can ask about your pain, watch how you stand and walk, and look at your footwear, then give you exercises. We cannot examine your foot by hand, and some symptoms need in-person care. We screen for those at the start and will tell you if a video appointment is not right.",
+        a: "We can ask about your pain, watch how you stand and walk, and look at your footwear, then give you exercises. Over video, we cannot examine your foot by hand, and some symptoms need in-person care. We screen for those at the start and will tell you if a video appointment is not right.",
       },
       {
         q: "What exercises help heel pain?",
@@ -606,7 +606,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "Can hip pain be assessed over video?",
-        a: "We can ask about your pain, watch how you stand, walk and balance, and guide you through a self-check, then give you exercises. We cannot examine the hip by hand or scan it. Some symptoms need in-person care, and we screen for them at the start of your appointment.",
+        a: "We can ask about your pain, watch how you stand, walk and balance, and guide you through a self-check, then give you exercises. Over video, we cannot examine the hip by hand or scan it. Some symptoms need in-person care, and we screen for them at the start of your appointment.",
       },
       {
         q: "Do you treat gluteal tendinopathy and hip osteoarthritis?",
@@ -815,7 +815,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Recovery from a rotator cuff repair is slow and protected at first, because the repaired tendon needs time to heal. How long you wear a sling, what you may do with the arm, and when strengthening can begin are all set by your surgeon and depend on the size of the repair. We do not change those instructions.",
       "To give a sense of the shape, one NHS hospital trust's patient leaflet describes a sling worn for up to six weeks, no weight through the arm for the first three weeks, and physio-led phases that move from protection to regaining everyday movement and then strength. That is one trust's protocol, not a rule for everyone, so follow your own surgeon's protocol.",
       "Online rehab starts once your surgical team has cleared exercise-based rehab. Our video sessions then help you carry out the exercises you were given, check the movement you can do safely, and progress the plan at the pace your surgeon allows.",
-      "We cannot see the wound, check the repair by hand, or test strength the way an in-person shoulder clinic can. Our service guidance is that wound checks and any complication go back to your surgical team. We will say so if something we see on video suggests that.",
+      "Over video, we cannot see the wound, check the repair by hand, or test strength the way an in-person shoulder clinic can. Our service guidance is that wound checks and any complication go back to your surgical team. We will say so if something we see on video suggests that.",
       "If your shoulder trouble came before surgery, our page on [online physiotherapy for shoulder pain](/online-physiotherapy-for/shoulder-pain) covers that stage. We have not linked an exercise library hub here, because our tendinopathy exercises are written for shoulders that have not been operated on.",
     ],
     assessmentChecks: [

@@ -709,7 +709,7 @@ export const guides: Guide[] = [
     seoDescription:
       "An honest list of what video physiotherapy cannot do, from hands-on treatment to red-flag symptoms, with what to do instead in each case.",
     answer:
-      "Online physiotherapy cannot give hands-on treatment, handle emergencies, or replace in-person assessment when a problem needs it. Our video appointments cover the UK, and we also offer home visits in the Glasgow area, but we do not offer acupuncture and we cannot give hands-on treatment over video. If you need hands-on care or urgent help, we say so and tell you where to go instead.",
+      "Online physiotherapy cannot give hands-on treatment, handle emergencies, or replace in-person assessment when a problem needs it. Our video appointments cover the UK, and we also offer home visits in the Glasgow area, but we do not offer acupuncture or needles and we cannot give hands-on treatment over video. If you need hands-on care or urgent help, we say so and tell you where to go instead.",
     sections: [
       {
         heading: "Why we publish this page",
@@ -721,7 +721,7 @@ export const guides: Guide[] = [
       {
         heading: "Hands-on treatment",
         paragraphs: [
-          "We cannot give manual therapy, such as hands-on joint mobilisation, over video, and we do not offer acupuncture. We have no clinic or premises. If you are in the Glasgow area, you can book a home visit for an in-person assessment instead of a video call, and our home visits use the same booking flow and prices.",
+          "We cannot give manual therapy, such as hands-on joint mobilisation, over video, and we do not offer acupuncture or needles. We have no clinic or premises. If you are in the Glasgow area, you can book a home visit for an in-person assessment instead of a video call, and our home visits use the same booking flow and prices.",
           "Our service guidance says that if hands-on joint mobilisation is the main treatment a problem needs, you will be told at triage and pointed towards an in-person clinician or your GP. If you want hands-on care and you are outside the Glasgow area, look for a registered in-person physiotherapist near you. Check that they are on the HCPC Register, because physiotherapist is a protected title.",
           "It is worth knowing that national guidance is cautious about some hands-on approaches. NICE says manual therapy for low back pain should only be part of a package that includes exercise, and it advises against acupuncture for low back pain and for osteoarthritis."
         ]
@@ -772,7 +772,7 @@ export const guides: Guide[] = [
     faqs: [
       {
         q: "Do you offer manual therapy or acupuncture?",
-        a: "Not over video. We cannot give hands-on treatment such as manual therapy over video, and we do not offer acupuncture. If you are in the Glasgow area, you can book a home visit for hands-on assessment. Elsewhere, we point you to an in-person clinician near you."
+        a: "We do not offer acupuncture or needles, and over video we cannot give hands-on treatment. If you are in the Glasgow area, you can book a home visit for an in-person assessment, and your physiotherapist will tell you what is appropriate for you. Elsewhere, we point you to an in-person clinician near you."
       },
       {
         q: "What if I think I have broken a bone?",
