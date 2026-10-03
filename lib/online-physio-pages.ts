@@ -12,6 +12,7 @@
 //  - Inline links use [label](/path) and must be site-relative.
 
 import type { Source } from "@/lib/content-types";
+import { PHASE_BC_REVIEWED_ON } from "@/lib/clinical-signoff";
 
 export type OnlinePhysioPage = {
   slug: string;
@@ -122,8 +123,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "how-many-physiotherapy-sessions-do-i-need",
     ],
     serviceSlug: "musculoskeletal-physiotherapy",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "low-back-pain",
@@ -202,8 +202,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "how-many-physiotherapy-sessions-do-i-need",
     ],
     serviceSlug: "musculoskeletal-physiotherapy",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "neck-pain",
@@ -277,8 +276,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     selfTestSlugs: ["chin-tuck-rotation-check"],
     guideSlugs: ["can-a-physio-diagnose-over-video", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "musculoskeletal-physiotherapy",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "shoulder-pain",
@@ -351,8 +349,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     blogSlugs: ["online-physiotherapy-for-frozen-shoulder"],
     guideSlugs: ["what-online-physiotherapy-cannot-do", "can-a-physio-diagnose-over-video"],
     serviceSlug: "musculoskeletal-physiotherapy",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "knee-pain",
@@ -427,8 +424,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     selfTestSlugs: ["single-leg-decline-squat-check"],
     guideSlugs: ["does-online-physiotherapy-work", "can-a-physio-diagnose-over-video"],
     serviceSlug: "musculoskeletal-physiotherapy",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "plantar-fasciitis",
@@ -494,8 +490,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     guideSlugs: ["private-physiotherapy-cost-uk", "can-a-physio-diagnose-over-video"],
     serviceSlug: "musculoskeletal-physiotherapy",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "tennis-elbow",
@@ -563,8 +558,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     selfTestSlugs: ["resisted-wrist-extension-test"],
     guideSlugs: ["what-online-physiotherapy-cannot-do", "how-many-physiotherapy-sessions-do-i-need"],
     serviceSlug: "musculoskeletal-physiotherapy",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "hip-pain",
@@ -637,8 +631,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     selfTestSlugs: ["trendelenburg-mirror-check"],
     guideSlugs: ["can-a-physio-diagnose-over-video", "does-online-physiotherapy-work"],
     serviceSlug: "musculoskeletal-physiotherapy",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "knee-replacement-rehab",
@@ -718,8 +711,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     exerciseHubSlug: "after-knee-replacement",
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "post-surgical-rehabilitation",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-02",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "hip-replacement-rehab",
@@ -802,8 +794,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     exerciseHubSlug: "after-hip-replacement",
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "post-surgical-rehabilitation",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-02",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "rotator-cuff-repair-rehab",
@@ -882,8 +873,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "post-surgical-rehabilitation",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-02",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "stroke-rehabilitation",
@@ -972,8 +962,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "neurological-rehabilitation",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-02",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "parkinsons",
@@ -1055,8 +1044,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     hubBacklink: false,
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "neurological-rehabilitation",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-02",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "multiple-sclerosis",
@@ -1135,8 +1123,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "neurological-rehabilitation",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-02",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
   {
     slug: "functional-neurological-disorder",
@@ -1222,8 +1209,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     ],
     guideSlugs: ["does-online-physiotherapy-work", "what-online-physiotherapy-cannot-do"],
     serviceSlug: "neurological-rehabilitation",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-02",
+    reviewedOn: PHASE_BC_REVIEWED_ON,
   },
 ];
 

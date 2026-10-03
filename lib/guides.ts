@@ -11,6 +11,7 @@
 //  - Inline links use [label](/path) and must be site-relative.
 
 import type { RelatedLink, Source } from "@/lib/content-types";
+import { PHASE_BC_REVIEWED_ON } from "@/lib/clinical-signoff";
 
 export type GuideSection = { heading: string; paragraphs: string[] };
 
@@ -132,8 +133,7 @@ export const guides: Guide[] = [
       { label: "How online physiotherapy works", href: "/how-online-physiotherapy-works" }
     ],
     publishedOn: "2026-10-01",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01"
+    reviewedOn: PHASE_BC_REVIEWED_ON
   },
   {
     slug: "claim-physiotherapy-on-health-insurance",
@@ -235,8 +235,7 @@ export const guides: Guide[] = [
       { label: "Do I need a GP referral for physiotherapy?", href: "/guides/do-i-need-a-gp-referral-for-physiotherapy" }
     ],
     publishedOn: "2026-10-01",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01"
+    reviewedOn: PHASE_BC_REVIEWED_ON
   },
   {
     slug: "do-i-need-a-gp-referral-for-physiotherapy",
@@ -321,8 +320,7 @@ export const guides: Guide[] = [
       { label: "Claim physiotherapy on health insurance", href: "/guides/claim-physiotherapy-on-health-insurance" }
     ],
     publishedOn: "2026-10-01",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01"
+    reviewedOn: PHASE_BC_REVIEWED_ON
   },
   {
     slug: "how-many-physiotherapy-sessions-do-i-need",
@@ -406,8 +404,7 @@ export const guides: Guide[] = [
       { label: "Musculoskeletal physiotherapy", href: "/services/musculoskeletal-physiotherapy" }
     ],
     publishedOn: "2026-10-01",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01"
+    reviewedOn: PHASE_BC_REVIEWED_ON
   },
   {
     slug: "nhs-physio-waiting-times-scotland",
@@ -496,8 +493,7 @@ export const guides: Guide[] = [
       { label: "How online physiotherapy works", href: "/how-online-physiotherapy-works" }
     ],
     publishedOn: "2026-10-01",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01"
+    reviewedOn: PHASE_BC_REVIEWED_ON
   }
   ,
   {
@@ -604,8 +600,7 @@ export const guides: Guide[] = [
       { label: "Can a physio diagnose over video?", href: "/guides/can-a-physio-diagnose-over-video" }
     ],
     publishedOn: "2026-10-01",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01"
+    reviewedOn: PHASE_BC_REVIEWED_ON
   },
   {
     slug: "can-a-physio-diagnose-over-video",
@@ -705,8 +700,7 @@ export const guides: Guide[] = [
       { label: "Does online physiotherapy work?", href: "/guides/does-online-physiotherapy-work" }
     ],
     publishedOn: "2026-10-01",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01"
+    reviewedOn: PHASE_BC_REVIEWED_ON
   },
   {
     slug: "what-online-physiotherapy-cannot-do",
@@ -823,8 +817,7 @@ export const guides: Guide[] = [
       { label: "Musculoskeletal physiotherapy", href: "/services/musculoskeletal-physiotherapy" }
     ],
     publishedOn: "2026-10-01",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-01"
+    reviewedOn: PHASE_BC_REVIEWED_ON
   },
   {
     slug: "how-to-choose-an-online-physiotherapist-uk",
@@ -903,8 +896,7 @@ export const guides: Guide[] = [
       { label: "Claiming physiotherapy on health insurance", href: "/guides/claim-physiotherapy-on-health-insurance" }
     ],
     publishedOn: "2026-10-02",
-    // Placeholder until Shivaliba Zala signs off docs/seo/phase-b-clinical-review.md - set to the real sign-off date before any production deploy (drives the byline, JSON-LD lastReviewed and sitemap lastModified).
-    reviewedOn: "2026-10-02"
+    reviewedOn: PHASE_BC_REVIEWED_ON
   }
 ];
 
