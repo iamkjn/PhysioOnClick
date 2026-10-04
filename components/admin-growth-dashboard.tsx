@@ -35,14 +35,17 @@ type ChatSession = {
   messages: ChatMessage[];
 };
 
-type ChatQuestion = {
+type ChatThread = {
   id: string;
-  question: string;
   source: string;
+  patientId?: string;
+  sessionId: string;
+  preview: string;
   device: string;
   createdAtIso?: string;
   sortAt: number;
-  intent?: string;
+  messages: ChatMessage[];
+  notes: string[];
 };
 
 const EVENT_LABELS: Record<string, string> = {
@@ -269,6 +272,7 @@ function isPatientJourneyEvent(event: GrowthEvent) {
 export function AdminGrowthDashboard() {
   const [events, setEvents] = useState<GrowthEvent[] | null>(null);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [selectedChatThreadId, setSelectedChatThreadId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -435,35 +439,67 @@ export function AdminGrowthDashboard() {
       countries.set(country, (countries.get(country) ?? 0) + 1);
     }
 
-    const chatFromGrowth: ChatQuestion[] = list
-      .filter((event) => event.event === "chat_message_sent")
-      .map((event) => ({
-        id: event.id,
-        question: chatPreview(event) || "Question preview was not captured for this older chat event.",
-        source: "Website assistant",
-        device: event.device ?? "device",
-        createdAtIso: event.createdAtIso,
-        sortAt: event.createdAtIso ? new Date(event.createdAtIso).getTime() : 0,
-        intent: stringParam(event, "intent"),
-      }));
+    const chatGrowthGroups = new Map<string, GrowthEvent[]>();
+    for (const event of list) {
+      if (event.event !== "chat_message_sent") continue;
+      const key = event.sessionId || event.id;
+      chatGrowthGroups.set(key, [...(chatGrowthGroups.get(key) ?? []), event]);
+    }
 
-    const chatFromHistory: ChatQuestion[] = chatSessions.flatMap((session) =>
-      session.messages
-        .map((message, index) => ({ message, index }))
-        .filter(({ message }) => message.role === "user" && message.text.trim())
-        .map(({ message, index }) => ({
-          id: `${session.sessionId}-${index}`,
-          question: message.text.replace(/\s+/g, " ").trim().slice(0, 220),
-          source: session.patientName,
-          device: "logged-in patient",
-          createdAtIso: message.timestamp,
-          sortAt: message.timestamp
-            ? new Date(message.timestamp).getTime()
-            : session.updatedAt?.seconds
-              ? session.updatedAt.seconds * 1000
-              : 0,
-        })),
-    );
+    const chatFromGrowth: ChatThread[] = [...chatGrowthGroups.entries()].map(([sessionId, group]) => {
+      const sorted = [...group].sort(
+        (a, b) => (new Date(a.createdAtIso ?? 0).getTime() || 0) - (new Date(b.createdAtIso ?? 0).getTime() || 0),
+      );
+      const latest = sorted[sorted.length - 1];
+      const messages: ChatMessage[] = sorted.map((event) => ({
+        role: "user",
+        text: chatPreview(event) || "Question preview was not captured for this older chat event.",
+        timestamp: event.createdAtIso,
+      }));
+      return {
+        id: `growth-${sessionId}`,
+        source: "Website assistant guest session",
+        sessionId,
+        preview: messages[messages.length - 1]?.text ?? "Question preview was not captured for this older chat event.",
+        device: latest?.device ?? "device",
+        createdAtIso: latest?.createdAtIso,
+        sortAt: latest?.createdAtIso ? new Date(latest.createdAtIso).getTime() : 0,
+        messages,
+        notes: [
+          "Growth record",
+          "Only patient questions are available for guest website assistant sessions.",
+          latest ? `Intent: ${formatLabel(stringParam(latest, "intent") || "general")}` : "",
+        ].filter(Boolean),
+      };
+    });
+
+    const chatFromHistory: ChatThread[] = chatSessions.map((session) => {
+      const userMessages = session.messages.filter((message) => message.role === "user" && message.text.trim());
+      const latestUserMessage = userMessages[userMessages.length - 1];
+      return {
+        id: `history-${session.sessionId}`,
+        source: session.patientName,
+        patientId: session.patientId,
+        sessionId: session.sessionId,
+        preview: (latestUserMessage?.text || session.messages[0]?.text || "No patient message found.")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 220),
+        device: "logged-in patient",
+        createdAtIso: latestUserMessage?.timestamp,
+        sortAt: latestUserMessage?.timestamp
+          ? new Date(latestUserMessage.timestamp).getTime()
+          : session.updatedAt?.seconds
+            ? session.updatedAt.seconds * 1000
+            : 0,
+        messages: session.messages,
+        notes: [
+          "Saved patient chat history",
+          `${session.messages.length} total message${session.messages.length === 1 ? "" : "s"}`,
+          session.patientId ? `Patient ID: ${session.patientId}` : "",
+        ].filter(Boolean),
+      };
+    });
 
     return {
       trackedSessions: sessionIds.size,
@@ -484,7 +520,7 @@ export function AdminGrowthDashboard() {
       services: [...services.entries()].sort((a, b) => b[1].count - a[1].count).slice(0, 6),
       exercises: [...exercises.entries()].sort((a, b) => b[1].count - a[1].count).slice(0, 6),
       countries: [...countries.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6),
-      chatQuestions: [...chatFromGrowth, ...chatFromHistory]
+      chatThreads: [...chatFromGrowth, ...chatFromHistory]
         .sort((a, b) => b.sortAt - a.sortAt)
         .slice(0, 10),
     };
@@ -495,6 +531,8 @@ export function AdminGrowthDashboard() {
   if (events === null) {
     return <SkeletonStatGrid count={3} />;
   }
+
+  const selectedChatThread = stats.chatThreads.find((thread) => thread.id === selectedChatThreadId) ?? null;
 
   return (
     <div className="admin-growth">
@@ -574,15 +612,17 @@ export function AdminGrowthDashboard() {
         </section>
 
         <section className="admin-growth-card admin-growth-card--wide">
-          <h3>Recent patient chat questions</h3>
-          {stats.chatQuestions.length ? (
-            <ul className="admin-growth-timeline admin-growth-timeline--chat">
-              {stats.chatQuestions.map((chat) => (
+          <h3>Recent patient chat sessions</h3>
+          {stats.chatThreads.length ? (
+            <ul className="admin-growth-chat-sessions">
+              {stats.chatThreads.map((chat) => (
                 <li key={chat.id}>
-                  <span>{chat.question}</span>
-                  <strong>{chat.source}</strong>
-                  {chat.intent ? <em>{formatLabel(chat.intent)}</em> : null}
-                  <small>{formatTime(chat.createdAtIso)} · {chat.device}</small>
+                  <button type="button" onClick={() => setSelectedChatThreadId(chat.id)}>
+                    <span>{chat.source}</span>
+                    <strong>{chat.preview}</strong>
+                    <em>{chat.messages.length} message{chat.messages.length === 1 ? "" : "s"} · {chat.device}</em>
+                    <small>{formatTime(chat.createdAtIso)}</small>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -593,6 +633,47 @@ export function AdminGrowthDashboard() {
           )}
         </section>
       </div>
+
+      {selectedChatThread ? (
+        <div className="admin-chat-detail-overlay" role="dialog" aria-modal="true" aria-labelledby="chat-detail-title">
+          <div className="admin-chat-detail">
+            <header>
+              <div>
+                <span className="dashboard-eyebrow">Patient assistant conversation</span>
+                <h2 id="chat-detail-title">{selectedChatThread.source}</h2>
+                <p>
+                  {formatTime(selectedChatThread.createdAtIso)} · {selectedChatThread.device} · Session{" "}
+                  {selectedChatThread.sessionId.slice(0, 12)}
+                </p>
+              </div>
+              <button type="button" onClick={() => setSelectedChatThreadId(null)}>Close</button>
+            </header>
+
+            <div className="admin-chat-detail-meta">
+              {selectedChatThread.notes.map((note) => (
+                <span key={note}>{note}</span>
+              ))}
+            </div>
+
+            <div className="admin-chat-detail-messages">
+              {selectedChatThread.messages.length ? (
+                selectedChatThread.messages.map((message, index) => (
+                  <article
+                    key={`${message.timestamp ?? "message"}-${index}`}
+                    className={message.role === "user" ? "is-user" : "is-model"}
+                  >
+                    <span>{message.role === "user" ? "Patient" : "PhysioOnClick assistant"}</span>
+                    <p>{message.text}</p>
+                    <small>{formatTime(message.timestamp)}</small>
+                  </article>
+                ))
+              ) : (
+                <p className="muted">No messages were saved for this session.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <section className="admin-growth-card admin-growth-basis">
         <div>
