@@ -4,6 +4,7 @@ import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { allOnlinePhysioSlugs, getOnlinePhysioPage } from "@/lib/online-physio-pages";
 import { initialAssessmentPrice } from "@/lib/site-data";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { practiceRef } from "@/lib/structured-data";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -27,9 +28,9 @@ const faqItems: { question: string; answer: React.ReactNode }[] = [
     question: "Can I see you in person in Scotland?",
     answer: (
       <>
-        Yes, through home visits in the Glasgow area. Elsewhere in Scotland, appointments are by video. We have no
-        clinic or premises, and we&rsquo;ll confirm by email if your address is outside the area we cover for home
-        visits. If you need hands-on care and a home visit is not available to you, we will tell you at your
+        Yes, through home visits in {HOME_VISIT_AREA_LABEL}. Elsewhere in Scotland, appointments are by video. We
+        have no clinic or premises. When you book a home visit you enter your postcode and see straight away whether
+        we cover it. If you need hands-on care and a home visit is not available to you, we will tell you at your
         assessment and suggest you look for an in-person service, for example through your GP or your health
         board&rsquo;s NHS MSK service. For emergencies, call 999 or go to A&amp;E.
       </>

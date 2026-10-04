@@ -15,7 +15,7 @@ export const DEFAULT_VISIT_TYPE: VisitType = "video";
 
 export const VISIT_TYPE_LABELS: Record<VisitType, string> = {
   video: "Video call (anywhere in the UK)",
-  home: "Home visit (Glasgow area)",
+  home: "Home visit in Glasgow",
 };
 
 /**

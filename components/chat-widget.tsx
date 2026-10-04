@@ -8,6 +8,8 @@ import { track } from "@/lib/analytics";
 import { auth } from "@/lib/firebase";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { pricing } from "@/lib/site-data";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -366,7 +368,7 @@ export function ChatWidget() {
 
   function tapLocation() {
     addBot(
-      "We're based in Glasgow, UK. We offer home visits in the Glasgow area (we have no clinic or premises) and video physiotherapy across the whole UK, at the same prices.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.",
+      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit costs the video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.`,
       BACK_CHIPS,
     );
   }

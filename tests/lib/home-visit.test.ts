@@ -13,7 +13,7 @@ import {
 describe("home-visit helpers", () => {
   it("exposes the agreed labels, hint and caps", () => {
     expect(VISIT_TYPE_LABELS.video).toBe("Video call (anywhere in the UK)");
-    expect(VISIT_TYPE_LABELS.home).toBe("Home visit (Glasgow area)");
+    expect(VISIT_TYPE_LABELS.home).toBe("Home visit in Glasgow");
     expect(HOME_VISIT_HINT).toBe(
       "Home visits cover Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3).",
     );

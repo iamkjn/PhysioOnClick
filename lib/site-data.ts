@@ -263,7 +263,10 @@ export const services: Service[] = [
       {
         question: "I'm in Glasgow — can I see you in person?",
         answer:
-          "Yes, through home visits in the Glasgow area, at the same prices as video. Elsewhere in Scotland and the UK, appointments are by video, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. We'll confirm by email if your address is outside the area we cover for home visits, and we'll tell you at triage if another kind of neuro physiotherapy would suit you better."
+          // "£15" is literal here: importing HOME_VISIT_TRAVEL_FEE_PENCE would create an
+          // import cycle (lib/home-visit-pricing -> lib/cal-services -> this file).
+          // tests/lib/home-visit-copy.test.ts keeps it in step with the constant.
+          "Yes, through home visits in the Glasgow area, at the video price plus a £15 travel fee per visit. Elsewhere in Scotland and the UK, appointments are by video, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. When you book a home visit you enter your postcode and see straight away whether we cover it, and we'll tell you at triage if another kind of neuro physiotherapy would suit you better."
       }
     ],
     headline: "Online Neurological Physiotherapy for Glasgow, Scotland & the UK",
@@ -436,7 +439,7 @@ export const pricing: PricingItem[] = [
     title: "Initial Online Assessment",
     duration: "60 min",
     price: 40,
-    description: "Assessment by video or home visit (Glasgow area) with tailored advice and exercise planning.",
+    description: "Assessment with tailored advice and exercise planning.",
     mode: "Online"
   },
   {
@@ -444,7 +447,7 @@ export const pricing: PricingItem[] = [
     title: "Online Follow-Up",
     duration: "30 min",
     price: 30,
-    description: "Ongoing progression and accountability support, by video or home visit (Glasgow area).",
+    description: "Ongoing progression and accountability support.",
     mode: "Online"
   },
   {

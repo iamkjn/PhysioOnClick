@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 
 import { founder, initialAssessmentPrice } from "@/lib/site-data";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
 import { Reveal } from "@/components/reveal";
@@ -210,7 +211,7 @@ export default async function HomePage() {
           </details>
           <details>
             <summary>Can I be seen in person?</summary>
-            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit (Glasgow area)&rdquo; when you book, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. We have no clinic or premises, and video appointments are available anywhere in the UK at the same prices.</p>
+            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit costs the video price plus a {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit. We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
           </details>
           <details>
             <summary>Is online physiotherapy actually effective?</summary>

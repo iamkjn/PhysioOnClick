@@ -5,6 +5,8 @@ import { guides } from "@/lib/guides";
 import { onlinePhysioPages } from "@/lib/online-physio-pages";
 import { services, pricing } from "@/lib/site-data";
 import { practiceNode } from "@/lib/structured-data";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 
 // Home visits in the Glasgow area are offered, so no data file may deny them.
 const DENIALS = [
@@ -99,5 +101,56 @@ describe("practiceNode home visits", () => {
     expect(node.makesOffer.itemOffered.serviceType).toBe("Home visit physiotherapy");
     expect(node.makesOffer.itemOffered.areaServed).toEqual({ "@type": "City", name: "Glasgow" });
     expect(node.availableChannel.map((c: any) => c.serviceType)).toContain("Home visit physiotherapy");
+  });
+});
+
+// Home visits cost the video price plus a travel fee per visit, and coverage
+// is checked from the postcode at booking. Copy written before that change
+// said "same prices" and "we'll confirm by email"; none may survive.
+describe("home visit pricing and coverage copy", () => {
+  const STALE = [
+    /same prices?/i,
+    /cost the same as video/i,
+    /confirm by email if your address/i,
+    /confirm by email if an address/i,
+    /Home visit \(Glasgow area\)/,
+  ];
+  const FILES = [
+    "app/page.tsx",
+    "app/terms/page.tsx",
+    "app/glasgow-physiotherapist/page.tsx",
+    "app/how-online-physiotherapy-works/page.tsx",
+    "app/online-physiotherapy-scotland/page.tsx",
+    "app/pricing/page.tsx",
+    "lib/site-data.ts",
+    "lib/chat-prompt.ts",
+    "lib/home-visit.ts",
+    "components/chat-widget.tsx",
+  ];
+
+  it.each(FILES)("%s has no stale home-visit pricing or confirm-by-email copy", (file) => {
+    const src = readFileSync(file, "utf8");
+    for (const phrase of STALE) expect(src).not.toMatch(phrase);
+  });
+
+  it("the chat prompt states the travel fee and the covered area", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain(`plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit`);
+    expect(prompt).toContain(HOME_VISIT_AREA_LABEL);
+    expect(prompt).not.toMatch(/confirm by email/i);
+  });
+
+  it("the neuro FAQ's literal travel fee matches the constant", () => {
+    // site-data cannot import the constant (import cycle), so pin it here.
+    const neuro = services.find((s) => s.slug === "neurological-rehabilitation")!;
+    const faq = neuro.faqs.find((f) => /in person/i.test(f.question))!;
+    expect(faq.answer).toContain(`video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit`);
+  });
+
+  it("initial assessment and follow-up descriptions are visit-neutral", () => {
+    for (const id of ["initial-assessment", "follow-up"]) {
+      const item = pricing.find((p) => p.id === id)!;
+      expect(item.description).not.toMatch(/video|home visit|Glasgow/i);
+    }
   });
 });

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { EXERCISE_DISCLAIMER } from "@/lib/exercise-disclaimer";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
@@ -79,9 +81,17 @@ export default function TermsPage() {
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Home visits (Glasgow area)</h2>
           <p>
-            Home visits are offered in the Glasgow area, booked through the same booking flow as video
-            appointments and at the same prices. When you book a home visit we ask for your address and
-            postcode. We will confirm by email if your address is outside the area we cover.
+            Home visits are offered in {HOME_VISIT_AREA_LABEL}, booked through the same booking flow as
+            video appointments. A home visit is charged at the price of the equivalent video appointment
+            plus a travel fee of {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} per visit. The travel fee is
+            shown separately at checkout and on your invoice. If you book a session bundle as home visits,
+            the price you pay when you book includes the travel fee for every visit in the bundle. Discount
+            codes apply to the session price only, not to the travel fee.
+          </p>
+          <p>
+            Home visits are available only for postcodes in the area we cover. When you book a home visit
+            we ask for your postcode and address, and we check the postcode at that point: a home visit
+            cannot be booked for a postcode outside the area we cover.
           </p>
           <ul>
             <li>Please provide a safe, clear space for the session and safe, reasonable access to it.</li>

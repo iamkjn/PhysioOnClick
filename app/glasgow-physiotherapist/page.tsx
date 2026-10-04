@@ -2,13 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
-import { initialAssessmentPrice } from "@/lib/site-data";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
 import { practiceRef } from "@/lib/structured-data";
+
+// Home visits cost the video price plus a travel fee per visit, so every
+// figure here is derived from lib/home-visit-pricing rather than hardcoded.
+const videoInitial = formatPounds(sessionPricePence("initial-assessment"));
+const homeInitial = formatPounds(sessionPricePence("initial-assessment") + travelFeePence("initial-assessment", "home"));
+const travelFee = formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE);
 
 export const metadata: Metadata = {
   alternates: { canonical: "/glasgow-physiotherapist" },
   title: "Physiotherapist Glasgow: Home Visits & Online | PhysioOnClick",
-  description: `Physiotherapist in Glasgow offering home visits in the Glasgow area, plus video appointments across the UK. No GP referral needed. £${initialAssessmentPrice} initial assessment.`
+  description: `Physiotherapist in Glasgow offering home visits in the Glasgow area, plus video appointments UK-wide. No GP referral. ${videoInitial} video assessment, ${homeInitial} home visit.`
 };
 
 const faqItems = [
@@ -20,11 +27,11 @@ const faqItems = [
   {
     question: "Can I be seen in person in Glasgow?",
     answer:
-      "Yes, through home visits in the Glasgow area. We do not have a clinic or premises, so all in-person care happens at your home. Choose \"Home visit (Glasgow area)\" when you book. We'll confirm by email if your address is outside the area we cover."
+      `Yes, through home visits in the Glasgow area. We do not have a clinic or premises, so all in-person care happens at your home. Choose "Home visit in Glasgow" when you book and enter your postcode, and you'll see straight away whether we cover it. Home visits cover ${HOME_VISIT_AREA_LABEL}.`
   },
   {
     question: "How much does a home visit cost?",
-    answer: `Home visits cost the same as video appointments. The initial assessment is £${initialAssessmentPrice}, and follow-up and bundle prices are the same as for video. See the pricing page for the full list.`
+    answer: `A home visit costs the video appointment price plus a ${travelFee} travel fee per visit. The initial assessment is ${videoInitial} by video or ${homeInitial} as a home visit. Bundles booked as home visits include the travel fee for every visit, paid when you book. See the pricing page for the full list.`
   },
   {
     question: "Can I book a video appointment if I live outside Glasgow?",
@@ -54,7 +61,7 @@ export default function GlasgowPage() {
         "@type": "WebPage",
         about: practiceRef()
       }) }} />
-      {/* FAQPage left exactly as-is — untouched by this refactor. */}
+      {/* FAQPage mirrors the visible FAQ below (same faqItems). */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -67,7 +74,8 @@ export default function GlasgowPage() {
           <p className="lead">
             PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. If you are in the
             Glasgow area you can book a home visit, and video appointments are available anywhere in the UK.
-            Prices are the same for both, and the initial assessment is £{initialAssessmentPrice}.
+            The initial assessment is {videoInitial} by video, or {homeInitial} as a home visit (the video
+            price plus a {travelFee} travel fee).
           </p>
           <div className="button-row">
             <TrackedBookLink
@@ -94,7 +102,7 @@ export default function GlasgowPage() {
             <li>Glasgow-based, HCPC registered physiotherapist</li>
             <li>Home visits in the Glasgow area, with no clinic or premises</li>
             <li>Video appointments anywhere in the UK</li>
-            <li>Same prices and the same booking flow for both</li>
+            <li>The same booking flow for both; home visits add a {travelFee} travel fee per visit</li>
             <li>
               Living elsewhere in Scotland?{" "}
               <Link href="/online-physiotherapy-scotland" prefetch>
@@ -122,9 +130,9 @@ export default function GlasgowPage() {
               <li>The same HCPC registered physiotherapist, with follow-ups by home visit or video</li>
             </ul>
             <p>
-              Home visits are for the Glasgow area. We have no clinic or premises. When you book, choose
-              &ldquo;Home visit (Glasgow area)&rdquo; and enter your address. We&rsquo;ll confirm by email if your
-              address is outside the area we cover.
+              Home visits cover {HOME_VISIT_AREA_LABEL}. We have no clinic or premises. When you book,
+              choose &ldquo;Home visit in Glasgow&rdquo; and enter your postcode: you&rsquo;ll see straight away
+              whether we cover it, then add your address.
             </p>
           </div>
         </Reveal>
@@ -143,10 +151,11 @@ export default function GlasgowPage() {
 
       <Reveal direction="up">
         <section className="page-section stack">
-          <h2>Prices are the same for home visits and video</h2>
+          <h2>Home visit and video prices</h2>
           <p>
-            The initial assessment is £{initialAssessmentPrice} whether you choose a home visit or a video call.
-            Follow-ups and bundles are priced the same way for both. See{" "}
+            The initial assessment is {videoInitial} by video or {homeInitial} as a home visit. A home visit
+            costs the video price plus a {travelFee} travel fee per visit, shown as its own line at checkout.
+            Bundles booked as home visits include the travel fee for every visit, paid when you book. See{" "}
             <Link href="/pricing">pricing</Link> for the full list. If you are not sure which suits you, the{" "}
             <Link href="/how-online-physiotherapy-works">how it works</Link> page explains the booking steps.
           </p>
