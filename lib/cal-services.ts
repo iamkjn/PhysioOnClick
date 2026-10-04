@@ -16,6 +16,9 @@ export type CalService = {
   id: BookServiceId;
   /** Cal.com event type slug — verified live against the public /v2/slots API. */
   calSlug: string;
+  /** Event type for a Glasgow home visit, when Cal.com has one for this tier.
+   *  Tiers without one book home visits on `calSlug`. Use calSlugFor(). */
+  homeCalSlug?: string;
   /** Length of the booked session, matching the Cal.com event type. Drives the
    *  calendar-file end time. Bundles book a 60-min first session. */
   minutes: number;
@@ -25,10 +28,14 @@ export type CalService = {
   included: string[];
 };
 
+/** Same slug in the dev and prod Cal.com accounts (verified live 2026-10-04). */
+const HOME_VISIT_ASSESSMENT_SLUG = "initial-assessment-home-visit-in-glasgow";
+
 const CAL_SERVICES: Record<BookServiceId, CalService> = {
   "initial-assessment": {
     id: "initial-assessment",
     calSlug: "initial-online-assessment",
+    homeCalSlug: HOME_VISIT_ASSESSMENT_SLUG,
     minutes: 60,
     sessions: 1,
     included: [
@@ -52,6 +59,7 @@ const CAL_SERVICES: Record<BookServiceId, CalService> = {
   "bundle-4": {
     id: "bundle-4",
     calSlug: "initial-online-assessment",
+    homeCalSlug: HOME_VISIT_ASSESSMENT_SLUG,
     minutes: 60,
     sessions: 4,
     included: [
@@ -64,6 +72,7 @@ const CAL_SERVICES: Record<BookServiceId, CalService> = {
   "bundle-8": {
     id: "bundle-8",
     calSlug: "initial-online-assessment",
+    homeCalSlug: HOME_VISIT_ASSESSMENT_SLUG,
     minutes: 60,
     sessions: 8,
     included: [
@@ -83,6 +92,16 @@ export function isBookServiceId(value: unknown): value is BookServiceId {
 
 export function calServiceFor(id: BookServiceId): CalService {
   return CAL_SERVICES[id];
+}
+
+/**
+ * The Cal.com event type to check and book. A home visit uses the tier's
+ * home-visit event when there is one (initial assessment, and a bundle's first
+ * session); follow-ups have no home event yet and stay on the video one.
+ */
+export function calSlugFor(id: BookServiceId, visitType?: unknown): string {
+  const service = CAL_SERVICES[id];
+  return visitType === "home" && service.homeCalSlug ? service.homeCalSlug : service.calSlug;
 }
 
 /** The tier's marketing copy (title/price/duration) joined to its Cal mapping. */

@@ -241,6 +241,8 @@ export function BookingStepTime({
       start: dateKey(start),
       end: dateKey(last)
     });
+    // Home visits read the Glasgow home-visit event type's availability.
+    if (visit.visitType === "home") params.set("visit", "home");
 
     fetch(`/api/cal/slots?${params}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
@@ -258,7 +260,7 @@ export function BookingStepTime({
     return () => {
       cancelled = true;
     };
-  }, [service.id, viewMonth, today, retryToken]);
+  }, [service.id, visit.visitType, viewMonth, today, retryToken]);
 
   // The API returns only free times. Deriving the physio's usual hours from the
   // whole month lets us show genuinely-busy times struck through, rather than

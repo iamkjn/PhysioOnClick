@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { CAL_USERNAME, calServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { CAL_USERNAME, calSlugFor, isBookServiceId } from "@/lib/cal-services";
 
 /**
  * Real Cal.com availability for the custom /book calendar.
@@ -68,7 +68,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const calSlug = calServiceFor(service).calSlug;
+  // ?visit=home reads the Glasgow home-visit event type's availability.
+  const calSlug = calSlugFor(service, searchParams.get("visit"));
 
   const url = new URL("https://api.cal.com/v2/slots");
   url.searchParams.set("eventTypeSlug", calSlug);

@@ -187,3 +187,17 @@ describe("POST /api/payments/webhook — home visits", () => {
   });
 });
 
+
+describe("POST /api/payments/webhook — home-visit Cal.com event", () => {
+  it("checks the slot against the Glasgow home-visit event for a home visit", async () => {
+    await POST(signedRequest(eventWith({ visitType: "home", homeVisitAddress: ADDRESS })));
+    const slotUrl = new URL((fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0] as string);
+    expect(slotUrl.searchParams.get("eventTypeSlug")).toBe("initial-assessment-home-visit-in-glasgow");
+  });
+
+  it("checks the slot against the video event for a video booking", async () => {
+    await POST(signedRequest(eventWith({})));
+    const slotUrl = new URL((fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0] as string);
+    expect(slotUrl.searchParams.get("eventTypeSlug")).toBe("initial-online-assessment");
+  });
+});

@@ -18,6 +18,8 @@ vi.mock("@/lib/cal-services", () => ({
     sessions: 1,
     included: [],
   }),
+  calSlugFor: (_id: string, visitType?: unknown) =>
+    visitType === "home" ? "initial-assessment-home-visit-in-glasgow" : "initial-online-assessment",
 }));
 
 import { GET } from "@/app/api/cal/slots/route";
@@ -158,5 +160,18 @@ describe("GET /api/cal/slots", () => {
     );
 
     expect(res.status).toBe(502);
+  });
+  it("looks up the Glasgow home-visit event when visit=home", async () => {
+    global.fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: {} }), { status: 200 }));
+    await GET(makeRequest({ service: "initial-assessment", start: "2026-07-20", end: "2026-07-25", visit: "home" }));
+    const [calledUrl] = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(new URL(calledUrl as string).searchParams.get("eventTypeSlug")).toBe("initial-assessment-home-visit-in-glasgow");
+  });
+
+  it("keeps the video event when visit is missing or not home", async () => {
+    global.fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: {} }), { status: 200 }));
+    await GET(makeRequest({ service: "initial-assessment", start: "2026-07-20", end: "2026-07-25", visit: "video" }));
+    const [calledUrl] = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(new URL(calledUrl as string).searchParams.get("eventTypeSlug")).toBe("initial-online-assessment");
   });
 });

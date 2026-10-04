@@ -1,4 +1,4 @@
-import { CAL_USERNAME, calServiceFor } from "@/lib/cal-services";
+import { CAL_USERNAME, calSlugFor } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
 import type { VisitType } from "@/lib/home-visit";
 
@@ -45,7 +45,9 @@ export async function createCalBooking(
     return { ok: false, status: 503, error: "Booking calendar is not configured." };
   }
 
-  const calSlug = calServiceFor(input.service).calSlug;
+  // Same rule as the metadata below: only a home visit WITH an address counts.
+  const isHomeVisit = input.visitType === "home" && Boolean(input.homeVisitAddress);
+  const calSlug = calSlugFor(input.service, isHomeVisit ? "home" : undefined);
   const basePayload: Record<string, unknown> = {
     start: input.startISO,
     attendee: { name: input.name, email: input.email, timeZone: input.timeZone },
@@ -56,8 +58,8 @@ export async function createCalBooking(
   const metadata: Record<string, string> = {};
   if (cleanedFocus && cleanedFocus.length > 0) metadata.focusAreas = cleanedFocus.join(", ");
   if (input.visitType === "home" && input.homeVisitAddress) {
-    // Same calendar and event types as video; Cal.com only records the visit
-    // type + address in metadata so the practitioner sees where to go.
+    // Booked on the Glasgow home-visit event type where the tier has one (see
+    // calSlugFor); the visit type + address also travel in metadata.
     metadata.visitType = "home";
     metadata.homeVisitAddress = input.homeVisitAddress;
   }

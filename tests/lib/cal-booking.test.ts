@@ -114,3 +114,52 @@ describe("createCalBooking", () => {
     expect(plain).not.toHaveProperty("metadata");
   });
 });
+
+describe("createCalBooking — Cal.com event type for home visits", () => {
+  function okFetch() {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ data: { uid: "cal_abc" } }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("NEXT_PUBLIC_CAL_USERNAME", "physio");
+    return fetchMock;
+  }
+  const slugOf = (fetchMock: ReturnType<typeof vi.fn>) =>
+    JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string).eventTypeSlug;
+
+  it("books a home-visit initial assessment into the Glasgow home-visit event", async () => {
+    const fetchMock = okFetch();
+    await createCalBooking({ ...OK_INPUT, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS" });
+    expect(slugOf(fetchMock)).toBe("initial-assessment-home-visit-in-glasgow");
+  });
+
+  it("keeps a home-visit follow-up on the follow-up event", async () => {
+    const fetchMock = okFetch();
+    await createCalBooking({
+      ...OK_INPUT,
+      service: "follow-up",
+      visitType: "home",
+      homeVisitAddress: "7 Example Street, G31 4HS",
+    });
+    expect(slugOf(fetchMock)).toBe("online-follow-up");
+  });
+
+  it("treats a home visit with no address as video, matching the metadata rule", async () => {
+    const fetchMock = okFetch();
+    await createCalBooking({ ...OK_INPUT, visitType: "home" });
+    expect(slugOf(fetchMock)).toBe("initial-online-assessment");
+  });
+
+  it("retries a rejected home visit without metadata but still on the home-visit event", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response("bad metadata", { status: 400 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ data: { uid: "cal_abc" } }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("NEXT_PUBLIC_CAL_USERNAME", "physio");
+    await createCalBooking({ ...OK_INPUT, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS" });
+    const retry = JSON.parse((fetchMock.mock.calls[1][1] as RequestInit).body as string);
+    expect(retry.eventTypeSlug).toBe("initial-assessment-home-visit-in-glasgow");
+    expect(retry.metadata).toBeUndefined();
+  });
+});

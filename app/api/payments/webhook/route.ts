@@ -7,7 +7,7 @@ import { guestBookingOwnerFields } from "@/lib/guest-booking";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
-import { bookServiceFor, calServiceFor, serviceLabelFor } from "@/lib/cal-services";
+import { bookServiceFor, calSlugFor, serviceLabelFor } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
 
 type StripeEvent = {
@@ -35,14 +35,14 @@ type SlotState = "free" | "taken" | "unknown";
  * the authority — a momentary Cal outage must not charge a customer and then
  * record slot_unavailable for a slot that was actually free.
  */
-async function checkSlot(service: BookServiceId, startISO: string): Promise<SlotState> {
+async function checkSlot(service: BookServiceId, startISO: string, visitType?: string): Promise<SlotState> {
   // Read live (not the module-level constant) so this route reacts to the
   // request-time env, matching how this handler is exercised in tests.
   const calUsername = process.env.NEXT_PUBLIC_CAL_USERNAME ?? "";
   if (!calUsername) return "unknown";
   const day = startISO.slice(0, 10); // YYYY-MM-DD
   const url = new URL("https://api.cal.com/v2/slots");
-  url.searchParams.set("eventTypeSlug", calServiceFor(service).calSlug);
+  url.searchParams.set("eventTypeSlug", calSlugFor(service, visitType));
   url.searchParams.set("username", calUsername);
   url.searchParams.set("start", day);
   url.searchParams.set("end", day);
@@ -124,7 +124,9 @@ export async function POST(request: Request) {
     createdAt: FieldValue.serverTimestamp(),
   });
 
-  if ((await checkSlot(intent.service, intent.startISO)) === "taken") {
+  // Check the same event type createCalBooking will book (home only with an address).
+  const slotVisitType = intent.visitType === "home" && intent.homeVisitAddress ? "home" : undefined;
+  if ((await checkSlot(intent.service, intent.startISO, slotVisitType)) === "taken") {
     // Cal confirmed the slot is gone between checkout and webhook. Record for
     // admin follow-up/refund. ("unknown" falls through to the booking attempt
     // below so a transient Cal error can't charge-without-booking.)
