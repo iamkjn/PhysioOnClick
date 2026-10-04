@@ -549,52 +549,58 @@ export function AdminGrowthDashboard() {
       {error ? <p className="form-error">{error}</p> : null}
 
       <div className="admin-growth-stats">
-        <article className="admin-growth-stat is-primary">
+        <Link className="admin-growth-stat admin-growth-stat-link is-primary" href="#latest-interactions">
           <Activity aria-hidden="true" />
           <span>Tracked visitor sessions</span>
           <strong>{stats.trackedSessions}</strong>
-          <small>Unique browser sessions in the latest event window.</small>
-        </article>
-        <article className="admin-growth-stat">
+          <small>Review latest activity</small>
+        </Link>
+        <Link className="admin-growth-stat admin-growth-stat-link" href="#booking-funnel">
           <MousePointerClick aria-hidden="true" />
           <span>Book clicks</span>
           <strong>{stats.bookClicks}</strong>
-        </article>
-        <article className="admin-growth-stat">
+          <small>Open booking funnel</small>
+        </Link>
+        <Link className="admin-growth-stat admin-growth-stat-link" href="#booking-funnel">
           <ArrowDownRight aria-hidden="true" />
           <span>Checkout starts</span>
           <strong>{stats.checkouts}</strong>
-        </article>
-        <article className="admin-growth-stat">
+          <small>Open booking funnel</small>
+        </Link>
+        <Link className="admin-growth-stat admin-growth-stat-link" href="#booking-funnel">
           <CalendarCheck2 aria-hidden="true" />
           <span>Confirmed</span>
           <strong>{stats.bookings}</strong>
-        </article>
-        <article className="admin-growth-stat">
+          <small>Open booking funnel</small>
+        </Link>
+        <Link className="admin-growth-stat admin-growth-stat-link" href="#exercise-conversion">
           <Dumbbell aria-hidden="true" />
           <span>Exercise views</span>
           <strong>{stats.exerciseViews}</strong>
-        </article>
-        <article className="admin-growth-stat">
+          <small>Open exercise details</small>
+        </Link>
+        <Link className="admin-growth-stat admin-growth-stat-link" href="#exercise-conversion">
           <BookmarkCheck aria-hidden="true" />
           <span>Saved exercises</span>
           <strong>{stats.exerciseSaves}</strong>
-        </article>
+          <small>Open exercise details</small>
+        </Link>
         <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/chat-logs">
           <MessageSquare aria-hidden="true" />
           <span>Chat leads</span>
           <strong>{stats.chatLeads}</strong>
           <small>Open chat log details</small>
         </Link>
-        <article className="admin-growth-stat">
+        <Link className="admin-growth-stat admin-growth-stat-link" href="#country-reach">
           <Globe2 aria-hidden="true" />
           <span>Countries captured</span>
           <strong>{stats.countries.length}</strong>
-        </article>
+          <small>Open country reach</small>
+        </Link>
       </div>
 
       <div className="admin-growth-grid">
-        <section className="admin-growth-card admin-growth-card--wide">
+        <section id="latest-interactions" className="admin-growth-card admin-growth-card--wide">
           <h3>Latest interactions</h3>
           {patientEvents.length ? (
             <ul className="admin-growth-timeline">
@@ -636,25 +642,8 @@ export function AdminGrowthDashboard() {
         </section>
       </div>
 
-      <section className="admin-growth-card admin-growth-basis">
-        <div>
-          <h3>Why this number shows</h3>
-          <p className="muted">
-            Tracked visitor sessions are unique browser session IDs from recent patient-side events. It is not a click
-            count, so a person who only opens one page can still count as one session.
-          </p>
-        </div>
-        <ol className="admin-growth-list">
-          <li><span><strong>Patient events analysed</strong><small>Latest tracked website activity loaded here</small></span><b>{stats.analysedEvents}</b></li>
-          <li><span><strong>Unique visitor sessions</strong><small>Basis for the headline number</small></span><b>{stats.trackedSessions}</b></li>
-          <li><span><strong>Engaged sessions</strong><small>Sessions with 2 or more tracked events</small></span><b>{stats.engagedSessions}</b></li>
-          <li><span><strong>Single-event sessions</strong><small>Likely quick visits, refreshes or one-page views</small></span><b>{stats.singleEventSessions}</b></li>
-          <li><span><strong>Country-known sessions</strong><small>New events only, after country capture is live</small></span><b>{stats.countrySessions}</b></li>
-        </ol>
-      </section>
-
       <div className="admin-growth-grid">
-        <section className="admin-growth-card admin-growth-card--span">
+        <section id="booking-funnel" className="admin-growth-card admin-growth-card--span">
           <h3>Booking funnel</h3>
           <div className="admin-growth-funnel">
             {stats.funnel.map((item) => (
@@ -667,7 +656,7 @@ export function AdminGrowthDashboard() {
           </div>
         </section>
 
-        <section className="admin-growth-card">
+        <section id="exercise-conversion" className="admin-growth-card">
           <h3>Exercise conversion</h3>
           <div className="admin-growth-funnel admin-growth-funnel--compact">
             {stats.exerciseConversion.map((item) => (
@@ -694,7 +683,7 @@ export function AdminGrowthDashboard() {
           ) : <p className="muted">No page views recorded yet.</p>}
         </section>
 
-        <section className="admin-growth-card">
+        <section id="country-reach" className="admin-growth-card">
           <h3>Country reach</h3>
           {stats.countries.length ? (
             <ol className="admin-growth-list admin-growth-country-list">
