@@ -34,7 +34,10 @@ vi.mock('@/lib/patient-addresses', async (orig) => ({
 }))
 // Step 2 is out of scope here: capture what step 1 hands it.
 vi.mock('@/components/booking-step-time', () => ({
-  BookingStepTime: (props: Record<string, unknown>) => (mocks.timeProps.push(props), <p>Step two</p>),
+  BookingStepTime: (props: Record<string, unknown>) => (
+    mocks.timeProps.push(props),
+    <button type="button" onClick={props.onBack as () => void}>Back to step one</button>
+  ),
 }))
 
 import { BookingFlow } from '@/components/booking-flow'
@@ -90,7 +93,7 @@ describe('booking address book', () => {
     const user = await chooseHome()
     await screen.findByRole('radiogroup', { name: 'Your saved addresses' })
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
-    await screen.findByText('Step two')
+    await screen.findByRole('button', { name: 'Back to step one' })
     expect(lastVisit()).toEqual({ visitType: 'home', homeAddressLine: '7 Springfield Gardens', homePostcode: 'G31 4HS' })
     expect(mocks.addAddress).not.toHaveBeenCalled()
   })
@@ -110,21 +113,20 @@ describe('booking address book', () => {
     await user.type(await screen.findByLabelText('Address'), '2 University Ave')
     expect(screen.getByRole('checkbox', { name: 'Save to my address book' })).toBeChecked()
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
-    await screen.findByText('Step two')
+    await screen.findByRole('button', { name: 'Back to step one' })
     expect(mocks.addAddress).toHaveBeenCalledTimes(1)
     expect(mocks.addAddress).toHaveBeenCalledWith('u1', { line: '2 University Ave', postcode: 'G12 8QQ' })
     expect(lastVisit()).toMatchObject({ homeAddressLine: '2 University Ave', homePostcode: 'G12 8QQ' })
   })
 
   it('does not save when unticked', async () => {
-    mocks.addAddress.mockRejectedValue(new Error('nope'))
     const user = await chooseHome()
     await user.click(await screen.findByRole('radio', { name: 'Use a different address' }))
     await user.type(screen.getByLabelText('Postcode'), 'G12 8QQ')
     await user.type(await screen.findByLabelText('Address'), '2 University Ave')
     await user.click(screen.getByRole('checkbox', { name: 'Save to my address book' }))
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
-    await screen.findByText('Step two')
+    await screen.findByRole('button', { name: 'Back to step one' })
     expect(mocks.addAddress).not.toHaveBeenCalled()
   })
 
@@ -135,8 +137,43 @@ describe('booking address book', () => {
     await user.type(screen.getByLabelText('Postcode'), 'G12 8QQ')
     await user.type(await screen.findByLabelText('Address'), '2 University Ave')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
-    await screen.findByText('Step two')
+    await screen.findByRole('button', { name: 'Back to step one' })
     expect(mocks.addAddress).toHaveBeenCalledTimes(1)
+  })
+
+  it('defaults to "Use a different address" when there is no usual address', async () => {
+    mocks.getUsualAddressId.mockResolvedValue(null)
+    await chooseHome()
+    expect(await screen.findByRole('radio', { name: 'Use a different address' })).toBeChecked()
+    expect(screen.getByLabelText('Postcode')).toBeInTheDocument()
+  })
+
+  it('signed-in user with no saved addresses gets the postcode flow and the save box', async () => {
+    mocks.getAddresses.mockResolvedValue([])
+    mocks.getUsualAddressId.mockResolvedValue(null)
+    const user = await chooseHome()
+    await waitFor(() => expect(mocks.getAddresses).toHaveBeenCalled())
+    expect(screen.queryByRole('radiogroup', { name: 'Your saved addresses' })).not.toBeInTheDocument()
+    await user.type(screen.getByLabelText('Postcode'), 'G12 8QQ')
+    await user.type(await screen.findByLabelText('Address'), '2 University Ave')
+    expect(screen.getByRole('checkbox', { name: 'Save to my address book' })).toBeChecked()
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await screen.findByRole('button', { name: 'Back to step one' })
+    expect(mocks.addAddress).toHaveBeenCalledTimes(1)
+  })
+
+  it('after saving, Back shows the new address selected and Continue does not save again', async () => {
+    const user = await chooseHome()
+    await user.click(await screen.findByRole('radio', { name: 'Use a different address' }))
+    await user.type(screen.getByLabelText('Postcode'), 'G12 8QQ')
+    await user.type(await screen.findByLabelText('Address'), '2 University Ave')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await user.click(await screen.findByRole('button', { name: 'Back to step one' }))
+    expect(await screen.findByRole('radio', { name: /2 University Ave, G12 8QQ/ })).toBeChecked()
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await screen.findByRole('button', { name: 'Back to step one' })
+    expect(mocks.addAddress).toHaveBeenCalledTimes(1)
+    expect(lastVisit()).toMatchObject({ homeAddressLine: '2 University Ave', homePostcode: 'G12 8QQ' })
   })
 
   it('anonymous users see no saved list or save box', async () => {

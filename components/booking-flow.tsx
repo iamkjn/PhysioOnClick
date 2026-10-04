@@ -246,6 +246,9 @@ export function BookingFlow() {
           setAddressChoice(usual.id);
           setHomeAddressLine(usual.line);
           setHomePostcode(usual.postcode);
+        } else {
+          // No usual address: start on the normal postcode flow, never a dead end.
+          setAddressChoice("different");
         }
       })
       .catch(() => {
@@ -295,12 +298,14 @@ export function BookingFlow() {
         if (!already) {
           // Fire and forget: a failed save must never block booking.
           addAddress(user.uid, { line: home.addressLine, postcode: home.postcode })
-            .then((id) =>
+            .then((id) => {
               setSavedAddresses((prev) => [
                 ...prev,
                 { id, ownerUid: user.uid, label: "", line: home.addressLine, postcode: home.postcode },
-              ])
-            )
+              ]);
+              // Back to step 1 then shows the new address selected, Continue available.
+              setAddressChoice(id);
+            })
             .catch(() => {});
         }
       }

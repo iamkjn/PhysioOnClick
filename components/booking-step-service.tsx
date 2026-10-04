@@ -268,6 +268,9 @@ export function BookingStepService({
                 </div>
               </div>
             ) : null}
+            {hasSaved && !savedChosen && !showAddressInputs ? (
+              <p className="book-field-hint book-field-full">Choose an address to continue.</p>
+            ) : null}
             {savedChosen && coverage === "uncovered" ? (
               <div className="book-out-of-area book-field-full" role="alert">
                 <span id="book-home-hint">
