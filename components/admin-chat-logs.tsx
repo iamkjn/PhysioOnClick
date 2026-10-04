@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { formatPersonName } from "@/lib/name-format";
 import {
+  collection,
   collectionGroup,
   doc,
   getDoc,
@@ -13,7 +14,10 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
+import Link from "next/link";
 import { SkeletonRow } from "@/components/skeleton";
+
+const CHAT_LOG_PAGE_SIZE = 10;
 
 type ChatMessage = {
   role: "user" | "model";
@@ -26,15 +30,18 @@ type ChatSession = {
   sessionId: string;
   patientId: string;
   patientName?: string;
-  updatedAt?: { seconds: number };
+  sourceLabel: string;
+  href: string;
+  sortAt: number;
   messages: ChatMessage[];
+  notes?: string[];
 };
 
 export function AdminChatLogs() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [search, setSearch] = useState("");
-  const [expanded, setExpanded] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (!db) return;
@@ -44,12 +51,13 @@ export function AdminChatLogs() {
       // narrowing on the module-level `db` is lost inside the nested async callbacks below
       const database = db;
       try {
-        // ponytail: capped at 100 sessions, add pagination if the clinic outgrows it
-        const q = query(collectionGroup(database, "chatSessions"), orderBy("updatedAt", "desc"), limit(100));
-        const snap = await getDocs(q);
+        const [historySnap, growthSnap] = await Promise.all([
+          getDocs(query(collectionGroup(database, "chatSessions"), orderBy("updatedAt", "desc"), limit(100))),
+          getDocs(query(collection(database, "growthEvents"), orderBy("createdAtIso", "desc"), limit(180))),
+        ]);
 
         const patientIds = Array.from(
-          new Set(snap.docs.map(sessionDoc => sessionDoc.ref.parent.parent?.id ?? ""))
+          new Set(historySnap.docs.map(sessionDoc => sessionDoc.ref.parent.parent?.id ?? ""))
         );
         const patientNameCache = new Map<string, string>();
         await Promise.all(
@@ -65,19 +73,66 @@ export function AdminChatLogs() {
           })
         );
 
-        const results: ChatSession[] = snap.docs.map(sessionDoc => {
+        const savedChats: ChatSession[] = historySnap.docs.map(sessionDoc => {
           const patientId = sessionDoc.ref.parent.parent?.id ?? "";
           const data = sessionDoc.data();
+          const updatedAt = data.updatedAt?.seconds ? data.updatedAt.seconds * 1000 : 0;
 
           return {
             sessionId: sessionDoc.id,
             patientId,
             patientName: formatPersonName(patientNameCache.get(patientId), patientId),
-            updatedAt: data.updatedAt,
+            sourceLabel: "Saved patient account chat",
+            href: `/admin/chat-logs/${encodeURIComponent(`history:${patientId}:${sessionDoc.id}`)}`,
+            sortAt: updatedAt,
             messages: data.messages ?? [],
+            notes: [patientId ? `Patient ID: ${patientId}` : ""].filter(Boolean),
           };
         });
 
+        const growthGroups = new Map<string, ChatSession>();
+        growthSnap.docs.forEach(eventDoc => {
+          const event = eventDoc.data();
+          if (event.event !== "chat_message_sent" || typeof event.sessionId !== "string" || !event.sessionId) return;
+          const createdAtIso = typeof event.createdAtIso === "string" ? event.createdAtIso : undefined;
+          const sortAt = createdAtIso ? new Date(createdAtIso).getTime() : 0;
+          const preview =
+            typeof event.params?.message_preview === "string" && event.params.message_preview.trim()
+              ? event.params.message_preview.trim()
+              : "Question preview was not captured for this older chat event.";
+          const existing = growthGroups.get(event.sessionId);
+          const message: ChatMessage = { role: "user", text: preview, timestamp: createdAtIso };
+          const intent =
+            typeof event.params?.intent === "string" && event.params.intent
+              ? event.params.intent.replaceAll("-", " ")
+              : "general";
+
+          if (existing) {
+            existing.messages.push(message);
+            existing.sortAt = Math.max(existing.sortAt, sortAt);
+            return;
+          }
+
+          growthGroups.set(event.sessionId, {
+            sessionId: event.sessionId,
+            patientId: "",
+            patientName: "Website assistant guest session",
+            sourceLabel: "Growth tracked website chat",
+            href: `/admin/chat-logs/${encodeURIComponent(`growth:${event.sessionId}`)}`,
+            sortAt,
+            messages: [message],
+            notes: [`Intent: ${intent}`],
+          });
+        });
+
+        const guestChats = Array.from(growthGroups.values()).map(session => ({
+          ...session,
+          messages: session.messages.sort(
+            (a, b) => new Date(a.timestamp ?? 0).getTime() - new Date(b.timestamp ?? 0).getTime(),
+          ),
+        }));
+
+        const results = [...savedChats, ...guestChats].sort((a, b) => b.sortAt - a.sortAt);
         setSessions(results);
       } finally {
         setLoading(false);
@@ -92,9 +147,21 @@ export function AdminChatLogs() {
     const q = search.toLowerCase();
     return (
       s.patientName?.toLowerCase().includes(q) ||
+      s.sourceLabel.toLowerCase().includes(q) ||
+      s.notes?.some(note => note.toLowerCase().includes(q)) ||
       s.messages.some(m => m.text.toLowerCase().includes(q))
     );
   });
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / CHAT_LOG_PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * CHAT_LOG_PAGE_SIZE;
+  const visibleSessions = filtered.slice(pageStart, pageStart + CHAT_LOG_PAGE_SIZE);
+  const pageEnd = Math.min(pageStart + CHAT_LOG_PAGE_SIZE, filtered.length);
 
   if (loading) return <SkeletonRow count={4} />;
 
@@ -112,10 +179,11 @@ export function AdminChatLogs() {
       {filtered.length === 0 ? (
         <p>No chat sessions found.</p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-          {filtered.map(s => {
-          const date = s.updatedAt
-            ? new Date(s.updatedAt.seconds * 1000).toLocaleDateString("en-GB", {
+        <>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+          {visibleSessions.map(s => {
+          const date = s.sortAt
+            ? new Date(s.sortAt).toLocaleString("en-GB", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
@@ -124,22 +192,22 @@ export function AdminChatLogs() {
               })
             : "—";
           const preview = s.messages.find(m => m.role === "user")?.text ?? "—";
-          const isOpen = expanded === s.sessionId;
 
           return (
-            <div
+            <Link
               key={s.sessionId}
+              href={s.href}
               style={{
                 border: "1px solid var(--color-primary-light)",
                 borderRadius: 12,
                 overflow: "hidden",
                 background: "white",
+                color: "inherit",
+                textDecoration: "none",
               }}
             >
-              <button
+              <div
                 className="admin-chat-session-toggle"
-                onClick={() => setExpanded(isOpen ? null : s.sessionId)}
-                aria-expanded={isOpen}
                 style={{
                   width: "100%",
                   display: "flex",
@@ -157,6 +225,9 @@ export function AdminChatLogs() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--color-text-primary)" }}>
                     {s.patientName}
+                  </div>
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--primary)", marginTop: 2, fontWeight: 700 }}>
+                    {s.sourceLabel}
                   </div>
                   <div
                     style={{
@@ -177,51 +248,36 @@ export function AdminChatLogs() {
                     {s.messages.length} messages
                   </div>
                 </div>
-                <span aria-hidden="true" style={{ color: "var(--color-primary-dark)", fontSize: 18 }}>{isOpen ? "▲" : "▼"}</span>
-              </button>
-
-              {isOpen && (
-                <div style={{ borderTop: "1px solid var(--color-border)", padding: "14px 18px" }}>
-                  {s.messages.map((m, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        marginBottom: 10,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: m.role === "user" ? "flex-end" : "flex-start",
-                      }}
-                    >
-                      <div
-                        style={{
-                          maxWidth: "80%",
-                          padding: "var(--space-2) var(--space-3)",
-                          borderRadius:
-                            m.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
-                          // rule: readable text uses --primary (AA-checked), not the raw
-                          // --color-primary decoration token — white-on-raw-accent was
-                          // under 3:1 contrast.
-                          background: m.role === "user" ? "var(--primary)" : "var(--color-primary-light)",
-                          color: m.role === "user" ? "white" : "var(--color-text-primary)",
-                          fontSize: "var(--text-xs)",
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        {m.text}
-                      </div>
-                      {m.action && (
-                        <div style={{ marginTop: "var(--space-1)", fontSize: "var(--text-xs)", color: "var(--primary)" }}>
-                          → {m.action.label} ({m.action.url})
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                <span aria-hidden="true" style={{ color: "var(--color-primary-dark)", fontSize: 18 }}>›</span>
+              </div>
+            </Link>
           );
         })}
-        </div>
+          </div>
+
+          <div className="admin-pagination" aria-label="Chat log pagination">
+            <span>
+              Showing {pageStart + 1}-{pageEnd} of {filtered.length} chat session{filtered.length === 1 ? "" : "s"}
+            </span>
+            <div>
+              <button
+                type="button"
+                onClick={() => setPage(value => Math.max(1, value - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <strong>Page {currentPage} of {totalPages}</strong>
+              <button
+                type="button"
+                onClick={() => setPage(value => Math.min(totalPages, value + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Scoped hover affordance for session toggles — dashboard-table shares

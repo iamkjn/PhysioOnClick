@@ -54,6 +54,7 @@ const SAFE_PARAM_KEYS = new Set([
   "discount_percent",
   "amount_pence",
   "message_length",
+  "message_preview",
   "intent",
 ]);
 
