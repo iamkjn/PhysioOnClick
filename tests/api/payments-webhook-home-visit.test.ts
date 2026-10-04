@@ -201,3 +201,26 @@ describe("POST /api/payments/webhook — home-visit Cal.com event", () => {
     expect(slotUrl.searchParams.get("eventTypeSlug")).toBe("initial-online-assessment");
   });
 });
+
+describe("POST /api/payments/webhook — travel fee", () => {
+  it("stores the travel fee on the payment doc and the booking doc", async () => {
+    await POST(signedRequest(eventWith({ visitType: "home", homeVisitAddress: ADDRESS, travelFeePence: "1500" })));
+    const paid = paymentDocRef.set.mock.calls.map((c) => c[0]).find((d) => d.status === "paid");
+    expect(paid.travelFeePence).toBe(1500);
+    expect(bookingDoc.update.mock.calls[0][0].travelFeePence).toBe(1500);
+  });
+
+  it("passes the travel fee to the invoice and the receipt email", async () => {
+    await POST(signedRequest(eventWith({ visitType: "home", homeVisitAddress: ADDRESS, travelFeePence: "1500" })));
+    expect((generateInvoicePdf as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].travelFeePence).toBe(1500);
+    expect((sendReceiptEmail as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].travelFeePence).toBe(1500);
+  });
+
+  it("adds no travel fee anywhere for a video booking", async () => {
+    await POST(signedRequest(eventWith({})));
+    const paid = paymentDocRef.set.mock.calls.map((c) => c[0]).find((d) => d.status === "paid");
+    expect(paid).not.toHaveProperty("travelFeePence");
+    expect((generateInvoicePdf as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]).not.toHaveProperty("travelFeePence");
+    expect((sendReceiptEmail as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]).not.toHaveProperty("travelFeePence");
+  });
+});
