@@ -1,6 +1,6 @@
 import zlib from "node:zlib";
 import { describe, expect, it } from "vitest";
-import { generateInvoicePdf, invoiceDeliveryLine, type InvoicePdfInput } from "@/lib/invoice-pdf";
+import { generateInvoicePdf, invoiceDeliveryLine, invoiceLineItems, type InvoicePdfInput } from "@/lib/invoice-pdf";
 
 /**
  * Every page content stream, inflated. pdf-lib writes standard-font text as
@@ -102,5 +102,27 @@ describe("generateInvoicePdf", () => {
       patientEmail: "pat@example.com", sessionDateISO: null,
     });
     expect(Buffer.from(bytes.slice(0, 4)).toString("utf8")).toBe("%PDF");
+  });
+});
+
+describe("invoice travel-fee row", () => {
+  it("splits a home visit into service and travel rows", () => {
+    expect(invoiceLineItems({ amountPence: 5500, serviceLabel: "Initial Assessment (home visit)", travelFeePence: 1500 })).toEqual([
+      { label: "Initial Assessment (home visit)", amountPence: 4000 },
+      { label: "Travel fee (home visit)", amountPence: 1500 },
+    ]);
+    expect(invoiceLineItems({ amountPence: 4000, serviceLabel: "Initial Online Assessment" })).toEqual([
+      { label: "Initial Online Assessment", amountPence: 4000 },
+    ]);
+  });
+
+  it("prints the travel row only when a travel fee is passed", async () => {
+    const withFee = pdfContent(
+      await generateInvoicePdf({ ...BASE_INPUT, amountPence: 5500, visitType: "home", travelFeePence: 1500 })
+    );
+    expect(withFee).toContain(hex("Travel fee (home visit)"));
+    expect(withFee).toContain(hex("£15.00"));
+    const without = pdfContent(await generateInvoicePdf(BASE_INPUT));
+    expect(without).not.toContain(hex("Travel fee"));
   });
 });

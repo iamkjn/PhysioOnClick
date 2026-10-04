@@ -6,6 +6,8 @@ export type ReceiptData = {
   invoiceNumber: string;
   paidAt: string;
   amountPence: number;
+  /** Home-visit travel fee included in amountPence; 0 for video. */
+  travelFeePence: number;
   service: string;
   serviceLabel: string;
   patientName: string;
@@ -35,6 +37,7 @@ export async function getReceiptBySession(sessionId: string): Promise<ReceiptDat
     email?: string;
     calBookingUid?: string;
     visitType?: string;
+    travelFeePence?: number;
   };
   if (pay.status !== "paid" || !pay.invoiceNumber) return null;
 
@@ -64,6 +67,7 @@ export async function getReceiptBySession(sessionId: string): Promise<ReceiptDat
     invoiceNumber: pay.invoiceNumber,
     paidAt: pay.paidAt ?? "",
     amountPence: pay.amountPence ?? 0,
+    travelFeePence: typeof pay.travelFeePence === "number" ? pay.travelFeePence : 0,
     service,
     serviceLabel,
     patientName,

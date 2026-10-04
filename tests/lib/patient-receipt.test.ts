@@ -53,5 +53,19 @@ describe("getReceiptBySession", () => {
     paymentsGet.mockResolvedValue(pay({}));
     expect((await getReceiptBySession("cs_v"))!.serviceLabel).toBe("Initial Online Assessment");
   });
-});
 
+  it("returns the stored travel fee for a home visit and 0 for video", async () => {
+    bookingsGet.mockResolvedValue({ empty: true, docs: [] });
+    const pay = (extra: Record<string, unknown>) => ({
+      empty: false,
+      docs: [{ data: () => ({
+        status: "paid", invoiceNumber: "INV-2026-AB12CD", paidAt: "2026-07-31T10:00:00.000Z",
+        amountPence: 5500, service: "initial-assessment", email: "ada@example.com", ...extra,
+      }) }],
+    });
+    paymentsGet.mockResolvedValue(pay({ visitType: "home", travelFeePence: 1500 }));
+    expect((await getReceiptBySession("cs_h"))!.travelFeePence).toBe(1500);
+    paymentsGet.mockResolvedValue(pay({}));
+    expect((await getReceiptBySession("cs_v"))!.travelFeePence).toBe(0);
+  });
+});
