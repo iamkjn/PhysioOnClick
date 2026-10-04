@@ -21,6 +21,7 @@ import { AddToPlanButton } from "@/components/exercise-library/add-to-plan-butto
 import { ByLine } from "@/components/exercise-library/by-line";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
+import { ReferenceOnlyNote } from "@/components/exercise-library/reference-only-label";
 import { EmbedExerciseButton } from "@/components/exercise-library/embed-exercise-button";
 import { ExerciseImage } from "@/components/exercise-image";
 import { ExerciseVideo } from "@/components/exercise-library/exercise-video";
@@ -160,6 +161,7 @@ export default async function ExerciseDetailPage({
         <div className="exlib-detail-hero__copy">
           <span className="eyebrow">Exercise library</span>
           <h1>{exercise.title}</h1>
+          <ReferenceOnlyNote />
           {exercise.aka?.length ? (
             <p className="muted">Also known as {exercise.aka.join(", ")}.</p>
           ) : null}

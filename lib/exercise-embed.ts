@@ -1,6 +1,7 @@
 import { exerciseImageUrl } from "@/lib/exercise-images";
 import { formatDosage, resolveDosage, type Exercise } from "@/lib/exercises";
 import { splitMistakes } from "@/lib/exercise-safety-line";
+import { REFERENCE_ONLY_NOTE } from "@/lib/exercise-disclaimer";
 import { absoluteUrl } from "@/lib/utils";
 
 // Embeddable exercises (docs/superpowers/specs/2026-09-30-exercise-embeds-design.md).
@@ -71,6 +72,7 @@ p{margin:0 0 8px}
 ol{margin:0 0 8px;padding-left:22px}
 li{margin-bottom:2px}
 .dose{font-weight:600}
+.ref{font-size:13px;font-weight:600;color:#4a5568;margin:4px 0 0}
 .safety{background:#fff4f2;border:1px solid #f3d6d0;color:#a83a2c;border-radius:10px;padding:6px 12px;font-size:13px}
 .cta{display:inline-block;margin-top:4px;color:#0369a1;font-weight:600;text-decoration:none}
 .cta:hover{text-decoration:underline}
@@ -108,6 +110,7 @@ export function renderEmbedHtml(exercise: Exercise): string {
     `<main class="card">` +
     `<div class="media" oncontextmenu="return false"><img src="${image}" alt="Illustration of the ${title} exercise" width="960" height="960" draggable="false" loading="lazy"><span class="wm" aria-hidden="true">© physioonclick.co.uk</span></div>` +
     `<h1>${title}</h1>` +
+    `<p class="ref">${escapeHtml(REFERENCE_ONLY_NOTE)}</p>` +
     (exercise.setup ? `<p>${escapeHtml(exercise.setup)}</p>` : "") +
     (steps ? `<ol>${steps}</ol>` : "") +
     (dose ? `<p class="dose">${escapeHtml(dose)}</p>` : "") +

@@ -24,6 +24,15 @@ export const SELF_TEST_DISCLAIMER = [
 
 export const EXERCISE_DISCLAIMER = EXERCISE_DISCLAIMER_SENTENCES.join(" ");
 
+// Clinical sign-off round 2, Q2 (2026-10-04): every exercise in the library is
+// labelled "For reference only" - a badge on every exercise card and list row,
+// and the badge plus the one-line note on every exercise page, the library
+// browser preview and the embed. Rendered by components/exercise-library/
+// reference-only-label.tsx and lib/exercise-embed.ts. ASCII only.
+export const REFERENCE_ONLY_LABEL = "For reference only";
+export const REFERENCE_ONLY_FOLLOW_UP = "Follow the advice of a physiotherapist who has assessed you.";
+export const REFERENCE_ONLY_NOTE = `${REFERENCE_ONLY_LABEL}. ${REFERENCE_ONLY_FOLLOW_UP}`;
+
 // Page-level variant for the editorial guides (app/guides/[slug]) and the
 // "online physiotherapy for" landing pages (app/online-physiotherapy-for/[slug]).
 // Rendered once per page by those two route components. Clinical sign-off
