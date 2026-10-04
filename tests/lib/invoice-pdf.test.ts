@@ -126,3 +126,18 @@ describe("invoice travel-fee row", () => {
     expect(without).not.toContain(hex("Travel fee"));
   });
 });
+
+describe("invoice travel-fee row label", () => {
+  it("uses the passed label with the visit count", async () => {
+    expect(
+      invoiceLineItems({ amountPence: 18000, serviceLabel: "4 Session Bundle (home visits)", travelFeePence: 6000, travelFeeLabel: "Travel fee (4 home visits × £15)" })
+    ).toEqual([
+      { label: "4 Session Bundle (home visits)", amountPence: 12000 },
+      { label: "Travel fee (4 home visits × £15)", amountPence: 6000 },
+    ]);
+    const content = pdfContent(
+      await generateInvoicePdf({ ...BASE_INPUT, amountPence: 18000, visitType: "home", travelFeePence: 6000, travelFeeLabel: "Travel fee (4 home visits × £15)" })
+    );
+    expect(content).toContain(hex("Travel fee (4 home visits × £15)"));
+  });
+});

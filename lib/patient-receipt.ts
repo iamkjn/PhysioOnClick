@@ -1,6 +1,7 @@
 import { getAdminDb } from "@/lib/firebase-admin";
 import { isBookServiceId, serviceLabelFor } from "@/lib/cal-services";
 import { formatPersonName } from "@/lib/name-format";
+import { chargedTravelFeeLabel } from "@/lib/home-visit-pricing";
 
 export type ReceiptData = {
   invoiceNumber: string;
@@ -8,6 +9,8 @@ export type ReceiptData = {
   amountPence: number;
   /** Home-visit travel fee included in amountPence; 0 for video. */
   travelFeePence: number;
+  /** "Travel fee (4 home visits × £15)" for the travel row; "" when there is no travel fee. */
+  travelFeeLabel: string;
   service: string;
   serviceLabel: string;
   patientName: string;
@@ -63,11 +66,14 @@ export async function getReceiptBySession(sessionId: string): Promise<ReceiptDat
     }
   }
 
+  const travelFeePence = typeof pay.travelFeePence === "number" ? pay.travelFeePence : 0;
+
   return {
     invoiceNumber: pay.invoiceNumber,
     paidAt: pay.paidAt ?? "",
     amountPence: pay.amountPence ?? 0,
-    travelFeePence: typeof pay.travelFeePence === "number" ? pay.travelFeePence : 0,
+    travelFeePence,
+    travelFeeLabel: travelFeePence > 0 ? chargedTravelFeeLabel(service, travelFeePence) : "",
     service,
     serviceLabel,
     patientName,

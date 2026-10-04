@@ -93,4 +93,18 @@ describe("sendReceiptEmail", () => {
     expect(sent.html).not.toContain("Travel fee");
     expect(sent.text).not.toContain("Travel fee");
   });
+
+  it("labels the travel line with the visit count when a label is passed", async () => {
+    vi.stubEnv("RESEND_API_KEY", "re_test");
+    const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    await sendReceiptEmail({
+      ...INPUT, serviceLabel: "4 Session Bundle (home visits)", amountPence: 18000,
+      visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS",
+      travelFeePence: 6000, travelFeeLabel: "Travel fee (4 home visits × £15)",
+    });
+    const sent = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(sent.html).toContain("Travel fee (4 home visits × £15):</strong> £60.00");
+    expect(sent.text).toContain("Travel fee (4 home visits × £15): £60.00");
+  });
 });

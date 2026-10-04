@@ -48,3 +48,17 @@ describe("helpers", () => {
     expect(formatPounds(5150)).toBe("£51.50");
   });
 });
+
+describe("chargedTravelFeeLabel", () => {
+  it("uses the per-visit breakdown when the charge matches the service's travel fee", async () => {
+    const { chargedTravelFeeLabel } = await import("@/lib/home-visit-pricing");
+    expect(chargedTravelFeeLabel("initial-assessment", 1500)).toBe("Travel fee (1 home visit × £15)");
+    expect(chargedTravelFeeLabel("bundle-4", 6000)).toBe("Travel fee (4 home visits × £15)");
+  });
+  it("falls back to a plain label for an unknown service or a charge that no longer matches the constant", async () => {
+    const { chargedTravelFeeLabel } = await import("@/lib/home-visit-pricing");
+    expect(chargedTravelFeeLabel("legacy-service", 1500)).toBe("Travel fee (home visit)");
+    expect(chargedTravelFeeLabel(undefined, 1500)).toBe("Travel fee (home visit)");
+    expect(chargedTravelFeeLabel("bundle-4", 4000)).toBe("Travel fee (home visit)");
+  });
+});

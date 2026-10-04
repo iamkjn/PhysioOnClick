@@ -216,11 +216,21 @@ describe("POST /api/payments/webhook — travel fee", () => {
     expect((sendReceiptEmail as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].travelFeePence).toBe(1500);
   });
 
+  it("labels the travel fee with the visit count on the invoice and the receipt email, but does not store the label", async () => {
+    await POST(signedRequest(eventWith({ visitType: "home", homeVisitAddress: ADDRESS, travelFeePence: "1500" })));
+    expect((generateInvoicePdf as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].travelFeeLabel).toBe("Travel fee (1 home visit × £15)");
+    expect((sendReceiptEmail as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].travelFeeLabel).toBe("Travel fee (1 home visit × £15)");
+    const paid = paymentDocRef.set.mock.calls.map((c) => c[0]).find((d) => d.status === "paid");
+    expect(paid).not.toHaveProperty("travelFeeLabel");
+  });
+
   it("adds no travel fee anywhere for a video booking", async () => {
     await POST(signedRequest(eventWith({})));
     const paid = paymentDocRef.set.mock.calls.map((c) => c[0]).find((d) => d.status === "paid");
     expect(paid).not.toHaveProperty("travelFeePence");
     expect((generateInvoicePdf as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]).not.toHaveProperty("travelFeePence");
     expect((sendReceiptEmail as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]).not.toHaveProperty("travelFeePence");
+    expect((generateInvoicePdf as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]).not.toHaveProperty("travelFeeLabel");
+    expect((sendReceiptEmail as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]).not.toHaveProperty("travelFeeLabel");
   });
 });

@@ -4,6 +4,7 @@ import { createCalBooking } from "@/lib/cal-booking";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { guestBookingOwnerFields } from "@/lib/guest-booking";
+import { chargedTravelFeeLabel } from "@/lib/home-visit-pricing";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
@@ -157,6 +158,10 @@ export async function POST(request: Request) {
   // number so receipts and invoices can show it as its own line.
   const travelFee = homeVisit && intent.travelFeePence ? Number(intent.travelFeePence) : 0;
   const travelFeeFields = travelFee > 0 ? { travelFeePence: travelFee } : {};
+  // The invoice and receipt email label the travel row like the Stripe line
+  // item. Derived, so it is passed to them but never stored.
+  const travelFeeReceiptFields =
+    travelFee > 0 ? { ...travelFeeFields, travelFeeLabel: chargedTravelFeeLabel(intent.service, travelFee) } : {};
 
   const booking = await createCalBooking({
     service: intent.service,
@@ -341,7 +346,7 @@ export async function POST(request: Request) {
       sessionDateISO: intent.startISO,
       // Visit type only (prints the delivery line) — the address stays off the invoice.
       ...(homeVisit ? { visitType: "home" as const } : {}),
-      ...travelFeeFields,
+      ...travelFeeReceiptFields,
     });
     const pdfPath = `invoices/${invoiceNumber}.pdf`;
     const up = await uploadObject(pdfPath, pdfBytes, "application/pdf");
@@ -361,7 +366,7 @@ export async function POST(request: Request) {
       amountPence: session.amount_total ?? 0,
       receiptUrl: `${siteUrl}/book/receipt/${session.id}`,
       ...(homeVisit ?? {}),
-      ...travelFeeFields,
+      ...travelFeeReceiptFields,
       ...(pdfBytes
         ? { pdf: { filename: `invoice-${invoiceNumber}.pdf`, base64: Buffer.from(pdfBytes).toString("base64") } }
         : {}),

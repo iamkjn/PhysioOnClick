@@ -4,6 +4,7 @@ import { PRACTICE_PHONE } from "@/lib/structured-data";
 import { formatGbp, issuerField } from "@/lib/invoice";
 import { INVOICE_AVATAR_PNG_BASE64 } from "@/lib/invoice-avatar";
 import type { VisitType } from "@/lib/home-visit";
+import { TRAVEL_FEE_FALLBACK_LABEL } from "@/lib/home-visit-pricing";
 
 export type InvoicePdfInput = {
   invoiceNumber: string;
@@ -17,13 +18,17 @@ export type InvoicePdfInput = {
   visitType?: VisitType;
   /** Home visits: printed as its own row; the service row shows amount minus this. */
   travelFeePence?: number;
+  /** Label for the travel row, e.g. "Travel fee (4 home visits × £15)"; defaults to "Travel fee (home visit)". */
+  travelFeeLabel?: string;
 };
 
 /** The rows printed under "Service details": the service, then the travel fee if any. */
-export function invoiceLineItems(input: Pick<InvoicePdfInput, "amountPence" | "serviceLabel" | "travelFeePence">) {
+export function invoiceLineItems(
+  input: Pick<InvoicePdfInput, "amountPence" | "serviceLabel" | "travelFeePence" | "travelFeeLabel">
+) {
   const travel = input.travelFeePence && input.travelFeePence > 0 ? input.travelFeePence : 0;
   const rows = [{ label: input.serviceLabel, amountPence: input.amountPence - travel }];
-  if (travel) rows.push({ label: "Travel fee (home visit)", amountPence: travel });
+  if (travel) rows.push({ label: input.travelFeeLabel || TRAVEL_FEE_FALLBACK_LABEL, amountPence: travel });
   return rows;
 }
 

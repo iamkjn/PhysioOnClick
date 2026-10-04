@@ -233,8 +233,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ sessio
             {r.travelFeePence > 0 ? (
               <tr>
                 <td>
-                  <div className="rcpt-item-title">Travel fee (home visit)</div>
-                  <div className="rcpt-item-sub">£15 per home visit</div>
+                  <div className="rcpt-item-title">{r.travelFeeLabel}</div>
                 </td>
                 <td>{fmtDate(r.sessionDate)}</td>
                 <td className="r">{formatGbp(r.travelFeePence)}</td>

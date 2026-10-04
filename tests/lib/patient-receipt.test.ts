@@ -69,3 +69,31 @@ describe("getReceiptBySession", () => {
     expect((await getReceiptBySession("cs_v"))!.travelFeePence).toBe(0);
   });
 });
+
+describe("getReceiptBySession travel fee label", () => {
+  const pay = (extra: Record<string, unknown>) => ({
+    empty: false,
+    docs: [{ data: () => ({
+      status: "paid", invoiceNumber: "INV-2026-AB12CD", paidAt: "2026-07-31T10:00:00.000Z",
+      amountPence: 18000, service: "bundle-4", email: "ada@example.com", ...extra,
+    }) }],
+  });
+
+  it("labels the travel row with the visit count, like the Stripe line item", async () => {
+    bookingsGet.mockResolvedValue({ empty: true, docs: [] });
+    paymentsGet.mockResolvedValue(pay({ visitType: "home", travelFeePence: 6000 }));
+    expect((await getReceiptBySession("cs_b4"))!.travelFeeLabel).toBe("Travel fee (4 home visits × £15)");
+  });
+
+  it("falls back to a plain label for a service it does not recognise", async () => {
+    bookingsGet.mockResolvedValue({ empty: true, docs: [] });
+    paymentsGet.mockResolvedValue(pay({ service: "legacy", visitType: "home", travelFeePence: 1500 }));
+    expect((await getReceiptBySession("cs_x"))!.travelFeeLabel).toBe("Travel fee (home visit)");
+  });
+
+  it("has no travel label for a video receipt", async () => {
+    bookingsGet.mockResolvedValue({ empty: true, docs: [] });
+    paymentsGet.mockResolvedValue(pay({ amountPence: 12000 }));
+    expect((await getReceiptBySession("cs_v"))!.travelFeeLabel).toBe("");
+  });
+});

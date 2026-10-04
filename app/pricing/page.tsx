@@ -111,7 +111,10 @@ export default function PricingPage() {
 
         <div>
           <Reveal direction="up">
-            <h2>Home visits in Glasgow <span>(video price + £15 travel fee per visit)</span></h2>
+            <h2>
+              Home visits in Glasgow{" "}
+              <span>(video price + {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit)</span>
+            </h2>
           </Reveal>
           <p className="muted">
             We visit {HOME_VISIT_AREA_LABEL}. The travel fee is a fixed {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} per visit,
@@ -129,9 +132,16 @@ export default function PricingPage() {
               </article>
             ))}
           </div>
-          <Link className="button primary" href="/book?visit=home" style={{ marginTop: "1rem" }}>
-            Book a home visit
-          </Link>
+          <div style={{ marginTop: "1rem" }}>
+            <TrackedBookLink
+              className="button primary"
+              href="/book?visit=home"
+              source="pricing_page_home_visit"
+              event="book_now_click"
+            >
+              Book a home visit
+            </TrackedBookLink>
+          </div>
         </div>
 
         <Reveal direction="up">
