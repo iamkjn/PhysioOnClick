@@ -116,6 +116,7 @@ npm run cf-typegen  # regenerate cloudflare-env.d.ts from wrangler.jsonc
 ### Environment variables
 
 See `.env.example` for the full list. Key server-only vars: `CAL_WEBHOOK_SECRET`, `CAL_API_KEY`, `ADMIN_EMAIL`, `GEMINI_API_KEY`, `RESEND_API_KEY`, `ENQUIRY_EMAIL_TO`/`ENQUIRY_EMAIL_FROM`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and Firebase admin credentials. Key client vars: `NEXT_PUBLIC_FIREBASE_*`, `NEXT_PUBLIC_CAL_USERNAME`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_USE_LIVE_CONTENT`. Local dev works without `RESEND_API_KEY` — magic links log to the console instead of emailing.
+- Home visit address lookup uses `GETADDRESS_API_KEY` (server-only, getAddress.io free plan). Lookup and resolving routes are `app/api/address/lookup` and `app/api/address/resolve` with rate-limit binding `ADDRESS_RATE_LIMITER` (30 req/60s per IP). Saved addresses are stored in Firestore `patientAddresses` collection with `defaultAddressId` on user/dependent docs.
 
 ## Design Context
 
