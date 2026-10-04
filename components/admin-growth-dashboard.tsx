@@ -580,11 +580,12 @@ export function AdminGrowthDashboard() {
           <span>Saved exercises</span>
           <strong>{stats.exerciseSaves}</strong>
         </article>
-        <article className="admin-growth-stat">
+        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/chat-logs">
           <MessageSquare aria-hidden="true" />
           <span>Chat leads</span>
           <strong>{stats.chatLeads}</strong>
-        </article>
+          <small>Open chat log details</small>
+        </Link>
         <article className="admin-growth-stat">
           <Globe2 aria-hidden="true" />
           <span>Countries captured</span>
