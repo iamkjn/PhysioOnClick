@@ -1,10 +1,11 @@
 "use client";
 
-import { collection, limit, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, collectionGroup, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
 import { Activity, ArrowDownRight, BookmarkCheck, CalendarCheck2, Dumbbell, Globe2, MessageSquare, MousePointerClick } from "lucide-react";
 
 import { db } from "@/lib/firebase";
+import { formatPersonName } from "@/lib/name-format";
 import { pricing } from "@/lib/site-data";
 import { SkeletonStatGrid } from "@/components/skeleton";
 
@@ -18,6 +19,30 @@ type GrowthEvent = {
   countryName?: string;
   createdAtIso?: string;
   params?: Record<string, unknown>;
+};
+
+type ChatMessage = {
+  role: "user" | "model";
+  text: string;
+  timestamp?: string;
+};
+
+type ChatSession = {
+  sessionId: string;
+  patientId: string;
+  patientName: string;
+  updatedAt?: { seconds: number };
+  messages: ChatMessage[];
+};
+
+type ChatQuestion = {
+  id: string;
+  question: string;
+  source: string;
+  device: string;
+  createdAtIso?: string;
+  sortAt: number;
+  intent?: string;
 };
 
 const EVENT_LABELS: Record<string, string> = {
@@ -131,6 +156,10 @@ function numberParam(event: GrowthEvent, key: string) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+function chatPreview(event: GrowthEvent) {
+  return stringParam(event, "message_preview");
+}
+
 function serviceName(value: string) {
   return SERVICE_LABELS[value] ?? formatLabel(value);
 }
@@ -170,6 +199,10 @@ function eventTitle(event: GrowthEvent) {
     const title = stringParam(event, "service_title") || stringParam(event, "service_slug");
     return title ? `Service viewed: ${formatLabel(title)}` : EVENT_LABELS[event.event] ?? event.event;
   }
+  if (event.event === "chat_message_sent") {
+    const preview = chatPreview(event);
+    return preview ? `Patient asked: ${preview}` : "Patient chat message";
+  }
   return EVENT_LABELS[event.event] ?? formatLabel(event.event);
 }
 
@@ -203,6 +236,13 @@ function eventDetails(event: GrowthEvent) {
   const condition = stringParam(event, "condition_name") || stringParam(event, "condition_slug");
   if (condition) details.push(`Condition: ${formatLabel(condition)}`);
 
+  if (event.event === "chat_message_sent") {
+    const intent = stringParam(event, "intent");
+    const length = numberParam(event, "message_length");
+    if (intent) details.push(`Intent: ${formatLabel(intent)}`);
+    if (length !== null) details.push(`${length} characters`);
+  }
+
   if (typeof event.params?.for_dependent === "boolean") {
     details.push(event.params.for_dependent ? "For dependent" : "For account holder");
   }
@@ -228,6 +268,7 @@ function isPatientJourneyEvent(event: GrowthEvent) {
 
 export function AdminGrowthDashboard() {
   const [events, setEvents] = useState<GrowthEvent[] | null>(null);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -247,6 +288,59 @@ export function AdminGrowthDashboard() {
         setError("Growth tracking events could not be loaded. Check admin access and Firestore indexes.");
       },
     );
+  }, []);
+
+  useEffect(() => {
+    if (!db) return;
+    let cancelled = false;
+
+    async function loadChatHistory() {
+      if (!db) return;
+      const database = db;
+      try {
+        const q = query(collectionGroup(database, "chatSessions"), orderBy("updatedAt", "desc"), limit(40));
+        const snap = await getDocs(q);
+        const patientIds = Array.from(new Set(snap.docs.map((sessionDoc) => sessionDoc.ref.parent.parent?.id ?? "")));
+        const patientNameCache = new Map<string, string>();
+
+        await Promise.all(
+          patientIds.map(async (patientId) => {
+            if (!patientId) return;
+            let patientName = patientId;
+            try {
+              const patientSnap = await getDoc(doc(database, "patients", patientId));
+              if (patientSnap.exists()) {
+                patientName = formatPersonName(patientSnap.data().displayName as string | undefined, patientId);
+              }
+            } catch {
+              // Non-fatal: show the patient id if the name lookup fails.
+            }
+            patientNameCache.set(patientId, patientName);
+          }),
+        );
+
+        const results: ChatSession[] = snap.docs.map((sessionDoc) => {
+          const patientId = sessionDoc.ref.parent.parent?.id ?? "";
+          const data = sessionDoc.data();
+          return {
+            sessionId: sessionDoc.id,
+            patientId,
+            patientName: formatPersonName(patientNameCache.get(patientId), patientId || "Patient"),
+            updatedAt: data.updatedAt,
+            messages: Array.isArray(data.messages) ? (data.messages as ChatMessage[]) : [],
+          };
+        });
+
+        if (!cancelled) setChatSessions(results);
+      } catch {
+        if (!cancelled) setChatSessions([]);
+      }
+    }
+
+    loadChatHistory();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const stats = useMemo(() => {
@@ -341,6 +435,36 @@ export function AdminGrowthDashboard() {
       countries.set(country, (countries.get(country) ?? 0) + 1);
     }
 
+    const chatFromGrowth: ChatQuestion[] = list
+      .filter((event) => event.event === "chat_message_sent")
+      .map((event) => ({
+        id: event.id,
+        question: chatPreview(event) || "Question preview was not captured for this older chat event.",
+        source: "Website assistant",
+        device: event.device ?? "device",
+        createdAtIso: event.createdAtIso,
+        sortAt: event.createdAtIso ? new Date(event.createdAtIso).getTime() : 0,
+        intent: stringParam(event, "intent"),
+      }));
+
+    const chatFromHistory: ChatQuestion[] = chatSessions.flatMap((session) =>
+      session.messages
+        .map((message, index) => ({ message, index }))
+        .filter(({ message }) => message.role === "user" && message.text.trim())
+        .map(({ message, index }) => ({
+          id: `${session.sessionId}-${index}`,
+          question: message.text.replace(/\s+/g, " ").trim().slice(0, 220),
+          source: session.patientName,
+          device: "logged-in patient",
+          createdAtIso: message.timestamp,
+          sortAt: message.timestamp
+            ? new Date(message.timestamp).getTime()
+            : session.updatedAt?.seconds
+              ? session.updatedAt.seconds * 1000
+              : 0,
+        })),
+    );
+
     return {
       trackedSessions: sessionIds.size,
       analysedEvents: list.length,
@@ -360,8 +484,11 @@ export function AdminGrowthDashboard() {
       services: [...services.entries()].sort((a, b) => b[1].count - a[1].count).slice(0, 6),
       exercises: [...exercises.entries()].sort((a, b) => b[1].count - a[1].count).slice(0, 6),
       countries: [...countries.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6),
+      chatQuestions: [...chatFromGrowth, ...chatFromHistory]
+        .sort((a, b) => b.sortAt - a.sortAt)
+        .slice(0, 10),
     };
-  }, [events]);
+  }, [events, chatSessions]);
 
   const patientEvents = useMemo(() => (events ?? []).filter(isPatientJourneyEvent), [events]);
 
@@ -424,6 +551,47 @@ export function AdminGrowthDashboard() {
           <span>Countries captured</span>
           <strong>{stats.countries.length}</strong>
         </article>
+      </div>
+
+      <div className="admin-growth-grid">
+        <section className="admin-growth-card admin-growth-card--wide">
+          <h3>Latest interactions</h3>
+          {patientEvents.length ? (
+            <ul className="admin-growth-timeline">
+              {patientEvents.slice(0, 12).map((event) => {
+                const details = eventDetails(event);
+                return (
+                  <li key={event.id}>
+                    <span>{eventTitle(event)}</span>
+                    <strong>{event.event === "page_view" ? pageLabel(event.path) : event.path}</strong>
+                    {details.length ? <em>{details.join(" · ")}</em> : null}
+                    <small>{formatTime(event.createdAtIso)} · {event.device ?? "device"}</small>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : <p className="muted">Events will appear here as soon as people use the site.</p>}
+        </section>
+
+        <section className="admin-growth-card admin-growth-card--wide">
+          <h3>Recent patient chat questions</h3>
+          {stats.chatQuestions.length ? (
+            <ul className="admin-growth-timeline admin-growth-timeline--chat">
+              {stats.chatQuestions.map((chat) => (
+                <li key={chat.id}>
+                  <span>{chat.question}</span>
+                  <strong>{chat.source}</strong>
+                  {chat.intent ? <em>{formatLabel(chat.intent)}</em> : null}
+                  <small>{formatTime(chat.createdAtIso)} · {chat.device}</small>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="muted">
+              Patient chat questions will appear here after new website visitors use the assistant.
+            </p>
+          )}
+        </section>
       </div>
 
       <section className="admin-growth-card admin-growth-basis">
@@ -526,22 +694,6 @@ export function AdminGrowthDashboard() {
               ))}
             </ol>
           ) : <p className="muted">Exercise views and clicks will appear as patients use the library.</p>}
-        </section>
-
-        <section className="admin-growth-card admin-growth-card--wide">
-          <h3>Latest interactions</h3>
-          {patientEvents.length ? (
-            <ul className="admin-growth-timeline">
-              {patientEvents.slice(0, 12).map((event) => (
-                <li key={event.id}>
-                  <span>{eventTitle(event)}</span>
-                  <strong>{event.path}</strong>
-                  {eventDetails(event).length ? <em>{eventDetails(event).join(" · ")}</em> : null}
-                  <small>{formatTime(event.createdAtIso)} · {event.device ?? "device"}</small>
-                </li>
-              ))}
-            </ul>
-          ) : <p className="muted">Events will appear here as soon as people use the site.</p>}
         </section>
       </div>
     </div>

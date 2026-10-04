@@ -165,6 +165,10 @@ function renderChatText(text: string): ReactNode {
   return sections.length ? sections : renderInlineText(text);
 }
 
+function chatMessagePreview(text: string) {
+  return text.replace(/\s+/g, " ").trim().slice(0, 160);
+}
+
 // ─── Widget ───────────────────────────────────────────────────────────────────
 
 export function ChatWidget() {
@@ -314,6 +318,7 @@ export function ChatWidget() {
     setChips([]);
     trackGrowthEvent("chat_message_sent", {
       message_length: clean.length,
+      message_preview: chatMessagePreview(clean),
       intent: /book|appointment|price|cost|pain|physio|service/i.test(clean) ? "commercial_or_clinical" : "general",
     });
     if (/book|appointment|checkout|assessment/i.test(clean)) {

@@ -5778,6 +5778,12 @@ textarea:focus {
   max-height: none;
 }
 
+.admin-growth-timeline--chat span,
+.admin-growth-timeline--chat strong,
+.admin-growth-timeline--chat em {
+  white-space: normal;
+}
+
 @media (max-width: 1180px) {
   .admin-quick-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
