@@ -17,6 +17,14 @@ import {
 } from "@/lib/dependents";
 import { validateName, validateDob, validateOptionalText, LIMITS } from "@/lib/validation";
 import { formatPersonName } from "@/lib/name-format";
+import Link from "next/link";
+import {
+  addressDisplay,
+  getAddresses,
+  getUsualAddressId,
+  setUsualAddress,
+  type SavedAddress,
+} from "@/lib/patient-addresses";
 
 function validatePerson(fields: { name: string; dob: string; notes: string }) {
   const e: Record<string, string> = {};
@@ -27,6 +35,9 @@ function validatePerson(fields: { name: string; dob: string; notes: string }) {
   if (notesErr) e.notes = notesErr;
   return e;
 }
+
+/** Key for the account holder in the usual-address map (dependents use their id). */
+const SELF_KEY = "__self__";
 
 function calcAge(dob: string): number {
   const d = new Date(dob);
@@ -59,6 +70,9 @@ export default function PeoplePage() {
   const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
   const [addErrors, setAddErrors] = useState<Record<string, string>>({});
   const [editErrors, setEditErrors] = useState<Record<string, string>>({});
+  const [addresses, setAddresses] = useState<SavedAddress[]>([]);
+  const [addressesLoaded, setAddressesLoaded] = useState(false);
+  const [usualAddress, setUsualAddressState] = useState<Record<string, string>>({});
   const router = useRouter();
   const toast = useToast();
 
@@ -75,7 +89,19 @@ export default function PeoplePage() {
       getDependents(u.uid).then((deps) => {
         setDependents(deps);
         setDependentsLoaded(true);
+        setUsualAddressState((prev) => {
+          const next = { ...prev };
+          for (const d of deps) next[d.id] = d.defaultAddressId ?? "";
+          return next;
+        });
       });
+      Promise.all([getAddresses(u.uid), getUsualAddressId(u.uid, null)])
+        .then(([list, mine]) => {
+          setAddresses(list);
+          setUsualAddressState((prev) => ({ ...prev, [SELF_KEY]: mine ?? "" }));
+        })
+        .catch(() => setAddresses([]))
+        .finally(() => setAddressesLoaded(true));
     });
   }, [router]);
 
@@ -143,6 +169,51 @@ export default function PeoplePage() {
     }
   }
 
+  async function handleUsualAddress(personId: string | null, addressId: string) {
+    if (!uid) return;
+    const key = personId ?? SELF_KEY;
+    const previous = usualAddress[key] ?? "";
+    setUsualAddressState((m) => ({ ...m, [key]: addressId }));
+    try {
+      await setUsualAddress(uid, personId, addressId || null);
+      toast.show("Usual address saved.", "success");
+    } catch {
+      setUsualAddressState((m) => ({ ...m, [key]: previous }));
+      toast.show("Could not save the usual address. Please try again.", "error");
+    }
+  }
+
+  function usualAddressField(personId: string | null, personName: string) {
+    if (!addressesLoaded) return null;
+    if (addresses.length === 0) {
+      return (
+        <span style={{ display: "block", fontSize: "var(--text-sm)", marginTop: 6 }}>
+          <span className="muted">Usual address for home visits: </span>
+          <Link href="/patient/account#addresses">Add an address</Link>
+        </span>
+      );
+    }
+    const key = personId ?? SELF_KEY;
+    return (
+      <label style={{ display: "block", fontSize: "var(--text-sm)", marginTop: 6 }}>
+        <span className="muted">Usual address for home visits</span>
+        <select
+          className="input"
+          aria-label={`Usual address for home visits (${personName})`}
+          value={usualAddress[key] ?? ""}
+          onChange={(e) => void handleUsualAddress(personId, e.target.value)}
+        >
+          <option value="">None</option>
+          {addresses.map((a) => (
+            <option key={a.id} value={a.id}>
+              {addressDisplay(a)}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  }
+
   async function handleDelete(id: string) {
     try {
       await deleteDependent(id);
@@ -199,6 +270,7 @@ export default function PeoplePage() {
               <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
                 Your account · {currentEmail}
               </span>
+              {usualAddressField(null, currentName)}
             </div>
           </div>
         )}
@@ -340,6 +412,7 @@ export default function PeoplePage() {
                     {dep.notes}
                   </span>
                 )}
+                {usualAddressField(dep.id, dep.name)}
               </div>
               <button
                 onClick={() => startEdit(dep)}

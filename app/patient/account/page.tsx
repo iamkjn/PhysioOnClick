@@ -8,6 +8,7 @@ import Link from "next/link";
 import { PatientProfileEditor } from "@/components/patient-profile-editor";
 import { RehabProgramsSection } from "@/components/rehab-programs-section";
 import { UploadPanel } from "@/components/upload-panel";
+import { AddressBookManager } from "@/components/address-book-manager";
 import { Skeleton, SkeletonForm, SkeletonRow } from "@/components/skeleton";
 import { PeopleIcon, ClipboardIcon } from "@/components/icons";
 import { formatPersonName } from "@/lib/name-format";
@@ -106,6 +107,14 @@ export default function AccountPage() {
       {/* Profile details */}
       <section className="page-section">
         <PatientProfileEditor />
+      </section>
+
+      {/* Saved addresses for home visits */}
+      <section id="addresses" className="page-section stack">
+        <div className="section-heading">
+          <h2>Addresses</h2>
+        </div>
+        <AddressBookManager uid={uid} />
       </section>
 
       {/* Rehab programmes */}

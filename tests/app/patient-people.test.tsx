@@ -18,6 +18,13 @@ vi.mock('@/lib/dependents', () => ({
   deleteDependent: vi.fn(),
 }))
 
+vi.mock('@/lib/patient-addresses', () => ({
+  addressDisplay: vi.fn(),
+  getAddresses: vi.fn(async () => []),
+  getUsualAddressId: vi.fn(async () => null),
+  setUsualAddress: vi.fn(),
+}))
+
 import PeoplePage from '@/app/patient/people/page'
 
 describe('PeoplePage', () => {
