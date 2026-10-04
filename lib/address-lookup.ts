@@ -10,7 +10,10 @@ export type LookupResult<T> =
   | { ok: true; value: T }
   | { ok: false; reason: "unconfigured" | "not_found" | "rate_limited" | "provider_error" };
 
-const BASE = "https://api.ideal-postcodes.co.uk/v1/autocomplete/addresses"
+const BASE = "https://api.ideal-postcodes.co.uk/v1/autocomplete/addresses";
+// Ideal Postcodes defaults to 10 hits; 100 is the documented maximum. A postcode with
+// more delivery points than this (rare large blocks) is truncated - manual entry covers it.
+const HIT_LIMIT = "100";
 const TIMEOUT_MS = 5000;
 
 function apiKey(): string {
@@ -24,9 +27,9 @@ function failure(status: number): LookupResult<never> {
 }
 
 export function formatAddressLine(parts: {
-  line_1?: string; line_2?: string; line_3?: string; line_4?: string; town_or_city?: string;
+  line_1?: string; line_2?: string; line_3?: string; line_4?: string; post_town?: string;
 }): string {
-  return [parts.line_1, parts.line_2, parts.line_3, parts.line_4, parts.town_or_city]
+  return [parts.line_1, parts.line_2, parts.line_3, parts.line_4, parts.post_town]
     .map((p) => (p ?? "").trim())
     .filter(Boolean)
     .join(", ")
@@ -39,7 +42,7 @@ export async function findAddresses(postcode: string): Promise<LookupResult<Addr
   const key = apiKey();
   if (!key) return { ok: false, reason: "unconfigured" };
   const queried = normalisePostcode(postcode);
-  const params = new URLSearchParams({ query: queried, api_key: key });
+  const params = new URLSearchParams({ query: queried, limit: HIT_LIMIT, api_key: key });
   try {
     const res = await fetch(`${BASE}?${params.toString()}`, { signal: AbortSignal.timeout(TIMEOUT_MS) });
     if (!res.ok) {
@@ -50,7 +53,7 @@ export async function findAddresses(postcode: string): Promise<LookupResult<Addr
     const want = compact(queried);
     const value = (json?.result?.hits ?? [])
       .filter((h): h is { id: string; suggestion: string } => typeof h?.id === "string" && typeof h?.suggestion === "string")
-      .filter((h) => compact(h.suggestion).endsWith(want))
+      .filter((h) => compact(h.suggestion.slice(h.suggestion.lastIndexOf(",") + 1)) === want)
       .map((h) => ({ id: h.id, label: h.suggestion }));
     return value.length ? { ok: true, value } : { ok: false, reason: "not_found" };
   } catch {
@@ -73,7 +76,7 @@ export async function resolveAddress(id: string): Promise<LookupResult<{ address
     const r = json?.result ?? {};
     const str = (k: string) => (typeof r[k] === "string" ? (r[k] as string) : "");
     const addressLine = formatAddressLine({
-      line_1: str("line_1"), line_2: str("line_2"), line_3: str("line_3"), town_or_city: str("post_town"),
+      line_1: str("line_1"), line_2: str("line_2"), line_3: str("line_3"), post_town: str("post_town"),
     });
     const postcode = normalisePostcode(str("postcode"));
     if (!addressLine || !postcode) return { ok: false, reason: "provider_error" };

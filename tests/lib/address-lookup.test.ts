@@ -14,12 +14,12 @@ function stubFetch(response: Response) {
 
 describe("formatAddressLine", () => {
   it("joins the non-empty lines and the town", () => {
-    expect(formatAddressLine({ line_1: "Flat 2", line_2: "7 Example Street", line_3: "", town_or_city: "Glasgow" })).toBe(
+    expect(formatAddressLine({ line_1: "Flat 2", line_2: "7 Example Street", line_3: "", post_town: "Glasgow" })).toBe(
       "Flat 2, 7 Example Street, Glasgow",
     );
   });
   it("caps the result at 120 characters", () => {
-    expect(formatAddressLine({ line_1: "x".repeat(200), town_or_city: "Glasgow" }).length).toBe(120);
+    expect(formatAddressLine({ line_1: "x".repeat(200), post_town: "Glasgow" }).length).toBe(120);
   });
 });
 
@@ -58,7 +58,22 @@ describe("findAddresses", () => {
     expect(url.origin + url.pathname).toBe("https://api.ideal-postcodes.co.uk/v1/autocomplete/addresses");
     expect(url.searchParams.get("query")).toBe("G31 4HS");
     expect(url.searchParams.get("api_key")).toBe("k_test");
+    expect(url.searchParams.get("limit")).toBe("100");
     expect(fetchMock.mock.calls[0][1]).toHaveProperty("signal");
+  });
+
+  it("matches the postcode after the last comma exactly, not as a suffix (defensive: G1 1AA must not match a longer code ending in it)", async () => {
+    vi.stubEnv("IDEAL_POSTCODES_API_KEY", "k_test");
+    stubFetch(
+      new Response(
+        JSON.stringify({ result: { hits: [
+          { id: "a", suggestion: "1 Long Road, Glasgow, PG1 1AA" },
+          { id: "b", suggestion: "2 Short St, Glasgow, G1 1AA" },
+        ] } }),
+        { status: 200 },
+      ),
+    );
+    expect(await findAddresses("G1 1AA")).toEqual({ ok: true, value: [{ id: "b", label: "2 Short St, Glasgow, G1 1AA" }] });
   });
 
   it("maps 404 to not_found, 429 to rate_limited and 401/402/403/500 to provider_error", async () => {

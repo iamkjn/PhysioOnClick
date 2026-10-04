@@ -76,4 +76,20 @@ describe("POST /api/address/resolve", () => {
     mocks.resolveAddress.mockResolvedValue({ ok: true, value: { addressLine: "1 Princes Street, Edinburgh", postcode: "EH2 2AN" } });
     expect((await resolve(post({ id: "abc" }))).status).toBe(422);
   });
+  it("maps provider failures to 404 / 429 / 503", async () => {
+    mocks.resolveAddress.mockResolvedValueOnce({ ok: false, reason: "not_found" });
+    expect((await resolve(post({ id: "paf_1" }))).status).toBe(404);
+    mocks.resolveAddress.mockResolvedValueOnce({ ok: false, reason: "rate_limited" });
+    expect((await resolve(post({ id: "paf_1" }))).status).toBe(429);
+    mocks.resolveAddress.mockResolvedValueOnce({ ok: false, reason: "unconfigured" });
+    expect((await resolve(post({ id: "paf_1" }))).status).toBe(503);
+    mocks.resolveAddress.mockResolvedValueOnce({ ok: false, reason: "provider_error" });
+    expect((await resolve(post({ id: "paf_1" }))).status).toBe(503);
+  });
+  it("is rate limited per IP with ADDRESS_RATE_LIMITER", async () => {
+    mocks.isRateLimited.mockResolvedValue(true);
+    expect((await resolve(post({ id: "paf_1" }))).status).toBe(429);
+    expect(mocks.isRateLimited).toHaveBeenCalledWith("ADDRESS_RATE_LIMITER", "1.2.3.4");
+    expect(mocks.resolveAddress).not.toHaveBeenCalled();
+  });
 });
