@@ -72,6 +72,7 @@ export default function PeoplePage() {
   const [editErrors, setEditErrors] = useState<Record<string, string>>({});
   const [addresses, setAddresses] = useState<SavedAddress[]>([]);
   const [addressesLoaded, setAddressesLoaded] = useState(false);
+  const [addressesFailed, setAddressesFailed] = useState(false);
   const [usualAddress, setUsualAddressState] = useState<Record<string, string>>({});
   const router = useRouter();
   const toast = useToast();
@@ -100,7 +101,10 @@ export default function PeoplePage() {
           setAddresses(list);
           setUsualAddressState((prev) => ({ ...prev, [SELF_KEY]: mine ?? "" }));
         })
-        .catch(() => setAddresses([]))
+        .catch(() => {
+          setAddresses([]);
+          setAddressesFailed(true);
+        })
         .finally(() => setAddressesLoaded(true));
     });
   }, [router]);
@@ -185,6 +189,13 @@ export default function PeoplePage() {
 
   function usualAddressField(personId: string | null, personName: string) {
     if (!addressesLoaded) return null;
+    if (addressesFailed) {
+      return (
+        <span className="muted" style={{ display: "block", fontSize: "var(--text-sm)", marginTop: 6 }}>
+          Could not load your addresses. Please refresh to try again.
+        </span>
+      );
+    }
     if (addresses.length === 0) {
       return (
         <span style={{ display: "block", fontSize: "var(--text-sm)", marginTop: 6 }}>

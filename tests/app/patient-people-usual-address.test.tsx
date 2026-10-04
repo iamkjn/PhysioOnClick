@@ -39,7 +39,16 @@ describe('People usual address', () => {
   it('links to the address book when none saved', async () => {
     getAddresses.mockResolvedValue([])
     render(<PeoplePage />)
+    await screen.findByText('Tom')
     const links = await screen.findAllByRole('link', { name: 'Add an address' })
-    expect(links[0]).toHaveAttribute('href', '/patient/account#addresses')
+    expect(links).toHaveLength(2)
+    for (const link of links) expect(link).toHaveAttribute('href', '/patient/account#addresses')
+  })
+
+  it('does not invite adding an address when loading them failed', async () => {
+    getAddresses.mockRejectedValue(new Error('offline'))
+    render(<PeoplePage />)
+    expect((await screen.findAllByText(/Could not load your addresses/)).length).toBeGreaterThan(0)
+    expect(screen.queryByRole('link', { name: 'Add an address' })).not.toBeInTheDocument()
   })
 })

@@ -96,4 +96,30 @@ describe('AddressBookManager', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(deleteAddress).toHaveBeenCalledWith('u1', 'a1'))
   })
+  it('keeps a load error visible while the add form is open', async () => {
+    getAddresses.mockRejectedValue(new Error('offline'))
+    render(<AddressBookManager uid="u1" />)
+    expect(await screen.findByText('Could not load your addresses. Please try again.')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Add an address' }))
+    expect(screen.getByText('Could not load your addresses. Please try again.')).toBeInTheDocument()
+  })
+
+  it('edits a covered address through the lookup', async () => {
+    getAddresses.mockResolvedValue([home])
+    updateAddress.mockResolvedValue(undefined)
+    render(<AddressBookManager uid="u1" />)
+    fireEvent.click(await screen.findByRole('button', { name: /Edit Home/ }))
+    const lookup = screen.getByTestId('lookup')
+    expect(lookup).toHaveValue('1 Main St')
+    fireEvent.change(lookup, { target: { value: '5 Main St' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save address' }))
+    await waitFor(() => expect(updateAddress).toHaveBeenCalledWith('a1', { label: 'Home', line: '5 Main St', postcode: 'G31 4HS' }))
+  })
+
+  it('caps the label input at 40 characters', async () => {
+    getAddresses.mockResolvedValue([])
+    render(<AddressBookManager uid="u1" />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Add an address' }))
+    expect(screen.getByLabelText(/Label/)).toHaveAttribute('maxLength', '40')
+  })
 })

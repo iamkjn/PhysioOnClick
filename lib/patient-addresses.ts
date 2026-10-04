@@ -1,7 +1,6 @@
 import {
   addDoc,
   collection,
-  deleteDoc,
   deleteField,
   doc,
   getDoc,
@@ -12,6 +11,7 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { validateHomeVisit } from "@/lib/home-visit";
@@ -71,19 +71,22 @@ export async function updateAddress(id: string, input: AddressInput): Promise<vo
 
 export async function deleteAddress(uid: string, id: string): Promise<void> {
   if (!db) return;
-  await deleteDoc(doc(db, "patientAddresses", id));
   const userSnap = await getDoc(doc(db, "users", uid));
-  if (userSnap.exists() && userSnap.data()?.defaultAddressId === id) {
-    await updateDoc(doc(db, "users", uid), { defaultAddressId: deleteField() });
-  }
   const deps = await getDocs(
     query(collection(db, "dependents"), where("ownerId", "==", uid), where("defaultAddressId", "==", id))
   );
+  // One atomic write: never leave a usual-address pointer at a deleted address.
+  const batch = writeBatch(db);
+  batch.delete(doc(db, "patientAddresses", id));
+  if (userSnap.exists() && userSnap.data()?.defaultAddressId === id) {
+    batch.update(doc(db, "users", uid), { defaultAddressId: deleteField() });
+  }
   for (const d of deps.docs) {
     if (d.data()?.defaultAddressId === id) {
-      await updateDoc(doc(db, "dependents", d.id), { defaultAddressId: deleteField() });
+      batch.update(doc(db, "dependents", d.id), { defaultAddressId: deleteField() });
     }
   }
+  await batch.commit();
 }
 
 export async function setUsualAddress(
@@ -92,6 +95,10 @@ export async function setUsualAddress(
   addressId: string | null
 ): Promise<void> {
   if (!db) return;
+  if (addressId !== null) {
+    const addr = await getDoc(doc(db, "patientAddresses", addressId));
+    if (!addr.exists() || addr.data()?.ownerUid !== uid) throw new Error("Address not found");
+  }
   const value = addressId === null ? deleteField() : addressId;
   if (personId === null) {
     await setDoc(doc(db, "users", uid), { defaultAddressId: value }, { merge: true });

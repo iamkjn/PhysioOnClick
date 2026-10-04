@@ -37,14 +37,17 @@ export function AddressBookManager({ uid }: { uid: string }) {
   const [loaded, setLoaded] = useState(false);
   const [form, setForm] = useState<FormState | null>(null);
   const [error, setError] = useState("");
+  // Kept apart from form errors so it stays visible while the form is open.
+  const [loadError, setLoadError] = useState("");
   const [saving, setSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SavedAddress | null>(null);
 
   const reload = useCallback(async () => {
     try {
       setAddresses(await getAddresses(uid));
+      setLoadError("");
     } catch {
-      setError("Could not load your addresses. Please try again.");
+      setLoadError("Could not load your addresses. Please try again.");
     } finally {
       setLoaded(true);
     }
@@ -86,7 +89,9 @@ export function AddressBookManager({ uid }: { uid: string }) {
 
   return (
     <div className="stack">
-      {loaded && addresses.length === 0 && !form && (
+      {loadError && <p className="field-error" role="alert">{loadError}</p>}
+
+      {loaded && !loadError && addresses.length === 0 && !form && (
         <p className="muted">No saved addresses yet. Add one to book home visits faster.</p>
       )}
 
