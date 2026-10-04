@@ -58,6 +58,11 @@ describe("Q3/Q4: shoulder infection signs route to A&E, each sign on its own ('o
       expect(c.urgentFlags!.some((f) => /red or hot skin over the joint, or a fever, or feeling generally unwell/.test(f) && f.includes(AE_OR_111)), c.slug).toBe(true);
     }
   });
+  it("shoulder hubs never route a fever or feeling unwell below the urgent box", () => {
+    for (const c of conditions.filter((c) => c.bodyArea === "Shoulder")) {
+      for (const f of c.redFlags) expect(/a fever|feel unwell/i.test(f) && !/see the urgent box/.test(f), `${c.slug}: ${f}`).toBe(false);
+    }
+  });
   it("the frozen shoulder blog uses the same route", () => {
     expect(read("lib/blog.ts")).toMatch(/Shoulder pain with red or hot skin over the joint, or a fever, or feeling generally unwell needs A&E now/);
   });

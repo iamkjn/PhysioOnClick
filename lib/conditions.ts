@@ -56,6 +56,17 @@ const REVIEWED_BY = "Shivaliba Zala";
 const REVIEWED_ON = "2026-09-08";
 
 /** Standard "get assessed" red flag added to every condition. */
+/**
+ * Shoulder hubs: a fever or feeling unwell with shoulder pain goes to A&E
+ * (SHOULDER_INFECTION_FLAG, NICE CKS "or"), so the non-urgent list must not
+ * repeat fever at a lower urgency.
+ */
+const SHOULDER_RED_FLAGS = [
+  "The pain followed a significant accident, fall or direct blow and you have not been checked over",
+  "Night sweats or losing weight without trying (for a fever or feeling unwell with shoulder pain, see the urgent box)",
+  "Pain that is severe, steadily getting worse, or keeps you awake every night and does not ease with a change of position",
+];
+
 const GENERAL_RED_FLAGS = [
   "The pain followed a significant accident, fall or direct blow and you have not been checked over",
   "You feel unwell with the pain - a fever, night sweats, or losing weight without trying",
@@ -133,7 +144,7 @@ export const conditions: Condition[] = [
     redFlags: [
       "Your arm became weak or you could not lift it at all straight after an injury - this may be a cuff tear that needs assessing",
       "Pins and needles or weakness spreading down the arm into the hand",
-      ...GENERAL_RED_FLAGS,
+      ...SHOULDER_RED_FLAGS,
     ],
     urgentFlags: [
       SHOULDER_DISLOCATION_FLAG,
@@ -510,7 +521,7 @@ export const conditions: Condition[] = [
     redFlags: [
       "The stiffness began right after a fall, a dislocation or a heavy pull on the arm",
       "Pins and needles or weakness spreading down the arm into the hand",
-      ...GENERAL_RED_FLAGS,
+      ...SHOULDER_RED_FLAGS,
     ],
     urgentFlags: [
       SHOULDER_DISLOCATION_FLAG,
@@ -581,7 +592,7 @@ export const conditions: Condition[] = [
     redFlags: [
       "Sudden marked weakness lifting the arm after an injury - possible rotator cuff tear",
       "Pins and needles or weakness spreading into the hand",
-      ...GENERAL_RED_FLAGS,
+      ...SHOULDER_RED_FLAGS,
     ],
     urgentFlags: [
       SHOULDER_DISLOCATION_FLAG,
