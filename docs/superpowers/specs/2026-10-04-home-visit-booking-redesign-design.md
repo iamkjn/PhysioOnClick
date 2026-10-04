@@ -129,25 +129,26 @@ constants above, never hard-coded.
 
 ### Postcode → address dropdown (added 2026-10-04, owner request)
 
-The owner asked for a free option: the **getAddress.io free plan** (200 lookups/day plus a 600/month reserve, $0; checked on getaddress.io 2026-10-04).
+The owner asked for a low-cost option. **Provider switched 2026-10-04** from getAddress.io to **Ideal Postcodes** (50 free lookups to start, then pay-as-you-go): getAddress.io no longer serves UK addresses (a real key returned only Australian results).
 
 - `lib/address-lookup.ts` (server only) wraps the provider behind `findAddresses(postcode)` → `[{ id, label }]` and
   `resolveAddress(id)` → `{ addressLine, postcode }`. Switching provider later means changing this one file.
-  - getAddress UK API: `GET https://api.getaddress.io/autocomplete/{postcode}?api-key=KEY&all=true` →
-    `{ suggestions: [{ address, url, id }] }` (free and rate-limited; doesn't use lookups);
-    `GET https://api.getaddress.io/get/{id}?api-key=KEY` → `{ postcode, line_1..line_4, town_or_city, county, … }`
-    (counts as 1 lookup). `addressLine` = non-empty `line_1..line_4` + `town_or_city`, joined with ", ", capped at 120.
-  - Secret `GETADDRESS_API_KEY` (Worker secret and .env files; documented in .env.example). A missing key, provider
+  - Ideal Postcodes: `GET https://api.ideal-postcodes.co.uk/v1/autocomplete/addresses?query={postcode}&api_key=KEY` →
+    `{ result: { hits: [{ id, suggestion, udprn, urls }] } }` (uses no credits; we keep only hits whose suggestion
+    ends with the queried postcode); `GET .../v1/autocomplete/addresses/{id}/gbr?api_key=KEY` →
+    `{ result: { line_1, line_2, line_3, post_town, postcode, … } }` (1 credit). `addressLine` = non-empty
+    `line_1..line_3` + `post_town`, joined with ", ", capped at 120. Both calls time out after 5 s.
+  - Secret `IDEAL_POSTCODES_API_KEY` (Worker secret and .env files; documented in .env.example). A missing key, provider
     error, 404 or 429 makes the routes answer 503 or 404, and the UI falls back to typing the address. Never log the
     postcode or address.
 - Routes `POST /api/address/lookup` `{ postcode }` and `POST /api/address/resolve` `{ id }` validate their input
-  (postcode shape as in `validateHomeVisit`; id `/^[A-Za-z0-9_-]{1,200}$/`). They only look up **covered** postcodes,
+  (postcode shape as in `validateHomeVisit`; id `/^[A-Za-z0-9_:-]{1,200}$/`). They only look up **covered** postcodes,
   since there's no point listing addresses we can't visit. They're rate-limited by a new `ADDRESS_RATE_LIMITER`
   binding (30 per 60 s per IP; prod namespace 1003, dev 2003).
 - UI component `AddressLookup`: after a covered postcode, it shows "Select your address" (a native select of the
   suggestions) plus "Enter address manually". Choosing an address resolves it and fills the address line. It's used
   in booking step 1 (for guests, and for signed-in patients adding a new address) and in Account → Addresses.
-- The privacy policy lists getAddress.io as a processor (it receives the postcode and the chosen address id).
+- The privacy policy lists Ideal Postcodes as a processor (it receives the postcode and the chosen address id).
 
 ### Stage 2 adjustments
 

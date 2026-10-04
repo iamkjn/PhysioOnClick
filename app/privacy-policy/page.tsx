@@ -94,11 +94,11 @@ export default function PrivacyPolicyPage() {
           <ul>
             <li><strong>Cal.com:</strong> used for appointment scheduling; booking data is shared with Cal.com to manage your calendar appointment. For a home visit this includes the visit address you give us</li>
             <li><strong>Cloudflare:</strong> hosts and protects this website; it processes technical data such as your IP address to deliver pages securely and block abuse</li>
-            <li><strong>getAddress.io:</strong> when you look up a home-visit address, the postcode you enter (and the address you choose) is sent to getAddress.io to list the addresses at that postcode. It is used only to answer that lookup.</li>
             <li><strong>Google Analytics:</strong> anonymous usage statistics, loaded only after you accept analytics cookies</li>
             <li><strong>Google Calendar / Google Meet:</strong> used to create appointment events and video consultation links; attendee details (name, email) are shared with Google to generate the meeting link</li>
             <li><strong>Google Firebase:</strong> Authentication, Firestore database and Storage, used to store account, appointment, and clinical data securely</li>
             <li><strong>Google Gemini:</strong> powers the on-site chat assistant; the content of your chat messages is processed to generate replies</li>
+            <li><strong>Ideal Postcodes:</strong> when you look up a home-visit address, the postcode you enter (and the address you choose) is sent to Ideal Postcodes to list the addresses at that postcode. It is used only to answer that lookup.</li>
             <li><strong>Resend:</strong> sends transactional emails such as sign-in links and enquiry notifications. For a home visit, our payment receipt email includes the visit address</li>
             <li><strong>Stripe:</strong> processes your online payment and holds your card details securely; we never see your full card number. For a home visit, the visit address is also recorded against your payment so the booking can be completed once you have paid</li>
             <li><strong>Trustpilot:</strong> after a completed session we may share your name, email and a booking reference with Trustpilot so it can invite you to leave an independent review. Leaving a review is entirely optional</li>

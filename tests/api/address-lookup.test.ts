@@ -34,6 +34,9 @@ describe("POST /api/address/lookup", () => {
     expect(await uncovered.json()).toEqual({ error: "not_covered" });
     expect(mocks.findAddresses).not.toHaveBeenCalled();
   });
+  it("rejects a null JSON body with 400", async () => {
+    expect((await lookup(post(null))).status).toBe(400);
+  });
   it("maps provider failures to 404 / 429 / 503", async () => {
     mocks.findAddresses.mockResolvedValueOnce({ ok: false, reason: "not_found" });
     expect((await lookup(post({ postcode: "G31 4HS" }))).status).toBe(404);
@@ -62,6 +65,12 @@ describe("POST /api/address/resolve", () => {
   it("rejects a bad id with 400", async () => {
     expect((await resolve(post({ id: "../etc" }))).status).toBe(400);
     expect((await resolve(post({}))).status).toBe(400);
+    expect((await resolve(post(null))).status).toBe(400);
+  });
+  it("accepts Ideal Postcodes style ids", async () => {
+    mocks.resolveAddress.mockResolvedValue({ ok: true, value: { addressLine: "7 Example Street, Glasgow", postcode: "G31 4HS" } });
+    expect((await resolve(post({ id: "paf_12345678" }))).status).toBe(200);
+    expect((await resolve(post({ id: "a:b-c_1" }))).status).toBe(200);
   });
   it("refuses an address whose postcode is outside the covered area", async () => {
     mocks.resolveAddress.mockResolvedValue({ ok: true, value: { addressLine: "1 Princes Street, Edinburgh", postcode: "EH2 2AN" } });

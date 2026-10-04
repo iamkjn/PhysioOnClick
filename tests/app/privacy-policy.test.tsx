@@ -49,10 +49,10 @@ describe('Privacy Policy page', () => {
     expect(text).toMatch(/October 2026/)
   })
 
-  it('covers getAddress.io processor and saved addresses retention', () => {
+  it('covers Ideal Postcodes processor and saved addresses retention', () => {
     const { container } = render(<PrivacyPolicyPage />)
     const text = container.textContent ?? ''
-    expect(text).toMatch(/getAddress\.io.*when you look up a home-visit address.*postcode you enter.*address you choose.*sent to getAddress\.io/)
+    expect(text).toMatch(/Ideal Postcodes.*when you look up a home-visit address.*postcode you enter.*address you choose.*sent to Ideal Postcodes/)
     expect(text).toMatch(/Saved addresses.*addresses you save to your address book.*kept until you delete them or close your account.*Past bookings keep their own copy/)
   })
 })

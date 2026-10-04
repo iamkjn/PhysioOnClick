@@ -13,7 +13,9 @@ export async function POST(request: Request) {
   }
   let body: { postcode?: unknown };
   try {
-    body = (await request.json()) as { postcode?: unknown };
+    const parsed: unknown = await request.json();
+    if (!parsed || typeof parsed !== "object") throw new Error("bad body");
+    body = parsed as { postcode?: unknown };
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }

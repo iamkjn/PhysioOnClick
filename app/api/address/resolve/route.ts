@@ -5,7 +5,7 @@ import { clientIp, isRateLimited } from "@/lib/rate-limit";
 
 const STATUS = { not_found: 404, rate_limited: 429, unconfigured: 503, provider_error: 503 } as const;
 const ERROR = { not_found: "not_found", rate_limited: "rate_limited", unconfigured: "unavailable", provider_error: "unavailable" } as const;
-const ID_PATTERN = /^[A-Za-z0-9_-]{1,200}$/;
+const ID_PATTERN = /^[A-Za-z0-9_:-]{1,200}$/;
 
 export async function POST(request: Request) {
   if (await isRateLimited("ADDRESS_RATE_LIMITER", clientIp(request))) {
@@ -13,7 +13,9 @@ export async function POST(request: Request) {
   }
   let body: { id?: unknown };
   try {
-    body = (await request.json()) as { id?: unknown };
+    const parsed: unknown = await request.json();
+    if (!parsed || typeof parsed !== "object") throw new Error("bad body");
+    body = parsed as { id?: unknown };
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
