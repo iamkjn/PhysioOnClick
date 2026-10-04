@@ -302,5 +302,106 @@ describe('booking visit type', () => {
       `Continue to payment · ${total}`,
     )
   })
-})
 
+  it('drops the chosen slot when the visit type changes (home and video use different events)', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'G31 4HS')
+    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
+    await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
+    await user.click(screen.getByRole('option', { name: '09:00' }))
+    await user.click(screen.getByRole('button', { name: /Back/ }))
+    expect(document.querySelector('.book-rail-physio')).not.toBeNull()
+    await user.click(screen.getByRole('radio', { name: /Video consultation/ }))
+    expect(document.querySelector('.book-rail-physio')).toBeNull()
+  })
+
+  it('keeps the chosen slot when the already-selected visit card is clicked again', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
+    await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
+    await user.click(screen.getByRole('option', { name: '09:00' }))
+    await user.click(screen.getByRole('button', { name: /Back/ }))
+    await user.click(screen.getByRole('radio', { name: /Video consultation/ }))
+    expect(document.querySelector('.book-rail-physio')).not.toBeNull()
+  })
+
+  it('clears a stale home-visit error when the postcode changes', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    const postcode = screen.getByLabelText('Postcode')
+    await user.type(postcode, 'G31 4HS')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(/address/i)
+    await user.clear(postcode)
+    await user.type(postcode, 'G32 1AA')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('leaves travel out of the rail until the postcode is covered', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
+    const video = formatPounds(sessionPricePence('initial-assessment'))
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    // Pending: nothing entered yet.
+    expect(document.querySelector('.book-rail-travel')).toBeNull()
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(video)
+    // Uncovered.
+    const postcode = screen.getByLabelText('Postcode')
+    await user.type(postcode, 'EH1 1AA')
+    expect(document.querySelector('.book-rail-travel')).toBeNull()
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(video)
+    // Covered.
+    await user.clear(postcode)
+    await user.type(postcode, 'G31 4HS')
+    expect(document.querySelector('.book-rail-travel')?.textContent).toContain('Travel fee (1 home visit × £15)')
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(
+      formatPounds(sessionPricePence('initial-assessment') + 1500),
+    )
+  })
+
+  it('moves focus to the video card after "Book a video consultation instead"', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'EH1 1AA')
+    await user.click(screen.getByRole('button', { name: 'Book a video consultation instead' }))
+    expect(screen.getByRole('radio', { name: /Video consultation/ })).toHaveFocus()
+  })
+
+  it('separates each visit card title from its subtitle in the accessible name', () => {
+    render(<BookingFlow />)
+    expect(screen.getByRole('radio', { name: /Home visit in Glasgow/ })).toHaveAccessibleName(
+      'Home visit in Glasgow Your physiotherapist visits you',
+    )
+    expect(screen.getByRole('radio', { name: /Video consultation/ })).toHaveAccessibleName(
+      'Video consultation Online, anywhere in the UK',
+    )
+  })
+
+  it('describes the postcode with just the out-of-area message and links "contact us" to /contact', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    const { outOfAreaMessage } = await import('@/lib/home-visit-area')
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    const postcode = screen.getByLabelText('Postcode')
+    await user.type(postcode, 'EH1 1AA')
+    const described = document.getElementById(postcode.getAttribute('aria-describedby') ?? '')
+    expect(described?.textContent).toBe(outOfAreaMessage('EH1 1AA'))
+    expect(described?.querySelector('button')).toBeNull()
+    expect(screen.getByRole('link', { name: 'contact us' })).toHaveAttribute('href', '/contact')
+  })
+
+  it('announces step 1 with the panel heading', () => {
+    render(<BookingFlow />)
+    expect(screen.getByText('Step 1 of 3: book your appointment.')).toBeInTheDocument()
+    expect(screen.queryByText('Step 1 of 3: choose your service.')).not.toBeInTheDocument()
+  })
+})

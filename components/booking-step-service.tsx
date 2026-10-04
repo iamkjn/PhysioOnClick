@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, type KeyboardEvent, type RefObject } from "react";
+import Link from "next/link";
 
 import { FOCUS_AREAS, serviceLabelFor, type CalService, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId, PricingItem } from "@/lib/site-data";
@@ -71,6 +72,23 @@ function coverageFor(postcode: string): Coverage {
   // Shape check first, so pasted junk is never echoed into the out-of-area copy.
   if (!validateHomeVisit("placeholder", postcode).ok) return "pending";
   return isCoveredPostcode(postcode) ? "covered" : "uncovered";
+}
+
+/**
+ * The out-of-area copy with "contact us" as a link to /contact. The message
+ * string itself stays plain (outOfAreaMessage is shared with the server).
+ */
+function OutOfAreaText({ postcode }: { postcode: string }) {
+  const message = outOfAreaMessage(postcode);
+  const at = message.indexOf("contact us");
+  if (at < 0) return <>{message}</>;
+  return (
+    <>
+      {message.slice(0, at)}
+      <Link href="/contact">contact us</Link>
+      {message.slice(at + "contact us".length)}
+    </>
+  );
 }
 
 function readableSlug(value: string) {
@@ -170,7 +188,7 @@ export function BookingStepService({
               >
                 {card.type === "home" ? <HouseIcon /> : <CameraIcon />}
                 <span>
-                  <span className="book-visit-title">{card.title}</span>
+                  <span className="book-visit-title">{card.title}</span>{" "}
                   <span className="book-visit-sub">{card.subtitle}</span>
                 </span>
               </button>
@@ -206,9 +224,19 @@ export function BookingStepService({
                   We visit {outwardCode(homePostcode)}. {HOME_VISIT_HINT}
                 </p>
               ) : coverage === "uncovered" ? (
-                <div id="book-home-hint" className="book-out-of-area" role="alert">
-                  {outOfAreaMessage(homePostcode)}{" "}
-                  <button type="button" className="book-out-of-area-switch" onClick={onSwitchToVideo}>
+                <div className="book-out-of-area" role="alert">
+                  <span id="book-home-hint">
+                    <OutOfAreaText postcode={homePostcode} />
+                  </span>{" "}
+                  <button
+                    type="button"
+                    className="book-out-of-area-switch"
+                    onClick={() => {
+                      onSwitchToVideo();
+                      // The out-of-area box unmounts; land focus on the card now selected.
+                      cardRefs.current.video?.focus();
+                    }}
+                  >
                     Book a video consultation instead
                   </button>
                 </div>

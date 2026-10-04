@@ -209,8 +209,20 @@ export function BookingFlow() {
   }, []);
 
   // visit_type is recorded on step completion and checkout_started (never the address).
-  const handleVisitTypeChange = useCallback((next: VisitType) => {
-    setVisitType(next);
+  // Home and video book different Cal.com events, so a real change of visit
+  // type invalidates the chosen slot (re-clicking the selected card does not).
+  const handleVisitTypeChange = useCallback(
+    (next: VisitType) => {
+      if (next !== visitType) setSelectedSlot(null);
+      setVisitType(next);
+      setVisitError(null);
+    },
+    [visitType]
+  );
+
+  // A new postcode makes any earlier home-visit error stale.
+  const handleHomePostcodeChange = useCallback((value: string) => {
+    setHomePostcode(value);
     setVisitError(null);
   }, []);
 
@@ -261,10 +273,12 @@ export function BookingFlow() {
   }
 
   const included = includedFor(serviceId, visitType);
-  const travel = travelFeePence(serviceId, visitType);
+  // Travel only counts once the postcode is covered: until then (or for an
+  // uncovered postcode) the rail shows the plain session price.
+  const travel = visitType === "home" && isCoveredPostcode(homePostcode) ? travelFeePence(serviceId, visitType) : 0;
   const railChecklist = step === 2 ? included.slice(0, 3) : included;
   const stepAnnouncement =
-    step === 1 ? "Step 1 of 3: choose your service." : "Step 2 of 3: time and your details.";
+    step === 1 ? "Step 1 of 3: book your appointment." : "Step 2 of 3: time and your details.";
 
   return (
     <div className="book-flow">
@@ -324,7 +338,7 @@ export function BookingFlow() {
         <div className="book-rail-spacer" />
         <div className="book-rail-divider" />
 
-        {visitType === "home" ? (
+        {travel > 0 ? (
           <div className="book-rail-travel">
             <span>{travelFeeLabel(serviceId)}</span>
             <span>{formatPounds(travel)}</span>
@@ -354,7 +368,7 @@ export function BookingFlow() {
           visitError={visitError}
           onVisitTypeChange={handleVisitTypeChange}
           onHomeAddressLineChange={setHomeAddressLine}
-          onHomePostcodeChange={setHomePostcode}
+          onHomePostcodeChange={handleHomePostcodeChange}
           onSwitchToVideo={() => handleVisitTypeChange("video")}
           onContinue={handleServiceContinue}
           titleRef={panelTitleRef}
