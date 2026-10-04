@@ -32,13 +32,14 @@ describe("home-visit line on condition pages", () => {
     expect(r.text).toContain(`${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee`);
     expect(r.text).toMatch(/hands-on treatment \(manual therapy\)/);
     expect(r.text).toMatch(/Video sessions cannot include hands-on treatment/);
+    expect(r.text).not.toContain("The same applies at home");
   });
   it.each(NEURO)("keeps the GP/specialist clearance alongside the line on %s", async (slug) => {
     const r = await homeVisit(slug);
-    expect(r.text).toContain("Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.");
+    expect(r.text).toContain("Whether you choose a home visit or video, your GP or specialist team must confirm it is safe for you to begin physiotherapy before you start.");
   });
   it.each(POSTOP)("keeps the surgical-team readiness alongside the line on %s", async (slug) => {
     const r = await homeVisit(slug);
-    expect(r.text).toContain("your surgical team has said you are ready for outpatient or community physiotherapy");
+    expect(r.text).toContain("Whether you choose a home visit or video, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy");
   });
 });

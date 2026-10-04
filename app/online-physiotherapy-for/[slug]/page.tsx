@@ -28,14 +28,12 @@ export const dynamic = "force-static";
 // Q7/Q8, 2026-10-04: home visits are offered for neuro and post-op care too,
 // and include hands-on treatment where appropriate). Neuro and post-op care
 // still need clearance first, so those pages repeat it next to the line.
-const NEURO_CLEARANCE =
-  "Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.";
 const POSTOP_READINESS =
   "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you.";
 
 function homeVisitClearance(serviceSlug: string): string | null {
-  if (serviceSlug === "neurological-rehabilitation") return `The same applies at home. ${NEURO_CLEARANCE}`;
-  if (serviceSlug === "post-surgical-rehabilitation") return `The same applies at home. ${POSTOP_READINESS}`;
+  if (serviceSlug === "neurological-rehabilitation") return "Whether you choose a home visit or video, your GP or specialist team must confirm it is safe for you to begin physiotherapy before you start.";
+  if (serviceSlug === "post-surgical-rehabilitation") return `Whether you choose a home visit or video, ${POSTOP_READINESS.charAt(0).toLowerCase()}${POSTOP_READINESS.slice(1)}`;
   return null;
 }
 
