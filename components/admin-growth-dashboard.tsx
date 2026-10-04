@@ -26,6 +26,68 @@ function countryLabel(event: GrowthEvent) {
   return "";
 }
 
+function countryDisplay(event: GrowthEvent) {
+  return countryLabel(event) || "Country not captured";
+}
+
+function formatLabel(value: string) {
+  return value.replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatTime(value?: string) {
+  if (!value) return "Just now";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Just now";
+  return date.toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function stringParam(event: GrowthEvent, key: string) {
+  const value = event.params?.[key];
+  return typeof value === "string" ? value : "";
+}
+
+function pageLabel(path: string) {
+  const segments = path.split("/").filter(Boolean);
+  if (!segments.length) return "Home";
+  if (segments[0] === "book") return "Booking";
+  if (segments[0] === "pricing") return "Pricing";
+  if (segments[0] === "services") return segments[1] ? `Service: ${formatLabel(segments[1])}` : "Services";
+  if (segments[0] === "exercises") {
+    if (segments[1] === "area" && segments[2]) return `Exercise area: ${formatLabel(segments[2])}`;
+    if (segments[1] === "for" && segments[2]) return `Condition exercises: ${formatLabel(segments[2])}`;
+    if (segments[1] === "tests" && segments[2]) return `Self-test: ${formatLabel(segments[2])}`;
+    if (segments[1]) return `Exercise: ${formatLabel(segments[1])}`;
+    return "Exercise library";
+  }
+  return formatLabel(segments.at(-1) ?? path);
+}
+
+function eventTitle(event: GrowthEvent) {
+  if (event.event === "page_view") return `${pageLabel(event.path)} page viewed`;
+  if (event.event === "book_now_click") {
+    const service = stringParam(event, "service_title") || stringParam(event, "service_slug") || stringParam(event, "service");
+    return service ? `Booking CTA clicked: ${formatLabel(service)}` : "Booking CTA clicked";
+  }
+  if (event.event === "library_view") {
+    const title = stringParam(event, "exercise_title") || stringParam(event, "exercise_slug");
+    return title ? `Exercise viewed: ${formatLabel(title)}` : "Exercise guide viewed";
+  }
+  if (event.event === "exercise_plan_saved") {
+    const title = stringParam(event, "exercise_title") || stringParam(event, "exercise_slug");
+    return title ? `Exercise saved: ${formatLabel(title)}` : "Exercise saved to plan";
+  }
+  if (event.event === "chat_message_sent") {
+    const preview = stringParam(event, "message_preview");
+    return preview ? `Patient asked: ${preview}` : "Patient chat message";
+  }
+  return formatLabel(event.event);
+}
+
 function isPatientJourneyEvent(event: GrowthEvent) {
   return !(
     event.path === "/admin" ||
@@ -83,6 +145,8 @@ export function AdminGrowthDashboard() {
       countries: sessionCountries.size,
     };
   }, [events]);
+
+  const recentActivity = useMemo(() => (events ?? []).filter(isPatientJourneyEvent).slice(0, 8), [events]);
 
   if (events === null) {
     return <SkeletonStatGrid count={3} />;
@@ -151,6 +215,28 @@ export function AdminGrowthDashboard() {
           <small>Open country records</small>
         </Link>
       </div>
+
+      <section className="admin-growth-card admin-growth-recent">
+        <div className="admin-growth-card-head">
+          <h3>Recent activity</h3>
+          <small>Latest patient-side events across the website.</small>
+        </div>
+        {recentActivity.length ? (
+          <ul className="admin-growth-timeline">
+            {recentActivity.map((event) => (
+              <li key={event.id}>
+                <span>{eventTitle(event)}</span>
+                <em>{event.path}</em>
+                <small>
+                  {formatTime(event.createdAtIso)} · {event.device ?? "device"} · {countryDisplay(event)}
+                </small>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="muted">Recent patient activity will appear here once visitors browse the website.</p>
+        )}
+      </section>
 
     </div>
   );

@@ -5631,6 +5631,26 @@ textarea:focus {
   line-height: 1.35;
 }
 
+.admin-growth-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.admin-growth-card-head small {
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.admin-growth-recent {
+  padding: var(--space-4);
+}
+
 .admin-pagination {
   display: flex;
   align-items: center;
@@ -5753,6 +5773,17 @@ textarea:focus {
 .admin-growth-detail-list p {
   margin: 0;
   font-size: 13px;
+}
+
+.admin-growth-detail-country {
+  color: #043246 !important;
+  font-weight: 750;
+}
+
+.admin-growth-detail-country strong {
+  color: #0d81aa;
+  font-size: inherit;
+  font-weight: 850;
 }
 
 .admin-growth-detail-list small {

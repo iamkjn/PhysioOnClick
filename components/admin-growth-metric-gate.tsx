@@ -119,6 +119,12 @@ function stringParam(event: GrowthEvent, key: string) {
   return typeof value === "string" ? value : "";
 }
 
+function countryDisplay(event: GrowthEvent) {
+  if (event.countryName) return event.countryName;
+  if (event.countryCode) return event.countryCode;
+  return "Country not captured";
+}
+
 function pageLabel(path: string) {
   const segments = path.split("/").filter(Boolean);
   if (!segments.length) return "Home";
@@ -169,9 +175,6 @@ function eventDetails(event: GrowthEvent) {
 
   const slotDate = stringParam(event, "slot_date");
   if (slotDate) details.push(`Slot date: ${slotDate}`);
-
-  const country = event.countryName || event.countryCode;
-  if (country) details.push(`Country: ${country}`);
 
   const intent = stringParam(event, "intent");
   if (intent) details.push(`Intent: ${formatLabel(intent)}`);
@@ -242,7 +245,7 @@ export function AdminGrowthMetricGate({ metric }: { metric: string }) {
   }
 
   return (
-    <AdminShell backHref="/admin" backLabel="← Dashboard">
+    <AdminShell backHref="/admin#growth" backLabel="← Growth">
       <main className="admin-standard-page">
         <AdminGrowthMetric metric={metric} />
       </main>
@@ -321,7 +324,7 @@ function AdminGrowthMetric({ metric }: { metric: string }) {
         <span className="dashboard-eyebrow">Growth detail</span>
         <h1>Unknown metric</h1>
         <p className="muted">This Growth detail page does not exist.</p>
-        <Link className="button button-secondary" href="/admin">
+        <Link className="button button-secondary" href="/admin#growth">
           Back to Growth
         </Link>
       </section>
@@ -366,6 +369,9 @@ function AdminGrowthMetric({ metric }: { metric: string }) {
                 <span>{EVENT_LABELS[event.event] ?? formatLabel(event.event)}</span>
                 <strong>{eventTitle(event)}</strong>
                 <em>{event.path}</em>
+                <p className="admin-growth-detail-country">
+                  <strong>Country:</strong> {countryDisplay(event)}
+                </p>
                 {details.length ? <p>{details.join(" · ")}</p> : null}
                 <small>
                   {formatTime(event.createdAtIso)} · {event.device ?? "device"} · Session {event.sessionId ?? "not captured"}
