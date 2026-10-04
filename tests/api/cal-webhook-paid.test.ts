@@ -82,9 +82,28 @@ describe("cal-webhook paid reconciliation", () => {
     );
   });
 
+  it("copies the home-visit travel fee from the payment onto the booking", async () => {
+    payData.current = {
+      amountPence: 4000,
+      status: "paid",
+      visitType: "home",
+      homeVisitAddress: "7 Example Street, G31 4HS",
+      travelFeePence: 1500,
+    };
+    await POST(signed(BODY));
+    expect(bookingRef.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        paid: true,
+        visitType: "home",
+        homeVisitAddress: "7 Example Street, G31 4HS",
+        travelFeePence: 1500,
+      }),
+    );
+  });
+
   it("adds no visit fields for a video booking", async () => {
     await POST(signed(BODY));
     const updates = bookingRef.update.mock.calls.map((c) => c[0]);
-    expect(updates.some((u) => "visitType" in u || "homeVisitAddress" in u)).toBe(false);
+    expect(updates.some((u) => "visitType" in u || "homeVisitAddress" in u || "travelFeePence" in u)).toBe(false);
   });
 });
