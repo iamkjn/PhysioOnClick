@@ -134,3 +134,18 @@ describe("Q8: home visits for neuro and post-op care", () => {
     expect(read("app/online-physiotherapy-for/[slug]/page.tsx")).not.toMatch(/NO_HOME_VISIT_LINE/);
   });
 });
+
+describe("Fix round 1: post-op infection citations match their sources", () => {
+  it("knee replacement cites CKS knee pain; hip replacement cites the NHS septic arthritis page, not CKS GTPS", () => {
+    const knee = getOnlinePhysioPage("knee-replacement-rehab")!;
+    expect(knee.sources.some((s) => s.url === "https://cks.nice.org.uk/topics/knee-pain-assessment/")).toBe(true);
+    const hip = getOnlinePhysioPage("hip-replacement-rehab")!;
+    expect(hip.sources.some((s) => s.url === "https://www.nhs.uk/conditions/septic-arthritis/")).toBe(true);
+    expect(hip.inPersonInstead.join(" ")).not.toMatch(/CKS/);
+  });
+  it("heel and elbow pages scope the CKS claim to the knee pain topic", () => {
+    for (const s of ["plantar-fasciitis", "tennis-elbow"]) {
+      expect(getOnlinePhysioPage(s)!.inPersonInstead.join(" "), s).toMatch(/NICE CKS guidance for clinicians on knee pain/);
+    }
+  });
+});
