@@ -1,6 +1,7 @@
 "use client";
 
 import { collection, collectionGroup, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query } from "firebase/firestore";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Activity, ArrowDownRight, BookmarkCheck, CalendarCheck2, Dumbbell, Globe2, MessageSquare, MousePointerClick } from "lucide-react";
 
@@ -37,6 +38,7 @@ type ChatSession = {
 
 type ChatThread = {
   id: string;
+  href: string;
   source: string;
   patientId?: string;
   sessionId: string;
@@ -272,7 +274,6 @@ function isPatientJourneyEvent(event: GrowthEvent) {
 export function AdminGrowthDashboard() {
   const [events, setEvents] = useState<GrowthEvent[] | null>(null);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
-  const [selectedChatThreadId, setSelectedChatThreadId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -458,6 +459,7 @@ export function AdminGrowthDashboard() {
       }));
       return {
         id: `growth-${sessionId}`,
+        href: `/admin/chat-logs/${encodeURIComponent(`growth:${sessionId}`)}`,
         source: "Website assistant guest session",
         sessionId,
         preview: messages[messages.length - 1]?.text ?? "Question preview was not captured for this older chat event.",
@@ -478,6 +480,7 @@ export function AdminGrowthDashboard() {
       const latestUserMessage = userMessages[userMessages.length - 1];
       return {
         id: `history-${session.sessionId}`,
+        href: `/admin/chat-logs/${encodeURIComponent(`history:${session.patientId}:${session.sessionId}`)}`,
         source: session.patientName,
         patientId: session.patientId,
         sessionId: session.sessionId,
@@ -531,8 +534,6 @@ export function AdminGrowthDashboard() {
   if (events === null) {
     return <SkeletonStatGrid count={3} />;
   }
-
-  const selectedChatThread = stats.chatThreads.find((thread) => thread.id === selectedChatThreadId) ?? null;
 
   return (
     <div className="admin-growth">
@@ -617,12 +618,12 @@ export function AdminGrowthDashboard() {
             <ul className="admin-growth-chat-sessions">
               {stats.chatThreads.map((chat) => (
                 <li key={chat.id}>
-                  <button type="button" onClick={() => setSelectedChatThreadId(chat.id)}>
+                  <Link href={chat.href}>
                     <span>{chat.source}</span>
                     <strong>{chat.preview}</strong>
                     <em>{chat.messages.length} message{chat.messages.length === 1 ? "" : "s"} · {chat.device}</em>
                     <small>{formatTime(chat.createdAtIso)}</small>
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -633,47 +634,6 @@ export function AdminGrowthDashboard() {
           )}
         </section>
       </div>
-
-      {selectedChatThread ? (
-        <div className="admin-chat-detail-overlay" role="dialog" aria-modal="true" aria-labelledby="chat-detail-title">
-          <div className="admin-chat-detail">
-            <header>
-              <div>
-                <span className="dashboard-eyebrow">Patient assistant conversation</span>
-                <h2 id="chat-detail-title">{selectedChatThread.source}</h2>
-                <p>
-                  {formatTime(selectedChatThread.createdAtIso)} · {selectedChatThread.device} · Session{" "}
-                  {selectedChatThread.sessionId.slice(0, 12)}
-                </p>
-              </div>
-              <button type="button" onClick={() => setSelectedChatThreadId(null)}>Close</button>
-            </header>
-
-            <div className="admin-chat-detail-meta">
-              {selectedChatThread.notes.map((note) => (
-                <span key={note}>{note}</span>
-              ))}
-            </div>
-
-            <div className="admin-chat-detail-messages">
-              {selectedChatThread.messages.length ? (
-                selectedChatThread.messages.map((message, index) => (
-                  <article
-                    key={`${message.timestamp ?? "message"}-${index}`}
-                    className={message.role === "user" ? "is-user" : "is-model"}
-                  >
-                    <span>{message.role === "user" ? "Patient" : "PhysioOnClick assistant"}</span>
-                    <p>{message.text}</p>
-                    <small>{formatTime(message.timestamp)}</small>
-                  </article>
-                ))
-              ) : (
-                <p className="muted">No messages were saved for this session.</p>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       <section className="admin-growth-card admin-growth-basis">
         <div>
