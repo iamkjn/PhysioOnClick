@@ -53,3 +53,26 @@ describe("booking intent <-> Stripe metadata", () => {
     expect(back).not.toHaveProperty("homeVisitAddress");
   });
 });
+
+describe("travel fee metadata", () => {
+  const base = {
+    service: "initial-assessment" as const,
+    startISO: "2999-01-01T10:00:00.000Z",
+    name: "Ada",
+    email: "ada@example.com",
+    timeZone: "Europe/London",
+  };
+  it("round-trips travelFeePence for a home visit", () => {
+    const meta = intentToMetadata({ ...base, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS", travelFeePence: "1500" });
+    expect(meta.travelFeePence).toBe("1500");
+    expect(metadataToIntent(meta)?.travelFeePence).toBe("1500");
+  });
+  it("drops travelFeePence on a video booking", () => {
+    const meta = intentToMetadata({ ...base, visitType: "video", travelFeePence: "1500" });
+    expect(meta).not.toHaveProperty("travelFeePence");
+    expect(metadataToIntent({ ...meta, travelFeePence: "1500" })).not.toHaveProperty("travelFeePence");
+  });
+  it("ignores a non-numeric travelFeePence", () => {
+    expect(metadataToIntent({ ...intentToMetadata({ ...base, visitType: "home", homeVisitAddress: "x, G1 1AA" }), travelFeePence: "abc" })).not.toHaveProperty("travelFeePence");
+  });
+});

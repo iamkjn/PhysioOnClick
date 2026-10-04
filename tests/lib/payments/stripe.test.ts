@@ -82,3 +82,54 @@ describe("createStripeCheckout", () => {
   });
 });
 
+
+describe("createStripeCheckout line items", () => {
+  const intent = {
+    service: "initial-assessment" as const,
+    startISO: "2999-01-01T10:00:00.000Z",
+    name: "Ada",
+    email: "ada@example.com",
+    timeZone: "Europe/London",
+  };
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+  function stubOk() {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ id: "cs_1", url: "https://checkout.stripe.com/c/cs_1" }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_x");
+    return fetchMock;
+  }
+  const bodyOf = (fetchMock: ReturnType<typeof vi.fn>) =>
+    new URLSearchParams(String((fetchMock.mock.calls[0][1] as RequestInit).body));
+
+  it("sends one line item when there are no extras (video, unchanged)", async () => {
+    const fetchMock = stubOk();
+    await createStripeCheckout({ intent, amountPence: 4000, serviceLabel: "Initial Online Assessment", successUrl: "s", cancelUrl: "c" });
+    const body = bodyOf(fetchMock);
+    expect(body.get("line_items[0][price_data][unit_amount]")).toBe("4000");
+    expect(body.get("line_items[1][price_data][unit_amount]")).toBeNull();
+  });
+
+  it("adds the travel fee as a second line item", async () => {
+    const fetchMock = stubOk();
+    await createStripeCheckout({
+      intent: { ...intent, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS", travelFeePence: "1500" },
+      amountPence: 3600,
+      serviceLabel: "Initial Assessment (home visit)",
+      extraLineItems: [{ name: "Travel fee (1 home visit × £15)", amountPence: 1500 }],
+      successUrl: "s",
+      cancelUrl: "c",
+    });
+    const body = bodyOf(fetchMock);
+    expect(body.get("line_items[0][price_data][unit_amount]")).toBe("3600");
+    expect(body.get("line_items[1][quantity]")).toBe("1");
+    expect(body.get("line_items[1][price_data][currency]")).toBe("gbp");
+    expect(body.get("line_items[1][price_data][unit_amount]")).toBe("1500");
+    expect(body.get("line_items[1][price_data][product_data][name]")).toBe("Travel fee (1 home visit × £15)");
+    expect(body.get("metadata[travelFeePence]")).toBe("1500");
+  });
+});

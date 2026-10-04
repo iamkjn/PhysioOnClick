@@ -21,6 +21,13 @@ export async function createStripeCheckout(
   form.set("line_items[0][price_data][currency]", "gbp");
   form.set("line_items[0][price_data][unit_amount]", String(input.amountPence));
   form.set("line_items[0][price_data][product_data][name]", input.serviceLabel);
+  (input.extraLineItems ?? []).forEach((item, i) => {
+    const n = i + 1;
+    form.set(`line_items[${n}][quantity]`, "1");
+    form.set(`line_items[${n}][price_data][currency]`, "gbp");
+    form.set(`line_items[${n}][price_data][unit_amount]`, String(item.amountPence));
+    form.set(`line_items[${n}][price_data][product_data][name]`, item.name);
+  });
   for (const [key, value] of Object.entries(intentToMetadata(input.intent))) {
     form.set(`metadata[${key}]`, value);
   }
