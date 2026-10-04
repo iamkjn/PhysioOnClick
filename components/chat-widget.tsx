@@ -50,7 +50,7 @@ const SERVICES = [
   {
     emoji: "🦿",
     label: "Post-Surgical Rehab",
-    text: "Structured rehab after knee/hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery.\n\nWe guide you through post-operative milestones, strength & range-of-motion progression and return-to-function coaching. Rehab starts once your surgical team has confirmed you have no restrictions.",
+    text: "Structured rehab after knee/hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery.\n\nWe guide you through post-operative milestones, strength & range-of-motion progression and return-to-function coaching. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you.",
   },
   {
     emoji: "🧠",
@@ -60,7 +60,7 @@ const SERVICES = [
   {
     emoji: "👶",
     label: "Paediatric Physio",
-    text: "Child-centred physiotherapy for developmental delay, coordination challenges, mobility support and post-operative rehab (once your child's surgical team has confirmed they have no restrictions).\n\nSessions use play-based strategies with full parent coaching. Parent attendance is encouraged.",
+    text: "Child-centred physiotherapy for developmental delay, coordination challenges, mobility support and post-operative rehab (once your child's surgical team has said they are ready for outpatient or community physiotherapy, following any restrictions or precautions they give).\n\nSessions use play-based strategies with full parent coaching. Parent attendance is encouraged.",
   },
   {
     emoji: "🚶",

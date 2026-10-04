@@ -321,7 +321,7 @@ export const guides: Guide[] = [
           "It depends on your condition; your physiotherapist will give you an estimate after your assessment. We do not quote a fixed number of sessions or weeks before we have assessed you, and we review the estimate with you at each follow-up.",
           "NICE guidance on low back pain and sciatica suggests that clinicians think early on about how likely each person is to get better quickly. It suggests lighter support, such as reassurance, advice to keep active and help to manage it yourself, for people likely to improve quickly, and more support, such as exercise programmes, for people at higher risk of a poor outcome. That guidance covers low back pain and sciatica only.",
           "For osteoarthritis, NICE guidance recommends telling people that joint pain may go up for a while when they start exercising, and that regular exercise kept up over the long term brings more benefit. That is one reason we focus on a routine you can keep going, rather than on a set number of appointments.",
-          "After surgery, recovery is set mainly by the operation and by your surgical team. Rehab starts once your surgical team has confirmed you have no restrictions. The NHS says full recovery from a knee or hip replacement may take several months, and your surgical team's advice always comes first.",
+          "After surgery, recovery is set mainly by the operation and by your surgical team. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. The NHS says full recovery from a knee or hip replacement may take several months, and your surgical team's advice always comes first.",
           "For neurological conditions, change differs a great deal between people, so we do not give a timeline. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. In our approach we review change you can notice, such as walking further or needing less support, rather than counting sessions."
         ]
       },
@@ -368,7 +368,7 @@ export const guides: Guide[] = [
       },
       {
         q: "How long does recovery after surgery take?",
-        a: "It depends on the operation and on you. The NHS says recovery from a knee or hip replacement may take several months. Rehab starts once your surgical team has confirmed you have no restrictions. Follow your surgeon's guidance."
+        a: "It depends on the operation and on you. The NHS says recovery from a knee or hip replacement may take several months. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Follow your surgeon's guidance."
       },
       {
         q: "Do session bundles save money?",
@@ -757,7 +757,7 @@ export const guides: Guide[] = [
       {
         heading: "After surgery and with falls or mobility problems",
         paragraphs: [
-          "Our post-surgical guidance sends wound checks, removal of stitches or staples, and any complication back to your surgical team for in-person review. Rehab starts once your surgical team has confirmed you have no restrictions. See [post-surgical rehabilitation](/services/post-surgical-rehabilitation).",
+          "Our post-surgical guidance sends wound checks, removal of stitches or staples, and any complication back to your surgical team for in-person review. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. See [post-surgical rehabilitation](/services/post-surgical-rehabilitation).",
           "For gait and mobility, our service guidance says a recent fall with injury, sudden weakness or acute pain affecting walking needs urgent in-person medical assessment first. It also says falls-risk tools that need hands-on testing, or a home hazard check, are better done in person. See our [gait and mobility assessment](/services/gait-and-mobility-assessment)."
         ]
       },

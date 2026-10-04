@@ -175,24 +175,24 @@ export const services: Service[] = [
       "Return-to-function coaching"
     ],
     firstSession:
-      "Rehab starts once your surgical team has confirmed you have no restrictions. The first session reviews your surgeon's notes or discharge summary if you have them and confirms that clearance. You'll be guided through a safe range-of-motion and strength check over video, and leave with goals we agree together and a plan to work towards them, not just a generic exercise sheet.",
+      "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. The first session reviews your surgeon's notes or discharge summary if you have them and checks any restrictions or precautions your surgical team has set. You'll be guided through a safe range-of-motion and strength check over video, and leave with goals we agree together and a plan to work towards them, not just a generic exercise sheet.",
     typicalOutcomes:
       "Recovery time is set mainly by your operation and your surgical team's advice. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan at each session, within any advice from your surgical team.",
     whenInPersonInstead:
-      "Wound checks, staple/suture removal, and any complication (infection signs, excessive swelling, a fall, or a joint that isn't progressing as expected) need in-person medical review — those go straight back to your surgical team, not managed through an online rehab plan. Rehab starts once your surgical team has confirmed you have no restrictions.",
+      "Wound checks, staple/suture removal, and any complication (infection signs, excessive swelling, a fall, or a joint that isn't progressing as expected) need in-person medical review — those go straight back to your surgical team, not managed through an online rehab plan. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you.",
     faqs: [
       {
         question: "When should physiotherapy start after surgery?",
-        answer: "Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the exercises and advice your hospital team gave you."
+        answer: "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Until then, follow the exercises and advice your hospital team gave you."
       },
       {
         question: "Can online rehab work after surgery?",
-        answer: "For some people, once their surgical team has confirmed they have no restrictions. We review your progress regularly and adjust your plan, and we'll tell you if you need to be seen in person instead."
+        answer: "For some people, once their surgical team has said they are ready for outpatient or community physiotherapy. We review your progress regularly and adjust your plan, and we'll tell you if you need to be seen in person instead."
       },
       {
         question: "What if I'm still on crutches or can't stand for long?",
         answer:
-          "Rehab starts once your surgical team has confirmed you have no restrictions. If you still use crutches or a frame after that, sessions can be adapted to seated or supported positions, and a walking assessment isn't required to start."
+          "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. If you still use crutches or a frame after that, sessions can be adapted to seated or supported positions, and a walking assessment isn't required to start."
       },
       {
         question: "Do you work with my surgeon or NHS physio team?",
@@ -284,7 +284,7 @@ export const services: Service[] = [
       "Developmental delay",
       "Coordination challenges",
       "Mobility support",
-      "Post-operative paediatric rehab (once your child's surgical team has confirmed they have no restrictions)",
+      "Post-operative paediatric rehab (once your child's surgical team has said they are ready for outpatient or community physiotherapy, following any restrictions or precautions they give)",
       "Strength and endurance building"
     ],
     approach: [
@@ -330,7 +330,7 @@ export const services: Service[] = [
     summary:
       "Movement analysis, walking assessment and rehabilitation planning for confidence and independence.",
     conditions: [
-      "Walking changes after surgery (once your surgical team has confirmed you have no restrictions)",
+      "Walking changes after surgery (once your surgical team has said you are ready for outpatient or community physiotherapy, within any precautions they set)",
       "Falls risk",
       "Balance confidence issues",
       "Mobility aid review",
@@ -355,7 +355,7 @@ export const services: Service[] = [
       },
       {
         question: "Can this help after joint replacement?",
-        answer: "Yes, walking practice can be part of recovery after a joint replacement. Rehab starts once your surgical team has confirmed you have no restrictions."
+        answer: "Yes, walking practice can be part of recovery after a joint replacement. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
       },
       {
         question: "Do I need a mobility aid to be assessed?",

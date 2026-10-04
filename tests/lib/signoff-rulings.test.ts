@@ -11,7 +11,8 @@ import { PAGE_DISCLAIMER } from "@/lib/exercise-disclaimer";
 import { conditions } from "@/lib/conditions";
 
 const NEURO_CLEARANCE = "Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.";
-const POSTOP_CLEARANCE = "starts once your surgical team has confirmed you have no restrictions";
+const POSTOP_CLEARANCE =
+  "starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you";
 
 const pageText = (p: (typeof onlinePhysioPages)[number]) =>
   [p.h1, p.seoTitle, p.seoDescription, p.answer, ...p.howOnlineWorks, ...p.assessmentChecks, ...p.typicalPlan,
@@ -70,7 +71,7 @@ describe("Q6/Q9: clearance before starting", () => {
   it("MS pauses sessions until the GP or MS team clears restarting", () => {
     expect(pageText(getOnlinePhysioPage("multiple-sclerosis")!)).toMatch(/pause your sessions[^.]*until your GP or MS team/i);
   });
-  it("every post-op landing page and the post-surgical service require no-restrictions clearance", () => {
+  it("every post-op landing page and the post-surgical service start when the surgical team says you are ready (round 2 Q1)", () => {
     for (const s of ["knee-replacement-rehab", "hip-replacement-rehab", "rotator-cuff-repair-rehab"]) {
       const t = pageText(getOnlinePhysioPage(s)!);
       expect(t, s).toContain(POSTOP_CLEARANCE);
@@ -78,14 +79,14 @@ describe("Q6/Q9: clearance before starting", () => {
     }
     expect(serviceText(services.find((s) => s.slug === "post-surgical-rehabilitation")!)).toContain(POSTOP_CLEARANCE);
   });
-  it("other post-op mentions carry the no-restrictions clearance", () => {
+  it("other post-op mentions carry the ready-for-physiotherapy wording (round 2 Q1)", () => {
     const paed = services.find((s) => s.slug === "paediatric-physiotherapy")!;
-    expect(paed.conditions.join(" ")).toMatch(/surgical team has confirmed they have no restrictions/);
+    expect(paed.conditions.join(" ")).toMatch(/surgical team has said they are ready for outpatient or community physiotherapy/);
     const gait = services.find((s) => s.slug === "gait-and-mobility-assessment")!;
-    expect(gait.conditions.join(" ") + serviceText(gait)).toMatch(/surgical team has confirmed you have no restrictions/);
+    expect(gait.conditions.join(" ") + serviceText(gait)).toMatch(/surgical team has said you are ready for outpatient or community physiotherapy/);
     expect(serviceText(gait)).toContain(POSTOP_CLEARANCE);
-    expect(read("app/glasgow-physiotherapist/page.tsx")).toContain("rehab starts once your surgical team has confirmed you have no restrictions");
-    expect(read("components/chat-widget.tsx")).toContain("Rehab starts once your surgical team has confirmed you have no restrictions.");
+    expect(read("app/glasgow-physiotherapist/page.tsx")).toContain("rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy");
+    expect(read("components/chat-widget.tsx")).toContain("Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you.");
     const firstSession = services.find((s) => s.slug === "post-surgical-rehabilitation")!.firstSession;
     expect(firstSession).not.toMatch(/stage of healing|next 2, 6 and 12 weeks/);
   });

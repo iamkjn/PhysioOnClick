@@ -40,7 +40,7 @@ const faqItems = [
   {
     question: "What conditions do you treat?",
     answer:
-      "Common areas include back pain, knee injuries, shoulder rehab, post-surgical recovery, neurological rehabilitation and mobility concerns. After an operation, rehab starts once your surgical team has confirmed you have no restrictions."
+      "Common areas include back pain, knee injuries, shoulder rehab, post-surgical recovery, neurological rehabilitation and mobility concerns. After an operation, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
   },
   {
     question: "Do you offer neurological physiotherapy for Glasgow patients?",

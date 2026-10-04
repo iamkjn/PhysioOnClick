@@ -664,16 +664,16 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How video physiotherapy fits after a knee replacement: when rehab can start, what a session covers, and which symptoms go back to your surgical team or 999.",
     answer:
-      "After a knee replacement, rehab with us starts once your surgical team has confirmed you have no restrictions. A video session lets your physiotherapist watch how you move, set milestones and progress your exercises at home. Wound checks and complications go back to your surgical team. Pain and swelling in the leg with breathing difficulty or chest pain needs 999.",
+      "After a knee replacement, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. On video we watch how you move, set milestones and progress your home exercises. Wound checks and complications go back to your surgical team. Pain and swelling in the leg with breathing difficulty or chest pain needs 999.",
     howOnlineWorks: [
-      "Your surgical team decides when rehab with us can begin. Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the instructions and exercises you were given in hospital.",
+      "Rehab after a knee replacement starts in hospital. NICE guidance on joint replacement says it should begin on the day of surgery if possible, and the NHS says following your exercises early on helps long-term strength and movement. Your surgical team decides when rehab with us can begin. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Until then, follow the instructions and exercises you were given in hospital.",
       "The NHS says a physiotherapist or occupational therapist explains a home exercise programme before you leave hospital, and that following those exercises early helps long-term strength and movement. Our video sessions build on that programme. We watch you stand, walk with your aid, bend and straighten the knee, and then adjust what you do at home.",
       "Being at home helps with the practical parts of recovery. We can look at the stairs you actually climb, the chair you sit in and the bathroom you use, and plan exercises and pacing around them. If you are still using crutches or a frame, our service guidance says sessions can be adapted to seated or supported positions.",
       "There are things we cannot do by video. We cannot examine the wound, remove stitches or staples, or check the joint by hand. Our service guidance is clear that wound checks and any complication go straight back to your surgical team, and we will tell you if something we see or hear in a session needs that.",
       "If your knee pain started before surgery, or you are still deciding on an operation, our page on [online physiotherapy for knee pain](/online-physiotherapy-for/knee-pain) covers that stage instead.",
     ],
     assessmentChecks: [
-      "Confirmation that your surgical team has said you have no restrictions, and any instructions they gave you.",
+      "Confirmation that your surgical team has said you are ready for outpatient or community physiotherapy, any restrictions or precautions they set, and any instructions they gave you.",
       "The date and type of operation, whether it was a total or partial knee replacement, and what your discharge summary or exercise sheet says.",
       "How the knee bends and straightens, how you stand up from a chair, and how you manage steps or stairs at home, as far as it is safe to try them.",
       "How you walk, whether you use a stick, crutches or a frame, and how much the knee swells or aches after activity.",
@@ -700,7 +700,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "When can I start online physio after a knee replacement?",
-        a: "Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the exercises and advice you were given in hospital. We can talk through where you are at booking, and we will ask you to check with your surgical team if you are unsure.",
+        a: "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Until then, follow the exercises and advice you were given in hospital. We can talk through where you are at booking, and we will ask you to check with your surgical team if you are unsure.",
       },
       {
         q: "Can you check my wound or remove stitches?",
@@ -712,7 +712,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Had ACL surgery instead?",
-        a: "We cover that in a separate guide: [online physiotherapy after ACL reconstruction](/blog/online-physiotherapy-after-acl-reconstruction). The same rule applies: rehab starts once your surgical team has confirmed you have no restrictions, and complications go back to them.",
+        a: "We cover that in a separate guide: [online physiotherapy after ACL reconstruction](/blog/online-physiotherapy-after-acl-reconstruction). The same rule applies: rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you, and complications go back to them.",
       },
     ],
     sources: [
@@ -749,17 +749,17 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How video physiotherapy fits after a hip replacement: when rehab can start, why your surgeon sets the precautions, and which symptoms need urgent care or 999.",
     answer:
-      "After a hip replacement, rehab with us starts once your surgical team has confirmed you have no restrictions. A video session lets your physiotherapist watch you move and progress your home exercises, and any hip advice comes from your surgeon. Wounds and complications go back to your surgical team. Leg or hip pain and swelling with breathing difficulty or chest pain needs 999.",
+      "After a hip replacement, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. On video we watch you move and progress your home exercises. Wounds and complications go back to your surgical team. Leg or hip pain and swelling with breathing difficulty or chest pain needs 999.",
     howOnlineWorks: [
-      "Your surgical team may set a period of protection before a gradual return to normal movement. Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the advice and any precautions they gave you.",
-      "Any hip precautions after your operation, such as how far you may bend the hip or which positions to avoid, are set by your surgical team. We do not set them. We start once your surgical team has confirmed you have no restrictions, and if they give you new advice later, follow it and tell us.",
+      "Rehab after a hip replacement starts in hospital. NICE guidance on joint replacement says it should begin on the day of surgery if possible, and the NHS says following your exercises early on helps long-term strength and movement. Your surgical team may set a period of protection before a gradual return to normal movement. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Until then, follow the advice and any precautions they gave you.",
+      "Any hip precautions after your operation, such as how far you may bend the hip or which positions to avoid, are set by your surgical team. We do not set them. We start once your surgical team has said you are ready for outpatient or community physiotherapy, we keep every exercise within the precautions they set, and if they give you new advice later, follow it and tell us.",
       "The NHS says your physiotherapist or occupational therapist explains home exercises before you leave hospital, and that following them helps long-term strength and movement. On video we watch the exercises you have been given, check how you get out of bed, sit down, stand and walk, and adjust the plan as your hip settles.",
       "Home is where much of recovery happens, so we can look at your own bed height, chair, toilet and stairs, and talk through how you manage them. That is a practical advantage of video for this stage, although it does not replace in-person care.",
       "We cannot see or feel the wound or check the joint by hand. If we are worried about the wound, a fall or a hip that is not progressing, we will tell you to contact your surgical team rather than carrying on with exercises.",
       "If your hip trouble came before surgery, our page on [online physiotherapy for hip pain](/online-physiotherapy-for/hip-pain) covers that stage.",
     ],
     assessmentChecks: [
-      "Confirmation that your surgical team has said you have no restrictions, and when your next follow-up with them is.",
+      "Confirmation that your surgical team has said you are ready for outpatient or community physiotherapy, any restrictions or precautions they set, and when your next follow-up with them is.",
       "The date of the operation, how you have been recovering since discharge, and what your discharge summary or exercise sheet says.",
       "How you get on and off the bed, in and out of a chair, and up and down stairs, and which of these still feel hard.",
       "How you walk, whether you use a stick, crutches or a frame, and how much the hip or leg aches or swells after activity.",
@@ -767,7 +767,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "The warning signs listed below, which we check for during your sessions.",
     ],
     typicalPlan: [
-      "Your plan starts from the exercises your hospital team gave you, and builds in small steps once your surgical team has confirmed you have no restrictions. We set milestones with you for walking, strength and everyday movement, and review them at each follow-up. Where our suggestions and your surgeon's advice differ, follow your surgeon.",
+      "Your plan starts from the exercises your hospital team gave you, and builds in small steps once your surgical team has said you are ready for outpatient or community physiotherapy, always within any precautions they set. We set milestones with you for walking, strength and everyday movement, and review them at each follow-up. Where our suggestions and your surgeon's advice differ, follow your surgeon.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Recovery differs from person to person. It depends on your condition; your physiotherapist will give you an estimate after your assessment.",
       "The NHS gives some typical timings, which vary with the person and the surgeon. It says people are usually home about 1 to 3 days after the operation if generally fit and the surgery went well, are usually told to wait at least 6 weeks before driving (check with your doctor), and often return to work at about 6 weeks depending on the job. A follow-up with your surgical team is usually around 6 to 12 weeks.",
       "Wound reviews and follow-up visits stay with your surgical team. NICE guidance on joint replacement recommends that people who do their rehabilitation on their own have a point of contact for advice and support, and are offered supervised rehabilitation if they struggle with daily activities or are not meeting their goals. It does not cover rehab by video. Keep your GP or specialist team informed about your treatment.",
@@ -787,11 +787,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "When can I start online physio after a hip replacement?",
-        a: "Rehab starts once your surgical team has confirmed you have no restrictions. Until then, follow the advice you were given in hospital. If you are unsure whether you have been cleared, ask your surgical team before booking.",
+        a: "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Until then, follow the advice you were given in hospital. If you are unsure whether you are ready, ask your surgical team before booking.",
       },
       {
         q: "What hip precautions should I follow?",
-        a: "Follow your surgeon's advice. Precautions are set by your surgical team and can differ between surgeons, so we do not set or change them. Rehab with us starts only once your surgical team has confirmed you have no restrictions, so if you still have precautions in place, it is too early to book. If anything is unclear, ask your surgeon or ward team.",
+        a: "Follow your surgeon's advice. Precautions are set by your surgical team and can differ between surgeons, so we do not set or change them. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and every exercise we give you stays within the precautions they set. If anything is unclear, ask your surgeon or ward team.",
       },
       {
         q: "Can you check my wound?",
@@ -837,16 +837,16 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How video physiotherapy fits after rotator cuff repair surgery: sling and protection phases set by your surgeon, what we check, and when to get urgent care.",
     answer:
-      "After rotator cuff repair, rehab with us starts once your surgical team has confirmed you have no restrictions. Your surgeon sets the sling and protection phases, and those stay with your surgical team. A video session lets your physiotherapist guide your exercises at home. Wound checks and complications go back to your surgical team. Chest pain with arm or shoulder pain needs 999.",
+      "After rotator cuff repair, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Your surgeon sets the sling and protection phases. On video we guide your home exercises. Wound checks and complications go back to your surgical team. Chest pain with arm or shoulder pain needs 999.",
     howOnlineWorks: [
       "Recovery from a rotator cuff repair is slow and protected at first, because the repaired tendon needs time to heal. How long you wear a sling, what you may do with the arm, and when strengthening can begin are all set by your surgeon and depend on the size of the repair. We do not change those instructions.",
       "To give a sense of the shape, one NHS hospital trust's patient leaflet describes a sling worn for up to six weeks, no weight through the arm for the first three weeks, and physio-led phases that move from protection to regaining everyday movement and then strength. That is one trust's protocol, not a rule for everyone, so follow your own surgeon's protocol.",
-      "Rehab starts once your surgical team has confirmed you have no restrictions. Before that, the early protected phases stay with your surgical team and the physiotherapy they arrange. Once you are cleared, our video sessions help you build movement and strength step by step, and we follow any further advice your surgeon gives.",
+      "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Before that, the early protected phases stay with your surgical team and the physiotherapy they arrange. Once they say you are ready, our video sessions help you build movement and strength step by step, and we follow any further advice your surgeon gives.",
       "Over video, we cannot see the wound, check the repair by hand, or test strength the way an in-person shoulder clinic can. Our service guidance is that wound checks and any complication go back to your surgical team. We will say so if something we see on video suggests that.",
       "If your shoulder trouble came before surgery, our page on [online physiotherapy for shoulder pain](/online-physiotherapy-for/shoulder-pain) covers that stage. We have not linked an exercise library hub here, because our tendinopathy exercises are written for shoulders that have not been operated on.",
     ],
     assessmentChecks: [
-      "Confirmation that your surgical team has said you have no restrictions, and any further advice they gave you.",
+      "Confirmation that your surgical team has said you are ready for outpatient or community physiotherapy, any restrictions or precautions they set, and any further advice they gave you.",
       "The date of your operation, the type and size of the repair if you know them, and what your discharge summary or exercise sheet says.",
       "When you stopped wearing the sling, and how you manage dressing, washing and sleeping.",
       "How far you can move the arm now, and any pain, swelling or stiffness in the shoulder, arm or hand.",
@@ -854,7 +854,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "The warning signs listed below, which we check for during your sessions.",
     ],
     typicalPlan: [
-      "Your plan starts once your surgical team has said you have no restrictions, and builds on the exercises you were given. We add everyday movement and then strength in steps, set milestones with you, and review them at each follow-up. Where your surgeon's advice differs from ours, follow your surgeon.",
+      "Your plan starts once your surgical team has said you are ready for outpatient or community physiotherapy, stays within any restrictions or precautions they set, and builds on the exercises you were given. We add everyday movement and then strength in steps, set milestones with you, and review them at each follow-up. Where your surgeon's advice differs from ours, follow your surgeon.",
       "The first session is a 60-minute video assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. Your operation and your surgeon's protocol both matter here. It depends on your condition; your physiotherapist will give you an estimate after your assessment.",
       "The same trust's leaflet gives some timings as an example only. It describes exercises two to four times a day that may continue at home for up to nine months, desk-based work often returning at around 6 to 8 weeks, manual work at least 3 to 4 months, no driving until after six weeks with the sling off, and non-contact sport at about six months. Your own timings will come from your surgeon.",
       "Follow-ups with your surgical team and shoulder physiotherapy specialist stay with them. Keep your GP or specialist team informed about your treatment.",
@@ -873,7 +873,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     faqs: [
       {
         q: "When can I start online physio after rotator cuff repair?",
-        a: "Rehab starts once your surgical team has confirmed you have no restrictions. Your surgeon sets the sling and protection phases, and those early phases stay with the team they arrange. If you are not sure whether you have been cleared, ask your surgical team before booking.",
+        a: "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Your surgeon sets the sling and protection phases, and those early phases stay with the team they arrange. If you are not sure whether you are ready, ask your surgical team before booking.",
       },
       {
         q: "How long will I wear the sling?",
