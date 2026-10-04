@@ -57,7 +57,8 @@ describe("findAddresses", () => {
     const url = new URL(String(fetchMock.mock.calls[0][0]));
     expect(url.origin + url.pathname).toBe("https://api.ideal-postcodes.co.uk/v1/autocomplete/addresses");
     expect(url.searchParams.get("query")).toBe("G31 4HS");
-    expect(url.searchParams.get("api_key")).toBe("k_test");
+    expect(url.searchParams.get("api_key")).toBeNull();
+    expect(fetchMock.mock.calls[0][1].headers).toEqual({ Authorization: 'api_key="k_test"' });
     expect(url.searchParams.get("limit")).toBe("100");
     expect(fetchMock.mock.calls[0][1]).toHaveProperty("signal");
   });
@@ -113,7 +114,8 @@ describe("resolveAddress", () => {
     expect(await resolveAddress("paf_123")).toEqual({ ok: true, value: { addressLine: "7 Example Street, Glasgow", postcode: "G31 4HS" } });
     const url = new URL(String(fetchMock.mock.calls[0][0]));
     expect(url.origin + url.pathname).toBe("https://api.ideal-postcodes.co.uk/v1/autocomplete/addresses/paf_123/gbr");
-    expect(url.searchParams.get("api_key")).toBe("k_test");
+    expect(url.searchParams.get("api_key")).toBeNull();
+    expect(fetchMock.mock.calls[0][1].headers).toEqual({ Authorization: 'api_key="k_test"' });
     expect(fetchMock.mock.calls[0][1]).toHaveProperty("signal");
   });
 

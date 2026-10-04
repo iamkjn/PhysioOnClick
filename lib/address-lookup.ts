@@ -20,6 +20,11 @@ function apiKey(): string {
   return process.env.IDEAL_POSTCODES_API_KEY ?? "";
 }
 
+// Key goes in the Authorization header (documented by Ideal Postcodes) so it never appears in URLs.
+function authHeaders(key: string): Record<string, string> {
+  return { Authorization: `api_key="${key}"` };
+}
+
 function failure(status: number): LookupResult<never> {
   if (status === 404) return { ok: false, reason: "not_found" };
   if (status === 429) return { ok: false, reason: "rate_limited" };
@@ -42,9 +47,9 @@ export async function findAddresses(postcode: string): Promise<LookupResult<Addr
   const key = apiKey();
   if (!key) return { ok: false, reason: "unconfigured" };
   const queried = normalisePostcode(postcode);
-  const params = new URLSearchParams({ query: queried, limit: HIT_LIMIT, api_key: key });
+  const params = new URLSearchParams({ query: queried, limit: HIT_LIMIT });
   try {
-    const res = await fetch(`${BASE}?${params.toString()}`, { signal: AbortSignal.timeout(TIMEOUT_MS) });
+    const res = await fetch(`${BASE}?${params.toString()}`, { headers: authHeaders(key), signal: AbortSignal.timeout(TIMEOUT_MS) });
     if (!res.ok) {
       console.error("Address lookup failed", res.status);
       return failure(res.status);
@@ -65,9 +70,8 @@ export async function findAddresses(postcode: string): Promise<LookupResult<Addr
 export async function resolveAddress(id: string): Promise<LookupResult<{ addressLine: string; postcode: string }>> {
   const key = apiKey();
   if (!key) return { ok: false, reason: "unconfigured" };
-  const params = new URLSearchParams({ api_key: key });
-  try {
-    const res = await fetch(`${BASE}/${encodeURIComponent(id)}/gbr?${params.toString()}`, { signal: AbortSignal.timeout(TIMEOUT_MS) });
+    try {
+    const res = await fetch(`${BASE}/${encodeURIComponent(id)}/gbr`, { headers: authHeaders(key), signal: AbortSignal.timeout(TIMEOUT_MS) });
     if (!res.ok) {
       console.error("Address resolve failed", res.status);
       return failure(res.status);
