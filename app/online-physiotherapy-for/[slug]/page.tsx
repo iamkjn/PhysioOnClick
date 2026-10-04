@@ -6,6 +6,8 @@ import { getArticle } from "@/lib/blog";
 import { getCondition, getSelfTest } from "@/lib/exercise-library";
 import { getGuide } from "@/lib/guides";
 import { PAGE_DISCLAIMER } from "@/lib/exercise-disclaimer";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 import {
   allOnlinePhysioSlugs,
   getOnlinePhysioPage,
@@ -22,17 +24,20 @@ import { TrackedBookLink } from "@/components/tracked-book-link";
 // on OpenNext that 404s every path on deploy (known repo hazard).
 export const dynamic = "force-static";
 
-// Pages for post-operative and neurological care require clearance first (see
-// each page), so the general home-visit line is left off them.
-const NO_HOME_VISIT_LINE = new Set([
-  "knee-replacement-rehab",
-  "hip-replacement-rehab",
-  "rotator-cuff-repair-rehab",
-  "stroke-rehabilitation",
-  "parkinsons",
-  "multiple-sclerosis",
-  "functional-neurological-disorder",
-]);
+// Every landing page shows the home-visit line (clinical sign-off round 2,
+// Q7/Q8, 2026-10-04: home visits are offered for neuro and post-op care too,
+// and include hands-on treatment where appropriate). Neuro and post-op care
+// still need clearance first, so those pages repeat it next to the line.
+const NEURO_CLEARANCE =
+  "Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.";
+const POSTOP_READINESS =
+  "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you.";
+
+function homeVisitClearance(serviceSlug: string): string | null {
+  if (serviceSlug === "neurological-rehabilitation") return `The same applies at home. ${NEURO_CLEARANCE}`;
+  if (serviceSlug === "post-surgical-rehabilitation") return `The same applies at home. ${POSTOP_READINESS}`;
+  return null;
+}
 
 export function generateStaticParams() {
   return allOnlinePhysioSlugs().map((slug) => ({ slug }));
@@ -144,12 +149,14 @@ export default async function OnlinePhysioLandingPage({
           </TrackedBookLink>
         </p>
 
-        {NO_HOME_VISIT_LINE.has(slug) ? null : (
-          <p>
-            If you&rsquo;re in the Glasgow area, you can{" "}
-            <Link href="/book?visit=home">book a home visit</Link> instead of a video call.
-          </p>
-        )}
+        <p data-home-visit>
+          If you live in {HOME_VISIT_AREA_LABEL}, you can{" "}
+          <Link href="/book?visit=home">book a home visit</Link> instead of a video call. A home visit
+          costs the video price plus a {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit,
+          and can include hands-on treatment (manual therapy) where appropriate. Video sessions cannot
+          include hands-on treatment.
+          {homeVisitClearance(page.serviceSlug) ? <> {homeVisitClearance(page.serviceSlug)}</> : null}
+        </p>
 
         <section>
           <h2>How online physiotherapy works {page.h1.startsWith("Online physiotherapy after ") ? "after" : "for"} {sentenceName(page)}</h2>

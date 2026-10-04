@@ -40,7 +40,12 @@ const faqItems = [
   {
     question: "What conditions do you treat?",
     answer:
-      "Common areas include back pain, knee injuries, shoulder rehab, post-surgical recovery, neurological rehabilitation and mobility concerns. After an operation, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
+      "Common areas include back pain, knee injuries, shoulder rehab, post-surgical recovery, neurological rehabilitation and mobility concerns, by video or as a home visit. After an operation, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
+  },
+  {
+    question: "Do you offer hands-on treatment?",
+    answer:
+      "Yes, at home visits. A home visit can include hands-on treatment (manual therapy) where appropriate, alongside exercise and advice. Video sessions cannot include hands-on treatment. We do not offer acupuncture or needles."
   },
   {
     question: "Do you offer neurological physiotherapy for Glasgow patients?",
@@ -125,6 +130,7 @@ export default function GlasgowPage() {
             <h2>What a home visit includes</h2>
             <ul className="clean-list">
               <li>A physiotherapy assessment at your home, covering your history and how you move</li>
+              <li>Hands-on treatment (manual therapy) where appropriate</li>
               <li>A tailored exercise plan with clear milestones</li>
               <li>A written summary after your session</li>
               <li>The same HCPC registered physiotherapist, with follow-ups by home visit or video</li>
@@ -144,6 +150,7 @@ export default function GlasgowPage() {
               <li>Join your assessment by secure video call from anywhere in the UK</li>
               <li>Receive a personalised rehab plan and exercise prescription</li>
               <li>Track progress with follow-up sessions</li>
+              <li>Video sessions cannot include hands-on treatment; choose a home visit if you need it</li>
             </ul>
           </div>
         </Reveal>

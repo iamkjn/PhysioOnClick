@@ -57,7 +57,7 @@ const practicalQuestions = [
   },
   {
     question: "Can I be seen in person?",
-    answer: `Yes, through home visits in ${HOME_VISIT_AREA_LABEL}. We have no clinic or premises. Video appointments are available anywhere in the UK. A home visit costs the video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit. Choose your visit type when you book; for a home visit you enter your postcode and see straight away whether we cover it.`
+    answer: `Yes, through home visits in ${HOME_VISIT_AREA_LABEL}. We have no clinic or premises. Video appointments are available anywhere in the UK. A home visit costs the video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit, and can include hands-on treatment (manual therapy) where appropriate; video sessions cannot. Choose your visit type when you book; for a home visit you enter your postcode and see straight away whether we cover it.`
   },
   {
     question: "Do I need a GP referral?",

@@ -93,3 +93,39 @@ describe("Q6: being unable to pass urine at all", () => {
     expect(line).toMatch(/call 999 or go to A&E\. Do not drive yourself\./);
   });
 });
+
+describe("Q7: hands-on treatment at home visits, never over video", () => {
+  const HANDS_ON = /hands-on treatment \(manual therapy\)/;
+  it("the cannot-do guide, Glasgow page, services and chat say hands-on is available at home visits", async () => {
+    const { getGuide } = await import("@/lib/guides");
+    const { services } = await import("@/lib/site-data");
+    const g = getGuide("what-online-physiotherapy-cannot-do")!;
+    const faq = g.faqs.find((f) => /manual therapy/.test(f.q))!;
+    expect(faq.a).toMatch(HANDS_ON);
+    expect(faq.a).toMatch(/Video sessions cannot include hands-on treatment/);
+    expect(faq.a).toMatch(/do not offer acupuncture or needles/);
+    expect(read("app/glasgow-physiotherapist/page.tsx")).toMatch(/Hands-on treatment \(manual therapy\) where appropriate/);
+    expect(read("app/glasgow-physiotherapist/page.tsx")).toMatch(/Video sessions cannot include hands-on treatment/);
+    expect(services.find((s) => s.slug === "musculoskeletal-physiotherapy")!.whenInPersonInstead).toMatch(HANDS_ON);
+    expect(read("lib/chat-prompt.ts")).toMatch(HANDS_ON);
+    expect(read("components/chat-widget.tsx")).toMatch(HANDS_ON);
+  });
+  it("no copy says home visits cost the same as video", () => {
+    expect(read("lib/guides.ts")).not.toMatch(/same booking flow and prices/);
+  });
+});
+
+describe("Q8: home visits for neuro and post-op care", () => {
+  it("the neuro and post-surgical services offer home visits with their clearance wording", async () => {
+    const { services } = await import("@/lib/site-data");
+    const neuro = services.find((s) => s.slug === "neurological-rehabilitation")!;
+    const postop = services.find((s) => s.slug === "post-surgical-rehabilitation")!;
+    const neuroFaq = neuro.faqs.find((f) => /at home/.test(f.question))!;
+    expect(neuroFaq.answer).toMatch(/Before you start, your GP or specialist team must confirm it is safe/);
+    const postopFaq = postop.faqs.find((f) => /at home/.test(f.question))!;
+    expect(postopFaq.answer).toMatch(/surgical team has said you are ready for outpatient or community physiotherapy/);
+  });
+  it("the landing page no longer gates the home-visit line", () => {
+    expect(read("app/online-physiotherapy-for/[slug]/page.tsx")).not.toMatch(/NO_HOME_VISIT_LINE/);
+  });
+});

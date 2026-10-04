@@ -1,22 +1,44 @@
-import { render } from "@testing-library/react";
+// Round-2 sign-off Q7/Q8 (2026-10-04): home visits are offered for neuro and
+// post-op care too, so every landing page shows the home-visit line, and it
+// says hands-on treatment is available at a home visit. Neuro and post-op pages
+// keep their clearance requirement alongside the line.
+import { cleanup, render } from "@testing-library/react";
 import OnlinePhysioPage from "@/app/online-physiotherapy-for/[slug]/page";
+import { onlinePhysioPages } from "@/lib/online-physio-pages";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 
 const LINE = "book a home visit";
+const NEURO = ["stroke-rehabilitation", "parkinsons", "multiple-sclerosis", "functional-neurological-disorder"];
+const POSTOP = ["knee-replacement-rehab", "hip-replacement-rehab", "rotator-cuff-repair-rehab"];
 
-async function text(slug: string) {
+async function homeVisit(slug: string) {
   const { container } = render(await OnlinePhysioPage({ params: Promise.resolve({ slug }) }));
-  return { text: container.textContent ?? "", link: container.querySelector('a[href="/book?visit=home"]') };
+  const block = container.querySelector("[data-home-visit]");
+  return {
+    text: block?.textContent ?? "",
+    links: container.querySelectorAll('a[href="/book?visit=home"]').length,
+  };
 }
 
+afterEach(() => cleanup());
+
 describe("home-visit line on condition pages", () => {
-  it("appears once on an MSK page", async () => {
-    const r = await text("sciatica");
+  it.each(onlinePhysioPages.map((p) => p.slug))("appears once on %s, with area, fee and hands-on wording", async (slug) => {
+    const r = await homeVisit(slug);
     expect(r.text).toContain(LINE);
-    expect(r.link).not.toBeNull();
+    expect(r.links).toBe(1);
+    expect(r.text).toContain(HOME_VISIT_AREA_LABEL);
+    expect(r.text).toContain(`${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee`);
+    expect(r.text).toMatch(/hands-on treatment \(manual therapy\)/);
+    expect(r.text).toMatch(/Video sessions cannot include hands-on treatment/);
   });
-  it.each(["knee-replacement-rehab", "stroke-rehabilitation"])("is absent on %s", async (slug) => {
-    const r = await text(slug);
-    expect(r.text).not.toContain(LINE);
-    expect(r.link).toBeNull();
+  it.each(NEURO)("keeps the GP/specialist clearance alongside the line on %s", async (slug) => {
+    const r = await homeVisit(slug);
+    expect(r.text).toContain("Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.");
+  });
+  it.each(POSTOP)("keeps the surgical-team readiness alongside the line on %s", async (slug) => {
+    const r = await homeVisit(slug);
+    expect(r.text).toContain("your surgical team has said you are ready for outpatient or community physiotherapy");
   });
 });

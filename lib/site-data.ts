@@ -108,7 +108,7 @@ export const services: Service[] = [
     ],
     approach: [
       "Detailed functional assessment and red-flag screening",
-      "Manual therapy where appropriate",
+      "Manual therapy (hands-on treatment) at home visits, where appropriate",
       "Graduated exercise prescription",
       "Pain education and pacing support"
     ],
@@ -117,7 +117,7 @@ export const services: Service[] = [
     typicalOutcomes:
       "How quickly things change depends on what is causing your pain and how long you have had it. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan at each session, rather than handing you an exercise sheet once.",
     whenInPersonInstead:
-      "A video assessment isn't right for everyone. If there are red-flag symptoms (unexplained weight loss, night pain that doesn't ease, saddle numbness, progressive weakness), suspected fracture, or a condition that needs hands-on joint mobilisation as the primary treatment, you'll be told plainly at triage and pointed toward an in-person clinician or your GP rather than kept in a plan that isn't the right fit. If you're in the Glasgow area, you can choose a home visit instead of a video call.",
+      "A video assessment isn't right for everyone. If there are red-flag symptoms (unexplained weight loss, night pain that doesn't ease, saddle numbness, progressive weakness) or a suspected fracture, you'll be told plainly at triage and pointed toward your GP or urgent care rather than kept in a plan that isn't the right fit. Video sessions cannot include hands-on treatment. If a problem needs hands-on treatment and you're in the Glasgow area, a home visit can include hands-on treatment (manual therapy) where appropriate; elsewhere, we'll point you to an in-person clinician.",
     faqs: [
       {
         question: "Do I need a GP referral?",
@@ -175,7 +175,7 @@ export const services: Service[] = [
       "Return-to-function coaching"
     ],
     firstSession:
-      "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. The first session reviews your surgeon's notes or discharge summary if you have them and checks any restrictions or precautions your surgical team has set. You'll be guided through a safe range-of-motion and strength check over video, and leave with goals we agree together and a plan to work towards them, not just a generic exercise sheet.",
+      "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. The first session reviews your surgeon's notes or discharge summary if you have them and checks any restrictions or precautions your surgical team has set. You'll be guided through a safe range-of-motion and strength check over video or, at a home visit in the Glasgow area, at your home, and leave with goals we agree together and a plan to work towards them, not just a generic exercise sheet.",
     typicalOutcomes:
       "Recovery time is set mainly by your operation and your surgical team's advice. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan at each session, within any advice from your surgical team.",
     whenInPersonInstead:
@@ -193,6 +193,11 @@ export const services: Service[] = [
         question: "What if I'm still on crutches or can't stand for long?",
         answer:
           "Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. If you still use crutches or a frame after that, sessions can be adapted to seated or supported positions, and a walking assessment isn't required to start."
+      },
+      {
+        question: "Can I have post-surgical rehab at home?",
+        answer:
+          "Yes, if you live in the Glasgow area. Home visits are available for post-surgical rehab, at the video price plus a travel fee per visit, and can include hands-on treatment (manual therapy) where appropriate. The same rule applies: rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
       },
       {
         question: "Do you work with my surgeon or NHS physio team?",
@@ -231,7 +236,7 @@ export const services: Service[] = [
       "Carer and family education"
     ],
     firstSession:
-      "The first session establishes your current mobility, balance, and functional goals — what you want to be able to do again, whether that's walking to the shops, managing stairs, or returning to a hobby. You'll be guided through safe, seated or supported movement checks over video, and a family member or carer is welcome to join. You'll leave with a short daily practice routine and a clear review date to track change against.",
+      "The first session establishes your current mobility, balance, and functional goals — what you want to be able to do again, whether that's walking to the shops, managing stairs, or returning to a hobby. You'll be guided through safe, seated or supported movement checks over video or, at a home visit in the Glasgow area, at your home, and a family member or carer is welcome to join. You'll leave with a short daily practice routine and a clear review date to track change against.",
     typicalOutcomes:
       "Recovery varies a great deal by condition and stage, so we don't give a fixed timeline. It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress regularly and adjust your plan, and reviews focus on function you can feel (walking further, needing less support).",
     whenInPersonInstead:
@@ -249,6 +254,11 @@ export const services: Service[] = [
         question: "Do I need clearance before starting?",
         answer:
           "Yes. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy. If you have MS and have a relapse, we pause sessions until your GP or MS team clears you to restart."
+      },
+      {
+        question: "Can I have neurological rehab at home?",
+        answer:
+          "Yes, if you live in the Glasgow area. Home visits are available for neurological rehabilitation, at the video price plus a travel fee per visit, and can include hands-on treatment (manual therapy) where appropriate. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy."
       },
       {
         question: "Can a family member or carer join the sessions?",
@@ -398,7 +408,7 @@ export const services: Service[] = [
     typicalOutcomes:
       "Structured online rehab works best as an ongoing loop: a weekly or fortnightly review call adjusts the plan based on what's improved and what hasn't, rather than a static exercise sheet you're left to interpret alone. We review your progress regularly and adjust your plan, with the review cadence stepping down as independence increases.",
     whenInPersonInstead:
-      "If triage identifies red-flag symptoms, a condition needing hands-on treatment as the primary intervention, or a situation better served by one of the specific services above (post-surgical, neurological, paediatric), you'll be redirected there or to an in-person clinician rather than kept in a general programme that isn't the right fit.",
+      "If triage identifies red-flag symptoms, a condition needing hands-on treatment as the primary intervention, or a situation better served by one of the specific services above (post-surgical, neurological, paediatric), you'll be redirected there, to a home visit if you're in the Glasgow area (home visits can include hands-on treatment where appropriate; video sessions cannot), or to an in-person clinician rather than kept in a general programme that isn't the right fit.",
     faqs: [
       {
         question: "Is online physio effective?",

@@ -709,7 +709,7 @@ export const guides: Guide[] = [
     seoDescription:
       "An honest list of what video physiotherapy cannot do, from hands-on treatment to red-flag symptoms, with what to do instead in each case.",
     answer:
-      "Online physiotherapy cannot give hands-on treatment, handle emergencies, or replace in-person assessment when a problem needs it. Our video appointments cover the UK, and we also offer home visits in the Glasgow area, but we do not offer acupuncture or needles and we cannot give hands-on treatment over video. If you need hands-on care or urgent help, we say so and tell you where to go instead.",
+      "Online physiotherapy cannot give hands-on treatment, handle emergencies, or replace in-person assessment when a problem needs it. Our video appointments cover the UK. We also offer home visits in the Glasgow area, where hands-on treatment (manual therapy) can be part of your care where appropriate. We do not offer acupuncture or needles. If you need urgent help, we say so and tell you where to go instead.",
     sections: [
       {
         heading: "Why we publish this page",
@@ -721,8 +721,8 @@ export const guides: Guide[] = [
       {
         heading: "Hands-on treatment",
         paragraphs: [
-          "We cannot give manual therapy, such as hands-on joint mobilisation, over video, and we do not offer acupuncture or needles. We have no clinic or premises. If you are in the Glasgow area, you can book a home visit for an in-person assessment instead of a video call, and our home visits use the same booking flow and prices.",
-          "Our service guidance says that if hands-on joint mobilisation is the main treatment a problem needs, you will be told at triage and pointed towards an in-person clinician or your GP. If you want hands-on care and you are outside the Glasgow area, look for a registered in-person physiotherapist near you. Check that they are on the HCPC Register, because physiotherapist is a protected title.",
+          "Video sessions cannot include hands-on treatment, so we cannot give manual therapy, such as hands-on joint mobilisation, over video. At a home visit in the Glasgow area, hands-on treatment (manual therapy) is available where appropriate, alongside exercise and advice. We do not offer acupuncture or needles, and we have no clinic or premises. Home visits use the same booking flow as video calls, at the video price plus a travel fee per visit (see [pricing](/pricing)).",
+          "Our service guidance says that if hands-on treatment is the main thing a problem needs, you will be told at triage and offered a home visit if you are in the Glasgow area, or pointed towards an in-person clinician or your GP. If you want hands-on care and you are outside the Glasgow area, look for a registered in-person physiotherapist near you. Check that they are on the HCPC Register, because physiotherapist is a protected title.",
           "It is worth knowing that national guidance is cautious about some hands-on approaches. NICE says manual therapy for low back pain should only be part of a package that includes exercise, and it advises against acupuncture for low back pain and for osteoarthritis."
         ]
       },
@@ -764,7 +764,7 @@ export const guides: Guide[] = [
       {
         heading: "How to decide what to do next",
         paragraphs: [
-          "If you think it might be an emergency, call 999 or go to A&E. If you are not sure, call 111 or speak to your GP. If your problem is not urgent but may need hands-on care, an in-person physiotherapist is the right choice.",
+          "If you think it might be an emergency, call 999 or go to A&E. If you are not sure, call 111 or speak to your GP. If your problem is not urgent but may need hands-on care, a home visit (Glasgow area) or an in-person physiotherapist near you is the right choice.",
           "If it is a problem where exercise, advice and guided movement are the main treatment, video may well suit you. Read the evidence in our guide on [whether online physiotherapy works](/guides/does-online-physiotherapy-work), and [book an appointment](/book) if you want to go ahead."
         ]
       }
@@ -772,7 +772,7 @@ export const guides: Guide[] = [
     faqs: [
       {
         q: "Do you offer manual therapy or acupuncture?",
-        a: "We do not offer acupuncture or needles, and over video we cannot give hands-on treatment. If you are in the Glasgow area, you can book a home visit for an in-person assessment, and your physiotherapist will tell you what is appropriate for you. Elsewhere, we point you to an in-person clinician near you."
+        a: "We do not offer acupuncture or needles. Video sessions cannot include hands-on treatment, but at a home visit in the Glasgow area hands-on treatment (manual therapy) is available where appropriate, and your physiotherapist will tell you what suits you. Elsewhere, we point you to an in-person clinician near you."
       },
       {
         q: "What if I think I have broken a bone?",
@@ -784,7 +784,7 @@ export const guides: Guide[] = [
       },
       {
         q: "Will you tell me if online physio is not right for me?",
-        a: "Yes. If triage shows that you need hands-on care or urgent help, we tell you plainly and point you to your GP, urgent care or an in-person clinician."
+        a: "Yes. If triage shows that you need hands-on care, we offer a home visit if you are in the Glasgow area, or point you to an in-person clinician. If you need urgent help, we tell you plainly and point you to your GP or urgent care."
       }
     ],
     sources: [
@@ -853,7 +853,7 @@ export const guides: Guide[] = [
         paragraphs: [
           "PhysioOnClick is a physiotherapy service run by Shivaliba Zala, who is HCPC registered. Appointments are by video anywhere in the UK, or as home visits in the Glasgow area. Our first appointment is a 60-minute assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. You can see all prices, including session bundles, on the [pricing page](/pricing).",
           "After a paid session we send you an invoice as a PDF. It lists our HCPC registration number and the session you paid for. You can check that registration yourself on the HCPC Register using the steps above.",
-          "There are things we do not offer. We have no clinic or premises, and we cannot give hands-on treatment over video. Home visits are available in the Glasgow area only. If your problem needs a physical examination or urgent care, we will say so and point you to the right place. If you want to know how well video can work, read [does online physiotherapy work?](/guides/does-online-physiotherapy-work)"
+          "There are things we do not offer. We have no clinic or premises, and we cannot give hands-on treatment over video. Home visits, which can include hands-on treatment (manual therapy) where appropriate, are available in the Glasgow area only. If your problem needs a physical examination or urgent care, we will say so and point you to the right place. If you want to know how well video can work, read [does online physiotherapy work?](/guides/does-online-physiotherapy-work)"
         ]
       }
     ],

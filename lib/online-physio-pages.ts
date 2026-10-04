@@ -969,7 +969,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "If you have severe hip pain after a fall or injury, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after a fall or injury, the NHS says to call 999 or go to A&E. Do not drive yourself.",
       "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
       "Any sudden or new change in your speech, such as slurred or lost words, goes to the 999 line above and does not wait for a session. For worries that are not an emergency, such as new low mood, ongoing swallowing or speech difficulties you already have, or a plan that no longer feels right, contact your stroke team or GP. Online sessions are not for acute care.",
-      "If you need hands-on therapy or equipment set up in person, we cannot provide that by video. Triage at booking tells you honestly if video does not suit you.",
+      "Video sessions cannot include hands-on therapy. If you live in the Glasgow area, a home visit can include hands-on treatment (manual therapy) where appropriate. If you need equipment set up in person, we cannot provide that by video. Triage at booking tells you honestly if video does not suit you.",
     ],
     faqs: [
       {
@@ -1066,7 +1066,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
       "If you have fallen in the past year and were hurt, could not get up on your own, blacked out, or have fallen 2 or more times, NICE falls guidance for older people and people aged 50 and over at higher risk recommends offering a full falls assessment to people in that situation. Ask your GP or local falls service about this rather than relying on video sessions alone.",
       "For worries about your medicines, new symptoms or your care plan, speak to your Parkinson's team or GP. The NHS says your plan is agreed with your healthcare team, and we do not change it.",
-      "If you cannot move safely at home without hands-on help, or need equipment fitted in person, we cannot provide that by video. Our service is for people who are medically stable, not for acute care.",
+      "If you cannot move safely at home without hands-on help, or need equipment fitted in person, we cannot provide that by video; if you live in the Glasgow area, ask us about a home visit. Our service is for people who are medically stable, not for acute care.",
     ],
     faqs: [
       {
@@ -1162,7 +1162,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
       "If none of the 999 signs above apply and you think you are having a relapse, our approach is to ask you to contact your MS team or GP. We cannot assess a relapse over video, and we pause your sessions with us until your GP or MS team has cleared you to restart.",
       "If you have symptoms you think could be MS but have no diagnosis, the NHS says to see a GP. Online sessions with us do not replace a diagnosis.",
-      "If you need hands-on therapy or equipment set up in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.",
+      "Video sessions cannot include hands-on therapy. If you live in the Glasgow area, a home visit can include hands-on treatment (manual therapy) where appropriate. If you need equipment set up in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.",
     ],
     faqs: [
       {
@@ -1249,7 +1249,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "If you have severe hip pain after a fall or injury, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after a fall or injury, the NHS says to call 999 or go to A&E. Do not drive yourself.",
       "After a head injury, such as in a fall, the NHS says to call 999 if, for example, the person has been knocked out and has not woken up, cannot stay awake, has a seizure, has fallen from a height of more than 1 metre or 5 stairs, has problems with their vision or hearing, has clear fluid coming from their ears or nose, has new numbness or weakness, has problems with walking, balance, understanding, speaking or writing, or their behaviour has changed. This is not the full list, so see the NHS head injury page listed in the sources. If you take blood thinners, are being sick or feel dizzy after a head injury, contact NHS 111. Do not drive yourself to A&E.",
       "If you have symptoms but no diagnosis, speak to your GP. Diagnosis of FND comes from a neurologist, and online sessions with us do not replace that.",
-      "If you need hands-on therapy or care in person, we cannot provide it by video. Triage at booking tells you honestly if video does not suit you.",
+      "Video sessions cannot include hands-on therapy. If you live in the Glasgow area, a home visit can include hands-on treatment (manual therapy) where appropriate. Triage at booking tells you honestly if video does not suit you.",
     ],
     faqs: [
       {

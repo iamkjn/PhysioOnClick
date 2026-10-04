@@ -45,17 +45,17 @@ const SERVICES = [
   {
     emoji: "💪",
     label: "Musculoskeletal Physio",
-    text: "We treat back & neck pain, shoulder impingement, tendon pain, persistent sports injuries and work-related strain.\n\nOur approach includes a detailed functional assessment, manual therapy where appropriate, graduated exercise prescription and pain education.",
+    text: "We treat back & neck pain, shoulder impingement, tendon pain, persistent sports injuries and work-related strain.\n\nOur approach includes a detailed functional assessment, hands-on treatment (manual therapy) at home visits where appropriate, graduated exercise prescription and pain education. Video sessions cannot include hands-on treatment.",
   },
   {
     emoji: "🦿",
     label: "Post-Surgical Rehab",
-    text: "Structured rehab after knee/hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery.\n\nWe guide you through post-operative milestones, strength & range-of-motion progression and return-to-function coaching. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you.",
+    text: "Structured rehab after knee/hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery.\n\nWe guide you through post-operative milestones, strength & range-of-motion progression and return-to-function coaching. Available by video, or as a home visit in the Glasgow area. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you.",
   },
   {
     emoji: "🧠",
     label: "Neurological Rehab",
-    text: "Goal-led rehab for stroke, Parkinson's, balance difficulties and neurological deconditioning.\n\nWe focus on task-specific mobility practice, balance & gait training, and carer education.",
+    text: "Goal-led rehab for stroke, Parkinson's, balance difficulties and neurological deconditioning.\n\nWe focus on task-specific mobility practice, balance & gait training, and carer education. Available by video, or as a home visit in the Glasgow area. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.",
   },
   {
     emoji: "👶",
@@ -368,7 +368,7 @@ export function ChatWidget() {
 
   function tapLocation() {
     addBot(
-      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit costs the video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.`,
+      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit costs the video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit. Video sessions can't include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of your care where appropriate.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.`,
       BACK_CHIPS,
     );
   }

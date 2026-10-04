@@ -211,7 +211,7 @@ export default async function HomePage() {
           </details>
           <details>
             <summary>Can I be seen in person?</summary>
-            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit costs the video price plus a {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit. We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
+            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit costs the video price plus a {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit and can include hands-on treatment (manual therapy) where appropriate. We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
           </details>
           <details>
             <summary>Is online physiotherapy actually effective?</summary>
@@ -219,7 +219,7 @@ export default async function HomePage() {
           </details>
           <details>
             <summary>What if online care isn&rsquo;t right for my situation?</summary>
-            <p>You&rsquo;ll be told plainly at triage. Red-flag symptoms, suspected fractures, or conditions needing hands-on treatment as the primary intervention are pointed toward an in-person clinician or your GP rather than kept in a plan that isn&rsquo;t the right fit.</p>
+            <p>You&rsquo;ll be told plainly at triage. Red-flag symptoms or suspected fractures are pointed toward your GP or urgent care rather than kept in a plan that isn&rsquo;t the right fit. Video sessions cannot include hands-on treatment; if you need it and you&rsquo;re in the Glasgow area, a home visit can include hands-on treatment (manual therapy) where appropriate, and elsewhere we&rsquo;ll point you to an in-person clinician.</p>
           </details>
           <details>
             <summary>Can I claim this back through insurance?</summary>
