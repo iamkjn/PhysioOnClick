@@ -326,11 +326,10 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Go to A&E if your shoulder looks out of place or has changed shape, or you think you have dislocated it. Call 999 if you cannot get there yourself. Do not drive yourself.",
       "Go to A&E if you fell and now cannot move or lift your arm. Call 999 if you cannot get there yourself.",
       "Ask for an urgent GP appointment or get help from NHS 111 if your shoulder pain is sudden or very bad, or started after an injury such as a fall.",
-      "Ask for an urgent GP appointment or get help from NHS 111 if you have a hot or cold arm, or no feeling in the arm.",
+      "Ask for an urgent GP appointment or get help from NHS 111 if your arm feels cold to touch, or you have no feeling in the arm.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you cannot move your arm, or you have pins and needles that do not go away.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you have severe pain in both shoulders.",
-      "If your shoulder is red, hot and painful and you have a fever or feel generally unwell: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. NICE CKS guidance for clinicians says this needs emergency assessment, because it can be a sign of a joint infection.",
-      "Ask for an urgent GP appointment or get help from NHS 111 if you are feeling feverish or unwell with your shoulder pain.",
+      "If you have shoulder pain with red or hot skin over the joint, or a fever, or you feel generally unwell: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. NICE CKS guidance for clinicians lists each of these as a possible sign of a joint infection that needs emergency assessment.",
       "Ask for an urgent GP appointment or get help from NHS 111 if you notice a lump or new swelling in your shoulder, or several of your joints have become swollen and painful at the same time. NICE CKS guidance for clinicians says these need urgent referral.",
       "If you are not sure how urgent your symptoms are, call 111 or speak to a GP before booking a video appointment.",
     ],
@@ -355,6 +354,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     sources: [
       { label: "NHS: Shoulder pain", url: "https://www.nhs.uk/symptoms/shoulder-pain/" },
       { label: "NICE CKS: Shoulder pain", url: "https://cks.nice.org.uk/topics/shoulder-pain/" },
+      { label: "NHS: Septic arthritis", url: "https://www.nhs.uk/conditions/septic-arthritis/" },
       { label: "NHS: Frozen shoulder", url: "https://www.nhs.uk/conditions/frozen-shoulder/" },
       { label: "NHS: Dislocated shoulder", url: "https://www.nhs.uk/conditions/dislocated-shoulder/" },
       { label: "NHS: Heart attack", url: "https://www.nhs.uk/conditions/heart-attack/" },
@@ -374,7 +374,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "Remote physiotherapy for knee pain and knee osteoarthritis: what the PEAK trial found, what we check on video, and when you need to be seen in person.",
     answer:
-      "For long-lasting knee pain that fits osteoarthritis, a video appointment lets your physiotherapist watch you squat and step, then set up a strengthening and activity plan. A 2024 trial found video care was non-inferior to in-person care for this group. A locked, giving-way or hot swollen knee needs to be seen in person.",
+      "For long-lasting knee pain that fits osteoarthritis, a video appointment lets your physiotherapist watch you squat and step, then set up a strengthening and activity plan. A 2024 trial found video care was non-inferior to in-person care for this group. A locked or giving-way knee needs to be seen in person, and a hot, red knee with a fever needs A&E.",
     howOnlineWorks: [
       "One randomised trial, PEAK, looked at video physiotherapy for knee osteoarthritis. It was published in The Lancet in 2024 and enrolled 394 adults with chronic knee pain consistent with osteoarthritis at 27 clinics in Australia. Both groups had five consultations over three months covering strengthening, physical activity and education. Video care was non-inferior to in-person care for pain and for function at three months.",
       "That finding is specific. It covers adults with chronic knee pain consistent with osteoarthritis in that trial, not every knee problem, and it does not describe our service. We mention it because it is relevant to knee pain from osteoarthritis, and our plans for knee osteoarthritis follow the same ground: exercise, activity and education.",
@@ -399,7 +399,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     timeline:
       "Knee osteoarthritis is a long-term condition, according to the NHS, so we cannot give you a reliable recovery range. Our aim is a plan that gets you moving and that you can keep going. We review how your pain, walking and daily tasks are changing at each follow-up, and adjust the exercises or suggest further help from your GP if progress stalls. In PEAK, results were measured at three months, and knee pain from other causes can behave differently.",
     inPersonInstead: [
-      "Call 111 if you have a very high temperature, or feel hot, cold or shivery, and have redness or heat around your knee.",
+      "If your knee is red, hot or swollen and you have a high temperature, or feel hot, cold or shivery: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. The NHS lists this under NHS 111, and NICE CKS guidance for clinicians says signs of a joint infection need immediate referral to hospital.",
       "Call 111 if your knee is badly swollen or has changed shape, or you cannot move it or put any weight on it.",
       "Call 111 if your knee locks, gives way or painfully clicks.",
       "Call 111 if your knee pain is very bad.",
@@ -420,7 +420,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       {
         q: "Should I stop exercising if my knee hurts?",
-        a: "Not necessarily. The NHS suggests regular activity and strength exercises for osteoarthritis, and our plans pace them to your knee. If your knee locks, gives way, is badly swollen, or you have a high temperature with redness or heat around it, call 111.",
+        a: "Not necessarily. The NHS suggests regular activity and strength exercises for osteoarthritis, and our plans pace them to your knee. If your knee locks, gives way or is badly swollen, call 111. If it is red or hot and you have a high temperature, go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.",
       },
     ],
     sources: [
@@ -434,6 +434,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       },
       { label: "NHS: Osteoarthritis", url: "https://www.nhs.uk/conditions/osteoarthritis/" },
       { label: "NHS: Knee pain", url: "https://www.nhs.uk/symptoms/knee-pain/" },
+      { label: "NHS: Septic arthritis", url: "https://www.nhs.uk/conditions/septic-arthritis/" },
+      {
+        label: "NICE CKS: Knee pain - assessment (used for joint infection warning signs)",
+        url: "https://cks.nice.org.uk/topics/knee-pain-assessment/",
+      },
     ],
     exerciseHubSlug: "knee-osteoarthritis",
     selfTestSlugs: ["single-leg-decline-squat-check"],
@@ -449,7 +454,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How a video physio appointment works for plantar fasciitis and heel pain: what we check on camera, the exercises in a plan, and when to get urgent help.",
     answer:
-      "If your heel pain fits plantar fasciitis, a video appointment lets your physiotherapist ask about your symptoms, watch you stand and walk, and set up foot and calf exercises to do at home. It is not the right route after a heel injury, with a hot swollen heel and fever, or with tingling or loss of feeling in the foot. Those need NHS 111 or a GP.",
+      "If your heel pain fits plantar fasciitis, a video appointment lets your physiotherapist ask about your symptoms, watch you stand and walk, and set up foot and calf exercises to do at home. It is not the right route after a heel injury or with tingling or loss of feeling in the foot (NHS 111 or a GP), or with a hot, swollen heel and a fever (A&E).",
     howOnlineWorks: [
       "Plantar fasciitis is pain under the heel or along the sole of the foot. Much of what we learn comes from the story: when the pain is worst, how it behaves after rest, what footwear you wear and how much time you spend on your feet. All of that can be covered by video, and you can show us the shoes you wear every day on camera.",
       "We also watch you move. We ask you to stand, walk across the room in bare feet or in your usual shoes, and rise onto your toes, so we can see how your foot and ankle share the load. Seeing you in your own home or workplace set-up helps us talk about the floors, shoes and routines that you actually have.",
@@ -477,7 +482,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call NHS 111 if you feel faint, dizzy or sick from the pain.",
       "Call NHS 111 if your foot or ankle has changed shape or is at an odd angle, or you heard a snap, grinding or popping noise when you hurt it.",
       "Call NHS 111 if you cannot walk, cannot walk on your tiptoes or cannot climb stairs after an injury, or you have swelling and bruising in your calf and ankle.",
-      "Call NHS 111 or ask for an urgent GP appointment if your heel is hot and swollen and you have a high temperature or feel unwell.",
+      "If your heel is red, hot or swollen and you have a high temperature or feel unwell: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. This can be a sign of a joint infection. The NHS says a joint infection needs urgent medical help, and NICE CKS guidance for clinicians says signs of a joint infection need immediate referral to hospital.",
       "See a GP if you have any tingling or loss of feeling in your foot, or if you have diabetes and heel pain.",
       "See a GP if the pain is severe or stops you doing normal activities, is getting worse or keeps coming back, or has not improved after 2 weeks of looking after it yourself. Tell us if the pain is there at night or at rest, and speak to your GP before relying on a video plan.",
     ],
@@ -502,6 +507,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     sources: [
       { label: "NHS: Plantar fasciitis", url: "https://www.nhs.uk/conditions/plantar-fasciitis/" },
       { label: "NHS: Heel pain", url: "https://www.nhs.uk/symptoms/foot-pain/heel-pain/" },
+      { label: "NHS: Septic arthritis", url: "https://www.nhs.uk/conditions/septic-arthritis/" },
+      {
+        label: "NICE CKS: Knee pain - assessment (used for joint infection warning signs)",
+        url: "https://cks.nice.org.uk/topics/knee-pain-assessment/",
+      },
       { label: "NICE CKS: Plantar fasciitis", url: "https://cks.nice.org.uk/topics/plantar-fasciitis/" },
     ],
     guideSlugs: ["private-physiotherapy-cost-uk", "can-a-physio-diagnose-over-video"],
@@ -516,7 +526,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     seoDescription:
       "How video physiotherapy works for tennis elbow: the grip and wrist checks we do on camera, what the exercise plan involves, and when to get urgent care.",
     answer:
-      "If your elbow pain fits tennis elbow, a video appointment lets your physiotherapist watch how you grip, lift and move your wrist, try a guided self-check, and set up forearm exercises to do at home. It is not the right route after an arm injury with numbness, tingling or a changed shape (A&E or 999), or if pain comes with a high temperature (111).",
+      "If your elbow pain fits tennis elbow, a video appointment lets your physiotherapist watch how you grip, lift and move your wrist, try a guided self-check, and set up forearm exercises to do at home. It is not the right route after an arm injury with numbness, tingling or a changed shape (A&E or 999), or if your elbow is hot and swollen and you have a high temperature (A&E).",
     howOnlineWorks: [
       "In our assessments, tennis elbow means pain on the outer side of the elbow that shows up when you grip, lift or twist. On video we ask what sets it off, such as typing, carrying shopping or using tools, and we watch you do a few of those movements in your own space, so we see the real triggers rather than a clinic version of them.",
       "We use one guided self-check, the [resisted wrist extension test](/exercises/tests/resisted-wrist-extension-test), if it is safe for you to try. You do it yourself on camera while we watch. It cannot confirm a diagnosis, and our self-check page says only a hands-on assessment can tell you for sure.",
@@ -543,7 +553,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Go to A&E or call 999 if, after an arm injury, your arm or wrist is numb, tingling or has pins and needles. Do not drive yourself to A&E; ask someone to take you or call 999.",
       "Go to A&E or call 999 if, after an arm injury, your arm or wrist has changed shape or is at an odd angle, a bone is sticking out, or you have a bad cut bleeding heavily. Do not drive yourself to A&E; ask someone to take you or call 999.",
       "Get help from NHS 111 if, after an injury, the arm is very painful, you cannot use it because of the pain, or the pain is getting worse.",
-      "Get help from NHS 111 if your elbow pain comes with a high temperature or other signs of infection.",
+      "If your elbow is red, hot or swollen and you have a high temperature or feel unwell: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. This can be a sign of a joint infection. The NHS says a joint infection needs urgent medical help, and NICE CKS guidance for clinicians says signs of a joint infection need immediate referral to hospital.",
       "If numbness or weakness comes on suddenly, especially with a drooping face or trouble speaking, call 999.",
       "If you have numbness or tingling in your fingers or hand that came on gradually, get medical advice from your GP. If it started after an injury, go to A&E instead.",
       "See a GP if you still have elbow pain after resting it and trying self-care for at least 2 weeks.",
@@ -569,6 +579,11 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     sources: [
       { label: "NHS: Tennis elbow", url: "https://www.nhs.uk/conditions/tennis-elbow/" },
       { label: "NICE CKS: Tennis elbow", url: "https://cks.nice.org.uk/topics/tennis-elbow/" },
+      { label: "NHS: Septic arthritis", url: "https://www.nhs.uk/conditions/septic-arthritis/" },
+      {
+        label: "NICE CKS: Knee pain - assessment (used for joint infection warning signs)",
+        url: "https://cks.nice.org.uk/topics/knee-pain-assessment/",
+      },
       { label: "NHS: Broken arm or wrist", url: "https://www.nhs.uk/conditions/broken-arm-or-wrist/" },
     ],
     exerciseHubSlug: "tennis-elbow",
@@ -693,6 +708,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Do not drive yourself to A&E. Ask someone to drive you, or call 999.",
       "Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.",
       "Ask for an urgent GP appointment or call NHS 111 if you have had a knee replacement and have throbbing or cramping pain in your leg.",
+      "If you have a high temperature, or feel hot, cold or shivery, and your knee is red, hot or swollen: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. NICE CKS guidance for clinicians says signs of a joint infection need immediate referral to hospital.",
       "Ask for an urgent GP appointment or call NHS 111 if you have a high temperature, or feel hot, cold or shivery, or if the wound is oozing or has pus.",
       "Ask for an urgent GP appointment or call NHS 111 if the redness, tenderness, swelling or pain in your knee is not getting better or is getting worse. The NHS says these can be signs of infection or a blood clot.",
       "Wound checks, stitch or staple removal and any complication go back to your surgical team, not to an online rehab session.",
@@ -780,6 +796,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.",
       "If you have severe hip pain after a fall or injury, cannot walk or put weight on the leg, or have tingling or loss of feeling in the hip or leg after a fall or injury, the NHS says to call 999 or go to A&E. Do not drive yourself.",
       "Ask for an urgent GP appointment or call NHS 111 if you have throbbing or cramping pain in your hip or leg.",
+      "If you have a high temperature, or feel hot, cold or shivery, and your hip is red, hot or swollen: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. NICE CKS guidance for clinicians says hip pain with signs of infection needs emergency referral.",
       "Ask for an urgent GP appointment or call NHS 111 if you have a high temperature, or feel hot, cold or shivery, or if the wound is oozing or has pus.",
       "Ask for an urgent GP appointment or call NHS 111 if the redness, tenderness, swelling or pain in your hip or leg is not getting better or is getting worse. The NHS says these can be signs of infection or a blood clot.",
       "If you cannot walk or put weight on the leg, or have severe hip pain after a fall or injury, call 999 or go to A&E and do not drive yourself (see above). If you have sudden severe hip pain without a fall, ask for an urgent GP appointment or call NHS 111. If you are otherwise worried your hip may have dislocated, contact your surgical team, care team or GP. Wound checks and any complication go back to your surgical team, not to an online rehab session.",
@@ -866,8 +883,8 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
       "Call 999 or go to A&E if you have pain and swelling in a leg together with difficulty breathing or chest pains. This could be a blood clot in the lungs. Do not drive yourself to A&E.",
       "Call 999 or go to A&E if you have severe difficulty breathing, pain in your chest or upper back, a very fast heartbeat, or you collapse. These can be signs of a blood clot in the lungs. Do not drive yourself.",
       "Ask for an urgent GP appointment or call NHS 111 if you have throbbing or cramping pain in one leg, swelling in one leg, or red, blue or darkened skin around a painful area. These can be signs of DVT, a blood clot in a vein.",
-      "If your shoulder is red, hot and painful and you have a fever or feel generally unwell: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. NICE CKS guidance for clinicians on shoulder pain says this needs emergency assessment.",
-      "Contact your surgical team, and ask for an urgent GP appointment or call NHS 111, if you have a high temperature, feel hot, cold or shivery, or the wound is oozing or has pus. NHS pages on joint replacement list these as signs of infection, and the shoulder surgery leaflet we read gives no separate route, so we apply the same routing.",
+      "If you have shoulder pain with red or hot skin over the joint, or a fever, or you feel generally unwell: go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell. NICE CKS guidance for clinicians on shoulder pain lists each of these as a possible sign of a joint infection that needs emergency assessment.",
+      "If the wound is oozing or has pus, contact your surgical team, and ask for an urgent GP appointment or call NHS 111. If you also have a high temperature, or feel hot, cold or shivery, use the A&E route above. NHS pages on joint replacement list these as signs of infection, and the shoulder surgery leaflet we read gives no separate route.",
       "Wound checks, stitch removal and any complication go back to your surgical team, not to an online rehab session.",
     ],
     faqs: [

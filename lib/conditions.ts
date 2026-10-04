@@ -68,7 +68,7 @@ const GENERAL_RED_FLAGS = [
  * and 13.
  */
 const GENERAL_URGENT_FLAGS = [
-  "The area is hot, very swollen and red, especially if you also feel feverish or unwell - go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.",
+  "The joint or area is red, hot or swollen and you have a fever or feel unwell, or it is very hot, swollen and red - go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.",
 ];
 
 /** DVT: NHS routes to an urgent GP appointment or NHS 111 (item 13). */
@@ -78,6 +78,14 @@ const CLOT_GP_FLAG =
 /** Possible pulmonary embolism: NHS routes to 999 or A&E (item 13). */
 const CLOT_URGENT_FLAG =
   "Sudden breathlessness or chest pain - call 999 or go to A&E, this could be a blood clot in the lungs, especially if you also have pain or swelling in a leg. Do not drive yourself.";
+
+/**
+ * Possible shoulder joint infection: NICE CKS shoulder pain lists red skin,
+ * fever, or being systemically unwell (joined by "or") and asks for emergency
+ * assessment (sheet item 15l).
+ */
+const SHOULDER_INFECTION_FLAG =
+  "Shoulder pain with red or hot skin over the joint, or a fever, or feeling generally unwell - go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.";
 
 /** Dislocated shoulder: NHS routes to A&E, 999 if you cannot get there (item 11). */
 const SHOULDER_DISLOCATION_FLAG =
@@ -129,6 +137,7 @@ export const conditions: Condition[] = [
     ],
     urgentFlags: [
       SHOULDER_DISLOCATION_FLAG,
+      SHOULDER_INFECTION_FLAG,
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
@@ -505,6 +514,7 @@ export const conditions: Condition[] = [
     ],
     urgentFlags: [
       SHOULDER_DISLOCATION_FLAG,
+      SHOULDER_INFECTION_FLAG,
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
@@ -575,6 +585,7 @@ export const conditions: Condition[] = [
     ],
     urgentFlags: [
       SHOULDER_DISLOCATION_FLAG,
+      SHOULDER_INFECTION_FLAG,
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:
@@ -1821,7 +1832,7 @@ export const conditions: Condition[] = [
     ],
     urgentFlags: [
       "New leakage with back pain, weakness or numbness in your legs, numbness around your genitals or bottom, or changes in bowel control - call 999 or go to A&E. Do not drive yourself.",
-      "You cannot pass urine at all, especially if your bladder feels full or painful - go to A&E now, or call NHS 111 straight away if you are not sure where to go.",
+      "You suddenly cannot pass urine at all, especially if your lower tummy is painful or swollen - call 999 or go to A&E. Do not drive yourself.",
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:

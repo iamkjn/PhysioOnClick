@@ -130,7 +130,7 @@ describe('conditions emergency routing', () => {
   it('every condition carries the general infection line at A&E / NHS 111 urgency', () => {
     for (const c of conditions) {
       expect(c.urgentFlags ?? [], c.slug).toContain(
-        'The area is hot, very swollen and red, especially if you also feel feverish or unwell - go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.',
+        'The joint or area is red, hot or swollen and you have a fever or feel unwell, or it is very hot, swollen and red - go to A&E now, or call NHS 111 straight away if you are not sure where to go. Do not drive yourself if you feel very unwell.',
       )
       expect(c.redFlags.join(' '), c.slug).not.toMatch(/hot, very swollen and red/)
     }
