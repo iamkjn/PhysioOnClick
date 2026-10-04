@@ -36,6 +36,16 @@ describe("app/online-physiotherapy-scotland", () => {
     expect(container.textContent).toContain(`£${initialAssessmentPrice}`);
   });
 
+  it("gives separate video and home-visit assessment prices", async () => {
+    const { formatPounds, sessionPricePence, travelFeePence } = await import("@/lib/home-visit-pricing");
+    const { container } = render(<ScotlandPage />);
+    const video = formatPounds(sessionPricePence("initial-assessment"));
+    const home = formatPounds(sessionPricePence("initial-assessment") + travelFeePence("initial-assessment", "home"));
+    expect(container.textContent).toMatch(new RegExp(`initial assessment is ${video} by\\s+video, or ${home} as a home visit`));
+    expect(container.textContent).not.toMatch(/for both/);
+    expect(String(metadata.description)).toContain(`${video} video assessment`);
+  });
+
   it("has no FAQPage JSON-LD and a WebPage node", () => {
     const { container } = render(<ScotlandPage />);
     const ld = [...container.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent ?? "");

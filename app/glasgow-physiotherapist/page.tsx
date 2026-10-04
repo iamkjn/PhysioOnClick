@@ -35,7 +35,7 @@ const faqItems = [
   },
   {
     question: "Can I book a video appointment if I live outside Glasgow?",
-    answer: "Yes. Video appointments for assessments and follow-ups are available anywhere in the UK. Home visits are for the Glasgow area only."
+    answer: `Yes. Video appointments for assessments and follow-ups are available anywhere in the UK. Home visits are only in the covered area: ${HOME_VISIT_AREA_LABEL}.`
   },
   {
     question: "What conditions do you treat?",

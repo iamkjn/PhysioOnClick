@@ -133,6 +133,24 @@ describe("home visit pricing and coverage copy", () => {
     for (const phrase of STALE) expect(src).not.toMatch(phrase);
   });
 
+  // One price "for both" video and home visits is wrong now that home visits
+  // add a travel fee: a "£" or a price expression, then "for both" / "whether
+  // you choose" within the same sentence (or the reverse order).
+  const SINGLE_PRICE_FOR_BOTH = [
+    /(£|\{[^}]*(price|initial)[^}]*\})[^.]{0,80}\b(for both|whether you choose)\b/i,
+    /\b(for both|whether you choose)\b[^.]{0,80}(£|\{[^}]*(price|initial)[^}]*\})/i,
+  ];
+
+  it.each(FILES)("%s never states one price for both video and home visits", (file) => {
+    const src = readFileSync(file, "utf8");
+    for (const pattern of SINGLE_PRICE_FOR_BOTH) expect(src).not.toMatch(pattern);
+  });
+
+  it.each(FILES)("%s does not limit home visits to the Glasgow area only", (file) => {
+    const src = readFileSync(file, "utf8");
+    expect(src).not.toMatch(/Glasgow area only|only in the Glasgow area/i);
+  });
+
   it("the chat prompt states the travel fee and the covered area", () => {
     const prompt = buildSystemPrompt();
     expect(prompt).toContain(`plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit`);

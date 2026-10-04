@@ -61,7 +61,7 @@ export default function TermsPage() {
           <h2>Nature of the service</h2>
           <p>
             PhysioOnClick provides physiotherapy consultations online across the UK, and home visits in the
-            Glasgow area. Booking a consultation creates a professional clinical relationship. The standard of care provided
+            covered area ({HOME_VISIT_AREA_LABEL}). Booking a consultation creates a professional clinical relationship. The standard of care provided
             online is equal to that of an in-person consultation. A lower standard of care is not acceptable
             simply because the interaction is remote.
           </p>
@@ -73,8 +73,8 @@ export default function TermsPage() {
             Services are provided to patients physically located in the United Kingdom at the time of
             consultation. Existing patients temporarily abroad (excluding the USA, Australia, and Canada)
             may continue care with prior agreement. If you are unsure whether your location is covered,
-            contact us before booking. Home visits are available only in the Glasgow area; see &ldquo;Home visits
-            (Glasgow area)&rdquo; below.
+            contact us before booking. Home visits are available only in the covered area
+            ({HOME_VISIT_AREA_LABEL}); see &ldquo;Home visits (Glasgow area)&rdquo; below.
           </p>
         </article>
 

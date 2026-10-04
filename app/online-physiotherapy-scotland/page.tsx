@@ -3,10 +3,15 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { allOnlinePhysioSlugs, getOnlinePhysioPage } from "@/lib/online-physio-pages";
-import { initialAssessmentPrice } from "@/lib/site-data";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import { formatPounds, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
 import { practiceRef } from "@/lib/structured-data";
 import { absoluteUrl } from "@/lib/utils";
+
+// Home visits cost the video price plus a travel fee, so the two prices are
+// derived separately from lib/home-visit-pricing.
+const videoInitial = formatPounds(sessionPricePence("initial-assessment"));
+const homeInitial = formatPounds(sessionPricePence("initial-assessment") + travelFeePence("initial-assessment", "home"));
 
 // CLINICAL REVIEW GATE: draft copy pending Shivaliba Zala's sign-off
 // (docs/seo/phase-b-clinical-review.md). Dev site only until then.
@@ -14,7 +19,7 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   alternates: { canonical: "/online-physiotherapy-scotland" },
   title: "Online Physiotherapy in Scotland | PhysioOnClick",
-  description: `Video physiotherapy across Scotland, plus home visits in the Glasgow area, with a Glasgow-based HCPC physiotherapist. No GP referral. £${initialAssessmentPrice} initial assessment.`,
+  description: `Video physiotherapy across Scotland, plus home visits in the Glasgow area, with a Glasgow-based HCPC physiotherapist. No GP referral. ${videoInitial} video assessment.`,
 };
 
 const PHS_URL =
@@ -81,8 +86,8 @@ export default function ScotlandPage() {
           <p className="lead">
             PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. Video appointments are
             available across Scotland with a stable internet connection, and home visits are available in the
-            Glasgow area. You do not need a GP referral, and the initial assessment is £{initialAssessmentPrice}
-            for both.
+            Glasgow area. You do not need a GP referral, and the initial assessment is {videoInitial} by
+            video, or {homeInitial} as a home visit.
           </p>
           <div className="button-row">
             <TrackedBookLink
@@ -98,7 +103,7 @@ export default function ScotlandPage() {
         <div className="page-hero-aside checklist-panel">
           <h2>What to know first</h2>
           <ul className="clean-list">
-            <li>Video appointments across Scotland, and home visits in the Glasgow area only.</li>
+            <li>Video appointments across Scotland, and home visits only in {HOME_VISIT_AREA_LABEL}.</li>
             <li>You need a camera, a microphone and a reasonably stable connection.</li>
             <li>
               Local to Glasgow? See our{" "}
