@@ -25,6 +25,7 @@ import { LIMITS, validateEmail, validateName } from "@/lib/validation";
 import { formatPersonName } from "@/lib/name-format";
 import { PasswordInput } from "@/components/password-input";
 import { AssessmentWizard } from "@/components/assessment-wizard";
+import { sessionPricePence, totalPence, travelFeePence } from "@/lib/home-visit-pricing";
 import { guestBookingMatches, rememberGuestBooking } from "@/lib/guest-booking";
 
 /** What step 1 chose: video (UK-wide) or a Glasgow-area home visit with its (already validated) address. */
@@ -187,10 +188,16 @@ export function BookingStepTime({
     assessmentUid: string;
     assessmentPersonId: string;
   } | null>(null);
-  const originalAmountPence = Math.round(service.price * 100);
-  const checkoutAmountPence = discountApplied && discountedAmountPence !== null
+  const originalAmountPence = sessionPricePence(service.id);
+  // Discount codes reduce the session price only; home visits add £15 travel per visit.
+  const sessionAfterDiscountPence = discountApplied && discountedAmountPence !== null
     ? discountedAmountPence
     : originalAmountPence;
+  const checkoutAmountPence = totalPence({
+    sessionPence: sessionAfterDiscountPence,
+    discountPence: 0,
+    travelFeePence: travelFeePence(service.id, visit.visitType),
+  });
 
   const signedIn = Boolean(user);
   const signingIn = !signedIn && authMode === "signin";

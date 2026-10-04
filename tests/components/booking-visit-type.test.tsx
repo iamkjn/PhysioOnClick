@@ -282,5 +282,25 @@ describe('booking visit type', () => {
     expect(document.querySelector('.book-rail-title')?.textContent).toBe('Initial Assessment (home visit)')
     expect(document.querySelector('.book-rail-list')?.textContent).not.toMatch(/video/i)
   })
+
+  it('shows the session price plus travel on the pay button for a home visit', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'G31 4HS')
+    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
+    const total = formatPounds(sessionPricePence('initial-assessment') + 1500)
+    await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
+    await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
+    await user.click(screen.getByRole('option', { name: '09:00' }))
+    await user.type(screen.getByLabelText('Full name'), 'Alex Morgan')
+    await user.type(screen.getByLabelText('Email'), 'alex@example.com')
+    await user.click(screen.getByRole('checkbox', { name: /consent/i }))
+    expect(screen.getByRole('button', { name: /Continue to payment/ })).toHaveTextContent(
+      `Continue to payment · ${total}`,
+    )
+  })
 })
 
