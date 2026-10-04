@@ -111,6 +111,8 @@ export async function GET(request: NextRequest) {
         usedSessions: data.usedSessions ?? 0,
         remainingSessions: data.remainingSessions ?? 0,
         status: data.status ?? "active",
+        // Lets the portal show home-visit times. The address never leaves the server.
+        ...(data.visitType === "home" ? { visitType: "home" as const } : {}),
       };
     })
     .filter((item) => item.totalSessions > 1);

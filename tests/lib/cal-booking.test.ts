@@ -133,7 +133,7 @@ describe("createCalBooking — Cal.com event type for home visits", () => {
     expect(slugOf(fetchMock)).toBe("initial-assessment-home-visit-in-glasgow");
   });
 
-  it("keeps a home-visit follow-up on the follow-up event", async () => {
+  it("books a home-visit follow-up into the follow-up home-visit event", async () => {
     const fetchMock = okFetch();
     await createCalBooking({
       ...OK_INPUT,
@@ -141,7 +141,7 @@ describe("createCalBooking — Cal.com event type for home visits", () => {
       visitType: "home",
       homeVisitAddress: "7 Example Street, G31 4HS",
     });
-    expect(slugOf(fetchMock)).toBe("online-follow-up");
+    expect(slugOf(fetchMock)).toBe("follow-up-home-visit-in-glasgow");
   });
 
   it("treats a home visit with no address as video, matching the metadata rule", async () => {

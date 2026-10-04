@@ -30,6 +30,7 @@ export type CalService = {
 
 /** Same slug in the dev and prod Cal.com accounts (verified live 2026-10-04). */
 const HOME_VISIT_ASSESSMENT_SLUG = "initial-assessment-home-visit-in-glasgow";
+const HOME_VISIT_FOLLOW_UP_SLUG = "follow-up-home-visit-in-glasgow";
 
 const CAL_SERVICES: Record<BookServiceId, CalService> = {
   "initial-assessment": {
@@ -48,6 +49,7 @@ const CAL_SERVICES: Record<BookServiceId, CalService> = {
   "follow-up": {
     id: "follow-up",
     calSlug: "online-follow-up",
+    homeCalSlug: HOME_VISIT_FOLLOW_UP_SLUG,
     minutes: 30,
     sessions: 1,
     included: [
@@ -97,7 +99,7 @@ export function calServiceFor(id: BookServiceId): CalService {
 /**
  * The Cal.com event type to check and book. A home visit uses the tier's
  * home-visit event when there is one (initial assessment, and a bundle's first
- * session); follow-ups have no home event yet and stay on the video one.
+ * session, and follow-ups including a home bundle's later sessions).
  */
 export function calSlugFor(id: BookServiceId, visitType?: unknown): string {
   const service = CAL_SERVICES[id];

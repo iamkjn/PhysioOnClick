@@ -20,8 +20,8 @@ describe("calSlugFor", () => {
     expect(calSlugFor("bundle-8", "home")).toBe(HOME);
   });
 
-  it("keeps home-visit follow-ups on the follow-up event until a home follow-up event exists", () => {
-    expect(calSlugFor("follow-up", "home")).toBe("online-follow-up");
+  it("books a home-visit follow-up (and a home bundle's later sessions) into the follow-up home-visit event", () => {
+    expect(calSlugFor("follow-up", "home")).toBe("follow-up-home-visit-in-glasgow");
   });
 
   it("ignores anything that isn't exactly 'home'", () => {

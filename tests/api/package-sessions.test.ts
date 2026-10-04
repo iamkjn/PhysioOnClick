@@ -118,4 +118,25 @@ describe("GET /api/package-sessions", () => {
     const res = await GET(new NextRequest("http://localhost/api/package-sessions", { headers: { Authorization: "Bearer t" } }));
     expect(JSON.stringify(await res.json())).not.toContain("Example Street");
   });
+
+  it("tells the portal a bundle is a home visit, so it shows home-visit times", async () => {
+    state.pack = basePack({ visitType: "home", homeVisitAddress: ADDRESS });
+    const snap = { docs: [{ id: "cs_1", data: () => state.pack }] };
+    db.collection.mockImplementationOnce(
+      () => ({ where: () => ({ limit: () => ({ get: async () => snap }) }) }) as never,
+    );
+    const res = await GET(new NextRequest("http://localhost/api/package-sessions", { headers: { Authorization: "Bearer t" } }));
+    const { packages } = await res.json();
+    expect(packages[0].visitType).toBe("home");
+  });
+
+  it("adds no visit type to a video bundle", async () => {
+    const snap = { docs: [{ id: "cs_1", data: () => state.pack }] };
+    db.collection.mockImplementationOnce(
+      () => ({ where: () => ({ limit: () => ({ get: async () => snap }) }) }) as never,
+    );
+    const res = await GET(new NextRequest("http://localhost/api/package-sessions", { headers: { Authorization: "Bearer t" } }));
+    const { packages } = await res.json();
+    expect(packages[0]).not.toHaveProperty("visitType");
+  });
 });

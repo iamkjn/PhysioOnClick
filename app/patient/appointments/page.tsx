@@ -23,6 +23,7 @@ type SessionPackage = {
   usedSessions: number;
   remainingSessions: number;
   status: string;
+  visitType?: "home";
 };
 
 type SlotMap = Record<string, string[]>;
@@ -373,7 +374,7 @@ function SessionPackagesPanel({
   const [checkIn, setCheckIn] = useState<PackageCheckIn>(defaultCheckIn);
   const [message, setMessage] = useState<string | null>(null);
 
-  async function loadSlots(packageId: string) {
+  async function loadSlots(packageId: string, visitType?: "home") {
     setActivePackageId(packageId);
     setMessage(null);
     setLoadingSlots(true);
@@ -389,6 +390,8 @@ function SessionPackagesPanel({
         start: dateKey(start),
         end: dateKey(end),
       });
+      // A home-visit bundle books its later sessions into the follow-up home-visit event.
+      if (visitType === "home") params.set("visit", "home");
       const res = await fetch(`/api/cal/slots?${params}`);
       const data = (await res.json()) as { slots?: SlotMap; error?: string };
       if (!res.ok) throw new Error(data.error || "Could not load times.");
@@ -456,7 +459,7 @@ function SessionPackagesPanel({
                 </span>
               </div>
               {canBook ? (
-                <button type="button" className="button small" onClick={() => loadSlots(pack.id)}>
+                <button type="button" className="button small" onClick={() => loadSlots(pack.id, pack.visitType)}>
                   Book next session
                 </button>
               ) : (
