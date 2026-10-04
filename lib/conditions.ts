@@ -1843,7 +1843,7 @@ export const conditions: Condition[] = [
     ],
     urgentFlags: [
       "New leakage with back pain, weakness or numbness in your legs, numbness around your genitals or bottom, or changes in bowel control - call 999 or go to A&E. Do not drive yourself.",
-      "You suddenly cannot pass urine at all, especially if your lower tummy is painful or swollen - call 999 or go to A&E. Do not drive yourself.",
+      "You cannot pass urine at all, especially if your lower tummy is painful or swollen - call 999 or go to A&E. Do not drive yourself.",
       ...GENERAL_URGENT_FLAGS,
     ],
     recoveryTimeline:

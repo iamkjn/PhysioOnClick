@@ -27,13 +27,7 @@ describe("glasgow-physiotherapist metadata", () => {
 });
 
 describe("glasgow-physiotherapist home-visit pricing copy", () => {
-  function faqJsonLd(container: HTMLElement) {
-    const scripts = [...container.querySelectorAll('script[type="application/ld+json"]')];
-    const faq = scripts.map((s) => JSON.parse(s.textContent ?? "{}")).find((d) => d["@type"] === "FAQPage");
-    return faq.mainEntity as Array<{ name: string; acceptedAnswer: { text: string } }>;
-  }
-
-  it("states the travel fee and both prices, in the page and the FAQ JSON-LD", () => {
+  it("states the travel fee and both prices in the page and the visible FAQ", () => {
     const { container } = render(<GlasgowPage />);
     const text = container.textContent ?? "";
     expect(text).not.toMatch(/same prices|cost the same as video|confirm by email/i);
@@ -41,11 +35,12 @@ describe("glasgow-physiotherapist home-visit pricing copy", () => {
     expect(text).toContain(`${home} as a home visit`);
     expect(text).toContain(`plus a ${fee} travel fee per visit`);
     expect(text).toContain("Home visit in Glasgow");
+    expect(text).toContain("How much does a home visit cost?");
+  });
 
-    const cost = faqJsonLd(container).find((q) => q.name === "How much does a home visit cost?")!;
-    expect(cost.acceptedAnswer.text).toContain(`plus a ${fee} travel fee per visit`);
-    expect(cost.acceptedAnswer.text).toContain(`${home} as a home visit`);
-    // Visible FAQ and JSON-LD come from the same items.
-    expect(text).toContain(cost.acceptedAnswer.text);
+  it("emits no FAQPage JSON-LD (global constraint: no FAQPage schema)", () => {
+    const { container } = render(<GlasgowPage />);
+    const scripts = [...container.querySelectorAll('script[type="application/ld+json"]')];
+    expect(scripts.some((s) => JSON.parse(s.textContent ?? "{}")["@type"] === "FAQPage")).toBe(false);
   });
 });

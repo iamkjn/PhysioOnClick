@@ -31,8 +31,8 @@ export function ExerciseCard({ exercise }: { exercise: Exercise }) {
         variant="thumb"
       />
       <span className="exlib-ex-card__body">
-        <ReferenceOnlyBadge />
         <span className="exlib-ex-card__title">{exercise.title}</span>
+        <ReferenceOnlyBadge />
         <span className="exlib-ex-card__summary">{exercise.description}</span>
         <span className="exlib-ex-card__meta">
           <span>{exercise.bodyPart}</span>

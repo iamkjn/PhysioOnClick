@@ -709,7 +709,7 @@ export const guides: Guide[] = [
     seoDescription:
       "An honest list of what video physiotherapy cannot do, from hands-on treatment to red-flag symptoms, with what to do instead in each case.",
     answer:
-      "Online physiotherapy cannot give hands-on treatment, handle emergencies, or replace in-person assessment when a problem needs it. Our video appointments cover the UK. We also offer home visits in the Glasgow area, where hands-on treatment (manual therapy) can be part of your care where appropriate. We do not offer acupuncture or needles. If you need urgent help, we say so and tell you where to go instead.",
+      "Online physiotherapy cannot give hands-on treatment, handle emergencies, or replace in-person assessment when a problem needs it. Our video appointments cover the UK. We also offer home visits in the Glasgow area, which can include hands-on treatment (manual therapy) where appropriate. We do not offer acupuncture or needles. If you need urgent help, we say so and tell you where to go instead.",
     sections: [
       {
         heading: "Why we publish this page",

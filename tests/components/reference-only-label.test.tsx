@@ -42,6 +42,10 @@ describe("reference-only label: every exercise card", () => {
     for (const exercise of exercises) {
       const { container } = render(<ExerciseCard exercise={exercise} />);
       expect(badges(container).length, exercise.slug).toBe(1);
+      // badge follows the title so the link's accessible name starts with the exercise
+      expect(container.querySelector("a")!.textContent!.indexOf(exercise.title), exercise.slug).toBeLessThan(
+        container.querySelector("a")!.textContent!.indexOf("For reference only"),
+      );
       cleanup();
     }
   });
@@ -57,11 +61,15 @@ describe("reference-only label: every exercise card", () => {
   it("every card on every body-area page and the library index carries the badge", async () => {
     for (const area of bodyAreas()) {
       const { container } = render(await AreaPage({ params: Promise.resolve({ bodyArea: area }) }));
-      for (const card of container.querySelectorAll(".exlib-ex-card")) expect(badges(card).length, area).toBe(1);
+      const cards = container.querySelectorAll(".exlib-ex-card");
+      expect(cards.length, area).toBeGreaterThan(0);
+      for (const card of cards) expect(badges(card).length, area).toBe(1);
       cleanup();
     }
     const { container } = render(<ExerciseLibraryIndexPage />);
-    for (const card of container.querySelectorAll(".exlib-ex-card")) expect(badges(card).length).toBe(1);
+    const cards = container.querySelectorAll(".exlib-ex-card");
+    expect(cards.length).toBeGreaterThan(0);
+    for (const card of cards) expect(badges(card).length).toBe(1);
   });
   it("the browser preview carries the note and every row and suggestion carries the badge", () => {
     const { container } = render(<ExerciseBrowser exercises={exercises} conditionSlugsBySlug={{}} />);

@@ -135,6 +135,14 @@ describe("Q8: home visits for neuro and post-op care", () => {
   });
 });
 
+describe("Fix round 1: no FAQPage schema on the Glasgow page", () => {
+  it("keeps the visible FAQ but emits no FAQPage JSON-LD", () => {
+    const src = read("app/glasgow-physiotherapist/page.tsx");
+    expect(src).not.toMatch(/FAQPage/);
+    expect(src).toMatch(/Frequently asked questions/);
+  });
+});
+
 describe("Fix round 1: post-op infection citations match their sources", () => {
   it("knee replacement cites CKS knee pain; hip replacement cites the NHS septic arthritis page, not CKS GTPS", () => {
     const knee = getOnlinePhysioPage("knee-replacement-rehab")!;

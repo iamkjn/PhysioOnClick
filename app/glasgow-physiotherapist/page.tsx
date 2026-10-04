@@ -66,12 +66,6 @@ export default function GlasgowPage() {
         "@type": "WebPage",
         about: practiceRef()
       }) }} />
-      {/* FAQPage mirrors the visible FAQ below (same faqItems). */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: faqItems.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } }))
-      }) }} />
       <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Physiotherapy in Glasgow</span>
