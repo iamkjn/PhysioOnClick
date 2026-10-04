@@ -275,6 +275,12 @@ export function BookingFlow() {
     [savedAddresses]
   );
 
+  const handleHomeAddressLineChange = useCallback((value: string) => {
+    setHomeAddressLine(value);
+    // A Continue pressed before the line arrived (e.g. mid-lookup) left an error: drop it.
+    if (value.trim()) setVisitError(null);
+  }, []);
+
   const handleServiceContinue = useCallback(() => {
     if (visitType === "home") {
       const home = validateHomeVisit(homeAddressLine, homePostcode);
@@ -303,8 +309,9 @@ export function BookingFlow() {
                 ...prev,
                 { id, ownerUid: user.uid, label: "", line: home.addressLine, postcode: home.postcode },
               ]);
-              // Back to step 1 then shows the new address selected, Continue available.
-              setAddressChoice(id);
+              // Back to step 1 then shows the new address selected, Continue available -
+              // unless the patient already picked another saved address meanwhile.
+              setAddressChoice((prev) => (prev === "different" || prev === null ? id : prev));
             })
             .catch(() => {});
         }
@@ -435,7 +442,7 @@ export function BookingFlow() {
           homePostcode={homePostcode}
           visitError={visitError}
           onVisitTypeChange={handleVisitTypeChange}
-          onHomeAddressLineChange={setHomeAddressLine}
+          onHomeAddressLineChange={handleHomeAddressLineChange}
           onHomePostcodeChange={handleHomePostcodeChange}
           onSwitchToVideo={() => handleVisitTypeChange("video")}
           onContinue={handleServiceContinue}

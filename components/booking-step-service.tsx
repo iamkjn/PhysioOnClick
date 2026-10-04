@@ -239,7 +239,12 @@ export function BookingStepService({
                 <p className="book-label" id="book-saved-addresses-label">
                   Your saved addresses
                 </p>
-                <div className="book-saved-addresses" role="radiogroup" aria-labelledby="book-saved-addresses-label">
+                <div
+                  className="book-saved-addresses"
+                  role="radiogroup"
+                  aria-labelledby="book-saved-addresses-label"
+                  aria-describedby={!savedChosen && !showAddressInputs ? "book-saved-addresses-hint" : undefined}
+                >
                   {addressBook!.addresses.map((a) => (
                     <label key={a.id} className="book-saved-address">
                       <input
@@ -269,7 +274,9 @@ export function BookingStepService({
               </div>
             ) : null}
             {hasSaved && !savedChosen && !showAddressInputs ? (
-              <p className="book-field-hint book-field-full">Choose an address to continue.</p>
+              <p className="book-field-hint book-field-full" id="book-saved-addresses-hint">
+                Choose an address to continue.
+              </p>
             ) : null}
             {savedChosen && coverage === "uncovered" ? (
               <div className="book-out-of-area book-field-full" role="alert">

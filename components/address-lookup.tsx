@@ -103,6 +103,7 @@ export function AddressLookup({
 
   const selectRef = useRef<HTMLSelectElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const manualButtonRef = useRef<HTMLButtonElement>(null);
   // Where focus goes after a view change (the focused control unmounts).
   const focusNextRef = useRef<"select" | "input" | null>(null);
 
@@ -188,7 +189,8 @@ export function AddressLookup({
     pickedRef.current = false;
     // Continue stays blocked until the choice is resolved.
     onAddressLineChange("");
-    setStatus("");
+    // Back on the placeholder: re-announce the list, as on first load.
+    setStatus(id ? "" : foundText(addresses.length));
     if (!id) return;
     pendingIdRef.current = id;
     resolveTimerRef.current = setTimeout(() => void flushResolve(), RESOLVE_DEBOUNCE_MS);
@@ -247,7 +249,11 @@ export function AddressLookup({
             className="book-input"
             value={selectedId}
             onChange={(e) => choose(e.target.value)}
-            onBlur={() => void flushResolve()}
+            onBlur={(e) => {
+              // Leaving for "Enter address manually" abandons the choice: don't pay to resolve it.
+              if (e.relatedTarget && e.relatedTarget === manualButtonRef.current) return;
+              void flushResolve();
+            }}
           >
             <option value="">Choose your address</option>
             {addresses.map((a) => (
@@ -284,6 +290,7 @@ export function AddressLookup({
       </p>
       {view === "select" ? (
         <button
+          ref={manualButtonRef}
           type="button"
           className="book-edit"
           onClick={() => goManual("")}

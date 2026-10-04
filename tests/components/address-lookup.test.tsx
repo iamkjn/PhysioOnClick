@@ -180,6 +180,30 @@ describe('AddressLookup', () => {
     expect(onAddressLineChange).toHaveBeenLastCalledWith('')
   })
 
+  it('restores the found-count status when the placeholder is re-picked', async () => {
+    routeFetch({ lookup: () => reply(200, { addresses: SUGGESTIONS }) })
+    const user = userEvent.setup()
+    render(<Harness />)
+    const select = await screen.findByLabelText('Select your address')
+    await user.selectOptions(select, 'abc')
+    expect(screen.getByRole('status')).toHaveTextContent('')
+    await user.selectOptions(select, '')
+    expect(screen.getByRole('status')).toHaveTextContent('2 addresses found. Select your address.')
+  })
+
+  it('does not resolve (billable) when focus leaves the select for "Enter address manually"', async () => {
+    routeFetch({
+      lookup: () => reply(200, { addresses: SUGGESTIONS }),
+      resolve: () => reply(200, { addressLine: '7 Example Street, Glasgow', postcode: 'G31 4HS' }),
+    })
+    const user = userEvent.setup()
+    render(<Harness />)
+    await user.selectOptions(await screen.findByLabelText('Select your address'), 'abc')
+    await user.click(screen.getByRole('button', { name: 'Enter address manually' }))
+    await new Promise((r) => setTimeout(r, 600))
+    expect(callsTo('/api/address/resolve')).toHaveLength(0)
+  })
+
   it('opens in manual mode, prefilled, when an address line already exists', async () => {
     routeFetch({ lookup: () => reply(200, { addresses: SUGGESTIONS }) })
     render(<Harness initialLine="3 Earlier Road" />)

@@ -176,6 +176,38 @@ describe('booking address book', () => {
     expect(lastVisit()).toMatchObject({ homeAddressLine: '2 University Ave', homePostcode: 'G12 8QQ' })
   })
 
+  it('a slow save does not override a saved address picked meanwhile', async () => {
+    let finish: (id: string) => void = () => {}
+    mocks.addAddress.mockImplementation(() => new Promise<string>((r) => { finish = r }))
+    const user = await chooseHome()
+    await user.click(await screen.findByRole('radio', { name: 'Use a different address' }))
+    await user.type(screen.getByLabelText('Postcode'), 'G12 8QQ')
+    await user.type(await screen.findByLabelText('Address'), '2 University Ave')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await user.click(await screen.findByRole('button', { name: 'Back to step one' }))
+    await user.click(await screen.findByRole('radio', { name: /Home, G31 4HS/ }))
+    finish('new-id')
+    expect(await screen.findByRole('radio', { name: /2 University Ave, G12 8QQ/ })).not.toBeChecked()
+    expect(screen.getByRole('radio', { name: /Home, G31 4HS/ })).toBeChecked()
+  })
+
+  it('clears the address error once an address line is entered', async () => {
+    const user = await chooseHome()
+    await user.click(await screen.findByRole('radio', { name: 'Use a different address' }))
+    await user.type(screen.getByLabelText('Postcode'), 'G12 8QQ')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    await user.type(await screen.findByLabelText('Address'), '2 University Ave')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('describes the saved-address group with the "Choose an address" hint when shown', async () => {
+    await chooseHome()
+    const group = await screen.findByRole('radiogroup', { name: 'Your saved addresses' })
+    // Usual address preselected: no hint, so no dangling description.
+    expect(group).not.toHaveAttribute('aria-describedby')
+  })
+
   it('anonymous users see no saved list or save box', async () => {
     signIn({ uid: 'anon', isAnonymous: true, displayName: null })
     const user = await chooseHome()
