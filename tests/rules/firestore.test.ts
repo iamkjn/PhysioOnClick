@@ -822,3 +822,87 @@ describe('patients/{uid}/followUps (admin-scheduled follow-up)', () => {
     await assertSucceeds(setDoc(followUpDoc(db), followUp()))
   })
 })
+
+describe('patientAddresses', () => {
+  const addr = (overrides: Record<string, unknown> = {}) => ({
+    ownerUid: PATIENT,
+    label: 'Home',
+    line: '1 High Street',
+    postcode: 'G31 4HS',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    ...overrides,
+  })
+  const ref = (db: unknown) => doc(db as never, 'patientAddresses/addr-1')
+
+  it('lets the owner create, read, update and delete', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(db), addr()))
+    await assertSucceeds(getDoc(ref(db)))
+    await assertSucceeds(updateDoc(ref(db), { label: 'Flat', updatedAt: serverTimestamp() }))
+    await assertSucceeds(deleteDoc(ref(db)))
+  })
+
+  it('lets an anonymous-auth user touch only their own', async () => {
+    const anon = testEnv
+      .authenticatedContext('anon-uid', { firebase: { sign_in_provider: 'anonymous' } })
+      .firestore()
+    await assertSucceeds(setDoc(ref(anon), addr({ ownerUid: 'anon-uid' })))
+    await assertFails(getDoc(doc(anon as never, 'patientAddresses/other')))
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(getDoc(ref(owner)))
+  })
+
+  it('denies another user reading or writing it', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(owner), addr()))
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(getDoc(ref(other)))
+    await assertFails(updateDoc(ref(other), { label: 'x' }))
+    await assertFails(deleteDoc(ref(other)))
+  })
+
+  it('denies unauthenticated access', async () => {
+    const db = testEnv.unauthenticatedContext().firestore()
+    await assertFails(setDoc(ref(db), addr()))
+  })
+
+  it('rejects invalid documents', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(ref(db), addr({ line: 'x'.repeat(121) })))
+    await assertFails(setDoc(ref(db), addr({ label: 'x'.repeat(41) })))
+    await assertFails(setDoc(ref(db), addr({ extra: 1 })))
+    await assertFails(setDoc(ref(db), addr({ ownerUid: OTHER })))
+  })
+
+  it('pins ownerUid on update', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(db), addr()))
+    await assertFails(updateDoc(ref(db), { ownerUid: OTHER }))
+  })
+})
+
+describe('dependents defaultAddressId', () => {
+  const dep = (overrides: Record<string, unknown> = {}) => ({
+    ownerId: PATIENT,
+    name: 'Child One',
+    dob: '2015-01-01',
+    relationship: 'child',
+    notes: '',
+    createdAt: serverTimestamp(),
+    ...overrides,
+  })
+  const ref = (db: unknown) => doc(db as never, 'dependents/dep-1')
+
+  it('allows the owner to set defaultAddressId', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(db), dep()))
+    await assertSucceeds(updateDoc(ref(db), { defaultAddressId: 'addr-1' }))
+  })
+
+  it('rejects a 200-char defaultAddressId', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(db), dep()))
+    await assertFails(updateDoc(ref(db), { defaultAddressId: 'x'.repeat(200) }))
+  })
+})

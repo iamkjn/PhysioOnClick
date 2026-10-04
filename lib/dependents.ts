@@ -21,6 +21,7 @@ export interface Dependent {
   relationship: string;
   notes: string;
   avatarUrl?: string;
+  defaultAddressId?: string;
 }
 
 export async function getDependents(userId: string): Promise<Dependent[]> {
