@@ -5,6 +5,7 @@ vi.mock("@/lib/payments/stripe", () => ({
 }));
 import { createStripeCheckout } from "@/lib/payments/stripe";
 import { POST } from "@/app/api/checkout/create/route";
+import { bookServiceFor } from "@/lib/cal-services";
 
 function req(body: unknown) {
   return new Request("http://localhost/api/checkout/create", {
@@ -22,6 +23,11 @@ const VALID = {
   timeZone: "Europe/London",
 };
 
+// Derived from the live price list so a price change doesn't break these tests.
+const SESSION_PENCE = Math.round(bookServiceFor("initial-assessment").price * 100);
+const DISCOUNT_PENCE = Math.round(SESSION_PENCE * 0.1);
+const DISCOUNTED_PENCE = SESSION_PENCE - DISCOUNT_PENCE;
+
 beforeEach(() => vi.clearAllMocks());
 afterEach(() => vi.restoreAllMocks());
 
@@ -35,9 +41,8 @@ describe("POST /api/checkout/create", () => {
     const json = await res.json();
     expect(res.status).toBe(200);
     expect(json).toEqual({ ok: true, url: "https://checkout.stripe.com/c/cs_1" });
-    // initial-assessment price is £50 -> 5000 pence
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(arg.amountPence).toBe(5000);
+    expect(arg.amountPence).toBe(SESSION_PENCE);
     expect(arg.intent.service).toBe("initial-assessment");
   });
 
@@ -58,7 +63,7 @@ describe("POST /api/checkout/create", () => {
     });
     await POST(req({ ...VALID, amountPence: 1 }));
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(arg.amountPence).toBe(5000);
+    expect(arg.amountPence).toBe(SESSION_PENCE);
   });
 
   it("applies the new patient discount code server-side", async () => {
@@ -71,11 +76,11 @@ describe("POST /api/checkout/create", () => {
 
     expect(res.status).toBe(200);
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(arg.amountPence).toBe(4500);
+    expect(arg.amountPence).toBe(DISCOUNTED_PENCE);
     expect(arg.intent.discountCode).toBe("NEW10");
     expect(arg.intent.discountPercent).toBe("10");
-    expect(arg.intent.originalAmountPence).toBe("5000");
-    expect(arg.intent.discountAmountPence).toBe("500");
+    expect(arg.intent.originalAmountPence).toBe(String(SESSION_PENCE));
+    expect(arg.intent.discountAmountPence).toBe(String(DISCOUNT_PENCE));
   });
 
   it("rejects unknown discount codes before Stripe checkout", async () => {
@@ -146,13 +151,54 @@ describe("POST /api/checkout/create — visit type", () => {
     expect(res.status).toBe(400);
   });
 
-  it("accepts a home visit at the same price and carries the address into the intent", async () => {
+  it("charges the session price plus a £15 travel fee for a covered home visit", async () => {
     okStripe();
     const res = await POST(req({ ...VALID, visitType: "home", homeAddressLine: " 7 Example Street ", homePostcode: "g31 4hs" }));
     expect(res.status).toBe(200);
     expect(lastIntent().visitType).toBe("home");
     expect(lastIntent().homeVisitAddress).toBe("7 Example Street, G31 4HS");
+    expect(lastIntent().travelFeePence).toBe("1500");
     const { bookServiceFor } = await import("@/lib/cal-services");
-    expect(lastAmount()).toBe(Math.round(bookServiceFor("initial-assessment").price * 100));
+    const session = Math.round(bookServiceFor("initial-assessment").price * 100);
+    const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(arg.amountPence).toBe(session);
+    expect(arg.extraLineItems).toEqual([{ name: "Travel fee (1 home visit × £15)", amountPence: 1500 }]);
+  });
+
+  it("charges every visit's travel fee upfront on a home bundle", async () => {
+    okStripe();
+    await POST(req({ ...VALID, service: "bundle-4", visitType: "home", homeAddressLine: "7 Example Street", homePostcode: "G31 4HS" }));
+    const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(arg.intent.travelFeePence).toBe("6000");
+    expect(arg.extraLineItems).toEqual([{ name: "Travel fee (4 home visits × £15)", amountPence: 6000 }]);
+  });
+
+  it("rejects a home visit outside the covered area without echoing the address", async () => {
+    const res = await POST(req({ ...VALID, visitType: "home", homeAddressLine: "1 Princes Street", homePostcode: "EH2 2AN" }));
+    expect(res.status).toBe(400);
+    const { error } = await res.json();
+    expect(error).toBe("We don't offer home visits at that postcode yet.");
+    expect(error).not.toContain("Princes");
+    expect(createStripeCheckout).not.toHaveBeenCalled();
+  });
+
+  it("sends a video booking with no travel fee and no extra line items", async () => {
+    okStripe();
+    await POST(req(VALID));
+    const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(arg.intent).not.toHaveProperty("travelFeePence");
+    expect(arg.extraLineItems).toBeUndefined();
+  });
+
+  it("does not discount the travel fee on a home visit", async () => {
+    okStripe();
+    const res = await POST(req({
+      ...VALID, discountCode: "new10", visitType: "home", homeAddressLine: "7 Example Street", homePostcode: "G31 4HS",
+    }));
+    expect(res.status).toBe(200);
+    const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(arg.amountPence).toBe(DISCOUNTED_PENCE);
+    expect(arg.extraLineItems[0].amountPence).toBe(1500);
+    expect(arg.intent.discountAmountPence).toBe(String(DISCOUNT_PENCE));
   });
 });
