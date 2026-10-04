@@ -273,7 +273,7 @@ describe('booking visit type', () => {
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     await user.type(screen.getByLabelText('Postcode'), 'g31 4hs')
     await user.selectOptions(await screen.findByLabelText('Select your address'), 'abc')
-    await screen.findByText('7 Example Street, Glasgow', { selector: 'p' })
+    await screen.findByText('Selected: 7 Example Street, Glasgow')
     expect(screen.getByLabelText('Postcode')).toHaveValue('G31 4HS')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     await payAsGuest(user)
@@ -287,6 +287,40 @@ describe('booking visit type', () => {
     expect(analytics).not.toContain('Example')
     expect(analytics).not.toContain('G31')
     expect(window.location.href).not.toContain('Example')
+  })
+
+  it('describes the manual address with the coverage hint', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'G31 4HS')
+    const address = await screen.findByLabelText('Address')
+    expect(address.getAttribute('aria-describedby')?.split(' ')).toContain('book-home-hint')
+  })
+
+  it('drops a picked address when the postcode is changed', async () => {
+    const base = fetchMock.getMockImplementation()!
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      if (String(url) === '/api/address/lookup') {
+        return { ok: true, status: 200, json: async () => ({ addresses: [{ id: 'abc', label: '7 Example Street, Glasgow' }] }) }
+      }
+      if (String(url) === '/api/address/resolve') {
+        return { ok: true, status: 200, json: async () => ({ addressLine: '7 Example Street, Glasgow', postcode: 'G31 4HS' }) }
+      }
+      return base(url, init)
+    })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    const postcode = screen.getByLabelText('Postcode')
+    await user.type(postcode, 'G31 4HS')
+    await user.selectOptions(await screen.findByLabelText('Select your address'), 'abc')
+    await screen.findByText('Selected: 7 Example Street, Glasgow')
+    await user.clear(postcode)
+    await user.type(postcode, 'G32 1AA')
+    expect(await screen.findByLabelText('Select your address')).toHaveValue('')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(/address/i)
   })
 
   it('sends a plain video booking with no address', async () => {

@@ -113,6 +113,18 @@ export function BookingStepService({
   titleRef
 }: Props) {
   const cardRefs = useRef<Partial<Record<VisitType, HTMLButtonElement | null>>>({});
+  // The postcode a list-picked address belongs to. Editing the postcode away
+  // from it drops the address, so an old address can't pair with a new postcode
+  // (the lookup itself unmounts while the postcode is mid-edit).
+  const pickedForRef = useRef<string | null>(null);
+
+  function handlePostcodeInput(value: string) {
+    if (pickedForRef.current !== null && normalisePostcode(value) !== pickedForRef.current) {
+      pickedForRef.current = null;
+      onHomeAddressLineChange("");
+    }
+    onHomePostcodeChange(value);
+  }
   const coverage: Coverage = visitType === "home" ? coverageFor(homePostcode) : "covered";
   const showBooking = visitType === "video" || coverage === "covered";
 
@@ -213,7 +225,7 @@ export function BookingStepService({
                 required
                 maxLength={HOME_POSTCODE_MAX}
                 value={homePostcode}
-                onChange={(e) => onHomePostcodeChange(e.target.value)}
+                onChange={(e) => handlePostcodeInput(e.target.value)}
                 aria-describedby="book-home-hint"
               />
               {coverage === "covered" ? (
@@ -247,8 +259,16 @@ export function BookingStepService({
               <AddressLookup
                 postcode={normalisePostcode(homePostcode)}
                 addressLine={homeAddressLine}
-                onAddressLineChange={onHomeAddressLineChange}
-                onPostcodeResolved={onHomePostcodeChange}
+                onAddressLineChange={(value) => {
+                  // Any change other than a resolved pick (typing, a new choice) ends the pairing.
+                  if (!value) pickedForRef.current = null;
+                  onHomeAddressLineChange(value);
+                }}
+                onPostcodeResolved={(canonical) => {
+                  pickedForRef.current = canonical;
+                  onHomePostcodeChange(canonical);
+                }}
+                describedBy="book-home-hint"
               />
             ) : null}
           </div>
