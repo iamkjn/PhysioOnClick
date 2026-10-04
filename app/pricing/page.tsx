@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { serviceLabelFor } from "@/lib/cal-services";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import {
+  HOME_VISIT_TRAVEL_FEE_PENCE,
+  formatPounds,
+  sessionPricePence,
+  travelFeePence
+} from "@/lib/home-visit-pricing";
 import { getPublicPricing } from "@/lib/public-content";
 import { bundleSessionCount, initialAssessmentPrice, payAsYouGoPrice, pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
@@ -48,7 +56,7 @@ export default function PricingPage() {
       <section className="page-section stack pricing-sections">
         <div>
           <Reveal direction="up">
-            <h2>Video appointments <span>(UK-wide) or home visits (Glasgow area)</span></h2>
+            <h2>Video appointments <span>(UK-wide)</span></h2>
           </Reveal>
           <div className="pricing-grid pricing-grid-two">
             {online.map((item, i) => (
@@ -99,6 +107,31 @@ export default function PricingPage() {
               );
             })}
           </div>
+        </div>
+
+        <div>
+          <Reveal direction="up">
+            <h2>Home visits in Glasgow <span>(video price + £15 travel fee per visit)</span></h2>
+          </Reveal>
+          <p className="muted">
+            We visit {HOME_VISIT_AREA_LABEL}. The travel fee is a fixed {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} per visit,
+            shown as its own line at checkout and on your invoice; bundles include every visit&apos;s fee upfront. Discount
+            codes apply to the session price.
+          </p>
+          <div className="pricing-grid pricing-grid-two">
+            {[...online, ...packages].map((item) => (
+              <article key={item.id} className="simple-price-card">
+                <h3>{serviceLabelFor(item.id, "home")}</h3>
+                <strong>{formatPounds(sessionPricePence(item.id) + travelFeePence(item.id, "home"))}</strong>
+                <p className="muted">
+                  {formatPounds(sessionPricePence(item.id))} + {formatPounds(travelFeePence(item.id, "home"))} travel
+                </p>
+              </article>
+            ))}
+          </div>
+          <Link className="button primary" href="/book?visit=home" style={{ marginTop: "1rem" }}>
+            Book a home visit
+          </Link>
         </div>
 
         <Reveal direction="up">
