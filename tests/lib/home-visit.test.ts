@@ -15,7 +15,7 @@ describe("home-visit helpers", () => {
     expect(VISIT_TYPE_LABELS.video).toBe("Video call (anywhere in the UK)");
     expect(VISIT_TYPE_LABELS.home).toBe("Home visit (Glasgow area)");
     expect(HOME_VISIT_HINT).toBe(
-      "Home visits cover the Glasgow area. We'll confirm by email if your address is outside it.",
+      "Home visits cover Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3).",
     );
     expect(HOME_ADDRESS_MAX).toBe(120);
     expect(HOME_POSTCODE_MAX).toBe(10);

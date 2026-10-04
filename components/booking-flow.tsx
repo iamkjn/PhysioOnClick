@@ -13,6 +13,8 @@ import type { BookServiceId } from "@/lib/site-data";
 import { getDependents, type Dependent } from "@/lib/dependents";
 import { accountUserOrNull } from "@/lib/guest-booking";
 import { DEFAULT_VISIT_TYPE, validateHomeVisit, type VisitType } from "@/lib/home-visit";
+import { isCoveredPostcode, outOfAreaMessage } from "@/lib/home-visit-area";
+import { formatPounds, sessionPricePence, travelFeeLabel, travelFeePence } from "@/lib/home-visit-pricing";
 import { usePerson } from "@/components/person-provider";
 import { BookingStepService } from "@/components/booking-step-service";
 import { BookingStepTime } from "@/components/booking-step-time";
@@ -86,7 +88,8 @@ export function BookingFlow() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [serviceId, setServiceId] = useState<BookServiceId>("initial-assessment");
   const [focusAreas, setFocusAreas] = useState<FocusArea[]>(["Back & neck"]);
-  // Video (UK-wide) or a Glasgow-area home visit — same price and calendar.
+  // Video (UK-wide) or a home visit in a covered postcode district — same
+  // calendar; a home visit adds a travel fee per visit (lib/home-visit-pricing).
   // The address is personal data: it stays in component state and the
   // checkout POST body only (never analytics, logs or the URL).
   const [visitType, setVisitType] = useState<VisitType>(DEFAULT_VISIT_TYPE);
@@ -218,6 +221,10 @@ export function BookingFlow() {
         setVisitError(home.error);
         return;
       }
+      if (!isCoveredPostcode(home.postcode)) {
+        setVisitError(outOfAreaMessage(home.postcode));
+        return;
+      }
       setHomeAddressLine(home.addressLine);
       setHomePostcode(home.postcode);
     }
@@ -254,6 +261,7 @@ export function BookingFlow() {
   }
 
   const included = includedFor(serviceId, visitType);
+  const travel = travelFeePence(serviceId, visitType);
   const railChecklist = step === 2 ? included.slice(0, 3) : included;
   const stepAnnouncement =
     step === 1 ? "Step 1 of 3: choose your service." : "Step 2 of 3: time and your details.";
@@ -316,9 +324,15 @@ export function BookingFlow() {
         <div className="book-rail-spacer" />
         <div className="book-rail-divider" />
 
+        {visitType === "home" ? (
+          <div className="book-rail-travel">
+            <span>{travelFeeLabel(serviceId)}</span>
+            <span>{formatPounds(travel)}</span>
+          </div>
+        ) : null}
         <div className="book-rail-total">
           <span className="book-rail-total-label">Total</span>
-          <span className="book-rail-total-price">£{service.price}</span>
+          <span className="book-rail-total-price">{formatPounds(sessionPricePence(serviceId) + travel)}</span>
         </div>
         <p className="book-rail-reassure">Free to reschedule up to 24 hours before your session.</p>
         <Link href="/how-online-physiotherapy-works" className="book-rail-reassure" style={{ textDecoration: "underline" }}>
@@ -341,6 +355,7 @@ export function BookingFlow() {
           onVisitTypeChange={handleVisitTypeChange}
           onHomeAddressLineChange={setHomeAddressLine}
           onHomePostcodeChange={setHomePostcode}
+          onSwitchToVideo={() => handleVisitTypeChange("video")}
           onContinue={handleServiceContinue}
           titleRef={panelTitleRef}
         />

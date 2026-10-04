@@ -1,5 +1,8 @@
 import { normalisePostcode } from "@/lib/home-visit";
 
+// The label lives in lib/home-visit (to avoid an import cycle); re-exported here.
+export { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit";
+
 /**
  * Where home visits are offered, by postcode district (outward code).
  * This is the ONLY copy of the list: the booking UI, /api/checkout/create and
@@ -8,8 +11,6 @@ import { normalisePostcode } from "@/lib/home-visit";
  */
 const GLASGOW = Array.from({ length: 53 }, (_, i) => `G${i + 1}`);
 export const HOME_VISIT_DISTRICTS: ReadonlySet<string> = new Set([...GLASGOW, "PA1", "PA2", "PA3", "ML3"]);
-
-export const HOME_VISIT_AREA_LABEL = "Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3)";
 
 /** "g31 4hs" -> "G31". Empty string when there is no recognisable district. */
 export function outwardCode(postcode: string): string {

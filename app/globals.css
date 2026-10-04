@@ -7886,6 +7886,98 @@ textarea:focus {
   font-weight: 600;
 }
 
+/* Visit choice (home / video) — the first thing on step 1. Same tokens as
+   .book-service-card so the two card rows read as one system. */
+.book-visit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.book-visit-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 18px 20px;
+  border-radius: var(--radius-card);
+  border: 1.5px solid var(--book-paper-border);
+  background: #fff;
+  color: var(--book-paper-ink);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.book-visit-card.is-selected {
+  border-color: var(--book-accent);
+  background: var(--book-accent-light);
+}
+
+.book-visit-card svg {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  color: var(--book-accent-dark);
+}
+
+.book-visit-title {
+  display: block;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.book-visit-sub {
+  display: block;
+  font-size: 0.86rem;
+  color: var(--book-paper-muted);
+}
+
+.book-home-fields {
+  margin: 0 0 20px;
+}
+
+.book-out-of-area {
+  margin-top: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--book-paper-border);
+  border-radius: var(--radius-card);
+  background: #fff;
+  color: var(--book-paper-ink);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.book-out-of-area-switch {
+  display: block;
+  margin-top: 10px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--radius-input);
+  background: var(--book-accent-dark);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.book-service-travel {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: var(--book-paper-muted);
+}
+
+.book-rail-travel {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: var(--book-muted-para);
+}
+
 /* ── Screen 2: time & details ──────────────────────────────── */
 .book-time-grid {
   display: grid;
@@ -8569,6 +8661,7 @@ textarea:focus {
   .book-rail-eyebrow,
   .book-rail-summary,
   .book-rail-list,
+  .book-rail-travel,
   .book-rail-divider,
   .book-rail-physio,
   .book-rail-reassure,
@@ -8624,6 +8717,8 @@ textarea:focus {
 .book-cta:focus-visible,
 .book-back:focus-visible,
 .book-service-card:focus-visible,
+.book-visit-card:focus-visible,
+.book-out-of-area-switch:focus-visible,
 .book-chip:focus-visible,
 .book-cal-nav:focus-visible,
 .book-cal-day:focus-visible,
@@ -8645,6 +8740,7 @@ textarea:focus {
   .book-cta,
   .book-back,
   .book-service-card,
+  .book-visit-card,
   .book-chip,
   .book-cal-day,
   .book-slot,

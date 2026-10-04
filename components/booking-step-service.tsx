@@ -1,16 +1,18 @@
 "use client";
 
-import type { RefObject } from "react";
+import { useRef, type KeyboardEvent, type RefObject } from "react";
 
-import { FOCUS_AREAS, type CalService, type FocusArea } from "@/lib/cal-services";
+import { FOCUS_AREAS, serviceLabelFor, type CalService, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId, PricingItem } from "@/lib/site-data";
 import {
   HOME_ADDRESS_MAX,
   HOME_POSTCODE_MAX,
   HOME_VISIT_HINT,
-  VISIT_TYPE_LABELS,
+  validateHomeVisit,
   type VisitType,
 } from "@/lib/home-visit";
+import { isCoveredPostcode, outOfAreaMessage, outwardCode } from "@/lib/home-visit-area";
+import { formatPounds, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
 
 type Props = {
   services: Array<CalService & PricingItem>;
@@ -31,9 +33,45 @@ type Props = {
   onVisitTypeChange: (next: VisitType) => void;
   onHomeAddressLineChange: (value: string) => void;
   onHomePostcodeChange: (value: string) => void;
+  /** "Book a video consultation instead" on the out-of-area message. */
+  onSwitchToVideo: () => void;
   onContinue: () => void;
   titleRef?: RefObject<HTMLHeadingElement | null>;
 };
+
+/** Card order matches the owner's design: home first, then video. */
+const VISIT_CARDS: Array<{ type: VisitType; title: string; subtitle: string }> = [
+  { type: "home", title: "Home visit in Glasgow", subtitle: "Your physiotherapist visits you" },
+  { type: "video", title: "Video consultation", subtitle: "Online, anywhere in the UK" },
+];
+
+function HouseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <path d="M3 10.5 12 3l9 7.5" />
+      <path d="M5 9v11h14V9" />
+      <path d="M10 20v-6h4v6" />
+    </svg>
+  );
+}
+
+function CameraIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <rect x="2.5" y="6" width="13" height="12" rx="2" />
+      <path d="m15.5 10.5 6-3.5v10l-6-3.5" />
+    </svg>
+  );
+}
+
+/** Where a home visit stands, from the postcode alone. */
+type Coverage = "pending" | "covered" | "uncovered";
+
+function coverageFor(postcode: string): Coverage {
+  // Shape check first, so pasted junk is never echoed into the out-of-area copy.
+  if (!validateHomeVisit("placeholder", postcode).ok) return "pending";
+  return isCoveredPostcode(postcode) ? "covered" : "uncovered";
+}
 
 function readableSlug(value: string) {
   return value
@@ -55,9 +93,29 @@ export function BookingStepService({
   onVisitTypeChange,
   onHomeAddressLineChange,
   onHomePostcodeChange,
+  onSwitchToVideo,
   onContinue,
   titleRef
 }: Props) {
+  const cardRefs = useRef<Partial<Record<VisitType, HTMLButtonElement | null>>>({});
+  const coverage: Coverage = visitType === "home" ? coverageFor(homePostcode) : "covered";
+  const showBooking = visitType === "video" || coverage === "covered";
+
+  // Radio-group keyboard pattern: arrows move the selection (and focus).
+  function handleVisitKey(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    const step =
+      event.key === "ArrowRight" || event.key === "ArrowDown"
+        ? 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp"
+          ? -1
+          : 0;
+    if (!step) return;
+    event.preventDefault();
+    const next = VISIT_CARDS[(index + step + VISIT_CARDS.length) % VISIT_CARDS.length]!.type;
+    onVisitTypeChange(next);
+    cardRefs.current[next]?.focus();
+  }
+
   return (
     <section className="book-panel">
       <p
@@ -71,7 +129,7 @@ export function BookingStepService({
         Step 1 of 3
       </p>
       <h1 className="book-panel-title" ref={titleRef} tabIndex={-1}>
-        Choose your service
+        Book your appointment
       </h1>
 
       <div className="book-panel-body">
@@ -90,76 +148,44 @@ export function BookingStepService({
           </div>
         ) : null}
 
-        <div className="book-service-grid" role="group" aria-label="Service">
-          {services.map((s) => {
-            const selected = s.id === serviceId;
+        <p className="book-focus-eyebrow" id="visit-type-label">
+          How would you like to be seen?
+        </p>
+        <div className="book-visit-grid" role="radiogroup" aria-labelledby="visit-type-label">
+          {VISIT_CARDS.map((card, index) => {
+            const selected = visitType === card.type;
             return (
               <button
                 type="button"
-                key={s.id}
-                aria-pressed={selected}
-                className={`book-service-card${selected ? " is-selected" : ""}`}
-                onClick={() => onServiceChange(s.id)}
+                key={card.type}
+                role="radio"
+                aria-checked={selected}
+                tabIndex={selected ? 0 : -1}
+                ref={(el) => {
+                  cardRefs.current[card.type] = el;
+                }}
+                className={`book-visit-card${selected ? " is-selected" : ""}`}
+                onClick={() => onVisitTypeChange(card.type)}
+                onKeyDown={(e) => handleVisitKey(e, index)}
               >
-                {selected ? (
-                  <span className="book-service-check" aria-hidden="true">
-                    ✓
-                  </span>
-                ) : null}
-                <span className="book-service-name">{s.title}</span>
-                <span className="book-service-desc">{s.description}</span>
-                <span className="book-service-price">£{s.price}</span>{" "}
-                <span className="book-service-duration">{s.duration}</span>
+                {card.type === "home" ? <HouseIcon /> : <CameraIcon />}
+                <span>
+                  <span className="book-visit-title">{card.title}</span>
+                  <span className="book-visit-sub">{card.subtitle}</span>
+                </span>
               </button>
             );
           })}
         </div>
 
-        <p className="book-focus-eyebrow" id="visit-type-label">
-          How would you like to be seen?
-        </p>
-        <div className="book-chip-row" role="radiogroup" aria-labelledby="visit-type-label">
-          {(Object.keys(VISIT_TYPE_LABELS) as VisitType[]).map((type) => {
-            const selected = visitType === type;
-            return (
-              <label key={type} className={`book-chip${selected ? " is-selected" : ""}`} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                <input
-                  type="radio"
-                  name="visit-type"
-                  value={type}
-                  checked={selected}
-                  onChange={() => onVisitTypeChange(type)}
-                />
-                {VISIT_TYPE_LABELS[type]}
-              </label>
-            );
-          })}
-        </div>
-
         {visitType === "home" ? (
-          <div className="book-fields" style={{ marginTop: 12 }}>
-            {visitError ? (
+          <div className="book-fields book-home-fields">
+            {visitError && coverage !== "uncovered" ? (
               <p className="book-error book-field-full" role="alert">
                 {visitError}
               </p>
             ) : null}
             <div className="book-field book-field-full">
-              <label className="book-label" htmlFor="book-home-address">
-                Address
-              </label>
-              <input
-                id="book-home-address"
-                className="book-input"
-                type="text"
-                autoComplete="street-address"
-                required
-                maxLength={HOME_ADDRESS_MAX}
-                value={homeAddressLine}
-                onChange={(e) => onHomeAddressLineChange(e.target.value)}
-                aria-describedby="book-home-hint"
-              />
-            </div>
-            <div className="book-field">
               <label className="book-label" htmlFor="book-home-postcode">
                 Postcode
               </label>
@@ -175,39 +201,105 @@ export function BookingStepService({
                 onChange={(e) => onHomePostcodeChange(e.target.value)}
                 aria-describedby="book-home-hint"
               />
+              {coverage === "covered" ? (
+                <p id="book-home-hint" className="book-field-hint" role="status">
+                  We visit {outwardCode(homePostcode)}. {HOME_VISIT_HINT}
+                </p>
+              ) : coverage === "uncovered" ? (
+                <div id="book-home-hint" className="book-out-of-area" role="alert">
+                  {outOfAreaMessage(homePostcode)}{" "}
+                  <button type="button" className="book-out-of-area-switch" onClick={onSwitchToVideo}>
+                    Book a video consultation instead
+                  </button>
+                </div>
+              ) : (
+                <p id="book-home-hint" className="book-field-hint">
+                  Enter your postcode to check we visit your area.
+                </p>
+              )}
             </div>
-            <p id="book-home-hint" className="book-field-hint book-field-full">
-              {HOME_VISIT_HINT}
-            </p>
+            {coverage === "covered" ? (
+              <div className="book-field book-field-full">
+                <label className="book-label" htmlFor="book-home-address">
+                  Address
+                </label>
+                <input
+                  id="book-home-address"
+                  className="book-input"
+                  type="text"
+                  autoComplete="street-address"
+                  required
+                  maxLength={HOME_ADDRESS_MAX}
+                  value={homeAddressLine}
+                  onChange={(e) => onHomeAddressLineChange(e.target.value)}
+                  aria-describedby="book-home-hint"
+                />
+              </div>
+            ) : null}
           </div>
         ) : null}
 
-        <p className="book-focus-eyebrow" id="focus-label">
-          Focus area (optional)
-        </p>
-        <div className="book-chip-row" role="group" aria-labelledby="focus-label">
-          {FOCUS_AREAS.map((area) => {
-            const selected = focusAreas.includes(area);
-            return (
-              <button
-                type="button"
-                key={area}
-                aria-pressed={selected}
-                className={`book-chip${selected ? " is-selected" : ""}`}
-                onClick={() => onToggleFocusArea(area)}
-              >
-                {area}
-              </button>
-            );
-          })}
-        </div>
+        {showBooking ? (
+          <>
+            <div className="book-service-grid" role="group" aria-label="Service">
+              {services.map((s) => {
+                const selected = s.id === serviceId;
+                const travel = travelFeePence(s.id, visitType);
+                return (
+                  <button
+                    type="button"
+                    key={s.id}
+                    aria-pressed={selected}
+                    className={`book-service-card${selected ? " is-selected" : ""}`}
+                    onClick={() => onServiceChange(s.id)}
+                  >
+                    {selected ? (
+                      <span className="book-service-check" aria-hidden="true">
+                        ✓
+                      </span>
+                    ) : null}
+                    <span className="book-service-name">{serviceLabelFor(s.id, visitType)}</span>
+                    <span className="book-service-desc">{s.description}</span>
+                    <span className="book-service-price">{formatPounds(sessionPricePence(s.id) + travel)}</span>{" "}
+                    <span className="book-service-duration">{s.duration}</span>
+                    {travel > 0 ? (
+                      <span className="book-service-travel">incl. {formatPounds(travel)} travel</span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+
+            <p className="book-focus-eyebrow" id="focus-label">
+              Focus area (optional)
+            </p>
+            <div className="book-chip-row" role="group" aria-labelledby="focus-label">
+              {FOCUS_AREAS.map((area) => {
+                const selected = focusAreas.includes(area);
+                return (
+                  <button
+                    type="button"
+                    key={area}
+                    aria-pressed={selected}
+                    className={`book-chip${selected ? " is-selected" : ""}`}
+                    onClick={() => onToggleFocusArea(area)}
+                  >
+                    {area}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : null}
       </div>
 
-      <div className="book-panel-footer">
-        <button type="button" className="book-cta" onClick={onContinue}>
-          Continue to times <span aria-hidden="true">→</span>
-        </button>
-      </div>
+      {showBooking ? (
+        <div className="book-panel-footer">
+          <button type="button" className="book-cta" onClick={onContinue}>
+            Continue to times <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }

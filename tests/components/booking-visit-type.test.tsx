@@ -2,8 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-// Home visits (Glasgow area) are booked through the same flow as video calls:
-// a visit-type choice on step 1, with address + postcode only for home visits.
+// Home visits are booked through the same flow as video calls: step 1 starts
+// with the visit choice, and a home visit needs a covered postcode (then an
+// address) before services and Continue appear. Home prices include travel.
 
 const mocks = vi.hoisted(() => ({
   authMock: { currentUser: null as unknown },
@@ -94,63 +95,134 @@ async function payAsGuest(user: ReturnType<typeof userEvent.setup>) {
 describe('booking visit type', () => {
   it('defaults to a video call with no address fields', () => {
     render(<BookingFlow />)
-    expect(screen.getByRole('radio', { name: 'Video call (anywhere in the UK)' })).toBeChecked()
-    expect(screen.getByRole('radio', { name: 'Home visit (Glasgow area)' })).not.toBeChecked()
+    expect(screen.getByRole('radio', { name: /Video consultation/ })).toHaveAttribute('aria-checked', 'true')
+    expect(screen.getByRole('radio', { name: /Home visit in Glasgow/ })).toHaveAttribute('aria-checked', 'false')
     expect(screen.queryByLabelText('Address')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Postcode')).not.toBeInTheDocument()
   })
 
-  it('reveals required, length-capped address fields and the Glasgow hint for a home visit', async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+  it('lists the home visit card first, then video', () => {
     render(<BookingFlow />)
-    await user.click(screen.getByRole('radio', { name: 'Home visit (Glasgow area)' }))
-
-    const address = screen.getByLabelText('Address')
-    const postcode = screen.getByLabelText('Postcode')
-    expect(address).toBeRequired()
-    expect(postcode).toBeRequired()
-    expect(address).toHaveAttribute('maxLength', '120')
-    expect(postcode).toHaveAttribute('maxLength', '10')
-    expect(
-      screen.getByText("Home visits cover the Glasgow area. We'll confirm by email if your address is outside it."),
-    ).toBeInTheDocument()
-    // Price is unchanged by the visit type.
-    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(
-      document.querySelector('.book-service-card.is-selected .book-service-price')?.textContent,
-    )
-
-    await user.click(screen.getByRole('radio', { name: 'Video call (anywhere in the UK)' }))
-    expect(screen.queryByLabelText('Address')).not.toBeInTheDocument()
+    const radios = screen.getAllByRole('radio')
+    expect(radios[0]).toHaveAccessibleName(/Home visit in Glasgow/)
+    expect(radios[1]).toHaveAccessibleName(/Video consultation/)
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Book your appointment')
   })
 
-  it('will not continue to times until a home visit has an address and a valid postcode', async () => {
+  it('reveals required, length-capped address fields and the coverage status for a home visit', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
-    await user.click(screen.getByRole('radio', { name: 'Home visit (Glasgow area)' }))
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+
+    const postcode = screen.getByLabelText('Postcode')
+    expect(postcode).toBeRequired()
+    expect(postcode).toHaveAttribute('maxLength', '10')
+    expect(screen.queryByLabelText('Address')).not.toBeInTheDocument()
+    expect(screen.getByText('Enter your postcode to check we visit your area.')).toBeInTheDocument()
+
+    await user.type(postcode, 'G31 4HS')
+    expect(screen.getByText(/We visit G31\./)).toHaveTextContent(
+      'We visit G31. Home visits cover Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3).',
+    )
+    const address = screen.getByLabelText('Address')
+    expect(address).toBeRequired()
+    expect(address).toHaveAttribute('maxLength', '120')
+
+    const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(
+      formatPounds(sessionPricePence('initial-assessment') + 1500),
+    )
+    expect(document.querySelector('.book-rail-travel')?.textContent).toContain('Travel fee (1 home visit × £15)')
+
+    await user.click(screen.getByRole('radio', { name: /Video consultation/ }))
+    expect(screen.queryByLabelText('Address')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Postcode')).not.toBeInTheDocument()
+    expect(document.querySelector('.book-rail-travel')).toBeNull()
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(
+      formatPounds(sessionPricePence('initial-assessment')),
+    )
+  })
+
+  it('will not continue to times until a covered home visit has an address', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'G31 4HS')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/address/i)
     expect(screen.queryByText('Step 2 of 3')).not.toBeInTheDocument()
+  })
 
-    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+  it('hides services and Continue until the postcode looks valid', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     await user.type(screen.getByLabelText('Postcode'), '12345')
-    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
-    expect(await screen.findByRole('alert')).toHaveTextContent(/postcode/i)
-    expect(screen.queryByText('Step 2 of 3')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Address')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Continue to times/ })).not.toBeInTheDocument()
+    expect(document.querySelector('.book-service-card')).toBeNull()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('blocks an uncovered postcode and offers video instead', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'EH1 1AA')
+    expect(await screen.findByRole('alert')).toHaveTextContent("We don't offer home visits in EH1 yet.")
+    expect(screen.queryByLabelText('Address')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Continue to times/ })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Book a video consultation instead' }))
+    expect(screen.getByRole('radio', { name: /Video consultation/ })).toHaveAttribute('aria-checked', 'true')
+    expect(screen.getByRole('button', { name: /Continue to times/ })).toBeInTheDocument()
+  })
+
+  it('shows home prices including travel on the service cards', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'G31 4HS')
+    const prices = [...document.querySelectorAll('.book-service-price')].map((n) => n.textContent)
+    const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
+    expect(prices).toEqual([
+      formatPounds(sessionPricePence('initial-assessment') + 1500),
+      formatPounds(sessionPricePence('follow-up') + 1500),
+      formatPounds(sessionPricePence('bundle-4') + 6000),
+      formatPounds(sessionPricePence('bundle-8') + 12000),
+    ])
+    expect([...document.querySelectorAll('.book-service-travel')].map((n) => n.textContent)).toEqual([
+      'incl. £15 travel',
+      'incl. £15 travel',
+      'incl. £60 travel',
+      'incl. £120 travel',
+    ])
+    expect(screen.getByRole('button', { name: /Initial Assessment \(home visit\)/ })).toBeInTheDocument()
+  })
+
+  it('moves between the visit cards with the arrow keys', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    const video = screen.getByRole('radio', { name: /Video consultation/ })
+    video.focus()
+    await user.keyboard('{ArrowLeft}')
+    const home = screen.getByRole('radio', { name: /Home visit in Glasgow/ })
+    expect(home).toHaveAttribute('aria-checked', 'true')
+    expect(home).toHaveFocus()
   })
 
   it('preselects a home visit from ?visit=home', () => {
     window.history.replaceState(null, '', '/book?visit=home')
     render(<BookingFlow />)
-    expect(screen.getByRole('radio', { name: 'Home visit (Glasgow area)' })).toBeChecked()
-    expect(screen.getByLabelText('Address')).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: /Home visit in Glasgow/ })).toHaveAttribute('aria-checked', 'true')
+    expect(screen.getByLabelText('Postcode')).toBeInTheDocument()
   })
 
   it('sends the home visit to checkout but keeps the address out of analytics', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
-    await user.click(screen.getByRole('radio', { name: 'Home visit (Glasgow area)' }))
-    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     await user.type(screen.getByLabelText('Postcode'), 'g31 4hs')
+    await user.type(screen.getByLabelText('Address'), '7 Example Street')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     await payAsGuest(user)
 
@@ -163,6 +235,7 @@ describe('booking visit type', () => {
     expect(analytics).toContain('"visit_type":"home"')
     expect(analytics).not.toContain('Example Street')
     expect(analytics).not.toContain('4HS')
+    expect(analytics).not.toContain('G31')
     expect(window.location.href).not.toContain('Example')
   })
 
@@ -180,9 +253,9 @@ describe('booking visit type', () => {
   it('words the consent for the chosen visit and passes the visit to the assessment', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
-    await user.click(screen.getByRole('radio', { name: 'Home visit (Glasgow area)' }))
-    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     await user.type(screen.getByLabelText('Postcode'), 'g31 4hs')
+    await user.type(screen.getByLabelText('Address'), '7 Example Street')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     const consent = await screen.findByRole('checkbox', { name: /consent/i })
     expect(consent.closest('label')?.textContent).toMatch(/physiotherapy assessment and treatment at a home visit/)
@@ -205,7 +278,7 @@ describe('booking visit type', () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
     expect(document.querySelector('.book-rail-title')?.textContent).toBe('Initial Online Assessment')
-    await user.click(screen.getByRole('radio', { name: 'Home visit (Glasgow area)' }))
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     expect(document.querySelector('.book-rail-title')?.textContent).toBe('Initial Assessment (home visit)')
     expect(document.querySelector('.book-rail-list')?.textContent).not.toMatch(/video/i)
   })

@@ -1,6 +1,7 @@
 /**
- * Home visits (Glasgow area) are booked through the same flow, calendar and
- * prices as video calls. This module holds the shared vocabulary and the
+ * Home visits (Glasgow area) are booked through the same flow and calendar as
+ * video calls, at the video price plus a travel fee (lib/home-visit-pricing).
+ * This module holds the shared vocabulary and the
  * address validation used by both the booking UI and /api/checkout/create.
  *
  * The home address is personal data: it is collected only for home visits,
@@ -17,16 +18,22 @@ export const VISIT_TYPE_LABELS: Record<VisitType, string> = {
   home: "Home visit (Glasgow area)",
 };
 
-export const HOME_VISIT_HINT =
-  "Home visits cover the Glasgow area. We'll confirm by email if your address is outside it.";
+/**
+ * The covered area in words. Defined here rather than in lib/home-visit-area
+ * (which re-exports it) because that module imports normalisePostcode from
+ * this one; importing back would create a runtime cycle.
+ */
+export const HOME_VISIT_AREA_LABEL = "Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3)";
+
+export const HOME_VISIT_HINT = `Home visits cover ${HOME_VISIT_AREA_LABEL}.`;
 
 export const HOME_ADDRESS_MAX = 120;
 export const HOME_POSTCODE_MAX = 10;
 
 /**
  * Deliberately loose UK postcode shape (outward code + inward code). It only
- * catches obvious typos; it does not decide whether an address is in the
- * Glasgow area — the practice confirms that by email.
+ * catches obvious typos; whether the district is covered is decided by
+ * isCoveredPostcode in lib/home-visit-area.
  */
 const UK_POSTCODE = /^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/;
 
