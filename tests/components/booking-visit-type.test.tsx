@@ -405,3 +405,29 @@ describe('booking visit type', () => {
     expect(screen.queryByText('Step 1 of 3: choose your service.')).not.toBeInTheDocument()
   })
 })
+
+describe("booking step 1 without focus-area chips", () => {
+  it("has no focus-area chips (the assessment body chart collects the pain area)", () => {
+    render(<BookingFlow />)
+    expect(screen.queryByText(/Focus area/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Back & neck" })).not.toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Shoulder" })).not.toBeInTheDocument()
+  })
+
+  it("sends no focus area by default", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole("button", { name: /Continue to times/ }))
+    await payAsGuest(user)
+    expect(checkoutBody().focusAreas).toEqual([])
+  })
+
+  it("still carries the area from an exercise link", async () => {
+    window.history.replaceState(null, "", "/book?exercise=knee-extension&body_part=knee")
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole("button", { name: /Continue to times/ }))
+    await payAsGuest(user)
+    expect(checkoutBody().focusAreas).toEqual(["Sports injury"])
+  })
+})

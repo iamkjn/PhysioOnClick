@@ -3,7 +3,7 @@
 import { useRef, type KeyboardEvent, type RefObject } from "react";
 import Link from "next/link";
 
-import { FOCUS_AREAS, serviceLabelFor, type CalService, type FocusArea } from "@/lib/cal-services";
+import { serviceLabelFor, type CalService } from "@/lib/cal-services";
 import type { BookServiceId, PricingItem } from "@/lib/site-data";
 import {
   HOME_ADDRESS_MAX,
@@ -18,14 +18,12 @@ import { formatPounds, sessionPricePence, travelFeePence } from "@/lib/home-visi
 type Props = {
   services: Array<CalService & PricingItem>;
   serviceId: BookServiceId;
-  focusAreas: FocusArea[];
   bookingContext?: {
     source: string;
     exercise: string;
     bodyPart: string;
   } | null;
   onServiceChange: (id: BookServiceId) => void;
-  onToggleFocusArea: (area: FocusArea) => void;
   visitType: VisitType;
   homeAddressLine: string;
   homePostcode: string;
@@ -100,10 +98,8 @@ function readableSlug(value: string) {
 export function BookingStepService({
   services,
   serviceId,
-  focusAreas,
   bookingContext,
   onServiceChange,
-  onToggleFocusArea,
   visitType,
   homeAddressLine,
   homePostcode,
@@ -293,26 +289,6 @@ export function BookingStepService({
                     {travel > 0 ? (
                       <span className="book-service-travel">incl. {formatPounds(travel)} travel</span>
                     ) : null}
-                  </button>
-                );
-              })}
-            </div>
-
-            <p className="book-focus-eyebrow" id="focus-label">
-              Focus area (optional)
-            </p>
-            <div className="book-chip-row" role="group" aria-labelledby="focus-label">
-              {FOCUS_AREAS.map((area) => {
-                const selected = focusAreas.includes(area);
-                return (
-                  <button
-                    type="button"
-                    key={area}
-                    aria-pressed={selected}
-                    className={`book-chip${selected ? " is-selected" : ""}`}
-                    onClick={() => onToggleFocusArea(area)}
-                  >
-                    {area}
                   </button>
                 );
               })}

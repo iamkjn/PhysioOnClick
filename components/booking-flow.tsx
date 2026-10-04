@@ -87,7 +87,9 @@ export function BookingFlow() {
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [serviceId, setServiceId] = useState<BookServiceId>("initial-assessment");
-  const [focusAreas, setFocusAreas] = useState<FocusArea[]>(["Back & neck"]);
+  // No pain-area chips at booking: the assessment body chart collects that.
+  // Only an exercise link (?body_part / ?exercise) pre-fills an area.
+  const [focusAreas, setFocusAreas] = useState<FocusArea[]>([]);
   // Video (UK-wide) or a home visit in a covered postcode district — same
   // calendar; a home visit adds a travel fee per visit (lib/home-visit-pricing).
   // The address is personal data: it stays in component state and the
@@ -201,11 +203,6 @@ export function BookingFlow() {
     trackGrowthEvent("booking_service_selected", { service_id: next });
     setServiceId(next);
     setSelectedSlot(null);
-  }, []);
-
-  const toggleFocusArea = useCallback((area: FocusArea) => {
-    trackGrowthEvent("booking_focus_selected", { focus_area: area });
-    setFocusAreas((prev) => (prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]));
   }, []);
 
   // visit_type is recorded on step completion and checkout_started (never the address).
@@ -358,10 +355,8 @@ export function BookingFlow() {
         <BookingStepService
           services={services}
           serviceId={serviceId}
-          focusAreas={focusAreas}
           bookingContext={bookingContext}
           onServiceChange={handleServiceChange}
-          onToggleFocusArea={toggleFocusArea}
           visitType={visitType}
           homeAddressLine={homeAddressLine}
           homePostcode={homePostcode}
