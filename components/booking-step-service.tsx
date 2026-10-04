@@ -5,10 +5,11 @@ import Link from "next/link";
 
 import { serviceLabelFor, type CalService } from "@/lib/cal-services";
 import type { BookServiceId, PricingItem } from "@/lib/site-data";
+import { AddressLookup } from "@/components/address-lookup";
 import {
-  HOME_ADDRESS_MAX,
   HOME_POSTCODE_MAX,
   HOME_VISIT_HINT,
+  normalisePostcode,
   validateHomeVisit,
   type VisitType,
 } from "@/lib/home-visit";
@@ -243,22 +244,12 @@ export function BookingStepService({
               )}
             </div>
             {coverage === "covered" ? (
-              <div className="book-field book-field-full">
-                <label className="book-label" htmlFor="book-home-address">
-                  Address
-                </label>
-                <input
-                  id="book-home-address"
-                  className="book-input"
-                  type="text"
-                  autoComplete="street-address"
-                  required
-                  maxLength={HOME_ADDRESS_MAX}
-                  value={homeAddressLine}
-                  onChange={(e) => onHomeAddressLineChange(e.target.value)}
-                  aria-describedby="book-home-hint"
-                />
-              </div>
+              <AddressLookup
+                postcode={normalisePostcode(homePostcode)}
+                addressLine={homeAddressLine}
+                onAddressLineChange={onHomeAddressLineChange}
+                onPostcodeResolved={onHomePostcodeChange}
+              />
             ) : null}
           </div>
         ) : null}
