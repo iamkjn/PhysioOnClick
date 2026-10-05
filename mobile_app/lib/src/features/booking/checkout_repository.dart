@@ -50,6 +50,22 @@ class CheckoutDiscount {
   );
 }
 
+/// A message from our server meant for the patient (shown verbatim).
+class CheckoutException implements Exception {
+  final String message;
+  const CheckoutException(this.message);
+  @override
+  String toString() => message;
+}
+
+const kCheckoutUnreachable =
+    "We couldn't reach the booking service. Please check your connection and try again.";
+
+/// Only server-authored messages are shown; timeouts/network/other errors
+/// get friendly generic copy.
+String checkoutErrorMessage(Object e) =>
+    e is CheckoutException && e.message.isNotEmpty ? e.message : kCheckoutUnreachable;
+
 typedef IdTokenProvider = Future<String?> Function();
 
 class CheckoutRepository {
@@ -83,16 +99,16 @@ class CheckoutRepository {
     required String service,
     required DateTime start,
     required DateTime end,
+    String visitType = 'video',
   }) async {
     String fmt(DateTime d) =>
         '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-    final uri = Uri.parse('$kApiBase/api/cal/slots').replace(
-      queryParameters: {
-        'service': service,
-        'start': fmt(start),
-        'end': fmt(end),
-      },
-    );
+    final uri = Uri.parse('$kApiBase/api/cal/slots').replace(queryParameters: {
+      'service': service,
+      'start': fmt(start),
+      'end': fmt(end),
+      if (visitType == 'home') 'visit': 'home',
+    });
     final res = await _client
         .get(uri, headers: await _authHeaders())
         .timeout(const Duration(seconds: 20));
@@ -110,7 +126,9 @@ class CheckoutRepository {
     required String name,
     required String email,
     String timeZone = 'Europe/London',
-    List<String> focusAreas = const [],
+    String visitType = 'video',
+    String? homeAddressLine,
+    String? homePostcode,
     String? assessmentUid,
     String? assessmentPersonId,
     String? assessmentFormId,
@@ -127,7 +145,11 @@ class CheckoutRepository {
             'name': name,
             'email': email,
             'timeZone': timeZone,
-            if (focusAreas.isNotEmpty) 'focusAreas': focusAreas,
+            'visitType': visitType,
+            if (visitType == 'home') ...{
+              'homeAddressLine': ?homeAddressLine,
+              'homePostcode': ?homePostcode,
+            },
             if (assessmentUid != null) 'assessmentUid': assessmentUid,
             if (assessmentPersonId != null)
               'assessmentPersonId': assessmentPersonId,
@@ -146,8 +168,9 @@ class CheckoutRepository {
     }
 
     if (res.statusCode != 200 || body?['ok'] != true) {
-      final error = body?['error'] as String?;
-      throw Exception(error ?? 'Failed to start checkout (${res.statusCode})');
+      final error = body?['error'];
+      if (error is String && error.trim().isNotEmpty) throw CheckoutException(error);
+      throw Exception('Failed to start checkout (${res.statusCode})');
     }
     return body!['url'] as String;
   }

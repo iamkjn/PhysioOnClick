@@ -4,6 +4,7 @@ import 'package:firebase_core_platform_interface/firebase_core_platform_interfac
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_app/src/features/booking/models/book_service.dart';
+import 'package:mobile_app/src/features/booking/models/home_visit.dart';
 import 'package:mobile_app/src/features/booking/time_details_screen.dart';
 
 /// A no-op `FirebaseAppPlatform` — enough for `Firebase.app()` to succeed
@@ -88,5 +89,20 @@ void main() {
     await tester.pump(const Duration(milliseconds: 50));
     expect(find.byType(CheckboxListTile), findsOneWidget);
     expect(find.textContaining('I consent'), findsOneWidget);
+  });
+
+  testWidgets('home initial assessment: pay button shows £55 incl. travel fee', (tester) async {
+    final service = bookServiceFor(BookServiceId.initialAssessment);
+    await tester.pumpWidget(MaterialApp(
+      home: TimeDetailsScreen(
+        service: service,
+        visitType: VisitType.home,
+        homeAddress: const HomeVisitAddress(line: '1 Main St', postcode: 'G31 4HS'),
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.text('Continue to payment · £55'), findsOneWidget);
+    expect(find.text('Initial Assessment (home visit)'), findsOneWidget);
   });
 }

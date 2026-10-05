@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/page_transitions.dart';
+import '../addresses/address_repository.dart';
 import '../people/dependent_model.dart';
 import '../people/people_repository.dart';
 import 'assessment_step_screen.dart';
 import 'booking_step_header.dart';
 import 'checkout_repository.dart';
+import 'home_visit_repository.dart';
 import 'models/book_service.dart';
+import 'models/home_visit.dart';
+import 'visit_address_panel.dart';
 
 const _weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -30,20 +34,30 @@ int _leadingBlanks(DateTime firstOfMonth) => (firstOfMonth.weekday - 1) % 7;
 /// once, the same shape as web's one `<form>`.
 class TimeDetailsScreen extends StatefulWidget {
   final ResolvedService service;
-  final List<String> focusAreas;
 
   /// When set (non-self), pre-selects this dependent in the "Booking for"
   /// picker instead of defaulting to "myself" — see [ServiceSelectScreen].
   final String? initialPersonId;
   final String? initialPersonName;
 
+  /// Visit type chosen in step 1; home visits carry the address.
+  final VisitType visitType;
+  final HomeVisitAddress? homeAddress;
+
   const TimeDetailsScreen({
     required this.service,
-    this.focusAreas = const [],
+    this.visitType = VisitType.video,
+    this.homeAddress,
     this.initialPersonId,
     this.initialPersonName,
+    this.addressRepository,
+    this.homeVisitRepository,
     super.key,
   });
+
+  /// Injectable for tests; real implementations are used when null.
+  final AddressRepository? addressRepository;
+  final HomeVisitRepository? homeVisitRepository;
 
   @override
   State<TimeDetailsScreen> createState() => _TimeDetailsScreenState();
@@ -71,6 +85,11 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
   String? _discountMessage;
   int? _discountedAmountPence;
 
+  /// Home-visit address; may be switched to the picked person's usual one.
+  HomeVisitAddress? _homeAddress;
+  AddressRepository? _addrRepo;
+  HomeVisitRepository? _hvRepo;
+
   @override
   void initState() {
     super.initState();
@@ -83,6 +102,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
     }
     _selectedPersonId = widget.initialPersonId;
     _selectedPersonName = widget.initialPersonName;
+    _homeAddress = widget.homeAddress;
     _loadSlots();
   }
 
@@ -110,6 +130,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
         service: widget.service.apiId,
         start: start,
         end: lastOfMonth,
+        visitType: widget.visitType.name,
       );
       if (mounted) {
         setState(() {
@@ -136,10 +157,13 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
     _loadSlots();
   }
 
-  double get _checkoutPrice {
+  /// Session price (discounted when a code is applied) plus any home-visit
+  /// travel fee. The discount applies to the session only, never the fee.
+  int get _checkoutPence {
+    final total = totalPence(widget.service, widget.visitType);
     final discounted = _discountApplied ? _discountedAmountPence : null;
-    if (discounted == null) return widget.service.price;
-    return discounted / 100;
+    if (discounted == null) return total;
+    return discounted + travelFeePence(widget.service, widget.visitType);
   }
 
   String get _discountCode => _discountController.text.trim().toUpperCase();
@@ -222,8 +246,9 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
           email: _emailController.text.trim(),
           personId: _selectedPersonId,
           personName: _selectedPersonName ?? _nameController.text.trim(),
-          focusAreas: widget.focusAreas,
           discountCode: _discountApplied ? _discountCode : null,
+          visitType: widget.visitType,
+          homeAddress: _homeAddress,
         ),
       ),
     );
@@ -240,7 +265,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(title: Text(widget.service.title)),
+      appBar: AppBar(title: Text(serviceLabelFor(widget.service, widget.visitType))),
       body: SafeArea(
         child: Column(
           children: [
@@ -253,6 +278,28 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                 children: [
+                  if (widget.visitType == VisitType.home)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        homePriceSummary(widget.service),
+                        style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                      ),
+                    ),
+                  if (widget.visitType == VisitType.home && _homeAddress != null)
+                    VisitAddressPanel(
+                      address: _homeAddress!,
+                      step1PersonId: widget.initialPersonId,
+                      selectedPersonId: _selectedPersonId,
+                      selectedPersonName: _selectedPersonName,
+                      uid: user?.uid,
+                      addressRepository:
+                          _addrRepo ??= widget.addressRepository ?? AddressRepository(),
+                      homeVisitRepository:
+                          _hvRepo ??= widget.homeVisitRepository ?? HomeVisitRepository(),
+                      onChange: () => Navigator.of(context).pop(),
+                      onAddressChanged: (a) => setState(() => _homeAddress = a),
+                    ),
                   if (_slotsError != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -408,7 +455,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                     child: Text(
                       _discountChecking
                           ? 'Checking discount...'
-                          : 'Continue to payment · £${_checkoutPrice.toStringAsFixed(0)}',
+                          : 'Continue to payment · ${formatPounds(_checkoutPence)}',
                     ),
                   ),
                 ),

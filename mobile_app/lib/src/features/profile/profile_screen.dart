@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../addresses/addresses_screen.dart';
 import '../appointments/appointments_screen.dart';
 import '../auth/sign_in_screen.dart';
 import '../auth/sign_up_screen.dart';
@@ -117,6 +118,16 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const PeopleScreen()),
+                ),
+              ),
+              const SizedBox(height: 10),
+              _QuickLinkTile(
+                icon: Icons.location_on_rounded,
+                label: 'Addresses',
+                subtitle: 'Saved addresses for home visits',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => AddressesScreen()),
                 ),
               ),
               const SizedBox(height: 10),

@@ -5,6 +5,7 @@ import '../../core/page_transitions.dart';
 import '../assessment/assessment_screen.dart';
 import 'checkout_repository.dart';
 import 'models/book_service.dart';
+import 'models/home_visit.dart';
 import 'payment_screen.dart';
 
 /// Step 3 of the native booking flow (service -> time -> assessment ->
@@ -20,8 +21,9 @@ class AssessmentStepScreen extends StatelessWidget {
   final String email;
   final String? personId;
   final String personName;
-  final List<String> focusAreas;
   final String? discountCode;
+  final VisitType visitType;
+  final HomeVisitAddress? homeAddress;
 
   const AssessmentStepScreen({
     required this.service,
@@ -30,8 +32,9 @@ class AssessmentStepScreen extends StatelessWidget {
     required this.email,
     required this.personId,
     required this.personName,
-    this.focusAreas = const [],
     this.discountCode,
+    this.visitType = VisitType.video,
+    this.homeAddress,
     super.key,
   });
 
@@ -51,7 +54,9 @@ class AssessmentStepScreen extends StatelessWidget {
             start: start,
             name: name,
             email: email,
-            focusAreas: focusAreas,
+            visitType: visitType.name,
+            homeAddressLine: visitType == VisitType.home ? homeAddress?.line : null,
+            homePostcode: visitType == VisitType.home ? homeAddress?.postcode : null,
             assessmentUid: uid,
             assessmentPersonId: resolvedPersonId,
             assessmentFormId: formId,
@@ -63,12 +68,12 @@ class AssessmentStepScreen extends StatelessWidget {
             PhysioPageRoute(builder: (_) => PaymentScreen(checkoutUrl: url)),
           );
         } catch (e) {
-          debugPrint('createCheckoutSession failed: $e');
+          debugPrint('createCheckoutSession failed');
           if (!context.mounted) return;
+          // Server messages (e.g. "We don't offer home visits at that
+          // postcode yet.") are shown verbatim; anything else is generic.
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not start payment. Please try again.'),
-            ),
+            SnackBar(content: Text(checkoutErrorMessage(e))),
           );
         }
       },
