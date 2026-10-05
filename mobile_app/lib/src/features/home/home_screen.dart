@@ -300,7 +300,13 @@ class _HeroBanner extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const ServicesScreen()),
+                      MaterialPageRoute(
+                        builder:
+                            (_) => Scaffold(
+                              appBar: AppBar(),
+                              body: const ServicesScreen(),
+                            ),
+                      ),
                     );
                   },
                   style: OutlinedButton.styleFrom(

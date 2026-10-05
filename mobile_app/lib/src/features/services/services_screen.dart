@@ -155,54 +155,60 @@ class _ExerciseLibraryCTA extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const ExerciseLibraryScreen()),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: const Color(0xFFECFEFF),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF9ADCEE)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFFD8F3F9),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(
-                Icons.fitness_center_rounded,
-                color: Color(0xFF0891B2),
-              ),
+    // InkWell needs a Material ancestor; supply one so the CTA works even
+    // when this screen is not hosted inside a Scaffold.
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap:
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ExerciseLibraryScreen()),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Browse exercise library',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: const Color(0xFFECFEFF),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFF9ADCEE)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD8F3F9),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.fitness_center_rounded,
+                  color: Color(0xFF0891B2),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Browse exercise library',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    'Search guidance by area, condition or stage.',
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ],
+                    const SizedBox(height: 3),
+                    Text(
+                      'Search guidance by area, condition or stage.',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Icon(Icons.chevron_right_rounded, color: Color(0xFF0891B2)),
-          ],
+              const Icon(Icons.chevron_right_rounded, color: Color(0xFF0891B2)),
+            ],
+          ),
         ),
       ),
     );
@@ -244,26 +250,28 @@ class _ServiceCardState extends State<_ServiceCard> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: _expanded
-                ? s.color.withValues(alpha: 0.4)
-                : const Color(0xFFC8E8F0),
+            color:
+                _expanded
+                    ? s.color.withValues(alpha: 0.4)
+                    : const Color(0xFFC8E8F0),
             width: _expanded ? 1.5 : 1,
           ),
-          boxShadow: _expanded
-              ? [
-                  BoxShadow(
-                    color: s.color.withValues(alpha: 0.12),
-                    blurRadius: 20,
-                    offset: const Offset(0, 6),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+          boxShadow:
+              _expanded
+                  ? [
+                    BoxShadow(
+                      color: s.color.withValues(alpha: 0.12),
+                      blurRadius: 20,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                  : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
         ),
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -277,11 +285,12 @@ class _ServiceCardState extends State<_ServiceCard> {
                   child: Image.network(
                     serviceImageUrl(s.slug),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: s.bgColor,
-                      alignment: Alignment.center,
-                      child: Icon(s.icon, color: s.color, size: 32),
-                    ),
+                    errorBuilder:
+                        (context, error, stackTrace) => Container(
+                          color: s.bgColor,
+                          alignment: Alignment.center,
+                          child: Icon(s.icon, color: s.color, size: 32),
+                        ),
                     loadingBuilder: (context, child, progress) {
                       if (progress == null) return child;
                       return Container(
@@ -360,31 +369,32 @@ class _ServiceCardState extends State<_ServiceCard> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: s.conditions
-                          .map(
-                            (c) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: s.bgColor,
-                                borderRadius: BorderRadius.circular(999),
-                                border: Border.all(
-                                  color: s.color.withValues(alpha: 0.2),
+                      children:
+                          s.conditions
+                              .map(
+                                (c) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: s.bgColor,
+                                    borderRadius: BorderRadius.circular(999),
+                                    border: Border.all(
+                                      color: s.color.withValues(alpha: 0.2),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    c,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: s.color,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              child: Text(
-                                c,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: s.color,
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
+                              )
+                              .toList(),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -407,9 +417,10 @@ class _ServiceCardState extends State<_ServiceCard> {
                     ),
                   ],
                 ),
-                crossFadeState: _expanded
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
+                crossFadeState:
+                    _expanded
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
                 duration: const Duration(milliseconds: 220),
               ),
             ],
