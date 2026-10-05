@@ -9,6 +9,7 @@ import 'assessment_step_screen.dart';
 import 'booking_step_header.dart';
 import 'checkout_repository.dart';
 import 'models/book_service.dart';
+import 'models/home_visit.dart';
 
 const _weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -37,9 +38,15 @@ class TimeDetailsScreen extends StatefulWidget {
   final String? initialPersonId;
   final String? initialPersonName;
 
+  /// Visit type chosen in step 1; home visits carry the address.
+  final VisitType visitType;
+  final HomeVisitAddress? homeAddress;
+
   const TimeDetailsScreen({
     required this.service,
     this.focusAreas = const [],
+    this.visitType = VisitType.video,
+    this.homeAddress,
     this.initialPersonId,
     this.initialPersonName,
     super.key,
