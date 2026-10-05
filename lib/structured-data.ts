@@ -33,11 +33,11 @@ import type { SelfTest } from "@/lib/self-tests";
 
 const SITE = absoluteUrl("/");
 
-/** Temporarily hidden until the practice confirms the new public number. */
-export const PRACTICE_PHONE = "";
+/** Dedicated business number — shown sitewide and in the entity graph. */
+export const PRACTICE_PHONE = "07557 684395";
 
 /** Same number in the digits-only form `tel:` links require. */
-export const PRACTICE_PHONE_HREF = "";
+export const PRACTICE_PHONE_HREF = "tel:+447557684395";
 
 /** Stable @id for the practice entity — every page that mentions the
  *  business links back to this one node instead of re-declaring it. */
@@ -79,6 +79,7 @@ export function practiceNode() {
       addressCountry: "GB"
     },
     email: "hello@physioonclick.co.uk",
+    telephone: "+44 7557 684395",
     // Video consultations are available UK-wide; home visits are a separate,
     // Glasgow-only service. There is no clinic or walk-in premises, and no
     // geo is published (service-area business).
@@ -101,7 +102,11 @@ export function practiceNode() {
         "@type": "Service",
         name: "Home visit physiotherapy",
         serviceType: "Home visit physiotherapy",
-        areaServed: { "@type": "City", name: "Glasgow" },
+        areaServed: [
+          { "@type": "City", name: "Glasgow" },
+          { "@type": "City", name: "Paisley" },
+          { "@type": "City", name: "Hamilton" }
+        ],
         url: absoluteUrl("/glasgow-physiotherapist")
       }
     },

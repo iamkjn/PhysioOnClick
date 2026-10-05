@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { UkServiceLinks } from "@/components/uk-service-links";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -58,8 +59,8 @@ export async function generateMetadata({
   const name = /exercise$/i.test(exercise.title) ? exercise.title : `${exercise.title} exercise`;
   const title = `${name}: how-to${hasPrescribedDose(dosage) ? ", sets & reps" : " guide"} | PhysioOnClick`;
   const description = hasPrescribedDose(dosage)
-    ? `How to do the ${exercise.title}: steps, form cues, common mistakes and typical dose (${formatDosage(dosage)}). By an HCPC-registered physio.`
-    : `How to do the ${exercise.title}: steps, form cues and common mistakes. By an HCPC-registered physiotherapist.`;
+    ? `How to do the ${exercise.title}: steps, form cues, common mistakes and typical dose (${formatDosage(dosage)}). By a UK HCPC-registered physio.`
+    : `How to do the ${exercise.title}: steps, form cues and common mistakes. By a UK HCPC-registered physiotherapist.`;
 
   return {
     title,
@@ -404,6 +405,7 @@ export default async function ExerciseDetailPage({
           >
             Get my personalized plan
           </TrackedBookLink>
+          <UkServiceLinks />
         </div>
       </section>
     </div>

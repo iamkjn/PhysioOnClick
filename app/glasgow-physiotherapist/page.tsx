@@ -4,7 +4,7 @@ import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
-import { practiceRef } from "@/lib/structured-data";
+import { PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@/lib/structured-data";
 
 // Home visits cost the video price plus a travel fee per visit, so every
 // figure here is derived from lib/home-visit-pricing rather than hardcoded.
@@ -76,6 +76,11 @@ export default function GlasgowPage() {
             The initial assessment is {videoInitial} by video, or {homeInitial} as a home visit (the video
             price plus a {travelFee} travel fee).
           </p>
+          {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
+            <p>
+              Prefer to talk first? Call or text <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>.
+            </p>
+          ) : null}
           <div className="button-row">
             <TrackedBookLink
               className="button primary"
@@ -160,6 +165,28 @@ export default function GlasgowPage() {
             <Link href="/pricing">pricing</Link> for the full list. If you are not sure which suits you, the{" "}
             <Link href="/how-online-physiotherapy-works">how it works</Link> page explains the booking steps.
           </p>
+        </section>
+      </Reveal>
+
+      <Reveal direction="up">
+        <section className="page-section stack">
+          <h2>Areas we cover for home visits</h2>
+          <p>
+            Home visits cover every Glasgow postcode from G1 to G53, plus Paisley (PA1 to PA3) and
+            Hamilton (ML3). That includes the city centre and Merchant City, the West End (Partick,
+            Hyndland, Hillhead), the Southside (Shawlands, Pollokshields, Govanhill), the East End
+            (Dennistoun, Parkhead, Shettleston), the North (Springburn, Maryhill), and areas such as
+            Bearsden, Milngavie, Bishopbriggs, Rutherglen, Cambuslang, Newton Mearns, Giffnock and
+            Clarkston. Enter your postcode when you book to confirm.
+          </p>
+          <h2>Common problems we treat in Glasgow</h2>
+          <ul className="clean-list">
+            <li><Link href="/online-physiotherapy-for/low-back-pain">Low back pain</Link> and <Link href="/online-physiotherapy-for/sciatica">sciatica</Link></li>
+            <li><Link href="/online-physiotherapy-for/neck-pain">Neck pain</Link> and <Link href="/online-physiotherapy-for/shoulder-pain">shoulder pain</Link></li>
+            <li><Link href="/online-physiotherapy-for/knee-pain">Knee pain</Link> and <Link href="/online-physiotherapy-for/hip-pain">hip pain</Link></li>
+            <li>Rehab after <Link href="/online-physiotherapy-for/knee-replacement-rehab">knee replacement</Link> or <Link href="/online-physiotherapy-for/hip-replacement-rehab">hip replacement</Link></li>
+            <li><Link href="/online-physiotherapy-for/stroke-rehabilitation">Stroke rehabilitation</Link> and <Link href="/online-physiotherapy-for/parkinsons">Parkinson&rsquo;s</Link></li>
+          </ul>
         </section>
       </Reveal>
 

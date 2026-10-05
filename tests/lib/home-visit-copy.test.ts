@@ -99,7 +99,7 @@ describe("practiceNode home visits", () => {
 
   it("offers a Glasgow home visit service", () => {
     expect(node.makesOffer.itemOffered.serviceType).toBe("Home visit physiotherapy");
-    expect(node.makesOffer.itemOffered.areaServed).toEqual({ "@type": "City", name: "Glasgow" });
+    expect(node.makesOffer.itemOffered.areaServed).toContainEqual({ "@type": "City", name: "Glasgow" });
     expect(node.availableChannel.map((c: any) => c.serviceType)).toContain("Home visit physiotherapy");
   });
 });

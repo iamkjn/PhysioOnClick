@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { UkServiceLinks } from "@/components/uk-service-links";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -213,6 +214,7 @@ export default async function ExerciseAreaPage({
           >
             Book assessment
           </TrackedBookLink>
+          <UkServiceLinks />
         </div>
       </section>
     </div>
