@@ -2,10 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/app_colors.dart';
+import '../assistant/admin_assistant_screen.dart';
 import '../bookings/admin_booking_model.dart';
 import '../bookings/admin_bookings_screen.dart';
+import '../chat_logs/admin_chat_logs_screen.dart';
 import '../enquiries/admin_enquiries_screen.dart';
+import '../growth/admin_growth_screen.dart';
 import '../invoices/admin_invoices_screen.dart';
+import '../library/admin_library_screen.dart';
 import '../recovery/admin_patient_list_screen.dart';
 
 /// Admin's mobile home — mirrors web's `AdminLiveStats`
@@ -19,22 +23,37 @@ class AdminDashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(title: const Text('Admin dashboard'), automaticallyImplyLeading: false),
+      appBar: AppBar(
+        title: const Text('Admin dashboard'),
+        automaticallyImplyLeading: false,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: FirebaseFirestore.instance.collection('bookings').snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection('bookings')
+                .snapshots(),
             builder: (context, bookingsSnap) {
-              final bookings = bookingsSnap.data?.docs.map(AdminBooking.fromDoc).toList() ?? const [];
-              final completed = bookings.where((b) => b.displayStatus == 'completed').length;
-              final upcoming = bookings.where((b) => b.displayStatus == 'upcoming').length;
+              final bookings =
+                  bookingsSnap.data?.docs.map(AdminBooking.fromDoc).toList() ??
+                  const [];
+              final completed = bookings
+                  .where((b) => b.displayStatus == 'completed')
+                  .length;
+              final upcoming = bookings
+                  .where((b) => b.displayStatus == 'upcoming')
+                  .length;
 
               return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: FirebaseFirestore.instance.collection('enquiries').snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection('enquiries')
+                    .snapshots(),
                 builder: (context, enquiriesSnap) {
                   final enquiries = enquiriesSnap.data?.docs ?? const [];
-                  final newEnquiries = enquiries.where((d) => (d.data()['status'] as String?) == 'new').length;
+                  final newEnquiries = enquiries
+                      .where((d) => (d.data()['status'] as String?) == 'new')
+                      .length;
 
                   return Column(
                     children: [
@@ -46,14 +65,24 @@ class AdminDashboardScreen extends StatelessWidget {
                           if (completed > 0) '$completed completed',
                           if (upcoming > 0) '$upcoming upcoming',
                         ],
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminBookingsScreen())),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminBookingsScreen(),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 12),
                       _StatCard(
                         eyebrow: 'Enquiries',
                         value: '${enquiries.length}',
                         pills: [if (newEnquiries > 0) '$newEnquiries new'],
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminEnquiriesScreen())),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminEnquiriesScreen(),
+                          ),
+                        ),
                       ),
                     ],
                   );
@@ -62,24 +91,103 @@ class AdminDashboardScreen extends StatelessWidget {
             },
           ),
           const SizedBox(height: 24),
-          Text('More', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            'More',
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 12),
           Card(
             child: ListTile(
-              leading: const Icon(Icons.receipt_long_rounded, color: AppColors.teal),
-              title: const Text('Invoices'),
-              subtitle: const Text('Paid bookings and PDF receipts'),
+              leading: const Icon(
+                Icons.auto_awesome_rounded,
+                color: AppColors.teal,
+              ),
+              title: const Text('AI assistant'),
+              subtitle: const Text('Draft exercise plans from the library'),
               trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminInvoicesScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminAssistantScreen()),
+              ),
             ),
           ),
           Card(
             child: ListTile(
-              leading: const Icon(Icons.people_alt_rounded, color: AppColors.teal),
+              leading: const Icon(
+                Icons.trending_up_rounded,
+                color: AppColors.teal,
+              ),
+              title: const Text('Growth tracking'),
+              subtitle: const Text('Patient clicks, services and exercises'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminGrowthScreen()),
+              ),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(
+                Icons.menu_book_rounded,
+                color: AppColors.teal,
+              ),
+              title: const Text('Library'),
+              subtitle: const Text('Review exercises and self-tests'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminLibraryScreen()),
+              ),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(
+                Icons.chat_bubble_outline_rounded,
+                color: AppColors.teal,
+              ),
+              title: const Text('Chat logs'),
+              subtitle: const Text('Review patient assistant conversations'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminChatLogsScreen()),
+              ),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(
+                Icons.receipt_long_rounded,
+                color: AppColors.teal,
+              ),
+              title: const Text('Invoices'),
+              subtitle: const Text('Paid bookings and PDF receipts'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AdminInvoicesScreen()),
+              ),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(
+                Icons.people_alt_rounded,
+                color: AppColors.teal,
+              ),
               title: const Text('Patients'),
               subtitle: const Text('Recovery, exercises and clinical notes'),
               trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminPatientListScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AdminPatientListScreen(),
+                ),
+              ),
             ),
           ),
         ],
@@ -112,10 +220,16 @@ class _StatCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: primary ? const LinearGradient(colors: [AppColors.teal, AppColors.tealDark]) : null,
+          gradient: primary
+              ? const LinearGradient(
+                  colors: [AppColors.teal, AppColors.tealDark],
+                )
+              : null,
           color: primary ? null : AppColors.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: primary ? AppColors.tealDark : AppColors.border),
+          border: Border.all(
+            color: primary ? AppColors.tealDark : AppColors.border,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +246,11 @@ class _StatCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               value,
-              style: TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: primary ? Colors.white : AppColors.navy),
+              style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.w800,
+                color: primary ? Colors.white : AppColors.navy,
+              ),
             ),
             if (pills.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -140,9 +258,14 @@ class _StatCard extends StatelessWidget {
                 spacing: 6,
                 children: pills.map((p) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
-                      color: primary ? Colors.white.withValues(alpha: 0.18) : AppColors.tealLight,
+                      color: primary
+                          ? Colors.white.withValues(alpha: 0.18)
+                          : AppColors.tealLight,
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(

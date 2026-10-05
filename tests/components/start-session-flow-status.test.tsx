@@ -101,7 +101,7 @@ describe('StartSessionFlow booking status', () => {
 
     expect(await screen.findByRole('heading', { name: 'Self-assessment' })).toBeInTheDocument()
     expect(screen.getByText('No self-assessment submitted')).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /^Open / })).toHaveLength(6)
+    expect(screen.getAllByRole('button', { name: /^Open .+: / })).toHaveLength(6)
 
     await userEvent.click(screen.getByRole('button', { name: /Open Session summary/i }))
     expect(screen.getByRole('heading', { name: 'Session summary' })).toBeInTheDocument()

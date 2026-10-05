@@ -5,11 +5,11 @@ enum BookServiceId { initialAssessment, followUp, bundle4, bundle8 }
 
 extension BookServiceIdApi on BookServiceId {
   String get apiId => switch (this) {
-        BookServiceId.initialAssessment => 'initial-assessment',
-        BookServiceId.followUp => 'follow-up',
-        BookServiceId.bundle4 => 'bundle-4',
-        BookServiceId.bundle8 => 'bundle-8',
-      };
+    BookServiceId.initialAssessment => 'initial-assessment',
+    BookServiceId.followUp => 'follow-up',
+    BookServiceId.bundle4 => 'bundle-4',
+    BookServiceId.bundle8 => 'bundle-8',
+  };
 }
 
 class ResolvedService {

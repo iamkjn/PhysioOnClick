@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 
 import { track } from "@/lib/analytics";
 import type { BlogArticle } from "@/lib/blog";
+import { SaveBlogButton } from "@/components/save-blog-button";
 
 export function BlogDetailActions({ article }: { article: BlogArticle }) {
   // Fire `blog_read_complete` once when the reader reaches ~90% of the page —
@@ -29,6 +30,7 @@ export function BlogDetailActions({ article }: { article: BlogArticle }) {
   return (
     <div className="button-row blog-detail-actions">
       <span className="article-meta-pill">{article.readTime}</span>
+      <SaveBlogButton slug={article.slug} title={article.title} />
       <Link className="button secondary small" href="/blog">
         Back to blog
       </Link>

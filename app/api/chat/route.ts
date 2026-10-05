@@ -8,6 +8,7 @@ import { formatPersonName } from "@/lib/name-format";
 import { clientIp, isRateLimited } from "@/lib/rate-limit";
 
 type HistoryMessage = { role: "user" | "model"; text: string };
+type ChatAction = { type: string; label: string; url: string };
 
 type RequestBody = {
   message?: unknown;
@@ -80,6 +81,90 @@ const MAX_HISTORY_TEXT_CHARS = 2000;
 // reject its "function" role and need the @google/genai SDK instead).
 const CHAT_MODELS = ["gemini-3.5-flash", "gemini-3.1-flash-lite"];
 
+const SITE_ACTION_RULES: Array<{
+  pattern: RegExp;
+  action: ChatAction;
+}> = [
+  {
+    pattern: /\b(book|booking|appointment|session|consultation|assessment|checkout|pay|payment|available|availability|slot|slots)\b/i,
+    action: { type: "open_booking", label: "Book online", url: "/book" },
+  },
+  {
+    pattern: /\b(price|prices|pricing|cost|fee|fees|charge|charges|bundle|package|discount|new10|offer)\b/i,
+    action: { type: "redirect", label: "View pricing", url: "/pricing" },
+  },
+  {
+    pattern: /\b(invoice|receipt|insurance|claim|reimbursement|cashback|policy|insurer)\b/i,
+    action: { type: "redirect", label: "Open invoices", url: "/patient/invoices" },
+  },
+  {
+    pattern: /\b(exercise|exercises|rehab plan|home plan|self[\s-]?test|self[\s-]?check|scan|stretches|strengthening)\b/i,
+    action: { type: "redirect", label: "Open exercise library", url: "/exercises" },
+  },
+  {
+    pattern: /\b(contact|email|message|enquiry|enquire|support|help|speak|talk)\b/i,
+    action: { type: "redirect", label: "Contact PhysioOnClick", url: "/contact" },
+  },
+  {
+    pattern: /\b(my appointment|my appointments|upcoming|reschedule|cancel|my booking|schedule)\b/i,
+    action: { type: "redirect", label: "View appointments", url: "/patient/appointments" },
+  },
+  {
+    pattern: /\b(blog|article|advice|guide|learn)\b/i,
+    action: { type: "redirect", label: "Read the blog", url: "/blog" },
+  },
+  {
+    pattern: /\b(service|services|physio|physiotherapy|msk|musculoskeletal|back|neck|shoulder|knee|hip|ankle|sports|post[\s-]?surgical|surgery|replacement|neurological|neuro|stroke|parkinson|paediatric|pediatric|child|gait|mobility|online rehab)\b/i,
+    action: { type: "redirect", label: "View services", url: "/services" },
+  },
+];
+
+const SERVICE_ACTION_RULES: Array<{ pattern: RegExp; action: ChatAction }> = [
+  {
+    pattern: /\b(msk|musculoskeletal|back|neck|shoulder|knee|hip|ankle|elbow|wrist|pain|tendon|muscle|joint|sports)\b/i,
+    action: { type: "redirect", label: "View MSK physiotherapy", url: "/services/musculoskeletal-physiotherapy" },
+  },
+  {
+    pattern: /\b(post[\s-]?surgical|surgery|replacement|arthroplasty|operation|operative|tkr|thr)\b/i,
+    action: { type: "redirect", label: "View post-surgical rehab", url: "/services/post-surgical-rehabilitation" },
+  },
+  {
+    pattern: /\b(neuro|neurological|stroke|parkinson|multiple sclerosis|ms\b|balance|nerve)\b/i,
+    action: { type: "redirect", label: "View neurological rehab", url: "/services/neurological-rehabilitation" },
+  },
+  {
+    pattern: /\b(paediatric|pediatric|child|children|kids|developmental)\b/i,
+    action: { type: "redirect", label: "View paediatric physiotherapy", url: "/services/paediatric-physiotherapy" },
+  },
+  {
+    pattern: /\b(gait|walking|mobility|falls|fall|balance)\b/i,
+    action: { type: "redirect", label: "View gait & mobility", url: "/services/gait-and-mobility-assessment" },
+  },
+  {
+    pattern: /\b(online rehab|remote rehab|video physio|online physio|home programme|home program)\b/i,
+    action: { type: "redirect", label: "View online rehab", url: "/services/online-rehab-programmes" },
+  },
+];
+
+function inferSiteAction(message: string): ChatAction | undefined {
+  const accountAction = SITE_ACTION_RULES.find(({ action }) => action.url === "/patient/appointments");
+  if (accountAction?.pattern.test(message)) return accountAction.action;
+
+  const directAction = SITE_ACTION_RULES.filter(({ action }) => action.url !== "/services").find(({ pattern }) =>
+    pattern.test(message)
+  )?.action;
+  if (directAction) return directAction;
+
+  const serviceAction = SERVICE_ACTION_RULES.find(({ pattern }) => pattern.test(message))?.action;
+  if (serviceAction) return serviceAction;
+  return SITE_ACTION_RULES.find(({ pattern }) => pattern.test(message))?.action;
+}
+
+function isLikelyPhysioOnClickTopic(message: string): boolean {
+  if (message.length < 24) return true;
+  return SITE_ACTION_RULES.some(({ pattern }) => pattern.test(message));
+}
+
 function isRetryableModelError(error: unknown): boolean {
   const text = error instanceof Error ? error.message : String(error);
   return /\[(404|429|500|503)\b/.test(text);
@@ -114,7 +199,7 @@ export async function POST(req: NextRequest) {
   }
 
   const sessionId = incomingSessionId ?? crypto.randomUUID();
-  let actionForClient: { type: string; label: string; url: string } | undefined;
+  let actionForClient: ChatAction | undefined;
 
   try {
     const uid = await verifyToken(req.headers.get("Authorization"));
@@ -211,13 +296,22 @@ export async function POST(req: NextRequest) {
     }
     if (!response) throw lastError;
 
+    actionForClient ??= inferSiteAction(message);
+
+    if (!isLikelyPhysioOnClickTopic(message)) {
+      actionForClient = { type: "redirect", label: "View PhysioOnClick services", url: "/services" };
+      const reply =
+        "I can help with PhysioOnClick services, booking, pricing, exercises, insurance invoices and patient account questions. For anything outside that, the best next step here is to choose the right PhysioOnClick service or contact the clinic.";
+      return NextResponse.json({ reply, sessionId, action: actionForClient });
+    }
+
     // The model sometimes answers a tool call (e.g. redirect) with no text;
     // never send an empty bubble.
     const reply =
       response.text().trim() ||
       (actionForClient
         ? "Yes, we can help with that. You can take the next step here:"
-        : "Sorry, I couldn't answer that just now. Please use the contact form or call us.");
+        : "Sorry, I couldn't answer that just now. Please use the booking page, contact form, or email hello@physioonclick.co.uk.");
 
     // Persist to Firestore for logged-in patients. Scoped in its own try/catch so a
     // write failure is logged but doesn't discard an already-generated valid reply.
@@ -268,7 +362,7 @@ export async function POST(req: NextRequest) {
     console.error("[/api/chat] error:", err);
     return NextResponse.json(
       {
-        reply: "Sorry, I'm having trouble right now. Please call us or use the contact form.",
+        reply: "Sorry, I'm having trouble right now. Please use the booking page, contact form, or email hello@physioonclick.co.uk.",
         sessionId,
       },
       { status: 200 }

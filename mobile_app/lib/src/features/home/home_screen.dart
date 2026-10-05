@@ -31,14 +31,20 @@ class HomeScreen extends StatelessWidget {
               return Column(
                 children: [
                   _HeroBanner(theme: theme),
+                  const SizedBox(height: 14),
+                  _NewPatientOfferCard(theme: theme),
                   const SizedBox(height: 24),
                   _TrustBar(theme: theme),
                   const SizedBox(height: 28),
-                  Text('Why choose PhysioOnClick', style: theme.textTheme.titleLarge),
+                  Text(
+                    'Why choose PhysioOnClick',
+                    style: theme.textTheme.titleLarge,
+                  ),
                   const SizedBox(height: 14),
                   const _FeatureCard(
                     title: 'Online across the UK',
-                    body: 'Remote assessments, exercise progression and guided rehab — from anywhere in the UK.',
+                    body:
+                        'Remote assessments, exercise progression and guided rehab — from anywhere in the UK.',
                     icon: Icons.videocam_rounded,
                     color: Color(0xFF0891B2),
                     bgColor: Color(0xFFD8F3F9),
@@ -46,7 +52,8 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   const _FeatureCard(
                     title: 'Structured rehab programmes',
-                    body: 'Personalised exercise plans and progress tracking built around your recovery goals.',
+                    body:
+                        'Personalised exercise plans and progress tracking built around your recovery goals.',
                     icon: Icons.fitness_center_rounded,
                     color: Color(0xFF0E7490),
                     bgColor: Color(0xFFE0F5FA),
@@ -54,10 +61,20 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   const _FeatureCard(
                     title: 'HCPC registered',
-                    body: 'All sessions with a fully registered, CSP member physiotherapist (PH155757).',
+                    body:
+                        'All sessions with a fully registered, CSP member physiotherapist (PH155757).',
                     icon: Icons.verified_rounded,
                     color: Color(0xFF16A34A),
                     bgColor: Color(0xFFDCFCE7),
+                  ),
+                  const SizedBox(height: 12),
+                  const _FeatureCard(
+                    title: 'Insurance-ready invoices',
+                    body:
+                        'Paid sessions include a PDF invoice you can submit to your UK health insurer if your policy covers physiotherapy.',
+                    icon: Icons.receipt_long_rounded,
+                    color: Color(0xFF0E7490),
+                    bgColor: Color(0xFFE0F5FA),
                   ),
                   const SizedBox(height: 28),
                   _QuickBookCard(theme: theme),
@@ -66,6 +83,62 @@ class HomeScreen extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _NewPatientOfferCard extends StatelessWidget {
+  const _NewPatientOfferCard({required this.theme});
+
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => ServiceSelectScreen.go(context),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFECFEFF),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFF9ADCEE)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: const Color(0xFF0891B2),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(Icons.local_offer_rounded, color: Colors.white),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'New patient offer',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Use NEW10 at checkout for 10% off your first booking.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: const Color(0xFF0E7490),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_rounded, color: Color(0xFF0891B2)),
+          ],
+        ),
       ),
     );
   }
@@ -99,7 +172,11 @@ class _Header extends StatelessWidget {
               alignment: Alignment.center,
               child: const Text(
                 'P',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 22),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 22,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -109,11 +186,15 @@ class _Header extends StatelessWidget {
                 children: [
                   Text(
                     'PhysioOnClick',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   Text(
                     name != null ? '$greeting, $name' : greeting,
-                    style: theme.textTheme.bodySmall?.copyWith(color: const Color(0xFF5E7A84)),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: const Color(0xFF5E7A84),
+                    ),
                   ),
                 ],
               ),
@@ -206,7 +287,10 @@ class _HeroBanner extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
                   ),
                   child: const Text('Book session'),
                 ),
@@ -226,7 +310,10 @@ class _HeroBanner extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
                   ),
                   child: const Text('Our services'),
                 ),
@@ -256,11 +343,23 @@ class _TrustBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _TrustItem(label: 'HCPC\nRegistered', icon: Icons.verified_rounded, color: const Color(0xFF0891B2)),
+          _TrustItem(
+            label: 'HCPC\nRegistered',
+            icon: Icons.verified_rounded,
+            color: const Color(0xFF0891B2),
+          ),
           _TrustDivider(),
-          _TrustItem(label: 'CSP\nMember', icon: Icons.workspace_premium_rounded, color: const Color(0xFF16A34A)),
+          _TrustItem(
+            label: 'CSP\nMember',
+            icon: Icons.workspace_premium_rounded,
+            color: const Color(0xFF16A34A),
+          ),
           _TrustDivider(),
-          _TrustItem(label: 'UK-wide\nOnline', icon: Icons.language_rounded, color: const Color(0xFF0891B2)),
+          _TrustItem(
+            label: 'UK-wide\nOnline',
+            icon: Icons.language_rounded,
+            color: const Color(0xFF0891B2),
+          ),
         ],
       ),
     );
@@ -275,7 +374,11 @@ class _TrustDivider extends StatelessWidget {
 }
 
 class _TrustItem extends StatelessWidget {
-  const _TrustItem({required this.label, required this.icon, required this.color});
+  const _TrustItem({
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
 
   final String label;
   final IconData icon;
@@ -343,7 +446,9 @@ class _FeatureCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 5),
                   Text(body, style: theme.textTheme.bodyMedium),
@@ -381,12 +486,16 @@ class _QuickBookCard extends StatelessWidget {
                 children: [
                   Text(
                     'Ready to book?',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Online sessions · across the UK',
-                    style: theme.textTheme.bodySmall?.copyWith(color: const Color(0xFF0E7490)),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: const Color(0xFF0E7490),
+                    ),
                   ),
                 ],
               ),
@@ -398,7 +507,11 @@ class _QuickBookCard extends StatelessWidget {
                 color: const Color(0xFF0891B2),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 22),
+              child: const Icon(
+                Icons.arrow_forward_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
           ],
         ),

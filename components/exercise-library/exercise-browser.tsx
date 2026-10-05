@@ -132,7 +132,7 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
   if (!selected) return null;
 
   return (
-    <section className="exlib-browser" aria-labelledby="exercise-browser-title">
+    <section className="exlib-browser" id="exercise-browser" aria-labelledby="exercise-browser-title">
       <div className="exlib-browser__head">
         <div>
           <span className="eyebrow">Exercise catalogue</span>

@@ -94,7 +94,7 @@ describe("app/exercises/[slug] page", () => {
     const { container } = await renderPage(SLUG);
 
     expect(container).toHaveTextContent(formatDosage(resolveDosage(exercise)));
-    expect(container.querySelector('a[href="/book"]')).not.toBeNull();
+    expect(container.querySelector('a[href^="/book"]')).not.toBeNull();
     expect(
       screen.getByRole("button", { name: /add to my plan/i }),
     ).toBeInTheDocument();

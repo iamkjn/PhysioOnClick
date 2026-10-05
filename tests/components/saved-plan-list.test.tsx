@@ -25,7 +25,7 @@ describe("SavedPlanList", () => {
     render(<SavedPlanList items={ITEMS} />);
 
     expect(
-      await screen.findByText(/haven't saved any exercises yet/i),
+      await screen.findByText(/build a shortlist before you book/i),
     ).toBeInTheDocument();
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
@@ -47,8 +47,8 @@ describe("SavedPlanList", () => {
 
     // The book CTA is always present when the list is non-empty.
     expect(
-      screen.getByRole("link", { name: /book an assessment/i }),
-    ).toHaveAttribute("href", "/book");
+      screen.getByRole("link", { name: /review with a physio/i }),
+    ).toHaveAttribute("href", "/book?service=initial-assessment&source=saved-exercise-plan");
   });
 
   it("removes an item when its Remove button is clicked", async () => {
@@ -81,7 +81,7 @@ describe("SavedPlanList", () => {
     await user.click(await screen.findByRole("button", { name: /remove/i }));
 
     expect(
-      screen.getByText(/haven't saved any exercises yet/i),
+      screen.getByText(/build a shortlist before you book/i),
     ).toBeInTheDocument();
   });
 });

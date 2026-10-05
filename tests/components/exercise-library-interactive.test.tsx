@@ -72,7 +72,7 @@ describe("PlanTray", () => {
       await screen.findByRole("button", { name: /add to my plan/i }),
     );
 
-    const link = screen.getByRole("link", { name: /1 exercise · view plan/i });
+    const link = screen.getByRole("link", { name: /^1 exercise saved$/i });
     expect(link).toHaveAttribute("href", "/exercises#my-plan");
   });
 
@@ -93,7 +93,7 @@ describe("PlanTray", () => {
     await user.click(buttons[1]);
 
     expect(
-      screen.getByRole("link", { name: /2 exercises · view plan/i }),
+      screen.getByRole("link", { name: /^2 exercises saved$/i }),
     ).toBeInTheDocument();
   });
 });

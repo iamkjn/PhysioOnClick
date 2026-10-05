@@ -132,6 +132,8 @@ All `library_*` events go through the typed `trackLibraryEvent()` wrapper
 | `app/admin/page.tsx` | `page_view`. `appointment_cancel` `{ source: "admin" }` and `appointment_reschedule` `{ source: "admin" }` from `components/admin-bookings-table.tsx` (via `AdminAuthGate` → `AdminDashboard`, the admin landing dashboard). |
 | `app/admin/assistant/page.tsx` | `page_view` only (AI assistant workspace). |
 | `app/admin/chat-logs/page.tsx` | `page_view` only. |
+| `app/admin/chat-logs/[threadId]/page.tsx` | `page_view` only (single chat transcript). |
+| `app/admin/growth/[metric]/page.tsx` | `page_view` only (growth metric records). |
 | `app/admin/invoices/page.tsx` | `page_view` only. |
 | `app/admin/library/page.tsx` | `page_view` only (exercise-library content manager). |
 | `app/admin/patients/page.tsx` | `page_view` only. |

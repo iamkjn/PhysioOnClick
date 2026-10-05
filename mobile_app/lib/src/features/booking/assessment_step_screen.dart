@@ -21,6 +21,7 @@ class AssessmentStepScreen extends StatelessWidget {
   final String email;
   final String? personId;
   final String personName;
+  final String? discountCode;
   final VisitType visitType;
   final HomeVisitAddress? homeAddress;
 
@@ -31,6 +32,7 @@ class AssessmentStepScreen extends StatelessWidget {
     required this.email,
     required this.personId,
     required this.personName,
+    this.discountCode,
     this.visitType = VisitType.video,
     this.homeAddress,
     super.key,
@@ -58,6 +60,7 @@ class AssessmentStepScreen extends StatelessWidget {
             assessmentUid: uid,
             assessmentPersonId: resolvedPersonId,
             assessmentFormId: formId,
+            discountCode: discountCode,
           );
           if (!context.mounted) return;
           Navigator.pushReplacement(

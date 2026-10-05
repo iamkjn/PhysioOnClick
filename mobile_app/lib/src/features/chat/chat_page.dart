@@ -18,37 +18,43 @@ const _services = [
   (
     emoji: '💪',
     label: 'Musculoskeletal Physio',
-    text: 'We treat back & neck pain, shoulder impingement, tendon pain, persistent sports injuries and work-related strain.\n\n'
+    text:
+        'We treat back & neck pain, shoulder impingement, tendon pain, persistent sports injuries and work-related strain.\n\n'
         'Our approach includes a detailed functional assessment, manual therapy where appropriate, graduated exercise prescription and pain education.',
   ),
   (
     emoji: '🦿',
     label: 'Post-Surgical Rehab',
-    text: 'Structured rehab after knee/hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery.\n\n'
+    text:
+        'Structured rehab after knee/hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery.\n\n'
         'We guide you through post-operative milestones, strength & range-of-motion progression and return-to-function coaching.',
   ),
   (
     emoji: '🧠',
     label: 'Neurological Rehab',
-    text: 'Goal-led rehab for stroke, Parkinson\'s, balance difficulties and neurological deconditioning.\n\n'
+    text:
+        'Goal-led rehab for stroke, Parkinson\'s, balance difficulties and neurological deconditioning.\n\n'
         'We focus on task-specific mobility practice, balance & gait training, and carer education.',
   ),
   (
     emoji: '👶',
     label: 'Paediatric Physio',
-    text: 'Child-centred physiotherapy for developmental delay, coordination challenges, mobility support and post-operative rehab.\n\n'
+    text:
+        'Child-centred physiotherapy for developmental delay, coordination challenges, mobility support and post-operative rehab.\n\n'
         'Sessions use play-based strategies with full parent coaching. Parent attendance is encouraged.',
   ),
   (
     emoji: '🚶',
     label: 'Gait & Mobility',
-    text: 'Walking assessment and movement analysis for falls risk, balance confidence, mobility aid review and reduced walking tolerance.\n\n'
+    text:
+        'Walking assessment and movement analysis for falls risk, balance confidence, mobility aid review and reduced walking tolerance.\n\n'
         'We provide functional walking assessment, strength & balance prescription and outcome tracking.',
   ),
   (
     emoji: '💻',
     label: 'Online Rehab',
-    text: 'UK-wide digital physiotherapy via secure video call with tailored exercise plans, progress tracking and weekly review calls.\n\n'
+    text:
+        'UK-wide digital physiotherapy via secure video call with tailored exercise plans, progress tracking and weekly review calls.\n\n'
         'Online patients receive the same structured rehabilitation planning as in-person sessions.',
   ),
 ];
@@ -61,6 +67,14 @@ const _pricingText =
     '• 4-Session Bundle — £120\n'
     '• 8-Session Bundle — £225\n\n'
     'New patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.';
+
+const _insuranceText =
+    'Yes — paid sessions include an insurance-ready PDF invoice.\n\n'
+    'How to claim:\n'
+    '• Open Invoices & Payments in your patient profile.\n'
+    '• Download or share the PDF invoice for the paid session.\n'
+    '• Submit it to your UK health insurer through their claim portal or app.\n\n'
+    'Reimbursement depends on your own policy, so please check your cover if you are unsure.';
 
 // ─── Chat page ──────────────────────────────────────────────────────────────
 
@@ -79,10 +93,13 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    _messages.add(const _Msg(
-      isBot: true,
-      text: 'Hi! I\'m your PhysioOnClick assistant 👋\n\nHow can I help you today?',
-    ));
+    _messages.add(
+      const _Msg(
+        isBot: true,
+        text:
+            'Hi! I\'m your PhysioOnClick assistant 👋\n\nHow can I help you today?',
+      ),
+    );
     _chips = _homeChips();
   }
 
@@ -95,28 +112,32 @@ class _ChatPageState extends State<ChatPage> {
   // ── Chip sets ─────────────────────────────────────────────────────────────
 
   List<_ChipDef> _homeChips() => [
-        _ChipDef('🏃', 'Our services', _tapServices),
-        _ChipDef('💰', 'Pricing', _tapPricing),
-        _ChipDef('📅', 'Book appointment', _tapBook),
-        _ChipDef('📍', 'Location', _tapLocation),
-        _ChipDef('📞', 'Contact us', _tapContact),
-        _ChipDef('❌', 'Cancellation policy', _tapCancellation),
-      ];
+    _ChipDef('🏃', 'Our services', _tapServices),
+    _ChipDef('💰', 'Pricing', _tapPricing),
+    _ChipDef('🧾', 'Insurance claims', _tapInsurance),
+    _ChipDef('📅', 'Book appointment', _tapBook),
+    _ChipDef('📍', 'Location', _tapLocation),
+    _ChipDef('📞', 'Contact us', _tapContact),
+    _ChipDef('❌', 'Cancellation policy', _tapCancellation),
+  ];
 
   List<_ChipDef> _backChips() => [
-        _ChipDef('📅', 'Book appointment', _tapBook),
-        _ChipDef('🏠', 'Main menu', _tapHome),
-      ];
+    _ChipDef('📅', 'Book appointment', _tapBook),
+    _ChipDef('🏠', 'Main menu', _tapHome),
+  ];
 
   // ── Tap handlers ──────────────────────────────────────────────────────────
 
   void _tapHome(BuildContext _) {
     setState(() {
       _messages.clear();
-      _messages.add(const _Msg(
-        isBot: true,
-        text: 'Hi! I\'m your PhysioOnClick assistant 👋\n\nHow can I help you today?',
-      ));
+      _messages.add(
+        const _Msg(
+          isBot: true,
+          text:
+              'Hi! I\'m your PhysioOnClick assistant 👋\n\nHow can I help you today?',
+        ),
+      );
       _chips = _homeChips();
     });
   }
@@ -126,7 +147,11 @@ class _ChatPageState extends State<ChatPage> {
       'We offer 6 specialised physiotherapy services. Which one would you like to know more about?',
       chips: [
         for (final s in _services)
-          _ChipDef(s.emoji, s.label, (c) => _tapServiceDetail(c, s.label, s.text)),
+          _ChipDef(
+            s.emoji,
+            s.label,
+            (c) => _tapServiceDetail(c, s.label, s.text),
+          ),
         _ChipDef('↩', 'Main menu', _tapHome),
       ],
     );
@@ -148,6 +173,10 @@ class _ChatPageState extends State<ChatPage> {
     _botReply(_pricingText, chips: _backChips());
   }
 
+  void _tapInsurance(BuildContext _) {
+    _botReply(_insuranceText, chips: _backChips());
+  }
+
   void _tapBook(BuildContext ctx) {
     _addUser('Book appointment');
     ServiceSelectScreen.go(ctx);
@@ -156,7 +185,7 @@ class _ChatPageState extends State<ChatPage> {
   void _tapLocation(BuildContext _) {
     _botReply(
       'We\'re based in Glasgow, UK and also offer online physiotherapy across the whole UK via secure video call.\n\n'
-          'Appointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.',
+      'Appointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.',
       chips: _backChips(),
     );
   }
@@ -183,13 +212,13 @@ class _ChatPageState extends State<ChatPage> {
   void _tapCancellation(BuildContext _) {
     _botReply(
       'Please cancel at least 24 hours in advance to avoid a cancellation fee.\n\n'
-          'You can manage your bookings through the Appointments screen in this app, or contact us at $_email.',
+      'You can manage your bookings through the Appointments screen in this app, or contact us at $_email.',
       chips: [
         _ChipDef('📋', 'My appointments', (ctx) {
           _addUser('My appointments');
-          Navigator.of(ctx).push(
-            MaterialPageRoute(builder: (_) => const AppointmentsScreen()),
-          );
+          Navigator.of(
+            ctx,
+          ).push(MaterialPageRoute(builder: (_) => const AppointmentsScreen()));
         }),
         _ChipDef('🏠', 'Main menu', _tapHome),
       ],
@@ -213,7 +242,8 @@ class _ChatPageState extends State<ChatPage> {
 
   void _onChipTap(BuildContext ctx, _ChipDef chip) {
     // Don't echo utility actions as user messages
-    final isUtility = chip.label == 'Copy email' ||
+    final isUtility =
+        chip.label == 'Copy email' ||
         chip.label == 'Main menu' ||
         chip.label == 'Back to services';
     if (!isUtility) _addUser(chip.label);
@@ -249,10 +279,7 @@ class _ChatPageState extends State<ChatPage> {
               itemBuilder: (_, i) => _BubbleWidget(msg: _messages[i]),
             ),
           ),
-          _ChipsBar(
-            chips: _chips,
-            onTap: (chip) => _onChipTap(context, chip),
-          ),
+          _ChipsBar(chips: _chips, onTap: (chip) => _onChipTap(context, chip)),
         ],
       ),
     );
@@ -290,7 +317,11 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           end: Alignment.bottomRight,
         ),
         boxShadow: [
-          BoxShadow(color: Color(0x330891B2), blurRadius: 12, offset: Offset(0, 4)),
+          BoxShadow(
+            color: Color(0x330891B2),
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: SafeArea(
@@ -340,7 +371,10 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                         SizedBox(width: 4),
                         Text(
                           'Online · Ask me anything',
-                          style: TextStyle(color: Color(0xCCFFFFFF), fontSize: 11),
+                          style: TextStyle(
+                            color: Color(0xCCFFFFFF),
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
@@ -366,8 +400,9 @@ class _BubbleWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment:
-            msg.isBot ? MainAxisAlignment.start : MainAxisAlignment.end,
+        mainAxisAlignment: msg.isBot
+            ? MainAxisAlignment.start
+            : MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (msg.isBot) ...[
@@ -449,7 +484,9 @@ class _ChipsBar extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: const Border(top: BorderSide(color: Color(0xFFE0F7FA), width: 1)),
+          border: const Border(
+            top: BorderSide(color: Color(0xFFE0F7FA), width: 1),
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -503,7 +540,9 @@ class _ChipWidgetState extends State<_ChipWidget> {
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0891B2).withValues(alpha: _pressed ? 0.2 : 0.07),
+              color: const Color(
+                0xFF0891B2,
+              ).withValues(alpha: _pressed ? 0.2 : 0.07),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),

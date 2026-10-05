@@ -78,6 +78,18 @@ const METRICS: Record<string, MetricConfig> = {
     events: ["chat_message_sent", "chat_booking_intent"],
     empty: "No chat leads have been tracked yet.",
   },
+  "page-views": {
+    title: "Page views",
+    description: "Every patient-side page view, newest first. Search by path to see one page.",
+    events: ["page_view"],
+    empty: "No page views have been tracked yet.",
+  },
+  "service-interest": {
+    title: "Service interest",
+    description: "Service page views, service card clicks and services chosen in booking.",
+    events: ["service_view", "service_click", "booking_service_selected"],
+    empty: "No service activity has been tracked yet.",
+  },
   countries: {
     title: "Countries captured",
     description: "Patient sessions where country data was captured.",
@@ -95,6 +107,9 @@ const EVENT_LABELS: Record<string, string> = {
   exercise_plan_saved: "Exercise saved to plan",
   chat_message_sent: "Patient chat message",
   chat_booking_intent: "Chat booking intent",
+  service_view: "Service page viewed",
+  service_click: "Service card clicked",
+  booking_service_selected: "Booking service chosen",
 };
 
 function formatLabel(value: string) {

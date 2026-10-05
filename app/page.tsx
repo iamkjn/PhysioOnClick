@@ -34,10 +34,6 @@ export default async function HomePage() {
   // have no cookie and get the marketing hero immediately.
   const initialSignedIn = (await cookies()).get("poc-auth")?.value === "1";
   const homeServices = getPublicServices().slice(0, 4);
-  const founderInitials = founder.name
-    .split(" ")
-    .map((part) => part[0])
-    .join("");
 
   return (
     <>
@@ -64,9 +60,14 @@ export default async function HomePage() {
         <div className="site-shell home-proof-grid">
           <Reveal direction="up">
             <article className="card home-founder-card">
-              <span className="home-founder-avatar" aria-hidden="true">
-                {founderInitials}
-              </span>
+              <Image
+                className="home-founder-avatar"
+                src="/images/shivaliba-zala-thumbnail.svg"
+                alt={`${founder.name}, HCPC registered physiotherapist`}
+                width={96}
+                height={96}
+                unoptimized
+              />
               <h3>{founder.name}</h3>
               <p className="muted">{founder.location}</p>
               <ul className="home-founder-credentials">

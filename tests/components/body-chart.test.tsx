@@ -62,12 +62,11 @@ describe("BodyChart", () => {
     expect(screen.getByRole("button", { name: /upper back/i })).toBeInTheDocument();
   });
 
-  it("uses large visible region buttons without the old anatomy image", () => {
+  it("renders the SVG body chart with clickable regions and no anatomy image", () => {
     const { container } = render(<BodyChart value={[]} onChange={vi.fn()} />);
     expect(container.querySelector(".body-chart__anatomy-image")).not.toBeInTheDocument();
-    expect(container.querySelector(".body-chart__area-btn")).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: /patient right body areas/i })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: /patient left body areas/i })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: /body chart, front view/i })).toBeInTheDocument();
+    expect(container.querySelectorAll(".body-chart__region").length).toBeGreaterThan(0);
   });
 
   it("has front-view hand and foot regions", () => {
