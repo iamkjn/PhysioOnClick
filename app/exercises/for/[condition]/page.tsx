@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { UkServiceLinks } from "@/components/uk-service-links";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -326,6 +327,7 @@ export default async function ConditionHubPage({
           >
             Get my personalized plan
           </TrackedBookLink>
+          <UkServiceLinks />
         </div>
       </section>
     </div>

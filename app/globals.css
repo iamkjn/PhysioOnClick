@@ -16386,3 +16386,14 @@ textarea:focus {
   font-size: var(--text-md);
   line-height: 1.6;
 }
+
+.simple-cta-inner .uk-service-links {
+  margin: 1.25rem auto 0;
+  font-size: 0.95rem;
+}
+
+.simple-cta-inner .uk-service-links a {
+  color: white;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
