@@ -3,10 +3,8 @@ import 'package:flutter/foundation.dart';
 import '../booking/models/home_visit.dart';
 
 const int kAddressLineMax = 120;
-const int kAddressPostcodeMax = 10;
+const int kAddressPostcodeMax = kPostcodeMaxLength;
 const int kAddressLabelMax = 40;
-
-final _ukPostcode = RegExp(r'^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$');
 
 /// Bumped whenever saved addresses are added, edited or deleted, so every
 /// mounted usual-address picker reloads (not just the one that opened
@@ -57,14 +55,10 @@ Map<String, dynamic> cleanAddressInput(
     throw const AddressValidationException(
         'Keep the address to $kAddressLineMax characters or fewer.');
   }
-  final raw = postcode.trim();
-  if (raw.isEmpty || raw.length > kAddressPostcodeMax) {
+  if (!isValidUkPostcode(postcode)) {
     throw const AddressValidationException("That postcode doesn't look right.");
   }
-  final pc = normalisePostcode(raw);
-  if (!_ukPostcode.hasMatch(pc)) {
-    throw const AddressValidationException("That postcode doesn't look right.");
-  }
+  final pc = normalisePostcode(postcode.trim());
   var lab = (label ?? '').trim();
   if (lab.length > kAddressLabelMax) lab = lab.substring(0, kAddressLabelMax);
   return {'label': lab, 'line': l, 'postcode': pc};

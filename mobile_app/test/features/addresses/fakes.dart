@@ -56,9 +56,11 @@ class FakeHomeVisitRepository implements HomeVisitRepository {
   FakeHomeVisitRepository({this.covered = const {}, this.failCoverage = false});
   final Set<String> covered; // postcodes that are covered
   final bool failCoverage;
+  final List<String> checked = [];
 
   @override
   Future<CoverageResult> checkCoverage(String postcode) async {
+    checked.add(normalisePostcode(postcode));
     if (failCoverage) throw const CoverageUnavailable();
     final pc = normalisePostcode(postcode);
     return CoverageResult(

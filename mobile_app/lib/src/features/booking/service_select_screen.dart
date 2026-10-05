@@ -7,6 +7,7 @@ import '../../core/app_colors.dart';
 import '../../core/page_transitions.dart';
 import '../../core/widgets/auth_gate_sheet.dart';
 import '../addresses/address_repository.dart';
+import '../addresses/outside_area_badge.dart';
 import 'booking_step_header.dart';
 import 'home_visit_repository.dart';
 import 'models/book_service.dart';
@@ -27,12 +28,6 @@ class ServiceSelection {
   const ServiceSelection(
       {required this.service, required this.visitType, this.homeAddress});
 }
-
-final _postcodeShape = RegExp(r'^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$');
-bool _validPostcode(String raw) =>
-    raw.trim().isNotEmpty &&
-    raw.trim().length <= kAddressPostcodeMax &&
-    _postcodeShape.hasMatch(normalisePostcode(raw));
 
 const _kDifferent = '__different__';
 
@@ -210,7 +205,7 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
       _manual = false;
       _lineCtrl.clear();
     });
-    if (!_validPostcode(raw)) return;
+    if (!isValidUkPostcode(raw)) return;
     _debounce = Timer(const Duration(milliseconds: 400), _checkCoverage);
   }
 
@@ -296,7 +291,7 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
     if (_pickedId == null && !_manual) return null;
     final line = _lineCtrl.text.replaceAll(RegExp(r'\s+'), ' ').trim();
     if (line.isEmpty || line.length > kAddressLineMax) return null;
-    if (!_validPostcode(_postcodeCtrl.text)) return null;
+    if (!isValidUkPostcode(_postcodeCtrl.text)) return null;
     return HomeVisitAddress(line: line, postcode: normalisePostcode(_postcodeCtrl.text));
   }
 
@@ -318,10 +313,25 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
           normalisePostcode(a.postcode) == home.postcode &&
           a.line.trim().toLowerCase() == home.line.toLowerCase());
       if (!exists) {
+        // Remember it now so Back -> Continue doesn't save it twice.
+        final pending = SavedAddress(
+            id: '', ownerUid: _uid!, label: '', line: home.line, postcode: home.postcode);
+        setState(() => _saved = [..._saved, pending]);
         _addr.addAddress(_uid!, line: home.line, postcode: home.postcode).then(
-              (_) {},
-              onError: (_) {},
-            );
+          (id) {
+            if (!mounted) return;
+            setState(() => _saved = [
+                  for (final a in _saved)
+                    identical(a, pending)
+                        ? SavedAddress(
+                            id: id, ownerUid: a.ownerUid, label: '', line: a.line, postcode: a.postcode)
+                        : a
+                ]);
+          },
+          onError: (_) {
+            if (mounted) setState(() => _saved = _saved.where((a) => !identical(a, pending)).toList());
+          },
+        );
       }
     }
     final selection =
@@ -444,17 +454,6 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
     );
   }
 
-  Widget _outOfAreaBadge() => Container(
-        margin: const EdgeInsets.only(top: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: AppColors.goldLight,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Text('Outside our home-visit area',
-            style: TextStyle(fontSize: 12, color: AppColors.gold, fontWeight: FontWeight.w600)),
-      );
-
   Widget _uncoveredBlock(String outward) {
     final theme = Theme.of(context);
     return Column(
@@ -563,7 +562,7 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
           value: a.id,
           title: Text(a.display),
           subtitle: _savedCoverage[a.id] == _CoverageState.uncovered
-              ? Align(alignment: Alignment.centerLeft, child: _outOfAreaBadge())
+              ? Align(alignment: Alignment.centerLeft, child: const OutsideAreaBadge())
               : null,
         ));
       }

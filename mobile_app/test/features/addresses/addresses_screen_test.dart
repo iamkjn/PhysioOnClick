@@ -30,6 +30,16 @@ void main() {
     expect(find.text('Outside our home-visit area'), findsOneWidget);
   });
 
+  testWidgets('checks coverage once per outward code', (t) async {
+    const home2 = SavedAddress(
+        id: 'h2', ownerUid: 'u1', label: 'Mum', line: '9 Gallowgate', postcode: 'G31 2AA');
+    final hv = FakeHomeVisitRepository(covered: {'G31 4HS'});
+    await t.pumpWidget(_app(FakeAddressRepository([_home, home2, _away]), hv));
+    await t.pumpAndSettle();
+    expect(hv.checked.length, 2);
+    expect(find.text('Outside our home-visit area'), findsOneWidget);
+  });
+
   testWidgets('coverage failure shows no badge', (t) async {
     await t.pumpWidget(
         _app(FakeAddressRepository([_away]), FakeHomeVisitRepository(failCoverage: true)));

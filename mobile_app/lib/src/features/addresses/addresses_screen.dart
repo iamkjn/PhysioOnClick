@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import '../booking/home_visit_repository.dart';
 import '../booking/models/home_visit.dart';
 import 'address_repository.dart';
+import 'outside_area_badge.dart';
 
-const kOutsideAreaLabel = 'Outside our home-visit area';
+export 'outside_area_badge.dart';
+
 const kNoAddressesCopy = 'No saved addresses yet. Add one to book home visits faster.';
 
 /// Account -> Addresses. Addresses/postcodes are personal data: never logged.
@@ -30,8 +32,10 @@ class AddressesScreen extends StatefulWidget {
 class _AddressesScreenState extends State<AddressesScreen> {
   List<SavedAddress>? _items;
   String? _error;
-  // postcode -> covered; absent = unknown (no badge).
+  // outward code -> covered; absent = unknown (no badge).
   final Map<String, bool> _coverage = {};
+
+  static String _outward(String postcode) => normalisePostcode(postcode).split(' ').first;
 
   @override
   void initState() {
@@ -47,8 +51,9 @@ class _AddressesScreenState extends State<AddressesScreen> {
         _items = list;
         _error = null;
       });
+      final seen = <String>{};
       for (final a in list) {
-        _checkCoverage(a.postcode);
+        if (seen.add(_outward(a.postcode))) _checkCoverage(a.postcode);
       }
     } catch (_) {
       if (!mounted) return;
@@ -57,10 +62,11 @@ class _AddressesScreenState extends State<AddressesScreen> {
   }
 
   Future<void> _checkCoverage(String postcode) async {
-    if (_coverage.containsKey(postcode)) return;
+    final outward = _outward(postcode);
+    if (_coverage.containsKey(outward)) return;
     try {
       final r = await widget.homeVisitRepository.checkCoverage(postcode);
-      if (mounted) setState(() => _coverage[postcode] = r.covered);
+      if (mounted) setState(() => _coverage[outward] = r.covered);
     } catch (_) {
       // Unknown: show no badge rather than a wrong one.
     }
@@ -159,7 +165,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                       children: [
                         if (a.label.isNotEmpty) Text(a.line),
                         Text(a.postcode),
-                        if (_coverage[a.postcode] == false) const OutsideAreaBadge(),
+                        if (_coverage[_outward(a.postcode)] == false) const OutsideAreaBadge(),
                       ],
                     ),
                     trailing: Row(
@@ -193,21 +199,6 @@ class _AddressesScreenState extends State<AddressesScreen> {
     }
     return Scaffold(appBar: AppBar(title: const Text('Addresses')), body: body);
   }
-}
-
-class OutsideAreaBadge extends StatelessWidget {
-  const OutsideAreaBadge({super.key});
-  @override
-  Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.only(top: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFF4E5),
-          borderRadius: BorderRadius.circular(999),
-        ),
-        child: const Text(kOutsideAreaLabel,
-            style: TextStyle(fontSize: 11, color: Color(0xFF9A5B00), fontWeight: FontWeight.w600)),
-      );
 }
 
 enum _Cov { idle, checking, covered, uncovered, failed }

@@ -42,6 +42,17 @@ String normalisePostcode(String raw) {
   return '${compact.substring(0, compact.length - 3)} ${compact.substring(compact.length - 3)}';
 }
 
+const int kPostcodeMaxLength = 10;
+final _ukPostcodeShape = RegExp(r'^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$');
+
+/// True when [raw] (any case/spacing) has the shape of a UK postcode.
+bool isValidUkPostcode(String raw) {
+  final t = raw.trim();
+  return t.isNotEmpty &&
+      t.length <= kPostcodeMaxLength &&
+      _ukPostcodeShape.hasMatch(normalisePostcode(t));
+}
+
 /// Personal data: never log, put in analytics, or put in a URL.
 class HomeVisitAddress {
   final String line;

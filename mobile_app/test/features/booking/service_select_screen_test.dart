@@ -276,6 +276,24 @@ void main() {
       expect(ar.added, ['9 Test Road|G31 4HS']);
     });
 
+    testWidgets('Back then Continue again does not save the new address twice',
+        (tester) async {
+      await big(tester);
+      hv.lookupFails = true;
+      await tester.pumpWidget(app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home visit in Glasgow'));
+      await tester.pumpAndSettle();
+      await enterPostcode(tester, 'G31 4HS');
+      await tester.enterText(find.byKey(const Key('manualLineField')), '9 Test Road');
+      await tester.pump();
+      await tester.tap(find.text('Continue to times'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue to times'));
+      await tester.pumpAndSettle();
+      expect(ar.added, ['9 Test Road|G31 4HS']);
+    });
+
     testWidgets('picking a looked-up address resolves it', (tester) async {
       await big(tester);
       await tester.pumpWidget(app());

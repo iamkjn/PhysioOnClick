@@ -53,4 +53,14 @@ void main() {
     expect(homePriceSummary(svc(BookServiceId.initialAssessment)), '£40 session + £15 travel');
     expect(homePriceSummary(svc(BookServiceId.bundle4)), '£120 sessions + £60 travel');
   });
+
+  test('isValidUkPostcode', () {
+    expect(isValidUkPostcode('g31 4hs'), isTrue);
+    expect(isValidUkPostcode('G314HS'), isTrue);
+    expect(isValidUkPostcode('EH1 1AA'), isTrue);
+    expect(isValidUkPostcode(''), isFalse);
+    expect(isValidUkPostcode('G31'), isFalse);
+    expect(isValidUkPostcode('NOT A POSTCODE'), isFalse);
+    expect(isValidUkPostcode('G31 4HS          X'), isFalse);
+  });
 }

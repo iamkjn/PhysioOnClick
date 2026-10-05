@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/page_transitions.dart';
+import '../addresses/address_repository.dart';
 import '../people/dependent_model.dart';
 import '../people/people_repository.dart';
 import 'assessment_step_screen.dart';
 import 'booking_step_header.dart';
 import 'checkout_repository.dart';
+import 'home_visit_repository.dart';
 import 'models/book_service.dart';
 import 'models/home_visit.dart';
+import 'visit_address_panel.dart';
 
 const _weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -47,8 +50,14 @@ class TimeDetailsScreen extends StatefulWidget {
     this.homeAddress,
     this.initialPersonId,
     this.initialPersonName,
+    this.addressRepository,
+    this.homeVisitRepository,
     super.key,
   });
+
+  /// Injectable for tests; real implementations are used when null.
+  final AddressRepository? addressRepository;
+  final HomeVisitRepository? homeVisitRepository;
 
   @override
   State<TimeDetailsScreen> createState() => _TimeDetailsScreenState();
@@ -71,6 +80,11 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
   String? _selectedPersonName;
   bool _consent = false;
 
+  /// Home-visit address; may be switched to the picked person's usual one.
+  HomeVisitAddress? _homeAddress;
+  AddressRepository? _addrRepo;
+  HomeVisitRepository? _hvRepo;
+
   @override
   void initState() {
     super.initState();
@@ -83,6 +97,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
     }
     _selectedPersonId = widget.initialPersonId;
     _selectedPersonName = widget.initialPersonName;
+    _homeAddress = widget.homeAddress;
     _loadSlots();
   }
 
@@ -161,7 +176,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
           personId: _selectedPersonId,
           personName: _selectedPersonName ?? _nameController.text.trim(),
           visitType: widget.visitType,
-          homeAddress: widget.homeAddress,
+          homeAddress: _homeAddress,
         ),
       ),
     );
@@ -194,6 +209,20 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                         homePriceSummary(widget.service),
                         style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                       ),
+                    ),
+                  if (widget.visitType == VisitType.home && _homeAddress != null)
+                    VisitAddressPanel(
+                      address: _homeAddress!,
+                      step1PersonId: widget.initialPersonId,
+                      selectedPersonId: _selectedPersonId,
+                      selectedPersonName: _selectedPersonName,
+                      uid: user?.uid,
+                      addressRepository:
+                          _addrRepo ??= widget.addressRepository ?? AddressRepository(),
+                      homeVisitRepository:
+                          _hvRepo ??= widget.homeVisitRepository ?? HomeVisitRepository(),
+                      onChange: () => Navigator.of(context).pop(),
+                      onAddressChanged: (a) => setState(() => _homeAddress = a),
                     ),
                   if (_slotsError != null)
                     Padding(
