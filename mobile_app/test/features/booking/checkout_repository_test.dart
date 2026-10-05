@@ -127,4 +127,56 @@ void main() {
     expect(status.status, 'paid');
     expect(status.calBookingUid, 'abc');
   });
+
+  test('fetchSlots adds visit=home for home visits only', () async {
+    final seen = <Uri>[];
+    final client = MockClient((request) async {
+      seen.add(request.url);
+      return http.Response(jsonEncode({'slots': {}}), 200);
+    });
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+    await repo.fetchSlots(service: 'initial-assessment', start: DateTime(2026, 9, 20), end: DateTime(2026, 9, 25), visitType: 'home');
+    await repo.fetchSlots(service: 'initial-assessment', start: DateTime(2026, 9, 20), end: DateTime(2026, 9, 25));
+    expect(seen[0].queryParameters['visit'], 'home');
+    expect(seen[1].queryParameters.containsKey('visit'), isFalse);
+  });
+
+  test('createCheckoutSession (video) sends visitType video, no address, no focusAreas', () async {
+    late Map<String, dynamic> body;
+    final client = MockClient((request) async {
+      body = jsonDecode(request.body) as Map<String, dynamic>;
+      return http.Response(jsonEncode({'ok': true, 'url': 'https://x'}), 200);
+    });
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+    await repo.createCheckoutSession(service: 'follow-up', start: DateTime.utc(2026, 9, 20, 9), name: 'P', email: 'p@e.com');
+    expect(body['visitType'], 'video');
+    expect(body.containsKey('focusAreas'), isFalse);
+    expect(body.containsKey('homeAddressLine'), isFalse);
+    expect(body.containsKey('homePostcode'), isFalse);
+  });
+
+  test('createCheckoutSession (home) sends address fields', () async {
+    late Map<String, dynamic> body;
+    final client = MockClient((request) async {
+      body = jsonDecode(request.body) as Map<String, dynamic>;
+      return http.Response(jsonEncode({'ok': true, 'url': 'https://x'}), 200);
+    });
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+    await repo.createCheckoutSession(
+      service: 'initial-assessment', start: DateTime.utc(2026, 9, 20, 9), name: 'P', email: 'p@e.com',
+      visitType: 'home', homeAddressLine: '1 Main St', homePostcode: 'G31 4HS');
+    expect(body['visitType'], 'home');
+    expect(body['homeAddressLine'], '1 Main St');
+    expect(body['homePostcode'], 'G31 4HS');
+  });
+
+  test('createCheckoutSession surfaces the server error verbatim', () async {
+    final client = MockClient((request) async => http.Response(
+        jsonEncode({'ok': false, 'error': "We don't offer home visits at that postcode yet."}), 400));
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+    expect(
+      () => repo.createCheckoutSession(service: 'initial-assessment', start: DateTime.utc(2026, 9, 20, 9), name: 'P', email: 'p@e.com', visitType: 'home', homeAddressLine: 'a', homePostcode: 'ZZ1 1ZZ'),
+      throwsA(predicate((e) => e.toString().contains("We don't offer home visits at that postcode yet."))),
+    );
+  });
 }

@@ -111,6 +111,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
         service: widget.service.apiId,
         start: start,
         end: lastOfMonth,
+        visitType: widget.visitType.name,
       );
       if (mounted) {
         setState(() {
@@ -161,7 +162,8 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
           email: _emailController.text.trim(),
           personId: _selectedPersonId,
           personName: _selectedPersonName ?? _nameController.text.trim(),
-          focusAreas: widget.focusAreas,
+          visitType: widget.visitType,
+          homeAddress: widget.homeAddress,
         ),
       ),
     );
@@ -178,7 +180,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(title: Text(widget.service.title)),
+      appBar: AppBar(title: Text(serviceLabelFor(widget.service, widget.visitType))),
       body: SafeArea(
         child: Column(
           children: [
@@ -187,6 +189,15 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                 children: [
+                  if (widget.visitType == VisitType.home)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        '${serviceLabelFor(widget.service, widget.visitType)} ${formatPounds(sessionPricePence(widget.service))}'
+                        ' + ${travelFeeLabel(widget.service)} ${formatPounds(travelFeePence(widget.service, widget.visitType))}',
+                        style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                      ),
+                    ),
                   if (_slotsError != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -300,7 +311,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                       backgroundColor: AppColors.teal,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: Text('Continue to payment · £${widget.service.price.toStringAsFixed(0)}'),
+                    child: Text('Continue to payment · ${formatPounds(totalPence(widget.service, widget.visitType))}'),
                   ),
                 ),
               ),

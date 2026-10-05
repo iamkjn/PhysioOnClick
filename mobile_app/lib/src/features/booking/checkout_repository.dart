@@ -60,6 +60,7 @@ class CheckoutRepository {
     required String service,
     required DateTime start,
     required DateTime end,
+    String visitType = 'video',
   }) async {
     String fmt(DateTime d) =>
         '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
@@ -67,6 +68,7 @@ class CheckoutRepository {
       'service': service,
       'start': fmt(start),
       'end': fmt(end),
+      if (visitType == 'home') 'visit': 'home',
     });
     final res = await _client
         .get(uri, headers: await _authHeaders())
@@ -85,7 +87,9 @@ class CheckoutRepository {
     required String name,
     required String email,
     String timeZone = 'Europe/London',
-    List<String> focusAreas = const [],
+    String visitType = 'video',
+    String? homeAddressLine,
+    String? homePostcode,
     String? assessmentUid,
     String? assessmentPersonId,
     String? assessmentFormId,
@@ -101,7 +105,11 @@ class CheckoutRepository {
             'name': name,
             'email': email,
             'timeZone': timeZone,
-            if (focusAreas.isNotEmpty) 'focusAreas': focusAreas,
+            'visitType': visitType,
+            if (visitType == 'home') ...{
+              'homeAddressLine': ?homeAddressLine,
+              'homePostcode': ?homePostcode,
+            },
             if (assessmentUid != null) 'assessmentUid': assessmentUid,
             if (assessmentPersonId != null) 'assessmentPersonId': assessmentPersonId,
             if (assessmentFormId != null) 'assessmentFormId': assessmentFormId,
