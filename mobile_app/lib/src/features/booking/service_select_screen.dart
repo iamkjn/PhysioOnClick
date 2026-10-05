@@ -108,7 +108,8 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
   // Saved addresses
   bool _savedLoaded = false;
   List<SavedAddress> _saved = [];
-  final Map<String, bool> _savedCovered = {};
+  final Map<String, _CoverageState> _savedCoverage = {};
+  final Map<String, int> _savedSeq = {};
   String _choice = _kDifferent;
 
   // Different address
@@ -116,6 +117,7 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
   final _lineCtrl = TextEditingController();
   Timer? _debounce;
   int _coverageSeq = 0;
+  int _lookupSeq = 0;
   _CoverageState _coverage = _CoverageState.idle;
   CoverageResult? _coverageResult;
   bool _lookupLoading = false;
@@ -165,13 +167,35 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
         _saved = saved;
         if (usual != null && saved.any((a) => a.id == usual)) _choice = usual;
       });
-      for (final a in saved) {
-        _hv.checkCoverage(a.postcode).then((r) {
-          if (mounted) setState(() => _savedCovered[a.id] = r.covered);
-        }, onError: (_) {});
-      }
+      _checkSaved(_chosenSaved);
     } catch (_) {
       // Saved addresses are a convenience; the patient can still type one.
+    }
+  }
+
+  void _choose(String id) {
+    setState(() => _choice = id);
+    final s = _chosenSaved;
+    if (s != null && _savedCoverage[s.id] != _CoverageState.covered &&
+        _savedCoverage[s.id] != _CoverageState.uncovered) {
+      _checkSaved(s);
+    }
+  }
+
+  /// Only the chosen saved address is checked (no POST per address).
+  Future<void> _checkSaved(SavedAddress? a) async {
+    if (a == null) return;
+    final seq = (_savedSeq[a.id] ?? 0) + 1;
+    _savedSeq[a.id] = seq;
+    setState(() => _savedCoverage[a.id] = _CoverageState.checking);
+    try {
+      final r = await _hv.checkCoverage(a.postcode);
+      if (!mounted || _savedSeq[a.id] != seq) return;
+      setState(() => _savedCoverage[a.id] =
+          r.covered ? _CoverageState.covered : _CoverageState.uncovered);
+    } catch (_) {
+      if (!mounted || _savedSeq[a.id] != seq) return;
+      setState(() => _savedCoverage[a.id] = _CoverageState.failed);
     }
   }
 
@@ -184,13 +208,15 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
       _suggestions = [];
       _pickedId = null;
       _manual = false;
+      _lineCtrl.clear();
     });
     if (!_validPostcode(raw)) return;
     _debounce = Timer(const Duration(milliseconds: 400), _checkCoverage);
   }
 
-  Future<void> _checkCoverage() async {
+  Future<void> _checkCoverage({bool lookup = true}) async {
     final seq = ++_coverageSeq;
+    _lookupSeq = lookup ? seq : _lookupSeq;
     final pc = _postcodeCtrl.text;
     setState(() => _coverage = _CoverageState.checking);
     try {
@@ -200,7 +226,7 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
         _coverageResult = r;
         _coverage = r.covered ? _CoverageState.covered : _CoverageState.uncovered;
       });
-      if (r.covered) _lookup(pc, seq);
+      if (r.covered && lookup) _lookup(pc, seq);
     } catch (_) {
       if (!mounted || seq != _coverageSeq) return;
       setState(() => _coverage = _CoverageState.failed);
@@ -211,14 +237,14 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
     setState(() => _lookupLoading = true);
     try {
       final list = await _hv.lookupAddresses(pc);
-      if (!mounted || seq != _coverageSeq) return;
+      if (!mounted || seq != _lookupSeq) return;
       setState(() {
         _suggestions = list;
         _manual = list.isEmpty;
         _lookupLoading = false;
       });
     } catch (_) {
-      if (!mounted || seq != _coverageSeq) return;
+      if (!mounted || seq != _lookupSeq) return;
       setState(() {
         _manual = true;
         _lookupLoading = false;
@@ -232,10 +258,16 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
     try {
       final a = await _hv.resolveAddress(id);
       if (!mounted || _pickedId != id) return;
+      final checked = _coverageResult?.postcode.isNotEmpty == true
+          ? normalisePostcode(_coverageResult!.postcode)
+          : normalisePostcode(_postcodeCtrl.text);
       setState(() {
         _lineCtrl.text = a.line;
         if (a.postcode.isNotEmpty) _postcodeCtrl.text = a.postcode;
       });
+      if (a.postcode.isNotEmpty && normalisePostcode(a.postcode) != checked) {
+        await _checkCoverage(lookup: false);
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -257,10 +289,11 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
   HomeVisitAddress? get _homeAddress {
     final s = _chosenSaved;
     if (s != null) {
-      if (_savedCovered[s.id] == false) return null;
+      if (_savedCoverage[s.id] != _CoverageState.covered) return null;
       return HomeVisitAddress(line: s.line, postcode: normalisePostcode(s.postcode));
     }
     if (_coverage != _CoverageState.covered) return null;
+    if (_pickedId == null && !_manual) return null;
     final line = _lineCtrl.text.replaceAll(RegExp(r'\s+'), ' ').trim();
     if (line.isEmpty || line.length > kAddressLineMax) return null;
     if (!_validPostcode(_postcodeCtrl.text)) return null;
@@ -269,7 +302,10 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
 
   bool get _homeBlocked {
     final s = _chosenSaved;
-    if (s != null) return _savedCovered[s.id] == false;
+    if (s != null) {
+      final c = _savedCoverage[s.id];
+      return c == _CoverageState.uncovered || c == _CoverageState.failed;
+    }
     return _coverage == _CoverageState.uncovered || _coverage == _CoverageState.failed;
   }
 
@@ -482,7 +518,7 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
           ));
         } else {
           children.add(DropdownButtonFormField<String>(
-            key: const Key('addressDropdown'),
+            key: ValueKey('addressDropdown-$_lookupSeq'),
             isExpanded: true,
             initialValue: _pickedId,
             hint: const Text('Select your address'),
@@ -524,7 +560,7 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
           contentPadding: EdgeInsets.zero,
           value: a.id,
           title: Text(a.display),
-          subtitle: _savedCovered[a.id] == false
+          subtitle: _savedCoverage[a.id] == _CoverageState.uncovered
               ? Align(alignment: Alignment.centerLeft, child: _outOfAreaBadge())
               : null,
         ));
@@ -536,16 +572,28 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
       ));
       children.add(RadioGroup<String>(
         groupValue: _choice,
-        onChanged: (v) => setState(() => _choice = v ?? _kDifferent),
+        onChanged: (v) => _choose(v ?? _kDifferent),
         child: Column(children: radios),
       ));
     }
     final chosen = _chosenSaved;
     if (chosen == null) {
       children.add(_differentAddress());
-    } else if (_savedCovered[chosen.id] == false) {
-      final outward = normalisePostcode(chosen.postcode).split(' ').first;
-      children.add(_uncoveredBlock(outward));
+    } else {
+      switch (_savedCoverage[chosen.id]) {
+        case _CoverageState.uncovered:
+          children.add(_uncoveredBlock(normalisePostcode(chosen.postcode).split(' ').first));
+        case _CoverageState.failed:
+          children.addAll([
+            Text("We couldn't check your postcode. Please try again.",
+                style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.error)),
+            TextButton(onPressed: () => _checkSaved(chosen), child: const Text('Retry')),
+          ]);
+        case _CoverageState.checking:
+          children.add(const LinearProgressIndicator());
+        default:
+          break;
+      }
     }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: children);
   }

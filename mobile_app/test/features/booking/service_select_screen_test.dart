@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 // ignore: depend_on_referenced_packages
 import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
@@ -14,9 +16,15 @@ class FakeHomeVisitRepo implements HomeVisitRepository {
   bool coverageFails = false;
   bool lookupFails = false;
   int coverageCalls = 0;
+  Map<String, Completer<void>> gates = {};
+  String resolvedPostcode = 'G31 4HS';
+  final checked = <String>[];
   @override
   Future<CoverageResult> checkCoverage(String postcode) async {
     coverageCalls++;
+    checked.add(normalisePostcode(postcode));
+    final g = gates[normalisePostcode(postcode)];
+    if (g != null) await g.future;
     if (coverageFails) throw const CoverageUnavailable();
     final pc = normalisePostcode(postcode);
     return CoverageResult(covered: covered, outwardCode: pc.split(' ').first, postcode: pc);
@@ -30,7 +38,7 @@ class FakeHomeVisitRepo implements HomeVisitRepository {
 
   @override
   Future<HomeVisitAddress> resolveAddress(String id) async =>
-      const HomeVisitAddress(line: '7 Springfield Gardens, Glasgow', postcode: 'G31 4HS');
+      HomeVisitAddress(line: '7 Springfield Gardens, Glasgow', postcode: resolvedPostcode);
 }
 
 class FakeAddressRepo implements AddressRepository {
@@ -186,7 +194,7 @@ void main() {
       await enterPostcode(tester, 'g31 4hs');
       expect(hv.coverageCalls, 1);
       expect(find.text('We visit G31.'), findsOneWidget);
-      expect(find.byKey(const Key('addressDropdown')), findsOneWidget);
+      expect(find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('addressDropdown')), findsOneWidget);
       expect(find.text('Initial Assessment (home visit)'), findsOneWidget);
       expect(find.textContaining('£55'), findsOneWidget);
       expect(find.textContaining('incl. £15 travel'), findsWidgets);
@@ -270,13 +278,117 @@ void main() {
       await tester.tap(find.text('Home visit in Glasgow'));
       await tester.pumpAndSettle();
       await enterPostcode(tester, 'G31 4HS');
-      await tester.tap(find.byKey(const Key('addressDropdown')));
+      await tester.tap(find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('addressDropdown')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('7 Springfield Gardens, Glasgow').last);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Continue to times'));
       await tester.pump();
       expect(continued!.homeAddress!.line, '7 Springfield Gardens, Glasgow');
+    });
+  
+    Finder continueBtn() => find.widgetWithText(FilledButton, 'Continue to times');
+    bool enabled(WidgetTester t) => t.widget<FilledButton>(continueBtn()).onPressed != null;
+
+    testWidgets('saved address whose coverage fails shows Retry and no enabled Continue',
+        (tester) async {
+      await big(tester);
+      ar.saved = const [
+        SavedAddress(id: 'x', ownerUid: 'u1', label: 'Home', line: '1 Main St', postcode: 'G31 4HS'),
+      ];
+      ar.usual = 'x';
+      hv.coverageFails = true;
+      await tester.pumpWidget(app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home visit in Glasgow'));
+      await tester.pumpAndSettle();
+      expect(find.text("We couldn't check your postcode. Please try again."), findsOneWidget);
+      expect(continueBtn().evaluate().isEmpty || !enabled(tester), isTrue);
+      hv.coverageFails = false;
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+      expect(enabled(tester), isTrue);
+    });
+
+    testWidgets('preselected usual address keeps Continue disabled until coverage returns',
+        (tester) async {
+      await big(tester);
+      ar.saved = const [
+        SavedAddress(id: 'x', ownerUid: 'u1', label: 'Home', line: '1 Main St', postcode: 'G31 4HS'),
+        SavedAddress(id: 'y', ownerUid: 'u1', label: 'Work', line: '2 High St', postcode: 'G1 1AA'),
+      ];
+      ar.usual = 'x';
+      final gate = Completer<void>();
+      hv.gates['G31 4HS'] = gate;
+      await tester.pumpWidget(app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home visit in Glasgow'));
+      await tester.pump();
+      await tester.pump();
+      expect(enabled(tester), isFalse);
+      expect(hv.checked, ['G31 4HS']); // only the chosen address is checked
+      gate.complete();
+      await tester.pumpAndSettle();
+      expect(enabled(tester), isTrue);
+    });
+
+    testWidgets('changing postcode clears the old address line', (tester) async {
+      await big(tester);
+      hv.lookupFails = true;
+      await tester.pumpWidget(app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home visit in Glasgow'));
+      await tester.pumpAndSettle();
+      await enterPostcode(tester, 'G31 4HS');
+      await tester.enterText(find.byKey(const Key('manualLineField')), '9 Test Road');
+      await tester.pump();
+      expect(enabled(tester), isTrue);
+      hv.lookupFails = false;
+      await enterPostcode(tester, 'G1 1AA');
+      expect(enabled(tester), isFalse);
+    });
+
+    testWidgets('resolved postcode that differs re-runs coverage', (tester) async {
+      await big(tester);
+      hv.resolvedPostcode = 'G40 1AB';
+      await tester.pumpWidget(app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home visit in Glasgow'));
+      await tester.pumpAndSettle();
+      await enterPostcode(tester, 'G31 4HS');
+      final gate = Completer<void>();
+      hv.gates['G40 1AB'] = gate;
+      await tester.tap(find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('addressDropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('7 Springfield Gardens, Glasgow').last);
+      await tester.pump();
+      await tester.pump();
+      expect(hv.checked.last, 'G40 1AB');
+      expect(enabled(tester), isFalse);
+      gate.complete();
+      await tester.pumpAndSettle();
+      expect(enabled(tester), isTrue);
+      await tester.tap(continueBtn());
+      await tester.pump();
+      expect(continued!.homeAddress!.postcode, 'G40 1AB');
+    });
+
+    testWidgets('stale out-of-order coverage response is ignored', (tester) async {
+      await big(tester);
+      await tester.pumpWidget(app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home visit in Glasgow'));
+      await tester.pumpAndSettle();
+      final slow = Completer<void>();
+      hv.gates['G31 4HS'] = slow;
+      await tester.enterText(find.byKey(const Key('postcodeField')), 'G31 4HS');
+      await tester.pump(const Duration(milliseconds: 450));
+      await enterPostcode(tester, 'G1 1AA');
+      expect(find.text('We visit G1.'), findsOneWidget);
+      slow.complete();
+      await tester.pumpAndSettle();
+      expect(find.text('We visit G1.'), findsOneWidget);
+      expect(find.text('We visit G31.'), findsNothing);
     });
   });
 }
