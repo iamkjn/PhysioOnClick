@@ -1,4 +1,5 @@
 import { ExerciseUseDisclaimer } from "@/components/exercise-library/exercise-safety-note";
+import { UkServiceLinks } from "@/components/uk-service-links";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -237,6 +238,7 @@ export default async function SelfTestPage({
           >
             Book assessment
           </TrackedBookLink>
+          <UkServiceLinks />
         </div>
       </section>
     </div>
