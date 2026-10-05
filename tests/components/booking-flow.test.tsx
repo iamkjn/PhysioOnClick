@@ -64,7 +64,7 @@ describe('BookingFlow', () => {
   it('defaults to Initial Assessment and mirrors the price in the rail', () => {
     render(<BookingFlow />)
     expect(screen.getByRole('button', { name: /Initial Online Assessment/ })).toHaveAttribute('aria-pressed', 'true')
-    expect(document.querySelector('.book-rail-total-price')).toHaveTextContent('£50')
+    expect(document.querySelector('.book-rail-total-price')).toHaveTextContent('£40')
   })
 
   it('updates the rail live when a different service is picked', async () => {
@@ -73,7 +73,7 @@ describe('BookingFlow', () => {
 
     await user.click(screen.getByRole('button', { name: /8 Session Bundle/ }))
 
-    expect(document.querySelector('.book-rail-total-price')).toHaveTextContent('£340')
+    expect(document.querySelector('.book-rail-total-price')).toHaveTextContent('£225')
     expect(document.querySelector('.book-rail-title')).toHaveTextContent('8 Session Bundle')
   })
 

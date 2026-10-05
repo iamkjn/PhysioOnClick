@@ -1,3 +1,4 @@
+import { pricing } from "@/lib/site-data";
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
 
@@ -196,7 +197,9 @@ describe("app/exercises/for/[condition] page", () => {
   it("renders a TrackedBookLink to /book showing the online 'from' price", async () => {
     const { container } = await renderPage(SLUG);
     expect(container.querySelector('a[href="/book"]')).not.toBeNull();
-    expect(container).toHaveTextContent("from £40");
+    // Cheapest online item (the follow-up), same derivation as the page.
+    const from = Math.min(...pricing.filter((item) => item.mode === "Online").map((item) => item.price));
+    expect(container).toHaveTextContent(`from £${from}`);
   });
 
   it("renders a ConditionPdfForm with an email field and a honeypot", async () => {
