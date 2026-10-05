@@ -16,6 +16,7 @@ export type ExercisePlanCard = {
   physioNote: string | null;
 };
 
+import { REFERENCE_ONLY_NOTE } from "@/lib/exercise-disclaimer";
 export type ExercisePlanPdfInput = {
   patientName: string;
   patientEmail?: string | null;
@@ -23,6 +24,9 @@ export type ExercisePlanPdfInput = {
   sessionDateISO: string | null;
   cards: ExercisePlanCard[];
   oneExercisePerPage?: boolean;
+  /** Public condition-hub plan (no patient or session): neutral authorship and
+   *  the "For reference only" note on the cover and every page (sign-off round 2, Q2). */
+  generalPlan?: boolean;
 };
 
 const DOT = "·"; // middle dot — WinAnsi-safe separator
@@ -421,10 +425,15 @@ function drawCover(page: PDFPage, input: ExercisePlanPdfInput, font: PDFFont, bo
   const patientEmail = pdfSafe(input.patientEmail ?? "");
   const physio = pdfSafe(input.physioName) || "your physiotherapist";
   const dstr = fmtDate(input.sessionDateISO);
-  const sessionLine = dstr
-    ? `For ${patient} ${DOT} from your session on ${dstr} with ${physio}`
-    : `For ${patient} ${DOT} from your session with ${physio}`;
+  const sessionLine = input.generalPlan
+    ? `General exercise plan ${DOT} written by ${physio}, HCPC-registered physiotherapist`
+    : dstr
+      ? `For ${patient} ${DOT} from your session on ${dstr} with ${physio}`
+      : `For ${patient} ${DOT} from your session with ${physio}`;
   page.drawText(pdfSafe(sessionLine), { x: MARGIN, y: height - 80, size: 10, font, color: TAGLINE });
+  if (input.generalPlan) {
+    page.drawText(REFERENCE_ONLY_NOTE, { x: MARGIN, y: height - 120, size: 8.5, font: bold, color: WHITE });
+  }
 
   if (patientEmail) {
     page.drawText(`Patient email: ${patientEmail}`, { x: MARGIN, y: height - 94, size: 8.5, font, color: COVER_META });
@@ -436,7 +445,7 @@ function drawCover(page: PDFPage, input: ExercisePlanPdfInput, font: PDFFont, bo
   page.drawText(creds, { x: MARGIN, y: patientEmail ? height - 108 : height - 96, size: 8.5, font, color: COVER_META });
 }
 
-function drawFooters(pdf: PDFDocument, font: PDFFont): void {
+function drawFooters(pdf: PDFDocument, font: PDFFont, referenceOnly = false): void {
   const pages = pdf.getPages();
   const line = pdfSafe(
     [invoiceIssuer.tradingName, invoiceIssuer.addressLines.join(", "), PRACTICE_PHONE, "hello@physioonclick.co.uk"]
@@ -462,6 +471,9 @@ function drawFooters(pdf: PDFDocument, font: PDFFont): void {
       font,
       color: MUTED,
     });
+    if (referenceOnly) {
+      page.drawText(REFERENCE_ONLY_NOTE, { x: MARGIN, y: 12, size: T_FOOTER, font, color: MUTED });
+    }
     page.drawRectangle({ x: 0, y: 0, width, height: 4, color: SKY });
   });
 }
@@ -507,7 +519,7 @@ export async function buildExercisePlanPdf(input: ExercisePlanPdfInput): Promise
     y -= layout.height + CARD_GAP;
   }
 
-  drawFooters(pdf, font);
+  drawFooters(pdf, font, input.generalPlan === true);
 
   return pdf.save();
 }

@@ -4,6 +4,7 @@
 
 import { ExerciseImage } from "@/components/exercise-image";
 import { TrackedContentLink } from "@/components/tracked-content-link";
+import { ReferenceOnlyBadge } from "@/components/exercise-library/reference-only-label";
 import type { Exercise } from "@/lib/exercise-library";
 
 export function ExerciseCard({ exercise }: { exercise: Exercise }) {
@@ -31,6 +32,7 @@ export function ExerciseCard({ exercise }: { exercise: Exercise }) {
       />
       <span className="exlib-ex-card__body">
         <span className="exlib-ex-card__title">{exercise.title}</span>
+        <ReferenceOnlyBadge />
         <span className="exlib-ex-card__summary">{exercise.description}</span>
         <span className="exlib-ex-card__meta">
           <span>{exercise.bodyPart}</span>

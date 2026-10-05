@@ -8,6 +8,8 @@
 //             per-item safety line / red-flags box; here the note is just the
 //             short general framing around them.
 
+import { EXERCISE_DISCLAIMER, SELF_TEST_DISCLAIMER } from "@/lib/exercise-disclaimer";
+
 const HEADING = "Using these exercises safely";
 
 const FULL_INTRO =
@@ -39,6 +41,9 @@ export function ExerciseSafetyNote({
       data-variant={variant}
     >
       <h2 className="exlib-safety__title">{HEADING}</h2>
+      <p className="exlib-safety__disclaimer" data-exercise-disclaimer>
+        <strong>{EXERCISE_DISCLAIMER}</strong>
+      </p>
       {variant === "full" ? (
         <>
           <p className="exlib-safety__intro">{FULL_INTRO}</p>
@@ -53,5 +58,14 @@ export function ExerciseSafetyNote({
         <p className="exlib-safety__body">{COMPACT_BODY}</p>
       )}
     </aside>
+  );
+}
+
+// Same wording for the self-check test pages, which do not carry the full note.
+export function ExerciseUseDisclaimer({ variant = "exercise" }: { variant?: "exercise" | "selftest" }) {
+  return (
+    <p className="exlib-selftest-disclaimer" data-exercise-disclaimer data-disclaimer>
+      {variant === "selftest" ? SELF_TEST_DISCLAIMER : EXERCISE_DISCLAIMER}
+    </p>
   );
 }

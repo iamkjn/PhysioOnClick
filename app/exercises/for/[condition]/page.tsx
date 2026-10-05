@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { UkServiceLinks } from "@/components/uk-service-links";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -8,6 +9,7 @@ import {
   programForCondition,
   selfTestsForCondition,
 } from "@/lib/exercise-library";
+import { onlinePhysioPageForHub } from "@/lib/online-physio-pages";
 import { pricing } from "@/lib/site-data";
 import { breadcrumbs, conditionWebPage } from "@/lib/structured-data";
 import { ByLine } from "@/components/exercise-library/by-line";
@@ -100,6 +102,7 @@ export default async function ConditionHubPage({
     .map((relatedSlug) => getCondition(relatedSlug))
     .filter((item): item is NonNullable<typeof item> => item !== null);
   const priceLabel = `from £${ONLINE_FROM_PRICE}`;
+  const onlinePhysio = onlinePhysioPageForHub(condition.slug);
 
   return (
     <div className="site-shell">
@@ -170,7 +173,19 @@ export default async function ConditionHubPage({
           </div>
 
           {/* Coral/danger tint. Must sit in the DOM before the programme so a
-              screen-reader or a skim reader meets the safety net first. */}
+              screen-reader or a skim reader meets the safety net first.
+              Urgent signs (each with its own route) get their own box, ahead of the
+              non-urgent list, so nothing urgent sits under "first". */}
+          {condition.urgentFlags?.length ? (
+            <div className="exlib-redflags exlib-redflags--urgent" data-urgent-flags>
+              <h2 className="exlib-redflags__title">Get urgent help now if</h2>
+              <ul className="exlib-redflags__list">
+                {condition.urgentFlags.map((flag, i) => (
+                  <li key={i}>{flag}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <div className="exlib-redflags" data-red-flags>
             <h2 className="exlib-redflags__title">
               Get checked by a clinician first if
@@ -279,6 +294,14 @@ export default async function ConditionHubPage({
             <p className="exlib-cta-card__price">
               Online physiotherapy {priceLabel} a session.
             </p>
+            {onlinePhysio ? (
+              <p className="exlib-cta-card__body">
+                Want a physio to guide you?{" "}
+                <Link href={`/online-physiotherapy-for/${onlinePhysio.slug}`}>
+                  {onlinePhysio.h1}
+                </Link>
+              </p>
+            ) : null}
             <ConditionPdfForm
               conditionSlug={condition.slug}
               conditionName={condition.name}
@@ -304,6 +327,7 @@ export default async function ConditionHubPage({
           >
             Get my personalized plan
           </TrackedBookLink>
+          <UkServiceLinks />
         </div>
       </section>
     </div>

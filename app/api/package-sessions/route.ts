@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createCalBooking } from "@/lib/cal-booking";
+import { serviceLabelFor } from "@/lib/cal-services";
 import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import type { VisitType } from "@/lib/home-visit";
 
 const DEFAULT_TIMEZONE = "Europe/London";
 
@@ -16,6 +18,9 @@ type PackageDoc = {
   remainingSessions?: number;
   status?: string;
   bookingUids?: string[];
+  /** Set by the payments webhook for a bundle bought as a home visit. */
+  visitType?: VisitType;
+  homeVisitAddress?: string;
 };
 
 type FollowUpCheckIn = {
@@ -106,6 +111,8 @@ export async function GET(request: NextRequest) {
         usedSessions: data.usedSessions ?? 0,
         remainingSessions: data.remainingSessions ?? 0,
         status: data.status ?? "active",
+        // Lets the portal show home-visit times. The address never leaves the server.
+        ...(data.visitType === "home" ? { visitType: "home" as const } : {}),
       };
     })
     .filter((item) => item.totalSessions > 1);
@@ -155,6 +162,13 @@ export async function POST(request: NextRequest) {
   const email = String(pack.email || user.email || "");
   if (!email) return NextResponse.json({ error: "Package email is missing." }, { status: 400 });
 
+  // A bundle bought as a home visit books every later session as a home
+  // visit. The address stays server-side: never logged or returned.
+  const homeVisit =
+    pack.visitType === "home" && typeof pack.homeVisitAddress === "string" && pack.homeVisitAddress.trim()
+      ? { visitType: "home" as const, homeVisitAddress: pack.homeVisitAddress.trim() }
+      : null;
+
   const booking = await createCalBooking({
     service: "follow-up",
     startISO: startDate.toISOString(),
@@ -162,6 +176,7 @@ export async function POST(request: NextRequest) {
     email,
     timeZone,
     focusAreas: ["Package session"],
+    ...(homeVisit ?? {}),
   });
   if (!booking.ok) {
     return NextResponse.json({ error: booking.error }, { status: booking.status || 502 });
@@ -189,7 +204,7 @@ export async function POST(request: NextRequest) {
     fullName: name,
     email: email.trim().toLowerCase(),
     phone: "",
-    service: "Online Follow-Up",
+    service: serviceLabelFor("follow-up", homeVisit?.visitType),
     appointmentDate,
     appointmentTime,
     appointmentLabel,
@@ -210,6 +225,7 @@ export async function POST(request: NextRequest) {
     packageSessionNumber: sessionNumber,
     packageTotalSessions: total,
     packageFollowUpCheckInId: checkInRef.id,
+    ...(homeVisit ?? {}),
     createdAt: FieldValue.serverTimestamp(),
   });
 

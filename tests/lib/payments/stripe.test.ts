@@ -54,4 +54,82 @@ describe("createStripeCheckout", () => {
     const result = await createStripeCheckout(INPUT);
     expect(result.ok).toBe(false);
   });
+
+  it("withholds Stripe's error body when the request carries a home address", async () => {
+    // Stripe echoes request params (metadata) in some error bodies.
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+      new Response('{"error":{"message":"bad metadata[homeVisitAddress]=7 Example Street, G31 4HS"}}', { status: 400 }),
+    ));
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_x");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const result = await createStripeCheckout({
+      ...INPUT,
+      intent: { ...INPUT.intent, visitType: "home" as const, homeVisitAddress: "7 Example Street, G31 4HS" },
+    });
+    expect(result.ok).toBe(false);
+    const logged = JSON.stringify(errorSpy.mock.calls);
+    expect(logged).toContain("400");
+    expect(logged).not.toContain("Example Street");
+    expect(logged).not.toContain("G31 4HS");
+  });
+
+  it("still logs Stripe's error body for a video booking", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("no such price", { status: 400 })));
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_x");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await createStripeCheckout(INPUT);
+    expect(JSON.stringify(errorSpy.mock.calls)).toContain("no such price");
+  });
+});
+
+
+describe("createStripeCheckout line items", () => {
+  const intent = {
+    service: "initial-assessment" as const,
+    startISO: "2999-01-01T10:00:00.000Z",
+    name: "Ada",
+    email: "ada@example.com",
+    timeZone: "Europe/London",
+  };
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+  function stubOk() {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ id: "cs_1", url: "https://checkout.stripe.com/c/cs_1" }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_x");
+    return fetchMock;
+  }
+  const bodyOf = (fetchMock: ReturnType<typeof vi.fn>) =>
+    new URLSearchParams(String((fetchMock.mock.calls[0][1] as RequestInit).body));
+
+  it("sends one line item when there are no extras (video, unchanged)", async () => {
+    const fetchMock = stubOk();
+    await createStripeCheckout({ intent, amountPence: 4000, serviceLabel: "Initial Online Assessment", successUrl: "s", cancelUrl: "c" });
+    const body = bodyOf(fetchMock);
+    expect(body.get("line_items[0][price_data][unit_amount]")).toBe("4000");
+    expect(body.get("line_items[1][price_data][unit_amount]")).toBeNull();
+  });
+
+  it("adds the travel fee as a second line item", async () => {
+    const fetchMock = stubOk();
+    await createStripeCheckout({
+      intent: { ...intent, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS", travelFeePence: "1500" },
+      amountPence: 3600,
+      serviceLabel: "Initial Assessment (home visit)",
+      extraLineItems: [{ name: "Travel fee (1 home visit × £15)", amountPence: 1500 }],
+      successUrl: "s",
+      cancelUrl: "c",
+    });
+    const body = bodyOf(fetchMock);
+    expect(body.get("line_items[0][price_data][unit_amount]")).toBe("3600");
+    expect(body.get("line_items[1][quantity]")).toBe("1");
+    expect(body.get("line_items[1][price_data][currency]")).toBe("gbp");
+    expect(body.get("line_items[1][price_data][unit_amount]")).toBe("1500");
+    expect(body.get("line_items[1][price_data][product_data][name]")).toBe("Travel fee (1 home visit × £15)");
+    expect(body.get("metadata[travelFeePence]")).toBe("1500");
+  });
 });

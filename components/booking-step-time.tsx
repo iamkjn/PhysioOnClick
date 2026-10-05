@@ -25,11 +25,19 @@ import { LIMITS, validateEmail, validateName } from "@/lib/validation";
 import { formatPersonName } from "@/lib/name-format";
 import { PasswordInput } from "@/components/password-input";
 import { AssessmentWizard } from "@/components/assessment-wizard";
+import { sessionPricePence, totalPence, travelFeePence } from "@/lib/home-visit-pricing";
 import { guestBookingMatches, rememberGuestBooking } from "@/lib/guest-booking";
+
+/** What step 1 chose: video (UK-wide) or a Glasgow-area home visit with its (already validated) address. */
+export type BookingVisit =
+  | { visitType: "video" }
+  | { visitType: "home"; homeAddressLine: string; homePostcode: string };
 
 type Props = {
   service: CalService & PricingItem;
   focusAreas: FocusArea[];
+  /** Defaults to a video call when omitted. */
+  visit?: BookingVisit;
   user: User | null | undefined;
   selectedSlot: string | null;
   onSelectSlot: (iso: string | null) => void;
@@ -115,6 +123,7 @@ async function startGuestSession(firebaseAuth: Auth, email: string): Promise<Use
 export function BookingStepTime({
   service,
   focusAreas,
+  visit = { visitType: "video" },
   user,
   selectedSlot,
   onSelectSlot,
@@ -179,10 +188,16 @@ export function BookingStepTime({
     assessmentUid: string;
     assessmentPersonId: string;
   } | null>(null);
-  const originalAmountPence = Math.round(service.price * 100);
-  const checkoutAmountPence = discountApplied && discountedAmountPence !== null
+  const originalAmountPence = sessionPricePence(service.id);
+  // Discount codes reduce the session price only; home visits add £15 travel per visit.
+  const sessionAfterDiscountPence = discountApplied && discountedAmountPence !== null
     ? discountedAmountPence
     : originalAmountPence;
+  const checkoutAmountPence = totalPence({
+    sessionPence: sessionAfterDiscountPence,
+    discountPence: 0,
+    travelFeePence: travelFeePence(service.id, visit.visitType),
+  });
 
   const signedIn = Boolean(user);
   const signingIn = !signedIn && authMode === "signin";
@@ -233,6 +248,8 @@ export function BookingStepTime({
       start: dateKey(start),
       end: dateKey(last)
     });
+    // Home visits read the Glasgow home-visit event type's availability.
+    if (visit.visitType === "home") params.set("visit", "home");
 
     fetch(`/api/cal/slots?${params}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
@@ -250,7 +267,7 @@ export function BookingStepTime({
     return () => {
       cancelled = true;
     };
-  }, [service.id, viewMonth, today, retryToken]);
+  }, [service.id, visit.visitType, viewMonth, today, retryToken]);
 
   // The API returns only free times. Deriving the physio's usual hours from the
   // whole month lets us show genuinely-busy times struck through, rather than
@@ -559,6 +576,7 @@ export function BookingStepTime({
         service_id: service.id,
         amount_pence: checkoutAmountPence,
         discount_code: discountApplied ? discountCode.trim() : "",
+        visit_type: visit.visitType,
       });
       const res = await fetch("/api/checkout/create", {
         method: "POST",
@@ -570,6 +588,10 @@ export function BookingStepTime({
           email: checkoutInfo.email,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           focusAreas,
+          visitType: visit.visitType,
+          ...(visit.visitType === "home"
+            ? { homeAddressLine: visit.homeAddressLine, homePostcode: visit.homePostcode }
+            : {}),
           ...(discountApplied ? { discountCode: discountCode.trim() } : {}),
           ...(assessmentFormId
             ? {
@@ -652,6 +674,7 @@ export function BookingStepTime({
         focusAreas={focusAreas}
         onSubmitted={(formId) => startCheckout(formId)}
         redirectingToPayment
+        visitType={visit.visitType}
       />
     );
   }
@@ -931,7 +954,8 @@ export function BookingStepTime({
               onChange={(e) => setConsent(e.target.checked)}
             />
             <span>
-              I consent to online consultation and the storage of my personal and clinical data as described in the{" "}
+              I consent to a physiotherapy assessment and treatment{" "}
+              {visit.visitType === "home" ? "at a home visit" : "by video"} and the storage of my personal and clinical data as described in the{" "}
               <a href="/privacy-policy">Privacy Policy</a>, and I accept the{" "}
               <a href="/terms">Terms</a>.
             </span>

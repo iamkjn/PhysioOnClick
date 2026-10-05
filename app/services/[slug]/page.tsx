@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 
 import { articlesForServiceSlug } from "@/lib/blog";
 import { getCondition } from "@/lib/exercise-library";
+import { getOnlinePhysioPage } from "@/lib/online-physio-pages";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { founder, initialAssessmentPrice, pricing, services } from "@/lib/site-data";
 import { breadcrumbs, serviceSchema } from "@/lib/structured-data";
@@ -221,6 +222,29 @@ export default async function ServiceDetailPage({
                 </TrackedContentLink>
               </li>
             ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {service.onlinePhysioSlugs?.length ? (
+        <section className="page-section stack simple-services-list">
+          <Reveal direction="up">
+            <div className="section-heading">
+              <h2>Online physiotherapy pages</h2>
+              <p>More detail on how video sessions work for specific conditions and recovery after surgery.</p>
+            </div>
+          </Reveal>
+          <ul className="service-approach-list">
+            {service.onlinePhysioSlugs.map((physioSlug) => {
+              const page = getOnlinePhysioPage(physioSlug);
+              return page ? (
+                <li key={physioSlug}>
+                  <Link href={`/online-physiotherapy-for/${physioSlug}`} prefetch>
+                    {page.name}
+                  </Link>
+                </li>
+              ) : null;
+            })}
           </ul>
         </section>
       ) : null}

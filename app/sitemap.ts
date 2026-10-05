@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 
 import { services } from "@/lib/site-data";
 import { blogArticles } from "@/lib/blog";
+import { guides } from "@/lib/guides";
+import { onlinePhysioPages } from "@/lib/online-physio-pages";
 import {
   allBodyAreaKeys,
   allConditionSlugs,
@@ -20,6 +22,7 @@ const routes = [
   "/book",
   "/how-online-physiotherapy-works",
   "/glasgow-physiotherapist",
+  "/online-physiotherapy-scotland",
   "/professional-standards",
   "/privacy-policy",
   "/medical-disclaimer",
@@ -100,10 +103,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
+  // Editorial guides carry a truthful lastModified (their review date).
+  const guideEntries = [
+    { url: `${base}/guides` },
+    ...guides.map((g) => ({
+      url: `${base}/guides/${g.slug}`,
+      lastModified: new Date(g.reviewedOn),
+    })),
+  ];
+
+  // Condition landing pages carry a truthful lastModified (their review date).
+  const onlinePhysioEntries = onlinePhysioPages.map((p) => ({
+    url: `${base}/online-physiotherapy-for/${p.slug}`,
+    lastModified: new Date(p.reviewedOn),
+  }));
+
   return [
     ...staticEntries,
     ...serviceEntries,
     ...blogEntries,
+    ...guideEntries,
+    ...onlinePhysioEntries,
     ...exerciseLibraryEntries,
     ...conditionEntries,
     ...exerciseEntries,

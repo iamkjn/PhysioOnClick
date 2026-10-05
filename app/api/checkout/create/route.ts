@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { isBookServiceId, serviceLabelFor } from "@/lib/cal-services";
 import { normaliseDiscountCode, validateCheckoutDiscount } from "@/lib/checkout-discounts";
 import { createStripeCheckout } from "@/lib/payments/stripe";
 import type { BookingIntent } from "@/lib/payments";
+import { DEFAULT_VISIT_TYPE, isVisitType, validateHomeVisit, type VisitType } from "@/lib/home-visit";
+import { isCoveredPostcode } from "@/lib/home-visit-area";
+import { sessionPricePence, travelFeeLabel, travelFeePence } from "@/lib/home-visit-pricing";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_TIMEZONE = "Europe/London";
@@ -19,6 +22,9 @@ type Body = {
   assessmentUid?: unknown;
   assessmentPersonId?: unknown;
   assessmentFormId?: unknown;
+  visitType?: unknown;
+  homeAddressLine?: unknown;
+  homePostcode?: unknown;
 };
 
 /** A Firestore auto-id / uid: alphanumeric, reasonable length. */
@@ -38,8 +44,21 @@ export async function POST(request: Request) {
     return bad("Invalid request body.");
   }
 
-  const { service, start, name, email, timeZone, focusAreas, discountCode, assessmentUid, assessmentPersonId, assessmentFormId } =
-    body;
+  const {
+    service,
+    start,
+    name,
+    email,
+    timeZone,
+    focusAreas,
+    discountCode,
+    assessmentUid,
+    assessmentPersonId,
+    assessmentFormId,
+    visitType,
+    homeAddressLine,
+    homePostcode,
+  } = body;
 
   if (!isBookServiceId(service)) return bad("Invalid or missing service.");
   if (typeof start !== "string" || start.trim() === "") return bad("Invalid or missing start time.");
@@ -64,6 +83,20 @@ export async function POST(request: Request) {
     resolvedTimeZone = timeZone;
   }
 
+  // Home visits (covered postcodes only, see lib/home-visit-area) add a travel fee (lib/home-visit-pricing). Any address sent with a video booking is ignored so it is never stored. Errors never echo the address back.
+  let resolvedVisitType: VisitType = DEFAULT_VISIT_TYPE;
+  if (visitType !== undefined && visitType !== null) {
+    if (!isVisitType(visitType)) return bad("Invalid visit type.");
+    resolvedVisitType = visitType;
+  }
+  let homeVisitAddress: string | undefined;
+  if (resolvedVisitType === "home") {
+    const home = validateHomeVisit(homeAddressLine, homePostcode);
+    if (!home.ok) return bad(home.error);
+    if (!isCoveredPostcode(home.postcode)) return bad("We don't offer home visits at that postcode yet.");
+    homeVisitAddress = home.homeVisitAddress;
+  }
+
   const cleanedFocus = Array.isArray(focusAreas)
     ? focusAreas
         .filter((f): f is string => typeof f === "string" && f.trim().length > 0)
@@ -71,9 +104,10 @@ export async function POST(request: Request) {
         .slice(0, 10)
     : undefined;
 
-  const svc = bookServiceFor(service);
-  const originalAmountPence = Math.round(svc.price * 100);
+  const originalAmountPence = sessionPricePence(service);
   let amountPence = originalAmountPence;
+  // Home visits add £15 per visit on top of the (possibly discounted) session price.
+  const travelPence = travelFeePence(service, resolvedVisitType);
   let appliedDiscount:
     | { code: string; percent: number; amountPence: number }
     | null = null;
@@ -110,6 +144,9 @@ export async function POST(request: Request) {
     email: normalizedEmail,
     timeZone: resolvedTimeZone,
     focusAreas: cleanedFocus,
+    visitType: resolvedVisitType,
+    ...(homeVisitAddress ? { homeVisitAddress } : {}),
+    ...(travelPence > 0 ? { travelFeePence: String(travelPence) } : {}),
     ...(appliedDiscount
       ? {
           discountCode: appliedDiscount.code,
@@ -125,8 +162,10 @@ export async function POST(request: Request) {
 
   const result = await createStripeCheckout({
     intent,
+    // The first line item is the session (after any discount); travel is its own line.
     amountPence,
-    serviceLabel: svc.title,
+    serviceLabel: serviceLabelFor(service, resolvedVisitType),
+    ...(travelPence > 0 ? { extraLineItems: [{ name: travelFeeLabel(service), amountPence: travelPence }] } : {}),
     successUrl: `${siteUrl}/book/success?session_id={CHECKOUT_SESSION_ID}`,
     cancelUrl: `${siteUrl}/book?cancelled=1`,
   });

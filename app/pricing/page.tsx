@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { serviceLabelFor } from "@/lib/cal-services";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import {
+  HOME_VISIT_TRAVEL_FEE_PENCE,
+  formatPounds,
+  sessionPricePence,
+  travelFeePence
+} from "@/lib/home-visit-pricing";
 import { getPublicPricing } from "@/lib/public-content";
-import { initialAssessmentPrice, pricing } from "@/lib/site-data";
+import { bundleSessionCount, initialAssessmentPrice, payAsYouGoPrice, pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -23,7 +31,6 @@ export default function PricingPage() {
   const pricing = getPublicPricing();
   const online = pricing.filter((item) => item.mode === "Online");
   const packages = pricing.filter((item) => item.mode === "Package");
-  const followUpPrice = online.find((item) => item.id === "follow-up")?.price ?? 0;
   const included = [
     "Personalised treatment plan",
     "Email support between sessions",
@@ -49,7 +56,7 @@ export default function PricingPage() {
       <section className="page-section stack pricing-sections">
         <div>
           <Reveal direction="up">
-            <h2>Online Consultations <span>(UK-wide)</span></h2>
+            <h2>Video appointments <span>(UK-wide)</span></h2>
           </Reveal>
           <div className="pricing-grid pricing-grid-two">
             {online.map((item, i) => (
@@ -79,8 +86,7 @@ export default function PricingPage() {
           </Reveal>
           <div className="pricing-grid pricing-grid-two">
             {packages.map((item, i) => {
-              const sessionCount = Number(item.title.match(/\d+/)?.[0] ?? 0);
-              const savings = sessionCount * followUpPrice - item.price;
+              const savings = payAsYouGoPrice(bundleSessionCount(item)) - item.price;
               return (
                 <Reveal key={item.id} direction="up" delay={i * 100}>
                   <article className="simple-package-card" style={{ display: "flex", flexDirection: "column" }}>
@@ -100,6 +106,41 @@ export default function PricingPage() {
                 </Reveal>
               );
             })}
+          </div>
+        </div>
+
+        <div>
+          <Reveal direction="up">
+            <h2>
+              Home visits in Glasgow{" "}
+              <span>(video price + {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit)</span>
+            </h2>
+          </Reveal>
+          <p className="muted">
+            We visit {HOME_VISIT_AREA_LABEL}. The travel fee is a fixed {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} per visit,
+            shown as its own line at checkout and on your invoice; bundles include every visit&apos;s fee upfront. Discount
+            codes apply to the session price.
+          </p>
+          <div className="pricing-grid pricing-grid-two">
+            {[...online, ...packages].map((item) => (
+              <article key={item.id} className="simple-price-card">
+                <h3>{serviceLabelFor(item.id, "home")}</h3>
+                <strong>{formatPounds(sessionPricePence(item.id) + travelFeePence(item.id, "home"))}</strong>
+                <p className="muted">
+                  {formatPounds(sessionPricePence(item.id))} + {formatPounds(travelFeePence(item.id, "home"))} travel
+                </p>
+              </article>
+            ))}
+          </div>
+          <div style={{ marginTop: "1rem" }}>
+            <TrackedBookLink
+              className="button primary"
+              href="/book?visit=home"
+              source="pricing_page_home_visit"
+              event="book_now_click"
+            >
+              Book a home visit
+            </TrackedBookLink>
           </div>
         </div>
 
@@ -125,11 +166,11 @@ export default function PricingPage() {
         <div className="site-shell service-faqs">
           <details>
             <summary>Can I claim this back on health insurance?</summary>
-            <p>Cover and rules vary between insurers and policies, and we cannot promise that any insurer will pay. Every paid session generates a receipt and a PDF invoice showing the physiotherapist&rsquo;s HCPC registration number, emailed to you and available in your account any time you need to submit a claim. Before you book, check with your insurer whether they need a GP referral, pre-authorisation, or a practitioner on their recognised list.</p>
+            <p>Cover and rules vary between insurers and policies, and we cannot promise that any insurer will pay. Every paid session generates a receipt and a PDF invoice showing the physiotherapist&rsquo;s HCPC registration number, emailed to you and available in your account any time you need to submit a claim. Before you book, check with your insurer whether they need a GP referral, pre-authorisation, or a practitioner on their recognised list. <Link href="/guides/claim-physiotherapy-on-health-insurance">How to claim physiotherapy on health insurance</Link>.</p>
           </details>
           <details>
             <summary>How much does private physiotherapy cost in the UK?</summary>
-            <p>At the four UK providers we checked, prices ranged from &pound;44 for a 30-minute online session to &pound;125 for a first appointment. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time.</p>
+            <p>At the four UK providers we checked, prices ranged from &pound;44 for a 30-minute online session to &pound;125 for a first appointment. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time. <Link href="/guides/private-physiotherapy-cost-uk">Private physiotherapy cost in the UK, explained</Link>.</p>
           </details>
           <details>
             <summary>Do I need a GP referral, and how quickly can I be seen?</summary>

@@ -6,6 +6,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { SkeletonRow } from "@/components/skeleton";
 import { EmptyState } from "@/components/empty-state";
+import { homeVisitLabel } from "@/lib/home-visit";
 import { getBooking, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { DownloadSummaryButton } from "@/components/download-summary-button";
@@ -74,6 +75,7 @@ export default function AppointmentDetailPage() {
     );
   }
 
+  const homeVisit = homeVisitLabel(booking.visitType, booking.homeVisitAddress);
   const date = booking.sessionDate.toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",
@@ -97,6 +99,10 @@ export default function AppointmentDetailPage() {
           <div>
             <h2 style={{ margin: 0, color: "var(--color-text-primary)" }}>{booking.patientName}</h2>
             <p className="muted" style={{ margin: "4px 0 0" }}>{booking.service}</p>
+            {homeVisit ? (
+              // Rendered as text, so React escapes the address.
+              <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--text-sm)" }}>{homeVisit}</p>
+            ) : null}
             {booking.packageSessionNumber && booking.packageTotalSessions ? (
               <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--text-sm)" }}>
                 Package session {booking.packageSessionNumber} of {booking.packageTotalSessions}

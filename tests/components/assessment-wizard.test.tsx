@@ -15,7 +15,11 @@ vi.mock("@/lib/assessment-forms", async () => {
 
 import { AssessmentWizard } from "@/components/assessment-wizard";
 
-function renderWizard(focusAreas: Array<"Back & neck" | "Shoulder"> = [], personDob = "") {
+function renderWizard(
+  focusAreas: Array<"Back & neck" | "Shoulder"> = [],
+  personDob = "",
+  visitType?: "video" | "home",
+) {
   const onSubmitted = vi.fn();
   render(
     <AssessmentWizard
@@ -27,6 +31,7 @@ function renderWizard(focusAreas: Array<"Back & neck" | "Shoulder"> = [], person
       bookingId="bk1"
       focusAreas={focusAreas}
       onSubmitted={onSubmitted}
+      visitType={visitType}
     />,
   );
   return { onSubmitted };
@@ -220,6 +225,31 @@ describe("AssessmentWizard", () => {
 
     await waitFor(() => expect(onSubmitted).toHaveBeenCalledWith("form_1"));
     expect(screen.getByText(/your physiotherapist will review/i)).toBeInTheDocument();
+  });
+
+  it("records a home visit as an in-person consultation with matching consent", async () => {
+    renderWizard([], "", "home");
+    await completeHappyPath();
+    expect(screen.getByText(/assessment and treatment at a home visit/i)).toBeInTheDocument();
+    expect(screen.queryByText(/online physiotherapy assessment/i)).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /submit assessment/i }));
+    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
+    expect(submitMock.mock.calls[0][2].consultationMode).toBe("in_person");
+  });
+
+  it("records a video booking as an online consultation", async () => {
+    renderWizard([], "", "video");
+    await completeHappyPath();
+    expect(screen.getByText(/assessment and treatment by video/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /submit assessment/i }));
+    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
+    expect(submitMock.mock.calls[0][2].consultationMode).toBe("online");
+  });
+
+  it("uses visit-neutral consent when the visit type is unknown", async () => {
+    renderWizard();
+    await completeHappyPath();
+    expect(screen.getByText(/by video or at a home visit, as booked/i)).toBeInTheDocument();
   });
 
   it("shows urgent guidance but still allows review and submission", async () => {

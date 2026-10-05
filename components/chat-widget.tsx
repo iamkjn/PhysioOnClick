@@ -7,6 +7,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { track } from "@/lib/analytics";
 import { auth } from "@/lib/firebase";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
+import { pricing } from "@/lib/site-data";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -42,22 +45,22 @@ const SERVICES = [
   {
     emoji: "💪",
     label: "Musculoskeletal Physio",
-    text: "We treat back & neck pain, shoulder impingement, tendon pain, persistent sports injuries and work-related strain.\n\nOur approach includes a detailed functional assessment, manual therapy where appropriate, graduated exercise prescription and pain education.",
+    text: "We treat back & neck pain, shoulder impingement, tendon pain, persistent sports injuries and work-related strain.\n\nOur approach includes a detailed functional assessment, hands-on treatment (manual therapy) at home visits where appropriate, graduated exercise prescription and pain education. Video sessions cannot include hands-on treatment.",
   },
   {
     emoji: "🦿",
     label: "Post-Surgical Rehab",
-    text: "Structured rehab after knee/hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery.\n\nWe guide you through post-operative milestones, strength & range-of-motion progression and return-to-function coaching.",
+    text: "Structured rehab after knee/hip replacement, ACL reconstruction, rotator cuff repair and fracture recovery.\n\nWe guide you through post-operative milestones, strength & range-of-motion progression and return-to-function coaching. Available by video, or as a home visit in the Glasgow area. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you.",
   },
   {
     emoji: "🧠",
     label: "Neurological Rehab",
-    text: "Goal-led rehab for stroke, Parkinson's, balance difficulties and neurological deconditioning.\n\nWe focus on task-specific mobility practice, balance & gait training, and carer education.",
+    text: "Goal-led rehab for stroke, Parkinson's, balance difficulties and neurological deconditioning.\n\nWe focus on task-specific mobility practice, balance & gait training, and carer education. Available by video, or as a home visit in the Glasgow area. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.",
   },
   {
     emoji: "👶",
     label: "Paediatric Physio",
-    text: "Child-centred physiotherapy for developmental delay, coordination challenges, mobility support and post-operative rehab.\n\nSessions use play-based strategies with full parent coaching. Parent attendance is encouraged.",
+    text: "Child-centred physiotherapy for developmental delay, coordination challenges, mobility support and post-operative rehab (once your child's surgical team has said they are ready for outpatient or community physiotherapy, following any restrictions or precautions they give).\n\nSessions use play-based strategies with full parent coaching. Parent attendance is encouraged.",
   },
   {
     emoji: "🚶",
@@ -71,8 +74,16 @@ const SERVICES = [
   },
 ];
 
-const PRICING_TEXT =
-  "Online sessions (UK-wide):\n• Initial Online Assessment (60 min) — £40\n• Online Follow-Up (30 min) — £30\n\nPackages:\n• 4-Session Bundle — £150\n• 8-Session Bundle — £280\n\nNew patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.";
+// Built from lib/site-data.ts so the chat can never quote a stale price.
+const PRICING_TEXT = [
+  "Online sessions (UK-wide):",
+  ...pricing.filter((p) => p.mode === "Online").map((p) => `• ${p.title} (${p.duration}) — £${p.price}`),
+  "",
+  "Packages:",
+  ...pricing.filter((p) => p.mode === "Package").map((p) => `• ${p.title} — £${p.price}`),
+  "",
+  "New patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.",
+].join("\n");
 
 const INSURANCE_TEXT =
   "Yes, PhysioOnClick provides insurance-ready PDF invoices for paid sessions.\n\nHow to claim:\n• Download your invoice from your patient account under Invoices, or use the copy emailed after payment.\n• Submit the PDF to your UK health insurer through their claim portal or app.\n• Add your policy number, claim reference and any extra details your insurer asks for.\n\nReimbursement depends on your own policy, so it is worth checking your cover before booking if you are unsure.";
@@ -362,7 +373,7 @@ export function ChatWidget() {
 
   function tapLocation() {
     addBot(
-      "We're based in Glasgow, UK and also offer online physiotherapy across the whole UK via secure video call.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.",
+      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit costs the video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit. Video sessions can't include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of your care where appropriate.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.`,
       BACK_CHIPS,
     );
   }

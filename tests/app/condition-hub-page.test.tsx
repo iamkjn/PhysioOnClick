@@ -37,6 +37,17 @@ describe("app/exercises/for/[condition] generateStaticParams", () => {
 });
 
 describe("app/exercises/for/[condition] page", () => {
+  it("links to the matching online physiotherapy landing page when one exists", async () => {
+    const { container } = await renderPage("sciatica");
+    expect(
+      container.querySelector('a[href="/online-physiotherapy-for/sciatica"]'),
+    ).not.toBeNull();
+    const none = await renderPage("hamstring-strain");
+    expect(
+      none.container.querySelector('a[href^="/online-physiotherapy-for/"]'),
+    ).toBeNull();
+  });
+
   it("renders '<name> exercises' as the h1", async () => {
     const { container } = await renderPage(SLUG);
     expect(container.querySelector("h1")?.textContent).toBe(
@@ -85,6 +96,21 @@ describe("app/exercises/for/[condition] page", () => {
     expect(
       redFlags!.compareDocumentPosition(firstStage!) &
         Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("renders 999/A&E signs in their own urgent box ahead of the non-urgent list", async () => {
+    const neck = getCondition("neck-pain")!;
+    expect(neck.urgentFlags?.length).toBeGreaterThan(0);
+    const { container } = await renderPage("neck-pain");
+    const urgent = container.querySelector("[data-urgent-flags]");
+    expect(urgent).not.toBeNull();
+    expect(urgent!.querySelector("h2")?.textContent).toBe("Get urgent help now if");
+    for (const flag of neck.urgentFlags!) expect(urgent).toHaveTextContent(flag);
+    const nonUrgent = container.querySelector("[data-red-flags]")!;
+    expect(nonUrgent.textContent).not.toMatch(/999|A&E/);
+    expect(
+      urgent!.compareDocumentPosition(nonUrgent) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
 

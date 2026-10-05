@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { initialAssessmentPrice } from "@/lib/site-data";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
@@ -23,16 +25,16 @@ const steps = [
     body: "Pick from an initial assessment, a follow-up, or a multi-session bundle, then choose an available slot. Everything runs on UK time and updates in real time as slots are booked."
   },
   {
+    title: "Complete a short assessment as you book",
+    body: "Before you pay, you fill in a short assessment as part of booking, so your physiotherapist has the full picture before your session."
+  },
+  {
     title: "Pay securely and get your receipt",
     body: "Payment is handled by Stripe before the appointment is confirmed. A payment receipt and a PDF invoice — suitable for a health insurance claim — are emailed automatically."
   },
   {
-    title: "Complete a short assessment beforehand",
-    body: "For paid bookings, a short pre-appointment assessment is emailed ahead of your session via a secure sign-in link, so your physiotherapist has the full picture before you speak. A reminder is sent roughly an hour before your appointment if it isn't finished yet."
-  },
-  {
-    title: "Attend your video consultation",
-    body: "Your confirmation email includes a secure video link for your appointment time. No separate app or account is required to join."
+    title: "Attend your video consultation or home visit",
+    body: "For a video appointment, your confirmation email includes a secure video link for your appointment time, and no separate app or account is required to join. If you chose a home visit in the Glasgow area, your physiotherapist comes to you at the booked time, and our receipt email shows the visit address."
   },
   {
     title: "Get your plan and keep it in one place",
@@ -52,6 +54,10 @@ const practicalQuestions = [
   {
     question: "Can I reschedule?",
     answer: "Yes, free of charge up to 24 hours before your appointment."
+  },
+  {
+    question: "Can I be seen in person?",
+    answer: `Yes, through home visits in ${HOME_VISIT_AREA_LABEL}. We have no clinic or premises. Video appointments are available anywhere in the UK. A home visit costs the video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit, and can include hands-on treatment (manual therapy) where appropriate; video sessions cannot. Choose your visit type when you book; for a home visit you enter your postcode and see straight away whether we cover it.`
   },
   {
     question: "Do I need a GP referral?",
@@ -100,7 +106,8 @@ export default function HowOnlinePhysiotherapyWorksPage() {
           </h1>
           <p>
             No clinic visit, no waiting room — just a clear five-step process from booking through to a
-            plan you can follow at home.
+            plan you can follow at home. You can book a video appointment anywhere in the UK, or a home visit
+            in the Glasgow area.
           </p>
         </section>
       </Reveal>
@@ -115,6 +122,10 @@ export default function HowOnlinePhysiotherapyWorksPage() {
             </article>
           </Reveal>
         ))}
+        <p>
+          Wondering how well it works?{" "}
+          <Link href="/guides/does-online-physiotherapy-work">Does online physiotherapy work?</Link>
+        </p>
       </section>
 
       <section className="page-section stack">

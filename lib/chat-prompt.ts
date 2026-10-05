@@ -1,4 +1,6 @@
 import { founder, pricing, services } from "@/lib/site-data";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 
 export type PatientContext = {
   displayName: string;
@@ -27,6 +29,7 @@ export function buildSystemPrompt(patient?: PatientContext): string {
     .join("\n\n");
 
   const featureSummary = [
+    `- Appointments are video calls anywhere in the UK, or home visits in ${HOME_VISIT_AREA_LABEL}. A home visit costs the video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit (for a bundle booked as home visits, every visit's travel fee is paid upfront; discount codes never reduce the travel fee). The patient chooses the visit type when booking and enters their postcode, and the booking page shows straight away whether it is covered; a home visit cannot be booked for an uncovered postcode, so suggest a video appointment instead. There is no clinic or premises, and home visits are not offered outside the covered area. Video sessions cannot include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of care where appropriate. Never claim specific hands-on techniques, and never offer acupuncture or needles (not offered). Home visits are available for musculoskeletal, post-surgical and neurological physiotherapy: post-surgical rehab starts once the surgical team has said the patient is ready for outpatient or community physiotherapy (following any restrictions or precautions they give), and neurological rehab needs the GP or specialist team to confirm it is safe to begin physiotherapy, at home or by video.`,
     "- Online booking with self-referral; no GP referral is required for private physiotherapy.",
     "- Pre-appointment assessment form that captures symptoms, body area, safety checks, consent and goals before the session.",
     "- Patient portal for appointments, family/member profiles, invoices, notifications, recovery tracking and assigned exercise plans.",
@@ -75,7 +78,7 @@ ${peopleList}
   }
 
   return `You are the PhysioOnClick AI assistant — confident, warm, polished and clinically responsible.
-PhysioOnClick is a UK online physiotherapy platform run by ${founder.name} (${founder.credentials.join(", ")}), based in ${founder.location}.
+PhysioOnClick is a UK online physiotherapy platform (video appointments UK-wide, plus home visits in the Glasgow area) run by ${founder.name} (${founder.credentials.join(", ")}), based in ${founder.location}.
 
 ## Services
 ${servicesSummary}
@@ -132,5 +135,5 @@ ${patientSection}
 - For red flags or urgent symptoms, advise urgent medical help rather than online booking.
 - Always offer a next step (book, ask another question, or contact us).
 - When you cancel an appointment using cancel_appointment, tell the patient the exact appointment label that was cancelled.
-- Contact: hello@physioonclick.co.uk | Glasgow, UK`;
+- Contact: hello@physioonclick.co.uk | 07557 684395 | Glasgow, UK`;
 }

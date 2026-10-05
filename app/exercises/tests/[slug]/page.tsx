@@ -1,3 +1,5 @@
+import { ExerciseUseDisclaimer } from "@/components/exercise-library/exercise-safety-note";
+import { UkServiceLinks } from "@/components/uk-service-links";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -24,11 +26,6 @@ export const dynamic = "force-static";
 export function generateStaticParams() {
   return allSelfTestSlugs().map((slug) => ({ slug }));
 }
-
-// The one disclaimer, verbatim, on every test page. These pages are
-// informational triage, not diagnosis (spec 11a "Positioning"). ASCII only.
-const DISCLAIMER =
-  "This is a guide, not a diagnosis. It cannot rule a problem in or out - a physiotherapist can. If your symptoms are severe, spreading, or you feel unwell, see a doctor.";
 
 // Every `whoShouldNotDoThis` string already opens "Do not do this test if ...".
 // Strip that lead so it becomes the callout heading and the string does not read
@@ -182,9 +179,7 @@ export default async function SelfTestPage({
         <div className="exlib-selftest__prose">
           <h2>How to read this</h2>
           <p>{test.interpretation}</p>
-          <p className="exlib-selftest-disclaimer" data-disclaimer>
-            {DISCLAIMER}
-          </p>
+          <ExerciseUseDisclaimer variant="selftest" />
         </div>
 
         {hubs.length ? (
@@ -243,6 +238,7 @@ export default async function SelfTestPage({
           >
             Book assessment
           </TrackedBookLink>
+          <UkServiceLinks />
         </div>
       </section>
     </div>

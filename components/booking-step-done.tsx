@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, type RefObject } from "react";
 
-import { bookServiceFor } from "@/lib/cal-services";
+import { bookServiceFor, serviceLabelFor } from "@/lib/cal-services";
 import { founder } from "@/lib/site-data";
 import { formatSlotChip, type BookingConfirmation } from "@/components/booking-flow";
 
@@ -13,7 +13,7 @@ function icsStamp(d: Date) {
 
 /** ponytail: a data-URI .ics beats pulling in a calendar dependency, and it
  *  works for Apple/Outlook/Google alike. */
-function calendarHref(title: string, startIso: string, minutes: number) {
+function calendarHref(title: string, startIso: string, minutes: number, isHomeVisit: boolean) {
   const start = new Date(startIso);
   const end = new Date(start.getTime() + minutes * 60_000);
   const body = [
@@ -26,7 +26,7 @@ function calendarHref(title: string, startIso: string, minutes: number) {
     `DTSTART:${icsStamp(start)}`,
     `DTEND:${icsStamp(end)}`,
     `SUMMARY:${title} · PhysioOnClick`,
-    `DESCRIPTION:Online physiotherapy session with ${founder.name}.`,
+    `DESCRIPTION:${isHomeVisit ? "Home visit" : "Online physiotherapy session"} with ${founder.name}.`,
     "END:VEVENT",
     "END:VCALENDAR"
   ].join("\r\n");
@@ -41,6 +41,8 @@ type Props = {
 export function BookingStepDone({ confirmation, titleRef }: Props) {
   const service = useMemo(() => bookServiceFor(confirmation.serviceId), [confirmation.serviceId]);
   const firstName = confirmation.name.trim().split(/\s+/)[0] || "there";
+  const isHomeVisit = confirmation.visitType === "home";
+  const title = serviceLabelFor(confirmation.serviceId, confirmation.visitType);
 
   return (
     <div className="book-done">
@@ -52,13 +54,15 @@ export function BookingStepDone({ confirmation, titleRef }: Props) {
           You&rsquo;re booked in, {firstName}.
         </h1>
         <p className="book-done-text">
-          We&rsquo;ve emailed your confirmation and a link to join the session. You can reschedule free of
-          charge up to 24 hours before.
+          {isHomeVisit
+            ? "We\u2019ve emailed your confirmation. Your physiotherapist will come to you for your home visit at the booked time."
+            : "We\u2019ve emailed your confirmation and a link to join the session."}{" "}
+          You can reschedule free of charge up to 24 hours before.
         </p>
         <div className="book-done-actions">
           <a
             className="book-action-outline"
-            href={calendarHref(service.title, confirmation.start, service.minutes)}
+            href={calendarHref(title, confirmation.start, service.minutes, isHomeVisit)}
             download="physioonclick-session.ics"
             aria-label="Add to calendar (downloads a calendar file)"
           >
@@ -77,7 +81,7 @@ export function BookingStepDone({ confirmation, titleRef }: Props) {
         <div className="book-summary-card">
           <div className="book-summary-row">
             <span className="book-summary-label">Service</span>
-            <span className="book-summary-value">{service.title}</span>
+            <span className="book-summary-value">{title}</span>
           </div>
           <div className="book-summary-row">
             <span className="book-summary-label">When</span>
@@ -105,7 +109,9 @@ export function BookingStepDone({ confirmation, titleRef }: Props) {
               2
             </span>
             <span className="book-next-text">
-              Join the video call at your booked time using the link in your email.
+              {isHomeVisit
+                ? "Be at home at your booked time for your home visit."
+                : "Join the video call at your booked time using the link in your email."}
             </span>
           </li>
           <li className="book-next-item">

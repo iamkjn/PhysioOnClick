@@ -8,12 +8,16 @@ import { auth } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { founder } from "@/lib/site-data";
-import { allBookServices, bookServiceFor, type FocusArea } from "@/lib/cal-services";
+import { allBookServices, bookServiceFor, includedFor, serviceLabelFor, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
 import { getDependents, type Dependent } from "@/lib/dependents";
 import { accountUserOrNull } from "@/lib/guest-booking";
+import { DEFAULT_VISIT_TYPE, normalisePostcode, validateHomeVisit, type VisitType } from "@/lib/home-visit";
+import { isCoveredPostcode, outOfAreaMessage } from "@/lib/home-visit-area";
+import { formatPounds, sessionPricePence, travelFeeLabel, travelFeePence } from "@/lib/home-visit-pricing";
 import { usePerson } from "@/components/person-provider";
 import { BookingStepService } from "@/components/booking-step-service";
+import { addAddress, getAddresses, getUsualAddressId, type SavedAddress } from "@/lib/patient-addresses";
 import { BookingStepTime } from "@/components/booking-step-time";
 import { BookingStepDone } from "@/components/booking-step-done";
 
@@ -22,6 +26,8 @@ export type BookingConfirmation = {
   start: string;
   serviceId: BookServiceId;
   name: string;
+  /** Video unless set; a home visit has no video link to join. */
+  visitType?: VisitType;
 };
 
 function initials(name: string) {
@@ -82,7 +88,22 @@ export function BookingFlow() {
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [serviceId, setServiceId] = useState<BookServiceId>("initial-assessment");
-  const [focusAreas, setFocusAreas] = useState<FocusArea[]>(["Back & neck"]);
+  // No pain-area chips at booking: the assessment body chart collects that.
+  // Only an exercise link (?body_part / ?exercise) pre-fills an area.
+  const [focusAreas, setFocusAreas] = useState<FocusArea[]>([]);
+  // Video (UK-wide) or a home visit in a covered postcode district — same
+  // calendar; a home visit adds a travel fee per visit (lib/home-visit-pricing).
+  // The address is personal data: it stays in component state and the
+  // checkout POST body only (never analytics, logs or the URL).
+  const [visitType, setVisitType] = useState<VisitType>(DEFAULT_VISIT_TYPE);
+  const [homeAddressLine, setHomeAddressLine] = useState("");
+  const [homePostcode, setHomePostcode] = useState("");
+  const [visitError, setVisitError] = useState<string | null>(null);
+  // Address book (signed-in, non-anonymous patients only). "different" = type a new one.
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [addressChoice, setAddressChoice] = useState<string | null>(null);
+  const [saveNewAddress, setSaveNewAddress] = useState(true);
+  const addressesLoadedFor = useRef<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
   const [bookingContext, setBookingContext] = useState<BookingContext | null>(null);
@@ -163,6 +184,8 @@ export function BookingFlow() {
       setServiceId(raw as BookServiceId);
       setSelectedSlot(null);
     }
+    // ?visit=home preselects a home visit (linked from the home-visit copy).
+    if (params.get("visit") === "home") setVisitType("home");
     const exercise = params.get("exercise")?.trim() ?? "";
     const bodyPart = params.get("body_part")?.trim() ?? "";
     const source = params.get("source")?.trim() ?? "";
@@ -188,10 +211,122 @@ export function BookingFlow() {
     setSelectedSlot(null);
   }, []);
 
-  const toggleFocusArea = useCallback((area: FocusArea) => {
-    trackGrowthEvent("booking_focus_selected", { focus_area: area });
-    setFocusAreas((prev) => (prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]));
+  // visit_type is recorded on step completion and checkout_started (never the address).
+  // Home and video book different Cal.com events, so a real change of visit
+  // type invalidates the chosen slot (re-clicking the selected card does not).
+  const handleVisitTypeChange = useCallback(
+    (next: VisitType) => {
+      if (next !== visitType) setSelectedSlot(null);
+      setVisitType(next);
+      setVisitError(null);
+    },
+    [visitType]
+  );
+
+  // A new postcode makes any earlier home-visit error stale.
+  const handleHomePostcodeChange = useCallback((value: string) => {
+    setHomePostcode(value);
+    setVisitError(null);
   }, []);
+
+  // Load the address book once per signed-in uid, the first time a home visit is chosen.
+  // The usual address is read for whoever the booking is for at that moment;
+  // a later person change on step 2 does not change the chosen address.
+  useEffect(() => {
+    if (!user || user.isAnonymous || visitType !== "home") return;
+    if (addressesLoadedFor.current === user.uid) return;
+    let cancelled = false;
+    Promise.all([getAddresses(user.uid), getUsualAddressId(user.uid, bookingForId).catch(() => null)])
+      .then(([list, usualId]) => {
+        if (cancelled) return;
+        addressesLoadedFor.current = user.uid;
+        setSavedAddresses(list);
+        const usual = usualId ? list.find((a) => a.id === usualId) : undefined;
+        if (usual) {
+          setAddressChoice(usual.id);
+          setHomeAddressLine(usual.line);
+          setHomePostcode(usual.postcode);
+        } else {
+          // No usual address: start on the normal postcode flow, never a dead end.
+          setAddressChoice("different");
+        }
+      })
+      .catch(() => {
+        // No address book: the normal postcode/lookup flow still works.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user, visitType, bookingForId]);
+
+  const handleAddressChoice = useCallback(
+    (choice: string) => {
+      setAddressChoice(choice);
+      setVisitError(null);
+      const saved = savedAddresses.find((a) => a.id === choice);
+      if (saved) {
+        setHomeAddressLine(saved.line);
+        setHomePostcode(saved.postcode);
+      } else {
+        setHomeAddressLine("");
+        setHomePostcode("");
+      }
+    },
+    [savedAddresses]
+  );
+
+  const handleHomeAddressLineChange = useCallback((value: string) => {
+    setHomeAddressLine(value);
+    // A Continue pressed before the line arrived (e.g. mid-lookup) left an error: drop it.
+    if (value.trim()) setVisitError(null);
+  }, []);
+
+  const handleServiceContinue = useCallback(() => {
+    if (visitType === "home") {
+      const home = validateHomeVisit(homeAddressLine, homePostcode);
+      if (!home.ok) {
+        setVisitError(home.error);
+        return;
+      }
+      if (!isCoveredPostcode(home.postcode)) {
+        setVisitError(outOfAreaMessage(home.postcode));
+        return;
+      }
+      setHomeAddressLine(home.addressLine);
+      setHomePostcode(home.postcode);
+      const typingNew = savedAddresses.length === 0 || addressChoice === "different";
+      if (user && !user.isAnonymous && typingNew && saveNewAddress) {
+        const line = home.addressLine.toLowerCase();
+        const pc = normalisePostcode(home.postcode);
+        const already = savedAddresses.some(
+          (a) => normalisePostcode(a.postcode) === pc && a.line.trim().toLowerCase() === line
+        );
+        if (!already) {
+          // Fire and forget: a failed save must never block booking.
+          addAddress(user.uid, { line: home.addressLine, postcode: home.postcode })
+            .then((id) => {
+              setSavedAddresses((prev) => [
+                ...prev,
+                { id, ownerUid: user.uid, label: "", line: home.addressLine, postcode: home.postcode },
+              ]);
+              // Back to step 1 then shows the new address selected, Continue available -
+              // unless the patient already picked another saved address meanwhile.
+              setAddressChoice((prev) => (prev === "different" || prev === null ? id : prev));
+            })
+            .catch(() => {});
+        }
+      }
+    }
+    setVisitError(null);
+    trackGrowthEvent("booking_step_completed", {
+      step: "service",
+      service_id: serviceId,
+      focus_areas: focusAreas.length,
+      visit_type: visitType,
+    });
+    track("booking_step_service_done", { service_id: serviceId, focus_areas: focusAreas.length, visit_type: visitType });
+    setStep(2);
+  }, [visitType, homeAddressLine, homePostcode, serviceId, focusAreas.length, user, savedAddresses, addressChoice, saveNewAddress]);
 
   const handleConfirmed = useCallback(
     (next: BookingConfirmation) => {
@@ -214,9 +349,13 @@ export function BookingFlow() {
     );
   }
 
-  const railChecklist = step === 2 ? service.included.slice(0, 3) : service.included;
+  const included = includedFor(serviceId, visitType);
+  // Travel only counts once the postcode is covered: until then (or for an
+  // uncovered postcode) the rail shows the plain session price.
+  const travel = visitType === "home" && isCoveredPostcode(homePostcode) ? travelFeePence(serviceId, visitType) : 0;
+  const railChecklist = step === 2 ? included.slice(0, 3) : included;
   const stepAnnouncement =
-    step === 1 ? "Step 1 of 3: choose your service." : "Step 2 of 3: time and your details.";
+    step === 1 ? "Step 1 of 3: book your appointment." : "Step 2 of 3: time and your details.";
 
   return (
     <div className="book-flow">
@@ -232,7 +371,7 @@ export function BookingFlow() {
         </div>
 
         <p className="book-rail-eyebrow">Your booking</p>
-        <h2 className="book-rail-title">{service.title}</h2>
+        <h2 className="book-rail-title">{serviceLabelFor(serviceId, visitType)}</h2>
         <p className="book-rail-summary">{service.description}</p>
 
         {bookingForId ? (
@@ -276,9 +415,15 @@ export function BookingFlow() {
         <div className="book-rail-spacer" />
         <div className="book-rail-divider" />
 
+        {travel > 0 ? (
+          <div className="book-rail-travel">
+            <span>{travelFeeLabel(serviceId)}</span>
+            <span>{formatPounds(travel)}</span>
+          </div>
+        ) : null}
         <div className="book-rail-total">
           <span className="book-rail-total-label">Total</span>
-          <span className="book-rail-total-price">£{service.price}</span>
+          <span className="book-rail-total-price">{formatPounds(sessionPricePence(serviceId) + travel)}</span>
         </div>
         <p className="book-rail-reassure">Free to reschedule up to 24 hours before your session.</p>
         <Link href="/how-online-physiotherapy-works" className="book-rail-reassure" style={{ textDecoration: "underline" }}>
@@ -290,21 +435,39 @@ export function BookingFlow() {
         <BookingStepService
           services={services}
           serviceId={serviceId}
-          focusAreas={focusAreas}
           bookingContext={bookingContext}
           onServiceChange={handleServiceChange}
-          onToggleFocusArea={toggleFocusArea}
-          onContinue={() => {
-            trackGrowthEvent("booking_step_completed", { step: "service", service_id: serviceId, focus_areas: focusAreas.length });
-            track("booking_step_service_done", { service_id: serviceId, focus_areas: focusAreas.length });
-            setStep(2);
-          }}
+          visitType={visitType}
+          homeAddressLine={homeAddressLine}
+          homePostcode={homePostcode}
+          visitError={visitError}
+          onVisitTypeChange={handleVisitTypeChange}
+          onHomeAddressLineChange={handleHomeAddressLineChange}
+          onHomePostcodeChange={handleHomePostcodeChange}
+          onSwitchToVideo={() => handleVisitTypeChange("video")}
+          onContinue={handleServiceContinue}
+          addressBook={
+            user && !user.isAnonymous
+              ? {
+                  addresses: savedAddresses,
+                  choice: addressChoice,
+                  onChoose: handleAddressChoice,
+                  saveNew: saveNewAddress,
+                  onSaveNewChange: setSaveNewAddress,
+                }
+              : null
+          }
           titleRef={panelTitleRef}
         />
       ) : (
         <BookingStepTime
           service={service}
           focusAreas={focusAreas}
+          visit={
+            visitType === "home"
+              ? { visitType: "home", homeAddressLine, homePostcode }
+              : { visitType: "video" }
+          }
           user={user}
           selectedSlot={selectedSlot}
           onSelectSlot={(iso) => {

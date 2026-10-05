@@ -29,6 +29,7 @@ import {
   type AssessmentRedFlags,
   type ConditionGroup,
   type ConditionalRedFlags,
+  type ConsultationMode,
   type PatientAssessmentFormInput,
 } from "@/lib/assessment-forms";
 import {
@@ -40,6 +41,7 @@ import {
 } from "@/lib/body-chart";
 import { calcAge, formatAge } from "@/lib/age";
 import type { FocusArea } from "@/lib/cal-services";
+import type { VisitType } from "@/lib/home-visit";
 import { formatPersonName } from "@/lib/name-format";
 import { regionToConditionGroups } from "@/lib/red-flag-groups";
 import { validateUKPhone } from "@/lib/validation";
@@ -56,6 +58,12 @@ interface Props {
   onSubmitted: (formId: string) => void;
   /** Skip the completion screen while the booking flow redirects to Stripe. */
   redirectingToPayment?: boolean;
+  /**
+   * How the booked session happens. Drives the care-consent wording and the
+   * clinical record's consultationMode. Unknown -> visit-neutral consent and
+   * "online" (the historical default).
+   */
+  visitType?: VisitType;
 }
 
 type StepId = "concern" | "health" | "safety" | "review";
@@ -95,8 +103,18 @@ const RED_FLAGS: Array<{ key: keyof AssessmentRedFlags; label: string }> = [
   { key: "immunocompromised", label: "A weakened immune system" },
 ];
 
+export function careConsentLabel(visitType?: VisitType): string {
+  if (visitType === "home") return "I agree to a physiotherapy assessment and treatment at a home visit.";
+  if (visitType === "video") return "I agree to a physiotherapy assessment and treatment by video.";
+  return "I agree to a physiotherapy assessment and treatment, by video or at a home visit, as booked.";
+}
+
+export function consultationModeFor(visitType?: VisitType): ConsultationMode {
+  return visitType === "home" ? "in_person" : "online";
+}
+
 const CONSENT_ITEMS: Array<{ key: "care" | "data" | "privacy" | "safety"; label: string }> = [
-  { key: "care", label: "I agree to an online physiotherapy assessment and treatment." },
+  { key: "care", label: careConsentLabel() },
   { key: "data", label: "I agree to PhysioOnClick storing this information to provide my care." },
   { key: "privacy", label: "I have read how my information is used." },
   { key: "safety", label: "I understand my physiotherapist may contact my GP or emergency services if there is a safety concern." },
@@ -278,6 +296,7 @@ export function AssessmentWizard({
   focusAreas = [],
   onSubmitted,
   redirectingToPayment = false,
+  visitType,
 }: Props) {
   const toast = useToast();
   const displayPersonName = formatPersonName(personName);
@@ -479,7 +498,7 @@ export function AssessmentWizard({
     const howLong = (state.howLong || "not-sure") as HowLong;
     const input: PatientAssessmentFormInput = {
       formType,
-      consultationMode: "online",
+      consultationMode: consultationModeFor(visitType),
       completedVia: "online_form",
       patientName: displayPersonName,
       patientDob: personDob,
@@ -883,7 +902,7 @@ export function AssessmentWizard({
                     onChange={(event) => patch({ consent: { ...state.consent, [item.key]: event.target.checked } })}
                   />
                   <span>
-                    {item.label}
+                    {item.key === "care" ? careConsentLabel(visitType) : item.label}
                     {item.key === "privacy" ? (
                       <> Read the <Link href="/privacy-policy" target="_blank">privacy policy</Link>.</>
                     ) : null}

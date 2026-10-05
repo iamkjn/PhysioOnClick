@@ -13,7 +13,7 @@
 import { conditions } from "@/lib/conditions";
 import { exercises } from "@/lib/exercises";
 import { selfTests } from "@/lib/self-tests";
-import { getBodyArea, allBodyAreaKeys } from "@/lib/body-areas";
+import { BODY_AREAS, getBodyArea, allBodyAreaKeys, type BodyArea } from "@/lib/body-areas";
 import { buildSearchItems, searchItems } from "@/lib/library-search";
 
 export type { Condition, ConditionStage } from "@/lib/conditions";
@@ -268,6 +268,38 @@ export function exercisesByBodyArea(key: string): Exercise[] {
   const area = getBodyArea(key);
   if (!area) return [];
   return exercises.filter((exercise) => area.bodyParts.includes(exercise.bodyPart));
+}
+
+/**
+ * The curated area an exercise rolls up into (each `bodyPart` belongs to
+ * exactly one area), or `null` for an unknown slug or unmapped `bodyPart`.
+ */
+export function bodyAreaForExercise(exerciseSlug: string): BodyArea | null {
+  const exercise = getExerciseBySlug(exerciseSlug);
+  if (!exercise) return null;
+  return BODY_AREAS.find((area) => area.bodyParts.includes(exercise.bodyPart)) ?? null;
+}
+
+/**
+ * Up to `limit` other exercises from the same body area, taken in a rotation
+ * that starts just after this exercise's own position in the area and wraps
+ * round. Each page therefore links a different window of its siblings, so
+ * internal links spread evenly across the area instead of piling onto the
+ * first few exercises in source order (which is what starved later exercises
+ * of crawl paths). Slugs in `exclude` (e.g. the related-exercise cards already
+ * on the page) are skipped.
+ */
+export function moreExercisesInArea(
+  exerciseSlug: string,
+  limit: number,
+  exclude: ReadonlySet<string> = new Set(),
+): Exercise[] {
+  const area = bodyAreaForExercise(exerciseSlug);
+  if (!area || limit <= 0) return [];
+  const siblings = exercisesByBodyArea(area.key);
+  const start = siblings.findIndex((exercise) => exercise.slug === exerciseSlug);
+  const rotated = [...siblings.slice(start + 1), ...siblings.slice(0, start)];
+  return rotated.filter((exercise) => !exclude.has(exercise.slug)).slice(0, limit);
 }
 
 /**

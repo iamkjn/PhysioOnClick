@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { EXERCISE_DISCLAIMER } from "@/lib/exercise-disclaimer";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
@@ -26,7 +29,7 @@ export default function TermsPage() {
         <div className="page-hero-aside">
           <strong>Last updated</strong>
           <p className="muted">
-            <time dateTime="2026-09">September 2026</time>
+            <time dateTime="2026-10">October 2026</time>
           </p>
         </div>
       </section>
@@ -57,8 +60,8 @@ export default function TermsPage() {
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Nature of the service</h2>
           <p>
-            PhysioOnClick provides physiotherapy consultations online across the UK.
-            Booking a consultation creates a professional clinical relationship. The standard of care provided
+            PhysioOnClick provides physiotherapy consultations online across the UK, and home visits in the
+            covered area ({HOME_VISIT_AREA_LABEL}). Booking a consultation creates a professional clinical relationship. The standard of care provided
             online is equal to that of an in-person consultation. A lower standard of care is not acceptable
             simply because the interaction is remote.
           </p>
@@ -70,8 +73,32 @@ export default function TermsPage() {
             Services are provided to patients physically located in the United Kingdom at the time of
             consultation. Existing patients temporarily abroad (excluding the USA, Australia, and Canada)
             may continue care with prior agreement. If you are unsure whether your location is covered,
-            contact us before booking.
+            contact us before booking. Home visits are available only in the covered area
+            ({HOME_VISIT_AREA_LABEL}); see &ldquo;Home visits (Glasgow area)&rdquo; below.
           </p>
+        </article>
+
+        <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
+          <h2>Home visits (Glasgow area)</h2>
+          <p>
+            Home visits are offered in {HOME_VISIT_AREA_LABEL}, booked through the same booking flow as
+            video appointments. A home visit is charged at the price of the equivalent video appointment
+            plus a travel fee of {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} per visit. The travel fee is
+            shown separately at checkout and on your invoice. If you book a session bundle as home visits,
+            the price you pay when you book includes the travel fee for every visit in the bundle. Discount
+            codes apply to the session price only, not to the travel fee.
+          </p>
+          <p>
+            Home visits are available only for postcodes in the area we cover. When you book a home visit
+            we ask for your postcode and address, and we check the postcode at that point: a home visit
+            cannot be booked for a postcode outside the area we cover.
+          </p>
+          <ul>
+            <li>Please provide a safe, clear space for the session and safe, reasonable access to it.</li>
+            <li>For a patient under 18, a parent, guardian or another responsible adult must be present for the whole visit.</li>
+            <li>We may rearrange or decline a visit if the address is outside the area we cover, or if we have a genuine concern for safety at the address.</li>
+            <li>If we decline or cannot attend a visit for either reason, you can choose a full refund or a new appointment, in line with our Payment &amp; cancellation terms below and the <Link href="/cancellation-policy" style={inlineLinkStyle}>cancellation policy</Link>. Your own cancellations follow the same notice rules as any other appointment.</li>
+          </ul>
         </article>
 
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
@@ -119,6 +146,21 @@ export default function TermsPage() {
           </p>
         </article>
 
+        <article
+          id="exercise-and-health-information"
+          className="panel stack soft-panel"
+          style={{ maxWidth: "70ch", lineHeight: 1.6 }}
+        >
+          <h2>Use of exercise and health information</h2>
+          <p>{EXERCISE_DISCLAIMER}</p>
+          <p>
+            The exercises, self-check guides, articles and other health information on this site are not a
+            substitute for an assessment of your own condition. If you choose to use them without an
+            assessment from a physiotherapist, you do so at your own risk. Nothing in these terms limits
+            liability that cannot be limited by law.
+          </p>
+        </article>
+
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Indemnity &amp; liability</h2>
           <p>
@@ -156,6 +198,14 @@ export default function TermsPage() {
             Healthcare professionals and organisations who would like to use or license our content can{" "}
             <Link href="/contact" style={inlineLinkStyle}>contact us</Link>. We will ask for unauthorised copies
             to be removed, including by notifying the hosting provider and search engines.
+          </p>
+          <p id="embedding">
+            <strong>Embedding our exercises.</strong> You may embed individual exercises from our{" "}
+            <Link href="/exercises" style={inlineLinkStyle}>exercise library</Link> on your website, free of charge,
+            using the embed code provided on each exercise page. The code must be used unchanged, including the
+            credit link to PhysioOnClick, and must not suggest that we endorse your organisation. Embedded exercises
+            remain our content and we may change or withdraw them at any time. This permission covers embedding only;
+            any other use described above still needs our written permission.
           </p>
         </article>
 

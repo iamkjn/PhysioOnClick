@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 
 import ServiceDetailPage from "@/app/services/[slug]/page";
 import { blogArticles } from "@/lib/blog";
+import { guides } from "@/lib/guides";
+import { onlinePhysioPages } from "@/lib/online-physio-pages";
 import { services } from "@/lib/site-data";
 import {
   allBodyAreaKeys,
@@ -17,7 +19,7 @@ const BASE = "https://physioonclick.co.uk";
 
 // Keep in sync with the `routes` array in app/sitemap.ts. A new static route
 // should be a deliberate change that also updates this count.
-const STATIC_ROUTE_COUNT = 14;
+const STATIC_ROUTE_COUNT = 15;
 
 async function loadSitemap() {
   vi.resetModules();
@@ -91,6 +93,21 @@ describe("app/sitemap.ts", () => {
     }
   });
 
+  it("lists the guides index and one URL per guide", async () => {
+    const urls = (await entries()).map((entry) => entry.url);
+    expect(urls).toContain(`${BASE}/guides`);
+    for (const g of guides) expect(urls).toContain(`${BASE}/guides/${g.slug}`);
+  });
+
+  it("lists one online-physiotherapy-for URL per record, stamped with its review date", async () => {
+    const all = await entries();
+    for (const p of onlinePhysioPages) {
+      const entry = all.find((e) => e.url === `${BASE}/online-physiotherapy-for/${p.slug}`);
+      expect(entry, `missing ${p.slug}`).toBeDefined();
+      expect(entry?.lastModified).toEqual(new Date(p.reviewedOn));
+    }
+  });
+
   it("adds exactly the exercise-library entries and nothing else", async () => {
     const all = await entries();
 
@@ -108,7 +125,13 @@ describe("app/sitemap.ts", () => {
     expect(exerciseLibEntries.length).toBe(exerciseLibCount);
 
     expect(all.length).toBe(
-      STATIC_ROUTE_COUNT + services.length + blogArticles.length + exerciseLibCount,
+      STATIC_ROUTE_COUNT +
+        services.length +
+        blogArticles.length +
+        exerciseLibCount +
+        1 +
+        guides.length +
+        onlinePhysioPages.length,
     );
   });
 });

@@ -45,6 +45,18 @@ export function AdminDashboard() {
   const [newEnquiries, setNewEnquiries] = useState(0);
 
   useEffect(() => {
+    function applyHashTab() {
+      if (window.location.hash === "#growth") {
+        setActiveTab("growth");
+        document.getElementById("admin-dashboard-growth")?.scrollIntoView({ block: "start" });
+      }
+    }
+    applyHashTab();
+    window.addEventListener("hashchange", applyHashTab);
+    return () => window.removeEventListener("hashchange", applyHashTab);
+  }, []);
+
+  useEffect(() => {
     if (!db) return;
     const q = query(collection(db, "enquiries"), where("status", "==", "new"));
     return onSnapshot(q, (s) => setNewEnquiries(s.size));
@@ -114,7 +126,7 @@ export function AdminDashboard() {
           })}
         </nav>
 
-        <section className="admin-dashboard-workspace" aria-labelledby="admin-activity-title">
+        <section className="admin-dashboard-workspace" id="admin-dashboard-growth" aria-labelledby="admin-activity-title">
           <div className="admin-dashboard-workspace-head">
             <div>
               <span className="dashboard-eyebrow">Operations</span>

@@ -109,7 +109,8 @@ export type LibraryEvent =
   | "library_cta_click"
   | "library_selftest_view"
   | "library_selftest_cta_click"
-  | "library_area_view";
+  | "library_area_view"
+  | "library_embed_copy";
 
 /**
  * Fire a public exercise-library analytics event. Thin typed wrapper over

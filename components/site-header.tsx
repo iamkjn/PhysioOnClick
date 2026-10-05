@@ -23,6 +23,7 @@ const navItems = [
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
   { href: "/exercises", label: "Exercises" },
+  { href: "/exercises/tests", label: "Self-checks" },
   { href: "/blog", label: "Blog" },
   { href: "/pricing", label: "Pricing" },
   { href: "/book", label: "Book" },
@@ -53,6 +54,10 @@ export function SiteHeader() {
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
+    // Self-checks lives under /exercises/tests; keep Exercises from also lighting up.
+    if (href === "/exercises") {
+      if (pathname === "/exercises/tests" || pathname.startsWith("/exercises/tests/")) return false;
+    }
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 

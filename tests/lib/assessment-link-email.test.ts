@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildAssessmentLinkEmailHtml } from "@/lib/emails/assessment-link-email";
+import { buildAssessmentLinkEmailHtml, buildAssessmentLinkEmailText } from "@/lib/emails/assessment-link-email";
 
 describe("buildAssessmentLinkEmailHtml", () => {
   it("includes CTA, pre-appointment copy, and conditional meeting link", () => {
@@ -24,5 +24,46 @@ describe("buildAssessmentLinkEmailHtml", () => {
       assessmentUrl: "https://s/x",
     });
     expect(html).not.toContain("Join your appointment");
+  });
+
+  it("shows the home visit address and omits the video join link for a home visit", () => {
+    const html = buildAssessmentLinkEmailHtml({
+      patientName: "Jane",
+      serviceLabel: "Initial",
+      assessmentUrl: "https://s/x",
+      meetingUrl: "https://m/y",
+      visitType: "home",
+      homeVisitAddress: "7 Example <Street>, G31 4HS",
+    });
+    expect(html).toContain("Home visit at 7 Example &lt;Street&gt;, G31 4HS");
+    expect(html).not.toContain("Join your appointment");
+    expect(html).not.toContain("https://m/y");
+  });
+
+  it("keeps the join link for a video booking", () => {
+    const html = buildAssessmentLinkEmailHtml({
+      patientName: "Jane",
+      serviceLabel: "Initial",
+      assessmentUrl: "https://s/x",
+      meetingUrl: "https://m/y",
+      visitType: "video",
+    });
+    expect(html).toContain("Join your appointment");
+    expect(html).not.toContain("Home visit at");
+  });
+});
+
+describe("buildAssessmentLinkEmailText", () => {
+  it("omits the join link and names the address for a home visit", () => {
+    const text = buildAssessmentLinkEmailText({
+      patientName: "Jane",
+      serviceLabel: "Initial",
+      assessmentUrl: "https://s/x",
+      meetingUrl: "https://m/y",
+      visitType: "home",
+      homeVisitAddress: "7 Example Street, G31 4HS",
+    });
+    expect(text).toContain("Home visit at 7 Example Street, G31 4HS");
+    expect(text).not.toContain("https://m/y");
   });
 });

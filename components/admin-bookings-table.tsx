@@ -26,6 +26,8 @@ type BookingRecord = {
   bookedBy: string;
   summaryId?: string;
   assessmentFormId?: string;
+  /** Glasgow-area home visit address; absent for video bookings. */
+  homeVisitAddress?: string;
 };
 
 type StatusFilter = "all" | "pending" | "upcoming" | "completed" | "cancelled";
@@ -117,6 +119,10 @@ export function AdminBookingsTable() {
           bookedBy:         String(d.bookedBy || d.patientId || ""),
           summaryId:        d.summaryId as string | undefined,
           assessmentFormId: d.assessmentFormId as string | undefined,
+          homeVisitAddress:
+            d.visitType === "home" && typeof d.homeVisitAddress === "string" && d.homeVisitAddress
+              ? d.homeVisitAddress
+              : undefined,
         };
       }));
       setLoading(false);
@@ -282,7 +288,19 @@ export function AdminBookingsTable() {
                     <strong style={{ display: "block", color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{formatPersonName(item.fullName || item.patientName)}</strong>
                     <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>{item.email}</span>
                   </td>
-                  <td style={{ color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>{item.service}</td>
+                  <td style={{ color: "var(--color-navy)", fontFamily: "var(--font-sans)" }}>
+                    {item.service}
+                    {item.homeVisitAddress ? (
+                      <>
+                        <span className="dashboard-status-pill" style={{ display: "table", marginTop: "0.35rem" }}>
+                          Home visit
+                        </span>
+                        <span style={{ display: "block", marginTop: "0.25rem", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+                          {item.homeVisitAddress}
+                        </span>
+                      </>
+                    ) : null}
+                  </td>
                   <td style={{ color: item.appointmentLabel === "TBC" ? "var(--color-text-secondary)" : "var(--color-navy)", fontStyle: item.appointmentLabel === "TBC" ? "italic" : "normal", fontFamily: "var(--font-sans)" }}>
                     {item.appointmentLabel}
                   </td>

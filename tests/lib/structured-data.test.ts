@@ -9,7 +9,9 @@ import {
   selfTestWebPage,
   personRef,
   personNode,
+  onlinePhysioWebPage,
 } from '@/lib/structured-data'
+import { getOnlinePhysioPage } from '@/lib/online-physio-pages'
 
 const ex = exercises.find((e) => e.slug === 'clam-shell')!
 const condition = conditions.find((c) => c.slug === 'rotator-cuff-tendinopathy')!
@@ -153,5 +155,22 @@ describe('structured-data: personNode', () => {
       'https://www.linkedin.com/in/dr-shivaliba-zala/',
       'https://www.csp.org.uk/user/zalashivali1998gmailcom',
     ])
+  })
+})
+
+describe('onlinePhysioWebPage about', () => {
+  const about = (slug: string) =>
+    (onlinePhysioWebPage(getOnlinePhysioPage(slug)!, `/online-physiotherapy-for/${slug}`) as { about: unknown }).about
+  it('defaults to MedicalCondition with the page name', () => {
+    const p = getOnlinePhysioPage('sciatica')!
+    expect(about('sciatica')).toEqual({ '@type': 'MedicalCondition', name: p.name })
+  })
+  it('uses SurgicalProcedure for procedure pages', () => {
+    expect(about('knee-replacement-rehab')).toEqual({ '@type': 'SurgicalProcedure', name: 'Knee replacement' })
+    expect(about('hip-replacement-rehab')).toEqual({ '@type': 'SurgicalProcedure', name: 'Hip replacement' })
+    expect(about('rotator-cuff-repair-rehab')).toEqual({ '@type': 'SurgicalProcedure', name: 'Rotator cuff repair' })
+  })
+  it('names stroke as a condition', () => {
+    expect(about('stroke-rehabilitation')).toEqual({ '@type': 'MedicalCondition', name: 'Stroke' })
   })
 })

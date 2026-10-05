@@ -6,8 +6,8 @@
 // appear together in one page's rendered HTML into a single graph instead of
 // treating them as unrelated, duplicate entities.
 //
-// The practice is online-first, with online physiotherapy across the UK and
-// in-person care available in Glasgow. `areaServed` is the whole UK on purpose,
+// The practice offers video physiotherapy across the UK and home visits in the
+// Glasgow area (no clinic or premises). `areaServed` is the whole UK on purpose,
 // while the address below represents the Glasgow business location.
 //
 // OWNER TODO — still missing from the public graph. Do not guess these:
@@ -17,7 +17,8 @@
 //   - sameAs for Facebook once the page is created
 
 import { absoluteUrl } from "@/lib/utils";
-import { founder, services } from "@/lib/site-data";
+import { stripLinks } from "@/lib/content-types";
+import { founder, services, withPrices } from "@/lib/site-data";
 // Import the conditions array directly, not `getCondition` from the
 // `@/lib/exercise-library` barrel: this module is pulled into app/layout.tsx
 // (siteEntityGraph), so a value import from the barrel would drag the whole
@@ -25,16 +26,18 @@ import { founder, services } from "@/lib/site-data";
 // `lib/conditions.ts` is dependency-free pure data.
 import { conditions } from "@/lib/conditions";
 import type { Exercise } from "@/lib/exercises";
+import type { OnlinePhysioPage } from "@/lib/online-physio-pages";
+import type { Guide } from "@/lib/guides";
 import type { Condition } from "@/lib/conditions";
 import type { SelfTest } from "@/lib/self-tests";
 
 const SITE = absoluteUrl("/");
 
-/** Temporarily hidden until the practice confirms the new public number. */
-export const PRACTICE_PHONE = "";
+/** Dedicated business number — shown sitewide and in the entity graph. */
+export const PRACTICE_PHONE = "07557 684395";
 
 /** Same number in the digits-only form `tel:` links require. */
-export const PRACTICE_PHONE_HREF = "";
+export const PRACTICE_PHONE_HREF = "tel:+447557684395";
 
 /** Stable @id for the practice entity — every page that mentions the
  *  business links back to this one node instead of re-declaring it. */
@@ -76,12 +79,36 @@ export function practiceNode() {
       addressCountry: "GB"
     },
     email: "hello@physioonclick.co.uk",
-    // Consultations are delivered remotely, never at the address above. Stating
-    // the channel explicitly stops the entity reading as a walk-in clinic.
-    availableChannel: {
-      "@type": "ServiceChannel",
-      serviceType: "Online video consultation",
-      serviceUrl: absoluteUrl("/book")
+    telephone: "+44 7557 684395",
+    // Video consultations are available UK-wide; home visits are a separate,
+    // Glasgow-only service. There is no clinic or walk-in premises, and no
+    // geo is published (service-area business).
+    availableChannel: [
+      {
+        "@type": "ServiceChannel",
+        serviceType: "Online video consultation",
+        serviceUrl: absoluteUrl("/book")
+      },
+      {
+        "@type": "ServiceChannel",
+        serviceType: "Home visit physiotherapy",
+        serviceUrl: absoluteUrl("/book?visit=home"),
+        availableLanguage: "English"
+      }
+    ],
+    makesOffer: {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: "Home visit physiotherapy",
+        serviceType: "Home visit physiotherapy",
+        areaServed: [
+          { "@type": "City", name: "Glasgow" },
+          { "@type": "City", name: "Paisley" },
+          { "@type": "City", name: "Hamilton" }
+        ],
+        url: absoluteUrl("/glasgow-physiotherapist")
+      }
     },
     // Mirrors the hours already published on /contact. If those change, change
     // both — contradicting hours are worse than none.
@@ -320,5 +347,53 @@ export function exerciseVideoObject(ex: Exercise): object | null {
     "@context": "https://schema.org",
     "@type": "VideoObject",
     ...video
+  };
+}
+
+/** MedicalWebPage for an editorial guide. FAQs ride along as Question/Answer
+ *  nodes (no FAQPage markup: Google retired that rich result). */
+export function guideWebPage(g: Guide, path: string): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    name: g.seoTitle,
+    headline: g.title,
+    description: g.seoDescription,
+    url: absoluteUrl(path),
+    author: personRef(),
+    reviewedBy: personRef(),
+    datePublished: g.publishedOn,
+    lastReviewed: g.reviewedOn,
+    inLanguage: "en-GB",
+    citation: g.sources.map((s) => s.url),
+    mainEntity: g.faqs.map((f) => ({
+      "@type": "Question",
+      name: stripLinks(withPrices(f.q)),
+      acceptedAnswer: { "@type": "Answer", text: stripLinks(withPrices(f.a)) }
+    }))
+  };
+}
+
+/** MedicalWebPage for an "online physiotherapy for [condition]" landing page.
+ *  Same shape as guideWebPage, plus the condition it is about. */
+export function onlinePhysioWebPage(p: OnlinePhysioPage, path: string): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    name: p.seoTitle,
+    headline: p.h1,
+    description: p.seoDescription,
+    url: absoluteUrl(path),
+    about: { "@type": p.about?.type ?? "MedicalCondition", name: p.about?.name ?? p.name },
+    author: personRef(),
+    reviewedBy: personRef(),
+    lastReviewed: p.reviewedOn,
+    inLanguage: "en-GB",
+    citation: p.sources.map((s) => s.url),
+    mainEntity: p.faqs.map((f) => ({
+      "@type": "Question",
+      name: stripLinks(withPrices(f.q)),
+      acceptedAnswer: { "@type": "Answer", text: stripLinks(withPrices(f.a)) }
+    }))
   };
 }

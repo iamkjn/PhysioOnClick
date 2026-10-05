@@ -9,6 +9,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 [ -f .env.development ] || { echo "ERROR: .env.development not found at repo root."; exit 1; }
+[ -L node_modules ] && { echo "SAFETY STOP: node_modules is a symlink; OpenNext bundles the link and every page 500s. Use a real copy: rm node_modules && cp -cR <main checkout>/node_modules node_modules"; exit 1; }
 
 # Safety: refuse to run if the dev env file is not actually pointing at dev.
 grep -q '^NEXT_PUBLIC_FIREBASE_PROJECT_ID=physioonclick-dev$' .env.development \
@@ -48,6 +49,9 @@ echo "  cal username     : ${NEXT_PUBLIC_CAL_USERNAME}"
 rm -rf .next
 
 npx opennextjs-cloudflare build
+# Blocks a bundle that would 500 every page (e.g. built with a symlinked
+# node_modules, which took dev down on 2026-10-01 and prod on 2026-10-03).
+node scripts/verify-opennext-build.mjs
 npx opennextjs-cloudflare deploy -e dev
 
 cat <<'WARN'

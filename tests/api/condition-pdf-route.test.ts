@@ -83,6 +83,8 @@ describe('POST /api/exercise-plan/condition-pdf', () => {
     expect(buildExercisePlanPdf).toHaveBeenCalledOnce()
     const pdfArg = buildExercisePlanPdf.mock.calls[0][0] as { cards: unknown[] }
     expect(pdfArg.cards).toHaveLength(3) // every stage: ex-1 + ex-2 + ex-3
+    // Public plan, not a session plan: printed as a general, reference-only plan.
+    expect((pdfArg as { generalPlan?: boolean }).generalPlan).toBe(true)
     expect(sendConditionPlanEmail).toHaveBeenCalledOnce()
     expect(sendConditionPlanEmail.mock.calls[0][0]).toMatchObject({ to: 'patient@example.com' })
     // The email's "see the full hub" link must point at the real route

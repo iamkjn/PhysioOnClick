@@ -4,10 +4,11 @@ import { createCalBooking } from "@/lib/cal-booking";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { guestBookingOwnerFields } from "@/lib/guest-booking";
+import { chargedTravelFeeLabel } from "@/lib/home-visit-pricing";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
-import { bookServiceFor, calServiceFor } from "@/lib/cal-services";
+import { bookServiceFor, calSlugFor, serviceLabelFor } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
 
 type StripeEvent = {
@@ -35,14 +36,14 @@ type SlotState = "free" | "taken" | "unknown";
  * the authority — a momentary Cal outage must not charge a customer and then
  * record slot_unavailable for a slot that was actually free.
  */
-async function checkSlot(service: BookServiceId, startISO: string): Promise<SlotState> {
+async function checkSlot(service: BookServiceId, startISO: string, visitType?: string): Promise<SlotState> {
   // Read live (not the module-level constant) so this route reacts to the
   // request-time env, matching how this handler is exercised in tests.
   const calUsername = process.env.NEXT_PUBLIC_CAL_USERNAME ?? "";
   if (!calUsername) return "unknown";
   const day = startISO.slice(0, 10); // YYYY-MM-DD
   const url = new URL("https://api.cal.com/v2/slots");
-  url.searchParams.set("eventTypeSlug", calServiceFor(service).calSlug);
+  url.searchParams.set("eventTypeSlug", calSlugFor(service, visitType));
   url.searchParams.set("username", calUsername);
   url.searchParams.set("start", day);
   url.searchParams.set("end", day);
@@ -124,7 +125,9 @@ export async function POST(request: Request) {
     createdAt: FieldValue.serverTimestamp(),
   });
 
-  if ((await checkSlot(intent.service, intent.startISO)) === "taken") {
+  // Check the same event type createCalBooking will book (home only with an address).
+  const slotVisitType = intent.visitType === "home" && intent.homeVisitAddress ? "home" : undefined;
+  if ((await checkSlot(intent.service, intent.startISO, slotVisitType)) === "taken") {
     // Cal confirmed the slot is gone between checkout and webhook. Record for
     // admin follow-up/refund. ("unknown" falls through to the booking attempt
     // below so a transient Cal error can't charge-without-booking.)
@@ -143,6 +146,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true, warning: "slot_unavailable" }, { status: 200 });
   }
 
+  // Home visits (Glasgow area) share the calendar, event types and prices with
+  // video calls; only the visit type + address travel with them. Video
+  // bookings add nothing here, so they behave exactly as before.
+  const homeVisit =
+    intent.visitType === "home" && intent.homeVisitAddress
+      ? { visitType: "home" as const, homeVisitAddress: intent.homeVisitAddress }
+      : null;
+
+  // Travel fee (pence) for home visits, from checkout metadata. Stored as a
+  // number so receipts and invoices can show it as its own line.
+  const travelFee = homeVisit && intent.travelFeePence ? Number(intent.travelFeePence) : 0;
+  const travelFeeFields = travelFee > 0 ? { travelFeePence: travelFee } : {};
+  // The invoice and receipt email label the travel row like the Stripe line
+  // item. Derived, so it is passed to them but never stored.
+  const travelFeeReceiptFields =
+    travelFee > 0 ? { ...travelFeeFields, travelFeeLabel: chargedTravelFeeLabel(intent.service, travelFee) } : {};
+
   const booking = await createCalBooking({
     service: intent.service,
     startISO: intent.startISO,
@@ -150,6 +170,7 @@ export async function POST(request: Request) {
     email: intent.email,
     timeZone: intent.timeZone,
     focusAreas: intent.focusAreas,
+    ...(homeVisit ?? {}),
   });
 
   if (!booking.ok) {
@@ -185,6 +206,9 @@ export async function POST(request: Request) {
     createdAt: FieldValue.serverTimestamp(),
     invoiceNumber,
     paidAt: new Date().toISOString(),
+    // cal-webhook copies these onto the bookings doc if it is created after this.
+    ...(homeVisit ?? {}),
+    ...travelFeeFields,
     ...(isPackage
       ? {
           packageId,
@@ -210,6 +234,9 @@ export async function POST(request: Request) {
       firstCalBookingUid: booking.uid,
       bookingUids: [booking.uid],
       stripeSessionId: session.id,
+      // Server-only (no client rule on sessionPackages): later bundle
+      // sessions are booked from this doc and must stay home visits.
+      ...(homeVisit ?? {}),
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
@@ -228,6 +255,8 @@ export async function POST(request: Request) {
         paid: true,
         amountPaidPence: session.amount_total ?? 0,
         paymentProvider: "stripe",
+        ...(homeVisit ?? {}),
+        ...travelFeeFields,
         ...(isPackage
           ? {
               packageId,
@@ -301,7 +330,7 @@ export async function POST(request: Request) {
   // though it doesn't depend on the PDF succeeding. Each step now has its own
   // try/catch so one failure can't take the other down with it.
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const serviceLabel = purchasedService.title;
+  const serviceLabel = serviceLabelFor(intent.service, homeVisit?.visitType);
 
   let pdfBytes: Uint8Array | undefined;
   try {
@@ -315,6 +344,9 @@ export async function POST(request: Request) {
       patientName: intent.name,
       patientEmail: intent.email,
       sessionDateISO: intent.startISO,
+      // Visit type only (prints the delivery line) — the address stays off the invoice.
+      ...(homeVisit ? { visitType: "home" as const } : {}),
+      ...travelFeeReceiptFields,
     });
     const pdfPath = `invoices/${invoiceNumber}.pdf`;
     const up = await uploadObject(pdfPath, pdfBytes, "application/pdf");
@@ -333,6 +365,8 @@ export async function POST(request: Request) {
       serviceLabel,
       amountPence: session.amount_total ?? 0,
       receiptUrl: `${siteUrl}/book/receipt/${session.id}`,
+      ...(homeVisit ?? {}),
+      ...travelFeeReceiptFields,
       ...(pdfBytes
         ? { pdf: { filename: `invoice-${invoiceNumber}.pdf`, base64: Buffer.from(pdfBytes).toString("base64") } }
         : {}),

@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest'
 
 // Next.js Link renders as <a> in tests — no mock needed
 import TermsPage from '@/app/terms/page'
+import { EXERCISE_DISCLAIMER } from '@/lib/exercise-disclaimer'
 
 describe('Terms & Conditions page', () => {
   it('renders all 9 required section headings', () => {
@@ -39,5 +40,40 @@ describe('Terms & Conditions page', () => {
       expect(link).toHaveAttribute('href', '/cancellation-policy')
     }
     expect(screen.getByRole('link', { name: /privacy policy/i })).toHaveAttribute('href', '/privacy-policy')
+  })
+
+  it('grants an embed-only licence at #embedding', () => {
+    const { container } = render(<TermsPage />)
+    const clause = container.querySelector('#embedding')
+    expect(clause).not.toBeNull()
+    expect(clause?.textContent).toMatch(/embed individual exercises/i)
+    expect(clause?.textContent).toMatch(/credit link/i)
+    expect(clause?.textContent).toMatch(/covers embedding only/i)
+  })
+
+  it('has a home visits clause without premises or insurer claims', () => {
+    render(<TermsPage />)
+    expect(screen.getByRole('heading', { name: 'Home visits (Glasgow area)' })).toBeInTheDocument()
+    const text = screen.getByRole('heading', { name: 'Home visits (Glasgow area)' }).closest('article')?.textContent ?? ''
+    expect(text).not.toMatch(/same prices/)
+    expect(text).toMatch(/price of the equivalent video appointment\s+plus a travel fee of £15 per visit/)
+    expect(text).toMatch(/Glasgow \(G1–G53\), Paisley \(PA1–PA3\) and Hamilton \(ML3\)/)
+    expect(text).toMatch(/shown separately at checkout and on your invoice/)
+    expect(text).toMatch(/travel fee for every visit in the bundle/)
+    expect(text).toMatch(/cannot be booked for a postcode outside the area we cover/)
+    expect(text).not.toMatch(/confirm by email/)
+    expect(text).toMatch(/under 18/)
+    expect(text).toMatch(/outside the area we cover/)
+    expect(text).not.toMatch(/\bclinic\b|premises|insur/i)
+  })
+
+  it('has the exercise and health information clause using the shared wording', () => {
+    const { container } = render(<TermsPage />)
+    expect(screen.getByRole('heading', { name: 'Use of exercise and health information' })).toBeInTheDocument()
+    const clause = container.querySelector('#exercise-and-health-information')
+    expect(clause?.textContent).toContain(EXERCISE_DISCLAIMER)
+    expect(clause?.textContent).toMatch(/at your own risk/)
+    expect(clause?.textContent).toMatch(/cannot be limited by law/)
+    expect(clause?.textContent).not.toMatch(/exclude all liability|accepts no responsibility/i)
   })
 })

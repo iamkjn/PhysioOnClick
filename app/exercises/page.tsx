@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import {
+  BODY_AREAS,
   allConditionSlugs,
   allExerciseSlugs,
   allSelfTestSlugs,
   conditionsForExercise,
+  exercisesByBodyArea,
   getCondition,
   getExerciseBySlug,
   getSelfTest,
@@ -85,6 +87,12 @@ export default function ExerciseLibraryIndexPage() {
       conditionsForExercise(exercise.slug).map((condition) => condition.slug),
     ]),
   );
+  // Plain-link index of every exercise, grouped by body area: gives each
+  // exercise page a crawl path from this frequently-crawled hub.
+  const exercisesByArea = BODY_AREAS.map((area) => ({
+    area,
+    items: exercisesByBodyArea(area.key),
+  })).filter(({ items }) => items.length > 0);
   const selfTests = allSelfTestSlugs()
     .map((slug) => getSelfTest(slug))
     .filter((test): test is NonNullable<typeof test> => test !== null);
@@ -221,6 +229,27 @@ export default function ExerciseLibraryIndexPage() {
             <ExerciseCard key={exercise.slug} exercise={exercise} />
           ))}
         </div>
+      </section>
+
+      <section className="exlib-index-section" aria-labelledby="all-exercises-heading">
+        <div className="section-heading">
+          <h2 id="all-exercises-heading">All exercises by body area</h2>
+          <p>Every exercise in the library, grouped by where in the body it works.</p>
+        </div>
+        {exercisesByArea.map(({ area, items }) => (
+          <div key={area.key} className="exlib-area-index">
+            {/* Plain heading, not a link: the body map above is the one
+                place each area page is linked from this index. */}
+            <h3>{area.label}</h3>
+            <ul className="exlib-link-list">
+              {items.map((exercise) => (
+                <li key={exercise.slug}>
+                  <Link href={`/exercises/${exercise.slug}`}>{exercise.title}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </section>
 
       <section className="exlib-index-section exlib-index-section--links">

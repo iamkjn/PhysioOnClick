@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
 
-import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
+import { ExerciseSafetyNote, ExerciseUseDisclaimer } from "@/components/exercise-library/exercise-safety-note";
+import { EXERCISE_DISCLAIMER, SELF_TEST_DISCLAIMER } from "@/lib/exercise-disclaimer";
 
 describe("ExerciseSafetyNote", () => {
   it("full: renders the h2, an intro, a 5-item list and the 'see a doctor' closing line", () => {
@@ -72,5 +73,27 @@ describe("ExerciseSafetyNote", () => {
         [],
       );
     }
+  });
+
+  it("both variants and the self-test disclaimer carry the shared own-risk wording", () => {
+    expect(EXERCISE_DISCLAIMER).toMatch(/without guidance from a physiotherapist who has assessed you/);
+    expect(EXERCISE_DISCLAIMER).toMatch(/at your own risk/);
+    for (const variant of ["full", "compact"] as const) {
+      const { container } = render(<ExerciseSafetyNote variant={variant} />);
+      expect(
+        container.querySelector("[data-exercise-disclaimer]")?.textContent,
+      ).toBe(EXERCISE_DISCLAIMER);
+    }
+    const { container } = render(<ExerciseUseDisclaimer />);
+    expect(container.textContent).toBe(EXERCISE_DISCLAIMER);
+    expect([...EXERCISE_DISCLAIMER].every((ch) => ch.codePointAt(0)! <= 0xff)).toBe(true);
+  });
+
+  it("self-test variant is one combined, ASCII, own-risk note", () => {
+    const { container } = render(<ExerciseUseDisclaimer variant="selftest" />);
+    expect(container.textContent).toBe(SELF_TEST_DISCLAIMER);
+    expect(SELF_TEST_DISCLAIMER).toMatch(/not a diagnosis/);
+    expect(SELF_TEST_DISCLAIMER).toMatch(/at your own risk/);
+    expect([...SELF_TEST_DISCLAIMER].every((ch) => ch.codePointAt(0)! <= 0xff)).toBe(true);
   });
 });

@@ -1,4 +1,5 @@
 import type { BookServiceId } from "@/lib/site-data";
+import { isVisitType, type VisitType } from "@/lib/home-visit";
 
 export type BookingIntent = {
   service: BookServiceId;
@@ -15,12 +16,20 @@ export type BookingIntent = {
   assessmentUid?: string;
   assessmentPersonId?: string;
   assessmentFormId?: string;
+  /** "video" (default) or "home" (Glasgow-area home visit). Absent on legacy sessions = video. */
+  visitType?: VisitType;
+  /** "<address line>, <POSTCODE>" — home visits only (<= 132 chars, well under Stripe's 500). */
+  homeVisitAddress?: string;
+  /** Integer pence as a string, home visits only: £15 × visits (lib/home-visit-pricing). */
+  travelFeePence?: string;
 };
 
 export type CreateCheckoutInput = {
   intent: BookingIntent;
   amountPence: number;
   serviceLabel: string;
+  /** Extra Stripe line items after the service (e.g. the home-visit travel fee). Video passes none. */
+  extraLineItems?: Array<{ name: string; amountPence: number }>;
   successUrl: string;
   cancelUrl: string;
 };
@@ -45,6 +54,11 @@ export function intentToMetadata(intent: BookingIntent): Record<string, string> 
     ...(intent.assessmentUid ? { assessmentUid: intent.assessmentUid } : {}),
     ...(intent.assessmentPersonId ? { assessmentPersonId: intent.assessmentPersonId } : {}),
     ...(intent.assessmentFormId ? { assessmentFormId: intent.assessmentFormId } : {}),
+    ...(intent.visitType ? { visitType: intent.visitType } : {}),
+    ...(intent.visitType === "home" && intent.homeVisitAddress
+      ? { homeVisitAddress: intent.homeVisitAddress }
+      : {}),
+    ...(intent.visitType === "home" && intent.travelFeePence ? { travelFeePence: intent.travelFeePence } : {}),
   };
 }
 
@@ -70,5 +84,13 @@ export function metadataToIntent(meta: Record<string, string> | undefined): Book
     ...(meta.assessmentUid ? { assessmentUid: meta.assessmentUid } : {}),
     ...(meta.assessmentPersonId ? { assessmentPersonId: meta.assessmentPersonId } : {}),
     ...(meta.assessmentFormId ? { assessmentFormId: meta.assessmentFormId } : {}),
+    ...(isVisitType(meta.visitType) ? { visitType: meta.visitType } : {}),
+    // An address only means anything on a home visit; drop it otherwise.
+    ...(meta.visitType === "home" && meta.homeVisitAddress
+      ? { homeVisitAddress: meta.homeVisitAddress }
+      : {}),
+    ...(meta.visitType === "home" && meta.travelFeePence && /^\d+$/.test(meta.travelFeePence)
+      ? { travelFeePence: meta.travelFeePence }
+      : {}),
   };
 }

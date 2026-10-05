@@ -204,4 +204,44 @@ describe('AdminBookingsTable', () => {
       '/admin/session/booking-with-assessment#self-assessment'
     )
   })
+
+  it('shows a Home visit badge and the address for a home visit only', () => {
+    render(<AdminBookingsTable />)
+    act(() => {
+      emit?.({
+        docs: [
+          {
+            id: 'home-booking',
+            data: () => ({
+              fullName: 'Home Patient',
+              email: 'home@example.com',
+              service: 'Initial assessment',
+              appointmentDate: '2099-01-03',
+              appointmentTime: '11:00',
+              status: 'upcoming',
+              visitType: 'home',
+              homeVisitAddress: '7 Example Street, G31 4HS',
+            }),
+          },
+          {
+            id: 'video-booking',
+            data: () => ({
+              fullName: 'Video Patient',
+              email: 'video@example.com',
+              service: 'Follow-up',
+              appointmentDate: '2099-01-04',
+              appointmentTime: '11:00',
+              status: 'upcoming',
+            }),
+          },
+        ],
+      })
+    })
+
+    const homeRow = screen.getByText('Home Patient').closest('tr')!
+    expect(within(homeRow).getByText('Home visit')).toBeInTheDocument()
+    expect(within(homeRow).getByText('7 Example Street, G31 4HS')).toBeInTheDocument()
+    const videoRow = screen.getByText('Video Patient').closest('tr')!
+    expect(within(videoRow).queryByText('Home visit')).not.toBeInTheDocument()
+  })
 })

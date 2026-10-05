@@ -47,3 +47,24 @@ describe("exercises library", () => {
     }
   });
 });
+
+describe("pricing bundles", () => {
+  it("every bundle costs less than booking the same sessions one at a time", async () => {
+    const { pricing, bundleSessionCount, payAsYouGoPrice } = await import("@/lib/site-data");
+    const bundles = pricing.filter((p) => p.mode === "Package");
+    expect(bundles.length).toBeGreaterThan(0);
+    for (const b of bundles) {
+      const n = bundleSessionCount(b);
+      expect(n, b.id).toBeGreaterThan(1);
+      expect(b.price, `${b.id} must be cheaper than pay-as-you-go`).toBeLessThan(payAsYouGoPrice(n));
+    }
+  });
+
+  it("prices pay-as-you-go as one assessment plus follow-ups", async () => {
+    const { pricing, payAsYouGoPrice } = await import("@/lib/site-data");
+    const initial = pricing.find((p) => p.id === "initial-assessment")!.price;
+    const followUp = pricing.find((p) => p.id === "follow-up")!.price;
+    expect(payAsYouGoPrice(4)).toBe(initial + 3 * followUp);
+    expect(payAsYouGoPrice(0)).toBe(0);
+  });
+});

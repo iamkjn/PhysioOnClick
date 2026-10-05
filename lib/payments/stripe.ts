@@ -21,6 +21,13 @@ export async function createStripeCheckout(
   form.set("line_items[0][price_data][currency]", "gbp");
   form.set("line_items[0][price_data][unit_amount]", String(input.amountPence));
   form.set("line_items[0][price_data][product_data][name]", input.serviceLabel);
+  (input.extraLineItems ?? []).forEach((item, i) => {
+    const n = i + 1;
+    form.set(`line_items[${n}][quantity]`, "1");
+    form.set(`line_items[${n}][price_data][currency]`, "gbp");
+    form.set(`line_items[${n}][price_data][unit_amount]`, String(item.amountPence));
+    form.set(`line_items[${n}][price_data][product_data][name]`, item.name);
+  });
   for (const [key, value] of Object.entries(intentToMetadata(input.intent))) {
     form.set(`metadata[${key}]`, value);
   }
@@ -41,7 +48,12 @@ export async function createStripeCheckout(
   }
 
   if (!response.ok) {
-    console.error("Stripe checkout error status", response.status, await response.text().catch(() => ""));
+    // Stripe can echo request params (including metadata) in its error body,
+    // so never log it when the request carries a home-visit address.
+    const detail = input.intent.homeVisitAddress
+      ? "[body withheld: home visit]"
+      : await response.text().catch(() => "");
+    console.error("Stripe checkout error status", response.status, detail);
     return { ok: false, error: "Unable to start payment." };
   }
 

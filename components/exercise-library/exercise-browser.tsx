@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import { ExerciseImage } from "@/components/exercise-image";
+import { ReferenceOnlyBadge, ReferenceOnlyNote } from "@/components/exercise-library/reference-only-label";
 import type { Exercise } from "@/lib/exercise-library";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
 
@@ -194,6 +195,7 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
                   />
                   <span className="exlib-browser__row-copy">
                     <span className="exlib-browser__row-title">{exercise.title}</span>
+                    <ReferenceOnlyBadge />
                     <span className="exlib-browser__row-meta">
                       {exercise.bodyPart} | {exercise.stage}
                     </span>
@@ -228,6 +230,7 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
               <span>{selected.stage}</span>
             </div>
             <h3>{selected.title}</h3>
+            <ReferenceOnlyNote />
             {selected.aka?.length ? (
               <p className="muted">Also known as {selected.aka.join(", ")}.</p>
             ) : null}
@@ -313,6 +316,7 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
                     />
                     <span>
                       <strong>{exercise.title}</strong>
+                      <ReferenceOnlyBadge />
                       <small>
                         {exercise.bodyPart} | {exercise.stage}
                       </small>

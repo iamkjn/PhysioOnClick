@@ -1,5 +1,6 @@
 import { renderEmailLayout, toPlainText } from "@/lib/emails/email-layout";
 import { formatPersonName } from "@/lib/name-format";
+import { homeVisitLabel, type VisitType } from "@/lib/home-visit";
 
 /** Escape user-controlled values before interpolating into email HTML. */
 function escapeHtml(value: string): string {
@@ -17,13 +18,21 @@ export function buildAssessmentLinkEmailHtml(input: {
   assessmentUrl: string;
   meetingUrl?: string;
   appointmentLabel?: string;
+  /** A home visit shows "Home visit at <address>" and never a video join link. */
+  visitType?: VisitType;
+  homeVisitAddress?: string;
 }): string {
   const patientName = formatPersonName(input.patientName, "");
   const greeting = patientName ? `Hi ${escapeHtml(patientName)},` : "Hello,";
   const appointmentLine = input.appointmentLabel
     ? `<p style="margin:0 0 16px; font-size:14px;"><strong>Appointment:</strong> ${escapeHtml(input.appointmentLabel)}</p>`
     : "";
-  const meetingLine = input.meetingUrl
+  const visitLine = homeVisitLabel(input.visitType, input.homeVisitAddress);
+  const isHomeVisit = input.visitType === "home";
+  const homeVisitHtml = visitLine
+    ? `<p style="margin:0 0 16px; font-size:14px;"><strong>Where:</strong> ${escapeHtml(visitLine)}</p>`
+    : "";
+  const meetingLine = input.meetingUrl && !isHomeVisit
     ? `<p style="margin:16px 0 0; font-size:13.5px;"><a href="${escapeHtml(input.meetingUrl)}" style="color:#0A77A8;">Join your appointment</a></p>`
     : "";
   return renderEmailLayout({
@@ -32,6 +41,7 @@ export function buildAssessmentLinkEmailHtml(input: {
       <p style="margin:0 0 16px;">${greeting}</p>
       <p style="margin:0 0 16px;">Please complete your short assessment for <strong>${escapeHtml(input.serviceLabel)}</strong> before your appointment. Completing it helps us make the most of your session.</p>
       ${appointmentLine}
+      ${homeVisitHtml}
       <p style="margin:0;">
         <a href="${escapeHtml(input.assessmentUrl)}" style="display:inline-block; background:#0EA5E9; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:8px; font-weight:700; font-size:14px;">Complete your assessment</a>
       </p>
@@ -40,12 +50,15 @@ export function buildAssessmentLinkEmailHtml(input: {
   });
 }
 
-function buildAssessmentLinkEmailText(input: {
+export function buildAssessmentLinkEmailText(input: {
   patientName: string;
   serviceLabel: string;
   assessmentUrl: string;
   meetingUrl?: string;
   appointmentLabel?: string;
+  /** A home visit shows "Home visit at <address>" and never a video join link. */
+  visitType?: VisitType;
+  homeVisitAddress?: string;
 }): string {
   const patientName = formatPersonName(input.patientName, "");
   const greeting = patientName ? `Hi ${patientName},` : "Hello,";
@@ -55,8 +68,10 @@ function buildAssessmentLinkEmailText(input: {
     `Please complete your short assessment for ${input.serviceLabel} before your appointment. Completing it helps us make the most of your session.`,
   ];
   if (input.appointmentLabel) lines.push("", `Appointment: ${input.appointmentLabel}`);
+  const visitLine = homeVisitLabel(input.visitType, input.homeVisitAddress);
+  if (visitLine) lines.push("", `Where: ${visitLine}`);
   lines.push("", `Complete your assessment: ${input.assessmentUrl}`);
-  if (input.meetingUrl) lines.push("", `Join your appointment: ${input.meetingUrl}`);
+  if (input.meetingUrl && input.visitType !== "home") lines.push("", `Join your appointment: ${input.meetingUrl}`);
   return toPlainText(lines.join("\n"));
 }
 

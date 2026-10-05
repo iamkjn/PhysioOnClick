@@ -66,6 +66,7 @@ Below, "custom events" means events beyond these three sitewide ones.
 | `app/services/[slug]/page.tsx` | `page_view`. Primary CTA: `service_book_click` `{ service_slug, source: "service_detail_page" }`. Bottom CTA band: `service_book_click` `{ service_slug: "cta_band", source: "service_detail_cta_band" }` **and** `book_now_click` `{ source: "service_detail" }` (same click). |
 | `app/pricing/page.tsx` | `page_view`. Bottom CTA band: `book_now_click` `{ source: "pricing_page" }`. (Per-plan "Book Now"/"Get Started" cards are plain `/book?service=` links, not separately tracked — see "Confirmed gap on public marketing pages" note in the project brief; only the one primary CTA is instrumented here.) |
 | `app/glasgow-physiotherapist/page.tsx` | `page_view`. Hero CTA: `book_now_click` `{ source: "glasgow_page" }`. |
+| `app/online-physiotherapy-scotland/page.tsx` | `page_view`. Hero CTA: `book_now_click` `{ source: "scotland_page" }`. |
 | `app/how-online-physiotherapy-works/page.tsx` | `page_view`. Bottom CTA band: `book_now_click` `{ source: "how_it_works_page" }`. |
 | `app/contact/page.tsx` | `page_view`. "Book an appointment" CTA: `book_now_click` `{ source: "contact_page" }`. The contact form itself (`components/contact-form.tsx`) is not separately tracked. |
 | `app/search/page.tsx` | `page_view` only. |
@@ -81,6 +82,9 @@ Below, "custom events" means events beyond these three sitewide ones.
 |---|---|
 | `app/blog/page.tsx` | `page_view` only (index/listing). |
 | `app/blog/[slug]/page.tsx` | `page_view`. `blog_read_complete` `{ slug }` (`components/blog-detail-actions.tsx`, fires once the reader reaches the end of the article). |
+| `app/guides/page.tsx` | `page_view` only (index/listing). |
+| `app/guides/[slug]/page.tsx` | `page_view`. CTA band: `service_book_click` `{ service_slug: "initial-assessment", source: "guide-cta-band" }` **and** `book_now_click` `{ source: "guide-cta-band" }` (same click). |
+| `app/online-physiotherapy-for/[slug]/page.tsx` | `page_view`. Primary and CTA-band booking links: `service_book_click` `{ service_slug: "initial-assessment", source: "online-physio-landing" \| "online-physio-cta-band", slug }` **and** `book_now_click` `{ source }` (same click). |
 
 ## Exercise library
 
@@ -90,7 +94,7 @@ All `library_*` events go through the typed `trackLibraryEvent()` wrapper
 | Page | Events |
 |---|---|
 | `app/exercises/page.tsx` | `page_view`. `library_hub_view` `{ slug: "exercises" }` on mount (`<TrackView>`, the library's own top-level index — reuses the same event condition-hub pages use, distinguished by the constant slug `"exercises"`). |
-| `app/exercises/[slug]/page.tsx` | `page_view`. `library_exercise_view` `{ slug: exercise.slug }` on mount. `library_add_to_plan` `{ slug: exerciseSlug }` from `components/exercise-library/add-to-plan-button.tsx`. |
+| `app/exercises/[slug]/page.tsx` | `page_view`. `library_exercise_view` `{ slug: exercise.slug }` on mount. `library_add_to_plan` `{ slug: exerciseSlug }` from `components/exercise-library/add-to-plan-button.tsx`. `library_embed_copy` `{ slug }` from `components/exercise-library/embed-exercise-button.tsx`. |
 | `app/exercises/area/[bodyArea]/page.tsx` | `page_view`. `library_area_view` `{ slug: area.key }` on mount (new event — body-area filter pages are a distinct page type from a condition hub or the top-level index). |
 | `app/exercises/for/[condition]/page.tsx` | `page_view`. `library_hub_view` `{ slug: condition.slug }` on mount. `library_pdf_request` `{ slug: conditionSlug }` from `components/exercise-library/condition-pdf-form.tsx`. |
 | `app/exercises/how-we-make-this/page.tsx` | `page_view` only. |

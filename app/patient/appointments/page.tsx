@@ -12,6 +12,7 @@ import { ClipboardIcon } from "@/components/icons";
 import { TrustpilotInvitations } from "@/components/trustpilot-invitations";
 import { getPatientBookings, type BookingRecord } from "@/lib/patient-bookings";
 import { getFollowUps, type FollowUp } from "@/lib/follow-ups";
+import { homeVisitLabel } from "@/lib/home-visit";
 import { formatPersonName } from "@/lib/name-format";
 
 type SessionPackage = {
@@ -22,6 +23,7 @@ type SessionPackage = {
   usedSessions: number;
   remainingSessions: number;
   status: string;
+  visitType?: "home";
 };
 
 type SlotMap = Record<string, string[]>;
@@ -264,6 +266,7 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
   const isPackageFollowUp = Boolean(booking.packageSessionNumber && booking.packageSessionNumber > 1);
   const needsAssessment =
     booking.paid && !isPackageFollowUp && booking.assessmentCompletedAt === null && booking.displayStatus === "upcoming";
+  const homeVisit = homeVisitLabel(booking.visitType, booking.homeVisitAddress);
   return (
     <div>
       <Link href={`/patient/appointments/${booking.id}`} style={{ textDecoration: "none" }}>
@@ -297,6 +300,12 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
               ? ` · Package ${booking.packageSessionNumber}/${booking.packageTotalSessions}`
               : ""}
           </span>
+          {homeVisit ? (
+            // Rendered as text, so React escapes the address.
+            <span style={{ display: "block", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
+              {homeVisit}
+            </span>
+          ) : null}
         </div>
         {booking.displayStatus === "cancelled" ? (
           <span
@@ -365,7 +374,7 @@ function SessionPackagesPanel({
   const [checkIn, setCheckIn] = useState<PackageCheckIn>(defaultCheckIn);
   const [message, setMessage] = useState<string | null>(null);
 
-  async function loadSlots(packageId: string) {
+  async function loadSlots(packageId: string, visitType?: "home") {
     setActivePackageId(packageId);
     setMessage(null);
     setLoadingSlots(true);
@@ -381,6 +390,8 @@ function SessionPackagesPanel({
         start: dateKey(start),
         end: dateKey(end),
       });
+      // A home-visit bundle books its later sessions into the follow-up home-visit event.
+      if (visitType === "home") params.set("visit", "home");
       const res = await fetch(`/api/cal/slots?${params}`);
       const data = (await res.json()) as { slots?: SlotMap; error?: string };
       if (!res.ok) throw new Error(data.error || "Could not load times.");
@@ -448,7 +459,7 @@ function SessionPackagesPanel({
                 </span>
               </div>
               {canBook ? (
-                <button type="button" className="button small" onClick={() => loadSlots(pack.id)}>
+                <button type="button" className="button small" onClick={() => loadSlots(pack.id, pack.visitType)}>
                   Book next session
                 </button>
               ) : (

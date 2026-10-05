@@ -1,6 +1,7 @@
 import { formatGbp } from "@/lib/invoice";
 import { renderEmailLayout, toPlainText } from "@/lib/emails/email-layout";
 import { formatPersonName } from "@/lib/name-format";
+import { homeVisitLabel, type VisitType } from "@/lib/home-visit";
 
 /** Escape user-controlled values before interpolating into email HTML. */
 function escapeHtml(value: string): string {
@@ -16,6 +17,13 @@ export async function sendReceiptEmail(input: {
   to: string; patientName: string; invoiceNumber: string;
   serviceLabel: string; amountPence: number; receiptUrl: string;
   pdf?: { filename: string; base64: string };
+  /** Home visits show "Home visit at <address>"; video receipts are unchanged. */
+  visitType?: VisitType;
+  homeVisitAddress?: string;
+  /** Home visits: shown as its own line; amountPence is the total paid including it. */
+  travelFeePence?: number;
+  /** Label for the travel line, e.g. "Travel fee (4 home visits × £15)"; defaults to "Travel fee". */
+  travelFeeLabel?: string;
 }): Promise<{ sent: boolean }> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -26,6 +34,9 @@ export async function sendReceiptEmail(input: {
   const patientName = formatPersonName(input.patientName, "");
   const greeting = patientName ? `Hi ${escapeHtml(patientName)},` : "Hello,";
   const amount = formatGbp(input.amountPence);
+  const travel = input.travelFeePence && input.travelFeePence > 0 ? formatGbp(input.travelFeePence) : "";
+  const travelLabel = input.travelFeeLabel || "Travel fee";
+  const visitLine = homeVisitLabel(input.visitType, input.homeVisitAddress);
   const html = renderEmailLayout({
     preheader: `Your receipt for ${input.serviceLabel} — ${amount}`,
     bodyHtml: `
@@ -35,6 +46,8 @@ export async function sendReceiptEmail(input: {
         <tr><td style="padding:16px 20px; font-size:14px;">
           <p style="margin:0 0 6px;"><strong>Invoice:</strong> ${input.invoiceNumber}</p>
           <p style="margin:0 0 6px;"><strong>Service:</strong> ${escapeHtml(input.serviceLabel)}</p>
+          ${visitLine ? `<p style="margin:0 0 6px;"><strong>Where:</strong> ${escapeHtml(visitLine)}</p>` : ""}
+          ${travel ? `<p style="margin:0 0 6px;"><strong>${escapeHtml(travelLabel)}:</strong> ${travel}</p>` : ""}
           <p style="margin:0;"><strong>Amount paid:</strong> ${amount}</p>
         </td></tr>
       </table>
@@ -44,7 +57,7 @@ export async function sendReceiptEmail(input: {
     `,
   });
   const text = toPlainText(
-    `${greeting}\n\nThank you for your payment. Here is your receipt for insurance or your records.\n\nInvoice: ${input.invoiceNumber}\nService: ${input.serviceLabel}\nAmount paid: ${amount}\n\nView or print your full receipt: ${input.receiptUrl}`
+    `${greeting}\n\nThank you for your payment. Here is your receipt for insurance or your records.\n\nInvoice: ${input.invoiceNumber}\nService: ${input.serviceLabel}\n${visitLine ? `Where: ${visitLine}\n` : ""}${travel ? `${travelLabel}: ${travel}\n` : ""}Amount paid: ${amount}\n\nView or print your full receipt: ${input.receiptUrl}`
   );
   try {
     const response = await fetch("https://api.resend.com/emails", {

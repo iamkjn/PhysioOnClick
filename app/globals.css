@@ -2610,6 +2610,35 @@ textarea:focus {
   bottom: 22px;
 }
 
+/* Plain text-link lists (crawl paths): "More <area> exercises" on exercise
+   pages and the "All exercises by body area" index on /exercises. */
+.exlib-link-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 3 14rem;
+  column-gap: var(--space-6);
+}
+
+.exlib-link-list li {
+  break-inside: avoid;
+  padding: 0.3rem 0;
+}
+
+.exlib-link-list a {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.exlib-area-index + .exlib-area-index {
+  margin-top: var(--space-6);
+}
+
+.exlib-area-index h3 {
+  margin-bottom: var(--space-2);
+}
+
 .exlib-copyright {
   margin-top: var(--space-6);
   margin-bottom: var(--space-6);
@@ -5557,11 +5586,28 @@ textarea:focus {
 }
 
 .admin-growth-stat {
-  min-height: 112px;
-  display: grid;
-  align-content: space-between;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-2);
   padding: var(--space-3);
+}
+
+.admin-growth-stat-link {
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.admin-growth-stat-link:hover,
+.admin-growth-stat-link:focus-visible {
+  border-color: #0ea5e9;
+  box-shadow: 0 18px 42px rgba(14, 129, 170, 0.14);
+  transform: translateY(-1px);
 }
 
 .admin-growth-stat.is-primary {
@@ -5570,6 +5616,7 @@ textarea:focus {
 }
 
 .admin-growth-stat svg {
+  flex: 0 0 auto;
   width: 20px;
   height: 20px;
   color: #0ea5e9;
@@ -5583,13 +5630,18 @@ textarea:focus {
 }
 
 .admin-growth-stat span {
+  min-height: 34px;
+  display: flex;
+  align-items: flex-end;
   color: #667a83;
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 800;
+  line-height: 1.25;
 }
 
 .admin-growth-stat strong {
+  margin-top: auto;
   color: #043246;
   font-family: var(--font-sans);
   font-size: 30px;
@@ -5597,11 +5649,174 @@ textarea:focus {
 }
 
 .admin-growth-stat small {
+  min-height: 30px;
+  display: flex;
+  align-items: flex-start;
   color: #667a83;
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 650;
   line-height: 1.35;
+}
+
+.admin-growth-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.admin-growth-card-head small {
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.admin-growth-recent {
+  padding: var(--space-4);
+}
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.admin-pagination > div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.admin-pagination button {
+  min-height: 38px;
+  padding: 0 var(--space-3);
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: white;
+  color: #043246;
+  font: inherit;
+  cursor: pointer;
+}
+
+.admin-pagination button:not(:disabled):hover {
+  border-color: #0ea5e9;
+  background: #f5fbfe;
+}
+
+.admin-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-growth-detail-page {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.admin-growth-detail-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 14px 36px rgba(4, 50, 70, 0.06);
+}
+
+.admin-growth-detail-head h1 {
+  margin: var(--space-1) 0 0;
+  color: #043246;
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.05;
+}
+
+.admin-growth-detail-head p {
+  max-width: 720px;
+  margin: var(--space-2) 0 0;
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+}
+
+.admin-growth-detail-head > strong {
+  color: #043246;
+  font-family: var(--font-sans);
+  font-size: clamp(42px, 7vw, 64px);
+  line-height: 0.9;
+}
+
+.admin-growth-detail-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-growth-detail-list li {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 10px 28px rgba(4, 50, 70, 0.05);
+}
+
+.admin-growth-detail-list span {
+  color: #0d81aa;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.admin-growth-detail-list strong {
+  color: #043246;
+  font-family: var(--font-sans);
+  font-size: 16px;
+}
+
+.admin-growth-detail-list em,
+.admin-growth-detail-list p,
+.admin-growth-detail-list small {
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-style: normal;
+}
+
+.admin-growth-detail-list p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.admin-growth-detail-country {
+  color: #043246 !important;
+  font-weight: 750;
+}
+
+.admin-growth-detail-country strong {
+  color: #0d81aa;
+  font-size: inherit;
+  font-weight: 850;
+}
+
+.admin-growth-detail-list small {
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .admin-growth-basis {
@@ -5783,6 +5998,235 @@ textarea:focus {
   white-space: normal;
 }
 
+.admin-growth-chat-sessions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-growth-chat-sessions li {
+  min-width: 0;
+}
+
+.admin-growth-chat-sessions a {
+  width: 100%;
+  min-height: 126px;
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid #edf2f4;
+  border-radius: 8px;
+  background: #fbfdfd;
+  color: inherit;
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.admin-growth-chat-sessions a:hover,
+.admin-growth-chat-sessions a:focus-visible {
+  outline: none;
+  transform: translateY(-1px);
+  border-color: rgba(14, 165, 233, 0.45);
+  box-shadow: 0 14px 28px rgba(4, 50, 70, 0.08);
+}
+
+.admin-growth-chat-sessions span,
+.admin-growth-chat-sessions strong,
+.admin-growth-chat-sessions em,
+.admin-growth-chat-sessions small {
+  min-width: 0;
+  font-family: var(--font-sans);
+}
+
+.admin-growth-chat-sessions span {
+  color: #043246;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.admin-growth-chat-sessions strong {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #244955;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.admin-growth-chat-sessions em,
+.admin-growth-chat-sessions small {
+  color: #667a83;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.admin-chat-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: rgba(4, 50, 70, 0.34);
+  backdrop-filter: blur(8px);
+}
+
+.admin-chat-detail {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: var(--space-4);
+  width: min(1100px, 100%);
+  height: min(860px, 100%);
+  margin: auto;
+  overflow: hidden;
+  border: 1px solid #dce5e8;
+  border-radius: 10px;
+  background: #fffdf8;
+  box-shadow: 0 28px 70px rgba(4, 50, 70, 0.22);
+}
+
+.admin-chat-detail header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-5) 0;
+}
+
+.admin-chat-detail header h2 {
+  margin: 0.2rem 0;
+  color: #043246;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.admin-chat-detail header p {
+  margin: 0;
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-chat-detail header button {
+  min-height: 42px;
+  padding: 0 1rem;
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: white;
+  color: #043246;
+  font-family: var(--font-sans);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.admin-chat-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+}
+
+.admin-chat-detail-meta span {
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: #eaf6fb;
+  color: #244955;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.admin-chat-detail-messages {
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  overflow: auto;
+  padding: 0 var(--space-5) var(--space-5);
+}
+
+.admin-chat-detail-messages article {
+  width: min(78%, 720px);
+  display: grid;
+  gap: 0.35rem;
+  padding: var(--space-3);
+  border-radius: 10px;
+  border: 1px solid #dce5e8;
+  background: white;
+}
+
+.admin-chat-detail-messages article.is-user {
+  justify-self: end;
+  background: #043246;
+  color: white;
+}
+
+.admin-chat-detail-messages article.is-model {
+  justify-self: start;
+  background: #eef8fb;
+}
+
+.admin-chat-detail-messages span,
+.admin-chat-detail-messages small {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 850;
+  opacity: 0.78;
+}
+
+.admin-chat-detail-messages p {
+  margin: 0;
+  color: inherit;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.admin-chat-detail-page {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.admin-chat-detail-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 14px 36px rgba(4, 50, 70, 0.06);
+}
+
+.admin-chat-detail-page-head h1 {
+  margin: 0.2rem 0;
+  color: #043246;
+  font-size: clamp(1.9rem, 3vw, 3rem);
+}
+
+.admin-chat-detail-page-head p {
+  margin: 0;
+  color: #667a83;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-chat-detail-messages--page {
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+}
+
 @media (max-width: 1180px) {
   .admin-quick-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5854,6 +6298,48 @@ textarea:focus {
 
   .admin-growth-timeline {
     grid-template-columns: 1fr;
+  }
+
+  .admin-growth-chat-sessions {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-chat-detail-overlay {
+    padding: 0;
+  }
+
+  .admin-chat-detail {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .admin-chat-detail header {
+    flex-direction: column;
+    padding: var(--space-4) var(--space-4) 0;
+  }
+
+  .admin-chat-detail-meta,
+  .admin-chat-detail-messages {
+    padding-right: var(--space-4);
+    padding-left: var(--space-4);
+  }
+
+  .admin-chat-detail-messages article {
+    width: 92%;
+  }
+
+  .admin-chat-detail-page-head {
+    flex-direction: column;
+    padding: var(--space-4);
+  }
+
+  .admin-chat-detail-page-head .button {
+    width: 100%;
+  }
+
+  .admin-chat-detail-messages--page {
+    padding: 0;
   }
 }
 
@@ -6433,6 +6919,15 @@ textarea:focus {
 
   .call-link {
     display: none;
+  }
+}
+
+/* Nine nav items (incl. Self-checks) overlap the brand and Book Now between
+   the 960px column breakpoint and ~1180px; tighten link spacing there only. Must come after the 1240px rule. */
+@media (min-width: 961px) and (max-width: 1180px) {
+  .simple-nav-links a {
+    padding: 0.55rem 0.5rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -7882,6 +8377,98 @@ textarea:focus {
   font-weight: 600;
 }
 
+/* Visit choice (home / video) — the first thing on step 1. Same tokens as
+   .book-service-card so the two card rows read as one system. */
+.book-visit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.book-visit-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 18px 20px;
+  border-radius: var(--radius-card);
+  border: 1.5px solid var(--book-paper-border);
+  background: #fff;
+  color: var(--book-paper-ink);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.book-visit-card.is-selected {
+  border-color: var(--book-accent);
+  background: var(--book-accent-light);
+}
+
+.book-visit-card svg {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  color: var(--book-accent-dark);
+}
+
+.book-visit-title {
+  display: block;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.book-visit-sub {
+  display: block;
+  font-size: 0.86rem;
+  color: var(--book-paper-muted);
+}
+
+.book-home-fields {
+  margin: 0 0 20px;
+}
+
+.book-out-of-area {
+  margin-top: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--book-paper-border);
+  border-radius: var(--radius-card);
+  background: #fff;
+  color: var(--book-paper-ink);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.book-out-of-area-switch {
+  display: block;
+  margin-top: 10px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--radius-input);
+  background: var(--book-accent-dark);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.book-service-travel {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: var(--book-paper-muted);
+}
+
+.book-rail-travel {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: var(--book-muted-para);
+}
+
 /* ── Screen 2: time & details ──────────────────────────────── */
 .book-time-grid {
   display: grid;
@@ -8565,6 +9152,7 @@ textarea:focus {
   .book-rail-eyebrow,
   .book-rail-summary,
   .book-rail-list,
+  .book-rail-travel,
   .book-rail-divider,
   .book-rail-physio,
   .book-rail-reassure,
@@ -8620,6 +9208,8 @@ textarea:focus {
 .book-cta:focus-visible,
 .book-back:focus-visible,
 .book-service-card:focus-visible,
+.book-visit-card:focus-visible,
+.book-out-of-area-switch:focus-visible,
 .book-chip:focus-visible,
 .book-cal-nav:focus-visible,
 .book-cal-day:focus-visible,
@@ -8641,6 +9231,7 @@ textarea:focus {
   .book-cta,
   .book-back,
   .book-service-card,
+  .book-visit-card,
   .book-chip,
   .book-cal-day,
   .book-slot,
@@ -10929,6 +11520,32 @@ textarea:focus {
   color: var(--color-primary-dark);
 }
 
+/* "For reference only" label on every exercise (clinical sign-off round 2, Q2). */
+.exlib-ref-badge {
+  align-self: flex-start;
+  display: inline-block;
+  padding: 0.18rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-navy);
+  background: color-mix(in srgb, var(--color-navy) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-navy) 18%, transparent);
+  border-radius: var(--radius-chip);
+}
+
+.exlib-ref-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
 .exlib-ex-card:hover .exlib-ex-card__more span,
 .exlib-ex-card:focus-visible .exlib-ex-card__more span {
   margin-left: 2px;
@@ -11858,6 +12475,108 @@ textarea:focus {
   .exlib-add-btn:focus-visible {
     transform: none;
   }
+}
+
+/* Embed this exercise — secondary text action + dialog */
+.exlib-embed-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.exlib-embed-btn:hover,
+.exlib-embed-btn:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+.exlib-embed-dialog {
+  box-sizing: border-box;
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  border: 0;
+  border-radius: var(--radius-panel);
+  padding: var(--space-5);
+  background: var(--color-surface, #fffdf8);
+  color: var(--color-text-primary, #14213d);
+}
+
+.exlib-embed-dialog::backdrop {
+  background: rgba(20, 33, 61, 0.45);
+}
+
+.exlib-embed-dialog__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.exlib-embed-dialog__head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.exlib-embed-dialog__close {
+  background: none;
+  border: 0;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+}
+
+.exlib-embed-dialog__preview {
+  display: block;
+  width: 100%;
+  height: 360px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  margin: var(--space-3) 0;
+}
+
+.exlib-embed-dialog__label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+.exlib-embed-dialog textarea {
+  box-sizing: border-box;
+  width: 100%;
+  font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: var(--space-3);
+  border-radius: var(--radius-input);
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: inherit;
+  resize: vertical;
+}
+
+.exlib-embed-dialog__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.exlib-embed-dialog__licence {
+  font-size: var(--text-sm);
+  margin-top: var(--space-3);
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -15948,4 +16667,28 @@ textarea:focus {
   color: #fff;
   font-weight: 700;
   text-decoration: underline;
+}
+
+/* Guides: the direct-answer callout at the top of each guide. */
+.guide-answer {
+  margin: var(--space-4) 0 var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--book-accent-dark);
+  border-radius: var(--radius-card);
+  background: var(--book-accent-light);
+  color: var(--color-text-primary);
+  font-size: var(--text-md);
+  line-height: 1.6;
+}
+
+.simple-cta-inner .uk-service-links {
+  margin: 1.25rem auto 0;
+  font-size: 0.95rem;
+}
+
+.simple-cta-inner .uk-service-links a {
+  color: white;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

@@ -4,6 +4,8 @@ export type GateBooking = {
   assessmentCompletedAt: Date | null;
   paid: boolean;
   status: string;
+  /** Drives the assessment's consent wording and consultationMode. */
+  visitType?: "video" | "home";
 };
 
 export function selectTargetBooking(

@@ -228,8 +228,17 @@ export default async function ReceiptPage({ params }: { params: Promise<{ sessio
                 <div className="rcpt-item-sub">Physiotherapy service</div>
               </td>
               <td>{fmtDate(r.sessionDate)}</td>
-              <td className="r">{formatGbp(r.amountPence)}</td>
+              <td className="r">{formatGbp(r.amountPence - r.travelFeePence)}</td>
             </tr>
+            {r.travelFeePence > 0 ? (
+              <tr>
+                <td>
+                  <div className="rcpt-item-title">{r.travelFeeLabel}</div>
+                </td>
+                <td>{fmtDate(r.sessionDate)}</td>
+                <td className="r">{formatGbp(r.travelFeePence)}</td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
 

@@ -1,5 +1,6 @@
-import { CAL_USERNAME, calServiceFor } from "@/lib/cal-services";
+import { CAL_USERNAME, calSlugFor } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
+import type { VisitType } from "@/lib/home-visit";
 
 export type CreateCalBookingInput = {
   service: BookServiceId;
@@ -8,6 +9,9 @@ export type CreateCalBookingInput = {
   email: string;
   timeZone: string;
   focusAreas?: string[];
+  /** Only "home" changes the payload; video bookings are sent exactly as before. */
+  visitType?: VisitType;
+  homeVisitAddress?: string;
 };
 
 export type CreateCalBookingResult =
@@ -41,7 +45,9 @@ export async function createCalBooking(
     return { ok: false, status: 503, error: "Booking calendar is not configured." };
   }
 
-  const calSlug = calServiceFor(input.service).calSlug;
+  // Same rule as the metadata below: only a home visit WITH an address counts.
+  const isHomeVisit = input.visitType === "home" && Boolean(input.homeVisitAddress);
+  const calSlug = calSlugFor(input.service, isHomeVisit ? "home" : undefined);
   const basePayload: Record<string, unknown> = {
     start: input.startISO,
     attendee: { name: input.name, email: input.email, timeZone: input.timeZone },
@@ -49,10 +55,16 @@ export async function createCalBooking(
     username: calUsername,
   };
   const cleanedFocus = input.focusAreas?.filter((f) => f.trim().length > 0);
+  const metadata: Record<string, string> = {};
+  if (cleanedFocus && cleanedFocus.length > 0) metadata.focusAreas = cleanedFocus.join(", ");
+  if (input.visitType === "home" && input.homeVisitAddress) {
+    // Booked on the Glasgow home-visit event type where the tier has one (see
+    // calSlugFor); the visit type + address also travel in metadata.
+    metadata.visitType = "home";
+    metadata.homeVisitAddress = input.homeVisitAddress;
+  }
   const payloadWithMetadata =
-    cleanedFocus && cleanedFocus.length > 0
-      ? { ...basePayload, metadata: { focusAreas: cleanedFocus.join(", ") } }
-      : basePayload;
+    Object.keys(metadata).length > 0 ? { ...basePayload, metadata } : basePayload;
 
   let response: Response;
   try {
@@ -66,7 +78,10 @@ export async function createCalBooking(
   }
 
   if (!response.ok) {
-    console.error("Cal.com booking error status", response.status, await safeText(response));
+    // Cal.com error bodies can echo the request back; never let that put a
+    // home-visit address in the logs.
+    const detail = metadata.homeVisitAddress ? "[body withheld: home visit]" : await safeText(response);
+    console.error("Cal.com booking error status", response.status, detail);
     return { ok: false, status: 502, error: "Unable to create booking." };
   }
 

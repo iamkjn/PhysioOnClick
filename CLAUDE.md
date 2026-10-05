@@ -104,6 +104,8 @@ npm run deploy      # build + deploy to Cloudflare
 npm run cf-typegen  # regenerate cloudflare-env.d.ts from wrangler.jsonc
 ```
 
+- `npm run deploy` first runs `scripts/check-deploy-source.mjs`, which refuses to build unless the checkout is exactly `origin/master` with no uncommitted website changes (`mobile_app/`, `docs/`, `.worktrees/`, `.claude/` are ignored). Prod was overwritten several times on 2026-10-02 by deploys from a stale checkout and from unpushed code. Push first, then deploy from a fresh worktree of `origin/master`. Emergency override: `ALLOW_UNSYNCED_DEPLOY=1`. Roll back with `npx wrangler rollback <version>`, not a redeploy.
+- **Never symlink `node_modules`** in a worktree you build from. OpenNext copies the link into the bundle, its next-server patch silently doesn't apply, the build still reports success, and every page 500s with `Dynamic require of "/.next/server/middleware-manifest.json"` (dev 2026-10-01, prod ~3.5h on 2026-10-03). Give a worktree a real copy: `cp -cR <main checkout>/node_modules node_modules` (APFS clone, ~20s). `check-deploy-source.mjs` and `deploy-dev.sh` refuse a symlinked `node_modules`, and `scripts/verify-opennext-build.mjs` (run by `deploy`, `preview` and `deploy:dev` after building) refuses any bundle where the patch is missing. A bare `npx opennextjs-cloudflare deploy` skips all of these, so run the checks yourself first if you ever use it.
 - `wrangler.jsonc` — Worker config. `compatibility_date` must stay ≥ `2025-04-01` or vars stop appearing in `process.env`. Only non-secret vars belong here (the file is committed).
 - `open-next.config.ts` — no incremental cache override; add the R2 one if a route ever uses `revalidate`.
 - Secrets are set with `wrangler secret put NAME` (or the dashboard), never in `wrangler.jsonc`.
@@ -114,6 +116,7 @@ npm run cf-typegen  # regenerate cloudflare-env.d.ts from wrangler.jsonc
 ### Environment variables
 
 See `.env.example` for the full list. Key server-only vars: `CAL_WEBHOOK_SECRET`, `CAL_API_KEY`, `ADMIN_EMAIL`, `GEMINI_API_KEY`, `RESEND_API_KEY`, `ENQUIRY_EMAIL_TO`/`ENQUIRY_EMAIL_FROM`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and Firebase admin credentials. Key client vars: `NEXT_PUBLIC_FIREBASE_*`, `NEXT_PUBLIC_CAL_USERNAME`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_USE_LIVE_CONTENT`. Local dev works without `RESEND_API_KEY` — magic links log to the console instead of emailing.
+- Home visit address lookup uses `IDEAL_POSTCODES_API_KEY` (server-only, Ideal Postcodes: 50 free lookups, then pay-as-you-go). Lookup and resolving routes are `app/api/address/lookup` and `app/api/address/resolve` with rate-limit binding `ADDRESS_RATE_LIMITER` (30 req/60s per IP). Saved addresses are stored in Firestore `patientAddresses` collection with `defaultAddressId` on user/dependent docs.
 
 ## Design Context
 

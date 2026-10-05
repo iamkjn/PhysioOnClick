@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
           <div className="page-hero-aside">
             <strong>Last updated</strong>
             <p className="muted">
-              <time dateTime="2026-09">September 2026</time>
+              <time dateTime="2026-10">October 2026</time>
             </p>
           </div>
         </section>
@@ -57,6 +57,7 @@ export default function PrivacyPolicyPage() {
             <li><strong>Contact details:</strong> name, email address, phone number</li>
             <li><strong>Appointment data:</strong> preferred dates, times, and service type</li>
             <li><strong>Clinical information:</strong> condition notes, session records, progress data, and exercise assignments entered through the patient portal</li>
+            <li><strong>Home address (home visits only):</strong> the address line and postcode, collected only if you book a home visit. We use it to attend your appointment and to check that it is within the area we cover. We do not ask for it for video appointments</li>
             <li><strong>Dependant details:</strong> where you manage care for a child or another person, the details you add for them</li>
             <li><strong>Enquiry &amp; chat content:</strong> messages you send through the contact form and the on-site chat assistant</li>
             <li><strong>Payment:</strong> payment is taken online when you book, through Stripe. We receive confirmation of payment, the amount and your billing name and email, but we never see or store your full card details</li>
@@ -91,15 +92,16 @@ export default function PrivacyPolicyPage() {
           <h2>Third-party processors</h2>
           <p>Your data is processed by the following third parties on our behalf, under written data-processing terms:</p>
           <ul>
-            <li><strong>Google Firebase:</strong> Authentication, Firestore database and Storage, used to store account, appointment, and clinical data securely</li>
-            <li><strong>Cal.com:</strong> used for appointment scheduling; booking data is shared with Cal.com to manage your calendar appointment</li>
-            <li><strong>Google Calendar / Google Meet:</strong> used to create appointment events and video consultation links; attendee details (name, email) are shared with Google to generate the meeting link</li>
-            <li><strong>Google Gemini:</strong> powers the on-site chat assistant; the content of your chat messages is processed to generate replies</li>
-            <li><strong>Resend:</strong> sends transactional emails such as sign-in links and enquiry notifications</li>
-            <li><strong>Google Analytics:</strong> anonymous usage statistics, loaded only after you accept analytics cookies</li>
-            <li><strong>Stripe:</strong> processes your online payment and holds your card details securely; we never see your full card number</li>
-            <li><strong>Trustpilot:</strong> after a completed session we may share your name, email and a booking reference with Trustpilot so it can invite you to leave an independent review. Leaving a review is entirely optional</li>
+            <li><strong>Cal.com:</strong> used for appointment scheduling; booking data is shared with Cal.com to manage your calendar appointment. For a home visit this includes the visit address you give us</li>
             <li><strong>Cloudflare:</strong> hosts and protects this website; it processes technical data such as your IP address to deliver pages securely and block abuse</li>
+            <li><strong>Google Analytics:</strong> anonymous usage statistics, loaded only after you accept analytics cookies</li>
+            <li><strong>Google Calendar / Google Meet:</strong> used to create appointment events and video consultation links; attendee details (name, email) are shared with Google to generate the meeting link</li>
+            <li><strong>Google Firebase:</strong> Authentication, Firestore database and Storage, used to store account, appointment, and clinical data securely</li>
+            <li><strong>Google Gemini:</strong> powers the on-site chat assistant; the content of your chat messages is processed to generate replies</li>
+            <li><strong>Ideal Postcodes:</strong> when you look up a home-visit address, the postcode you enter (and the address you choose) is sent to Ideal Postcodes to list the addresses at that postcode. It is used only to answer that lookup.</li>
+            <li><strong>Resend:</strong> sends transactional emails such as sign-in links and enquiry notifications. For a home visit, our payment receipt email includes the visit address</li>
+            <li><strong>Stripe:</strong> processes your online payment and holds your card details securely; we never see your full card number. For a home visit, the visit address is also recorded against your payment so the booking can be completed once you have paid</li>
+            <li><strong>Trustpilot:</strong> after a completed session we may share your name, email and a booking reference with Trustpilot so it can invite you to leave an independent review. Leaving a review is entirely optional</li>
           </ul>
         </article>
 
@@ -138,6 +140,8 @@ export default function PrivacyPolicyPage() {
             <li><strong>Adult clinical records:</strong> retained for 8 years from the date of last contact, in line with HCPC record-keeping standards</li>
             <li><strong>Children&apos;s clinical records:</strong> retained until the patient&apos;s 25th birthday (or 26th if the last entry was made at age 17)</li>
             <li><strong>Appointment and contact enquiries:</strong> retained for 12 months after the last interaction</li>
+            <li><strong>Home visit address:</strong> held in our database in your booking record and payment record, and kept for 12 months after the last interaction, as for appointment enquiries above. Where the address is recorded in your clinical notes, it is kept with your clinical record (8 years for adults). Stripe and our booking calendar provider keep their own copies under their own retention policies</li>
+            <li><strong>Saved addresses:</strong> addresses you save to your address book are kept until you delete them or close your account. Past bookings keep their own copy of the visit address.</li>
           </ul>
         </article>
 

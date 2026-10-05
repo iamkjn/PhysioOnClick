@@ -43,7 +43,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Initial Online Assessment'), findsOneWidget);
     expect(find.text('Online Follow-Up'), findsOneWidget);
-    expect(find.textContaining('£50'), findsOneWidget);
+    expect(find.textContaining('£40'), findsOneWidget);
   });
 
   testWidgets('shows a step progress header and a Continue button', (tester) async {

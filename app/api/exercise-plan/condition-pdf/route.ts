@@ -97,6 +97,7 @@ export async function POST(request: Request) {
       patientName: "",
       physioName: founder.name,
       sessionDateISO: null,
+      generalPlan: true,
       cards,
     });
 
