@@ -27,6 +27,22 @@ class CheckoutStatus {
       );
 }
 
+/// A message from our server meant for the patient (shown verbatim).
+class CheckoutException implements Exception {
+  final String message;
+  const CheckoutException(this.message);
+  @override
+  String toString() => message;
+}
+
+const kCheckoutUnreachable =
+    "We couldn't reach the booking service. Please check your connection and try again.";
+
+/// Only server-authored messages are shown; timeouts/network/other errors
+/// get friendly generic copy.
+String checkoutErrorMessage(Object e) =>
+    e is CheckoutException && e.message.isNotEmpty ? e.message : kCheckoutUnreachable;
+
 typedef IdTokenProvider = Future<String?> Function();
 
 class CheckoutRepository {
@@ -125,8 +141,9 @@ class CheckoutRepository {
     }
 
     if (res.statusCode != 200 || body?['ok'] != true) {
-      final error = body?['error'] as String?;
-      throw Exception(error ?? 'Failed to start checkout (${res.statusCode})');
+      final error = body?['error'];
+      if (error is String && error.trim().isNotEmpty) throw CheckoutException(error);
+      throw Exception('Failed to start checkout (${res.statusCode})');
     }
     return body!['url'] as String;
   }

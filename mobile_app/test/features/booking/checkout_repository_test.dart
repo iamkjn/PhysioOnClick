@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -178,5 +179,32 @@ void main() {
       () => repo.createCheckoutSession(service: 'initial-assessment', start: DateTime.utc(2026, 9, 20, 9), name: 'P', email: 'p@e.com', visitType: 'home', homeAddressLine: 'a', homePostcode: 'ZZ1 1ZZ'),
       throwsA(predicate((e) => e.toString().contains("We don't offer home visits at that postcode yet."))),
     );
+  });
+
+  test('server error is a CheckoutException carrying the message', () async {
+    final client = MockClient((request) async =>
+        http.Response(jsonEncode({'ok': false, 'error': 'Server says no.'}), 400));
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+    await expectLater(
+      repo.createCheckoutSession(service: 'follow-up', start: DateTime.utc(2026, 9, 20, 9), name: 'P', email: 'p@e.com'),
+      throwsA(isA<CheckoutException>().having((e) => e.message, 'message', 'Server says no.')),
+    );
+  });
+
+  test('non-JSON failure is not a CheckoutException', () async {
+    final client = MockClient((request) async => http.Response('<html>502</html>', 502));
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+    await expectLater(
+      repo.createCheckoutSession(service: 'follow-up', start: DateTime.utc(2026, 9, 20, 9), name: 'P', email: 'p@e.com'),
+      throwsA(isNot(isA<CheckoutException>())),
+    );
+  });
+
+  test('checkoutErrorMessage: server text verbatim, friendly text otherwise', () {
+    expect(checkoutErrorMessage(const CheckoutException('Nope.')), 'Nope.');
+    expect(checkoutErrorMessage(TimeoutException('t')), kCheckoutUnreachable);
+    expect(checkoutErrorMessage(Exception('SocketException: host lookup failed')), kCheckoutUnreachable);
+    expect(kCheckoutUnreachable,
+        "We couldn't reach the booking service. Please check your connection and try again.");
   });
 }

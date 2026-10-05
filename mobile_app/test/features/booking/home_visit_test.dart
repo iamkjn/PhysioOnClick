@@ -48,4 +48,9 @@ void main() {
   test('HomeVisitAddress.formatted', () {
     expect(const HomeVisitAddress(line: '1 Main St', postcode: 'G31 4HS').formatted, '1 Main St, G31 4HS');
   });
+
+  test('home price summary reads "£40 session + £15 travel"', () {
+    expect(homePriceSummary(svc(BookServiceId.initialAssessment)), '£40 session + £15 travel');
+    expect(homePriceSummary(svc(BookServiceId.bundle4)), '£120 sessions + £60 travel');
+  });
 }

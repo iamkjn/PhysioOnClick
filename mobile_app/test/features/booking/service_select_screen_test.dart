@@ -16,6 +16,7 @@ class FakeHomeVisitRepo implements HomeVisitRepository {
   bool coverageFails = false;
   bool lookupFails = false;
   int coverageCalls = 0;
+  int lookupCalls = 0;
   Map<String, Completer<void>> gates = {};
   String resolvedPostcode = 'G31 4HS';
   final checked = <String>[];
@@ -32,6 +33,7 @@ class FakeHomeVisitRepo implements HomeVisitRepository {
 
   @override
   Future<List<AddressSuggestion>> lookupAddresses(String postcode) async {
+    lookupCalls++;
     if (lookupFails) throw const LookupUnavailable();
     return const [AddressSuggestion(id: 'a1', label: '7 Springfield Gardens, Glasgow')];
   }
@@ -87,6 +89,9 @@ class _FakeFirebasePlatform extends FirebasePlatform {
   @override
   List<FirebaseAppPlatform> get apps => [_app];
 }
+
+Finder addressDropdown() => find.byWidgetPredicate((w) =>
+    w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('addressDropdown'));
 
 void main() {
   setUpAll(() {
@@ -194,7 +199,7 @@ void main() {
       await enterPostcode(tester, 'g31 4hs');
       expect(hv.coverageCalls, 1);
       expect(find.text('We visit G31.'), findsOneWidget);
-      expect(find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('addressDropdown')), findsOneWidget);
+      expect(addressDropdown(), findsOneWidget);
       expect(find.text('Initial Assessment (home visit)'), findsOneWidget);
       expect(find.textContaining('£55'), findsOneWidget);
       expect(find.textContaining('incl. £15 travel'), findsWidgets);
@@ -278,7 +283,7 @@ void main() {
       await tester.tap(find.text('Home visit in Glasgow'));
       await tester.pumpAndSettle();
       await enterPostcode(tester, 'G31 4HS');
-      await tester.tap(find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('addressDropdown')));
+      await tester.tap(addressDropdown());
       await tester.pumpAndSettle();
       await tester.tap(find.text('7 Springfield Gardens, Glasgow').last);
       await tester.pumpAndSettle();
@@ -303,7 +308,7 @@ void main() {
       await tester.tap(find.text('Home visit in Glasgow'));
       await tester.pumpAndSettle();
       expect(find.text("We couldn't check your postcode. Please try again."), findsOneWidget);
-      expect(continueBtn().evaluate().isEmpty || !enabled(tester), isTrue);
+      expect(continueBtn(), findsNothing);
       hv.coverageFails = false;
       await tester.tap(find.text('Retry'));
       await tester.pumpAndSettle();
@@ -358,7 +363,7 @@ void main() {
       await enterPostcode(tester, 'G31 4HS');
       final gate = Completer<void>();
       hv.gates['G40 1AB'] = gate;
-      await tester.tap(find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('addressDropdown')));
+      await tester.tap(addressDropdown());
       await tester.pumpAndSettle();
       await tester.tap(find.text('7 Springfield Gardens, Glasgow').last);
       await tester.pump();
@@ -389,6 +394,32 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('We visit G1.'), findsOneWidget);
       expect(find.text('We visit G31.'), findsNothing);
+    });
+  
+    testWidgets('Retry after a failed post-resolve re-check keeps the picked address',
+        (tester) async {
+      await big(tester);
+      hv.resolvedPostcode = 'G40 1AB';
+      await tester.pumpWidget(app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home visit in Glasgow'));
+      await tester.pumpAndSettle();
+      await enterPostcode(tester, 'G31 4HS');
+      expect(hv.lookupCalls, 1);
+      await tester.tap(addressDropdown());
+      await tester.pumpAndSettle();
+      hv.coverageFails = true;
+      await tester.tap(find.text('7 Springfield Gardens, Glasgow').last);
+      await tester.pumpAndSettle();
+      expect(find.text("We couldn't check your postcode. Please try again."), findsOneWidget);
+      hv.coverageFails = false;
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+      expect(hv.lookupCalls, 1); // no fresh lookup that would drop the pick
+      expect(enabled(tester), isTrue);
+      await tester.tap(continueBtn());
+      await tester.pump();
+      expect(continued!.homeAddress!.postcode, 'G40 1AB');
     });
   });
 }

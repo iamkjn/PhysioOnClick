@@ -498,7 +498,9 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
         children.addAll([
           Text("We couldn't check your postcode. Please try again.",
               style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.error)),
-          TextButton(onPressed: _checkCoverage, child: const Text('Retry')),
+          TextButton(
+              onPressed: () => _checkCoverage(lookup: _pickedId == null),
+              child: const Text('Retry')),
         ]);
       case _CoverageState.uncovered:
         children.add(_uncoveredBlock(_coverageResult?.outwardCode ?? ''));

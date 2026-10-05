@@ -68,10 +68,9 @@ class AssessmentStepScreen extends StatelessWidget {
           debugPrint('createCheckoutSession failed');
           if (!context.mounted) return;
           // Server messages (e.g. "We don't offer home visits at that
-          // postcode yet.") are shown verbatim.
-          final msg = e is Exception ? e.toString().replaceFirst('Exception: ', '') : '';
+          // postcode yet.") are shown verbatim; anything else is generic.
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(msg.isNotEmpty ? msg : 'Could not start payment. Please try again.')),
+            SnackBar(content: Text(checkoutErrorMessage(e))),
           );
         }
       },

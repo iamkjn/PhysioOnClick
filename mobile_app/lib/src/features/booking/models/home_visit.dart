@@ -30,6 +30,11 @@ String serviceLabelFor(ResolvedService s, VisitType v) {
 String travelFeeLabel(ResolvedService s) =>
     'Travel fee (${s.sessions} home visit${s.sessions == 1 ? '' : 's'} × ${formatPounds(kHomeVisitTravelFeePence)})';
 
+/// "£40 session + £15 travel" (bundles: "£120 sessions + £60 travel").
+String homePriceSummary(ResolvedService s) =>
+    '${formatPounds(sessionPricePence(s))} session${s.sessions == 1 ? '' : 's'}'
+    ' + ${formatPounds(travelFeePence(s, VisitType.home))} travel';
+
 /// "g31  4hs" -> "G31 4HS". Too-short input is only trimmed/upper-cased.
 String normalisePostcode(String raw) {
   final compact = raw.replaceAll(RegExp(r'\s+'), '').toUpperCase();

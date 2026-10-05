@@ -31,7 +31,6 @@ int _leadingBlanks(DateTime firstOfMonth) => (firstOfMonth.weekday - 1) % 7;
 /// once, the same shape as web's one `<form>`.
 class TimeDetailsScreen extends StatefulWidget {
   final ResolvedService service;
-  final List<String> focusAreas;
 
   /// When set (non-self), pre-selects this dependent in the "Booking for"
   /// picker instead of defaulting to "myself" — see [ServiceSelectScreen].
@@ -44,7 +43,6 @@ class TimeDetailsScreen extends StatefulWidget {
 
   const TimeDetailsScreen({
     required this.service,
-    this.focusAreas = const [],
     this.visitType = VisitType.video,
     this.homeAddress,
     this.initialPersonId,
@@ -193,8 +191,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(
-                        '${serviceLabelFor(widget.service, widget.visitType)} ${formatPounds(sessionPricePence(widget.service))}'
-                        ' + ${travelFeeLabel(widget.service)} ${formatPounds(travelFeePence(widget.service, widget.visitType))}',
+                        homePriceSummary(widget.service),
                         style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                       ),
                     ),
