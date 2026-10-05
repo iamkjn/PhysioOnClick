@@ -8,9 +8,14 @@ class FakeAddressRepository implements AddressRepository {
   final Map<String?, String?> usual = {};
   final List<String> deleted = [];
   int _n = 0;
+  bool failGet = false;
+  bool failSetUsual = false;
 
   @override
-  Future<List<SavedAddress>> getAddresses(String uid) async => [...items];
+  Future<List<SavedAddress>> getAddresses(String uid) async {
+    if (failGet) throw Exception('offline');
+    return [...items];
+  }
 
   @override
   Future<String> addAddress(String uid,
@@ -39,6 +44,7 @@ class FakeAddressRepository implements AddressRepository {
 
   @override
   Future<void> setUsualAddress(String uid, String? personId, String? addressId) async {
+    if (failSetUsual) throw Exception('offline');
     usual[personId] = addressId;
   }
 

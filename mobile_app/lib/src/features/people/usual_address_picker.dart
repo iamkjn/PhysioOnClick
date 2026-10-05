@@ -33,7 +33,14 @@ class _UsualAddressPickerState extends State<UsualAddressPicker> {
   @override
   void initState() {
     super.initState();
+    addressBookRevision.addListener(_load);
     _load();
+  }
+
+  @override
+  void dispose() {
+    addressBookRevision.removeListener(_load);
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -68,7 +75,7 @@ class _UsualAddressPickerState extends State<UsualAddressPicker> {
 
   Future<void> _add() async {
     await widget.onAddAddress();
-    await _load();
+    notifyAddressBookChanged();
   }
 
   @override

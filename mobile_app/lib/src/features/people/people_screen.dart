@@ -64,82 +64,19 @@ class PeopleScreen extends StatelessWidget {
           if (snap.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          final people = snap.data ?? [];
-
-          if (people.isEmpty) {
-            return EmptyState(
-              title: 'Just you for now',
-              body:
-                  'Add a family member or friend to book appointments on their behalf.',
-              icon: Icons.group_outlined,
-              cta: FilledButton(
-                onPressed: () => AddPersonSheet.show(context),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.gold,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(160, 48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: const Text('Add a Person'),
-              ),
-            );
-          }
-
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            children: [
-              _PersonCard(
-                name: user.displayName ?? 'You',
-                subtitle: 'Your account · ${user.email ?? ""}',
-                avatarUrl: user.photoURL,
-                tag: 'You',
-                footer: picker(null),
-              ),
-              const SizedBox(height: 10),
-              ...people.map(
-                (dep) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _PersonCard(
-                    name: dep.name,
-                    subtitle:
-                        '${dep.relationship} · ${_age(dep.dob)} years old',
-                    avatarUrl: dep.avatarUrl,
-                    onEdit: () => AddPersonSheet.show(context, existing: dep),
-                    onDelete: () => _confirmDelete(context, repo, dep),
-                    footer: picker(dep.id),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              OutlinedButton.icon(
-                onPressed: () => AddPersonSheet.show(context),
-                icon: const Icon(Icons.person_add_rounded),
-                label: const Text('Add a person'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                  side: const BorderSide(color: Color(0xFF0891B2)),
-                  foregroundColor: const Color(0xFF0891B2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              ),
-            ],
+          return PeopleCardList(
+            accountName: user.displayName ?? 'You',
+            accountSubtitle: 'Your account · ${user.email ?? ""}',
+            accountAvatarUrl: user.photoURL,
+            people: snap.data ?? const [],
+            pickerFor: picker,
+            onAddPerson: () => AddPersonSheet.show(context),
+            onEdit: (dep) => AddPersonSheet.show(context, existing: dep),
+            onDelete: (dep) => _confirmDelete(context, repo, dep),
           );
         },
       ),
     );
-  }
-
-  int _age(String dob) {
-    final d = DateTime.tryParse(dob);
-    if (d == null) return 0;
-    final now = DateTime.now();
-    int age = now.year - d.year;
-    if (now.month < d.month || (now.month == d.month && now.day < d.day)) age--;
-    return age;
   }
 
   Future<void> _confirmDelete(
@@ -171,6 +108,106 @@ class PeopleScreen extends StatelessWidget {
           ),
     );
     if (confirmed == true) await repo.deleteDependent(dep.id);
+  }
+}
+
+/// The account holder ("You") card — always shown, with its usual-address
+/// picker — followed by dependents, or the empty-state prompt when there
+/// are none.
+class PeopleCardList extends StatelessWidget {
+  const PeopleCardList({
+    super.key,
+    required this.accountName,
+    required this.accountSubtitle,
+    this.accountAvatarUrl,
+    required this.people,
+    required this.pickerFor,
+    required this.onAddPerson,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  final String accountName;
+  final String accountSubtitle;
+  final String? accountAvatarUrl;
+  final List<Dependent> people;
+  final Widget Function(String? personId) pickerFor;
+  final VoidCallback onAddPerson;
+  final void Function(Dependent) onEdit;
+  final void Function(Dependent) onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      children: [
+        _PersonCard(
+          name: accountName,
+          subtitle: accountSubtitle,
+          avatarUrl: accountAvatarUrl,
+          tag: 'You',
+          footer: pickerFor(null),
+        ),
+        const SizedBox(height: 10),
+        if (people.isEmpty)
+          EmptyState(
+            title: 'Just you for now',
+            body:
+                'Add a family member or friend to book appointments on their behalf.',
+            icon: Icons.group_outlined,
+            cta: FilledButton(
+              onPressed: onAddPerson,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.gold,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(160, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text('Add a Person'),
+            ),
+          )
+        else ...[
+          ...people.map(
+            (dep) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _PersonCard(
+                name: dep.name,
+                subtitle: '${dep.relationship} · ${_age(dep.dob)} years old',
+                avatarUrl: dep.avatarUrl,
+                onEdit: () => onEdit(dep),
+                onDelete: () => onDelete(dep),
+                footer: pickerFor(dep.id),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: onAddPerson,
+            icon: const Icon(Icons.person_add_rounded),
+            label: const Text('Add a person'),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(50),
+              side: const BorderSide(color: Color(0xFF0891B2)),
+              foregroundColor: const Color(0xFF0891B2),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  static int _age(String dob) {
+    final d = DateTime.tryParse(dob);
+    if (d == null) return 0;
+    final now = DateTime.now();
+    int age = now.year - d.year;
+    if (now.month < d.month || (now.month == d.month && now.day < d.day)) age--;
+    return age;
   }
 }
 

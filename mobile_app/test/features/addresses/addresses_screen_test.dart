@@ -121,4 +121,49 @@ void main() {
     expect(repo.items.single.label, 'Flat');
     expect(repo.items.single.line, '7 Springfield Gardens');
   });
+
+  testWidgets('load failure offers a Retry button that reloads', (t) async {
+    final repo = FakeAddressRepository([_home])..failGet = true;
+    await t.pumpWidget(_app(repo, FakeHomeVisitRepository(covered: {'G31 4HS'})));
+    await t.pumpAndSettle();
+    expect(find.textContaining('Pull to try again'), findsNothing);
+    repo.failGet = false;
+    await t.tap(find.widgetWithText(FilledButton, 'Retry'));
+    await t.pumpAndSettle();
+    expect(find.text('Home'), findsOneWidget);
+  });
+
+  testWidgets('deleting an address announces an address-book change', (t) async {
+    final repo = FakeAddressRepository([_home]);
+    final before = addressBookRevision.value;
+    await t.pumpWidget(_app(repo, FakeHomeVisitRepository(covered: {'G31 4HS'})));
+    await t.pumpAndSettle();
+    await t.tap(find.byTooltip('Delete address'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Delete'));
+    await t.pumpAndSettle();
+    expect(addressBookRevision.value, greaterThan(before));
+  });
+
+  testWidgets('editing the postcode clears stale outside-area badge and suggestions', (t) async {
+    await t.pumpWidget(MaterialApp(
+        home: Scaffold(
+            body: AddressForm(
+                uid: 'u1',
+                addressRepository: FakeAddressRepository(),
+                homeVisitRepository: FakeHomeVisitRepository(covered: {'G31 4HS'})))));
+    await t.enterText(find.byKey(const Key('address-postcode')), 'EH1 2AB');
+    await t.tap(find.text('Find address'));
+    await t.pumpAndSettle();
+    expect(find.text('Outside our home-visit area'), findsOneWidget);
+    await t.enterText(find.byKey(const Key('address-postcode')), 'G31 4HS');
+    await t.pump();
+    expect(find.text('Outside our home-visit area'), findsNothing);
+    await t.tap(find.text('Find address'));
+    await t.pumpAndSettle();
+    expect(find.byKey(const Key('address-dropdown')), findsOneWidget);
+    await t.enterText(find.byKey(const Key('address-postcode')), 'G1 1AA');
+    await t.pump();
+    expect(find.byKey(const Key('address-dropdown')), findsNothing);
+  });
 }

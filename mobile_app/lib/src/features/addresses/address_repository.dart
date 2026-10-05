@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../booking/models/home_visit.dart';
 
 const int kAddressLineMax = 120;
@@ -6,6 +7,13 @@ const int kAddressPostcodeMax = 10;
 const int kAddressLabelMax = 40;
 
 final _ukPostcode = RegExp(r'^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$');
+
+/// Bumped whenever saved addresses are added, edited or deleted, so every
+/// mounted usual-address picker reloads (not just the one that opened
+/// the Addresses screen).
+final ValueNotifier<int> addressBookRevision = ValueNotifier<int>(0);
+
+void notifyAddressBookChanged() => addressBookRevision.value++;
 
 class AddressValidationException implements Exception {
   final String message;

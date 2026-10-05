@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../booking/home_visit_repository.dart';
+import '../booking/models/home_visit.dart';
 import 'address_repository.dart';
 
 const kOutsideAreaLabel = 'Outside our home-visit area';
@@ -51,7 +52,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
       }
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error = "Couldn't load your addresses. Pull to try again.");
+      setState(() => _error = "Couldn't load your addresses.");
     }
   }
 
@@ -76,7 +77,10 @@ class _AddressesScreenState extends State<AddressesScreen> {
         homeVisitRepository: widget.homeVisitRepository,
       ),
     );
-    if (saved == true) await _load();
+    if (saved == true) {
+      notifyAddressBookChanged();
+      await _load();
+    }
   }
 
   Future<void> _delete(SavedAddress a) async {
@@ -98,6 +102,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
     if (ok != true) return;
     try {
       await widget.addressRepository.deleteAddress(widget.uid, a.id);
+      notifyAddressBookChanged();
       await _load();
     } catch (_) {
       if (!mounted) return;
@@ -111,7 +116,28 @@ class _AddressesScreenState extends State<AddressesScreen> {
     final items = _items;
     Widget body;
     if (_error != null) {
-      body = Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(_error!)));
+      body = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(_error!, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: () {
+                  setState(() {
+                    _error = null;
+                    _items = null;
+                  });
+                  _load();
+                },
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
     } else if (items == null) {
       body = const Center(child: CircularProgressIndicator());
     } else {
@@ -215,9 +241,31 @@ class _AddressFormState extends State<AddressForm> {
   String? _error;
   bool _saving = false;
   int _seq = 0;
+  // Postcode text the current coverage/suggestions belong to.
+  String? _checkedPostcode;
+
+  @override
+  void initState() {
+    super.initState();
+    _postcode.addListener(_onPostcodeEdited);
+  }
+
+  void _onPostcodeEdited() {
+    final checked = _checkedPostcode;
+    if (checked == null) return;
+    if (normalisePostcode(_postcode.text) == checked) return;
+    _seq++; // drop in-flight coverage/lookup/resolve results
+    _checkedPostcode = null;
+    setState(() {
+      _cov = _Cov.idle;
+      _suggestions = const [];
+      _selected = null;
+    });
+  }
 
   @override
   void dispose() {
+    _postcode.removeListener(_onPostcodeEdited);
     _label.dispose();
     _line.dispose();
     _postcode.dispose();
@@ -228,6 +276,7 @@ class _AddressFormState extends State<AddressForm> {
     final pc = _postcode.text.trim();
     if (pc.isEmpty) return;
     final seq = ++_seq;
+    _checkedPostcode = normalisePostcode(pc);
     setState(() {
       _cov = _Cov.checking;
       _suggestions = const [];
@@ -254,16 +303,20 @@ class _AddressFormState extends State<AddressForm> {
 
   Future<void> _pick(String? id) async {
     if (id == null) return;
+    final seq = _seq;
     setState(() => _selected = id);
     try {
       final a = await widget.homeVisitRepository.resolveAddress(id);
-      if (!mounted) return;
+      if (!mounted || seq != _seq) return;
+      // The resolved postcode belongs to these suggestions; don't let the
+      // listener treat it as a manual edit.
+      if (a.postcode.isNotEmpty) _checkedPostcode = normalisePostcode(a.postcode);
       setState(() {
         _line.text = a.line;
-        _postcode.text = a.postcode;
+        if (a.postcode.isNotEmpty) _postcode.text = a.postcode;
       });
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || seq != _seq) return;
       setState(() => _error = "Couldn't fetch that address. Type it in below instead.");
     }
   }
