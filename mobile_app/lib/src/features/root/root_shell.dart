@@ -12,8 +12,10 @@ import '../admin/dashboard/admin_dashboard_screen.dart';
 import '../admin/enquiries/admin_enquiries_screen.dart';
 import '../admin/profile/admin_profile_screen.dart';
 import '../admin/recovery/admin_patient_list_screen.dart';
+import '../blog/blog_screen.dart';
 import '../booking/booking_screen.dart';
 import '../chat/chat_page.dart';
+import '../exercises/exercise_library_screen.dart';
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
 import '../services/services_screen.dart';
@@ -40,6 +42,8 @@ class _RootShellState extends State<RootShell>
   late final List<Widget> _patientScreens = const [
     HomeScreen(),
     ServicesScreen(),
+    ExerciseLibraryScreen(),
+    BlogScreen(),
     BookingScreen(),
     ProfileScreen(),
   ];
@@ -127,39 +131,96 @@ class _RootShellState extends State<RootShell>
   // icon for the unselected state and a filled icon for the selected
   // state (matching the site's refreshed, less-cluttered iconography).
   static const _patientNavItems = [
-    _NavConfig(icon: Icons.home_rounded, outlineIcon: Icons.home_outlined, label: 'Home'),
-    _NavConfig(icon: Icons.medical_services_rounded, outlineIcon: Icons.medical_services_outlined, label: 'Services'),
+    _NavConfig(
+      icon: Icons.home_rounded,
+      outlineIcon: Icons.home_outlined,
+      label: 'Home',
+    ),
+    _NavConfig(
+      icon: Icons.medical_services_rounded,
+      outlineIcon: Icons.medical_services_outlined,
+      label: 'Services',
+    ),
+    _NavConfig(
+      icon: Icons.fitness_center_rounded,
+      outlineIcon: Icons.fitness_center_outlined,
+      label: 'Exercises',
+    ),
+    _NavConfig(
+      icon: Icons.article_rounded,
+      outlineIcon: Icons.article_outlined,
+      label: 'Blog',
+    ),
     _NavConfig(
       icon: Icons.event_available_rounded,
       outlineIcon: Icons.event_available_rounded,
       label: 'Booking',
       highlight: true,
     ),
-    _NavConfig(icon: Icons.person_rounded, outlineIcon: Icons.person_outline_rounded, label: 'Profile'),
+    _NavConfig(
+      icon: Icons.person_rounded,
+      outlineIcon: Icons.person_outline_rounded,
+      label: 'Profile',
+    ),
   ];
 
   static const _adminNavItems = [
-    _NavConfig(icon: Icons.dashboard_rounded, outlineIcon: Icons.dashboard_outlined, label: 'Dashboard'),
-    _NavConfig(icon: Icons.event_available_rounded, outlineIcon: Icons.event_available_outlined, label: 'Bookings'),
-    _NavConfig(icon: Icons.mail_rounded, outlineIcon: Icons.mail_outline_rounded, label: 'Enquiries'),
-    _NavConfig(icon: Icons.people_alt_rounded, outlineIcon: Icons.people_alt_outlined, label: 'Patients'),
-    _NavConfig(icon: Icons.person_rounded, outlineIcon: Icons.person_outline_rounded, label: 'Profile'),
+    _NavConfig(
+      icon: Icons.dashboard_rounded,
+      outlineIcon: Icons.dashboard_outlined,
+      label: 'Dashboard',
+    ),
+    _NavConfig(
+      icon: Icons.event_available_rounded,
+      outlineIcon: Icons.event_available_outlined,
+      label: 'Bookings',
+    ),
+    _NavConfig(
+      icon: Icons.mail_rounded,
+      outlineIcon: Icons.mail_outline_rounded,
+      label: 'Enquiries',
+    ),
+    _NavConfig(
+      icon: Icons.people_alt_rounded,
+      outlineIcon: Icons.people_alt_outlined,
+      label: 'Patients',
+    ),
+    _NavConfig(
+      icon: Icons.person_rounded,
+      outlineIcon: Icons.person_outline_rounded,
+      label: 'Profile',
+    ),
   ];
 
-  List<_NavConfig> get _navItems => _isAdmin ? _adminNavItems : _patientNavItems;
+  List<_NavConfig> get _navItems =>
+      _isAdmin ? _adminNavItems : _patientNavItems;
 
   // Tab labels used as GA4 screen names, index-aligned with the matching
   // screens list above.
-  static const _patientTabScreenNames = ['home', 'services', 'booking', 'profile'];
-  static const _adminTabScreenNames = ['admin_dashboard', 'admin_bookings', 'admin_enquiries', 'admin_patients', 'profile'];
+  static const _patientTabScreenNames = [
+    'home',
+    'services',
+    'exercises',
+    'blog',
+    'booking',
+    'profile',
+  ];
+  static const _adminTabScreenNames = [
+    'admin_dashboard',
+    'admin_bookings',
+    'admin_enquiries',
+    'admin_patients',
+    'profile',
+  ];
 
   void _onNavTap(int index) {
     // The booking-tab auth gate only applies to the patient nav — admin
     // accounts are already authenticated by the time _isAdmin is true, and
     // the admin nav has no patient-booking tab at all.
     if (!_isAdmin) {
-      final isBookingTab = index == 2;
-      final isGuest = Firebase.apps.isEmpty || FirebaseAuth.instance.currentUser == null;
+      final isBookingTab = index == 4;
+      final isGuest =
+          Firebase.apps.isEmpty || FirebaseAuth.instance.currentUser == null;
       if (isBookingTab && isGuest) {
         Analytics.track('auth_gate_shown', {'source': 'booking_tab'});
         showAuthGateSheet(
@@ -170,7 +231,9 @@ class _RootShellState extends State<RootShell>
       }
     }
 
-    final tabScreenNames = _isAdmin ? _adminTabScreenNames : _patientTabScreenNames;
+    final tabScreenNames = _isAdmin
+        ? _adminTabScreenNames
+        : _patientTabScreenNames;
     if (index < tabScreenNames.length) {
       final name = tabScreenNames[index];
       Analytics.track('tab_switch', {'tab': name});
@@ -449,8 +512,10 @@ class _NavItemState extends State<_NavItem>
                 ),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (child, animation) =>
-                      ScaleTransition(scale: animation, child: FadeTransition(opacity: animation, child: child)),
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: animation,
+                    child: FadeTransition(opacity: animation, child: child),
+                  ),
                   child: Icon(
                     widget.selected ? widget.icon : widget.outlineIcon,
                     key: ValueKey(widget.selected),

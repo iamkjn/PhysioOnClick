@@ -53,6 +53,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
   final _repo = CheckoutRepository();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _discountController = TextEditingController();
 
   late DateTime _viewMonth;
   Map<String, List<String>> _slots = {};
@@ -65,6 +66,10 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
   String? _selectedPersonId;
   String? _selectedPersonName;
   bool _consent = false;
+  bool _discountChecking = false;
+  bool _discountApplied = false;
+  String? _discountMessage;
+  int? _discountedAmountPence;
 
   @override
   void initState() {
@@ -85,6 +90,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _discountController.dispose();
     super.dispose();
   }
 
@@ -130,6 +136,68 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
     _loadSlots();
   }
 
+  double get _checkoutPrice {
+    final discounted = _discountApplied ? _discountedAmountPence : null;
+    if (discounted == null) return widget.service.price;
+    return discounted / 100;
+  }
+
+  String get _discountCode => _discountController.text.trim().toUpperCase();
+
+  void _clearDiscount() {
+    setState(() {
+      _discountApplied = false;
+      _discountedAmountPence = null;
+      _discountMessage = null;
+    });
+  }
+
+  Future<void> _applyDiscount() async {
+    final code = _discountCode;
+    final email = _emailController.text.trim();
+    if (code.isEmpty) {
+      setState(() => _discountMessage = 'Enter a discount code first.');
+      return;
+    }
+    if (email.isEmpty) {
+      setState(
+        () => _discountMessage =
+            'Enter your email before applying a discount code.',
+      );
+      return;
+    }
+
+    setState(() {
+      _discountChecking = true;
+      _discountApplied = false;
+      _discountedAmountPence = null;
+      _discountMessage = null;
+    });
+
+    try {
+      final discount = await _repo.validateDiscount(
+        code: code,
+        email: email,
+        service: widget.service.apiId,
+      );
+      if (!mounted) return;
+      setState(() {
+        _discountApplied = true;
+        _discountedAmountPence = discount.amountPence;
+        _discountMessage =
+            'NEW10 applied — ${discount.percent}% off your first booking.';
+      });
+    } catch (error) {
+      if (!mounted) return;
+      final raw = error.toString();
+      setState(() {
+        _discountMessage = raw.replaceFirst('Exception: ', '');
+      });
+    } finally {
+      if (mounted) setState(() => _discountChecking = false);
+    }
+  }
+
   Future<void> _onContinue() async {
     if (_selectedSlotIso == null || !_consent) return;
     final user = FirebaseAuth.instance.currentUser;
@@ -155,6 +223,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
           personId: _selectedPersonId,
           personName: _selectedPersonName ?? _nameController.text.trim(),
           focusAreas: widget.focusAreas,
+          discountCode: _discountApplied ? _discountCode : null,
         ),
       ),
     );
@@ -175,7 +244,11 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            BookingStepHeader(step: 2, totalSteps: 3, title: 'Time & your details'),
+            BookingStepHeader(
+              step: 2,
+              totalSteps: 3,
+              title: 'Time & your details',
+            ),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
@@ -183,7 +256,10 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                   if (_slotsError != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(_slotsError!, style: const TextStyle(color: AppColors.error)),
+                      child: Text(
+                        _slotsError!,
+                        style: const TextStyle(color: AppColors.error),
+                      ),
                     ),
                   _CalendarMonth(
                     viewMonth: _viewMonth,
@@ -204,7 +280,9 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                   _TimeSlotList(
                     loading: _loadingSlots,
                     selectedDate: _selectedDate,
-                    isos: _selectedDate == null ? const [] : (_slots[_dateKey(_selectedDate!)] ?? const []),
+                    isos: _selectedDate == null
+                        ? const []
+                        : (_slots[_dateKey(_selectedDate!)] ?? const []),
                     selectedIso: _selectedSlotIso,
                     onSelect: (iso) => setState(() => _selectedSlotIso = iso),
                   ),
@@ -218,7 +296,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16),
                           child: DropdownButtonFormField<String>(
-                            initialValue: _selectedPersonId ?? user.uid,
+                            value: _selectedPersonId ?? user.uid,
                             decoration: const InputDecoration(
                               labelText: 'Booking for',
                               border: OutlineInputBorder(),
@@ -226,7 +304,9 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                             items: [
                               DropdownMenuItem(
                                 value: user.uid,
-                                child: Text('${user.displayName?.isNotEmpty == true ? user.displayName : 'Myself'} (my appointment)'),
+                                child: Text(
+                                  '${user.displayName?.isNotEmpty == true ? user.displayName : 'Myself'} (my appointment)',
+                                ),
                               ),
                               ...dependents.map(
                                 (d) => DropdownMenuItem(
@@ -243,8 +323,9 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                                   _selectedPersonName = null;
                                 } else {
                                   _selectedPersonId = value;
-                                  _selectedPersonName =
-                                      dependents.firstWhere((d) => d.id == value).name;
+                                  _selectedPersonName = dependents
+                                      .firstWhere((d) => d.id == value)
+                                      .name;
                                 }
                               });
                             },
@@ -254,18 +335,44 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                     ),
                   Text(
                     'Booking as',
-                    style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Full name', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                      labelText: 'Full name',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
+                    onChanged: (_) {
+                      if (_discountApplied || _discountMessage != null) {
+                        _clearDiscount();
+                      }
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
                     keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 16),
+                  _DiscountPanel(
+                    controller: _discountController,
+                    checking: _discountChecking,
+                    applied: _discountApplied,
+                    message: _discountMessage,
+                    onApply: _applyDiscount,
+                    onChanged: () {
+                      if (_discountApplied || _discountMessage != null) {
+                        _clearDiscount();
+                      }
+                    },
                   ),
                   const SizedBox(height: 20),
                   CheckboxListTile(
@@ -288,18 +395,127 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: (_selectedSlotIso == null || !_consent) ? null : _onContinue,
+                    onPressed:
+                        (_selectedSlotIso == null ||
+                            !_consent ||
+                            _discountChecking)
+                        ? null
+                        : _onContinue,
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.teal,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: Text('Continue to payment · £${widget.service.price.toStringAsFixed(0)}'),
+                    child: Text(
+                      _discountChecking
+                          ? 'Checking discount...'
+                          : 'Continue to payment · £${_checkoutPrice.toStringAsFixed(0)}',
+                    ),
                   ),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _DiscountPanel extends StatelessWidget {
+  const _DiscountPanel({
+    required this.controller,
+    required this.checking,
+    required this.applied,
+    required this.message,
+    required this.onApply,
+    required this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final bool checking;
+  final bool applied;
+  final String? message;
+  final VoidCallback onApply;
+  final VoidCallback onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: applied ? const Color(0xFF16A34A) : AppColors.border,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Discount code',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'New patient? Use NEW10 for 10% off your first booking.',
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  textCapitalization: TextCapitalization.characters,
+                  onChanged: (value) {
+                    final upper = value.toUpperCase();
+                    if (value != upper) {
+                      controller.value = controller.value.copyWith(
+                        text: upper,
+                        selection: TextSelection.collapsed(
+                          offset: upper.length,
+                        ),
+                      );
+                    }
+                    onChanged();
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'NEW10',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              FilledButton(
+                onPressed: checking ? null : onApply,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.teal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                ),
+                child: Text(checking ? 'Checking...' : 'Apply'),
+              ),
+            ],
+          ),
+          if (message != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              message!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: applied ? const Color(0xFF15803D) : AppColors.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -331,8 +547,18 @@ class _CalendarMonth extends StatelessWidget {
   final ValueChanged<DateTime> onSelectDay;
 
   static const _monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   @override
@@ -348,7 +574,9 @@ class _CalendarMonth extends StatelessWidget {
             ),
             Text(
               '${_monthNames[viewMonth.month - 1]} ${viewMonth.year}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             IconButton(
               onPressed: onNextMonth,
@@ -358,18 +586,20 @@ class _CalendarMonth extends StatelessWidget {
         ),
         Row(
           children: _weekdayLabels
-              .map((d) => Expanded(
-                    child: Center(
-                      child: Text(
-                        d,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textSecondary,
-                        ),
+              .map(
+                (d) => Expanded(
+                  child: Center(
+                    child: Text(
+                      d,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textSecondary,
                       ),
                     ),
-                  ))
+                  ),
+                ),
+              )
               .toList(),
         ),
         const SizedBox(height: 4),
@@ -398,8 +628,8 @@ class _CalendarMonth extends StatelessWidget {
         color: selected
             ? AppColors.teal
             : hasSlots
-                ? AppColors.tealLight
-                : Colors.transparent,
+            ? AppColors.tealLight
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
         child: InkWell(
           borderRadius: BorderRadius.circular(10),
@@ -412,8 +642,8 @@ class _CalendarMonth extends StatelessWidget {
                 color: selected
                     ? Colors.white
                     : hasSlots
-                        ? AppColors.textPrimary
-                        : AppColors.border,
+                    ? AppColors.textPrimary
+                    : AppColors.border,
               ),
             ),
           ),
@@ -457,7 +687,8 @@ class _TimeSlotList extends StatelessWidget {
       runSpacing: 8,
       children: isos.map((iso) {
         final time = DateTime.parse(iso).toLocal();
-        final label = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+        final label =
+            '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
         return ChoiceChip(
           label: Text(label),
           selected: selectedIso == iso,

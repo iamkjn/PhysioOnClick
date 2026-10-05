@@ -19,12 +19,35 @@ class CheckoutStatus {
   });
 
   factory CheckoutStatus.fromJson(Map<String, dynamic> json) => CheckoutStatus(
-        status: json['status'] as String,
-        service: json['service'] as String?,
-        calBookingUid: json['calBookingUid'] as String?,
-        invoiceNumber: json['invoiceNumber'] as String?,
-        paidAt: json['paidAt'] as String?,
-      );
+    status: json['status'] as String,
+    service: json['service'] as String?,
+    calBookingUid: json['calBookingUid'] as String?,
+    invoiceNumber: json['invoiceNumber'] as String?,
+    paidAt: json['paidAt'] as String?,
+  );
+}
+
+class CheckoutDiscount {
+  final int percent;
+  final int amountPence;
+  final int discountAmountPence;
+  final int originalAmountPence;
+
+  const CheckoutDiscount({
+    required this.percent,
+    required this.amountPence,
+    required this.discountAmountPence,
+    required this.originalAmountPence,
+  });
+
+  factory CheckoutDiscount.fromJson(
+    Map<String, dynamic> json,
+  ) => CheckoutDiscount(
+    percent: (json['percent'] as num?)?.toInt() ?? 0,
+    amountPence: (json['amountPence'] as num?)?.toInt() ?? 0,
+    discountAmountPence: (json['discountAmountPence'] as num?)?.toInt() ?? 0,
+    originalAmountPence: (json['originalAmountPence'] as num?)?.toInt() ?? 0,
+  );
 }
 
 typedef IdTokenProvider = Future<String?> Function();
@@ -33,8 +56,8 @@ class CheckoutRepository {
   CheckoutRepository({
     http.Client? httpClient,
     IdTokenProvider? idTokenProvider,
-  })  : _client = httpClient ?? http.Client(),
-        _idTokenProvider = idTokenProvider ?? _defaultIdTokenProvider;
+  }) : _client = httpClient ?? http.Client(),
+       _idTokenProvider = idTokenProvider ?? _defaultIdTokenProvider;
 
   final http.Client _client;
   final IdTokenProvider _idTokenProvider;
@@ -63,11 +86,13 @@ class CheckoutRepository {
   }) async {
     String fmt(DateTime d) =>
         '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-    final uri = Uri.parse('$kApiBase/api/cal/slots').replace(queryParameters: {
-      'service': service,
-      'start': fmt(start),
-      'end': fmt(end),
-    });
+    final uri = Uri.parse('$kApiBase/api/cal/slots').replace(
+      queryParameters: {
+        'service': service,
+        'start': fmt(start),
+        'end': fmt(end),
+      },
+    );
     final res = await _client
         .get(uri, headers: await _authHeaders())
         .timeout(const Duration(seconds: 20));
@@ -89,6 +114,7 @@ class CheckoutRepository {
     String? assessmentUid,
     String? assessmentPersonId,
     String? assessmentFormId,
+    String? discountCode,
   }) async {
     final uri = Uri.parse('$kApiBase/api/checkout/create');
     final res = await _client
@@ -103,8 +129,11 @@ class CheckoutRepository {
             'timeZone': timeZone,
             if (focusAreas.isNotEmpty) 'focusAreas': focusAreas,
             if (assessmentUid != null) 'assessmentUid': assessmentUid,
-            if (assessmentPersonId != null) 'assessmentPersonId': assessmentPersonId,
+            if (assessmentPersonId != null)
+              'assessmentPersonId': assessmentPersonId,
             if (assessmentFormId != null) 'assessmentFormId': assessmentFormId,
+            if (discountCode != null && discountCode.trim().isNotEmpty)
+              'discountCode': discountCode.trim().toUpperCase(),
           }),
         )
         .timeout(const Duration(seconds: 20));
@@ -123,15 +152,51 @@ class CheckoutRepository {
     return body!['url'] as String;
   }
 
+  Future<CheckoutDiscount> validateDiscount({
+    required String code,
+    required String email,
+    required String service,
+  }) async {
+    final uri = Uri.parse('$kApiBase/api/checkout/discount');
+    final res = await _client
+        .post(
+          uri,
+          headers: await _authHeaders(),
+          body: jsonEncode({
+            'code': code.trim().toUpperCase(),
+            'email': email.trim().toLowerCase(),
+            'service': service,
+          }),
+        )
+        .timeout(const Duration(seconds: 20));
+
+    Map<String, dynamic>? body;
+    try {
+      body = jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (_) {
+      body = null;
+    }
+
+    if (res.statusCode != 200 || body?['ok'] != true) {
+      final error = body?['error'] as String?;
+      throw Exception(error ?? 'That discount code could not be applied.');
+    }
+
+    return CheckoutDiscount.fromJson(body!['discount'] as Map<String, dynamic>);
+  }
+
   Future<CheckoutStatus> pollCheckoutStatus(String sessionId) async {
-    final uri = Uri.parse('$kApiBase/api/checkout/status')
-        .replace(queryParameters: {'session_id': sessionId});
+    final uri = Uri.parse(
+      '$kApiBase/api/checkout/status',
+    ).replace(queryParameters: {'session_id': sessionId});
     final res = await _client
         .get(uri, headers: await _authHeaders())
         .timeout(const Duration(seconds: 20));
     if (res.statusCode != 200) {
       throw Exception('Failed to check payment status (${res.statusCode})');
     }
-    return CheckoutStatus.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+    return CheckoutStatus.fromJson(
+      jsonDecode(res.body) as Map<String, dynamic>,
+    );
   }
 }

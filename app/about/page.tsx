@@ -15,6 +15,12 @@ export const metadata: Metadata = {
 
 const specialisms = [
   {
+    slug: "msk-physiotherapy",
+    title: "MSK Physiotherapy",
+    text: "Online assessment and rehab for back, neck, shoulder, knee, tendon and muscle pain.",
+    detail: "Joint, tendon, spine and muscle rehabilitation"
+  },
+  {
     slug: "arthroplasty-rehabilitation",
     title: "Arthroplasty Rehabilitation",
     text: "Expert in total knee and hip replacement recovery, guiding patients from surgery to full function.",
@@ -33,6 +39,12 @@ const specialisms = [
     detail: "Play-based movement support and family-led rehab"
   },
   {
+    slug: "sports-tendon-rehabilitation",
+    title: "Sports & Tendon Rehabilitation",
+    text: "Progressive loading, pacing and return-to-activity planning for tendon pain and sports injuries.",
+    detail: "Strength, load management and return-to-sport"
+  },
+  {
     slug: "research-and-innovation",
     title: "Research & Innovation",
     text: "MSc thesis on VR versus traditional exercise, combining clinical rigour with innovative approaches.",
@@ -43,6 +55,7 @@ const specialisms = [
 const highlights = [
   "More than 6 years of clinical physiotherapy experience",
   "NHS Tayside placement and orthopaedic rehab exposure",
+  "NHS Lothian observership experience",
   "Online physiotherapy support across the UK",
   "Evidence-based approach with calm, practical treatment planning"
 ];
@@ -106,15 +119,16 @@ export default function AboutPage() {
         </article>
 
         <aside className="about-profile-card">
-          <Image
-            className="about-profile-image"
-            src="https://images.unsplash.com/photo-1666214280391-8ff5bd3c0bf0?auto=format&fit=crop&w=1200&q=80"
-            alt="Clinical physiotherapy consultation"
-            width={1200}
-            height={980}
-            placeholder="blur"
-            blurDataURL={medicalImagePlaceholder}
-          />
+          <div className="about-profile-media">
+            <Image
+              className="about-profile-image"
+              src="/images/shivaliba-zala-thumbnail.svg"
+              alt={`${founder.name}, HCPC registered physiotherapist`}
+              width={640}
+              height={640}
+              unoptimized
+            />
+          </div>
           <div className="about-profile-body">
             <strong>{founder.name}</strong>
             <p>{founder.location}</p>
@@ -141,11 +155,10 @@ export default function AboutPage() {
             <article className="about-specialism-card">
               <Image
                 className="about-specialism-image"
-                src={`/specialism-images/${item.slug}`}
+                src={`/images/specialisms/${item.slug}.webp`}
                 alt={item.title}
-                width={900}
-                height={520}
-                unoptimized
+                width={1800}
+                height={1040}
                 placeholder="blur"
                 blurDataURL={medicalImagePlaceholder}
               />
@@ -166,9 +179,10 @@ export default function AboutPage() {
           <span className="eyebrow">Clinical background</span>
           <h2>From movement analysis research to practical rehab that patients can actually follow.</h2>
           <p>
-            Shivaliba&apos;s background includes NHS training exposure, EMG and motion analysis research, and an MSc in
-            Orthopaedic & Rehabilitation Technology from the University of Dundee. That combination helps PhysioOnClick
-            balance clinical rigour with clear, realistic rehabilitation plans.
+            Shivaliba&apos;s background includes NHS Tayside placement experience, NHS Lothian observership experience,
+            EMG and motion analysis research, and an MSc in Orthopaedic & Rehabilitation Technology from the University
+            of Dundee. That combination helps PhysioOnClick balance clinical rigour with clear, realistic rehabilitation
+            plans.
           </p>
         </div>
         <div className="about-story-stats">
@@ -183,6 +197,10 @@ export default function AboutPage() {
           <div className="about-stat-card">
             <strong>NHS</strong>
             <span>Tayside placement experience</span>
+          </div>
+          <div className="about-stat-card">
+            <strong>NHS</strong>
+            <span>Lothian observership experience</span>
           </div>
           <div className="about-stat-card">
             <strong>UK-wide</strong>

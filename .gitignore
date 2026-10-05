@@ -49,3 +49,4 @@ generated-assets/
 
 # One-off SEO audit report output — a generated report, not app code.
 physioonclick.co.uk-audit/
+.worktrees/

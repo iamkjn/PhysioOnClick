@@ -5,11 +5,11 @@ enum BookServiceId { initialAssessment, followUp, bundle4, bundle8 }
 
 extension BookServiceIdApi on BookServiceId {
   String get apiId => switch (this) {
-        BookServiceId.initialAssessment => 'initial-assessment',
-        BookServiceId.followUp => 'follow-up',
-        BookServiceId.bundle4 => 'bundle-4',
-        BookServiceId.bundle8 => 'bundle-8',
-      };
+    BookServiceId.initialAssessment => 'initial-assessment',
+    BookServiceId.followUp => 'follow-up',
+    BookServiceId.bundle4 => 'bundle-4',
+    BookServiceId.bundle8 => 'bundle-8',
+  };
 }
 
 class ResolvedService {
@@ -45,8 +45,9 @@ const List<ResolvedService> _kServices = [
     id: BookServiceId.initialAssessment,
     title: 'Initial Online Assessment',
     duration: '60 min',
-    price: 50,
-    description: 'Remote assessment with tailored advice and exercise planning.',
+    price: 40,
+    description:
+        'Remote assessment with tailored advice and exercise planning.',
     mode: 'Online',
     calSlug: 'initial-online-assessment',
     minutes: 60,
@@ -62,7 +63,7 @@ const List<ResolvedService> _kServices = [
     id: BookServiceId.followUp,
     title: 'Online Follow-Up',
     duration: '30 min',
-    price: 40,
+    price: 30,
     description: 'Ongoing online progression and accountability support.',
     mode: 'Online',
     calSlug: 'online-follow-up',
@@ -78,7 +79,7 @@ const List<ResolvedService> _kServices = [
     id: BookServiceId.bundle4,
     title: '4 Session Bundle',
     duration: 'Flexible',
-    price: 180,
+    price: 150,
     description: 'Cost-effective package for structured rehabilitation.',
     mode: 'Package',
     calSlug: 'initial-online-assessment',
@@ -95,7 +96,7 @@ const List<ResolvedService> _kServices = [
     id: BookServiceId.bundle8,
     title: '8 Session Bundle',
     duration: 'Flexible',
-    price: 340,
+    price: 280,
     description: 'Longer-term rehabilitation plan with review milestones.',
     mode: 'Package',
     calSlug: 'initial-online-assessment',

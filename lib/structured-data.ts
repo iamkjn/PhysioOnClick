@@ -30,13 +30,11 @@ import type { SelfTest } from "@/lib/self-tests";
 
 const SITE = absoluteUrl("/");
 
-/** The one canonical spelling of the practice phone number. NAP consistency is
- *  a real ranking/trust signal, so every surface (schema, footer, contact page,
- *  directory submissions) must render this identical string. */
-export const PRACTICE_PHONE = "+44 7741 074518";
+/** Temporarily hidden until the practice confirms the new public number. */
+export const PRACTICE_PHONE = "";
 
 /** Same number in the digits-only form `tel:` links require. */
-export const PRACTICE_PHONE_HREF = "tel:+447741074518";
+export const PRACTICE_PHONE_HREF = "";
 
 /** Stable @id for the practice entity — every page that mentions the
  *  business links back to this one node instead of re-declaring it. */
@@ -77,10 +75,6 @@ export function practiceNode() {
       postalCode: "G31 4HS",
       addressCountry: "GB"
     },
-    // NAP consistency depends on this exact string being reused everywhere the
-    // number appears — site footer, contact page, and any directory listing.
-    // Change it in one place only.
-    telephone: PRACTICE_PHONE,
     email: "hello@physioonclick.co.uk",
     // Consultations are delivered remotely, never at the address above. Stating
     // the channel explicitly stops the entity reading as a walk-in clinic.

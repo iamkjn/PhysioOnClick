@@ -1,0 +1,41 @@
+<svg width="640" height="640" viewBox="0 0 640 640" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Shivaliba Zala practitioner thumbnail</title>
+  <desc id="desc">A branded clinical thumbnail for Shivaliba Zala at PhysioOnClick.</desc>
+  <defs>
+    <linearGradient id="bg" x1="98" y1="72" x2="548" y2="594" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EAF7FB"/>
+      <stop offset="0.58" stop-color="#F8FCFD"/>
+      <stop offset="1" stop-color="#E7F1FA"/>
+    </linearGradient>
+    <linearGradient id="coat" x1="201" y1="323" x2="438" y2="577" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E9F2F7"/>
+    </linearGradient>
+    <filter id="shadow" x="52" y="52" width="536" height="548" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="24" stdDeviation="26" flood-color="#0D3B4A" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="640" height="640" rx="150" fill="#0C6F91"/>
+  <rect x="34" y="34" width="572" height="572" rx="128" fill="url(#bg)"/>
+  <circle cx="506" cy="112" r="72" fill="#0C6F91" fill-opacity="0.08"/>
+  <circle cx="121" cy="502" r="92" fill="#20A8D8" fill-opacity="0.08"/>
+  <g filter="url(#shadow)">
+    <path d="M169 564C183 442 239 375 320 375C401 375 457 442 471 564H169Z" fill="url(#coat)"/>
+    <path d="M253 395L320 476L387 395" stroke="#0C6F91" stroke-opacity="0.18" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M253 394C266 443 288 497 320 564C352 497 374 443 387 394" stroke="#D8E5EC" stroke-width="10" stroke-linecap="round"/>
+    <path d="M222 441C240 471 259 511 272 564" stroke="#D6E3EA" stroke-width="8" stroke-linecap="round"/>
+    <path d="M418 441C400 471 381 511 368 564" stroke="#D6E3EA" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="320" cy="257" r="118" fill="#D88C78"/>
+    <path d="M221 260C230 182 271 126 338 126C392 126 433 163 448 222C421 207 380 200 326 201C283 202 249 220 221 260Z" fill="#123B4B"/>
+    <path d="M224 270C254 234 289 219 327 221C380 223 419 216 449 235C449 161 398 107 327 107C256 107 207 162 207 235C207 249 213 262 224 270Z" fill="#123B4B"/>
+    <path d="M278 292C302 312 338 314 363 292" stroke="#FFFFFF" stroke-opacity="0.72" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="275" cy="256" r="7" fill="#123B4B" fill-opacity="0.72"/>
+    <circle cx="365" cy="256" r="7" fill="#123B4B" fill-opacity="0.72"/>
+    <path d="M319 260C316 281 312 291 302 302" stroke="#B96C5C" stroke-width="7" stroke-linecap="round"/>
+    <path d="M214 530H426" stroke="#0C6F91" stroke-opacity="0.18" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  <rect x="396" y="410" width="140" height="72" rx="36" fill="#0C6F91"/>
+  <text x="466" y="455" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#FFFFFF">SZ</text>
+  <path d="M117 119H148M132 104V135" stroke="#0C6F91" stroke-width="10" stroke-linecap="round"/>
+  <path d="M492 526C509 526 523 512 523 495" stroke="#0C6F91" stroke-width="9" stroke-linecap="round" stroke-opacity="0.36"/>
+</svg>

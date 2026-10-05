@@ -439,7 +439,9 @@ function drawCover(page: PDFPage, input: ExercisePlanPdfInput, font: PDFFont, bo
 function drawFooters(pdf: PDFDocument, font: PDFFont): void {
   const pages = pdf.getPages();
   const line = pdfSafe(
-    `${invoiceIssuer.tradingName} ${DOT} ${invoiceIssuer.addressLines.join(", ")} ${DOT} ${PRACTICE_PHONE} ${DOT} hello@physioonclick.co.uk`
+    [invoiceIssuer.tradingName, invoiceIssuer.addressLines.join(", "), PRACTICE_PHONE, "hello@physioonclick.co.uk"]
+      .filter(Boolean)
+      .join(` ${DOT} `)
   );
   pages.forEach((page, i) => {
     const { width } = page.getSize();

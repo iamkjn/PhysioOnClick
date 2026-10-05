@@ -9,7 +9,6 @@ import {
   getCondition,
   getExerciseBySlug,
   getSelfTest,
-  librarySearchIndex,
   programForCondition,
 } from "@/lib/exercise-library";
 import { breadcrumbs } from "@/lib/structured-data";
@@ -156,7 +155,14 @@ export default function ExerciseLibraryIndexPage() {
           this browser - sign in and book to turn it into a plan your
           physiotherapist can see.
         </p>
-        <SavedPlanList items={librarySearchIndex().exercises} />
+        <SavedPlanList
+          items={browserExercises.map((exercise) => ({
+            slug: exercise.slug,
+            title: exercise.title,
+            bodyPart: exercise.bodyPart,
+            stage: exercise.stage,
+          }))}
+        />
       </section>
 
       <section className="exlib-index-section">

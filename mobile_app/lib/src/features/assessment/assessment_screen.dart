@@ -16,7 +16,15 @@ const _kImpact = 'impact';
 const _kContext = 'context';
 const _kSafety = 'safety';
 const _kConsent = 'consent';
-const List<_StepId> _steps = [_kIntro, _kBody, _kStory, _kImpact, _kContext, _kSafety, _kConsent];
+const List<_StepId> _steps = [
+  _kIntro,
+  _kBody,
+  _kStory,
+  _kImpact,
+  _kContext,
+  _kSafety,
+  _kConsent,
+];
 
 const _howLongOptions = [
   (value: HowLong.days, label: 'A few days'),
@@ -27,11 +35,27 @@ const _howLongOptions = [
 ];
 
 const _redFlagOptions = [
-  (key: 'majorTrauma', label: 'A recent serious injury, fall or suspected broken bone'),
-  (key: 'chestPainBreathlessness', label: 'Chest pain, breathlessness, blackouts or dizziness'),
-  (key: 'bladderBowelSaddle', label: "New problems with your bladder, bowel or numbness around the saddle area"),
-  (key: 'progressiveWeakness', label: "Weakness or clumsiness that's quickly getting worse"),
-  (key: 'unexplainedFeverWeightLoss', label: 'Unexplained fever, night sweats or weight loss'),
+  (
+    key: 'majorTrauma',
+    label: 'A recent serious injury, fall or suspected broken bone',
+  ),
+  (
+    key: 'chestPainBreathlessness',
+    label: 'Chest pain, breathlessness, blackouts or dizziness',
+  ),
+  (
+    key: 'bladderBowelSaddle',
+    label:
+        "New problems with your bladder, bowel or numbness around the saddle area",
+  ),
+  (
+    key: 'progressiveWeakness',
+    label: "Weakness or clumsiness that's quickly getting worse",
+  ),
+  (
+    key: 'unexplainedFeverWeightLoss',
+    label: 'Unexplained fever, night sweats or weight loss',
+  ),
   (key: 'nightPain', label: "Constant pain that's there all night"),
 ];
 
@@ -88,7 +112,6 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
   bool _dataConsent = false;
   bool _privacyConsent = false;
   bool _safetyConsent = false;
-  final _signatureController = TextEditingController();
 
   @override
   void dispose() {
@@ -97,7 +120,6 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
     _contextController.dispose();
     _ecNameController.dispose();
     _ecPhoneController.dispose();
-    _signatureController.dispose();
     super.dispose();
   }
 
@@ -110,14 +132,14 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       _nightPain;
 
   bool _redFlagValue(String key) => switch (key) {
-        'majorTrauma' => _majorTrauma,
-        'chestPainBreathlessness' => _chestPainBreathlessness,
-        'bladderBowelSaddle' => _bladderBowelSaddle,
-        'progressiveWeakness' => _progressiveWeakness,
-        'unexplainedFeverWeightLoss' => _unexplainedFeverWeightLoss,
-        'nightPain' => _nightPain,
-        _ => false,
-      };
+    'majorTrauma' => _majorTrauma,
+    'chestPainBreathlessness' => _chestPainBreathlessness,
+    'bladderBowelSaddle' => _bladderBowelSaddle,
+    'progressiveWeakness' => _progressiveWeakness,
+    'unexplainedFeverWeightLoss' => _unexplainedFeverWeightLoss,
+    'nightPain' => _nightPain,
+    _ => false,
+  };
 
   void _toggleRedFlag(String key) {
     setState(() {
@@ -172,15 +194,16 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
         return _careConsent &&
             _dataConsent &&
             _privacyConsent &&
-            _safetyConsent &&
-            _signatureController.text.trim().length >= 2;
+            _safetyConsent;
       default:
         return true;
     }
   }
 
-  void _back() => setState(() => _stepIdx = (_stepIdx - 1).clamp(0, _steps.length - 1));
-  void _forward() => setState(() => _stepIdx = (_stepIdx + 1).clamp(0, _steps.length - 1));
+  void _back() =>
+      setState(() => _stepIdx = (_stepIdx - 1).clamp(0, _steps.length - 1));
+  void _forward() =>
+      setState(() => _stepIdx = (_stepIdx + 1).clamp(0, _steps.length - 1));
 
   Future<void> _submit() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -203,7 +226,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       symptomStartDate: deriveSymptomStartDate(howLong),
       onsetPattern: deriveOnsetPattern(howLong),
       painScore: _pain.round(),
-      subjective: SubjectiveAssessmentProfile(clinicalArea: deriveClinicalArea(_regions)),
+      subjective: SubjectiveAssessmentProfile(
+        clinicalArea: deriveClinicalArea(_regions),
+      ),
       outcomes: const OutcomeMeasureSet(),
       objectiveVideo: const ObjectiveVideoAssessment(),
       goalsPlan: GoalSetting(meaningfulGoal: _impactController.text.trim()),
@@ -236,8 +261,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
         safetySharing: _safetyConsent,
         videoConsent: false,
       ),
-      signature: _signatureController.text.trim(),
-      completedAt: '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}',
+      signature: widget.personName,
+      completedAt:
+          '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}',
       submittedByUid: user.uid,
       bookingId: widget.bookingId,
     );
@@ -261,7 +287,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("We couldn't submit your form. Please try again.")),
+        const SnackBar(
+          content: Text("We couldn't submit your form. Please try again."),
+        ),
       );
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -276,7 +304,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      return const Scaffold(body: Center(child: Text('Sign in to complete your assessment')));
+      return const Scaffold(
+        body: Center(child: Text('Sign in to complete your assessment')),
+      );
     }
 
     final step = _steps[_stepIdx];
@@ -299,7 +329,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                       value: (_stepIdx + 1) / _steps.length,
                       minHeight: 6,
                       backgroundColor: AppColors.border,
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.teal),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.teal,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -327,26 +359,39 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                   children: [
                     if (_stepIdx > 0) ...[
                       Expanded(
-                        child: OutlinedButton(onPressed: _back, child: const Text('Back')),
+                        child: OutlinedButton(
+                          onPressed: _back,
+                          child: const Text('Back'),
+                        ),
                       ),
                       const SizedBox(width: 12),
                     ],
                     Expanded(
                       child: step == _kConsent
                           ? FilledButton(
-                              onPressed: (_canAdvance(_kConsent) && !_submitting) ? _submit : null,
-                              style: FilledButton.styleFrom(backgroundColor: AppColors.teal),
+                              onPressed:
+                                  (_canAdvance(_kConsent) && !_submitting)
+                                  ? _submit
+                                  : null,
+                              style: FilledButton.styleFrom(
+                                backgroundColor: AppColors.teal,
+                              ),
                               child: _submitting
                                   ? const SizedBox(
                                       height: 18,
                                       width: 18,
-                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
                                     )
                                   : const Text('Submit'),
                             )
                           : FilledButton(
                               onPressed: _canAdvance(step) ? _forward : null,
-                              style: FilledButton.styleFrom(backgroundColor: AppColors.teal),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: AppColors.teal,
+                              ),
                               child: const Text('Continue'),
                             ),
                     ),
@@ -371,14 +416,18 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
               'so the session starts where it matters.',
             ),
             const SizedBox(height: 16),
-            Text('Completing this for ${widget.personName}.', style: theme.textTheme.bodyMedium),
+            Text(
+              'Completing this for ${widget.personName}.',
+              style: theme.textTheme.bodyMedium,
+            ),
           ],
         );
 
       case _kBody:
         return _StepShell(
           title: 'Where is the problem?',
-          hint: "Tap the body chart on every area that's involved. You can pick more than one.",
+          hint:
+              "Tap the body chart on every area that's involved. You can pick more than one.",
           children: [
             BodyChart(
               value: _regions,
@@ -394,7 +443,8 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       case _kStory:
         return _StepShell(
           title: "Tell us what's going on.",
-          hint: 'In your own words — what it feels like, when it started, what makes it better or worse.',
+          hint:
+              'In your own words — what it feels like, when it started, what makes it better or worse.',
           children: [
             TextField(
               controller: _storyController,
@@ -402,27 +452,38 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
               maxLength: 2000,
               onChanged: (_) => setState(() {}),
               decoration: const InputDecoration(
-                hintText: 'e.g. A sharp pain in my right shoulder when I lift my arm overhead, started '
+                hintText:
+                    'e.g. A sharp pain in my right shoulder when I lift my arm overhead, started '
                     'about three weeks ago after decorating…',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
-            Text('How long have you had it?', style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              'How long have you had it?',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: _howLongOptions
-                  .map((h) => ChoiceChip(
-                        label: Text(h.label),
-                        selected: _howLong == h.value,
-                        onSelected: (_) => setState(() => _howLong = h.value),
-                      ))
+                  .map(
+                    (h) => ChoiceChip(
+                      label: Text(h.label),
+                      selected: _howLong == h.value,
+                      onSelected: (_) => setState(() => _howLong = h.value),
+                    ),
+                  )
                   .toList(),
             ),
             const SizedBox(height: 16),
-            Text('Pain right now: ${_pain.round()}/10', style: theme.textTheme.bodyMedium),
+            Text(
+              'Pain right now: ${_pain.round()}/10',
+              style: theme.textTheme.bodyMedium,
+            ),
             Slider(
               value: _pain,
               min: 0,
@@ -437,7 +498,8 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       case _kImpact:
         return _StepShell(
           title: 'What has this been getting in the way of?',
-          hint: 'No rush — just the everyday things that matter most to you, like work, sleep, sport, or '
+          hint:
+              'No rush — just the everyday things that matter most to you, like work, sleep, sport, or '
               'lifting the kids.',
           children: [
             TextField(
@@ -446,7 +508,8 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
               maxLength: 1500,
               onChanged: (_) => setState(() {}),
               decoration: const InputDecoration(
-                hintText: "e.g. I can't sleep on that side and I've stopped going to the gym.",
+                hintText:
+                    "e.g. I can't sleep on that side and I've stopped going to the gym.",
                 border: OutlineInputBorder(),
               ),
             ),
@@ -456,25 +519,35 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       case _kContext:
         return _StepShell(
           title: 'Anything we should know?',
-          hint: 'Optional — medicines you take, past injuries or operations, or health conditions.',
+          hint:
+              'Optional — medicines you take, past injuries or operations, or health conditions.',
           children: [
             TextField(
               controller: _contextController,
               maxLines: 4,
               maxLength: 2000,
               decoration: const InputDecoration(
-                hintText: 'e.g. I take blood pressure tablets. Broke the same wrist 10 years ago.',
+                hintText:
+                    'e.g. I take blood pressure tablets. Broke the same wrist 10 years ago.',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 20),
-            Text('Emergency contact (required)', style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              'Emergency contact (required)',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: _ecNameController,
               maxLength: 80,
               onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -485,7 +558,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
               decoration: InputDecoration(
                 labelText: 'Phone',
                 border: const OutlineInputBorder(),
-                errorText: _ecPhoneController.text.trim().isNotEmpty && !isValidUKPhone(_ecPhoneController.text)
+                errorText:
+                    _ecPhoneController.text.trim().isNotEmpty &&
+                        !isValidUKPhone(_ecPhoneController.text)
                     ? 'Enter a valid UK phone number.'
                     : null,
               ),
@@ -496,17 +571,20 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
       case _kSafety:
         return _StepShell(
           title: 'A quick safety check.',
-          hint: 'Physiotherapists screen for a few things that need a doctor first. Do any of these apply '
+          hint:
+              'Physiotherapists screen for a few things that need a doctor first. Do any of these apply '
               'right now?',
           children: [
-            ..._redFlagOptions.map((f) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: _FlagButton(
-                    label: f.label,
-                    selected: _redFlagValue(f.key),
-                    onTap: () => _toggleRedFlag(f.key),
-                  ),
-                )),
+            ..._redFlagOptions.map(
+              (f) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _FlagButton(
+                  label: f.label,
+                  selected: _redFlagValue(f.key),
+                  onTap: () => _toggleRedFlag(f.key),
+                ),
+              ),
+            ),
             _FlagButton(
               label: 'None of these',
               selected: _redFlagsNone,
@@ -541,21 +619,27 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
               controlAffinity: ListTileControlAffinity.leading,
               value: _careConsent,
               onChanged: (v) => setState(() => _careConsent = v ?? false),
-              title: const Text("I'm happy to have an online physiotherapy assessment and treatment."),
+              title: const Text(
+                "I'm happy to have an online physiotherapy assessment and treatment.",
+              ),
             ),
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,
               value: _dataConsent,
               onChanged: (v) => setState(() => _dataConsent = v ?? false),
-              title: const Text('I agree to PhysioOnClick storing this information to provide my care.'),
+              title: const Text(
+                'I agree to PhysioOnClick storing this information to provide my care.',
+              ),
             ),
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,
               value: _privacyConsent,
               onChanged: (v) => setState(() => _privacyConsent = v ?? false),
-              title: const Text("I've read how my information is used (privacy policy)."),
+              title: const Text(
+                "I've read how my information is used (privacy policy).",
+              ),
             ),
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
@@ -565,15 +649,6 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
               title: const Text(
                 'I understand my physiotherapist may contact my GP or emergency services if there\'s a '
                 'safety concern.',
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _signatureController,
-              onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(
-                labelText: 'Type your name to confirm',
-                border: OutlineInputBorder(),
               ),
             ),
           ],
@@ -601,7 +676,12 @@ class _StepShell extends StatelessWidget {
         Text(title, style: theme.textTheme.headlineSmall),
         if (hint != null) ...[
           const SizedBox(height: 6),
-          Text(hint!, style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+          Text(
+            hint!,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
         ],
         const SizedBox(height: 16),
         ...children,
@@ -611,7 +691,11 @@ class _StepShell extends StatelessWidget {
 }
 
 class _FlagButton extends StatelessWidget {
-  const _FlagButton({required this.label, required this.selected, required this.onTap});
+  const _FlagButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
   final bool selected;
@@ -628,7 +712,10 @@ class _FlagButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? AppColors.tealLight : AppColors.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: selected ? AppColors.teal : AppColors.border, width: selected ? 2 : 1),
+          border: Border.all(
+            color: selected ? AppColors.teal : AppColors.border,
+            width: selected ? 2 : 1,
+          ),
         ),
         child: Row(
           children: [

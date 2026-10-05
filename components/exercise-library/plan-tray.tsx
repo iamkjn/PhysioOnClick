@@ -2,8 +2,8 @@
 
 // A slim bottom bar summarising the visitor's "my plan" list. Sticky (not
 // fixed) so it sits at the end of the page flow and never covers content.
-// Renders nothing while the plan is empty. Phase 1 has no dedicated plan view,
-// so "view plan" links back to the library index with a #my-plan anchor.
+// Renders nothing while the plan is empty. Exercise saves stay inside the
+// exercise library so they are not mixed with saved blog reading.
 
 import Link from "next/link";
 import { useEffect, useState } from "react";

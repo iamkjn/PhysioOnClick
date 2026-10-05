@@ -6,6 +6,7 @@ export type GrowthEventName =
   | "service_view"
   | "service_click"
   | "library_view"
+  | "blog_saved"
   | "exercise_click"
   | "exercise_plan_saved"
   | "exercise_booking_intent"

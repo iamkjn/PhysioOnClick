@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
 import '../booking/service_select_screen.dart';
+import '../exercises/exercise_library_screen.dart';
 
 /// Mirrors web's `serviceImagePath` (`lib/site-data.ts`) — real cover
 /// photography checked into `public/images/service-covers/`, one PNG per
 /// service slug, served directly by the Next.js static file handler.
-String serviceImageUrl(String slug) => '$kApiBase/images/service-covers/service-$slug.png';
+String serviceImageUrl(String slug) =>
+    '$kApiBase/images/service-covers/service-$slug.png';
 
 /// The six real services from `lib/site-data.ts`'s `services` array — titles,
 /// summaries and condition lists copied verbatim from there. Keep this in
@@ -19,7 +21,13 @@ const _services = [
     title: 'Musculoskeletal Physiotherapy',
     description:
         'Assessment and rehabilitation for joint, tendon, spine and muscle pain with a practical, evidence-based treatment plan.',
-    conditions: ['Back and neck pain', 'Shoulder impingement', 'Tendon pain', 'Persistent sports injuries', 'Work-related strain'],
+    conditions: [
+      'Back and neck pain',
+      'Shoulder impingement',
+      'Tendon pain',
+      'Persistent sports injuries',
+      'Work-related strain',
+    ],
     icon: Icons.accessibility_new_rounded,
     color: Color(0xFF0891B2),
     bgColor: Color(0xFFD8F3F9),
@@ -27,8 +35,15 @@ const _services = [
   (
     slug: 'post-surgical-rehabilitation',
     title: 'Post-Surgical Rehabilitation',
-    description: 'Structured rehabilitation after arthroplasty, ligament reconstruction and orthopaedic procedures.',
-    conditions: ['Total knee replacement rehab', 'Total hip replacement rehab', 'ACL reconstruction', 'Rotator cuff repair', 'Fracture recovery'],
+    description:
+        'Structured rehabilitation after arthroplasty, ligament reconstruction and orthopaedic procedures.',
+    conditions: [
+      'Total knee replacement rehab',
+      'Total hip replacement rehab',
+      'ACL reconstruction',
+      'Rotator cuff repair',
+      'Fracture recovery',
+    ],
     icon: Icons.medical_services_rounded,
     color: Color(0xFF0E7490),
     bgColor: Color(0xFFE0F5FA),
@@ -36,8 +51,15 @@ const _services = [
   (
     slug: 'neurological-rehabilitation',
     title: 'Neurological Rehabilitation',
-    description: 'Goal-led rehabilitation for neurological conditions focused on mobility, confidence and function.',
-    conditions: ['Stroke rehabilitation', 'Parkinsonian movement challenges', 'Balance difficulties', 'Functional mobility loss', 'Neurological deconditioning'],
+    description:
+        'Goal-led rehabilitation for neurological conditions focused on mobility, confidence and function.',
+    conditions: [
+      'Stroke rehabilitation',
+      'Parkinsonian movement challenges',
+      'Balance difficulties',
+      'Functional mobility loss',
+      'Neurological deconditioning',
+    ],
     icon: Icons.psychology_rounded,
     color: Color(0xFF7C3AED),
     bgColor: Color(0xFFF3E8FF),
@@ -45,8 +67,15 @@ const _services = [
   (
     slug: 'paediatric-physiotherapy',
     title: 'Paediatric Physiotherapy',
-    description: 'Child-centred physiotherapy for movement confidence, developmental support and family-guided rehab.',
-    conditions: ['Developmental delay', 'Coordination challenges', 'Mobility support', 'Post-operative paediatric rehab', 'Strength and endurance building'],
+    description:
+        'Child-centred physiotherapy for movement confidence, developmental support and family-guided rehab.',
+    conditions: [
+      'Developmental delay',
+      'Coordination challenges',
+      'Mobility support',
+      'Post-operative paediatric rehab',
+      'Strength and endurance building',
+    ],
     icon: Icons.child_care_rounded,
     color: Color(0xFF16A34A),
     bgColor: Color(0xFFDCFCE7),
@@ -54,8 +83,15 @@ const _services = [
   (
     slug: 'gait-and-mobility-assessment',
     title: 'Gait & Mobility Assessment',
-    description: 'Movement analysis, walking assessment and rehabilitation planning for confidence and independence.',
-    conditions: ['Walking changes after surgery', 'Falls risk', 'Balance confidence issues', 'Mobility aid review', 'Reduced walking tolerance'],
+    description:
+        'Movement analysis, walking assessment and rehabilitation planning for confidence and independence.',
+    conditions: [
+      'Walking changes after surgery',
+      'Falls risk',
+      'Balance confidence issues',
+      'Mobility aid review',
+      'Reduced walking tolerance',
+    ],
     icon: Icons.directions_walk_rounded,
     color: Color(0xFFD97706),
     bgColor: Color(0xFFFEF3C7),
@@ -63,8 +99,15 @@ const _services = [
   (
     slug: 'online-rehab-programmes',
     title: 'Online Rehab Programmes',
-    description: 'UK-wide digital physiotherapy support with review calls, progress tracking and guided exercise plans.',
-    conditions: ['Remote recovery support', 'Self-management planning', 'Exercise progression', 'Return-to-work guidance', 'Long-term rehab follow-up'],
+    description:
+        'UK-wide digital physiotherapy support with review calls, progress tracking and guided exercise plans.',
+    conditions: [
+      'Remote recovery support',
+      'Self-management planning',
+      'Exercise progression',
+      'Return-to-work guidance',
+      'Long-term rehab follow-up',
+    ],
     icon: Icons.videocam_rounded,
     color: Color(0xFF0EA5E9),
     bgColor: Color(0xFFE0F2FE),
@@ -89,6 +132,8 @@ class ServicesScreen extends StatelessWidget {
             style: theme.textTheme.bodyLarge,
           ),
           const SizedBox(height: 20),
+          _ExerciseLibraryCTA(theme: theme),
+          const SizedBox(height: 16),
           ..._services.map(
             (service) => Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -98,6 +143,67 @@ class ServicesScreen extends StatelessWidget {
           const SizedBox(height: 4),
           _BookingCTA(theme: theme),
         ],
+      ),
+    );
+  }
+}
+
+class _ExerciseLibraryCTA extends StatelessWidget {
+  const _ExerciseLibraryCTA({required this.theme});
+
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ExerciseLibraryScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: const Color(0xFFECFEFF),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFF9ADCEE)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: const Color(0xFFD8F3F9),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.fitness_center_rounded,
+                color: Color(0xFF0891B2),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Browse exercise library',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Search guidance by area, condition or stage.',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: Color(0xFF0891B2)),
+          ],
+        ),
       ),
     );
   }
@@ -114,7 +220,8 @@ class _ServiceCard extends StatefulWidget {
     IconData icon,
     Color color,
     Color bgColor,
-  }) service;
+  })
+  service;
 
   @override
   State<_ServiceCard> createState() => _ServiceCardState();
@@ -137,7 +244,9 @@ class _ServiceCardState extends State<_ServiceCard> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: _expanded ? s.color.withValues(alpha: 0.4) : const Color(0xFFC8E8F0),
+            color: _expanded
+                ? s.color.withValues(alpha: 0.4)
+                : const Color(0xFFC8E8F0),
             width: _expanded ? 1.5 : 1,
           ),
           boxShadow: _expanded
@@ -181,7 +290,10 @@ class _ServiceCardState extends State<_ServiceCard> {
                         child: SizedBox(
                           width: 22,
                           height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: s.color),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: s.color,
+                          ),
                         ),
                       );
                     },
@@ -207,13 +319,12 @@ class _ServiceCardState extends State<_ServiceCard> {
                       children: [
                         Text(
                           s.title,
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         const SizedBox(height: 3),
-                        Text(
-                          s.description,
-                          style: theme.textTheme.bodySmall,
-                        ),
+                        Text(s.description, style: theme.textTheme.bodySmall),
                       ],
                     ),
                   ),
@@ -252,11 +363,16 @@ class _ServiceCardState extends State<_ServiceCard> {
                       children: s.conditions
                           .map(
                             (c) => Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: s.bgColor,
                                 borderRadius: BorderRadius.circular(999),
-                                border: Border.all(color: s.color.withValues(alpha: 0.2)),
+                                border: Border.all(
+                                  color: s.color.withValues(alpha: 0.2),
+                                ),
                               ),
                               child: Text(
                                 c,
@@ -275,7 +391,10 @@ class _ServiceCardState extends State<_ServiceCard> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () => ServiceSelectScreen.go(context),
-                        icon: const Icon(Icons.calendar_month_rounded, size: 18),
+                        icon: const Icon(
+                          Icons.calendar_month_rounded,
+                          size: 18,
+                        ),
                         label: Text('Book ${s.title.split(' ').first} session'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: s.color,
@@ -288,7 +407,9 @@ class _ServiceCardState extends State<_ServiceCard> {
                     ),
                   ],
                 ),
-                crossFadeState: _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                crossFadeState: _expanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
                 duration: const Duration(milliseconds: 220),
               ),
             ],
@@ -344,8 +465,13 @@ class _BookingCTA extends StatelessWidget {
                 backgroundColor: Colors.white,
                 foregroundColor: const Color(0xFF0891B2),
                 minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                textStyle: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
               ),
               child: const Text('Book initial assessment'),
             ),

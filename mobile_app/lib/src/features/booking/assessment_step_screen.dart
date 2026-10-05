@@ -21,6 +21,7 @@ class AssessmentStepScreen extends StatelessWidget {
   final String? personId;
   final String personName;
   final List<String> focusAreas;
+  final String? discountCode;
 
   const AssessmentStepScreen({
     required this.service,
@@ -30,6 +31,7 @@ class AssessmentStepScreen extends StatelessWidget {
     required this.personId,
     required this.personName,
     this.focusAreas = const [],
+    this.discountCode,
     super.key,
   });
 
@@ -53,6 +55,7 @@ class AssessmentStepScreen extends StatelessWidget {
             assessmentUid: uid,
             assessmentPersonId: resolvedPersonId,
             assessmentFormId: formId,
+            discountCode: discountCode,
           );
           if (!context.mounted) return;
           Navigator.pushReplacement(
@@ -63,7 +66,9 @@ class AssessmentStepScreen extends StatelessWidget {
           debugPrint('createCheckoutSession failed: $e');
           if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not start payment. Please try again.')),
+            const SnackBar(
+              content: Text('Could not start payment. Please try again.'),
+            ),
           );
         }
       },

@@ -8,6 +8,7 @@ import { useMemo, useState } from "react";
 import type { BlogArticle } from "@/lib/blog";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { EmptyState } from "@/components/empty-state";
+import { SavedBlogList } from "@/components/saved-blog-list";
 
 type SortMode = "newest" | "oldest" | "a-z";
 
@@ -90,6 +91,10 @@ export function BlogDirectory({
         </div>
       </section>
 
+      <section className="page-section">
+        <SavedBlogList articles={articles} />
+      </section>
+
       {visibleArticles.length === 0 && (
         <section className="page-section">
           <EmptyState
@@ -101,7 +106,7 @@ export function BlogDirectory({
         </section>
       )}
 
-      <section className="page-section article-grid simple-blog-grid">
+      <section className="page-section article-grid simple-blog-grid" id="articles">
         {visibleArticles.map((article) => (
           <article className="simple-blog-card" key={article.slug}>
             <div className="simple-blog-card-top">

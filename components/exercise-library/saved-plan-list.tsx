@@ -12,10 +12,17 @@ import Link from "next/link";
 import { getPlan, onPlanChange, removeFromPlan } from "@/lib/exercise-plan-store";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 
+type SavedExerciseSummary = {
+  slug: string;
+  title: string;
+  bodyPart?: string;
+  stage?: string;
+};
+
 export function SavedPlanList({
   items,
 }: {
-  items: { slug: string; title: string }[];
+  items: SavedExerciseSummary[];
 }) {
   const [slugs, setSlugs] = useState<string[]>([]);
 
@@ -24,27 +31,72 @@ export function SavedPlanList({
     return onPlanChange((next) => setSlugs(next));
   }, []);
 
-  const titleBySlug = new Map(items.map((item) => [item.slug, item.title]));
+  const itemBySlug = new Map(items.map((item) => [item.slug, item]));
   const saved = slugs
-    .filter((slug) => titleBySlug.has(slug))
-    .map((slug) => ({ slug, title: titleBySlug.get(slug) as string }));
+    .map((slug) => itemBySlug.get(slug))
+    .filter((item): item is SavedExerciseSummary => Boolean(item));
 
   if (saved.length === 0) {
     return (
-      <p className="exlib-saved__empty">
-        {`You haven't saved any exercises yet. Tap "Add to my plan" on any exercise page to build a list here.`}
-      </p>
+      <div className="exlib-saved exlib-saved--empty">
+        <div className="exlib-saved__empty-icon" aria-hidden="true">+</div>
+        <div>
+          <h3>Build a shortlist before you book</h3>
+          <p>
+            Save exercises that look relevant, then bring that shortlist into
+            your assessment so your physiotherapist can shape it into a safe plan.
+          </p>
+        </div>
+        <Link className="button secondary small" href="#exercise-browser">
+          Browse exercises
+        </Link>
+      </div>
     );
   }
 
   return (
     <div className="exlib-saved">
+      <div className="exlib-saved__summary">
+        <div>
+          <span className="eyebrow">Saved exercise plan</span>
+          <h3>{saved.length} saved for review</h3>
+          <p>
+            These are your interests, not a prescription yet. We will use them
+            as a starting point for the right dose, order and progression.
+          </p>
+        </div>
+        <TrackedBookLink
+          className="button primary"
+          href="/book?service=initial-assessment&source=saved-exercise-plan"
+          serviceSlug="initial-assessment"
+          source="exercise-plan-list"
+          growthEvent="saved_plan_booking_intent"
+          growthParams={{
+            source: "exercise_saved_section",
+            service_slug: "initial-assessment",
+            saved_count: saved.length,
+          }}
+        >
+          Review with a physio
+        </TrackedBookLink>
+      </div>
       <ul className="exlib-saved__list">
-        {saved.map((item) => (
+        {saved.map((item, index) => (
           <li key={item.slug} className="exlib-saved__item">
-            <Link className="exlib-saved__link" href={`/exercises/${item.slug}`}>
-              {item.title}
-            </Link>
+            <div className="exlib-saved__item-main">
+              <span className="exlib-saved__number" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <Link className="exlib-saved__link" href={`/exercises/${item.slug}`}>
+                  {item.title}
+                </Link>
+                <p>
+                  {[item.bodyPart, item.stage].filter(Boolean).join(" · ") ||
+                    "Exercise guide"}
+                </p>
+              </div>
+            </div>
             <button
               type="button"
               className="exlib-saved__remove"
@@ -56,15 +108,6 @@ export function SavedPlanList({
           </li>
         ))}
       </ul>
-      <p className="exlib-saved__cta">
-        <TrackedBookLink
-          href="/book"
-          serviceSlug="musculoskeletal-physiotherapy"
-          source="exercise-plan-list"
-        >
-          Book an assessment to get a tailored plan
-        </TrackedBookLink>
-      </p>
     </div>
   );
 }
