@@ -5,10 +5,12 @@ import Link from "next/link";
 
 import { serviceLabelFor, type CalService } from "@/lib/cal-services";
 import type { BookServiceId, PricingItem } from "@/lib/site-data";
+import { AddressLookup } from "@/components/address-lookup";
+import { addressDisplay, type SavedAddress } from "@/lib/patient-addresses";
 import {
-  HOME_ADDRESS_MAX,
   HOME_POSTCODE_MAX,
   HOME_VISIT_HINT,
+  normalisePostcode,
   validateHomeVisit,
   type VisitType,
 } from "@/lib/home-visit";
@@ -35,6 +37,15 @@ type Props = {
   /** "Book a video consultation instead" on the out-of-area message. */
   onSwitchToVideo: () => void;
   onContinue: () => void;
+  /** Signed-in (non-anonymous) patients only; null/undefined for guests. */
+  addressBook?: {
+    addresses: SavedAddress[];
+    /** A saved address id, "different", or null (nothing chosen yet). */
+    choice: string | null;
+    onChoose: (choice: string) => void;
+    saveNew: boolean;
+    onSaveNewChange: (value: boolean) => void;
+  } | null;
   titleRef?: RefObject<HTMLHeadingElement | null>;
 };
 
@@ -109,10 +120,34 @@ export function BookingStepService({
   onHomePostcodeChange,
   onSwitchToVideo,
   onContinue,
+  addressBook,
   titleRef
 }: Props) {
+  const hasSaved = Boolean(addressBook && addressBook.addresses.length > 0);
+  const savedChosen = hasSaved
+    ? addressBook!.addresses.find((a) => a.id === addressBook!.choice) ?? null
+    : null;
+  // With saved addresses, the postcode/lookup inputs only show for "Use a different address".
+  const showAddressInputs = !hasSaved || addressBook!.choice === "different";
   const cardRefs = useRef<Partial<Record<VisitType, HTMLButtonElement | null>>>({});
-  const coverage: Coverage = visitType === "home" ? coverageFor(homePostcode) : "covered";
+  // The postcode a list-picked address belongs to. Editing the postcode away
+  // from it drops the address, so an old address can't pair with a new postcode
+  // (the lookup itself unmounts while the postcode is mid-edit).
+  const pickedForRef = useRef<string | null>(null);
+
+  function handlePostcodeInput(value: string) {
+    if (pickedForRef.current !== null && normalisePostcode(value) !== pickedForRef.current) {
+      pickedForRef.current = null;
+      onHomeAddressLineChange("");
+    }
+    onHomePostcodeChange(value);
+  }
+  const coverage: Coverage =
+    visitType !== "home"
+      ? "covered"
+      : hasSaved && !savedChosen && !showAddressInputs
+        ? "pending"
+        : coverageFor(homePostcode);
   const showBooking = visitType === "video" || coverage === "covered";
 
   // Radio-group keyboard pattern: arrows move the selection (and focus).
@@ -199,6 +234,69 @@ export function BookingStepService({
                 {visitError}
               </p>
             ) : null}
+            {hasSaved ? (
+              <div className="book-field book-field-full">
+                <p className="book-label" id="book-saved-addresses-label">
+                  Your saved addresses
+                </p>
+                <div
+                  className="book-saved-addresses"
+                  role="radiogroup"
+                  aria-labelledby="book-saved-addresses-label"
+                  aria-describedby={!savedChosen && !showAddressInputs ? "book-saved-addresses-hint" : undefined}
+                >
+                  {addressBook!.addresses.map((a) => (
+                    <label key={a.id} className="book-saved-address">
+                      <input
+                        type="radio"
+                        name="book-saved-address"
+                        value={a.id}
+                        checked={addressBook!.choice === a.id}
+                        onChange={() => addressBook!.onChoose(a.id)}
+                      />{" "}
+                      <span>{addressDisplay(a)}</span>
+                      {!isCoveredPostcode(a.postcode) ? (
+                        <span className="book-saved-address-badge"> Outside our home-visit area</span>
+                      ) : null}
+                    </label>
+                  ))}
+                  <label className="book-saved-address">
+                    <input
+                      type="radio"
+                      name="book-saved-address"
+                      value="different"
+                      checked={addressBook!.choice === "different"}
+                      onChange={() => addressBook!.onChoose("different")}
+                    />{" "}
+                    <span>Use a different address</span>
+                  </label>
+                </div>
+              </div>
+            ) : null}
+            {hasSaved && !savedChosen && !showAddressInputs ? (
+              <p className="book-field-hint book-field-full" id="book-saved-addresses-hint">
+                Choose an address to continue.
+              </p>
+            ) : null}
+            {savedChosen && coverage === "uncovered" ? (
+              <div className="book-out-of-area book-field-full" role="alert">
+                <span id="book-home-hint">
+                  <OutOfAreaText postcode={homePostcode} />
+                </span>{" "}
+                <button
+                  type="button"
+                  className="book-out-of-area-switch"
+                  onClick={() => {
+                    onSwitchToVideo();
+                    cardRefs.current.video?.focus();
+                  }}
+                >
+                  Book a video consultation instead
+                </button>
+              </div>
+            ) : null}
+            {showAddressInputs ? (
+            <>
             <div className="book-field book-field-full">
               <label className="book-label" htmlFor="book-home-postcode">
                 Postcode
@@ -212,7 +310,7 @@ export function BookingStepService({
                 required
                 maxLength={HOME_POSTCODE_MAX}
                 value={homePostcode}
-                onChange={(e) => onHomePostcodeChange(e.target.value)}
+                onChange={(e) => handlePostcodeInput(e.target.value)}
                 aria-describedby="book-home-hint"
               />
               {coverage === "covered" ? (
@@ -243,22 +341,32 @@ export function BookingStepService({
               )}
             </div>
             {coverage === "covered" ? (
-              <div className="book-field book-field-full">
-                <label className="book-label" htmlFor="book-home-address">
-                  Address
-                </label>
+              <AddressLookup
+                postcode={normalisePostcode(homePostcode)}
+                addressLine={homeAddressLine}
+                onAddressLineChange={(value) => {
+                  // Any change other than a resolved pick (typing, a new choice) ends the pairing.
+                  if (!value) pickedForRef.current = null;
+                  onHomeAddressLineChange(value);
+                }}
+                onPostcodeResolved={(canonical) => {
+                  pickedForRef.current = canonical;
+                  onHomePostcodeChange(canonical);
+                }}
+                describedBy="book-home-hint"
+              />
+            ) : null}
+            {addressBook && coverage === "covered" ? (
+              <label className="book-field book-field-full book-save-address">
                 <input
-                  id="book-home-address"
-                  className="book-input"
-                  type="text"
-                  autoComplete="street-address"
-                  required
-                  maxLength={HOME_ADDRESS_MAX}
-                  value={homeAddressLine}
-                  onChange={(e) => onHomeAddressLineChange(e.target.value)}
-                  aria-describedby="book-home-hint"
-                />
-              </div>
+                  type="checkbox"
+                  checked={addressBook.saveNew}
+                  onChange={(e) => addressBook.onSaveNewChange(e.target.checked)}
+                />{" "}
+                Save to my address book
+              </label>
+            ) : null}
+            </>
             ) : null}
           </div>
         ) : null}

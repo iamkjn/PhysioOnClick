@@ -77,13 +77,30 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    match /patientAddresses/{addressId} {
+      function validAddress(d) {
+        return d.keys().hasOnly(['ownerUid', 'label', 'line', 'postcode', 'createdAt', 'updatedAt']) &&
+          d.ownerUid is string &&
+          d.label is string && d.label.size() <= 40 &&
+          d.line is string && d.line.size() >= 1 && d.line.size() <= 120 &&
+          d.postcode is string && d.postcode.size() >= 5 && d.postcode.size() <= 10;
+      }
+      allow read: if isAdmin() || (isSignedIn() && resource.data.ownerUid == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid &&
+        validAddress(request.resource.data);
+      allow update: if isSignedIn() && resource.data.ownerUid == request.auth.uid &&
+        request.resource.data.ownerUid == resource.data.ownerUid && validAddress(request.resource.data);
+      allow delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
     match /dependents/{dependentId} {
       // Mirrors client-side caps in lib/validation.ts / mobile validators.dart.
       // dob is a 10-char ISO date and relationship a short picklist value; the
       // caps just stop a hand-crafted client SDK write storing megabyte strings.
       function validDependent(d) {
         return d.keys().hasOnly(['ownerId', 'name', 'dob', 'relationship', 'notes',
-            'avatarUrl', 'createdAt']) &&
+            'avatarUrl', 'createdAt', 'defaultAddressId']) &&
+          (!('defaultAddressId' in d) || (d.defaultAddressId is string && d.defaultAddressId.size() <= 128)) &&
           d.name is string && d.name.size() >= 2 && d.name.size() <= 80 &&
           d.dob is string && d.dob.size() <= 30 &&
           d.relationship is string && d.relationship.size() <= 50 &&

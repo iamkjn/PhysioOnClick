@@ -7,7 +7,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore'
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest'
 
 // Covers the two subcollections the mobile app writes through the client SDK
@@ -820,5 +820,148 @@ describe('patients/{uid}/followUps (admin-scheduled follow-up)', () => {
   it('allows an admin write with a valid dueDate and note', async () => {
     const db = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
     await assertSucceeds(setDoc(followUpDoc(db), followUp()))
+  })
+})
+
+describe('patientAddresses', () => {
+  const addr = (overrides: Record<string, unknown> = {}) => ({
+    ownerUid: PATIENT,
+    label: 'Home',
+    line: '1 High Street',
+    postcode: 'G31 4HS',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    ...overrides,
+  })
+  const ref = (db: unknown) => doc(db as never, 'patientAddresses/addr-1')
+
+  it('lets the owner create, read, update and delete', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(db), addr()))
+    await assertSucceeds(getDoc(ref(db)))
+    await assertSucceeds(updateDoc(ref(db), { label: 'Flat', updatedAt: serverTimestamp() }))
+    await assertSucceeds(deleteDoc(ref(db)))
+  })
+
+  it('lets an anonymous-auth user touch only their own', async () => {
+    const anon = testEnv
+      .authenticatedContext('anon-uid', { firebase: { sign_in_provider: 'anonymous' } })
+      .firestore()
+    await assertSucceeds(setDoc(ref(anon), addr({ ownerUid: 'anon-uid' })))
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore() as never, 'patientAddresses/other'), addr())
+    })
+    await assertFails(getDoc(doc(anon as never, 'patientAddresses/other')))
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(getDoc(ref(owner)))
+  })
+
+  it('denies another user reading or writing it', async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(owner), addr()))
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(getDoc(ref(other)))
+    await assertFails(updateDoc(ref(other), { label: 'x' }))
+    await assertFails(deleteDoc(ref(other)))
+  })
+
+  it('denies unauthenticated access', async () => {
+    const db = testEnv.unauthenticatedContext().firestore()
+    await assertFails(setDoc(ref(db), addr()))
+  })
+
+  it('rejects invalid documents', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertFails(setDoc(ref(db), addr({ line: 'x'.repeat(121) })))
+    await assertFails(setDoc(ref(db), addr({ label: 'x'.repeat(41) })))
+    await assertFails(setDoc(ref(db), addr({ extra: 1 })))
+    await assertFails(setDoc(ref(db), addr({ ownerUid: OTHER })))
+  })
+
+  it('allows listing only your own addresses', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore() as never, 'patientAddresses/addr-1'), addr())
+    })
+    const own = testEnv.authenticatedContext(PATIENT).firestore()
+    const col = (db: unknown) => collection(db as never, 'patientAddresses')
+    await assertSucceeds(getDocs(query(col(own), where('ownerUid', '==', PATIENT))))
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(getDocs(query(col(other), where('ownerUid', '==', PATIENT))))
+    await assertFails(getDocs(col(other)))
+  })
+
+  it('lets an admin read any address', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore() as never, 'patientAddresses/addr-1'), addr())
+    })
+    const admin = testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+    await assertSucceeds(getDoc(ref(admin)))
+  })
+
+  it('rejects invalid values on update', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(db), addr()))
+    await assertFails(updateDoc(ref(db), { line: '' }))
+    await assertFails(updateDoc(ref(db), { line: 'x'.repeat(121) }))
+    await assertFails(updateDoc(ref(db), { postcode: 'G1' }))
+    await assertFails(updateDoc(ref(db), { label: 'x'.repeat(41) }))
+    await assertFails(updateDoc(ref(db), { extra: 1 }))
+  })
+
+  it('pins ownerUid on update', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(db), addr()))
+    await assertFails(updateDoc(ref(db), { ownerUid: OTHER }))
+  })
+})
+
+describe('dependents defaultAddressId', () => {
+  const dep = (overrides: Record<string, unknown> = {}) => ({
+    ownerId: PATIENT,
+    name: 'Child One',
+    dob: '2015-01-01',
+    relationship: 'child',
+    notes: '',
+    createdAt: serverTimestamp(),
+    ...overrides,
+  })
+  const ref = (db: unknown) => doc(db as never, 'dependents/dep-1')
+
+  it('allows the owner to set defaultAddressId', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(db), dep()))
+    await assertSucceeds(updateDoc(ref(db), { defaultAddressId: 'addr-1' }))
+  })
+
+  it("denies a non-owner setting another user's dependent defaultAddressId", async () => {
+    const owner = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(owner), dep()))
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(updateDoc(ref(other), { defaultAddressId: 'addr-1' }))
+  })
+
+  it('rejects a 200-char defaultAddressId', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(ref(db), dep()))
+    await assertFails(updateDoc(ref(db), { defaultAddressId: 'x'.repeat(200) }))
+  })
+})
+
+describe('users defaultAddressId', () => {
+  const userRef = (db: unknown, uid = PATIENT) => doc(db as never, `users/${uid}`)
+
+  it('lets the account holder set and clear it', async () => {
+    const db = testEnv.authenticatedContext(PATIENT).firestore()
+    await assertSucceeds(setDoc(userRef(db), { defaultAddressId: 'addr-1' }, { merge: true }))
+    await assertSucceeds(updateDoc(userRef(db), { defaultAddressId: 'addr-2' }))
+  })
+
+  it("denies setting another user's", async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(userRef(ctx.firestore()), { name: 'Pat' })
+    })
+    const other = testEnv.authenticatedContext(OTHER).firestore()
+    await assertFails(updateDoc(userRef(other), { defaultAddressId: 'addr-1' }))
+    await assertFails(setDoc(userRef(other), { defaultAddressId: 'addr-1' }, { merge: true }))
   })
 })

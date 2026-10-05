@@ -127,6 +127,37 @@ constants above, never hard-coded.
   so editing or deleting an address never changes past bookings, receipts or invoices.
 - Guests type the address as today; nothing is saved.
 
+### Postcode → address dropdown (added 2026-10-04, owner request)
+
+The owner asked for a low-cost option. **Provider switched 2026-10-04** from getAddress.io to **Ideal Postcodes** (50 free lookups to start, then pay-as-you-go): getAddress.io no longer serves UK addresses (a real key returned only Australian results).
+
+- `lib/address-lookup.ts` (server only) wraps the provider behind `findAddresses(postcode)` → `[{ id, label }]` and
+  `resolveAddress(id)` → `{ addressLine, postcode }`. Switching provider later means changing this one file.
+  - Ideal Postcodes: `GET https://api.ideal-postcodes.co.uk/v1/autocomplete/addresses?query={postcode}&api_key=KEY` →
+    `{ result: { hits: [{ id, suggestion, udprn, urls }] } }` (uses no credits; we keep only hits whose suggestion
+    ends with the queried postcode); `GET .../v1/autocomplete/addresses/{id}/gbr?api_key=KEY` →
+    `{ result: { line_1, line_2, line_3, post_town, postcode, … } }` (1 credit). `addressLine` = non-empty
+    `line_1..line_3` + `post_town`, joined with ", ", capped at 120. Both calls time out after 5 s.
+  - Secret `IDEAL_POSTCODES_API_KEY` (Worker secret and .env files; documented in .env.example). A missing key, provider
+    error, 404 or 429 makes the routes answer 503 or 404, and the UI falls back to typing the address. Never log the
+    postcode or address.
+- Routes `POST /api/address/lookup` `{ postcode }` and `POST /api/address/resolve` `{ id }` validate their input
+  (postcode shape as in `validateHomeVisit`; id `/^[A-Za-z0-9_:-]{1,200}$/`). They only look up **covered** postcodes,
+  since there's no point listing addresses we can't visit. They're rate-limited by a new `ADDRESS_RATE_LIMITER`
+  binding (30 per 60 s per IP; prod namespace 1003, dev 2003).
+- UI component `AddressLookup`: after a covered postcode, it shows "Select your address" (a native select of the
+  suggestions) plus "Enter address manually". Choosing an address resolves it and fills the address line. It's used
+  in booking step 1 (for guests, and for signed-in patients adding a new address) and in Account → Addresses.
+- The privacy policy lists Ideal Postcodes as a processor (it receives the postcode and the chosen address id).
+
+### Stage 2 adjustments
+
+- The person is chosen on step 2, after the address on step 1. So the saved-address picker on step 1 preselects the
+  usual address of whoever the booking is currently for (seeded from the existing PersonProvider context; the
+  account holder by default). Changing the person on step 2 doesn't change an address that's already chosen.
+- `dependents` rules allow an optional `defaultAddressId` (string ≤ 128). `users` already allows owner updates.
+- "Save to my address book" saves the new address when the patient continues to times (signed-in patients only).
+
 ### Privacy (unchanged rules)
 
 Addresses never go into logs, analytics events or URLs. The package API only ever

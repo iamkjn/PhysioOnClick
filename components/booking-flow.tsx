@@ -12,11 +12,12 @@ import { allBookServices, bookServiceFor, includedFor, serviceLabelFor, type Foc
 import type { BookServiceId } from "@/lib/site-data";
 import { getDependents, type Dependent } from "@/lib/dependents";
 import { accountUserOrNull } from "@/lib/guest-booking";
-import { DEFAULT_VISIT_TYPE, validateHomeVisit, type VisitType } from "@/lib/home-visit";
+import { DEFAULT_VISIT_TYPE, normalisePostcode, validateHomeVisit, type VisitType } from "@/lib/home-visit";
 import { isCoveredPostcode, outOfAreaMessage } from "@/lib/home-visit-area";
 import { formatPounds, sessionPricePence, travelFeeLabel, travelFeePence } from "@/lib/home-visit-pricing";
 import { usePerson } from "@/components/person-provider";
 import { BookingStepService } from "@/components/booking-step-service";
+import { addAddress, getAddresses, getUsualAddressId, type SavedAddress } from "@/lib/patient-addresses";
 import { BookingStepTime } from "@/components/booking-step-time";
 import { BookingStepDone } from "@/components/booking-step-done";
 
@@ -98,6 +99,11 @@ export function BookingFlow() {
   const [homeAddressLine, setHomeAddressLine] = useState("");
   const [homePostcode, setHomePostcode] = useState("");
   const [visitError, setVisitError] = useState<string | null>(null);
+  // Address book (signed-in, non-anonymous patients only). "different" = type a new one.
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [addressChoice, setAddressChoice] = useState<string | null>(null);
+  const [saveNewAddress, setSaveNewAddress] = useState(true);
+  const addressesLoadedFor = useRef<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
   const [bookingContext, setBookingContext] = useState<BookingContext | null>(null);
@@ -223,6 +229,58 @@ export function BookingFlow() {
     setVisitError(null);
   }, []);
 
+  // Load the address book once per signed-in uid, the first time a home visit is chosen.
+  // The usual address is read for whoever the booking is for at that moment;
+  // a later person change on step 2 does not change the chosen address.
+  useEffect(() => {
+    if (!user || user.isAnonymous || visitType !== "home") return;
+    if (addressesLoadedFor.current === user.uid) return;
+    let cancelled = false;
+    Promise.all([getAddresses(user.uid), getUsualAddressId(user.uid, bookingForId).catch(() => null)])
+      .then(([list, usualId]) => {
+        if (cancelled) return;
+        addressesLoadedFor.current = user.uid;
+        setSavedAddresses(list);
+        const usual = usualId ? list.find((a) => a.id === usualId) : undefined;
+        if (usual) {
+          setAddressChoice(usual.id);
+          setHomeAddressLine(usual.line);
+          setHomePostcode(usual.postcode);
+        } else {
+          // No usual address: start on the normal postcode flow, never a dead end.
+          setAddressChoice("different");
+        }
+      })
+      .catch(() => {
+        // No address book: the normal postcode/lookup flow still works.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user, visitType, bookingForId]);
+
+  const handleAddressChoice = useCallback(
+    (choice: string) => {
+      setAddressChoice(choice);
+      setVisitError(null);
+      const saved = savedAddresses.find((a) => a.id === choice);
+      if (saved) {
+        setHomeAddressLine(saved.line);
+        setHomePostcode(saved.postcode);
+      } else {
+        setHomeAddressLine("");
+        setHomePostcode("");
+      }
+    },
+    [savedAddresses]
+  );
+
+  const handleHomeAddressLineChange = useCallback((value: string) => {
+    setHomeAddressLine(value);
+    // A Continue pressed before the line arrived (e.g. mid-lookup) left an error: drop it.
+    if (value.trim()) setVisitError(null);
+  }, []);
+
   const handleServiceContinue = useCallback(() => {
     if (visitType === "home") {
       const home = validateHomeVisit(homeAddressLine, homePostcode);
@@ -236,6 +294,28 @@ export function BookingFlow() {
       }
       setHomeAddressLine(home.addressLine);
       setHomePostcode(home.postcode);
+      const typingNew = savedAddresses.length === 0 || addressChoice === "different";
+      if (user && !user.isAnonymous && typingNew && saveNewAddress) {
+        const line = home.addressLine.toLowerCase();
+        const pc = normalisePostcode(home.postcode);
+        const already = savedAddresses.some(
+          (a) => normalisePostcode(a.postcode) === pc && a.line.trim().toLowerCase() === line
+        );
+        if (!already) {
+          // Fire and forget: a failed save must never block booking.
+          addAddress(user.uid, { line: home.addressLine, postcode: home.postcode })
+            .then((id) => {
+              setSavedAddresses((prev) => [
+                ...prev,
+                { id, ownerUid: user.uid, label: "", line: home.addressLine, postcode: home.postcode },
+              ]);
+              // Back to step 1 then shows the new address selected, Continue available -
+              // unless the patient already picked another saved address meanwhile.
+              setAddressChoice((prev) => (prev === "different" || prev === null ? id : prev));
+            })
+            .catch(() => {});
+        }
+      }
     }
     setVisitError(null);
     trackGrowthEvent("booking_step_completed", {
@@ -246,7 +326,7 @@ export function BookingFlow() {
     });
     track("booking_step_service_done", { service_id: serviceId, focus_areas: focusAreas.length, visit_type: visitType });
     setStep(2);
-  }, [visitType, homeAddressLine, homePostcode, serviceId, focusAreas.length]);
+  }, [visitType, homeAddressLine, homePostcode, serviceId, focusAreas.length, user, savedAddresses, addressChoice, saveNewAddress]);
 
   const handleConfirmed = useCallback(
     (next: BookingConfirmation) => {
@@ -362,10 +442,21 @@ export function BookingFlow() {
           homePostcode={homePostcode}
           visitError={visitError}
           onVisitTypeChange={handleVisitTypeChange}
-          onHomeAddressLineChange={setHomeAddressLine}
+          onHomeAddressLineChange={handleHomeAddressLineChange}
           onHomePostcodeChange={handleHomePostcodeChange}
           onSwitchToVideo={() => handleVisitTypeChange("video")}
           onContinue={handleServiceContinue}
+          addressBook={
+            user && !user.isAnonymous
+              ? {
+                  addresses: savedAddresses,
+                  choice: addressChoice,
+                  onChoose: handleAddressChoice,
+                  saveNew: saveNewAddress,
+                  onSaveNewChange: setSaveNewAddress,
+                }
+              : null
+          }
           titleRef={panelTitleRef}
         />
       ) : (

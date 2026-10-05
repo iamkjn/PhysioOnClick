@@ -58,6 +58,11 @@ beforeEach(() => {
   mocks.signInAnonymously.mockResolvedValue({ user: { uid: 'anon-1', isAnonymous: true, displayName: null } })
   mocks.updateProfile.mockResolvedValue(undefined)
   fetchMock.mockImplementation(async (url: string) => {
+    // Address lookup is unavailable by default, so step 1 falls back to the
+    // manual "Address" input (the dropdown has its own test below).
+    if (String(url).includes('/api/address/')) {
+      return { ok: false, status: 503, json: async () => ({ error: 'unavailable' }) }
+    }
     if (String(url).includes('/api/checkout/create')) {
       return { ok: true, json: async () => ({ ok: true, url: `${window.location.origin}/#stripe-checkout` }) }
     }
@@ -124,7 +129,7 @@ describe('booking visit type', () => {
     expect(screen.getByText(/We visit G31\./)).toHaveTextContent(
       'We visit G31. Home visits cover Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3).',
     )
-    const address = screen.getByLabelText('Address')
+    const address = await screen.findByLabelText('Address')
     expect(address).toBeRequired()
     expect(address).toHaveAttribute('maxLength', '120')
 
@@ -222,7 +227,7 @@ describe('booking visit type', () => {
     render(<BookingFlow />)
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     await user.type(screen.getByLabelText('Postcode'), 'g31 4hs')
-    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+    await user.type(await screen.findByLabelText('Address'), '7 Example Street')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     await payAsGuest(user)
 
@@ -237,6 +242,85 @@ describe('booking visit type', () => {
     expect(analytics).not.toContain('4HS')
     expect(analytics).not.toContain('G31')
     expect(window.location.href).not.toContain('Example')
+  })
+
+  it('fills the address from the postcode dropdown and sends it to checkout, not analytics', async () => {
+    const base = fetchMock.getMockImplementation()!
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      if (String(url) === '/api/address/lookup') {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            addresses: [
+              { id: 'abc', label: '7 Example Street, Glasgow' },
+              { id: 'def', label: '9 Example Street, Glasgow' },
+            ],
+          }),
+        }
+      }
+      if (String(url) === '/api/address/resolve') {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ addressLine: '7 Example Street, Glasgow', postcode: 'G31 4HS' }),
+        }
+      }
+      return base(url, init)
+    })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'g31 4hs')
+    await user.selectOptions(await screen.findByLabelText('Select your address'), 'abc')
+    await screen.findByText('Selected: 7 Example Street, Glasgow')
+    expect(screen.getByLabelText('Postcode')).toHaveValue('G31 4HS')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await payAsGuest(user)
+
+    expect(checkoutBody()).toMatchObject({
+      visitType: 'home',
+      homeAddressLine: '7 Example Street, Glasgow',
+      homePostcode: 'G31 4HS',
+    })
+    const analytics = JSON.stringify([...mocks.trackGrowthEvent.mock.calls, ...mocks.track.mock.calls])
+    expect(analytics).not.toContain('Example')
+    expect(analytics).not.toContain('G31')
+    expect(window.location.href).not.toContain('Example')
+  })
+
+  it('describes the manual address with the coverage hint', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'G31 4HS')
+    const address = await screen.findByLabelText('Address')
+    expect(address.getAttribute('aria-describedby')?.split(' ')).toContain('book-home-hint')
+  })
+
+  it('drops a picked address when the postcode is changed', async () => {
+    const base = fetchMock.getMockImplementation()!
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      if (String(url) === '/api/address/lookup') {
+        return { ok: true, status: 200, json: async () => ({ addresses: [{ id: 'abc', label: '7 Example Street, Glasgow' }] }) }
+      }
+      if (String(url) === '/api/address/resolve') {
+        return { ok: true, status: 200, json: async () => ({ addressLine: '7 Example Street, Glasgow', postcode: 'G31 4HS' }) }
+      }
+      return base(url, init)
+    })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    const postcode = screen.getByLabelText('Postcode')
+    await user.type(postcode, 'G31 4HS')
+    await user.selectOptions(await screen.findByLabelText('Select your address'), 'abc')
+    await screen.findByText('Selected: 7 Example Street, Glasgow')
+    await user.clear(postcode)
+    await user.type(postcode, 'G32 1AA')
+    expect(await screen.findByLabelText('Select your address')).toHaveValue('')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(/address/i)
   })
 
   it('sends a plain video booking with no address', async () => {
@@ -255,7 +339,7 @@ describe('booking visit type', () => {
     render(<BookingFlow />)
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     await user.type(screen.getByLabelText('Postcode'), 'g31 4hs')
-    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+    await user.type(await screen.findByLabelText('Address'), '7 Example Street')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     const consent = await screen.findByRole('checkbox', { name: /consent/i })
     expect(consent.closest('label')?.textContent).toMatch(/physiotherapy assessment and treatment at a home visit/)
@@ -288,7 +372,7 @@ describe('booking visit type', () => {
     render(<BookingFlow />)
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     await user.type(screen.getByLabelText('Postcode'), 'G31 4HS')
-    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+    await user.type(await screen.findByLabelText('Address'), '7 Example Street')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
     const total = formatPounds(sessionPricePence('initial-assessment') + 1500)
@@ -308,7 +392,7 @@ describe('booking visit type', () => {
     render(<BookingFlow />)
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     await user.type(screen.getByLabelText('Postcode'), 'G31 4HS')
-    await user.type(screen.getByLabelText('Address'), '7 Example Street')
+    await user.type(await screen.findByLabelText('Address'), '7 Example Street')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
     await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
