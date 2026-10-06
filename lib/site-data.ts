@@ -227,7 +227,9 @@ export const services: Service[] = [
       "Parkinsonian movement challenges",
       "Balance difficulties",
       "Functional mobility loss",
-      "Neurological deconditioning"
+      "Neurological deconditioning",
+      "Multiple sclerosis (between relapses, with your GP or MS team's clearance)",
+      "Functional neurological disorder (FND)"
     ],
     approach: [
       "Task-specific mobility practice",
@@ -258,7 +260,28 @@ export const services: Service[] = [
       {
         question: "Can I have neurological rehab at home?",
         answer:
-          "Yes, if you live in the Glasgow area. Home visits are available for neurological rehabilitation, at the video price plus a travel fee per visit, and can include hands-on treatment (manual therapy) where appropriate. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy."
+          // Wording approved in clinical sign-off round 3 (2026-10-06). "£15" literal: see the note below.
+          "If you live in Glasgow (G1–G53), Paisley (PA1–PA3) or Hamilton (ML3), your physiotherapist can come to your home. For many neurological conditions, home is where the practice matters most: your own stairs, your own chair, the route to your front door. A family member or carer is welcome to join and learn how to support practice between sessions. A home visit costs the video price plus a £15 travel fee, and can include hands-on treatment where appropriate. Outside the area, sessions are by video. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy."
+      },
+      {
+        question: "Do you offer stroke physiotherapy in Glasgow?",
+        answer:
+          "Yes, as home visits in the Glasgow area or by video. Sessions focus on goals such as walking, balance, getting up from a chair and using your affected arm in daily tasks, with a home practice routine between sessions. Rehab with us starts once you are medically stable and your GP or specialist team has confirmed it is safe for you to begin physiotherapy."
+      },
+      {
+        question: "Do you offer physiotherapy for Parkinson's in Glasgow?",
+        answer:
+          "Yes, at home in the Glasgow area or by video. Sessions can cover walking, turning, balance, getting up from the floor or a chair and staying active, with exercises you can keep practising at home. Your GP or specialist team must confirm it is safe for you to begin physiotherapy."
+      },
+      {
+        question: "Do you offer physiotherapy for MS in Glasgow?",
+        answer:
+          "Yes, at home in the Glasgow area or by video, paced around fatigue. If you have a relapse, we pause sessions until your GP or MS team clears you to restart."
+      },
+      {
+        question: "Do you offer FND physiotherapy in Glasgow?",
+        answer:
+          "Yes, at home in the Glasgow area or by video, after your diagnosis has been made by a neurologist. Your GP or specialist team must confirm it is safe for you to begin physiotherapy."
       },
       {
         question: "Can a family member or carer join the sessions?",
