@@ -51,7 +51,7 @@ For each, add a short description. Keep it factual, for example: "Physiotherapy 
 ## Step 5: Hours, phone and website
 
 - Hours: enter the hours when patients can book appointments. If you only work by appointment, still set hours that match your booking calendar.
-- Phone: use exactly the number shown on the website: +44 7741 074518.
+- Phone: use exactly the number shown on the website: +44 7557 684395.
 - Website: https://physioonclick.co.uk/glasgow-physiotherapist (the home-visit page). Look for the Website field under Edit profile, Contact.
 - Add a short description of the business (look for "From the business"). Mention HCPC registration, home visits in the Glasgow area and video appointments across the UK. Do not mention premises or a clinic.
 - Add photos of you, branded equipment and the logo. Do not photograph the inside of a patient's home.
@@ -75,7 +75,7 @@ If Google refuses, read the reason, fix what it says, and resubmit. Do not creat
 NAP means Name, Address, Phone. Google and other directories compare them, so they should match across the website, Google and any directory listings.
 
 - Name: PhysioOnClick (the trading name on the website and invoices).
-- Phone: +44 7741 074518 (the single number the website publishes).
+- Phone: +44 7557 684395 (the single number the website publishes).
 - Address: hidden on the Google profile, because this is a service-area business. The website's structured data still lists 7 Springfield Gardens, Glasgow G31 4HS, which is the address on invoices. Do not remove it from invoices. We should decide separately whether the website should keep publishing that street address now that Google will hide it.
 - Website: https://physioonclick.co.uk.
 
@@ -96,6 +96,6 @@ If you add the business to other directories, use these same details exactly.
 - [ ] Service-area business, address hidden
 - [ ] Service areas confirmed by you and entered
 - [ ] Services added: Home visit physiotherapy, Online physiotherapy
-- [ ] Hours, phone +44 7741 074518, website /glasgow-physiotherapist
+- [ ] Hours, phone +44 7557 684395, website /glasgow-physiotherapist
 - [ ] Verification completed
 - [ ] Review link added as GOOGLE_REVIEW_URL (optional)

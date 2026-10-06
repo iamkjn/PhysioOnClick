@@ -119,7 +119,7 @@ Use these exactly as written.
 | Practitioner | Shivaliba Zala |
 | Website | https://physioonclick.co.uk |
 | Email | hello@physioonclick.co.uk |
-| Phone | +44 7741 074518 |
+| Phone | +44 7557 684395 |
 | Address | 7 Springfield Gardens, Glasgow, G31 4HS, United Kingdom |
 | Service area | United Kingdom (online) |
 | Hours | Mon–Fri 08:00–18:00, Sat 09:00–13:00 |
