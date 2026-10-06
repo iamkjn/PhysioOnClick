@@ -1782,29 +1782,27 @@ p {
 }
 
 .about-profile-media {
-  display: grid;
-  place-items: center;
-  min-height: 360px;
-  padding: 1.5rem;
-  background:
-    radial-gradient(circle at 28% 18%, rgba(28, 160, 209, 0.18), transparent 32%),
-    linear-gradient(145deg, #f6fcff 0%, #eef8fb 48%, #fffaf0 100%);
+  background: #f7fafb;
 }
 
 .about-profile-image {
+  display: block;
   width: 100%;
-  max-width: 330px;
-  height: auto;
-  aspect-ratio: 1;
+  max-width: none;
+  height: clamp(420px, 36vw, 560px);
   object-fit: cover;
-  border-radius: 32px;
-  box-shadow: 0 24px 44px rgba(4, 50, 70, 0.14);
+  object-position: center 42%;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .about-profile-body {
-  padding: 1.25rem;
+  padding: 1.35rem 1.45rem 1.45rem;
   display: grid;
   gap: 0.7rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), var(--color-surface) 42%),
+    var(--color-surface);
 }
 
 .about-mini-label {
@@ -1823,7 +1821,7 @@ p {
 }
 
 .about-profile-body strong {
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   margin-bottom: 0.35rem;
 }
 
@@ -1839,9 +1837,10 @@ p {
 }
 
 .about-credential-grid span {
-  padding: 0.45rem 0.7rem;
+  padding: 0.48rem 0.75rem;
   border-radius: 14px;
-  background: var(--surface-alt);
+  background: color-mix(in srgb, var(--primary) 9%, #fff);
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--line));
   color: var(--primary-dark);
   font-size: 0.88rem;
   font-weight: 600;

@@ -62,11 +62,10 @@ export default async function HomePage() {
             <article className="card home-founder-card">
               <Image
                 className="home-founder-avatar"
-                src="/images/shivaliba-zala-thumbnail.svg"
+                src="/images/shivaliba-zala-thumbnail.webp"
                 alt={`${founder.name}, HCPC registered physiotherapist`}
-                width={96}
-                height={96}
-                unoptimized
+                width={512}
+                height={512}
               />
               <h3>{founder.name}</h3>
               <p className="muted">{founder.location}</p>

@@ -122,11 +122,10 @@ export default function AboutPage() {
           <div className="about-profile-media">
             <Image
               className="about-profile-image"
-              src="/images/shivaliba-zala-thumbnail.svg"
+              src="/images/shivaliba-zala-portrait.webp"
               alt={`${founder.name}, HCPC registered physiotherapist`}
-              width={640}
-              height={640}
-              unoptimized
+              width={900}
+              height={1200}
             />
           </div>
           <div className="about-profile-body">
