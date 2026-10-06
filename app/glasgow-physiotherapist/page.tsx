@@ -137,7 +137,8 @@ export default function GlasgowPage() {
             <p>
               Home visits cover {HOME_VISIT_AREA_LABEL}. We have no clinic or premises. When you book,
               choose &ldquo;Home visit in Glasgow&rdquo; and enter your postcode: you&rsquo;ll see straight away
-              whether we cover it, then add your address.
+              whether we cover it, then add your address. More on{" "}
+              <Link href="/physiotherapy-home-visits-glasgow">physiotherapy home visits</Link>, including how to prepare.
             </p>
           </div>
         </Reveal>

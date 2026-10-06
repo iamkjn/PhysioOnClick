@@ -19,7 +19,7 @@ const BASE = "https://physioonclick.co.uk";
 
 // Keep in sync with the `routes` array in app/sitemap.ts. A new static route
 // should be a deliberate change that also updates this count.
-const STATIC_ROUTE_COUNT = 15;
+const STATIC_ROUTE_COUNT = 16;
 
 async function loadSitemap() {
   vi.resetModules();
