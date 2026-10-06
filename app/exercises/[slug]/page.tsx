@@ -52,15 +52,17 @@ export async function generateMetadata({
     return {};
   }
 
-  // These pages already rank on page 1 for exercise-name queries but earn few
-  // clicks, so the snippet promises what the searcher wants: the how-to plus
-  // the dose (sets/reps), from a named professional.
+  // These pages rank around positions 6-10 for exercise-name searches but
+  // earned ~0.7% CTR with a generic "how-to, sets & reps" title and a dosage
+  // shorthand snippet. Lead with what the exercise is and does (its own plain
+  // description), then the promise: steps, form tips and dose from a physio.
   const dosage = resolveDosage(exercise);
-  const name = /exercise$/i.test(exercise.title) ? exercise.title : `${exercise.title} exercise`;
-  const title = `${name}: how-to${hasPrescribedDose(dosage) ? ", sets & reps" : " guide"} | PhysioOnClick`;
-  const description = hasPrescribedDose(dosage)
-    ? `How to do the ${exercise.title}: steps, form cues, common mistakes and typical dose (${formatDosage(dosage)}). By a UK HCPC-registered physio.`
-    : `How to do the ${exercise.title}: steps, form cues and common mistakes. By a UK HCPC-registered physiotherapist.`;
+  const name = exercise.title.length <= 18 && !/exercise$/i.test(exercise.title) ? `${exercise.title} Exercise` : exercise.title;
+  const title = `${name}: How to Do It Properly | PhysioOnClick`;
+  const promise = hasPrescribedDose(dosage)
+    ? "Steps, form tips & sets/reps from a UK physio."
+    : "Steps and form tips from a UK physio.";
+  const description = `${clipAtWord(exercise.description, 158 - promise.length)} ${promise}`;
 
   return {
     title,
@@ -410,4 +412,10 @@ export default async function ExerciseDetailPage({
       </section>
     </div>
   );
+}
+
+function clipAtWord(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max - 1);
+  return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,;:–-]+$/, "")}…`;
 }

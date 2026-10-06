@@ -211,6 +211,17 @@ describe("app/exercises/[slug] generateMetadata", () => {
     );
   });
 
+  it("keeps every exercise snippet within search length limits", async () => {
+    const { allExerciseSlugs } = await import("@/lib/exercise-library");
+    for (const slug of allExerciseSlugs()) {
+      const meta = await generateMetadata({ params: Promise.resolve({ slug }) });
+      const d = String(meta.description);
+      expect(d.length, slug).toBeLessThanOrEqual(160);
+      expect(d.length, slug).toBeGreaterThanOrEqual(70);
+      expect(d, slug).not.toMatch(/ ·|undefined/);
+    }
+  });
+
   it("returns an empty object for an unknown slug", async () => {
     const meta = await generateMetadata({
       params: Promise.resolve({ slug: "nope" }),
