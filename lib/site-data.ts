@@ -279,10 +279,10 @@ export const services: Service[] = [
           "Yes, through home visits in the Glasgow area, at the video price plus a £15 travel fee per visit. Elsewhere in Scotland and the UK, appointments are by video, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. When you book a home visit you enter your postcode and see straight away whether we cover it, and we'll tell you at triage if another kind of neuro physiotherapy would suit you better."
       }
     ],
-    headline: "Online Neurological Physiotherapy for Glasgow, Scotland & the UK",
-    seoTitle: "Online Neuro Physiotherapy – Glasgow & UK | PhysioOnClick",
+    headline: "Neurological Physiotherapy in Glasgow: Home Visits & Online",
+    seoTitle: "Neuro Physio Glasgow – Home Visits & Online | PhysioOnClick",
     seoDescription:
-      "Neurological physiotherapy by video for Glasgow, Scotland and UK-wide: stroke, Parkinson's, balance and mobility."
+      "Neurological physiotherapy in Glasgow with home visits, plus video sessions UK-wide: stroke, Parkinson's, MS, FND, balance and mobility."
   },
   {
     slug: "paediatric-physiotherapy",
