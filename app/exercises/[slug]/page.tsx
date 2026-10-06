@@ -28,6 +28,7 @@ import { ExerciseImage } from "@/components/exercise-image";
 import { ExerciseVideo } from "@/components/exercise-library/exercise-video";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { getOnlinePhysioPage, onlinePhysioPageForHub } from "@/lib/online-physio-pages";
 import { TrackView } from "@/components/track-view";
 
 // One statically-exported page per catalogue exercise. Same reasoning as the
@@ -96,6 +97,13 @@ export default async function ExerciseDetailPage({
 
   const path = `/exercises/${slug}`;
   const hubs = conditionsForExercise(slug);
+  // Exercise pages carry most of the site's search traffic; send those
+  // visitors (and link equity) on to the condition landing pages they map to.
+  // Falls back to the body part when no hub maps to a landing page.
+  const hubPages = hubs.map((hub) => onlinePhysioPageForHub(hub.slug)).filter((p) => p !== null);
+  const bodyPartPage = BODY_PART_CARE_PAGE[exercise.bodyPart];
+  const fallback = hubPages.length || !bodyPartPage ? [] : [getOnlinePhysioPage(bodyPartPage)].filter((p) => p !== null);
+  const carePages = [...new Map([...hubPages, ...fallback].map((p) => [p.slug, p])).values()];
   const related = relatedExercises(slug, 4);
   const area = bodyAreaForExercise(slug);
   const moreInArea = moreExercisesInArea(slug, 12, new Set(related.map((item) => item.slug)));
@@ -407,6 +415,17 @@ export default async function ExerciseDetailPage({
           >
             Get my personalized plan
           </TrackedBookLink>
+          {carePages.length ? (
+            <p className="uk-service-links">
+              Get physio help for:{" "}
+              {carePages.map((page, i) => (
+                <span key={page.slug}>
+                  {i ? " · " : null}
+                  <Link href={`/online-physiotherapy-for/${page.slug}`}>{page.name}</Link>
+                </span>
+              ))}
+            </p>
+          ) : null}
           <UkServiceLinks />
         </div>
       </section>
@@ -419,3 +438,13 @@ function clipAtWord(text: string, max: number): string {
   const cut = text.slice(0, max - 1);
   return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,;:–-]+$/, "")}…`;
 }
+
+// Only body parts with one unambiguous condition landing page.
+const BODY_PART_CARE_PAGE: Record<string, string> = {
+  Knee: "knee-pain",
+  Hip: "hip-pain",
+  Shoulder: "shoulder-pain",
+  "Lumbar spine": "low-back-pain",
+  "Cervical spine": "neck-pain",
+  Neck: "neck-pain",
+};

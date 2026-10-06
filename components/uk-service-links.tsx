@@ -13,7 +13,7 @@ export function UkServiceLinks() {
     <p className="uk-service-links">
       <Link href="/online-physiotherapy-scotland">Online physiotherapy across the UK</Link>
       {" · "}
-      <Link href="/glasgow-physiotherapist">Home visits in Glasgow</Link>
+      <Link href="/physiotherapy-home-visits-glasgow">Home visits in Glasgow</Link>
       {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
         <>
           {" · "}

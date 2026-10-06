@@ -197,6 +197,25 @@ describe("app/exercises/[slug] page", () => {
   });
 });
 
+describe("app/exercises/[slug] condition care links", () => {
+  it("links each exercise on to the condition landing pages its hubs map to", async () => {
+    const { conditionsForExercise, allExerciseSlugs } = await import("@/lib/exercise-library");
+    const { onlinePhysioPageForHub } = await import("@/lib/online-physio-pages");
+    const slug = allExerciseSlugs().find((s) =>
+      conditionsForExercise(s).some((h) => onlinePhysioPageForHub(h.slug)),
+    )!;
+    const page = conditionsForExercise(slug).map((h) => onlinePhysioPageForHub(h.slug)).find(Boolean)!;
+    const { container } = await renderPage(slug);
+    expect(container.querySelector(`a[href="/online-physiotherapy-for/${page.slug}"]`)).not.toBeNull();
+    expect(container.querySelector('a[href="/physiotherapy-home-visits-glasgow"]')).not.toBeNull();
+  });
+
+  it("falls back to the body-part landing page when no hub maps to one", async () => {
+    const { container } = await renderPage("spanish-squat");
+    expect(container.querySelector('a[href="/online-physiotherapy-for/knee-pain"]')).not.toBeNull();
+  });
+});
+
 describe("app/exercises/[slug] generateMetadata", () => {
   it("builds a branded title, a relative canonical and a per-exercise OG image", async () => {
     const meta = await generateMetadata({
