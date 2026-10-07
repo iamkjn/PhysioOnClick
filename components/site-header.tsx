@@ -8,6 +8,8 @@ import type { Auth, User } from "firebase/auth";
 import { track } from "@/lib/analytics";
 // Types-only Firebase import inside, so this keeps the header's lazy-Auth split.
 import { accountUserOrNull } from "@/lib/guest-booking";
+import { useBookingDraft } from "@/lib/booking-draft";
+import { BookingDraftBadge, BookingReturnBanner, RESUME_HREF } from "@/components/booking-draft-ui";
 
 // notification-bell.tsx statically imports "@/lib/firebase" + "firebase/auth"
 // itself, so a plain top-level import here would silently re-introduce the
@@ -39,6 +41,9 @@ type GsapModule = typeof import("@/lib/gsap");
 
 export function SiteHeader() {
   const pathname = usePathname();
+  // An unfinished booking sends every "Book Now" back to where the patient left off.
+  const bookingDraft = useBookingDraft();
+  const bookHref = bookingDraft ? RESUME_HREF : "/book";
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -282,8 +287,13 @@ export function SiteHeader() {
               )}
               {/* "Contact" already lives in the primary nav above (line ~17);
                   this used to duplicate it as "Contact Us" right next to it. */}
-              <Link className="button primary small" href="/book" onClick={() => track("book_now_click", { source: "header" })}>
-                Book Now
+              <Link
+                className="button primary small booking-draft-anchor"
+                href={bookHref}
+                onClick={() => track("book_now_click", { source: bookingDraft ? "header_resume" : "header" })}
+              >
+                {bookingDraft ? "Continue booking" : "Book Now"}
+                <BookingDraftBadge />
               </Link>
             </div>
             <button
@@ -296,10 +306,12 @@ export function SiteHeader() {
               <span />
               <span />
               <span />
+              {bookingDraft && !menuOpen ? <BookingDraftBadge /> : null}
             </button>
           </div>
         </div>
       </header>
+      <BookingReturnBanner pathname={pathname} />
 
       <div
         className={`mobile-nav-backdrop${menuOpen ? " open" : ""}`}
@@ -324,11 +336,12 @@ export function SiteHeader() {
           </Link>
         ))}
         <Link
-          className="button primary mobile-nav-book"
-          href="/book"
+          className="button primary mobile-nav-book booking-draft-anchor"
+          href={bookHref}
           onClick={() => setMenuOpen(false)}
         >
-          Book Now
+          {bookingDraft ? "Continue booking" : "Book Now"}
+          <BookingDraftBadge />
         </Link>
         {user ? (
           <button

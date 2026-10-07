@@ -140,11 +140,20 @@ export function BookingStepTime({
   // redirects to Stripe Checkout instead of calling it directly.
   void onConfirmed;
   const today = useMemo(() => new Date(), []);
-  const [viewMonth, setViewMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
+  // A slot already chosen (a resumed booking, or Back then Continue) opens on its own day.
+  const [viewMonth, setViewMonth] = useState(() => {
+    const base = selectedSlot ? new Date(selectedSlot) : today;
+    return new Date(base.getFullYear(), base.getMonth(), 1);
+  });
   const [slots, setSlots] = useState<SlotMap>({});
   const [loadingSlots, setLoadingSlots] = useState(true);
   const [slotsError, setSlotsError] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(() =>
+    selectedSlot ? dateKey(new Date(selectedSlot)) : null
+  );
+  // Set when a remembered slot turned out to be taken once fresh times loaded.
+  const [slotGone, setSlotGone] = useState(false);
+  const rememberedSlot = useRef(selectedSlot);
   // Bumped by the "Try again" link on a fetch failure to re-run the effect
   // below without duplicating its fetch logic.
   const [retryToken, setRetryToken] = useState(0);
@@ -255,7 +264,17 @@ export function BookingStepTime({
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((data: { slots: SlotMap }) => {
         if (cancelled) return;
-        setSlots(data.slots ?? {});
+        const fresh = data.slots ?? {};
+        setSlots(fresh);
+        // Check a remembered slot once, against its own month's fresh times.
+        const remembered = rememberedSlot.current;
+        if (remembered) {
+          rememberedSlot.current = null;
+          if (!(fresh[dateKey(new Date(remembered))] ?? []).includes(remembered)) {
+            onSelectSlot(null);
+            setSlotGone(true);
+          }
+        }
       })
       .catch(() => {
         if (!cancelled) setSlotsError("We couldn't load available times. Please try again.");
@@ -298,6 +317,7 @@ export function BookingStepTime({
 
   function pickDay(key: string) {
     setSelectedDate(key);
+    setSlotGone(false);
     onSelectSlot(null);
   }
 
@@ -776,6 +796,11 @@ export function BookingStepTime({
               </div>
             </div>
 
+            {slotGone && !selectedSlot ? (
+              <p className="book-error" role="alert">
+                The time you picked earlier has just been taken. Please choose another time.
+              </p>
+            ) : null}
             <div role="status" aria-live="polite">
               {loadingSlots ? (
                 <p className="book-loading">Loading times…</p>

@@ -20,6 +20,8 @@ import { BookingStepService } from "@/components/booking-step-service";
 import { addAddress, getAddresses, getUsualAddressId, type SavedAddress } from "@/lib/patient-addresses";
 import { BookingStepTime } from "@/components/booking-step-time";
 import { BookingStepDone } from "@/components/booking-step-done";
+import { BookingResumeCard, discardDraft } from "@/components/booking-draft-ui";
+import { clearBookingDraft, loadBookingDraft, saveBookingDraft, type BookingDraft } from "@/lib/booking-draft";
 
 export type BookingConfirmation = {
   uid: string;
@@ -107,6 +109,10 @@ export function BookingFlow() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
   const [bookingContext, setBookingContext] = useState<BookingContext | null>(null);
+  // A saved, unfinished booking from an earlier visit (lib/booking-draft.ts).
+  // savedDraft = offered or loaded; draftResumed = loaded into the flow.
+  const [savedDraft, setSavedDraft] = useState<BookingDraft | null>(null);
+  const [draftResumed, setDraftResumed] = useState(false);
 
   // undefined = auth still resolving, null = guest, User = signed in
   const [user, setUser] = useState<User | null | undefined>(undefined);
@@ -186,6 +192,12 @@ export function BookingFlow() {
     }
     // ?visit=home preselects a home visit (linked from the home-visit copy).
     if (params.get("visit") === "home") setVisitType("home");
+    const draft = loadBookingDraft();
+    if (draft) {
+      setSavedDraft(draft);
+      // ?resume=1 comes from the header badge / return banner: load it straight away.
+      if (params.get("resume") === "1") applyDraft(draft);
+    }
     const exercise = params.get("exercise")?.trim() ?? "";
     const bodyPart = params.get("body_part")?.trim() ?? "";
     const source = params.get("source")?.trim() ?? "";
@@ -203,6 +215,37 @@ export function BookingFlow() {
   }, []);
 
   const service = useMemo(() => bookServiceFor(serviceId), [serviceId]);
+
+  // Home visits restart on step 1: the address is never stored, so it must
+  // be confirmed again before times can be picked.
+  function applyDraft(draft: BookingDraft) {
+    setServiceId(draft.serviceId);
+    setFocusAreas(draft.focusAreas);
+    setVisitType(draft.visitType);
+    setSelectedSlot(draft.slot);
+    setStep(draft.visitType === "home" ? 1 : 2);
+    setDraftResumed(true);
+    trackGrowthEvent("booking_resumed", { service_id: draft.serviceId, visit_type: draft.visitType, has_slot: Boolean(draft.slot) });
+  }
+
+  const handleRemoveDraft = useCallback(() => {
+    discardDraft("book_page");
+    setSavedDraft(null);
+    if (draftResumed) {
+      setDraftResumed(false);
+      setServiceId("initial-assessment");
+      setFocusAreas([]);
+      setVisitType(DEFAULT_VISIT_TYPE);
+      setSelectedSlot(null);
+      setStep(1);
+    }
+  }, [draftResumed]);
+
+  // Keep the draft current once step 1 is done (choices only, no personal data).
+  useEffect(() => {
+    if (step !== 2) return;
+    saveBookingDraft({ serviceId, focusAreas, visitType, slot: selectedSlot });
+  }, [step, serviceId, focusAreas, visitType, selectedSlot]);
 
   // Slots are per-event-type, so a service change invalidates the chosen slot.
   const handleServiceChange = useCallback((next: BookServiceId) => {
@@ -324,14 +367,20 @@ export function BookingFlow() {
       focus_areas: focusAreas.length,
       visit_type: visitType,
     });
+    if (!draftResumed) {
+      trackGrowthEvent("booking_draft_saved", { service_id: serviceId, visit_type: visitType });
+      // Starting a fresh booking replaces any older one offered above the flow.
+      setSavedDraft(null);
+    }
     track("booking_step_service_done", { service_id: serviceId, focus_areas: focusAreas.length, visit_type: visitType });
     setStep(2);
-  }, [visitType, homeAddressLine, homePostcode, serviceId, focusAreas.length, user, savedAddresses, addressChoice, saveNewAddress]);
+  }, [visitType, homeAddressLine, homePostcode, serviceId, focusAreas.length, user, savedAddresses, addressChoice, saveNewAddress, draftResumed]);
 
   const handleConfirmed = useCallback(
     (next: BookingConfirmation) => {
       trackGrowthEvent("booking_confirmed", { service_id: serviceId, for_dependent: Boolean(bookingForId) });
       track("booking_confirmed", { service_id: serviceId, for_dependent: Boolean(bookingForId) });
+      clearBookingDraft();
       setConfirmation(next);
       setStep(3);
     },
@@ -357,7 +406,19 @@ export function BookingFlow() {
   const stepAnnouncement =
     step === 1 ? "Step 1 of 3: book your appointment." : "Step 2 of 3: time and your details.";
 
+  const resumeCard = savedDraft ? (
+    <BookingResumeCard
+      // Once loaded, reflect the live choices (e.g. a slot cleared as taken).
+      draft={draftResumed ? { ...savedDraft, serviceId, visitType, slot: selectedSlot } : savedDraft}
+      resumed={draftResumed}
+      onContinue={() => applyDraft(savedDraft)}
+      onRemove={handleRemoveDraft}
+    />
+  ) : null;
+
   return (
+    <>
+    {resumeCard}
     <div className="book-flow">
       <p className="sr-only" role="status" aria-live="polite">
         {stepAnnouncement}
@@ -489,5 +550,6 @@ export function BookingFlow() {
         />
       )}
     </div>
+    </>
   );
 }

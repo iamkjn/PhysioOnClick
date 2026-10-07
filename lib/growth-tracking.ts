@@ -21,6 +21,9 @@ export type GrowthEventName =
   | "checkout_started"
   | "discount_applied"
   | "booking_confirmed"
+  | "booking_draft_saved"
+  | "booking_resumed"
+  | "booking_draft_discarded"
   | "chat_opened"
   | "chat_message_sent"
   | "chat_booking_intent";

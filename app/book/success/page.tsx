@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+import { clearBookingDraft } from "@/lib/booking-draft";
+
 import { GuestClaimAccount, useGuestBookingEmail } from "@/components/guest-claim-account";
 
 type Status = "pending" | "processing" | "paid" | "slot_unavailable" | "booking_failed";
@@ -28,6 +30,8 @@ function BookingResult() {
         const data = (await res.json()) as { status: Status };
         if (cancelled) return;
         setStatus(data.status);
+        // Paid: the saved in-progress booking is done, so drop the header badge.
+        if (data.status === "paid") clearBookingDraft();
         if (data.status === "pending" || data.status === "processing") {
           if (tries < 10) setTimeout(poll, 2000);
           else setTimedOut(true);
