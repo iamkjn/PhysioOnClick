@@ -41,6 +41,18 @@ describe("app/exercises/[slug] page", () => {
     ).toBeInTheDocument();
   });
 
+  it("opens with a quick-answer box: description, dose and what it's used for", async () => {
+    const { container } = await renderPage(SLUG);
+    const box = container.querySelector(".exlib-quick-answer")!;
+    expect(box).not.toBeNull();
+    expect(box).toHaveTextContent(exercise.description);
+    expect(box).toHaveTextContent(formatDosage(resolveDosage(exercise)));
+    expect(box).toHaveTextContent(/Often used for/);
+    // sits directly after the H1 block, before the long-form content
+    const h1 = container.querySelector("h1")!;
+    expect(h1.compareDocumentPosition(box) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("renders the setup text, an <ol> of every step, and every cue", async () => {
     const { container } = await renderPage(SLUG);
 

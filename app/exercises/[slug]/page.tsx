@@ -117,6 +117,13 @@ export default async function ExerciseDetailPage({
   const programmes = programmesForExercise(slug);
   const helpsWith = exercise.helpsWith ?? [];
   const dose = formatDosage(resolveDosage(exercise));
+  const usedFor = hubs.length
+    ? hubs
+        .slice(0, 3)
+        // Mid-sentence items read lower-case; leave acronyms ("ACL ...") alone.
+        .map((hub, i) => (i > 0 && /^[A-Z][a-z]/.test(hub.name) ? hub.name[0].toLowerCase() + hub.name.slice(1) : hub.name))
+        .join(", ")
+    : `${exercise.bodyPart} rehab`;
   const bookingHref = `/book?service=initial-assessment&source=exercise-detail&exercise=${encodeURIComponent(exercise.slug)}&body_part=${encodeURIComponent(exercise.bodyPart)}`;
   const { ordinary: ordinaryMistakes, safety: safetyLine } = splitMistakes(
     exercise.mistakes ?? [],
@@ -183,7 +190,27 @@ export default async function ExerciseDetailPage({
           {exercise.aka?.length ? (
             <p className="muted">Also known as {exercise.aka.join(", ")}.</p>
           ) : null}
-          <p>{exercise.description}</p>
+          {/* Quick answer: the what / how much / what for that a searcher wants,
+              in the first lines under the H1 so it can be lifted as a
+              snippet. Built only from reviewed catalogue fields. */}
+          <section className="exlib-quick-answer" aria-labelledby="quick-answer-heading">
+            <h2 id="quick-answer-heading" className="exlib-quick-answer__label">
+              Quick answer
+            </h2>
+            <p>{exercise.description}</p>
+            <dl>
+              {hasPrescribedDose(resolveDosage(exercise)) ? (
+                <div>
+                  <dt>Typical starting dose</dt>
+                  <dd>{dose}</dd>
+                </div>
+              ) : null}
+              <div>
+                <dt>Often used for</dt>
+                <dd>{usedFor}</dd>
+              </div>
+            </dl>
+          </section>
 
           <ExerciseVideo exercise={exercise} />
 
@@ -235,10 +262,12 @@ export default async function ExerciseDetailPage({
             </ul>
           ) : null}
 
-          <p className="muted">
-            <strong>Typical dose:</strong> {dose}. This is a general starting
-            point, not a plan matched to your condition or stage.
-          </p>
+          {hasPrescribedDose(resolveDosage(exercise)) ? (
+            <p className="muted">
+              The dose above is a general starting point, not a plan matched to
+              your condition or stage.
+            </p>
+          ) : null}
 
           <div className="exlib-detail-hero__actions">
             <TrackedBookLink
