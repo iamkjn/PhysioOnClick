@@ -30,6 +30,9 @@ import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { getOnlinePhysioPage, onlinePhysioPageForHub } from "@/lib/online-physio-pages";
 import { TrackView } from "@/components/track-view";
+import { exerciseImageUrl } from "@/lib/exercise-images";
+import { hasUploadedImage } from "@/lib/exercise-image-prompts";
+import { exerciseSearchTitle } from "@/lib/exercise-search-titles";
 
 // One statically-exported page per catalogue exercise. Same reasoning as the
 // service and blog detail routes: without force-static the route re-runs the
@@ -58,12 +61,16 @@ export async function generateMetadata({
   // shorthand snippet. Lead with what the exercise is and does (its own plain
   // description), then the promise: steps, form tips and dose from a physio.
   const dosage = resolveDosage(exercise);
-  const name = exercise.title.length <= 18 && !/exercise$/i.test(exercise.title) ? `${exercise.title} Exercise` : exercise.title;
-  const title = `${name}: How to Do It Properly | PhysioOnClick`;
+  const title = exerciseSearchTitle(slug, exercise.title);
   const promise = hasPrescribedDose(dosage)
     ? "Steps, form tips & sets/reps from a UK physio."
     : "Steps and form tips from a UK physio.";
   const description = `${clipAtWord(exercise.description, 158 - promise.length)} ${promise}`;
+  // The SVG share card is noindex and Google won't use SVGs as result
+  // thumbnails, so point at the real illustration (WebP) when one exists.
+  const shareImage = hasUploadedImage(exercise.id)
+    ? { url: exerciseImageUrl(exercise.id, "full"), width: 960, height: 960, alt: `${exercise.title} exercise demonstration` }
+    : `/exercise-og/${slug}`;
 
   return {
     title,
@@ -74,11 +81,11 @@ export async function generateMetadata({
       title,
       description,
       url: `/exercises/${slug}`,
-      images: [`/exercise-og/${slug}`],
+      images: [shareImage],
     },
     twitter: {
       card: "summary_large_image",
-      images: [`/exercise-og/${slug}`],
+      images: [shareImage],
     },
   };
 }

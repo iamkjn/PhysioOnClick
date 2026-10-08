@@ -26,6 +26,9 @@ import { founder, services, withPrices } from "@/lib/site-data";
 // `lib/conditions.ts` is dependency-free pure data.
 import { conditions } from "@/lib/conditions";
 import type { Exercise } from "@/lib/exercises";
+import { exerciseImageUrl } from "@/lib/exercise-images";
+import { hasUploadedImage } from "@/lib/exercise-image-prompts";
+import { exerciseSearchName } from "@/lib/exercise-search-titles";
 import type { OnlinePhysioPage } from "@/lib/online-physio-pages";
 import type { Guide } from "@/lib/guides";
 import type { Condition } from "@/lib/conditions";
@@ -258,10 +261,26 @@ const LIBRARY_COPYRIGHT = {
  *  rather than re-declaring the Person here. */
 export function exerciseWebPage(ex: Exercise, path: string): object {
   const condition = ex.condition?.trim();
+  // Declaring the real illustration is what makes it eligible as the result
+  // thumbnail and in Google Images. Only once it's actually uploaded — the
+  // image route serves a placeholder SVG otherwise.
+  const image = hasUploadedImage(ex.id)
+    ? {
+        "@type": "ImageObject",
+        contentUrl: absoluteUrl(exerciseImageUrl(ex.id, "full")),
+        url: absoluteUrl(exerciseImageUrl(ex.id, "full")),
+        width: 960,
+        height: 960,
+        caption: `${ex.title} exercise demonstration`,
+        creditText: "PhysioOnClick",
+        ...LIBRARY_COPYRIGHT,
+      }
+    : null;
   return {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
-    name: `${ex.title} exercise`,
+    name: exerciseSearchName(ex.slug, ex.title),
+    ...(image ? { image, primaryImageOfPage: image } : {}),
     description: shortDescription(ex.setup ?? ex.description ?? ""),
     url: absoluteUrl(path),
     ...(condition

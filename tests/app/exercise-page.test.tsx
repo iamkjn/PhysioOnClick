@@ -217,7 +217,7 @@ describe("app/exercises/[slug] condition care links", () => {
 });
 
 describe("app/exercises/[slug] generateMetadata", () => {
-  it("builds a branded title, a relative canonical and a per-exercise OG image", async () => {
+  it("builds a branded title, a relative canonical and a per-exercise OG image (real illustration when uploaded)", async () => {
     const meta = await generateMetadata({
       params: Promise.resolve({ slug: SLUG }),
     });
@@ -225,8 +225,11 @@ describe("app/exercises/[slug] generateMetadata", () => {
     expect(typeof meta.title).toBe("string");
     expect((meta.title as string).endsWith("| PhysioOnClick")).toBe(true);
     expect(meta.alternates?.canonical).toBe(`/exercises/${SLUG}`);
+    const { getExerciseBySlug } = await import("@/lib/exercise-library");
+    const { hasUploadedImage } = await import("@/lib/exercise-image-prompts");
+    const ex = getExerciseBySlug(SLUG)!;
     expect(JSON.stringify(meta.openGraph?.images)).toContain(
-      `/exercise-og/${SLUG}`,
+      hasUploadedImage(ex.id) ? `/exercise-images/${ex.id}?size=full` : `/exercise-og/${SLUG}`,
     );
   });
 
