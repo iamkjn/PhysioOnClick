@@ -53,6 +53,18 @@ describe("app/exercises/[slug] page", () => {
     expect(h1.compareDocumentPosition(box) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it("prompts a booking straight after the steps, priced from site data", async () => {
+    const { initialAssessmentPrice } = await import("@/lib/site-data");
+    const { container } = await renderPage(SLUG);
+    const prompt = container.querySelector(".exlib-next-step")!;
+    expect(prompt).not.toBeNull();
+    const link = prompt.querySelector("a")!;
+    expect(link).toHaveTextContent(`Book a £${initialAssessmentPrice} assessment`);
+    expect(link.getAttribute("href")).toContain("service=initial-assessment");
+    const steps = container.querySelector("[data-steps]")!;
+    expect(steps.compareDocumentPosition(prompt) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("renders the setup text, an <ol> of every step, and every cue", async () => {
     const { container } = await renderPage(SLUG);
 

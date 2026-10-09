@@ -352,6 +352,33 @@ export default async function ExerciseDetailPage({
         </Reveal>
       </section>
 
+      {/* Booking prompt where most readers stop: straight after the steps. */}
+      <section className="page-section">
+        <aside className="exlib-next-step" aria-label="Book an assessment">
+          <p>
+            <strong>Not getting better, or not sure this is the right exercise for you?</strong>{" "}
+            A £{initialAssessmentPrice} online assessment with an HCPC-registered
+            physiotherapist gets you a plan matched to your condition and stage.
+          </p>
+          <TrackedBookLink
+            className="button primary"
+            href={bookingHref}
+            serviceSlug="initial-assessment"
+            source="exercise-page-after-steps"
+            growthEvent="exercise_booking_intent"
+            growthParams={{
+              exercise_slug: exercise.slug,
+              exercise_title: exercise.title,
+              body_part: exercise.bodyPart,
+              stage: exercise.stage,
+              booking_context: "exercise_detail_after_steps",
+            }}
+          >
+            Book a £{initialAssessmentPrice} assessment
+          </TrackedBookLink>
+        </aside>
+      </section>
+
       <section className="page-section stack">
         <ExerciseSafetyNote variant="compact" />
       </section>
@@ -429,7 +456,7 @@ export default async function ExerciseDetailPage({
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">This exercise is generic - you&apos;re not</span>
-          <h2>Get a plan personalized to you</h2>
+          <h2>Get a plan personalised to you</h2>
           <p>
             Book a £{initialAssessmentPrice} online assessment with an
             HCPC-registered physiotherapist and get a rehab plan matched to your
@@ -449,7 +476,7 @@ export default async function ExerciseDetailPage({
               booking_context: "exercise_detail_bottom",
             }}
           >
-            Get my personalized plan
+            Get my personalised plan
           </TrackedBookLink>
           {carePages.length ? (
             <p className="uk-service-links">

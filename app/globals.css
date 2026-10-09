@@ -16850,3 +16850,21 @@ textarea:focus {
 .exlib-quick-answer dd {
   margin: 0;
 }
+
+/* Exercise detail: booking prompt after the steps. */
+.exlib-next-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-primary-light);
+}
+
+.exlib-next-step p {
+  flex: 1 1 22rem;
+  margin: 0;
+}
