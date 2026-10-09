@@ -29,6 +29,7 @@ import type { Exercise } from "@/lib/exercises";
 import { exerciseImageUrl } from "@/lib/exercise-images";
 import { hasUploadedImage } from "@/lib/exercise-image-prompts";
 import { exerciseSearchName } from "@/lib/exercise-search-titles";
+import { demoVideoForSlug, isoDuration } from "@/lib/exercise-demo-videos";
 import type { OnlinePhysioPage } from "@/lib/online-physio-pages";
 import type { Guide } from "@/lib/guides";
 import type { Condition } from "@/lib/conditions";
@@ -354,18 +355,24 @@ export function selfTestWebPage(t: SelfTest, path: string): object {
   };
 }
 
-/** A `VideoObject` for an exercise's demo video, or `null` when there is no
- *  structured video to describe. Every current exercise returns `null`: a bare
- *  embed URL does not satisfy Google's VideoObject requirements (name,
- *  thumbnailUrl, uploadDate, contentUrl/embedUrl), so this stays a stub until
- *  Phase 4 adds a real `videoObject` field to `Exercise`. */
+/** A `VideoObject` for an exercise's own filmed demo (lib/exercise-demo-videos),
+ *  or `null` when it has none. Carries everything Google requires for a video
+ *  result: name, description, thumbnailUrl, uploadDate, embedUrl (+ duration). */
 export function exerciseVideoObject(ex: Exercise): object | null {
-  const video = (ex as { videoObject?: Record<string, unknown> }).videoObject;
+  const video = demoVideoForSlug(ex.slug);
   if (!video) return null;
   return {
     "@context": "https://schema.org",
     "@type": "VideoObject",
-    ...video
+    name: `How to do the ${ex.title} exercise`,
+    description: shortDescription(ex.description ?? ""),
+    thumbnailUrl: `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`,
+    uploadDate: video.uploadDate,
+    duration: isoDuration(video.durationSeconds),
+    embedUrl: `https://www.youtube-nocookie.com/embed/${video.youtubeId}`,
+    inLanguage: "en-GB",
+    author: personRef(),
+    ...LIBRARY_COPYRIGHT
   };
 }
 

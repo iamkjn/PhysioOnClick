@@ -1,9 +1,7 @@
 // Demo-video slot for an exercise page. Server component.
 //
-// Phase 1 has no structured video for any exercise, so `exerciseVideoObject`
-// returns null for the whole catalogue and this renders nothing. When a real
-// `videoObject` is added (Phase 4), this emits the VideoObject JSON-LD and, if
-// the object carries a playable URL, an embedded player.
+// Renders nothing until the exercise has an entry in lib/exercise-demo-videos.
+// Then: a privacy-enhanced YouTube player plus the VideoObject JSON-LD.
 
 import type { Exercise } from "@/lib/exercise-library";
 import { exerciseVideoObject } from "@/lib/structured-data";
@@ -26,6 +24,7 @@ export function ExerciseVideo({ exercise }: { exercise: Exercise }) {
           src={src}
           title={name ?? `${exercise.title} demonstration`}
           loading="lazy"
+          allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
       ) : null}

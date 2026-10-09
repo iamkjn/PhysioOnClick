@@ -1,3 +1,4 @@
+import { EXERCISE_DEMO_VIDEOS } from '@/lib/exercise-demo-videos'
 import { describe, it, expect } from 'vitest'
 import { conditions } from '@/lib/conditions'
 import { exercises } from '@/lib/exercises'
@@ -101,9 +102,27 @@ describe('structured-data: conditionWebPage', () => {
 })
 
 describe('structured-data: exerciseVideoObject', () => {
-  it('is null for every current exercise (no structured video field yet)', () => {
+  it('is null for exercises without a filmed demo', () => {
+    const withVideo = new Set(Object.keys(EXERCISE_DEMO_VIDEOS))
     for (const e of exercises) {
-      expect(exerciseVideoObject(e)).toBeNull()
+      if (!withVideo.has(e.slug)) expect(exerciseVideoObject(e)).toBeNull()
+    }
+  })
+
+  it('carries every field Google requires once a demo is registered', () => {
+    const e = exercises.find((x) => x.slug === 'wall-slide')!
+    EXERCISE_DEMO_VIDEOS['wall-slide'] = { youtubeId: 'abcdefghijk', uploadDate: '2026-10-20', durationSeconds: 75 }
+    try {
+      const v = exerciseVideoObject(e) as Record<string, string>
+      expect(v['@type']).toBe('VideoObject')
+      expect(v.name).toMatch(/Wall Slide/)
+      expect(v.description.length).toBeGreaterThan(20)
+      expect(v.thumbnailUrl).toBe('https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg')
+      expect(v.uploadDate).toBe('2026-10-20')
+      expect(v.duration).toBe('PT1M15S')
+      expect(v.embedUrl).toBe('https://www.youtube-nocookie.com/embed/abcdefghijk')
+    } finally {
+      delete EXERCISE_DEMO_VIDEOS['wall-slide']
     }
   })
 })

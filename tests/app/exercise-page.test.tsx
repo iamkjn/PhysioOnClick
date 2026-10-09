@@ -145,7 +145,7 @@ describe("app/exercises/[slug] page", () => {
     expect(note?.textContent).toContain("Using these exercises safely");
   });
 
-  it("has no video slot in Phase 1 (exerciseVideoObject is always null)", async () => {
+  it("has no video slot until a filmed demo is registered", async () => {
     const { container } = await renderPage(SLUG);
     expect(container.querySelector("[data-exercise-video]")).toBeNull();
   });
