@@ -273,6 +273,11 @@ export function exerciseWebPage(ex: Exercise, path: string): object {
         height: 960,
         caption: `${ex.title} exercise demonstration`,
         creditText: "PhysioOnClick",
+        creator: { "@id": PRACTICE_ID },
+        // Google Images "Licensable" fields: the Terms carry the reuse
+        // licence (personal use only); permission is requested via Contact.
+        license: absoluteUrl("/terms"),
+        acquireLicensePage: absoluteUrl("/contact"),
         ...LIBRARY_COPYRIGHT,
       }
     : null;
