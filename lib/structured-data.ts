@@ -273,7 +273,9 @@ export function exerciseWebPage(ex: Exercise, path: string): object {
         height: 960,
         caption: `${ex.title} exercise demonstration`,
         creditText: "PhysioOnClick",
-        creator: { "@id": PRACTICE_ID },
+        // Typed inline: Google's image-metadata check does not resolve a
+        // bare @id ref and flags "Invalid object type for field creator".
+        creator: { "@type": "Organization", "@id": PRACTICE_ID, name: "PhysioOnClick" },
         // Google Images "Licensable" fields: the Terms carry the reuse
         // licence (personal use only); permission is requested via Contact.
         license: absoluteUrl("/terms"),
