@@ -61,18 +61,21 @@ export async function generateMetadata({
 
   const title = `${area.label} exercises | PhysioOnClick`;
   const description = area.blurb;
+  const path = `/exercises/area/${area.key}`;
 
   return {
     title,
     description,
-    // Thin filter pages: point the canonical at the library index rather than
-    // letting each area URL compete for the same content (spec 5.4).
-    alternates: { canonical: "/exercises" },
+    // Self-canonical: each area page has its own exercises, conditions and
+    // self-checks, and is listed in the sitemap. Canonicalising to /exercises
+    // contradicted the sitemap and got every area page dropped from Google as
+    // "Alternative page with proper canonical tag".
+    alternates: { canonical: path },
     openGraph: {
       type: "website",
       title,
       description,
-      url: "/exercises",
+      url: path,
     },
   };
 }

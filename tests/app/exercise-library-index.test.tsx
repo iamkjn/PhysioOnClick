@@ -11,6 +11,7 @@ import AreaPage, {
 } from "@/app/exercises/area/[bodyArea]/page";
 import HowWeMakeThisPage from "@/app/exercises/how-we-make-this/page";
 import {
+  allBodyAreaKeys,
   allConditionSlugs,
   BODY_AREAS,
   bodyAreas,
@@ -218,12 +219,21 @@ describe("app/exercises/area/[bodyArea] page", () => {
     expect(note?.textContent).toContain("Using these exercises safely");
   });
 
-  it("generateMetadata canonical points to /exercises, not the area URL", async () => {
+  // Area pages are in the sitemap, so each must canonicalise to itself.
+  // Pointing them at /exercises got them dropped from Google as
+  // "Alternative page with proper canonical tag".
+  it("generateMetadata self-canonicalises every area page", async () => {
     const meta = await areaMetadata({
       params: Promise.resolve({ bodyArea: "shoulder" }),
     });
     expect(meta.title).toBe("Shoulder exercises | PhysioOnClick");
-    expect(meta.alternates?.canonical).toBe("/exercises");
+    expect(meta.alternates?.canonical).toBe("/exercises/area/shoulder");
+    expect(meta.openGraph?.url).toBe("/exercises/area/shoulder");
+
+    for (const bodyArea of allBodyAreaKeys()) {
+      const m = await areaMetadata({ params: Promise.resolve({ bodyArea }) });
+      expect(m.alternates?.canonical).toBe(`/exercises/area/${bodyArea}`);
+    }
   });
 
   it("calls notFound() for an unknown body area", async () => {
