@@ -363,3 +363,25 @@ Read 2026-10-04 via curl with a browser user agent (nice.org.uk, cks.nice.org.uk
 - Item 11 (NHS enlarged prostate page: urgent GP or 111 if "you cannot pee at all"; CKS LUTS in men: "arrange hospital admission" for a first episode) still stands but is the LESS cautious route.
 - NOT VERIFIED: any nhs.uk or nhsinform.scot acute urinary retention page that covers women (nhs.uk/conditions/urinary-retention/ and nhsinform.scot .../urinary-retention/ and .../acute-urinary-retention/ return 404 on 2026-10-04; the NHS urinary incontinence pages mention only chronic retention). CKS acute retention guidance is men 40+ only.
 - Most cautious supported route: being suddenly unable to pass any urine routes to "call 999 or go to A&E" (NHS inform 999; NHS sciatica 999/A&E). This supersedes the item 11 "Use:" line (A&E or 111) for the stress urinary incontinence hub.
+
+## 16. Health cash plans, WPA and Healthcode (added 2026-10-16)
+
+Same rules as item 7: do NOT record or imply that any of these organisations recognises, accepts or pays PhysioOnClick. Pages read 2026-10-16 via direct page-text fetch; quotes are short extracts, everything else PARAPHRASE ONLY.
+
+### WPA
+- WPA asks providers to register with it for recognition so its members can use their services; once recognised, members can find them in its online provider search. Its members "are free to choose where, when and who provides them with treatment". Source: WPA, Information for healthcare providers https://wpa.org.uk/healthcare-providers - "register with us for recognition first" (checked 2026-10-16)
+- WPA accepts electronic invoices through Healthcode, which it calls "a fast and secure way of submitting invoices to the majority of health insurers". Source: same page (checked 2026-10-16)
+- NOT VERIFIED - do not use: "we will only reimburse fees to providers that we recognise" (seen only in a search snippet of a WPA guide page, not on the page read).
+
+### Healthcode
+- Healthcode's Clearing Service lets practitioners create invoices and send them electronically to insurers ("all the major Insurers and payors" from one place); it also runs the PPR (Private Practice Register) where practitioners hold licences and qualifications. Source: Healthcode, Healthcare technology solutions for practitioners https://www.healthcode.co.uk/practitioners/ - "send electronically to insurers" (checked 2026-10-16)
+- Background (item 7): AXA Health's recognition criteria include electronic invoicing through Healthcode or another system AXA recognises.
+
+### Simplyhealth (health cash plan)
+- A receipt must include the patient's full name, the practitioner's name and contact details, and the treatment details, date and amount paid; "Credit/Debit card receipts alone will not be accepted". Online claims typically take around 2 to 3 days to process; if approved, payment reaches the bank account within 3 to 5 working days. Source: Simplyhealth, Claiming questions & answers https://www.simplyhealth.co.uk/help-and-support/claiming - "Credit/Debit card receipts alone will not be accepted" (checked 2026-10-16)
+- NOT VERIFIED - do not use: any Simplyhealth physio percentage or annual limit, HCPC wording, claim deadline, or "no authorisation needed" (not on the pages read).
+
+### Westfield Health (health cash plan)
+- A health cash plan lets you claim money back, up to set limits, towards everyday healthcare costs; physiotherapy is among the therapy treatments listed; there are five levels of cover. Source: Westfield Health, Health cash plan https://www.westfieldhealth.com/individual/health-cash-plan - "claim money back, up to set limits" (checked 2026-10-16)
+- Money-back claims need the original receipt and must be made within 26 weeks of the date you paid; the receipt should show your name (or the person claimed for), full practitioner details, the date and payment amounts, and details of the treatment; the practitioner must be registered with, or a member of, an approved professional organisation; app claims are usually processed within two working days. Source: Westfield Health, How to claim https://www.westfieldhealth.com/my-westfield/health-cash-plans/how-to-claim - "within 26 weeks of the date you paid" (checked 2026-10-16)
+- Not stated on the pages read: whether Westfield names the HCPC, or whether video sessions are claimable. Say "check with your plan".

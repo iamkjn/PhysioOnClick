@@ -65,6 +65,20 @@ describe("guides data", () => {
       "do-i-need-a-gp-referral-for-physiotherapy", "how-many-physiotherapy-sessions-do-i-need",
       "nhs-physio-waiting-times-scotland"]) expect(getGuide(s), s).not.toBeNull();
   });
+  it("insurance guide covers cash plans and Healthcode without implying any insurer pays us", () => {
+    const g = getGuide("claim-physiotherapy-on-health-insurance")!;
+    const t = allText(g);
+    for (const name of ["Simplyhealth", "Westfield Health", "WPA", "Healthcode"]) expect(t, name).toContain(name);
+    expect(g.answer).toMatch(/not on every insurer's recognised list/);
+    expect(t).toMatch(/cannot promise that any insurer or cash plan will pay/);
+    expect(/(accepts|recognises|approved by|covered by) (us|PhysioOnClick)/i.test(t)).toBe(false);
+  });
+  it("updatedOn, when set, is a valid date no earlier than publishing", () => {
+    for (const g of guides.filter((g) => g.updatedOn)) {
+      expect(g.updatedOn, g.slug).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(g.updatedOn! >= g.publishedOn, g.slug).toBe(true);
+    }
+  });
   it("has the phase B3 guides", () => {
     for (const s of ["does-online-physiotherapy-work", "can-a-physio-diagnose-over-video",
       "what-online-physiotherapy-cannot-do"]) expect(getGuide(s), s).not.toBeNull();

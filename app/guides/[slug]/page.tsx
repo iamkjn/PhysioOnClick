@@ -90,7 +90,7 @@ export default async function GuidePage({
       </nav>
 
       <section className="simple-page-hero">
-        <ByLine reviewedOn={guide.reviewedOn} />
+        <ByLine reviewedOn={guide.reviewedOn} updatedOn={guide.updatedOn} />
         <h1>{guide.title}</h1>
       </section>
 

@@ -27,6 +27,8 @@ export type Guide = {
   sources: Source[];
   related: RelatedLink[];
   publishedOn: string;
+  /** Last non-clinical content update (sources, wording), if after publishing. */
+  updatedOn?: string;
   reviewedOn: string;
 };
 
@@ -113,58 +115,93 @@ export const guides: Guide[] = [
     ],
     related: [
       { label: "Pricing and session bundles", href: "/pricing" },
-      { label: "How online physiotherapy works", href: "/how-online-physiotherapy-works" }
+      { label: "How online physiotherapy works", href: "/how-online-physiotherapy-works" },
+      { label: "Claim physio on health insurance or a cash plan", href: "/guides/claim-physiotherapy-on-health-insurance" }
     ],
     publishedOn: "2026-10-01",
     reviewedOn: PHASE_BC_REVIEWED_ON
   },
   {
     slug: "claim-physiotherapy-on-health-insurance",
-    title: "Can I claim physiotherapy on my health insurance?",
-    seoTitle: "Claim Physio on Health Insurance: What to Check | PhysioOnClick",
+    title: "Can I claim physiotherapy on health insurance or a cash plan?",
+    seoTitle: "Claim Physio on Health Insurance or a Cash Plan | PhysioOnClick",
     seoDescription:
-      "How physio insurance claims usually work, what Bupa, AXA Health, Vitality and Aviva say on their own sites, and what to check before you book and pay.",
+      "How physio claims work on private health insurance and health cash plans, what the insurers and plans say on their own sites, and what to ask before you book.",
     answer:
-      "Check your policy first. Whether your insurer pays for physiotherapy depends on your cover, and your insurer may also want a referral, a pre-authorisation code or a practitioner on its recognised list. We are not on every insurer's recognised list, so check with your insurer before booking if you plan to claim.",
+      "It depends on your cover. Private medical insurance may want a GP referral, a pre-authorisation code or a practitioner on its recognised list before it pays. With a health cash plan you usually pay first, then claim money back up to set limits with an itemised receipt. We are not on every insurer's recognised list, so check before booking if you plan to claim.",
     sections: [
       {
-        heading: "How a physio insurance claim usually works",
+        heading: "Health insurance or a cash plan: which do you have?",
+        paragraphs: [
+          "There are two common ways people in the UK get help paying for private physiotherapy, and they work quite differently. Look at your policy documents or membership card to see which one you have, because the rest of this guide depends on it.",
+          "Private medical insurance, from insurers such as Bupa, AXA Health, Vitality, Aviva and WPA, can pay for a course of treatment. It usually comes with rules: your policy has to include outpatient therapies, and the insurer may want a referral, a pre-authorisation code or a practitioner it recognises before it pays.",
+          "A health cash plan, from providers such as Simplyhealth and Westfield Health, works differently. Westfield Health describes a cash plan as a way to claim money back, up to set limits, towards the cost of everyday healthcare, and lists physiotherapy among the therapy treatments it covers. You pay for the session yourself, then send in your receipt.",
+          "Many people get either kind of cover through their employer. If yours comes through work, the company named on your membership card or in your benefits portal is the one to ask, even if it is not a name you recognise."
+        ]
+      },
+      {
+        heading: "How a private medical insurance claim usually works",
         paragraphs: [
           "Every insurer has its own rules, but most claims follow the same few steps. Doing them in this order can save you from paying for a session that is not covered.",
           "First, check that your policy includes outpatient therapies such as physiotherapy. Check whether it covers treatment outside hospital, and whether it caps the number of sessions or the amount you can claim in a year.",
           "Second, find out whether you need a GP referral or a pre-authorisation code before your first session. Some insurers let you go straight to a physiotherapist, and some do not.",
           "Third, ask whether the insurer only pays practitioners on its own recognised list. Check whether yours pays any registered physiotherapist, or only those on its list.",
-          "Finally, pay for the session, keep the invoice, and send it to your insurer with your claim form. Ask how long the insurer allows for sending a claim in."
+          "Finally, pay for the session, keep the invoice, and send it to your insurer with your claim form. Ask how long the insurer allows for sending a claim in.",
+          "You may see the name Healthcode in your insurer's paperwork. Healthcode runs a billing service that lets practitioners send invoices electronically to insurers. WPA says it accepts invoices this way, and AXA Health lists electronic invoicing through Healthcode, or another system it recognises, among its criteria for recognising a physiotherapist. You do not need a Healthcode account yourself, but it is worth asking your insurer whether the practitioner has to bill it directly or whether you can pay and claim the money back."
         ]
       },
       {
         heading: "What the main insurers say on their own sites",
         paragraphs: [
-          "The wording below comes from each insurer's public pages, checked on 1 October 2026. Policies differ, so your own policy documents and your insurer's current pages come first.",
+          "The wording below comes from each insurer's public pages, checked on 1 October 2026 (WPA on 16 October 2026). Policies differ, so your own policy documents and your insurer's current pages come first.",
           "Bupa says its health insurance customers can get direct access to a muscle, bone and joint specialist, and that you don't need to wait for a GP referral. It also says treatment is approved with a pre-authorisation code, and that any onward referral is subject to the benefits and exclusions of your cover. Separately, Bupa's contract for physiotherapists says Bupa will not be obliged to fund physiotherapy performed without pre-authorisation.",
           "AXA Health says that with an AXA Health plan you can speak to a physio without the need for a GP referral. You use an online form, then set up a video or telephone call appointment. AXA Health also publishes criteria for individual physiotherapists to become recognised by it, including HCPC registration and electronic invoicing through Healthcode or another system it recognises.",
           "Vitality says members can self-refer for up to 6 physiotherapy sessions every plan year. That route is for face-to-face physiotherapy within its Priority Physio network. For a physiotherapist outside the network, Vitality says it covers sessions as long as the physiotherapist is recognised by it, and pays you back after you pay the invoice. For further sessions it asks for a detailed medical report from your treating physiotherapist.",
-          "Aviva says physiotherapy might be included in your cover, depending on what your policy includes. Depending on the policy, the route can start with a referral from a GP or from its digital GP service, or with a specialist referral after a diagnosis. One optional Aviva feature means you only need a GP referral, not a specialist one, for up to 10 sessions per health condition."
+          "Aviva says physiotherapy might be included in your cover, depending on what your policy includes. Depending on the policy, the route can start with a referral from a GP or from its digital GP service, or with a specialist referral after a diagnosis. One optional Aviva feature means you only need a GP referral, not a specialist one, for up to 10 sessions per health condition.",
+          "WPA says its members are free to choose where, when and who provides their treatment, and asks practitioners to register with it for recognition first. Once a practitioner is recognised, WPA members can find them in its online provider search, so that search is a quick way to check before you book."
         ]
       },
       {
-        heading: "Are we on your insurer's recognised list?",
+        heading: "How a health cash plan claim works",
         paragraphs: [
-          "We are not on every insurer's recognised list. Check with your insurer before booking if you plan to claim.",
-          "We cannot promise that any insurer will pay for a session with us, and nothing on this page says that any insurer accepts our invoices. The simplest way to find out is to ask your insurer two questions: will you pay for online physiotherapy by video, and do you need the practitioner to be on your recognised list?",
-          "If your insurer says yes to both, ask them to confirm whether we qualify before you book. Get the answer in writing if you can. If the answer is no, you can still book with us and pay yourself, and the invoice is yours to keep."
+          "Cash plans are usually simpler than insurance because you pay first and claim afterwards, but the receipt has to be right. Both cash plan providers we checked on 16 October 2026 list what they need to see.",
+          "Simplyhealth says a receipt must include the patient's full name, the practitioner's name and contact details, and the treatment details, date and amount paid. It also says credit and debit card receipts alone will not be accepted, so keep the itemised receipt or invoice, not just your card slip. It says an online claim typically takes around 2 to 3 days to process, and that payment should reach your bank account within 3 to 5 working days if the claim is approved.",
+          "Westfield Health asks for the original receipt, showing your name, full practitioner details, the date and amount paid, and details of the treatment. It says money back claims must be made within 26 weeks of the date you paid, and that the practitioner must be registered with, or a member of, an approved professional organisation. In the UK, anyone using the title physiotherapist must be on the HCPC Register, so the HCPC number on a receipt is a good thing to look for.",
+          "Cash plans pay back up to set limits, and Westfield Health offers five levels of cover, so what you get back depends on your plan. Before you book a course of sessions, check how much physiotherapy your level of cover pays and how much of it you have left."
+        ]
+      },
+      {
+        heading: "Can you claim for physiotherapy by video?",
+        paragraphs: [
+          "Some insurers offer physiotherapy by video themselves. AXA Health describes setting up a video or telephone call appointment with a physio, and Bupa's contract for the physiotherapists it recognises allows remote sessions by video, not telephone, where it is safe and clinically appropriate and the member agrees.",
+          "That does not mean every policy pays for a video session with any practitioner you choose. The cash plan pages we read do not say whether a session by video is claimable in the same way as a clinic visit, so ask your insurer or plan provider directly, and say that the session is by video when you do.",
+          "If you live in the Glasgow area, we also offer [home visits](/physiotherapy-home-visits-glasgow). Tell your insurer or plan which kind of session you are booking, so that the answer you get matches the session you have."
+        ]
+      },
+      {
+        heading: "Questions to ask before you book",
+        paragraphs: [
+          "A short call or message to your insurer or plan provider before you book can save you paying for a session that is not covered. These are the questions worth asking.",
+          "Is physiotherapy included in my cover, and how much of it have I got left? Do I need a GP referral or a pre-authorisation code first? Do you pay any HCPC-registered physiotherapist, or only those on your recognised list? Is a session by video covered in the same way as one in person? Does the practitioner have to bill you directly, or can I pay and claim the money back? How long do I have to send in a claim?",
+          "We are not on every insurer's recognised list, and we cannot promise that any insurer or cash plan will pay for a session with us. Nothing on this page says that any insurer or plan accepts our invoices. If yours says you need a recognised practitioner, ask them to confirm whether we qualify before you book, and get the answer in writing if you can.",
+          "If the answer is no, you can still book with us and pay yourself, and the invoice is yours to keep."
         ]
       },
       {
         heading: "What our invoice shows",
         paragraphs: [
-          "After a paid session we send you an invoice as a PDF. It lists our HCPC registration number and the session you paid for, itemised, so you can see exactly what the charge covers.",
-          "Insurers differ in what they want to see on an invoice, so send your insurer what it asks for. If your insurer asks for something that isn't on the invoice, contact us.",
-          "You can check how our online sessions work in [how online physiotherapy works](/how-online-physiotherapy-works), and see what a first appointment costs on the [pricing page](/pricing). If you are deciding between private and NHS care, our guide on [whether you need a GP referral](/guides/do-i-need-a-gp-referral-for-physiotherapy) may help."
+          "After a paid session we email you an invoice as a PDF, marked as paid in full. It shows the name of the person billed, the session date, the service and whether it was by video or a home visit, the amount paid, the date paid and an invoice number.",
+          "It also shows the practitioner details that claim forms tend to ask for: our physiotherapist's name, our address and contact details, our HCPC registration number and our CSP membership number. You can check any physiotherapist's registration yourself on the HCPC's online Register, linked in the sources below.",
+          "Those are the items Simplyhealth and Westfield Health list for a receipt, but each insurer and plan decides for itself what it pays, so send what your own provider asks for. If it asks for something that isn't on the invoice, contact us.",
+          "You can check how our online sessions work in [how online physiotherapy works](/how-online-physiotherapy-works), and see what a first appointment costs on the [pricing page](/pricing) or in our guide to [private physiotherapy costs](/guides/private-physiotherapy-cost-uk). If you are deciding between private and NHS care, our guide on [whether you need a GP referral](/guides/do-i-need-a-gp-referral-for-physiotherapy) may help."
         ]
       }
     ],
     faqs: [
+      {
+        q: "Can I use a health cash plan for physiotherapy?",
+        a: "Often, yes. Westfield Health, for example, lists physiotherapy among the therapy treatments on its cash plan. You usually pay for the session, then claim money back up to your plan's limits with an itemised receipt. Check your level of cover, and how much you have left, before you book."
+      },
       {
         q: "Is physio covered by Bupa?",
         a: "Bupa says its health insurance customers can get direct access to a muscle, bone and joint specialist, with treatment approved by a pre-authorisation code and subject to the benefits and exclusions of your cover. Check your own policy, and ask Bupa whether the practitioner you want to see is eligible before you book."
@@ -174,12 +211,20 @@ export const guides: Guide[] = [
         a: "It depends on the insurer and the policy. Bupa, AXA Health and Vitality each describe a route that does not need a GP referral for some members, while Aviva describes routes that can start with a GP referral. Ask your insurer which applies to you."
       },
       {
+        q: "What is Healthcode?",
+        a: "Healthcode runs a billing service that lets practitioners send invoices electronically to insurers. WPA, for example, says it accepts invoices this way. You do not need an account yourself; ask your insurer whether the practitioner has to bill it directly or whether you can pay and claim."
+      },
+      {
+        q: "Can I claim for an online physio session?",
+        a: "Sometimes. Some insurers offer video physiotherapy themselves, but whether your policy or cash plan pays for a video session with a practitioner you choose depends on your cover. Ask before you book, and say that the session is by video."
+      },
+      {
         q: "Does PhysioOnClick accept insurance?",
-        a: "You pay us directly and we give you an invoice to claim with. We are not on every insurer's recognised list, and we cannot promise that any insurer will pay. Check with your insurer before booking if you plan to claim."
+        a: "You pay us directly and we give you an invoice to claim with. We are not on every insurer's recognised list, and we cannot promise that any insurer or cash plan will pay. Check with your insurer or plan before booking if you plan to claim."
       },
       {
         q: "What does your invoice include?",
-        a: "A PDF invoice with our HCPC registration number and an itemised line for the session you paid for. Send it to your insurer with your claim form if they ask for it."
+        a: "A PDF invoice, marked paid in full, with the name of the person billed, the session date, the service and how it was delivered, the amount and date paid, an invoice number, and our physiotherapist's name, address, HCPC registration number and CSP membership number."
       }
     ],
     sources: [
@@ -210,14 +255,40 @@ export const guides: Guide[] = [
       {
         label: "Aviva: health insurance optional add-ons",
         url: "https://www.aviva.co.uk/health/health-products/health-insurance/health-options/"
+      },
+      {
+        label: "WPA: information for healthcare providers",
+        url: "https://wpa.org.uk/healthcare-providers"
+      },
+      {
+        label: "Healthcode: solutions for practitioners",
+        url: "https://www.healthcode.co.uk/practitioners/"
+      },
+      {
+        label: "Simplyhealth: claiming questions and answers",
+        url: "https://www.simplyhealth.co.uk/help-and-support/claiming"
+      },
+      {
+        label: "Westfield Health: health cash plan",
+        url: "https://www.westfieldhealth.com/individual/health-cash-plan"
+      },
+      {
+        label: "Westfield Health: how to claim",
+        url: "https://www.westfieldhealth.com/my-westfield/health-cash-plans/how-to-claim"
+      },
+      {
+        label: "HCPC: check the Register",
+        url: "https://www.hcpc-uk.org/check-the-register/"
       }
     ],
     related: [
       { label: "Pricing", href: "/pricing" },
       { label: "How online physiotherapy works", href: "/how-online-physiotherapy-works" },
+      { label: "How much does private physiotherapy cost in the UK?", href: "/guides/private-physiotherapy-cost-uk" },
       { label: "Do I need a GP referral for physiotherapy?", href: "/guides/do-i-need-a-gp-referral-for-physiotherapy" }
     ],
     publishedOn: "2026-10-01",
+    updatedOn: "2026-10-16",
     reviewedOn: PHASE_BC_REVIEWED_ON
   },
   {

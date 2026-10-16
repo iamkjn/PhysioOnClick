@@ -389,6 +389,7 @@ export function guideWebPage(g: Guide, path: string): object {
     author: personRef(),
     reviewedBy: personRef(),
     datePublished: g.publishedOn,
+    ...(g.updatedOn ? { dateModified: g.updatedOn } : {}),
     lastReviewed: g.reviewedOn,
     inLanguage: "en-GB",
     citation: g.sources.map((s) => s.url),

@@ -104,12 +104,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  // Editorial guides carry a truthful lastModified (their review date).
+  // Editorial guides carry a truthful lastModified: the later of their review
+  // date and their last content update.
   const guideEntries = [
     { url: `${base}/guides` },
     ...guides.map((g) => ({
       url: `${base}/guides/${g.slug}`,
-      lastModified: new Date(g.reviewedOn),
+      lastModified: new Date(g.updatedOn && g.updatedOn > g.reviewedOn ? g.updatedOn : g.reviewedOn),
     })),
   ];
 
