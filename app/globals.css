@@ -833,6 +833,15 @@ p {
   margin-right: auto;
 }
 
+.simple-page-hero p + p {
+  margin-top: var(--space-2);
+}
+
+/* The self-check disclaimer box otherwise sits flush against the intro. */
+.simple-page-hero .exlib-selftest-disclaimer {
+  margin-top: var(--space-4);
+}
+
 .simple-page-hero {
   background:
     linear-gradient(135deg, rgba(236, 248, 253, 0.94), rgba(255, 253, 248, 0.82)),
@@ -1187,6 +1196,11 @@ p {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.65rem 1.5rem;
   margin-bottom: 1.35rem;
+}
+
+/* Items stack inside each column div, so match the grid's row gap. */
+.service-conditions-grid p + p {
+  margin-top: 0.65rem;
 }
 
 /* Every sibling grid on this page collapses to one column on phones; this one
@@ -12150,7 +12164,7 @@ textarea:focus {
 .exlib-faq {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .exlib-faq__item {
@@ -12195,7 +12209,10 @@ textarea:focus {
   padding: 0 var(--space-4) var(--space-4);
 }
 
-.exlib-faq__answer p {
+/* Scoped under .exlib-faq so it beats `.exlib-hub__prose p` (declared later)
+   when the accordion sits inside guide prose - otherwise answers render in the
+   question's size and colour. */
+.exlib-faq .exlib-faq__answer p {
   margin: 0;
   font-family: var(--font-sans);
   font-size: var(--text-sm);
@@ -12624,6 +12641,19 @@ textarea:focus {
   margin-bottom: 0;
   font-size: var(--text-xl);
   color: var(--color-navy);
+}
+
+/* Guides and online-physio pages wrap each heading + paragraphs in a <section>.
+   The container's gap only spaces the sections, so space their contents too,
+   and give each new section a little extra room above its heading. */
+.exlib-hub__prose > section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.exlib-hub__prose > section:not(:first-child) {
+  margin-top: var(--space-4);
 }
 
 .exlib-hub__section {
@@ -13723,6 +13753,10 @@ textarea:focus {
   border: 1px solid var(--color-border);
   border-left: 3px solid var(--color-primary-dark);
   border-radius: var(--radius-card);
+}
+
+.exlib-safety p + p {
+  margin-top: var(--space-3);
 }
 
 .exlib-safety__title {
