@@ -26,8 +26,10 @@ const FULL_POINTS = [
 const FULL_CLOSING =
   "If your symptoms are severe, spreading, or you feel unwell, see a doctor rather than starting exercises.";
 
+// Follows the own-risk disclaimer in the same paragraph, so it carries only
+// what the disclaimer doesn't (booking is prompted elsewhere on every page).
 const COMPACT_BODY =
-  "Build up gradually, expect some mild soreness that settles within a day, and stop if pain is sharp, spreading, wakes you at night, or is clearly worse the next morning. These are general exercises - book an assessment if you are unsure or not improving.";
+  "Build up gradually, expect some mild soreness that settles within a day, and stop if pain is sharp, spreading, wakes you at night, or is clearly worse the next morning.";
 
 export function ExerciseSafetyNote({
   variant = "compact",
@@ -41,11 +43,11 @@ export function ExerciseSafetyNote({
       data-variant={variant}
     >
       <h2 className="exlib-safety__title">{HEADING}</h2>
-      <p className="exlib-safety__disclaimer" data-exercise-disclaimer>
-        <strong>{EXERCISE_DISCLAIMER}</strong>
-      </p>
       {variant === "full" ? (
         <>
+          <p className="exlib-safety__disclaimer" data-exercise-disclaimer>
+            <strong>{EXERCISE_DISCLAIMER}</strong>
+          </p>
           <p className="exlib-safety__intro">{FULL_INTRO}</p>
           <ul className="exlib-safety__list">
             {FULL_POINTS.map((point, i) => (
@@ -55,7 +57,12 @@ export function ExerciseSafetyNote({
           <p className="exlib-safety__closing">{FULL_CLOSING}</p>
         </>
       ) : (
-        <p className="exlib-safety__body">{COMPACT_BODY}</p>
+        <p className="exlib-safety__body">
+          <strong className="exlib-safety__disclaimer" data-exercise-disclaimer>
+            {EXERCISE_DISCLAIMER}
+          </strong>{" "}
+          {COMPACT_BODY}
+        </p>
       )}
     </aside>
   );

@@ -47,9 +47,10 @@ describe("ExerciseSafetyNote", () => {
     expect(container).toHaveTextContent(
       "Build up gradually, expect some mild soreness that settles within a day",
     );
-    expect(container).toHaveTextContent(
-      "book an assessment if you are unsure or not improving",
-    );
+    // One paragraph: the own-risk disclaimer, then the general guidance.
+    const paragraphs = container.querySelectorAll("p");
+    expect(paragraphs).toHaveLength(1);
+    expect(paragraphs[0].textContent).toMatch(/^This is general information only\..*Build up gradually/);
 
     expect(container.querySelectorAll("li")).toHaveLength(0);
     expect(container.querySelector("ul")).toBeNull();

@@ -388,11 +388,6 @@ export default async function ExerciseDetailPage({
           <Reveal direction="up">
             <div className="section-heading">
               <h2>Part of these recovery programmes</h2>
-              <p>
-                This exercise is one step in a staged plan for the conditions
-                below. Each link opens the full programme and shows where this
-                exercise fits.
-              </p>
             </div>
           </Reveal>
           <ul className="exlib-ex-page__programmes-list">
@@ -418,7 +413,6 @@ export default async function ExerciseDetailPage({
           <Reveal direction="up">
             <div className="section-heading">
               <h2>Related exercises</h2>
-              <p>Other exercises from the library that pair well with this one.</p>
             </div>
           </Reveal>
           <div className="exlib-ex-grid">
@@ -457,11 +451,6 @@ export default async function ExerciseDetailPage({
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">This exercise is generic - you&apos;re not</span>
           <h2>Get a plan personalised to you</h2>
-          <p>
-            Book a £{initialAssessmentPrice} online assessment with an
-            HCPC-registered physiotherapist and get a rehab plan matched to your
-            condition and stage - not a generic starting point.
-          </p>
           <TrackedBookLink
             className="button secondary cta-white"
             href={bookingHref}

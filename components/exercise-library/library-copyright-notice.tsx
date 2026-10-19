@@ -19,14 +19,12 @@ export function LibraryCopyrightNotice({
       className={inset ? "exlib-copyright" : "site-shell exlib-copyright"}
       aria-label="Copyright notice"
     >
+      {/* Kept to one line: it repeats on every exercise, blog and service page,
+          and the full permitted-use wording lives in the terms. */}
       <p>
-        <strong>© {year} PhysioOnClick.</strong> {content} our original work. They are free to
-        view for your own personal use. They may not be copied, screenshotted for redistribution, or reused in
-        professional, clinical or commercial material without our written permission.
-      </p>
-      <p>
-        Are you a professional who would like to use our content?{" "}
-        <Link href="/contact">Contact us</Link>. Full details are in our{" "}
+        <strong>© {year} PhysioOnClick.</strong> {content} our original work, free to view for
+        personal use. Any other use needs our written permission:{" "}
+        <Link href="/contact">contact us</Link> or see our{" "}
         <Link href="/terms#intellectual-property">terms</Link>.
       </p>
     </aside>
