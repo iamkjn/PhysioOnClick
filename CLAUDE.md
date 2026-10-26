@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev          # start dev server at http://localhost:3000
 npm run build        # production build
 npm run rebuild      # clean .next then build
-npm run lint         # ESLint via next lint
+npm run lint         # ESLint CLI (flat config in eslint.config.mjs; Next 16 removed next lint)
 npm test             # run tests in watch mode (vitest)
 npm run test:run     # run tests once
 npx vitest run tests/lib/recovery.test.ts   # run a single test file
@@ -24,7 +24,7 @@ Tests live in `tests/`, mirroring the source tree (`tests/lib/`, `tests/app/`, `
 
 ## Architecture
 
-**Stack:** Next.js 15 (App Router) + React 19, Firebase (Auth/Firestore/Storage/Functions), Cal.com (booking), Google Gemini (chat assistant), Resend (email), GSAP (animation), Recharts.
+**Stack:** Next.js 16 (App Router, built with webpack) + React 19, Firebase (Auth/Firestore/Storage/Functions), Cal.com (booking), Google Gemini (chat assistant), Resend (email), GSAP (animation), Recharts.
 
 ### Booking flow (Cal.com-backed, custom UI)
 
@@ -111,6 +111,8 @@ npm run cf-typegen  # regenerate cloudflare-env.d.ts from wrangler.jsonc
 - Secrets are set with `wrangler secret put NAME` (or the dashboard), never in `wrangler.jsonc`.
 - `NEXT_PUBLIC_*` are inlined at **build** time, so they must exist in the build environment — setting them as Worker vars/secrets does nothing.
 - `next.config.mjs` aliases `@firebase/firestore` to its browser build for the server bundle. The client SDK's node build uses gRPC/protobufjs, which calls `new Function()` — workerd forbids that and every SSR'd page 500s. Do not remove that alias.
+- That alias lives in the `webpack()` hook, which Turbopack (Next 16's default bundler) ignores, so `dev` and `build` pass `--webpack`. Don't drop the flag unless the alias is ported to `turbopack.resolveAlias` and verified in `npm run preview`.
+- `middleware.ts` stays an Edge middleware. Next 16 deprecates the filename (the build warns) in favour of `proxy.ts`, but `proxy` is Node-runtime only and OpenNext's Node middleware on workerd is experimental and unsupported. Don't run the middleware-to-proxy codemod.
 - `images.unoptimized` is on: Next's optimizer needs sharp, which Workers lacks. Every image is currently an SVG, which Next passes through anyway.
 
 ### Environment variables

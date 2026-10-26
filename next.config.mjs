@@ -28,8 +28,17 @@ const nextConfig = {
       { pathname: "/specialism-images/**", search: "" }
     ]
   },
+  // No `experimental.viewTransition`: Next 16 removed the flag and turns view
+  // transitions on in the App Router by default (the root crossfade in
+  // app/globals.css still applies).
   experimental: {
-    viewTransition: true,
+    // Next 16.4 type-checks `next build` with the `tsc` CLI by default, which
+    // checks the whole tsconfig project including tests/*.test.ts(x). Those
+    // rely on Vitest globals and were never part of the build's type check
+    // (the compiler-API checker skips test files), so ~400 test-only errors
+    // fail the build. This keeps the Next 15 scope: app code checked, tests
+    // skipped.
+    useTypeScriptCli: false,
   },
   // Strips `x-powered-by: Next.js` — no reason to advertise the framework
   // to anyone probing the live site.
@@ -254,6 +263,9 @@ const nextConfig = {
       },
     ];
   },
+  // Next 16 builds with Turbopack by default, which ignores this function and
+  // so would drop the Firestore alias below. package.json passes `--webpack`
+  // to `next dev` and `next build` (OpenNext runs `npm run build`) to keep it.
   webpack: (config, { isServer }) => {
     if (isServer) {
       // The Firebase *client* SDK ships two builds. Its "node" build talks gRPC
