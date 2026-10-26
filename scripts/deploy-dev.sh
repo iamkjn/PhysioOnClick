@@ -48,7 +48,9 @@ echo "  cal username     : ${NEXT_PUBLIC_CAL_USERNAME}"
 # vice versa for a dev build feeding a later prod build). Always start clean.
 rm -rf .next
 
-npx opennextjs-cloudflare build
+# Next 15 left its 2-year support window on 2026-10-21 and OpenNext now
+# refuses to build it without this flag. Drop the flag after upgrading to Next 16.
+npx opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion
 # Blocks a bundle that would 500 every page (e.g. built with a symlinked
 # node_modules, which took dev down on 2026-10-01 and prod on 2026-10-03).
 node scripts/verify-opennext-build.mjs
