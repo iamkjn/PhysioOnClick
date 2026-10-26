@@ -1,0 +1,10 @@
+# Workers Static Assets response headers (copied into .open-next/assets).
+# Keep fonts and the web app manifest out of Google's page index: Search
+# Console was reporting them as "Crawled - currently not indexed", which
+# fails every validation of that issue. Not applied to favicon.ico (Google's
+# favicon crawler reads it) or to /exercise-images/* (they rank in Google Images).
+/_next/static/media/*
+  X-Robots-Tag: noindex
+
+/site.webmanifest
+  X-Robots-Tag: noindex

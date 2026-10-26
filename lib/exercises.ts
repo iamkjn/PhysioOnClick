@@ -3260,7 +3260,8 @@ export const exercises: Exercise[] = [
       perDay: 1,
       perWeek: 5,
       notes: "Count one rep as one half-turn. Practise turning towards both your left and your right, and keep a surface within reach."
-    }
+    },
+    helpsWith: ["Turning round safely in the kitchen, bathroom and hallway", "Feeling steadier when you change direction", "Practising the moment many falls happen"]
   },
   {
     id: "ex-85",
@@ -5893,7 +5894,8 @@ export const exercises: Exercise[] = [
     tags: ["wrist", "tennis-elbow", "strength-phase"],
     condition: "Lateral epicondylalgia (tennis elbow)",
     stage: "Strength phase",
-    description: "Lifting and lowering a light weight through wrist extension using both phases of the movement, progressing the load on the wrist extensor tendon.",
+    description: "The next step after eccentric wrist extension for tennis elbow: lift and lower a light dumbbell with the wrist.",
+    aka: ["reverse wrist curl", "dumbbell wrist extension"],
     equipment: ["A light dumbbell or a resistance band", "A table or your thigh to rest the forearm on"],
     pose: "gripSqueeze",
     setup: "Sit with your forearm resting along a table or your thigh, palm facing down and your hand just past the edge, holding a light weight.",
