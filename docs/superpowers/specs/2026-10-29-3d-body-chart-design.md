@@ -1,7 +1,7 @@
 # 3D Body Chart — Design
 
 **Date:** 2026-10-29
-**Status:** Approved by owner, awaiting spec review
+**Status:** Approved by owner ("deploy this to the development environment, not live prod")
 **Branch:** `feat/3d-body-chart`
 
 ## Goal
@@ -16,11 +16,14 @@ presentation upgrade, not a data change.
 - No finer-grained pain location (e.g. "left hamstring" as saved data). Saved data stays
   the existing 31 region keys plus `somewhere-else`.
 - No female body variant. Astra's female model is Astra's own work and not openly
-  licensed; the open BodyParts3D data is a single adult male reference. Region-level
+  licensed; the open BodyParts3D data is a single adult male reference. Area-level
   picking is unaffected.
 - No change to red-flag routing, clinical-area derivation, Firestore shape, or old
   assessments.
-- No public anatomy explorer page (separate idea, not this spec).
+- No change to the admin assessment review (see "Admin" below).
+- No zoom (see "Patient experience").
+- No public anatomy explorer page (separate idea).
+- Dev deployment only. Prod needs a separate owner sign-off.
 
 ## Decisions made with the owner
 
@@ -29,159 +32,171 @@ presentation upgrade, not a data change.
 | Main goal | Look more professional; keep the same areas |
 | Look | Muscles + skeleton (like today's chart, in 3D) |
 | Rollout shape | 3D first, flat chart as automatic backup |
+| Environment | Deploy to dev only, never prod |
+
+## Refinements found while planning (2026-10-29)
+
+These came out of testing against the real model data, after the owner approved the
+design:
+
+1. **Areas are per surface point, not per part.** Each vertex carries its area, so a joint
+   area like "Left knee" covers the ends of the femur and tibia as well as the patella. The
+   area lights up where the patient tapped. A per-part mapping would have left the knee and
+   elbow almost untappable, because those joints sit between bones.
+2. **No zoom.** The areas are big enough at full-body size, and pinch/scroll zoom would
+   fight page scrolling on phones. Sideways drag turns the body. Vertical swipes still
+   scroll the page.
+3. **Admin keeps the flat chart.** The admin page renders every assessment at once, inside
+   `<details>`. Browsers cap 3D canvases at about 16 per page, and the flat chart is
+   quicker for Shivaliba to read at a glance. Both charts show the same saved areas.
+4. **Measured size: about 3.5 MB** gzipped (about 300k triangles, quantised), under the
+   5 MB target.
 
 ## Source and licence
 
 - **Geometry:** BodyParts3D 4.0, © The Database Center for Life Science, CC BY 4.0.
-- **Packaging/viewer reference:** Human Atlas by ashemag, MIT,
-  `https://github.com/ashemag/human-atlas` pinned at commit `1c38bf35c254` (the same
-  commit Astra builds on). Its `public/models/atlas.json` + `body-*.bin.gz` already hold
-  BodyParts3D converted to metres / Y-up and lightly simplified.
-- We take files from the upstream repo, never from Astra's CDN.
+- **Packaging:** Human Atlas by ashemag, MIT, `https://github.com/ashemag/human-atlas`
+  pinned at commit `1c38bf35c254a891200d3cedecfd57abebe83d8d`. Its `public/models/`
+  `atlas.json` + `body-*.bin.gz` hold BodyParts3D converted to metres, Y-up, with +X as
+  the patient's left and +Z as the front.
+- We download from that GitHub commit, never from Astra's CDN.
 - Credit line under the model: "Anatomy: BodyParts3D © DBCLS, CC BY 4.0". Full CC BY and
   MIT notices ship in `public/models/body-chart/ATTRIBUTION.md`.
 
 ## Patient experience
 
-1. On "Your concern", the patient sees a 3D body on the warm-paper background (Clarity
-   tokens, not Astra's black). Muscles in a muted warm tone, bones ivory — anatomical but
+1. On "Your concern", the patient sees a 3D body on the warm-paper surface (Clarity
+   tokens, not Astra's black). Muscles are a muted warm tone and bones ivory: anatomical but
    not graphic.
-2. Drag to rotate, pinch/scroll to zoom, and Front / Back / Side buttons. No auto-rotation
-   (respects `prefers-reduced-motion` by default).
-3. Tapping any muscle or bone toggles its region. Every mesh in a selected region is
-   tinted the sky-blue accent; hover/focus tints lighter.
-4. Tooltip shows the plain label plus the structure's anatomical name, e.g.
+2. Sideways drag turns the body (turntable, small tilt allowed). Buttons: Front / Back /
+   Left / Right. Left and Right are the patient's own sides.
+3. Tapping the body toggles the area under the finger. The whole area is tinted the
+   sky-blue accent. On desktop, hover tints the area lightly.
+4. A tooltip shows the plain label plus the anatomical name of the tapped structure, e.g.
    "Left thigh · Rectus femoris".
 5. The selected-area chips, the "Somewhere else / not sure" option, the selected count and
-   everything else on the step stay as they are.
-6. Small credit line under the canvas.
+   the rest of the step behave exactly as now.
+6. Under the canvas: a one-line hint and the credit line.
+7. A small "Use simple chart instead" link is above the model. It is also the keyboard and
+   screen-reader route.
 
 ## Architecture
 
-Five units, each with one job. The wizard and admin swap one import; nothing downstream
-changes.
+The wizard swaps one import. Nothing downstream changes.
 
-### 1. `scripts/build-body-model.mjs` (build-time, run by hand)
+### 1. `lib/body-chart-3d-regions.ts` (pure, build-time only)
 
-- Input: Human Atlas `atlas.json` + `body-*.bin(.gz)` at the pinned commit, downloaded to
-  a scratch directory.
-- Keeps systems `skeletal`, `muscular`, `connective` (738 parts). Drops parts that cannot
-  be tapped from outside or aren't relevant: teeth, gingiva, laryngeal/hyoid/ocular
-  structures, diaphragm and other deep-only parts (explicit exclude list in the script).
-- Re-simplifies with `meshoptimizer` (dev dependency) to a size budget: **target ≤ 5 MB
-  gzipped total, hard cap 6 MB**.
-- Assigns each kept part a region key using unit 2.
-- Writes `public/models/body-chart/manifest.json` (parts: id, name, region, chunk offsets,
-  bounds) and pre-gzipped `chunk-N.bin.gz` files, each well under Workers' 25 MiB
-  per-file limit.
-- Writes `docs/body-chart-3d-mapping.md`: a human-readable part → region table for
-  spot-checking.
+- `ruleForPart(name)` gives each part one of three rules: `exclude` (teeth, larynx, eye,
+  tongue, pelvic floor, deep neck, disks, papillary muscles, diaphragm), `fixed` (skull →
+  head-jaw, hyoid → neck, rotator cuff → shoulder), or a `segment` (arm, leg or trunk).
+- `regionKeyForVertex(rule, side, x, y, z)` splits a segment into areas by height, plus
+  depth for back versus front and for buttock versus hip, plus lateral distance for the
+  trunk "side" area.
+- Side comes from the part name (`left`/`right`), else from the vertex's x sign.
+- Every key it returns is a `BODY_REGIONS` key.
 
-### 2. `lib/body-chart-3d-regions.ts` (pure, tested)
+### 2. `lib/body-model-format.ts` (shared reader/writer + colour helpers)
 
-- `regionForPart(name, bounds): string | null` — rules on the part name (`left`/`right`
-  plus keywords like femur, deltoid, gluteus, calcaneal) and the part's height/centroid
-  for midline or ambiguous parts (vertebrae → neck / upper-back / mid-back / lower-back by
-  level).
-- A small explicit overrides map for parts the rules get wrong, e.g. muscles that span
-  regions (sartorius, latissimus dorsi), assigned by centroid.
-- Side convention: anatomical left/right from the source names. That is the patient's
-  own left/right, which matches the existing region keys.
-- Only returns keys that exist in `BODY_REGIONS` (`lib/body-chart.ts`).
+- One chunk is one merged mesh of at most 65,535 vertices (so indices are Uint16).
+- Each chunk holds Int16 normalised positions (× 2 = metres), Int8 normalised normals,
+  a Uint8 area index per vertex, and Uint16 indices. Each block is 4-byte aligned.
+- `manifest.json`: regions (the `BODY_REGIONS` keys in order), systems, parts (name,
+  system, chunk, vertex/index ranges), and chunks (file, bytes, gzip bytes, counts).
+- Pure helpers: `readChunk`, `writeChunk`, `partForFace`, `baseColors`, `paintColors`,
+  `linearBytes`.
 
-### 3. `components/body-chart-3d.tsx` (client-only viewer)
+### 3. `scripts/build-body-model.ts` (run by hand: `npm run build:body-model`)
 
-- Props identical to today's `BodyChart`: `{ value, onChange?, readOnly?, idPrefix? }`.
-- Uses `three` (new dependency), loaded via dynamic import so it only ships on this step.
-- Loads the manifest and chunks, decompresses with `DecompressionStream('gzip')`, builds
-  batched geometry (few draw calls) with per-part region ids for picking and tinting.
-- Renders on demand (only when the camera or selection changes), not a constant loop.
-- Raycast tap → part → region key → same toggle logic as `BodyChart`, including the
-  `somewhere-else` exclusivity rule.
-- `readOnly`: rotation and zoom still work, selection is disabled (same as the flat chart).
-- Reports `onReady` / `onError` / progress to its parent.
+- Downloads the pinned Human Atlas files into `.cache/` (gitignored).
+- Keeps the skeletal, muscular and connective systems, minus excluded parts.
+- Simplifies with `meshoptimizer` to a 200k-triangle budget, at 2% error and 48 triangles
+  minimum per part.
+- Quantises, bakes the areas, and writes `public/models/body-chart/{manifest.json,
+  chunk-N.bin.gz, ATTRIBUTION.md}` plus `docs/body-chart-3d-mapping.md` (a part → area
+  table for spot-checks).
+- Fails if the gzipped total exceeds 6 MB.
 
-### 4. `components/body-chart-picker.tsx` (chooser)
+### 4. `lib/body-model-loader.ts`
 
-- The component the wizard and admin import. Same props as `BodyChart`.
-- Shows the 3D chart when all of these are true:
-  - WebGL is available;
-  - the browser isn't in data-saver mode (`navigator.connection.saveData` isn't set);
-  - the model loads without error within 10 seconds.
-- Otherwise it renders today's flat `BodyChart`, with no error message.
-- While loading: a calm placeholder with a progress bar and a keyboard-reachable
-  "Use simple chart instead" link (also the route for screen-reader users, since the flat
-  chart has accessible buttons).
-- Once the patient is on the flat chart (via fallback or the link), it never swaps back to
-  3D mid-task.
-- The flat `BodyChart` stays in the codebase unchanged as the fallback.
+- `loadBodyModel()` is memoised per page. It fetches the manifest and chunks, gunzips with
+  `DecompressionStream` when the payload is gzip (checked by magic bytes), and checks sizes.
+- `onBodyModelProgress(listener)` reports download progress.
+- `prefetchBodyModel()` runs at idle time.
+- `canUse3D()` checks for WebGL and `DecompressionStream`, and that data-saver is off. The
+  result is cached.
 
-### 5. `lib/body-model-prefetch.ts`
+### 5. `components/body-chart-selection.tsx` + `toggleRegion` in `lib/body-chart.ts`
 
-- `prefetchBodyModel()` fetches the manifest and chunks into the browser HTTP cache at
-  idle time.
-- Called from `components/booking-flow.tsx` on step 1 (service), so the model is usually
-  cached by the time the assessment opens on step 2. Skipped when data-saver is on.
-- `app/patient/assessment/page.tsx` relies on the picker's own load (no prefetch needed).
+- The "somewhere else" button and the chips, shared by both charts.
+- `toggleRegion(value, key)` holds the existing toggle rule.
+- The flat chart is refactored to use both. Its behaviour is unchanged.
 
-### Integration points
+### 6. `components/body-chart-3d.tsx` (client viewer)
 
-- `components/assessment-wizard.tsx`: `BodyChart` → `BodyChartPicker` (one import, one tag).
-- `components/admin-assessment-review.tsx`: same swap, `readOnly`.
-- `app/globals.css`: styles for the picker, canvas, placeholder and credit line, under the
-  existing body-chart section, using Clarity tokens.
+- three.js and OrbitControls are dynamically imported inside the effect, so they're
+  loaded only on this step.
+- One mesh per chunk, vertex colours, and render on demand.
+- Raycast on tap (pointer moved ≤ 8 px): the hit vertex's area goes to `toggleRegion` and
+  then `onChange`.
+- The canvas uses `touch-action: pan-y`.
+- Calls `onReady` once built. Calls `onError` on load failure or WebGL context loss.
+
+### 7. `components/body-chart-picker.tsx`
+
+- The component the wizard imports. Props: `{ value, onChange }`.
+- Shows the 3D chart when `canUse3D()` is true. Otherwise it shows the flat `BodyChart`
+  with no message.
+- Falls back to the flat chart on `onError`, if not ready within 10 s, or when the
+  patient taps the link. It never swaps back once on the flat chart.
+
+### 8. Prefetch
+
+- `components/booking-flow.tsx` calls `prefetchBodyModel()` on mount (the service step).
+- `/patient/assessment` relies on the chart's own load.
 
 ## Data flow
 
-Tap mesh → part id → region key (from manifest) → `onChange(regions)` → wizard state
-`regions: string[]` → saved as `bodyRegions` / `bodyArea` exactly as today →
-`describeRegions`, `deriveClinicalArea` and `regionToConditionGroups` are unchanged.
+Tap → raycast → vertex area index → `manifest.regions[i]` → `toggleRegion` → wizard
+`regions: string[]` → saved as `bodyRegions` / `bodyArea` exactly as today.
 
 ## Error handling
 
 | Failure | Behaviour |
 |---|---|
-| No WebGL / context lost | Flat chart |
-| Data-saver on | Flat chart, no prefetch |
-| Manifest or chunk fetch fails | Flat chart |
-| Load exceeds 10 s | Flat chart (download is abandoned) |
-| Part with no region (shouldn't happen; build test guards) | Not tappable |
+| No WebGL, no DecompressionStream, data-saver on | Flat chart |
+| Manifest or chunk fetch fails, size mismatch | Flat chart (`onError`) |
+| Not ready within 10 s | Flat chart |
+| WebGL context lost | Flat chart |
+| Tap on empty space | Nothing |
 
-No error UI is shown to the patient in any of these cases. Failures are logged to the
-console for debugging.
-
-## Performance budget
-
-- Model: ≤ 5 MB gzipped target, 6 MB hard cap, enforced by a test that reads the manifest.
-- `three` loaded only by the 3D chart chunk; no change to other pages' JS.
-- Static files served from the Worker's assets; cached by the browser after first load.
+No error UI is shown to the patient. Errors are logged to the console.
 
 ## Testing
 
-- **Unit (`tests/lib/body-chart-3d-regions.test.ts`):** representative names map
-  correctly (left/right, vertebra levels, spanning muscles).
-- **Manifest test (`tests/lib/body-chart-3d-manifest.test.ts`):**
-  - every part maps to a valid `BODY_REGIONS` key;
-  - every one of the 31 regions has at least one part;
-  - total gzipped size is within the cap;
-  - the attribution file exists.
-- **Picker (`tests/components/body-chart-picker.test.tsx`):** with no WebGL in jsdom, the
-  flat chart renders. The fallback link works. Load error and timeout fall back. Existing
-  `body-chart.test.tsx` and wizard tests still pass unchanged.
-- **Manual:** dev deploy, then the owner compares on a real phone (mobile data and wifi)
-  against the current chart. Admin review is checked with an existing assessment.
+- Unit tests for the area rules: name rules, height bands, side handling, and every key
+  being valid and reachable.
+- Unit tests for the binary format and colour helpers.
+- A manifest test against the committed files. It checks:
+  - regions equal `BODY_REGIONS`;
+  - every area is present in the vertex data, with no vertex left without an area;
+  - the gzipped total is ≤ 6 MB;
+  - `ATTRIBUTION.md` exists.
+- Loader tests: memoisation, gzip decoding, retry after failure, progress, and support
+  detection.
+- Picker tests: no-WebGL fallback, error fallback, timeout fallback, the link, and no swap
+  back. The existing flat-chart and wizard tests still pass.
+- Manual: local preview on desktop and a mobile viewport, then the dev site.
 
 ## Rollout
 
-1. Build on `feat/3d-body-chart`, deploy to the dev site only.
-2. The owner compares it with the current chart on their own phone.
-3. Prod only after explicit owner sign-off. The chart has been replaced and restored twice
-   before (late Sept 2026), so no auto-promotion.
-4. Rollback: point the wizard and admin back at `BodyChart` (two imports).
+1. Build on `feat/3d-body-chart` and deploy to dev with `npm run deploy:dev` only.
+2. The owner compares it with the current chart on their phone.
+3. Prod only after explicit owner sign-off, as a separate step.
+4. Rollback: point the wizard back at `BodyChart` (one import).
 
 ## Known limitations
 
 - Single male reference body for all patients.
-- Hands and feet are small in 3D on phones; patients may need to zoom. The region chips
-  and "somewhere else" still cover this.
-- The geometry is educational reference anatomy, not a diagnostic tool.
+- Hands and feet are small on phones. Area bands keep them tappable, and chips confirm
+  what was picked.
+- Educational reference anatomy, not a diagnostic tool.
