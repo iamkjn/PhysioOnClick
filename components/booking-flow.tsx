@@ -22,6 +22,7 @@ import { BookingStepTime } from "@/components/booking-step-time";
 import { BookingStepDone } from "@/components/booking-step-done";
 import { BookingResumeCard, discardDraft } from "@/components/booking-draft-ui";
 import { clearBookingDraft, loadBookingDraft, saveBookingDraft, type BookingDraft } from "@/lib/booking-draft";
+import { prefetchBodyModel } from "@/lib/body-model-loader";
 
 export type BookingConfirmation = {
   uid: string;
@@ -212,6 +213,11 @@ export function BookingFlow() {
         body_part: bodyPart || undefined,
       });
     }
+  }, []);
+
+  // Warm the 3D body chart the assessment shows on the next step.
+  useEffect(() => {
+    prefetchBodyModel();
   }, []);
 
   const service = useMemo(() => bookServiceFor(serviceId), [serviceId]);

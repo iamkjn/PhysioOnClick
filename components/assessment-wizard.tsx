@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
-import { BodyChart } from "@/components/body-chart";
+import { BodyChartPicker } from "@/components/body-chart-picker";
 import { useToast } from "@/components/toast-provider";
 import {
   ASSESSMENT_LIMITS,
@@ -672,7 +672,7 @@ export function AssessmentWizard({
                 </div>
                 {state.regions.length > 0 ? <span>{state.regions.length} selected</span> : null}
               </div>
-              <BodyChart value={state.regions} onChange={(regions) => patch({ regions })} />
+              <BodyChartPicker value={state.regions} onChange={(regions) => patch({ regions })} />
             </div>
 
             <div className="assessment-wizard__field-grid">
