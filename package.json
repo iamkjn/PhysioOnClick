@@ -19,7 +19,8 @@
     "deploy:dev": "bash scripts/deploy-dev.sh",
     "upload": "npm run clean && opennextjs-cloudflare build && node scripts/patch-opennext-worker.mjs && opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
-    "test:rules": "vitest run --config vitest.rules.config.ts"
+    "test:rules": "vitest run --config vitest.rules.config.ts",
+    "build:body-model": "tsx scripts/build-body-model.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -57,6 +58,7 @@
     "eslint-config-next": "^16.4.3",
     "firebase-tools": "^15.23.0",
     "jsdom": "^29.1.1",
+    "meshoptimizer": "^1.3.0",
     "sharp": "^0.34.5",
     "typescript": "^5.8.2",
     "vitest": "^4.1.9",
