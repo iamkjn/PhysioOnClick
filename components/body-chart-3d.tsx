@@ -334,7 +334,10 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
     apiRef.current?.paint(selected, hoverRegion);
   }, [regions, value, hoverRegion]);
 
-  const shown = hover ?? tip;
+  // The last-tapped tooltip only stays while its area is still selected (it may
+  // have been removed via its chip or "Somewhere else").
+  const tipStillSelected = tip !== null && regions !== null && value.includes(regions[tip.region]);
+  const shown = hover ?? (tipStillSelected ? tip : null);
 
   return (
     <div className="body-chart body-chart-3d">
