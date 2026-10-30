@@ -289,6 +289,12 @@ const nextConfig = {
           process.cwd(),
           "node_modules/@firebase/firestore/dist/index.esm2017.js",
         ),
+        // three.js is browser-only: components/body-chart-3d.tsx imports it
+        // dynamically inside an effect that never runs on the server. Without
+        // this, webpack still follows those import()s and bundles the whole
+        // library into the Worker. `false` = empty module; no prefix `$`, so
+        // "three/examples/jsm/..." subpaths are covered too.
+        three: false,
       };
     }
     return config;
