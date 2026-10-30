@@ -97,6 +97,10 @@ describe("segmentBase", () => {
     ["trunk", 0.12, 1.1, 0.02, "side"],
     ["trunk", 0.05, 1.25, 0.08, "chest"],
     ["trunk", 0.05, 1.05, 0.08, "abdomen"],
+    ["trunk", 0.09, 1.05, -0.03, "side"], // back half of the flank at the waist
+    ["trunk", -0.12, 1.2, -0.01, "side"], // right flank at rib level
+    ["trunk", 0.03, 1.1, -0.12, "lower-back"], // just off the midline behind
+    ["trunk", 0.13, 1.38, -0.02, "chest"], // lateral above the armpit line: no side area
     ["back", 0, 1.5, 0.02, "neck"],
     ["back", 0.05, 1.35, 0.0, "upper-back"],
     ["back", 0, 1.2, -0.02, "mid-back"],

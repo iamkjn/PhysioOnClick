@@ -45,8 +45,9 @@ const HEAD = /^(frontal|parietal|occipital|temporal|sphenoid|nasal|zygomatic|pal
 const SHOULDER = /supraspinatus|infraspinatus|teres (major|minor)|subscapularis/;
 
 // Spine and the structures on it: always a back area, split by height only.
-// The vertebral bodies and the scapula's rib-side face sit in front of
-// Z_BACK, so the trunk front/back split would wrongly call them chest/abdomen.
+// The vertebral bodies and the scapula's rib-side face sit well forward of the
+// body's back surface, so the trunk's angle rule would wrongly call them
+// chest/abdomen or side.
 const BACK = /vertebra|^sacrum$|^coccyx$|^(atlas|axis)$|^scapula$|rotator|intertransversari|interspinal|spinalis|longissimus|iliocostalis|levatores costarum|rhomboid|serratus posterior|splenius/;
 
 const ARM = new RegExp(
@@ -101,9 +102,13 @@ const Y = {
   shoulder: 1.3, upperArm: 1.14, elbow: 1.06, forearm: 0.885,
   hip: 0.8, thigh: 0.5, knee: 0.4, lowerLeg: 0.09,
 } as const;
-const Z_BACK = -0.045; // trunk: behind this is "back" (the vertebral bodies sit around -0.04)
+// Trunk: classify by the angle around the body's vertical axis (0° = straight
+// ahead, 180° = straight behind), so the flanks are "side" however narrow the
+// waist is. The axis sits just in front of the spine.
+const TRUNK_AXIS_Z = -0.03;
+const FRONT_MAX_DEG = 55; // within 55° of straight ahead: chest / abdomen
+const BACK_MIN_DEG = 125; // within 55° of straight behind: back areas
 const Z_BUTTOCK = -0.055; // pelvis: behind this is "buttock"
-const SIDE_X = 0.105; // trunk below the shoulders: lateral to this is "side"
 
 export function segmentBase(segment: Segment, x: number, y: number, z: number): string {
   if (segment === "arm") {
@@ -127,13 +132,17 @@ export function segmentBase(segment: Segment, x: number, y: number, z: number): 
     return "lower-back";
   }
   if (y >= Y.neck) return "neck";
-  if (z < Z_BACK) {
+  const angle = (Math.atan2(Math.abs(x), z - TRUNK_AXIS_Z) * 180) / Math.PI;
+  if (angle > BACK_MIN_DEG) {
     if (y >= Y.upperBack) return "upper-back";
     if (y >= Y.midBack) return "mid-back";
     return "lower-back";
   }
-  if (Math.abs(x) >= SIDE_X && y < Y.upperBack) return "side";
-  return y >= Y.chest ? "chest" : "abdomen";
+  if (angle < FRONT_MAX_DEG || y >= Y.upperBack) {
+    // Above the armpits there is no "side" area: lateral points join the chest.
+    return y >= Y.chest ? "chest" : "abdomen";
+  }
+  return "side";
 }
 
 export function regionKeyForVertex(rule: KeptRule, side: Side | null, x: number, y: number, z: number): string {
