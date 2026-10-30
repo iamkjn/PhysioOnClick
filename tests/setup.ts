@@ -17,4 +17,8 @@ window.matchMedia = window.matchMedia || vi.fn().mockImplementation((query: stri
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn(),
 }))
+
+// jsdom has no canvas: getContext() logs "Not implemented" and returns null.
+// Return null quietly; components then fall back to their non-WebGL paths.
+HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext
 }
