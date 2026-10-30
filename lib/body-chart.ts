@@ -114,6 +114,15 @@ export function regionClinical(key: string): string {
   return REGION_BY_KEY.get(key)?.clinical ?? "";
 }
 
+/** The chart's toggle rule: "somewhere-else" is exclusive with every real area. */
+export function toggleRegion(value: string[], key: string): string[] {
+  if (key === SOMEWHERE_ELSE) return value.includes(SOMEWHERE_ELSE) ? [] : [SOMEWHERE_ELSE];
+  const next = new Set(value.filter((k) => k !== SOMEWHERE_ELSE));
+  if (next.has(key)) next.delete(key);
+  else next.add(key);
+  return [...next];
+}
+
 export function deriveClinicalArea(keys: string[]): ClinicalArea {
   const real = keys.filter((k) => REGION_BY_KEY.has(k));
   if (real.length === 0) return "general";

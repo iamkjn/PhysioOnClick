@@ -12,11 +12,12 @@ import { FRONT_MUSCLES, BACK_MUSCLES } from "body-muscles";
 import {
   BODY_REGIONS,
   REGION_MUSCLES,
-  SOMEWHERE_ELSE,
   regionClinical,
   regionLabel,
+  toggleRegion,
   type ChartView,
 } from "@/lib/body-chart";
+import { BodyChartSelection } from "@/components/body-chart-selection";
 
 interface Props {
   value: string[];
@@ -50,22 +51,13 @@ export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }
 
   function toggle(key: string) {
     if (readOnly || !onChange) return;
-    if (key === SOMEWHERE_ELSE) {
-      onChange(selected.has(SOMEWHERE_ELSE) ? [] : [SOMEWHERE_ELSE]);
-      return;
-    }
-    const next = new Set(value.filter((k) => k !== SOMEWHERE_ELSE));
-    if (next.has(key)) next.delete(key);
-    else next.add(key);
-    onChange([...next]);
+    onChange(toggleRegion(value, key));
   }
 
   function onMove(e: React.MouseEvent) {
     const rect = wrapRef.current?.getBoundingClientRect();
     if (rect) setTip({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   }
-
-  const chips = value.map((k) => ({ key: k, label: regionLabel(k) }));
 
   return (
     <div
@@ -153,31 +145,7 @@ export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }
         )}
       </div>
 
-      {!readOnly && (
-        <button
-          type="button"
-          className="body-chart__elsewhere"
-          aria-pressed={selected.has(SOMEWHERE_ELSE)}
-          onClick={() => toggle(SOMEWHERE_ELSE)}
-        >
-          Somewhere else / not sure
-        </button>
-      )}
-
-      {chips.length > 0 && (
-        <ul className="body-chart__chips" aria-label="Selected areas">
-          {chips.map((c) => (
-            <li key={c.key} className="body-chart__chip">
-              {c.label}
-              {!readOnly && (
-                <button type="button" aria-label={`Remove ${c.label}`} onClick={() => toggle(c.key)}>
-                  ×
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      <BodyChartSelection value={value} readOnly={readOnly} onToggle={toggle} />
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   describeRegions,
   deriveSymptomStartDate,
   deriveOnsetPattern,
+  toggleRegion,
 } from "@/lib/body-chart";
 import { allBodyAreaKeys } from "@/lib/body-areas";
 
@@ -106,5 +107,18 @@ describe("deriveSymptomStartDate / deriveOnsetPattern", () => {
     expect(deriveOnsetPattern("months")).toBe("gradual");
     expect(deriveOnsetPattern("since-op")).toBe("post_surgery");
     expect(deriveOnsetPattern("not-sure")).toBe("not_sure");
+  });
+});
+
+describe("toggleRegion", () => {
+  it("adds and removes an area", () => {
+    expect(toggleRegion([], "neck")).toEqual(["neck"]);
+    expect(toggleRegion(["neck", "knee-left"], "neck")).toEqual(["knee-left"]);
+  });
+
+  it("'somewhere-else' replaces every area, and any area replaces 'somewhere-else'", () => {
+    expect(toggleRegion(["neck"], "somewhere-else")).toEqual(["somewhere-else"]);
+    expect(toggleRegion(["somewhere-else"], "somewhere-else")).toEqual([]);
+    expect(toggleRegion(["somewhere-else"], "neck")).toEqual(["neck"]);
   });
 });
