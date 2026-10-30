@@ -6,7 +6,8 @@
 //
 // Each part gets a rule from its name: dropped (deep or irrelevant structures
 // nobody can tap), one fixed area (skull -> head-jaw), or a body segment (arm,
-// leg, trunk) whose vertices are split into areas by height. Splitting per
+// leg, trunk, or back for the spine and the structures on it) whose vertices
+// are split into areas by height. Splitting per
 // vertex rather than per part means a joint area like "Left knee" covers the
 // ends of the femur and tibia as well as the patella, so the area lights up
 // where the patient tapped.
@@ -14,7 +15,7 @@
 // Coordinates: metres, Y up, +X = the patient's left, +Z = the front.
 
 export type Side = "left" | "right";
-export type Segment = "arm" | "leg" | "trunk";
+export type Segment = "arm" | "leg" | "trunk" | "back";
 export type PartRule =
   | { kind: "exclude" }
   | { kind: "fixed"; base: string }
@@ -42,6 +43,11 @@ const EXCLUDE: RegExp[] = [
 
 const HEAD = /^(frontal|parietal|occipital|temporal|sphenoid|nasal|zygomatic|palatine) bone$|^(ethmoid|maxilla|mandible|vomer|major alar cartilage)$/;
 const SHOULDER = /supraspinatus|infraspinatus|teres (major|minor)|subscapularis/;
+
+// Spine and the structures on it: always a back area, split by height only.
+// The vertebral bodies and the scapula's rib-side face sit in front of
+// Z_BACK, so the trunk front/back split would wrongly call them chest/abdomen.
+const BACK = /vertebra|^sacrum$|^coccyx$|^(atlas|axis)$|^scapula$|rotator|intertransversari|interspinal|spinalis|longissimus|iliocostalis|levatores costarum|rhomboid|serratus posterior|splenius/;
 
 const ARM = new RegExp(
   [
@@ -81,6 +87,7 @@ export function ruleForPart(name: string): PartRule {
   if (HEAD.test(n)) return { kind: "fixed", base: "head-jaw" };
   if (n === "hyoid bone") return { kind: "fixed", base: "neck" };
   if (SHOULDER.test(n)) return { kind: "fixed", base: "shoulder" };
+  if (BACK.test(n)) return { kind: "segment", segment: "back" };
   if (ARM.test(n)) return { kind: "segment", segment: "arm" };
   if (LEG.test(n)) return { kind: "segment", segment: "leg" };
   return { kind: "segment", segment: "trunk" };
@@ -112,6 +119,12 @@ export function segmentBase(segment: Segment, x: number, y: number, z: number): 
     if (y >= Y.knee) return "knee";
     if (y >= Y.lowerLeg) return "lower-leg";
     return "foot";
+  }
+  if (segment === "back") {
+    if (y >= Y.neck) return "neck";
+    if (y >= Y.upperBack) return "upper-back";
+    if (y >= Y.midBack) return "mid-back";
+    return "lower-back";
   }
   if (y >= Y.neck) return "neck";
   if (z < Z_BACK) {

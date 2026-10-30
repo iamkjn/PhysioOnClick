@@ -46,6 +46,21 @@ describe("committed 3D body model", () => {
     });
   });
 
+  it("keeps every part's triangles inside its own vertex range", () => {
+    let outOfRange = 0;
+    manifest.chunks.forEach((c, i) => {
+      const raw = gunzipSync(fs.readFileSync(path.join(DIR, c.file)));
+      const { indices } = readChunk(c, raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.length));
+      for (const p of manifest.parts.filter((part) => part.chunk === i)) {
+        for (let k = p.firstIndex; k < p.firstIndex + p.indexCount; k++) {
+          const v = indices[k];
+          if (v < p.firstVertex || v >= p.firstVertex + p.vertexCount) outOfRange++;
+        }
+      }
+    });
+    expect(outOfRange).toBe(0);
+  });
+
   it("ships the CC BY 4.0 and MIT attribution", () => {
     const text = fs.readFileSync(path.join(DIR, "ATTRIBUTION.md"), "utf8");
     expect(text).toMatch(/BodyParts3D/);

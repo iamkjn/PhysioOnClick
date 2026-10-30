@@ -83,7 +83,10 @@ function mappingDoc(rows: MappingRow[]): string {
     .map((r) => {
       const total = [...r.areas.values()].reduce((a, b) => a + b, 0);
       const sorted = [...r.areas.entries()].sort((a, b) => b[1] - a[1]);
-      const areas = sorted.map(([k, n]) => `${k} ${Math.round((n / total) * 100)}%`).join(", ");
+      const areas = sorted
+        .filter(([, n]) => Math.round((n / total) * 100) > 0)
+        .map(([k, n]) => `${k} ${Math.round((n / total) * 100)}%`)
+        .join(", ");
       return { first: sorted[0][0], line: `| ${r.name} | ${r.system} | ${areas} |` };
     })
     .sort((a, b) => a.first.localeCompare(b.first) || a.line.localeCompare(b.line))
@@ -210,7 +213,6 @@ async function main() {
     const normals = new Int8Array(vertexCount * 3);
     const regions = new Uint8Array(vertexCount);
     const side = sideOf(p.name);
-    const areas = new Map<string, number>();
     for (let old = 0; old < remap.length; old++) {
       const v = remap[old];
       if (v === 0xffffffff) continue;
@@ -225,10 +227,22 @@ async function main() {
       const ri = regionIndex.get(key);
       if (ri === undefined) throw new Error(`${p.name}: area "${key}" is not in BODY_REGIONS`);
       regions[v] = ri;
-      areas.set(key, (areas.get(key) ?? 0) + 1);
     }
     const indices = new Uint16Array(simplified.length);
     for (let i = 0; i < simplified.length; i++) indices[i] = simplified[i] + pending.vertexCount;
+
+    const areas = new Map<string, number>();
+    for (let t = 0; t < simplified.length; t += 3) {
+      const [a, b, c] = [simplified[t], simplified[t + 1], simplified[t + 2]];
+      const p = (v: number, k: number) => (positions[v * 3 + k] / 32767) * POSITION_SCALE;
+      const ux = p(b, 0) - p(a, 0), uy = p(b, 1) - p(a, 1), uz = p(b, 2) - p(a, 2);
+      const vx = p(c, 0) - p(a, 0), vy = p(c, 1) - p(a, 1), vz = p(c, 2) - p(a, 2);
+      const area = Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) / 2;
+      for (const v of [a, b, c]) {
+        const key = BODY_REGIONS[regions[v]].key;
+        areas.set(key, (areas.get(key) ?? 0) + area / 3);
+      }
+    }
 
     parts.push({
       name: p.name,

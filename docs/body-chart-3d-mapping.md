@@ -5,79 +5,69 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 
 | Part | System | Areas |
 |---|---|---|
-| First lumbar vertebra | skeletal | abdomen 72%, lower-back 18%, mid-back 10% |
-| Fourth lumbar vertebra | skeletal | abdomen 75%, lower-back 25% |
-| lateral lumbar intertransversarius | muscular | abdomen 85%, mid-back 15% |
-| Lateral lumbar intertransversarius | muscular | abdomen 85%, mid-back 15% |
-| Left external oblique | muscular | abdomen 47%, side-left 28%, chest 24%, lower-back 0%, mid-back 0% |
-| Left lumbar rotator | muscular | abdomen 68%, lower-back 17%, mid-back 15% |
-| Left psoas major | muscular | abdomen 95%, chest 4%, side-left 1%, lower-back 1% |
-| Left twelfth rib | skeletal | abdomen 37%, mid-back 36%, lower-back 27% |
-| medial lumbar intertransversarius | muscular | abdomen 100% |
-| Medial lumbar intertransversarius | muscular | abdomen 100% |
-| Right external oblique | muscular | abdomen 47%, side-right 28%, chest 23%, lower-back 1%, mid-back 1% |
-| Right lumbar rotator | muscular | abdomen 68%, lower-back 16%, mid-back 15% |
-| Right psoas major | muscular | abdomen 92%, chest 5%, lower-back 2%, side-right 1% |
-| Second lumbar vertebra | skeletal | abdomen 90%, lower-back 10% |
-| Third lumbar vertebra | skeletal | abdomen 84%, lower-back 16% |
-| Left gemellus inferior | muscular | buttock-left 80%, hip-left 20% |
-| Left gemellus superior | muscular | buttock-left 72%, hip-left 28% |
-| Left gluteus maximus | muscular | buttock-left 64%, hip-left 32%, thigh-left 4% |
-| Left piriformis | muscular | buttock-left 76%, hip-left 24% |
-| Right gemellus inferior | muscular | buttock-right 86%, hip-right 14% |
-| Right gemellus superior | muscular | buttock-right 71%, hip-right 29% |
-| Right gluteus maximus | muscular | buttock-right 64%, hip-right 32%, thigh-right 4% |
-| Right piriformis | muscular | buttock-right 75%, hip-right 25% |
-| Abdominal part of left pectoralis major | muscular | chest 91%, side-left 9% |
-| Abdominal part of right pectoralis major | muscular | chest 93%, side-right 7% |
+| Left external oblique | muscular | abdomen 46%, side-left 42%, chest 11%, lower-back 1% |
+| Left psoas major | muscular | abdomen 98%, side-left 1%, chest 1% |
+| Linea alba | connective | abdomen 78%, chest 22% |
+| Right external oblique | muscular | abdomen 45%, side-right 42%, chest 11%, lower-back 1% |
+| Right psoas major | muscular | abdomen 97%, side-right 2%, chest 1% |
+| Left gemellus inferior | muscular | buttock-left 55%, hip-left 45% |
+| Left gemellus superior | muscular | buttock-left 58%, hip-left 42% |
+| Left gluteus maximus | muscular | buttock-left 84%, thigh-left 10%, hip-left 6% |
+| Left piriformis | muscular | buttock-left 58%, hip-left 42% |
+| Right gemellus inferior | muscular | buttock-right 65%, hip-right 35% |
+| Right gemellus superior | muscular | buttock-right 56%, hip-right 44% |
+| Right gluteus maximus | muscular | buttock-right 87%, thigh-right 7%, hip-right 6% |
+| Right piriformis | muscular | buttock-right 57%, hip-right 43% |
+| Abdominal part of left pectoralis major | muscular | chest 63%, side-left 37% |
+| Abdominal part of right pectoralis major | muscular | chest 71%, side-right 29% |
 | Body of sternum | skeletal | chest 100% |
 | Clavicular part of left pectoralis major | muscular | chest 100% |
 | Clavicular part of right pectoralis major | muscular | chest 100% |
-| External intercostal muscle | muscular | chest 32%, mid-back 26%, side-left 24%, upper-back 18%, abdomen 0%, lower-back 0% |
-| external intercostal muscle | muscular | chest 32%, mid-back 27%, side-right 24%, upper-back 17%, abdomen 0%, lower-back 0% |
-| First thoracic vertebra | skeletal | chest 68%, upper-back 18%, neck 14% |
 | Left fifth costal cartilage | skeletal | chest 100% |
 | Left first costal cartilage | skeletal | chest 100% |
 | Left first rib | skeletal | chest 100% |
 | Left fourth costal cartilage | skeletal | chest 100% |
-| Left fourth rib | skeletal | chest 53%, upper-back 47% |
-| Left pectoralis minor | muscular | chest 92%, side-left 8% |
+| Left fourth rib | skeletal | chest 66%, upper-back 34% |
+| Left omohyoid | muscular | chest 44%, neck 30%, upper-back 26% |
+| Left pectoralis minor | muscular | chest 87%, side-left 13% |
+| Left scalenus posterior | muscular | chest 51%, neck 49% |
 | Left second costal cartilage | skeletal | chest 100% |
-| Left second rib | skeletal | chest 93%, upper-back 7% |
+| Left second rib | skeletal | chest 96%, upper-back 4% |
 | Left seventh costal cartilage | skeletal | chest 97%, side-left 3% |
 | Left sixth costal cartilage | skeletal | chest 100% |
-| Left sternocleidomastoid | muscular | chest 50%, neck 50% |
-| Left sternohyoid | muscular | chest 55%, neck 45% |
+| Left sternohyoid | muscular | chest 56%, neck 44% |
+| Left sternothyroid | muscular | chest 64%, neck 36% |
 | Left subclavius | muscular | chest 100% |
 | Left third costal cartilage | skeletal | chest 100% |
-| Left third rib | skeletal | chest 57%, upper-back 43% |
-| Linea alba | connective | chest 56%, abdomen 44% |
+| Left third rib | skeletal | chest 71%, upper-back 29% |
 | Manubrium | skeletal | chest 100% |
 | Right fifth costal cartilage | skeletal | chest 100% |
 | Right first costal cartilage | skeletal | chest 100% |
 | Right first rib | skeletal | chest 100% |
 | Right fourth costal cartilage | skeletal | chest 100% |
-| Right fourth rib | skeletal | chest 52%, upper-back 48% |
-| Right pectoralis minor | muscular | chest 92%, side-right 8% |
-| Right scalenus posterior | muscular | chest 57%, neck 43% |
+| Right fourth rib | skeletal | chest 66%, upper-back 34% |
+| Right omohyoid | muscular | chest 44%, neck 31%, upper-back 25% |
+| Right pectoralis minor | muscular | chest 88%, side-right 12% |
+| Right platysma | muscular | chest 50%, neck 48%, upper-back 2% |
 | Right second costal cartilage | skeletal | chest 100% |
-| Right second rib | skeletal | chest 93%, upper-back 7% |
+| Right second rib | skeletal | chest 97%, upper-back 3% |
 | Right seventh costal cartilage | skeletal | chest 93%, side-right 7% |
 | Right sixth costal cartilage | skeletal | chest 100% |
-| Right sternohyoid | muscular | chest 63%, neck 37% |
+| Right sternohyoid | muscular | chest 53%, neck 47% |
+| Right sternothyroid | muscular | chest 71%, neck 29% |
 | Right subclavius | muscular | chest 100% |
 | Right third costal cartilage | skeletal | chest 100% |
-| Right third rib | skeletal | chest 60%, upper-back 40% |
-| Second thoracic vertebra | skeletal | chest 53%, upper-back 47% |
-| Sternocostal part of left pectoralis major | muscular | chest 98%, side-left 2% |
-| Sternocostal part of right pectoralis major | muscular | chest 98%, side-right 2% |
+| Right third rib | skeletal | chest 71%, upper-back 29% |
+| Sternocostal part of left pectoralis major | muscular | chest 94%, side-left 6% |
+| Sternocostal part of right pectoralis major | muscular | chest 94%, side-right 6% |
 | Xiphoid process | skeletal | chest 100% |
-| Humeral head of left flexor carpi ulnaris | muscular | elbow-left 47%, hand-left 45%, forearm-left 8% |
-| Left anconeus | muscular | elbow-left 75%, forearm-left 25% |
-| Left ulna | skeletal | elbow-left 61%, forearm-left 38%, hand-left 1% |
-| Long head of left triceps brachii | muscular | elbow-left 48%, shoulder-left 47%, upper-arm-left 5% |
-| Long head of right triceps brachii | muscular | elbow-right 50%, shoulder-right 44%, upper-arm-right 5% |
-| Right anconeus | muscular | elbow-right 75%, forearm-right 25% |
+| Humeral head of left pronator teres | muscular | elbow-left 61%, forearm-left 37%, upper-arm-left 2% |
+| Left anconeus | muscular | elbow-left 84%, forearm-left 16% |
+| Left brachioradialis | muscular | elbow-left 40%, forearm-left 39%, upper-arm-left 21% |
+| Left supinator | muscular | elbow-left 71%, forearm-left 29% |
+| Humeral head of right pronator teres | muscular | elbow-right 59%, forearm-right 39%, upper-arm-right 2% |
+| Right anconeus | muscular | elbow-right 87%, forearm-right 13% |
+| Right supinator | muscular | elbow-right 72%, forearm-right 28% |
 | Abductor digiti minimi of left foot | muscular | foot-left 100% |
 | Distal phalanx of left big toe | skeletal | foot-left 100% |
 | Distal phalanx of left fourth toe | skeletal | foot-left 100% |
@@ -92,14 +82,11 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Left abductor hallucis | muscular | foot-left 100% |
 | Left calcaneus | skeletal | foot-left 100% |
 | Left cuboid bone | skeletal | foot-left 100% |
-| Left extensor digitorum longus | muscular | foot-left 66%, knee-left 28%, lower-leg-left 6% |
 | Left extensor hallucis brevis | muscular | foot-left 100% |
-| Left fibularis tertius | skeletal | foot-left 80%, lower-leg-left 20% |
 | Left fifth metatarsal bone | skeletal | foot-left 100% |
 | Left first metatarsal bone | skeletal | foot-left 100% |
 | Left flexor accessorius | muscular | foot-left 100% |
 | Left flexor digitorum brevis | muscular | foot-left 100% |
-| Left flexor digitorum longus | muscular | foot-left 76%, lower-leg-left 24% |
 | Left fourth metatarsal bone | skeletal | foot-left 100% |
 | Left intermediate cuneiform bone | skeletal | foot-left 100% |
 | Left lateral cuneiform bone | skeletal | foot-left 100% |
@@ -108,8 +95,6 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Left second metatarsal bone | skeletal | foot-left 100% |
 | Left talus | skeletal | foot-left 100% |
 | Left third metatarsal bone | skeletal | foot-left 100% |
-| Left tibialis anterior | skeletal | foot-left 77%, knee-left 15%, lower-leg-left 8% |
-| Left tibialis posterior | skeletal | foot-left 81%, lower-leg-left 18%, knee-left 1% |
 | Medial head of left flexor hallucis brevis | muscular | foot-left 100% |
 | Middle phalanx of left fourth toe | skeletal | foot-left 100% |
 | Middle phalanx of left little toe | skeletal | foot-left 100% |
@@ -157,14 +142,11 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Right abductor hallucis | muscular | foot-right 100% |
 | Right calcaneus | skeletal | foot-right 100% |
 | Right cuboid bone | skeletal | foot-right 100% |
-| Right extensor digitorum longus | muscular | foot-right 65%, knee-right 29%, lower-leg-right 6% |
 | Right extensor hallucis brevis | muscular | foot-right 100% |
-| Right fibularis tertius | skeletal | foot-right 80%, lower-leg-right 20% |
 | Right fifth metatarsal bone | skeletal | foot-right 100% |
 | Right first metatarsal bone | skeletal | foot-right 100% |
 | Right flexor accessorius | muscular | foot-right 100% |
 | Right flexor digitorum brevis | muscular | foot-right 100% |
-| Right flexor digitorum longus | muscular | foot-right 75%, lower-leg-right 25% |
 | Right fourth metatarsal bone | skeletal | foot-right 100% |
 | Right intermediate cuneiform bone | skeletal | foot-right 100% |
 | Right lateral cuneiform bone | skeletal | foot-right 100% |
@@ -173,8 +155,6 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Right second metatarsal bone | skeletal | foot-right 100% |
 | Right talus | skeletal | foot-right 100% |
 | Right third metatarsal bone | skeletal | foot-right 100% |
-| Right tibialis anterior | skeletal | foot-right 78%, knee-right 15%, lower-leg-right 7% |
-| Right tibialis posterior | skeletal | foot-right 81%, lower-leg-right 18%, knee-right 1% |
 | Second lumbrical of right foot | muscular | foot-right 100% |
 | Second plantar interosseous of right foot | muscular | foot-right 100% |
 | Sesamoid bone of right foot | skeletal | foot-right 100% |
@@ -182,35 +162,47 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Third lumbrical of right foot | muscular | foot-right 100% |
 | Third plantar interosseous of right foot | muscular | foot-right 100% |
 | Transverse head of right adductor hallucis | muscular | foot-right 100% |
-| Humeral head of left pronator teres | muscular | forearm-left 82%, upper-arm-left 10%, elbow-left 8% |
-| Left abductor pollicis longus | muscular | forearm-left 57%, hand-left 43% |
-| Left brachioradialis | muscular | forearm-left 64%, upper-arm-left 23%, elbow-left 13% |
-| Left extensor carpi ulnaris | muscular | forearm-left 72%, hand-left 21%, elbow-left 7% |
-| Left extensor carpi ulnaris | muscular | forearm-left 82%, hand-left 18% |
-| Left extensor digiti minimi | muscular | forearm-left 41%, hand-left 36%, elbow-left 23% |
-| Left extensor indicis | muscular | forearm-left 60%, hand-left 40% |
-| Left flexor digitorum superficialis | muscular | forearm-left 55%, elbow-left 45% |
-| Left flexor pollicis longus | muscular | forearm-left 70%, hand-left 30% |
+| Humeral head of left flexor carpi ulnaris | muscular | forearm-left 59%, elbow-left 34%, hand-left 6% |
+| Left abductor pollicis longus | muscular | forearm-left 94%, hand-left 6% |
+| Left extensor carpi radialis brevis | muscular | forearm-left 65%, elbow-left 25%, upper-arm-left 7%, hand-left 3% |
+| Left extensor carpi radialis longus | muscular | forearm-left 51%, elbow-left 36%, upper-arm-left 9%, hand-left 4% |
+| Left extensor carpi ulnaris | muscular | forearm-left 74%, elbow-left 19%, hand-left 7% |
+| Left extensor carpi ulnaris | muscular | forearm-left 93%, hand-left 7% |
+| Left extensor digiti minimi | muscular | forearm-left 60%, elbow-left 23%, hand-left 17% |
+| Left extensor digitorum | muscular | forearm-left 45%, hand-left 38%, elbow-left 16% |
+| Left extensor pollicis brevis | muscular | forearm-left 77%, hand-left 23% |
+| Left extensor pollicis longus | muscular | forearm-left 76%, hand-left 24% |
+| Left flexor carpi radialis | muscular | forearm-left 64%, elbow-left 32%, hand-left 4% |
+| Left flexor digitorum profundus | muscular | forearm-left 54%, hand-left 34%, elbow-left 12% |
+| Left flexor digitorum superficialis | muscular | forearm-left 51%, hand-left 29%, elbow-left 20% |
+| Left flexor digitorum superficialis | muscular | forearm-left 95%, elbow-left 5% |
+| Left flexor pollicis longus | muscular | forearm-left 85%, hand-left 15% |
 | Left pronator quadratus | muscular | forearm-left 100% |
-| Left radius | skeletal | forearm-left 53%, elbow-left 40%, hand-left 7% |
-| Left supinator | muscular | forearm-left 52%, elbow-left 48% |
-| Ulnar head of left flexor carpi ulnaris | muscular | forearm-left 94%, elbow-left 6% |
-| Ulnar head of left pronator teres | muscular | forearm-left 76%, elbow-left 24% |
-| Humeral head of right pronator teres | muscular | forearm-right 83%, upper-arm-right 10%, elbow-right 7% |
-| Right abductor pollicis longus | muscular | forearm-right 57%, hand-right 43% |
-| Right brachioradialis | muscular | forearm-right 61%, upper-arm-right 24%, elbow-right 15% |
-| Right extensor carpi ulnaris | muscular | forearm-right 72%, hand-right 21%, elbow-right 7% |
-| Right extensor carpi ulnaris | muscular | forearm-right 83%, hand-right 17% |
-| Right extensor digiti minimi | muscular | forearm-right 43%, hand-right 32%, elbow-right 25% |
-| Right extensor indicis | muscular | forearm-right 64%, hand-right 36% |
-| Right flexor digitorum superficialis | muscular | forearm-right 63%, elbow-right 37% |
-| Right flexor pollicis longus | muscular | forearm-right 69%, hand-right 31% |
+| Left radius | skeletal | forearm-left 70%, elbow-left 30% |
+| Left ulna | skeletal | forearm-left 54%, elbow-left 46% |
+| Ulnar head of left flexor carpi ulnaris | muscular | forearm-left 64%, elbow-left 36% |
+| Ulnar head of left pronator teres | muscular | forearm-left 56%, elbow-left 44% |
+| Humeral head of right flexor carpi ulnaris | muscular | forearm-right 63%, elbow-right 31%, hand-right 7% |
+| Right abductor pollicis longus | muscular | forearm-right 95%, hand-right 5% |
+| Right brachioradialis | muscular | forearm-right 40%, elbow-right 39%, upper-arm-right 21% |
+| Right extensor carpi radialis brevis | muscular | forearm-right 58%, elbow-right 34%, upper-arm-right 6%, hand-right 2% |
+| Right extensor carpi radialis longus | muscular | forearm-right 47%, elbow-right 39%, upper-arm-right 11%, hand-right 3% |
+| Right extensor carpi ulnaris | muscular | forearm-right 72%, elbow-right 21%, hand-right 7% |
+| Right extensor carpi ulnaris | muscular | forearm-right 93%, hand-right 7% |
+| Right extensor digiti minimi | muscular | forearm-right 66%, hand-right 17%, elbow-right 16% |
+| Right extensor digitorum | muscular | forearm-right 49%, hand-right 39%, elbow-right 12% |
+| Right extensor pollicis brevis | muscular | forearm-right 77%, hand-right 23% |
+| Right extensor pollicis longus | muscular | forearm-right 76%, hand-right 24% |
+| Right flexor carpi radialis | muscular | forearm-right 70%, elbow-right 26%, hand-right 4% |
+| Right flexor digitorum profundus | muscular | forearm-right 55%, hand-right 35%, elbow-right 10% |
+| Right flexor digitorum superficialis | muscular | forearm-right 49%, hand-right 27%, elbow-right 24% |
+| Right flexor digitorum superficialis | muscular | forearm-right 97%, elbow-right 3% |
+| Right flexor pollicis longus | muscular | forearm-right 85%, hand-right 15% |
 | Right pronator quadratus | muscular | forearm-right 100% |
-| Right radius | skeletal | forearm-right 63%, elbow-right 32%, hand-right 5% |
-| Right supinator | muscular | forearm-right 52%, elbow-right 48% |
-| Right ulna | skeletal | forearm-right 47%, elbow-right 46%, hand-right 7% |
-| Ulnar head of right flexor carpi ulnaris | muscular | forearm-right 95%, elbow-right 5% |
-| Ulnar head of right pronator teres | muscular | forearm-right 76%, elbow-right 24% |
+| Right radius | skeletal | forearm-right 73%, elbow-right 26%, hand-right 1% |
+| Right ulna | skeletal | forearm-right 63%, elbow-right 36%, hand-right 1% |
+| Ulnar head of right flexor carpi ulnaris | muscular | forearm-right 71%, elbow-right 29% |
+| Ulnar head of right pronator teres | muscular | forearm-right 51%, elbow-right 49% |
 | Abductor digiti minimi of left hand | muscular | hand-left 100% |
 | Distal phalanx of left index finger | skeletal | hand-left 100% |
 | Distal phalanx of left little finger | skeletal | hand-left 100% |
@@ -220,23 +212,17 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Flexor digiti minimi brevis of left hand | muscular | hand-left 100% |
 | Left abductor pollicis brevis | muscular | hand-left 94%, forearm-left 6% |
 | Left capitate | skeletal | hand-left 100% |
-| Left extensor carpi radialis longus | muscular | hand-left 42%, upper-arm-left 28%, forearm-left 20%, elbow-left 11% |
-| Left extensor digitorum | muscular | hand-left 87%, elbow-left 9%, forearm-left 4% |
-| Left extensor pollicis brevis | muscular | hand-left 63%, forearm-left 37% |
-| Left extensor pollicis longus | muscular | hand-left 67%, forearm-left 33% |
+| Left extensor indicis | muscular | hand-left 55%, forearm-left 45% |
 | Left fifth metacarpal bone | skeletal | hand-left 100% |
 | Left first metacarpal bone | skeletal | hand-left 100% |
-| Left flexor carpi radialis | muscular | hand-left 49%, elbow-left 31%, forearm-left 21% |
-| Left flexor digitorum profundus | muscular | hand-left 62%, forearm-left 30%, elbow-left 8% |
-| Left flexor digitorum superficialis | muscular | hand-left 58%, elbow-left 38%, forearm-left 4% |
 | Left flexor pollicis brevis | muscular | hand-left 100% |
 | Left fourth metacarpal bone | skeletal | hand-left 100% |
 | Left hamate | skeletal | hand-left 100% |
-| Left lunate | skeletal | hand-left 83%, forearm-left 17% |
+| Left lunate | skeletal | hand-left 73%, forearm-left 27% |
 | Left opponens pollicis | muscular | hand-left 100% |
-| Left palmaris longus | muscular | hand-left 83%, elbow-left 12%, forearm-left 5% |
+| Left palmaris longus | muscular | hand-left 41%, forearm-left 32%, elbow-left 27% |
 | Left pisiform | skeletal | hand-left 100% |
-| Left scaphoid | skeletal | hand-left 74%, forearm-left 26% |
+| Left scaphoid | skeletal | hand-left 69%, forearm-left 31% |
 | Left second metacarpal bone | skeletal | hand-left 100% |
 | Left third metacarpal bone | skeletal | hand-left 100% |
 | Left trapezium | skeletal | hand-left 100% |
@@ -265,7 +251,6 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Distal phalanx of right ring finger | skeletal | hand-right 100% |
 | Distal phalanx of right thumb | skeletal | hand-right 100% |
 | Flexor digiti minimi brevis of right hand | muscular | hand-right 100% |
-| Humeral head of right flexor carpi ulnaris | muscular | hand-right 47%, elbow-right 45%, forearm-right 7% |
 | Middle phalanx of right index finger | skeletal | hand-right 100% |
 | Middle phalanx of right little finger | skeletal | hand-right 100% |
 | Middle phalanx of right middle finger | skeletal | hand-right 100% |
@@ -279,23 +264,17 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Proximal phalanx of right thumb | skeletal | hand-right 100% |
 | Right abductor pollicis brevis | muscular | hand-right 95%, forearm-right 5% |
 | Right capitate | skeletal | hand-right 100% |
-| Right extensor carpi radialis longus | muscular | hand-right 45%, upper-arm-right 26%, forearm-right 20%, elbow-right 10% |
-| Right extensor digitorum | muscular | hand-right 87%, elbow-right 9%, forearm-right 4% |
-| Right extensor pollicis brevis | muscular | hand-right 61%, forearm-right 39% |
-| Right extensor pollicis longus | muscular | hand-right 69%, forearm-right 31% |
+| Right extensor indicis | muscular | hand-right 51%, forearm-right 49% |
 | Right fifth metacarpal bone | skeletal | hand-right 100% |
 | Right first metacarpal bone | skeletal | hand-right 100% |
-| Right flexor carpi radialis | muscular | hand-right 52%, elbow-right 31%, forearm-right 17% |
-| Right flexor digitorum profundus | muscular | hand-right 62%, forearm-right 30%, elbow-right 8% |
-| Right flexor digitorum superficialis | muscular | hand-right 56%, elbow-right 39%, forearm-right 5% |
 | Right flexor pollicis brevis | muscular | hand-right 100% |
 | Right fourth metacarpal bone | skeletal | hand-right 100% |
 | Right hamate | skeletal | hand-right 100% |
-| Right lunate | skeletal | hand-right 86%, forearm-right 14% |
+| Right lunate | skeletal | hand-right 73%, forearm-right 27% |
 | Right opponens pollicis | muscular | hand-right 100% |
-| Right palmaris longus | muscular | hand-right 84%, elbow-right 13%, forearm-right 4% |
+| Right palmaris longus | muscular | hand-right 41%, forearm-right 35%, elbow-right 24% |
 | Right pisiform | skeletal | hand-right 100% |
-| Right scaphoid | skeletal | hand-right 76%, forearm-right 24% |
+| Right scaphoid | skeletal | hand-right 71%, forearm-right 29% |
 | Right second metacarpal bone | skeletal | hand-right 100% |
 | Right third metacarpal bone | skeletal | hand-right 100% |
 | Right trapezium | skeletal | hand-right 100% |
@@ -326,154 +305,153 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Right zygomatic bone | skeletal | head-jaw 100% |
 | Sphenoid bone | skeletal | head-jaw 100% |
 | Vomer | skeletal | head-jaw 100% |
-| Left femur | skeletal | hip-left 48%, knee-left 36%, thigh-left 15% |
-| Left gluteus medius | muscular | hip-left 73%, buttock-left 27% |
+| Left adductor minimus | muscular | hip-left 51%, thigh-left 49% |
+| Left gluteus medius | muscular | hip-left 60%, buttock-left 40% |
 | Left gluteus minimus | muscular | hip-left 100% |
-| Left hip bone | skeletal | hip-left 78%, buttock-left 22% |
+| Left hip bone | skeletal | hip-left 79%, buttock-left 21% |
 | Left iliacus | muscular | hip-left 100% |
-| Left iliotibial tract | skeletal | hip-left 29%, knee-left 27%, lower-leg-left 21%, thigh-left 19%, buttock-left 4% |
 | Left obturator externus | muscular | hip-left 100% |
-| Left obturator internus | muscular | hip-left 94%, buttock-left 6% |
-| Left pectineus | muscular | hip-left 81%, thigh-left 19% |
-| Left quadratus femoris | muscular | hip-left 96%, buttock-left 4% |
-| Left sartorius | muscular | hip-left 55%, lower-leg-left 38%, thigh-left 6%, knee-left 1% |
-| Left semimembranosus | muscular | hip-left 42%, thigh-left 39%, knee-left 19%, lower-leg-left 0% |
+| Left obturator internus | muscular | hip-left 80%, buttock-left 20% |
+| Left pectineus | muscular | hip-left 76%, thigh-left 24% |
+| Left quadratus femoris | muscular | hip-left 75%, buttock-left 25% |
 | Left tensor fasciae latae | connective | hip-left 100% |
-| Left vastus medialis | muscular | hip-left 37%, knee-left 33%, thigh-left 30% |
-| Right femur | skeletal | hip-right 55%, knee-right 32%, thigh-right 13% |
-| Right gluteus medius | muscular | hip-right 73%, buttock-right 27% |
+| Right adductor minimus | muscular | hip-right 56%, thigh-right 44% |
+| Right gluteus medius | muscular | hip-right 62%, buttock-right 38% |
 | Right gluteus minimus | muscular | hip-right 100% |
-| Right hip bone | skeletal | hip-right 76%, buttock-right 24% |
+| Right hip bone | skeletal | hip-right 79%, buttock-right 21% |
 | Right iliacus | muscular | hip-right 100% |
-| Right iliotibial tract | skeletal | hip-right 31%, knee-right 28%, lower-leg-right 20%, thigh-right 17%, buttock-right 4% |
 | Right obturator externus | muscular | hip-right 100% |
-| Right obturator internus | muscular | hip-right 94%, buttock-right 6% |
-| Right pectineus | muscular | hip-right 80%, thigh-right 20% |
-| Right quadratus femoris | muscular | hip-right 97%, buttock-right 3% |
-| Right sartorius | muscular | hip-right 54%, lower-leg-right 38%, thigh-right 7%, knee-right 1% |
-| Right semimembranosus | muscular | hip-right 47%, thigh-right 34%, knee-right 18%, lower-leg-right 1% |
+| Right obturator internus | muscular | hip-right 81%, buttock-right 19% |
+| Right pectineus | muscular | hip-right 79%, thigh-right 21% |
+| Right quadratus femoris | muscular | hip-right 76%, buttock-right 24% |
 | Right tensor fasciae latae | connective | hip-right 100% |
-| Right vastus intermedius | muscular | hip-right 42%, knee-right 38%, thigh-right 20% |
-| Right vastus medialis | muscular | hip-right 39%, knee-right 33%, thigh-right 27% |
-| Lateral head of left gastrocnemius | muscular | knee-left 54%, lower-leg-left 35%, thigh-left 12% |
 | Left patella | skeletal | knee-left 100% |
-| Left popliteus | muscular | knee-left 52%, lower-leg-left 48% |
-| Left rectus femoris | muscular | knee-left 53%, hip-left 35%, thigh-left 11%, lower-leg-left 2% |
-| Left soleus | muscular | knee-left 73%, lower-leg-left 27% |
-| Left tibia | skeletal | knee-left 48%, lower-leg-left 32%, foot-left 20% |
-| Left vastus intermedius | muscular | knee-left 43%, hip-left 42%, thigh-left 15% |
-| Long head of left biceps femoris | muscular | knee-left 50%, thigh-left 37%, buttock-left 12%, hip-left 1% |
-| Medial head of left gastrocnemius | muscular | knee-left 49%, lower-leg-left 31%, thigh-left 20% |
-| Lateral head of right gastrocnemius | muscular | knee-right 62%, lower-leg-right 28%, thigh-right 10% |
-| Long head of right biceps femoris | muscular | knee-right 55%, thigh-right 34%, buttock-right 10%, hip-right 1% |
-| Medial head of right gastrocnemius | muscular | knee-right 49%, lower-leg-right 29%, thigh-right 22% |
+| Left plantaris | muscular | knee-left 44%, lower-leg-left 36%, thigh-left 11%, foot-left 8% |
+| Left popliteus | muscular | knee-left 62%, lower-leg-left 38% |
 | Right patella | skeletal | knee-right 100% |
-| Right popliteus | muscular | knee-right 52%, lower-leg-right 48% |
-| Right rectus femoris | muscular | knee-right 50%, hip-right 34%, thigh-right 12%, lower-leg-right 3% |
-| Right soleus | muscular | knee-right 72%, lower-leg-right 28% |
-| Right tibia | skeletal | knee-right 55%, lower-leg-right 25%, foot-right 21% |
-| Fifth lumbar vertebra | skeletal | lower-back 53%, abdomen 47% |
-| Left iliocostalis lumborum | muscular | lower-back 64%, mid-back 32%, upper-back 4% |
-| Left serratus posterior inferior | muscular | lower-back 54%, mid-back 46% |
-| Right iliocostalis lumborum | muscular | lower-back 64%, mid-back 31%, upper-back 5% |
-| Right serratus posterior inferior | muscular | lower-back 51%, mid-back 49% |
-| Sacrum | skeletal | lower-back 90%, abdomen 10% |
+| Right plantaris | muscular | knee-right 44%, lower-leg-right 39%, thigh-right 10%, foot-right 7% |
+| Right popliteus | muscular | knee-right 62%, lower-leg-right 38% |
+| Fifth lumbar vertebra | skeletal | lower-back 100% |
+| First lumbar vertebra | skeletal | lower-back 57%, mid-back 43% |
+| Fourth lumbar vertebra | skeletal | lower-back 100% |
+| lateral lumbar intertransversarius | muscular | lower-back 78%, mid-back 22% |
+| Lateral lumbar intertransversarius | muscular | lower-back 78%, mid-back 22% |
+| Left iliocostalis lumborum | muscular | lower-back 70%, mid-back 30%, upper-back 1% |
+| Left lumbar rotator | muscular | lower-back 77%, mid-back 23% |
+| medial lumbar intertransversarius | muscular | lower-back 100% |
+| Medial lumbar intertransversarius | muscular | lower-back 100% |
+| Right iliocostalis lumborum | muscular | lower-back 69%, mid-back 30%, upper-back 1% |
+| Right lumbar rotator | muscular | lower-back 77%, mid-back 23% |
+| Sacrum | skeletal | lower-back 100% |
+| Second lumbar vertebra | skeletal | lower-back 100% |
 | set of interspinales lumborum | muscular | lower-back 100% |
 | Set of interspinales lumborum | muscular | lower-back 100% |
-| Left calcaneal tendon | connective | lower-leg-left 58%, foot-left 42% |
-| Left extensor hallucis longus | muscular | lower-leg-left 68%, foot-left 32% |
-| Left fibula | skeletal | lower-leg-left 42%, foot-left 30%, knee-left 28% |
-| Left fibularis brevis | skeletal | lower-leg-left 68%, foot-left 32% |
-| Left fibularis longus | skeletal | lower-leg-left 48%, foot-left 42%, knee-left 10% |
-| Left flexor hallucis longus | muscular | lower-leg-left 78%, foot-left 22% |
-| Left gracilis | muscular | lower-leg-left 51%, knee-left 24%, hip-left 16%, thigh-left 9% |
-| Left plantaris | muscular | lower-leg-left 55%, knee-left 19%, foot-left 14%, thigh-left 12% |
-| Left semitendinosus | muscular | lower-leg-left 67%, buttock-left 25%, hip-left 4%, knee-left 3%, thigh-left 1% |
-| Right calcaneal tendon | connective | lower-leg-right 57%, foot-right 43% |
-| Right extensor hallucis longus | muscular | lower-leg-right 66%, foot-right 34% |
-| Right fibula | skeletal | lower-leg-right 45%, knee-right 29%, foot-right 27% |
-| Right fibularis brevis | skeletal | lower-leg-right 69%, foot-right 31% |
-| Right fibularis longus | skeletal | lower-leg-right 48%, foot-right 43%, knee-right 10% |
-| Right flexor hallucis longus | muscular | lower-leg-right 77%, foot-right 23% |
-| Right gracilis | muscular | lower-leg-right 52%, knee-right 24%, hip-right 17%, thigh-right 8% |
-| Right plantaris | muscular | lower-leg-right 58%, knee-right 24%, thigh-right 10%, foot-right 8% |
-| Right semitendinosus | muscular | lower-leg-right 67%, buttock-right 24%, hip-right 4%, knee-right 4%, thigh-right 2% |
-| Eighth thoracic vertebra | skeletal | mid-back 89%, chest 11% |
-| Eleventh thoracic vertebra | skeletal | mid-back 79%, chest 21% |
-| Left eighth rib | skeletal | mid-back 63%, side-left 37% |
-| Left eleventh rib | skeletal | mid-back 61%, abdomen 16%, side-left 10%, lower-back 7%, chest 7% |
-| Left ninth rib | skeletal | mid-back 73%, side-left 27% |
-| Left seventh rib | skeletal | mid-back 38%, side-left 34%, upper-back 24%, chest 5% |
-| Left spinalis thoracis | muscular | mid-back 47%, upper-back 28%, lower-back 26% |
-| Left tenth rib | skeletal | mid-back 71%, side-left 29% |
-| Ninth thoracic vertebra | skeletal | mid-back 87%, chest 13% |
-| Right eighth rib | skeletal | mid-back 61%, side-right 39% |
-| Right eleventh rib | skeletal | mid-back 61%, side-right 15%, abdomen 11%, chest 7%, lower-back 6% |
-| Right ninth rib | skeletal | mid-back 69%, side-right 31% |
-| Right seventh rib | skeletal | mid-back 39%, side-right 35%, upper-back 22%, chest 4% |
-| Right spinalis thoracis | muscular | mid-back 46%, upper-back 28%, lower-back 26% |
-| Right tenth rib | skeletal | mid-back 72%, side-right 28% |
-| Right twelfth rib | skeletal | mid-back 38%, abdomen 35%, lower-back 28% |
-| Set of left levatores costarum breves | muscular | mid-back 70%, upper-back 23%, chest 6%, neck 1% |
-| Set of left levatores costarum longi | muscular | mid-back 60%, upper-back 29%, chest 10%, neck 0% |
-| Set of right levatores costarum breves | muscular | mid-back 70%, upper-back 22%, chest 7%, neck 1% |
-| Set of right levatores costarum longi | muscular | mid-back 61%, upper-back 28%, chest 10%, neck 1% |
-| Seventh thoracic vertebra | skeletal | mid-back 49%, upper-back 42%, chest 9% |
-| Tenth thoracic vertebra | skeletal | mid-back 85%, chest 15% |
-| Twelfth thoracic vertebra | skeletal | mid-back 55%, abdomen 36%, chest 9%, lower-back 1% |
+| Third lumbar vertebra | skeletal | lower-back 100% |
+| Lateral head of left gastrocnemius | muscular | lower-leg-left 68%, knee-left 31%, thigh-left 1% |
+| Left calcaneal tendon | connective | lower-leg-left 77%, foot-left 23% |
+| Left extensor digitorum longus | muscular | lower-leg-left 60%, foot-left 28%, knee-left 11% |
+| Left extensor hallucis longus | muscular | lower-leg-left 72%, foot-left 28% |
+| Left fibula | skeletal | lower-leg-left 67%, knee-left 17%, foot-left 16% |
+| Left fibularis brevis | skeletal | lower-leg-left 80%, foot-left 20% |
+| Left fibularis longus | skeletal | lower-leg-left 69%, knee-left 18%, foot-left 13% |
+| Left fibularis tertius | skeletal | lower-leg-left 52%, foot-left 48% |
+| Left flexor digitorum longus | muscular | lower-leg-left 60%, foot-left 40% |
+| Left flexor hallucis longus | muscular | lower-leg-left 75%, foot-left 25% |
+| Left soleus | muscular | lower-leg-left 92%, knee-left 8% |
+| Left tibia | skeletal | lower-leg-left 64%, knee-left 29%, foot-left 7% |
+| Left tibialis anterior | skeletal | lower-leg-left 85%, knee-left 8%, foot-left 7% |
+| Left tibialis posterior | skeletal | lower-leg-left 77%, foot-left 20%, knee-left 3% |
+| Medial head of left gastrocnemius | muscular | lower-leg-left 71%, knee-left 28%, thigh-left 1% |
+| Lateral head of right gastrocnemius | muscular | lower-leg-right 69%, knee-right 30%, thigh-right 1% |
+| Medial head of right gastrocnemius | muscular | lower-leg-right 73%, knee-right 26%, thigh-right 1% |
+| Right calcaneal tendon | connective | lower-leg-right 78%, foot-right 22% |
+| Right extensor digitorum longus | muscular | lower-leg-right 61%, foot-right 28%, knee-right 11% |
+| Right extensor hallucis longus | muscular | lower-leg-right 72%, foot-right 28% |
+| Right fibula | skeletal | lower-leg-right 67%, knee-right 20%, foot-right 13% |
+| Right fibularis brevis | skeletal | lower-leg-right 79%, foot-right 21% |
+| Right fibularis longus | skeletal | lower-leg-right 72%, knee-right 16%, foot-right 11% |
+| Right fibularis tertius | skeletal | lower-leg-right 56%, foot-right 44% |
+| Right flexor digitorum longus | muscular | lower-leg-right 55%, foot-right 45% |
+| Right flexor hallucis longus | muscular | lower-leg-right 76%, foot-right 24% |
+| Right soleus | muscular | lower-leg-right 91%, knee-right 9% |
+| Right tibia | skeletal | lower-leg-right 57%, knee-right 35%, foot-right 8% |
+| Right tibialis anterior | skeletal | lower-leg-right 85%, knee-right 8%, foot-right 7% |
+| Right tibialis posterior | skeletal | lower-leg-right 77%, foot-right 21%, knee-right 2% |
+| Eighth thoracic vertebra | skeletal | mid-back 100% |
+| Eleventh thoracic vertebra | skeletal | mid-back 100% |
+| Left eighth rib | skeletal | mid-back 54%, side-left 46% |
+| Left eleventh rib | skeletal | mid-back 59%, abdomen 20%, lower-back 13%, side-left 7%, chest 2% |
+| Left iliocostalis thoracis | muscular | mid-back 56%, upper-back 44% |
+| Left longissimus thoracis | muscular | mid-back 41%, lower-back 38%, upper-back 21% |
+| Left ninth rib | skeletal | mid-back 62%, side-left 38% |
+| Left serratus posterior inferior | muscular | mid-back 56%, lower-back 44% |
+| Left spinalis thoracis | muscular | mid-back 55%, upper-back 30%, lower-back 15% |
+| Left tenth rib | skeletal | mid-back 68%, side-left 32% |
+| Left twelfth rib | skeletal | mid-back 41%, lower-back 36%, abdomen 23% |
+| Ninth thoracic vertebra | skeletal | mid-back 100% |
+| Right eighth rib | skeletal | mid-back 53%, side-right 47% |
+| Right eleventh rib | skeletal | mid-back 60%, abdomen 14%, side-right 12%, lower-back 12%, chest 2% |
+| Right iliocostalis thoracis | muscular | mid-back 56%, upper-back 44% |
+| Right longissimus thoracis | muscular | mid-back 45%, lower-back 35%, upper-back 20% |
+| Right ninth rib | skeletal | mid-back 63%, side-right 37% |
+| Right serratus posterior inferior | muscular | mid-back 56%, lower-back 44% |
+| Right spinalis thoracis | muscular | mid-back 55%, upper-back 31%, lower-back 14% |
+| Right tenth rib | skeletal | mid-back 67%, side-right 33% |
+| Right twelfth rib | skeletal | mid-back 42%, lower-back 37%, abdomen 21% |
+| Set of left levatores costarum breves | muscular | mid-back 55%, upper-back 44%, neck 1% |
+| Set of left levatores costarum longi | muscular | mid-back 52%, upper-back 47%, neck 1% |
+| Set of right levatores costarum breves | muscular | mid-back 55%, upper-back 44%, neck 1% |
+| Set of right levatores costarum longi | muscular | mid-back 53%, upper-back 46%, neck 1% |
+| Seventh thoracic vertebra | skeletal | mid-back 58%, upper-back 42% |
+| Tenth thoracic vertebra | skeletal | mid-back 100% |
+| Twelfth thoracic vertebra | skeletal | mid-back 99%, lower-back 1% |
 | Atlas | skeletal | neck 100% |
 | Axis | skeletal | neck 100% |
-| Descending part of left trapezius | muscular | neck 67%, chest 31%, upper-back 2% |
-| Descending part of right trapezius | muscular | neck 69%, chest 29%, upper-back 2% |
+| Descending part of left trapezius | muscular | neck 71%, chest 18%, upper-back 12% |
+| Descending part of right trapezius | muscular | neck 67%, chest 18%, upper-back 15% |
 | Fifth cervical vertebra | skeletal | neck 100% |
 | Fourth cervical vertebra | skeletal | neck 100% |
 | Hyoid bone | skeletal | neck 100% |
 | Hyoid bone | skeletal | neck 100% |
-| Left cervical rotator | muscular | neck 99%, chest 1%, upper-back 0% |
+| Left cervical rotator | muscular | neck 93%, upper-back 7% |
 | Left digastric | muscular | neck 100% |
 | Left digastric | muscular | neck 100% |
 | Left digastric | muscular | neck 100% |
 | Left geniohyoid | muscular | neck 100% |
 | Left lateral thyrohyoid ligament | connective | neck 100% |
-| Left levator scapulae | skeletal | neck 53%, upper-back 47% |
-| Left longissimus capitis | muscular | neck 80%, upper-back 17%, chest 3% |
+| Left longissimus capitis | muscular | neck 84%, upper-back 16% |
 | Left mylohyoid | muscular | neck 100% |
 | Left obliquus capitis inferior | muscular | neck 100% |
 | Left obliquus capitis superior | muscular | neck 100% |
-| Left platysma | muscular | neck 57%, chest 41%, upper-back 3% |
+| Left platysma | muscular | neck 49%, chest 49%, upper-back 2% |
 | Left rectus capitis posterior major | muscular | neck 100% |
 | Left rectus capitis posterior minor | muscular | neck 100% |
-| Left scalenus anterior | muscular | neck 95%, chest 5% |
-| Left scalenus medius | muscular | neck 76%, chest 24% |
-| Left scalenus posterior | muscular | neck 53%, chest 47% |
+| Left scalenus anterior | muscular | neck 52%, chest 48% |
+| Left scalenus medius | muscular | neck 75%, chest 25% |
 | Left semispinalis capitis | muscular | neck 100% |
-| Left semispinalis cervicis | muscular | neck 50%, upper-back 46%, chest 4% |
-| Left splenius capitis | muscular | neck 73%, upper-back 27% |
-| Left sternothyroid | muscular | neck 57%, chest 43% |
+| Left splenius capitis | muscular | neck 69%, upper-back 31% |
+| Left sternocleidomastoid | muscular | neck 64%, chest 36% |
 | Left stylohyoid | muscular | neck 100% |
 | Left stylohyoid ligament | connective | neck 100% |
 | Left thyrohyoid | muscular | neck 100% |
 | Median thyrohyoid ligament | connective | neck 100% |
-| Right cervical rotator | muscular | neck 99%, chest 1%, upper-back 0% |
+| Right cervical rotator | muscular | neck 94%, upper-back 6% |
 | Right digastric | muscular | neck 100% |
 | Right digastric | muscular | neck 100% |
 | Right geniohyoid | muscular | neck 100% |
 | Right lateral thyrohyoid ligament | connective | neck 100% |
-| Right levator scapulae | skeletal | neck 54%, upper-back 46% |
-| Right longissimus capitis | muscular | neck 81%, upper-back 15%, chest 4% |
+| Right longissimus capitis | muscular | neck 84%, upper-back 16% |
 | Right mylohyoid | muscular | neck 100% |
 | Right obliquus capitis inferior | muscular | neck 100% |
 | Right obliquus capitis superior | muscular | neck 100% |
-| Right platysma | muscular | neck 51%, chest 47%, upper-back 2% |
 | Right rectus capitis posterior major | muscular | neck 100% |
 | Right rectus capitis posterior minor | muscular | neck 100% |
-| Right scalenus anterior | muscular | neck 88%, chest 12% |
-| Right scalenus medius | muscular | neck 71%, chest 29% |
+| Right scalenus anterior | muscular | neck 61%, chest 39% |
+| Right scalenus medius | muscular | neck 77%, chest 23% |
+| Right scalenus posterior | muscular | neck 51%, chest 49% |
 | Right semispinalis capitis | muscular | neck 100% |
-| Right semispinalis cervicis | muscular | neck 51%, upper-back 45%, chest 4% |
-| Right splenius capitis | muscular | neck 71%, upper-back 29% |
-| Right sternocleidomastoid | muscular | neck 57%, chest 43% |
-| Right sternothyroid | muscular | neck 51%, chest 49% |
+| Right splenius capitis | muscular | neck 70%, upper-back 30% |
+| Right sternocleidomastoid | muscular | neck 58%, chest 42% |
 | Right stylohyoid | muscular | neck 100% |
 | Right stylohyoid ligament | connective | neck 100% |
 | Right thyrohyoid | muscular | neck 100% |
@@ -483,94 +461,116 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Set of interspinales cervicis | muscular | neck 100% |
 | set of posterior cervical intertransversarii | muscular | neck 100% |
 | Set of posterior cervical intertransversarii | muscular | neck 100% |
-| Seventh cervical vertebra | skeletal | neck 89%, upper-back 6%, chest 5% |
+| Seventh cervical vertebra | skeletal | neck 76%, upper-back 24% |
 | Sixth cervical vertebra | skeletal | neck 100% |
-| spinalis | muscular | neck 60%, upper-back 40% |
-| Spinalis | muscular | neck 60%, upper-back 40% |
+| spinalis | muscular | neck 56%, upper-back 44% |
+| Spinalis | muscular | neck 57%, upper-back 43% |
 | Third cervical vertebra | skeletal | neck 100% |
-| Clavicular part of left deltoid | muscular | shoulder-left 97%, upper-arm-left 3% |
+| Acromial part of left deltoid | muscular | shoulder-left 93%, upper-arm-left 7% |
+| Clavicular part of left deltoid | muscular | shoulder-left 98%, upper-arm-left 2% |
 | Left clavicle | skeletal | shoulder-left 100% |
-| Left coracobrachialis | muscular | shoulder-left 66%, upper-arm-left 34% |
-| Left humerus | skeletal | shoulder-left 68%, elbow-left 24%, upper-arm-left 8% |
+| Left coracobrachialis | muscular | shoulder-left 69%, upper-arm-left 31% |
+| Left humerus | skeletal | shoulder-left 42%, upper-arm-left 41%, elbow-left 17% |
 | Left infraspinatus muscle | muscular | shoulder-left 100% |
 | Left subscapularis | skeletal | shoulder-left 100% |
 | Left supraspinatus | muscular | shoulder-left 100% |
 | Left teres major | muscular | shoulder-left 100% |
 | Left teres minor | muscular | shoulder-left 100% |
-| Long head of left biceps brachii | muscular | shoulder-left 52%, elbow-left 39%, upper-arm-left 8% |
-| Spinal part of left deltoid | muscular | shoulder-left 92%, upper-arm-left 8% |
-| Acromial part of right deltoid | muscular | shoulder-right 51%, upper-arm-right 49% |
-| Clavicular part of right deltoid | muscular | shoulder-right 97%, upper-arm-right 3% |
-| Long head of right biceps brachii | muscular | shoulder-right 48%, elbow-right 43%, upper-arm-right 9% |
+| Spinal part of left deltoid | muscular | shoulder-left 91%, upper-arm-left 9% |
+| Acromial part of right deltoid | muscular | shoulder-right 95%, upper-arm-right 5% |
+| Clavicular part of right deltoid | muscular | shoulder-right 98%, upper-arm-right 2% |
 | Right clavicle | skeletal | shoulder-right 100% |
-| Right coracobrachialis | muscular | shoulder-right 63%, upper-arm-right 37% |
-| Right humerus | skeletal | shoulder-right 90%, elbow-right 7%, upper-arm-right 3% |
+| Right coracobrachialis | muscular | shoulder-right 69%, upper-arm-right 31% |
 | Right infraspinatus muscle | muscular | shoulder-right 100% |
 | Right subscapularis | skeletal | shoulder-right 100% |
 | Right supraspinatus | muscular | shoulder-right 100% |
 | Right teres major | muscular | shoulder-right 100% |
 | Right teres minor | muscular | shoulder-right 100% |
-| Spinal part of right deltoid | muscular | shoulder-right 93%, upper-arm-right 7% |
-| Left adductor brevis | muscular | thigh-left 90%, hip-left 10% |
-| Left adductor longus | muscular | thigh-left 58%, hip-left 42% |
-| Left adductor magnus | muscular | thigh-left 69%, knee-left 23%, hip-left 8% |
-| Left adductor minimus | muscular | thigh-left 94%, hip-left 6% |
-| Left vastus lateralis | muscular | thigh-left 36%, knee-left 32%, hip-left 20%, lower-leg-left 13% |
-| Short head of left biceps femoris | muscular | thigh-left 77%, knee-left 23% |
-| Right adductor brevis | muscular | thigh-right 90%, hip-right 10% |
-| Right adductor longus | muscular | thigh-right 56%, hip-right 44% |
-| Right adductor magnus | muscular | thigh-right 68%, knee-right 23%, hip-right 9% |
-| Right adductor minimus | muscular | thigh-right 94%, hip-right 6% |
-| Right vastus lateralis | muscular | thigh-right 36%, knee-right 31%, hip-right 20%, lower-leg-right 13% |
-| Short head of right biceps femoris | muscular | thigh-right 74%, knee-right 26% |
-| Acromial part of left deltoid | muscular | upper-arm-left 54%, shoulder-left 46% |
-| Lateral head of left triceps brachii | muscular | upper-arm-left 63%, elbow-left 26%, shoulder-left 10% |
-| Left brachialis | muscular | upper-arm-left 67%, elbow-left 33% |
-| Left extensor carpi radialis brevis | muscular | upper-arm-left 50%, forearm-left 25%, hand-left 22%, elbow-left 2% |
-| Medial head of left triceps brachii | muscular | upper-arm-left 66%, shoulder-left 19%, elbow-left 15% |
-| Short head of left biceps brachii | muscular | upper-arm-left 83%, shoulder-left 17% |
-| Lateral head of right triceps brachii | muscular | upper-arm-right 60%, elbow-right 29%, shoulder-right 11% |
-| Medial head of right triceps brachii | muscular | upper-arm-right 68%, shoulder-right 17%, elbow-right 15% |
-| Right brachialis | muscular | upper-arm-right 69%, elbow-right 31% |
-| Right extensor carpi radialis brevis | muscular | upper-arm-right 45%, forearm-right 28%, hand-right 23%, elbow-right 3% |
-| Short head of right biceps brachii | muscular | upper-arm-right 82%, shoulder-right 18% |
-| Ascending part of left trapezius | muscular | upper-back 68%, mid-back 32% |
-| Ascending part of right trapezius | muscular | upper-back 69%, mid-back 31% |
-| Fifth thoracic vertebra | skeletal | upper-back 92%, chest 8% |
-| Fourth thoracic vertebra | skeletal | upper-back 93%, chest 7% |
-| Left fifth rib | skeletal | upper-back 57%, chest 29%, side-left 14% |
-| Left iliocostalis cervicis | muscular | upper-back 69%, neck 30%, chest 0% |
-| Left iliocostalis thoracis | muscular | upper-back 49%, chest 26%, mid-back 25% |
+| Spinal part of right deltoid | muscular | shoulder-right 90%, upper-arm-right 10% |
+| External intercostal muscle | muscular | side-left 30%, chest 28%, mid-back 25%, upper-back 17% |
+| Left serratus anterior | muscular | side-left 32%, upper-back 27%, chest 21%, mid-back 21% |
+| Left seventh rib | skeletal | side-left 46%, mid-back 40%, upper-back 11%, chest 3% |
+| Left sixth rib | skeletal | side-left 43%, upper-back 38%, chest 12%, mid-back 7% |
+| external intercostal muscle | muscular | side-right 30%, chest 28%, mid-back 25%, upper-back 17% |
+| Right serratus anterior | muscular | side-right 31%, upper-back 26%, chest 22%, mid-back 21% |
+| Right seventh rib | skeletal | side-right 47%, mid-back 40%, upper-back 11%, chest 2% |
+| Right sixth rib | skeletal | side-right 42%, upper-back 37%, chest 12%, mid-back 9% |
+| Left adductor brevis | muscular | thigh-left 70%, hip-left 30% |
+| Left adductor longus | muscular | thigh-left 80%, hip-left 20% |
+| Left adductor magnus | muscular | thigh-left 73%, hip-left 24%, knee-left 3% |
+| Left femur | skeletal | thigh-left 44%, hip-left 32%, knee-left 23% |
+| Left gracilis | muscular | thigh-left 67%, hip-left 19%, knee-left 10%, lower-leg-left 4% |
+| Left iliotibial tract | skeletal | thigh-left 50%, hip-left 36%, knee-left 9%, buttock-left 4%, lower-leg-left 1% |
+| Left rectus femoris | muscular | thigh-left 56%, hip-left 29%, knee-left 15% |
+| Left sartorius | muscular | thigh-left 61%, hip-left 23%, knee-left 10%, lower-leg-left 6% |
+| Left semimembranosus | muscular | thigh-left 78%, knee-left 15%, hip-left 7% |
+| Left semitendinosus | muscular | thigh-left 50%, hip-left 20%, buttock-left 13%, knee-left 11%, lower-leg-left 6% |
+| Left vastus intermedius | muscular | thigh-left 67%, knee-left 19%, hip-left 14% |
+| Left vastus lateralis | muscular | thigh-left 84%, hip-left 10%, knee-left 5% |
+| Left vastus medialis | muscular | thigh-left 87%, knee-left 11%, hip-left 2% |
+| Long head of left biceps femoris | muscular | thigh-left 87%, knee-left 9%, buttock-left 3%, hip-left 1% |
+| Short head of left biceps femoris | muscular | thigh-left 80%, knee-left 20% |
+| Long head of right biceps femoris | muscular | thigh-right 87%, knee-right 9%, buttock-right 4% |
+| Right adductor brevis | muscular | thigh-right 68%, hip-right 32% |
+| Right adductor longus | muscular | thigh-right 75%, hip-right 25% |
+| Right adductor magnus | muscular | thigh-right 69%, hip-right 26%, knee-right 5% |
+| Right femur | skeletal | thigh-right 43%, hip-right 34%, knee-right 23% |
+| Right gracilis | muscular | thigh-right 58%, hip-right 22%, knee-right 16%, lower-leg-right 4% |
+| Right iliotibial tract | skeletal | thigh-right 50%, hip-right 36%, knee-right 9%, buttock-right 5%, lower-leg-right 1% |
+| Right rectus femoris | muscular | thigh-right 55%, hip-right 29%, knee-right 16% |
+| Right sartorius | muscular | thigh-right 57%, hip-right 23%, knee-right 15%, lower-leg-right 6% |
+| Right semimembranosus | muscular | thigh-right 77%, knee-right 15%, hip-right 8%, lower-leg-right 1% |
+| Right semitendinosus | muscular | thigh-right 60%, knee-right 13%, hip-right 13%, buttock-right 10%, lower-leg-right 5% |
+| Right vastus intermedius | muscular | thigh-right 77%, knee-right 15%, hip-right 9% |
+| Right vastus lateralis | muscular | thigh-right 84%, hip-right 10%, knee-right 6% |
+| Right vastus medialis | muscular | thigh-right 87%, knee-right 11%, hip-right 2% |
+| Short head of right biceps femoris | muscular | thigh-right 78%, knee-right 22% |
+| Lateral head of left triceps brachii | muscular | upper-arm-left 73%, shoulder-left 23%, elbow-left 4% |
+| Left brachialis | muscular | upper-arm-left 78%, elbow-left 22% |
+| Long head of left biceps brachii | muscular | upper-arm-left 59%, shoulder-left 27%, elbow-left 13% |
+| Long head of left triceps brachii | muscular | upper-arm-left 49%, shoulder-left 31%, elbow-left 19% |
+| Medial head of left triceps brachii | muscular | upper-arm-left 76%, elbow-left 15%, shoulder-left 9% |
+| Short head of left biceps brachii | muscular | upper-arm-left 75%, shoulder-left 25% |
+| Lateral head of right triceps brachii | muscular | upper-arm-right 71%, shoulder-right 25%, elbow-right 4% |
+| Long head of right biceps brachii | muscular | upper-arm-right 53%, shoulder-right 32%, elbow-right 14% |
+| Long head of right triceps brachii | muscular | upper-arm-right 56%, shoulder-right 31%, elbow-right 13% |
+| Medial head of right triceps brachii | muscular | upper-arm-right 77%, elbow-right 13%, shoulder-right 9% |
+| Right brachialis | muscular | upper-arm-right 80%, elbow-right 20% |
+| Right humerus | skeletal | upper-arm-right 41%, shoulder-right 41%, elbow-right 19% |
+| Short head of right biceps brachii | muscular | upper-arm-right 72%, shoulder-right 28% |
+| Ascending part of left trapezius | muscular | upper-back 64%, mid-back 36% |
+| Ascending part of right trapezius | muscular | upper-back 58%, mid-back 42% |
+| Fifth thoracic vertebra | skeletal | upper-back 100% |
+| First thoracic vertebra | skeletal | upper-back 91%, neck 9% |
+| Fourth thoracic vertebra | skeletal | upper-back 100% |
+| Left fifth rib | skeletal | upper-back 43%, chest 35%, side-left 22% |
+| Left iliocostalis cervicis | muscular | upper-back 75%, neck 25% |
 | Left interspinalis thoracis | muscular | upper-back 100% |
-| Left longissimus cervicis | muscular | upper-back 51%, neck 48%, chest 0% |
-| Left longissimus thoracis | muscular | upper-back 34%, mid-back 28%, lower-back 28%, chest 9%, abdomen 1% |
-| Left omohyoid | muscular | upper-back 54%, neck 32%, chest 14% |
-| Left rhomboid major | muscular | upper-back 71%, mid-back 29% |
-| Left rhomboid minor | muscular | upper-back 82%, neck 18% |
-| Left scapula | skeletal | upper-back 55%, chest 37%, mid-back 8% |
-| Left semispinalis thoracis | muscular | upper-back 59%, mid-back 41% |
-| Left serratus anterior | muscular | upper-back 41%, side-left 24%, chest 24%, mid-back 10% |
-| Left serratus posterior superior | muscular | upper-back 69%, chest 26%, neck 5% |
-| Left sixth rib | skeletal | upper-back 49%, side-left 30%, chest 15%, mid-back 6% |
-| Left splenius cervicis | muscular | upper-back 88%, neck 7%, mid-back 5% |
-| Right fifth rib | skeletal | upper-back 53%, chest 30%, side-right 17% |
-| Right iliocostalis cervicis | muscular | upper-back 70%, neck 30%, chest 0% |
-| Right iliocostalis thoracis | muscular | upper-back 50%, chest 27%, mid-back 23% |
+| Left levator scapulae | skeletal | upper-back 52%, neck 48% |
+| Left longissimus cervicis | muscular | upper-back 66%, neck 34% |
+| Left rhomboid major | muscular | upper-back 90%, mid-back 10% |
+| Left rhomboid minor | muscular | upper-back 88%, neck 12% |
+| Left scapula | skeletal | upper-back 90%, mid-back 10% |
+| Left semispinalis cervicis | muscular | upper-back 59%, neck 41% |
+| Left semispinalis thoracis | muscular | upper-back 56%, mid-back 44% |
+| Left serratus posterior superior | muscular | upper-back 95%, neck 5% |
+| Left splenius cervicis | muscular | upper-back 74%, neck 26% |
+| Right fifth rib | skeletal | upper-back 43%, chest 32%, side-right 25% |
+| Right iliocostalis cervicis | muscular | upper-back 75%, neck 25% |
 | Right interspinalis thoracis | muscular | upper-back 100% |
-| Right longissimus cervicis | muscular | upper-back 51%, neck 49% |
-| Right longissimus thoracis | muscular | upper-back 35%, lower-back 28%, mid-back 27%, chest 9%, abdomen 1% |
-| Right omohyoid | muscular | upper-back 58%, neck 31%, chest 11% |
-| Right rhomboid major | muscular | upper-back 72%, mid-back 28% |
-| Right rhomboid minor | muscular | upper-back 78%, neck 22% |
-| Right scapula | skeletal | upper-back 55%, chest 37%, mid-back 8% |
-| Right semispinalis thoracis | muscular | upper-back 60%, mid-back 40% |
-| Right serratus anterior | muscular | upper-back 42%, side-right 24%, chest 23%, mid-back 11% |
-| Right serratus posterior superior | muscular | upper-back 68%, chest 27%, neck 5% |
-| Right sixth rib | skeletal | upper-back 49%, side-right 31%, chest 14%, mid-back 6% |
-| Right splenius cervicis | muscular | upper-back 88%, neck 7%, mid-back 5% |
-| Sixth thoracic vertebra | skeletal | upper-back 89%, chest 7%, mid-back 4% |
-| Third thoracic vertebra | skeletal | upper-back 85%, chest 15% |
-| Thoracic rotator | muscular | upper-back 57%, mid-back 38%, neck 5%, chest 0% |
-| thoracic rotator | muscular | upper-back 58%, mid-back 37%, neck 5%, chest 0% |
-| Transverse part of left trapezius | muscular | upper-back 85%, chest 8%, neck 7% |
-| Transverse part of right trapezius | muscular | upper-back 85%, chest 8%, neck 7% |
+| Right levator scapulae | skeletal | upper-back 52%, neck 48% |
+| Right longissimus cervicis | muscular | upper-back 66%, neck 34% |
+| Right rhomboid major | muscular | upper-back 90%, mid-back 10% |
+| Right rhomboid minor | muscular | upper-back 89%, neck 11% |
+| Right scapula | skeletal | upper-back 90%, mid-back 10% |
+| Right semispinalis cervicis | muscular | upper-back 60%, neck 40% |
+| Right semispinalis thoracis | muscular | upper-back 56%, mid-back 44% |
+| Right serratus posterior superior | muscular | upper-back 96%, neck 4% |
+| Right splenius cervicis | muscular | upper-back 73%, neck 26%, mid-back 1% |
+| Second thoracic vertebra | skeletal | upper-back 100% |
+| Sixth thoracic vertebra | skeletal | upper-back 97%, mid-back 3% |
+| Third thoracic vertebra | skeletal | upper-back 100% |
+| thoracic rotator | muscular | upper-back 58%, mid-back 40%, neck 2% |
+| Thoracic rotator | muscular | upper-back 58%, mid-back 40%, neck 2% |
+| Transverse part of left trapezius | muscular | upper-back 88%, neck 8%, chest 5% |
+| Transverse part of right trapezius | muscular | upper-back 90%, neck 6%, chest 4% |

@@ -13,6 +13,7 @@ const KEYS = new Set(BODY_REGIONS.map((r) => r.key));
 const arm = { kind: "segment", segment: "arm" };
 const leg = { kind: "segment", segment: "leg" };
 const trunk = { kind: "segment", segment: "trunk" };
+const back = { kind: "segment", segment: "back" };
 
 describe("sideOf", () => {
   it("reads the side from the part name", () => {
@@ -57,9 +58,18 @@ describe("ruleForPart", () => {
     ["Left calcaneal tendon", leg],
     ["Left iliacus", leg],
     ["Left hip bone", leg],
-    ["Fifth lumbar vertebra", trunk],
+    ["Fifth lumbar vertebra", back],
+    ["First lumbar vertebra", back],
+    ["Twelfth thoracic vertebra", back],
+    ["Sacrum", back],
+    ["Atlas", back],
+    ["Left lumbar rotator", back],
+    ["Medial lumbar intertransversarius", back],
+    ["Left longissimus thoracis", back],
+    ["Left rhomboid major", back],
+    ["Left splenius capitis", back],
     ["Left psoas major", trunk],
-    ["Left scapula", trunk],
+    ["Left scapula", back],
     ["Sternocostal part of left pectoralis major", trunk],
     ["Left external oblique", trunk],
   ])("classifies %s", (name, rule) => {
@@ -87,6 +97,10 @@ describe("segmentBase", () => {
     ["trunk", 0.12, 1.1, 0.02, "side"],
     ["trunk", 0.05, 1.25, 0.08, "chest"],
     ["trunk", 0.05, 1.05, 0.08, "abdomen"],
+    ["back", 0, 1.5, 0.02, "neck"],
+    ["back", 0.05, 1.35, 0.0, "upper-back"],
+    ["back", 0, 1.2, -0.02, "mid-back"],
+    ["back", 0, 1.05, -0.02, "lower-back"],
   ] as const)("%s at (%s, %s, %s) is %s", (segment, x, y, z, base) => {
     expect(segmentBase(segment, x, y, z)).toBe(base);
   });
@@ -112,7 +126,7 @@ describe("regionKeyForVertex", () => {
     const seen = new Set<string>();
     const unknown = new Set<string>();
     const rules: KeptRule[] = [
-      ...(["arm", "leg", "trunk"] as Segment[]).map((segment) => ({ kind: "segment" as const, segment })),
+      ...(["arm", "leg", "trunk", "back"] as Segment[]).map((segment) => ({ kind: "segment" as const, segment })),
       { kind: "fixed", base: "head-jaw" },
     ];
     for (const rule of rules) {
