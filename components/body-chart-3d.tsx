@@ -55,6 +55,7 @@ interface Handlers {
   onTap(hit: Hit): void;
   onHover(hit: Hit | null): void;
   onContextLost(): void;
+  onRotate(): void;
 }
 
 function displayName(part: ModelPart | undefined): string {
@@ -77,156 +78,183 @@ function createStage(
   const canvas = renderer.domElement;
   host.appendChild(canvas);
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(FOV, 1, 0.05, 20);
-  camera.position.set(0, TARGET_Y, 4);
-  scene.add(camera);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xb9b2a6, 1.3));
-  // Key light rides with the camera, so every view is lit the same way.
-  const key = new THREE.DirectionalLight(0xfffaf4, 1.8);
-  key.position.set(-1.5, 2.5, 1);
-  camera.add(key);
+  try {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(FOV, 1, 0.05, 20);
+    camera.position.set(0, TARGET_Y, 4);
+    scene.add(camera);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xb9b2a6, 1.3));
+    // Key light rides with the camera, so every view is lit the same way.
+    const key = new THREE.DirectionalLight(0xfffaf4, 1.8);
+    key.position.set(-1.5, 2.5, 1);
+    camera.add(key);
 
-  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.04 });
-  const partsByChunk = model.manifest.chunks.map((_, i) => model.manifest.parts.filter((p) => p.chunk === i));
-  const meshes: Mesh[] = [];
-  const colourData: { attr: BufferAttribute; colors: Uint8Array; base: Uint8Array; regions: Uint8Array }[] = [];
-  model.chunks.forEach((chunk, i) => {
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.BufferAttribute(chunk.positions, 3, true));
-    geometry.setAttribute("normal", new THREE.BufferAttribute(chunk.normals, 3, true));
-    const base = baseColors(partsByChunk[i], model.manifest.systems, chunk.regions.length);
-    const colors = base.slice();
-    const attr = new THREE.BufferAttribute(colors, 3, true);
-    geometry.setAttribute("color", attr);
-    geometry.setIndex(new THREE.BufferAttribute(chunk.indices, 1));
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.scale.setScalar(POSITION_SCALE);
-    mesh.userData.chunk = i;
-    scene.add(mesh);
-    meshes.push(mesh);
-    colourData.push({ attr, colors, base, regions: chunk.regions });
-  });
-
-  let frame = 0;
-  const render = () => {
-    if (frame) return;
-    frame = requestAnimationFrame(() => {
-      frame = 0;
-      renderer.render(scene, camera);
+    const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.04 });
+    const partsByChunk = model.manifest.chunks.map((_, i) => model.manifest.parts.filter((p) => p.chunk === i));
+    const meshes: Mesh[] = [];
+    const colourData: { attr: BufferAttribute; colors: Uint8Array; base: Uint8Array; regions: Uint8Array }[] = [];
+    model.chunks.forEach((chunk, i) => {
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(chunk.positions, 3, true));
+      geometry.setAttribute("normal", new THREE.BufferAttribute(chunk.normals, 3, true));
+      const base = baseColors(partsByChunk[i], model.manifest.systems, chunk.regions.length);
+      const colors = base.slice();
+      const attr = new THREE.BufferAttribute(colors, 3, true);
+      geometry.setAttribute("color", attr);
+      geometry.setIndex(new THREE.BufferAttribute(chunk.indices, 1));
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.scale.setScalar(POSITION_SCALE);
+      mesh.userData.chunk = i;
+      scene.add(mesh);
+      meshes.push(mesh);
+      colourData.push({ attr, colors, base, regions: chunk.regions });
     });
-  };
 
-  const controls = new OrbitControls(camera, canvas);
-  controls.target.set(0, TARGET_Y, 0);
-  controls.enablePan = false;
-  controls.enableZoom = false;
-  controls.minPolarAngle = Math.PI * 0.42;
-  controls.maxPolarAngle = Math.PI * 0.58;
-  controls.rotateSpeed = 0.7;
-  controls.addEventListener("change", render);
-  // Vertical swipes keep scrolling the page; sideways drags turn the body.
-  canvas.style.touchAction = "pan-y";
+    let frame = 0;
+    const render = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        renderer.render(scene, camera);
+      });
+    };
 
-  let distance = 4;
-  const fit = () => {
-    const w = host.clientWidth;
-    const h = host.clientHeight;
-    if (!w || !h) return;
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    const tanHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
-    distance = Math.max(FRAME_HEIGHT / 2 / tanHalf, FRAME_WIDTH / 2 / (tanHalf * camera.aspect));
-    const dir = camera.position.clone().sub(controls.target).normalize();
-    camera.position.copy(controls.target).addScaledVector(dir, distance);
-    camera.updateProjectionMatrix();
-    controls.update();
-    render();
-  };
-  const observer = new ResizeObserver(fit);
-  observer.observe(host);
-  fit();
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, TARGET_Y, 0);
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.minPolarAngle = Math.PI * 0.42;
+    controls.maxPolarAngle = Math.PI * 0.58;
+    controls.rotateSpeed = 0.7;
+    controls.addEventListener("change", render);
+    // A drag by the patient (not our own setView/fit) means no preset view is active.
+    let dragging = false;
+    controls.addEventListener("start", () => {
+      dragging = true;
+    });
+    controls.addEventListener("end", () => {
+      dragging = false;
+    });
+    controls.addEventListener("change", () => {
+      if (dragging) handlers.onRotate();
+    });
+    // Vertical swipes keep scrolling the page; sideways drags turn the body.
+    canvas.style.touchAction = "pan-y";
 
-  const raycaster = new THREE.Raycaster();
-  const ndc = new THREE.Vector2();
-  const pick = (clientX: number, clientY: number): Hit | null => {
-    const rect = canvas.getBoundingClientRect();
-    ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
-    raycaster.setFromCamera(ndc, camera);
-    const hit = raycaster.intersectObjects(meshes, false)[0];
-    if (!hit?.face || hit.faceIndex == null) return null;
-    const i = hit.object.userData.chunk as number;
-    const region = colourData[i].regions[hit.face.a];
-    if (region === NO_REGION) return null;
-    return { region, part: partForFace(partsByChunk[i], hit.faceIndex) };
-  };
-
-  let down: { x: number; y: number; id: number } | null = null;
-  let hoverTimer = 0;
-  const onPointerDown = (e: PointerEvent) => {
-    down = { x: e.clientX, y: e.clientY, id: e.pointerId };
-  };
-  const onPointerUp = (e: PointerEvent) => {
-    if (!down || down.id !== e.pointerId) return;
-    const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-    down = null;
-    if (moved > TAP_SLOP_PX) return;
-    const hit = pick(e.clientX, e.clientY);
-    if (hit) handlers.onTap(hit);
-  };
-  const onPointerMove = (e: PointerEvent) => {
-    if (e.pointerType !== "mouse" || e.buttons || hoverTimer) return;
-    hoverTimer = window.setTimeout(() => {
-      hoverTimer = 0;
-    }, HOVER_THROTTLE_MS);
-    handlers.onHover(pick(e.clientX, e.clientY));
-  };
-  const onPointerLeave = () => handlers.onHover(null);
-  const onContextLost = (e: Event) => {
-    e.preventDefault();
-    handlers.onContextLost();
-  };
-  canvas.addEventListener("pointerdown", onPointerDown);
-  canvas.addEventListener("pointerup", onPointerUp);
-  canvas.addEventListener("pointermove", onPointerMove);
-  canvas.addEventListener("pointerleave", onPointerLeave);
-  canvas.addEventListener("webglcontextlost", onContextLost);
-
-  return {
-    setView(view) {
-      const azimuth = VIEWS.find((v) => v.id === view)?.azimuth ?? 0;
-      camera.position.set(
-        controls.target.x + Math.sin(azimuth) * distance,
-        controls.target.y,
-        controls.target.z + Math.cos(azimuth) * distance
-      );
+    let distance = 4;
+    const fit = () => {
+      const w = host.clientWidth;
+      const h = host.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      const tanHalf = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
+      distance = Math.max(FRAME_HEIGHT / 2 / tanHalf, FRAME_WIDTH / 2 / (tanHalf * camera.aspect));
+      const dir = camera.position.clone().sub(controls.target).normalize();
+      camera.position.copy(controls.target).addScaledVector(dir, distance);
+      camera.updateProjectionMatrix();
       controls.update();
       render();
-    },
-    paint(selected, hover) {
-      for (const d of colourData) {
-        paintColors(d.colors, d.base, d.regions, selected, hover);
-        d.attr.needsUpdate = true;
-      }
-      render();
-    },
-    dispose() {
-      observer.disconnect();
-      if (frame) cancelAnimationFrame(frame);
-      window.clearTimeout(hoverTimer);
-      canvas.removeEventListener("pointerdown", onPointerDown);
-      canvas.removeEventListener("pointerup", onPointerUp);
-      canvas.removeEventListener("pointermove", onPointerMove);
-      canvas.removeEventListener("pointerleave", onPointerLeave);
-      canvas.removeEventListener("webglcontextlost", onContextLost);
-      controls.dispose();
-      meshes.forEach((m) => m.geometry.dispose());
-      material.dispose();
-      renderer.dispose();
-      renderer.forceContextLoss();
-      canvas.remove();
-    },
-  };
+    };
+    const observer = new ResizeObserver(fit);
+    observer.observe(host);
+    fit();
+
+    const raycaster = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    const pick = (clientX: number, clientY: number): Hit | null => {
+      const rect = canvas.getBoundingClientRect();
+      ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+      raycaster.setFromCamera(ndc, camera);
+      const hit = raycaster.intersectObjects(meshes, false)[0];
+      if (!hit?.face || hit.faceIndex == null) return null;
+      const i = hit.object.userData.chunk as number;
+      const region = colourData[i].regions[hit.face.a];
+      if (region === NO_REGION) return null;
+      return { region, part: partForFace(partsByChunk[i], hit.faceIndex) };
+    };
+
+    let down: { x: number; y: number; id: number } | null = null;
+    let hoverTimer = 0;
+    const onPointerDown = (e: PointerEvent) => {
+      down = e.button === 0 && e.isPrimary ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null;
+    };
+    const onPointerUp = (e: PointerEvent) => {
+      if (!down || down.id !== e.pointerId) return;
+      const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+      down = null;
+      if (moved > TAP_SLOP_PX) return;
+      const hit = pick(e.clientX, e.clientY);
+      if (hit) handlers.onTap(hit);
+    };
+    let lastHover: { x: number; y: number } | null = null;
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" || e.buttons) return;
+      lastHover = { x: e.clientX, y: e.clientY };
+      if (hoverTimer) return;
+      handlers.onHover(pick(e.clientX, e.clientY));
+      lastHover = null;
+      hoverTimer = window.setTimeout(() => {
+        hoverTimer = 0;
+        if (lastHover) handlers.onHover(pick(lastHover.x, lastHover.y));
+        lastHover = null;
+      }, HOVER_THROTTLE_MS);
+    };
+    const onPointerLeave = () => {
+      lastHover = null;
+      handlers.onHover(null);
+    };
+    const onContextLost = (e: Event) => {
+      e.preventDefault();
+      handlers.onContextLost();
+    };
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointerup", onPointerUp);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerleave", onPointerLeave);
+    canvas.addEventListener("webglcontextlost", onContextLost);
+
+    return {
+      setView(view) {
+        const azimuth = VIEWS.find((v) => v.id === view)?.azimuth ?? 0;
+        camera.position.set(
+          controls.target.x + Math.sin(azimuth) * distance,
+          controls.target.y,
+          controls.target.z + Math.cos(azimuth) * distance
+        );
+        controls.update();
+        render();
+      },
+      paint(selected, hover) {
+        for (const d of colourData) {
+          paintColors(d.colors, d.base, d.regions, selected, hover);
+          d.attr.needsUpdate = true;
+        }
+        render();
+      },
+      dispose() {
+        observer.disconnect();
+        if (frame) cancelAnimationFrame(frame);
+        window.clearTimeout(hoverTimer);
+        canvas.removeEventListener("pointerdown", onPointerDown);
+        canvas.removeEventListener("pointerup", onPointerUp);
+        canvas.removeEventListener("pointermove", onPointerMove);
+        canvas.removeEventListener("pointerleave", onPointerLeave);
+        canvas.removeEventListener("webglcontextlost", onContextLost);
+        controls.dispose();
+        meshes.forEach((m) => m.geometry.dispose());
+        material.dispose();
+        renderer.dispose();
+        renderer.forceContextLoss();
+        canvas.remove();
+      },
+    };
+  } catch (error) {
+    renderer.dispose();
+    renderer.forceContextLoss();
+    canvas.remove();
+    throw error;
+  }
 }
 
 interface Props {
@@ -242,7 +270,7 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
   const latest = useRef({ value, onChange, onReady, onError });
   const [regions, setRegions] = useState<string[] | null>(null);
   const [progress, setProgress] = useState(0);
-  const [view, setView] = useState<View>("front");
+  const [view, setView] = useState<View | null>("front");
   const [hover, setHover] = useState<Hit | null>(null);
   const [tip, setTip] = useState<Hit | null>(null);
   const [announce, setAnnounce] = useState("");
@@ -270,7 +298,7 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
             const key = model.manifest.regions[hit.region];
             const next = toggleRegion(latest.current.value, key);
             latest.current.onChange(next);
-            setTip(hit);
+            setTip(next.includes(key) ? hit : null);
             setAnnounce(`${regionLabel(key)} ${next.includes(key) ? "selected" : "removed"}`);
           },
           onHover(hit) {
@@ -278,6 +306,9 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
           },
           onContextLost() {
             latest.current.onError?.();
+          },
+          onRotate() {
+            setView(null);
           },
         });
         apiRef.current = stage;
@@ -303,10 +334,6 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
     apiRef.current?.paint(selected, hoverRegion);
   }, [regions, value, hoverRegion]);
 
-  useEffect(() => {
-    if (regions) apiRef.current?.setView(view);
-  }, [regions, view]);
-
   const shown = hover ?? tip;
 
   return (
@@ -321,7 +348,10 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
               aria-pressed={view === v.id}
               aria-label={v.aria}
               disabled={!regions}
-              onClick={() => setView(v.id)}
+              onClick={() => {
+                apiRef.current?.setView(v.id);
+                setView(v.id);
+              }}
             >
               {v.label}
             </button>
@@ -346,7 +376,7 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
       <p className="body-chart-3d__hint">Drag sideways to turn the body. Tap where you feel it.</p>
 
       {shown && regions ? (
-        <div className="body-chart__tooltip" role="status">
+        <div className="body-chart__tooltip">
           <strong>{regionLabel(regions[shown.region])}</strong>
           {shown.part ? <span>{displayName(shown.part)}</span> : null}
         </div>
