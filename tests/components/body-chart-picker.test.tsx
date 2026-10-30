@@ -22,6 +22,7 @@ const flatChart = () => screen.queryByRole("group", { name: /body chart, front v
 
 beforeEach(() => {
   vi.mocked(canUse3D).mockReturnValue(true);
+  sessionStorage.clear();
 });
 afterEach(() => {
   vi.useRealTimers();
@@ -80,5 +81,35 @@ describe("BodyChartPicker", () => {
     render(<BodyChartPicker value={[]} onChange={onChange} />);
     fireEvent.click(screen.getByRole("button", { name: "Neck" }));
     expect(onChange).toHaveBeenCalledWith(["neck"]);
+  });
+
+  it("moves keyboard focus to the flat chart when the patient asks for it", () => {
+    render(<BodyChartPicker value={[]} onChange={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: /use simple chart instead/i }));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Front" }));
+  });
+
+  it("does not steal focus when it falls back on its own", () => {
+    render(<BodyChartPicker value={[]} onChange={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "stub error" }));
+    expect(flatChart()).toBeInTheDocument();
+    expect(document.activeElement).not.toBe(screen.getByRole("button", { name: "Front" }));
+  });
+
+  it("remembers the simple chart for the rest of the session", () => {
+    const { unmount } = render(<BodyChartPicker value={[]} onChange={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: /use simple chart instead/i }));
+    unmount();
+    render(<BodyChartPicker value={[]} onChange={vi.fn()} />);
+    expect(flatChart()).toBeInTheDocument();
+    expect(screen.queryByTestId("chart-3d")).not.toBeInTheDocument();
+  });
+
+  it("remembers an automatic fallback too", () => {
+    const { unmount } = render(<BodyChartPicker value={[]} onChange={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "stub error" }));
+    unmount();
+    render(<BodyChartPicker value={[]} onChange={vi.fn()} />);
+    expect(flatChart()).toBeInTheDocument();
   });
 });
