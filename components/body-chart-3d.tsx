@@ -14,12 +14,12 @@ import type { OrbitControls as OrbitControlsType } from "three/examples/jsm/cont
 import { BodyChartSelection } from "@/components/body-chart-selection";
 import { regionLabel, toggleRegion } from "@/lib/body-chart";
 import { loadBodyModel, onBodyModelProgress, type BodyModel } from "@/lib/body-model-loader";
+import { computePartBoxes, pickChunk, type Vec3 } from "@/lib/body-model-pick";
 import {
   NO_REGION,
   POSITION_SCALE,
   baseColors,
   paintColors,
-  partForFace,
   type ModelPart,
 } from "@/lib/body-model-format";
 
@@ -91,6 +91,8 @@ function createStage(
 
     const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.04 });
     const partsByChunk = model.manifest.chunks.map((_, i) => model.manifest.parts.filter((p) => p.chunk === i));
+    // One box per part (normalised units) so a pick only tests parts the ray crosses.
+    const partBoxes = model.chunks.map((chunk, i) => computePartBoxes(chunk.positions, partsByChunk[i]));
     const meshes: Mesh[] = [];
     const colourData: { attr: BufferAttribute; colors: Uint8Array; base: Uint8Array; regions: Uint8Array }[] = [];
     model.chunks.forEach((chunk, i) => {
@@ -162,30 +164,26 @@ function createStage(
 
     const raycaster = new THREE.Raycaster();
     const ndc = new THREE.Vector2();
-    const nearest = new THREE.Vector3();
     const pick = (clientX: number, clientY: number): Hit | null => {
       const rect = canvas.getBoundingClientRect();
       ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
       raycaster.setFromCamera(ndc, camera);
-      const hit = raycaster.intersectObjects(meshes, false)[0];
-      if (!hit?.face || hit.faceIndex == null) return null;
-      const i = hit.object.userData.chunk as number;
-      // Long simplified triangles can straddle an area boundary: use the corner
-      // nearest the hit point rather than always the first one.
-      const local = hit.object.worldToLocal(hit.point.clone());
-      const position = (hit.object as Mesh).geometry.getAttribute("position");
-      let vertex = hit.face.a;
-      let best = Infinity;
-      for (const corner of [hit.face.a, hit.face.b, hit.face.c]) {
-        const d = nearest.fromBufferAttribute(position, corner).distanceToSquared(local);
-        if (d < best) {
-          best = d;
-          vertex = corner;
-        }
+      // Every chunk mesh has the same transform (uniform scale POSITION_SCALE),
+      // so one local-space ray serves them all and distances compare directly.
+      const origin = raycaster.ray.origin;
+      const dir = raycaster.ray.direction;
+      const localOrigin: Vec3 = [origin.x / POSITION_SCALE, origin.y / POSITION_SCALE, origin.z / POSITION_SCALE];
+      const localDir: Vec3 = [dir.x, dir.y, dir.z];
+      let best: { chunk: number; part: number; vertex: number; distance: number } | null = null;
+      for (let i = 0; i < model.chunks.length; i++) {
+        const { positions, indices } = model.chunks[i];
+        const hit = pickChunk(localOrigin, localDir, positions, indices, partsByChunk[i], partBoxes[i], best?.distance);
+        if (hit) best = { chunk: i, ...hit };
       }
-      const region = colourData[i].regions[vertex];
+      if (!best) return null;
+      const region = colourData[best.chunk].regions[best.vertex];
       if (region === NO_REGION) return null;
-      return { region, part: partForFace(partsByChunk[i], hit.faceIndex) };
+      return { region, part: partsByChunk[best.chunk][best.part] };
     };
 
     let down: { x: number; y: number; id: number } | null = null;
