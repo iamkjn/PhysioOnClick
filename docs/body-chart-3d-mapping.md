@@ -21,46 +21,33 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Body of sternum | skeletal | chest 100% |
 | Clavicular part of left pectoralis major | muscular | chest 100% |
 | Clavicular part of right pectoralis major | muscular | chest 100% |
-| External intercostal muscle | muscular | chest 42%, side-left 41%, mid-back 11%, upper-back 6% |
-| external intercostal muscle | muscular | chest 42%, side-right 41%, mid-back 11%, upper-back 6% |
 | Left fifth costal cartilage | skeletal | chest 100% |
-| Left fifth rib | skeletal | chest 60%, upper-back 21%, side-left 18% |
 | Left first costal cartilage | skeletal | chest 100% |
-| Left first rib | skeletal | chest 100% |
+| Left first rib | skeletal | chest 90%, upper-back 10% |
 | Left fourth costal cartilage | skeletal | chest 100% |
-| Left fourth rib | skeletal | chest 83%, upper-back 17% |
-| Left omohyoid | muscular | chest 70%, neck 30% |
+| Left fourth rib | skeletal | chest 60%, upper-back 40% |
 | Left pectoralis minor | muscular | chest 96%, side-left 4% |
-| Left platysma | muscular | chest 51%, neck 49% |
-| Left scalenus posterior | muscular | chest 51%, neck 49% |
 | Left second costal cartilage | skeletal | chest 100% |
-| Left second rib | skeletal | chest 100% |
+| Left second rib | skeletal | chest 68%, upper-back 32% |
 | Left seventh costal cartilage | skeletal | chest 100% |
 | Left sixth costal cartilage | skeletal | chest 100% |
-| Left sternohyoid | muscular | chest 56%, neck 44% |
-| Left sternothyroid | muscular | chest 64%, neck 36% |
 | Left subclavius | muscular | chest 100% |
 | Left third costal cartilage | skeletal | chest 100% |
-| Left third rib | skeletal | chest 90%, upper-back 10% |
+| Left third rib | skeletal | chest 60%, upper-back 40% |
 | Manubrium | skeletal | chest 100% |
 | Right fifth costal cartilage | skeletal | chest 100% |
-| Right fifth rib | skeletal | chest 61%, upper-back 20%, side-right 19% |
 | Right first costal cartilage | skeletal | chest 100% |
-| Right first rib | skeletal | chest 100% |
+| Right first rib | skeletal | chest 91%, upper-back 9% |
 | Right fourth costal cartilage | skeletal | chest 100% |
-| Right fourth rib | skeletal | chest 84%, upper-back 16% |
-| Right omohyoid | muscular | chest 69%, neck 31% |
+| Right fourth rib | skeletal | chest 59%, upper-back 41% |
 | Right pectoralis minor | muscular | chest 100% |
-| Right platysma | muscular | chest 52%, neck 48% |
 | Right second costal cartilage | skeletal | chest 100% |
-| Right second rib | skeletal | chest 100% |
+| Right second rib | skeletal | chest 69%, upper-back 31% |
 | Right seventh costal cartilage | skeletal | chest 100% |
 | Right sixth costal cartilage | skeletal | chest 100% |
-| Right sternohyoid | muscular | chest 53%, neck 47% |
-| Right sternothyroid | muscular | chest 71%, neck 29% |
 | Right subclavius | muscular | chest 100% |
 | Right third costal cartilage | skeletal | chest 100% |
-| Right third rib | skeletal | chest 91%, upper-back 9% |
+| Right third rib | skeletal | chest 59%, upper-back 41% |
 | Sternocostal part of left pectoralis major | muscular | chest 99%, side-left 1% |
 | Sternocostal part of right pectoralis major | muscular | chest 99%, side-right 1% |
 | Xiphoid process | skeletal | chest 100% |
@@ -400,8 +387,8 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Twelfth thoracic vertebra | skeletal | mid-back 99%, lower-back 1% |
 | Atlas | skeletal | neck 100% |
 | Axis | skeletal | neck 100% |
-| Descending part of left trapezius | muscular | neck 71%, chest 26%, upper-back 4% |
-| Descending part of right trapezius | muscular | neck 67%, chest 28%, upper-back 5% |
+| Descending part of left trapezius | muscular | neck 71%, upper-back 29% |
+| Descending part of right trapezius | muscular | neck 67%, upper-back 33% |
 | Fifth cervical vertebra | skeletal | neck 100% |
 | Fourth cervical vertebra | skeletal | neck 100% |
 | Hyoid bone | skeletal | neck 100% |
@@ -412,18 +399,22 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Left digastric | muscular | neck 100% |
 | Left geniohyoid | muscular | neck 100% |
 | Left lateral thyrohyoid ligament | connective | neck 100% |
-| Left levator scapulae | skeletal | neck 48%, upper-back 29%, chest 23% |
 | Left longissimus capitis | muscular | neck 84%, upper-back 16% |
 | Left mylohyoid | muscular | neck 100% |
 | Left obliquus capitis inferior | muscular | neck 100% |
 | Left obliquus capitis superior | muscular | neck 100% |
+| Left omohyoid | muscular | neck 100% |
+| Left platysma | muscular | neck 100% |
 | Left rectus capitis posterior major | muscular | neck 100% |
 | Left rectus capitis posterior minor | muscular | neck 100% |
-| Left scalenus anterior | muscular | neck 52%, chest 48% |
-| Left scalenus medius | muscular | neck 75%, chest 25% |
+| Left scalenus anterior | muscular | neck 100% |
+| Left scalenus medius | muscular | neck 100% |
+| Left scalenus posterior | muscular | neck 100% |
 | Left semispinalis capitis | muscular | neck 100% |
 | Left splenius capitis | muscular | neck 69%, upper-back 31% |
-| Left sternocleidomastoid | muscular | neck 64%, chest 36% |
+| Left sternocleidomastoid | muscular | neck 100% |
+| Left sternohyoid | muscular | neck 100% |
+| Left sternothyroid | muscular | neck 100% |
 | Left stylohyoid | muscular | neck 100% |
 | Left stylohyoid ligament | connective | neck 100% |
 | Left thyrohyoid | muscular | neck 100% |
@@ -433,19 +424,22 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Right digastric | muscular | neck 100% |
 | Right geniohyoid | muscular | neck 100% |
 | Right lateral thyrohyoid ligament | connective | neck 100% |
-| Right levator scapulae | skeletal | neck 48%, upper-back 38%, chest 14% |
 | Right longissimus capitis | muscular | neck 84%, upper-back 16% |
 | Right mylohyoid | muscular | neck 100% |
 | Right obliquus capitis inferior | muscular | neck 100% |
 | Right obliquus capitis superior | muscular | neck 100% |
+| Right omohyoid | muscular | neck 100% |
+| Right platysma | muscular | neck 100% |
 | Right rectus capitis posterior major | muscular | neck 100% |
 | Right rectus capitis posterior minor | muscular | neck 100% |
-| Right scalenus anterior | muscular | neck 61%, chest 39% |
-| Right scalenus medius | muscular | neck 77%, chest 23% |
-| Right scalenus posterior | muscular | neck 51%, chest 49% |
+| Right scalenus anterior | muscular | neck 100% |
+| Right scalenus medius | muscular | neck 100% |
+| Right scalenus posterior | muscular | neck 100% |
 | Right semispinalis capitis | muscular | neck 100% |
 | Right splenius capitis | muscular | neck 70%, upper-back 30% |
-| Right sternocleidomastoid | muscular | neck 58%, chest 42% |
+| Right sternocleidomastoid | muscular | neck 100% |
+| Right sternohyoid | muscular | neck 100% |
+| Right sternothyroid | muscular | neck 100% |
 | Right stylohyoid | muscular | neck 100% |
 | Right stylohyoid ligament | connective | neck 100% |
 | Right thyrohyoid | muscular | neck 100% |
@@ -481,22 +475,24 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Right teres major | muscular | shoulder-right 100% |
 | Right teres minor | muscular | shoulder-right 100% |
 | Spinal part of right deltoid | muscular | shoulder-right 90%, upper-arm-right 10% |
+| External intercostal muscle | muscular | side-left 41%, chest 27%, upper-back 21%, mid-back 11% |
 | Left eighth rib | skeletal | side-left 64%, mid-back 31%, abdomen 4%, chest 1% |
 | Left eleventh rib | skeletal | side-left 62%, mid-back 38% |
 | Left ninth rib | skeletal | side-left 65%, mid-back 35% |
 | Left psoas major | muscular | side-left 80%, abdomen 20% |
-| Left serratus anterior | muscular | side-left 50%, chest 42%, upper-back 6%, mid-back 2% |
+| Left serratus anterior | muscular | side-left 50%, upper-back 33%, chest 15%, mid-back 2% |
 | Left seventh rib | skeletal | side-left 60%, mid-back 15%, chest 14%, upper-back 11% |
-| Left sixth rib | skeletal | side-left 43%, chest 31%, upper-back 26% |
+| Left sixth rib | skeletal | side-left 43%, upper-back 38%, chest 18% |
 | Left tenth rib | skeletal | side-left 62%, mid-back 38% |
 | Left twelfth rib | skeletal | side-left 76%, mid-back 23%, lower-back 1% |
+| external intercostal muscle | muscular | side-right 41%, chest 27%, upper-back 21%, mid-back 11% |
 | Right eighth rib | skeletal | side-right 65%, mid-back 31%, abdomen 3% |
 | Right eleventh rib | skeletal | side-right 62%, mid-back 38% |
 | Right ninth rib | skeletal | side-right 66%, mid-back 34% |
 | Right psoas major | muscular | side-right 81%, abdomen 19% |
-| Right serratus anterior | muscular | side-right 50%, chest 43%, upper-back 5%, mid-back 2% |
+| Right serratus anterior | muscular | side-right 50%, upper-back 33%, chest 15%, mid-back 2% |
 | Right seventh rib | skeletal | side-right 60%, mid-back 15%, chest 14%, upper-back 11% |
-| Right sixth rib | skeletal | side-right 44%, chest 31%, upper-back 25% |
+| Right sixth rib | skeletal | side-right 44%, upper-back 37%, chest 19% |
 | Right tenth rib | skeletal | side-right 62%, mid-back 38% |
 | Right twelfth rib | skeletal | side-right 76%, mid-back 24% |
 | Left adductor brevis | muscular | thigh-left 70%, hip-left 30% |
@@ -542,13 +538,15 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Right brachialis | muscular | upper-arm-right 80%, elbow-right 20% |
 | Right humerus | skeletal | upper-arm-right 41%, shoulder-right 41%, elbow-right 19% |
 | Short head of right biceps brachii | muscular | upper-arm-right 72%, shoulder-right 28% |
-| Ascending part of left trapezius | muscular | upper-back 53%, mid-back 36%, chest 11% |
-| Ascending part of right trapezius | muscular | upper-back 42%, mid-back 42%, chest 16% |
+| Ascending part of left trapezius | muscular | upper-back 64%, mid-back 36% |
+| Ascending part of right trapezius | muscular | upper-back 58%, mid-back 42% |
 | Fifth thoracic vertebra | skeletal | upper-back 100% |
 | First thoracic vertebra | skeletal | upper-back 91%, neck 9% |
 | Fourth thoracic vertebra | skeletal | upper-back 100% |
+| Left fifth rib | skeletal | upper-back 48%, chest 34%, side-left 18% |
 | Left iliocostalis cervicis | muscular | upper-back 75%, neck 25% |
 | Left interspinalis thoracis | muscular | upper-back 100% |
+| Left levator scapulae | skeletal | upper-back 52%, neck 48% |
 | Left longissimus cervicis | muscular | upper-back 66%, neck 34% |
 | Left rhomboid major | muscular | upper-back 90%, mid-back 10% |
 | Left rhomboid minor | muscular | upper-back 88%, neck 12% |
@@ -557,8 +555,10 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Left semispinalis thoracis | muscular | upper-back 56%, mid-back 44% |
 | Left serratus posterior superior | muscular | upper-back 95%, neck 5% |
 | Left splenius cervicis | muscular | upper-back 74%, neck 26% |
+| Right fifth rib | skeletal | upper-back 48%, chest 33%, side-right 19% |
 | Right iliocostalis cervicis | muscular | upper-back 75%, neck 25% |
 | Right interspinalis thoracis | muscular | upper-back 100% |
+| Right levator scapulae | skeletal | upper-back 52%, neck 48% |
 | Right longissimus cervicis | muscular | upper-back 66%, neck 34% |
 | Right rhomboid major | muscular | upper-back 90%, mid-back 10% |
 | Right rhomboid minor | muscular | upper-back 89%, neck 11% |
@@ -572,5 +572,5 @@ Each row is one anatomical part and the share of its surface assigned to each bo
 | Third thoracic vertebra | skeletal | upper-back 100% |
 | thoracic rotator | muscular | upper-back 58%, mid-back 40%, neck 2% |
 | Thoracic rotator | muscular | upper-back 58%, mid-back 40%, neck 2% |
-| Transverse part of left trapezius | muscular | upper-back 54%, chest 38%, neck 8% |
-| Transverse part of right trapezius | muscular | upper-back 51%, chest 43%, neck 6% |
+| Transverse part of left trapezius | muscular | upper-back 92%, neck 8% |
+| Transverse part of right trapezius | muscular | upper-back 94%, neck 6% |

@@ -8,3 +8,7 @@
 
 /site.webmanifest
   X-Robots-Tag: noindex
+
+# The 3D body-chart model files are data for the assessment page, not pages.
+/models/*
+  X-Robots-Tag: noindex

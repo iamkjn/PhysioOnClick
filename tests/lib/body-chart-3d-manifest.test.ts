@@ -61,6 +61,34 @@ describe("committed 3D body model", () => {
     expect(outOfRange).toBe(0);
   });
 
+  it("keeps clinically important parts in their expected areas", () => {
+    const decoded = manifest.chunks.map((c) => {
+      const raw = gunzipSync(fs.readFileSync(path.join(DIR, c.file)));
+      return readChunk(c, raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.length));
+    });
+    const areasOf = (part: (typeof manifest.parts)[number]) => {
+      const keys = new Set<string>();
+      const { regions } = decoded[part.chunk];
+      for (let v = part.firstVertex; v < part.firstVertex + part.vertexCount; v++) keys.add(manifest.regions[regions[v]]);
+      return keys;
+    };
+    const expectations: [RegExp, string[]][] = [
+      [/trapezius/i, ["neck", "upper-back", "mid-back"]],
+      [/vertebra|^sacrum$|^(left |right )?scapula$/i, ["neck", "upper-back", "mid-back", "lower-back"]],
+      [/sternocleidomastoid|omohyoid|scalen/i, ["neck"]],
+    ];
+    const problems: string[] = [];
+    for (const [pattern, allowed] of expectations) {
+      const parts = manifest.parts.filter((p) => pattern.test(p.name));
+      expect(parts.length).toBeGreaterThan(0);
+      for (const part of parts) {
+        const bad = [...areasOf(part)].filter((k) => !allowed.includes(k));
+        if (bad.length) problems.push(`${part.name}: ${bad.join(", ")}`);
+      }
+    }
+    expect(problems).toEqual([]);
+  });
+
   it("ships the CC BY 4.0 and MIT attribution", () => {
     const text = fs.readFileSync(path.join(DIR, "ATTRIBUTION.md"), "utf8");
     expect(text).toMatch(/BodyParts3D/);

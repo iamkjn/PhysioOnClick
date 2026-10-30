@@ -43,12 +43,14 @@ const EXCLUDE: RegExp[] = [
 
 const HEAD = /^(frontal|parietal|occipital|temporal|sphenoid|nasal|zygomatic|palatine) bone$|^(ethmoid|maxilla|mandible|vomer|major alar cartilage)$/;
 const SHOULDER = /supraspinatus|infraspinatus|teres (major|minor)|subscapularis/;
+// Front-of-neck muscles reach down onto the upper chest; patients feel them as neck.
+const NECK = /sternocleidomastoid|sternohyoid|sternothyroid|omohyoid|platysma|scalen/;
 
 // Spine and the structures on it: always a back area, split by height only.
 // The vertebral bodies and the scapula's rib-side face sit well forward of the
 // body's back surface, so the trunk's angle rule would wrongly call them
 // chest/abdomen or side.
-const BACK = /vertebra|^sacrum$|^coccyx$|^(atlas|axis)$|^scapula$|rotator|intertransversari|interspinal|spinalis|longissimus|iliocostalis|levatores costarum|rhomboid|serratus posterior|splenius/;
+const BACK = /vertebra|^sacrum$|^coccyx$|^(atlas|axis)$|^scapula$|rotator|intertransversari|interspinal|spinalis|longissimus|iliocostalis|levatores costarum|rhomboid|serratus posterior|splenius|trapezius|levator scapulae/;
 
 const ARM = new RegExp(
   [
@@ -87,6 +89,7 @@ export function ruleForPart(name: string): PartRule {
   if (EXCLUDE.some((r) => r.test(n))) return { kind: "exclude" };
   if (HEAD.test(n)) return { kind: "fixed", base: "head-jaw" };
   if (n === "hyoid bone") return { kind: "fixed", base: "neck" };
+  if (NECK.test(n)) return { kind: "fixed", base: "neck" };
   if (SHOULDER.test(n)) return { kind: "fixed", base: "shoulder" };
   if (BACK.test(n)) return { kind: "segment", segment: "back" };
   if (ARM.test(n)) return { kind: "segment", segment: "arm" };
@@ -138,10 +141,12 @@ export function segmentBase(segment: Segment, x: number, y: number, z: number): 
     if (y >= Y.midBack) return "mid-back";
     return "lower-back";
   }
-  if (angle < FRONT_MAX_DEG || y >= Y.upperBack) {
-    // Above the armpits there is no "side" area: lateral points join the chest.
-    return y >= Y.chest ? "chest" : "abdomen";
+  if (y >= Y.upperBack) {
+    // Above the armpits there is no "side" area: the front half of the trunk
+    // joins the chest, the back half the upper back.
+    return angle <= 90 ? "chest" : "upper-back";
   }
+  if (angle < FRONT_MAX_DEG) return y >= Y.chest ? "chest" : "abdomen";
   return "side";
 }
 

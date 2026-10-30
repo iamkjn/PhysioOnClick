@@ -70,6 +70,14 @@ describe("ruleForPart", () => {
     ["Left splenius capitis", back],
     ["Left psoas major", trunk],
     ["Left scapula", back],
+    ["Transverse part of left trapezius", back],
+    ["Descending part of right trapezius", back],
+    ["Left levator scapulae", back],
+    ["Left sternocleidomastoid", { kind: "fixed", base: "neck" }],
+    ["Right omohyoid", { kind: "fixed", base: "neck" }],
+    ["Left scalenus anterior", { kind: "fixed", base: "neck" }],
+    ["Platysma", { kind: "fixed", base: "neck" }],
+    ["Left subscapularis", { kind: "fixed", base: "shoulder" }],
     ["Sternocostal part of left pectoralis major", trunk],
     ["Left external oblique", trunk],
   ])("classifies %s", (name, rule) => {
@@ -101,6 +109,7 @@ describe("segmentBase", () => {
     ["trunk", -0.12, 1.2, -0.01, "side"], // right flank at rib level
     ["trunk", 0.03, 1.1, -0.12, "lower-back"], // just off the midline behind
     ["trunk", 0.13, 1.38, -0.02, "chest"], // lateral above the armpit line: no side area
+    ["trunk", 0.15, 1.40, -0.06, "upper-back"], // behind the side of the body above the armpits
     ["back", 0, 1.5, 0.02, "neck"],
     ["back", 0.05, 1.35, 0.0, "upper-back"],
     ["back", 0, 1.2, -0.02, "mid-back"],

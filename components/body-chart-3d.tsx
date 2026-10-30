@@ -162,6 +162,7 @@ function createStage(
 
     const raycaster = new THREE.Raycaster();
     const ndc = new THREE.Vector2();
+    const nearest = new THREE.Vector3();
     const pick = (clientX: number, clientY: number): Hit | null => {
       const rect = canvas.getBoundingClientRect();
       ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
@@ -169,7 +170,20 @@ function createStage(
       const hit = raycaster.intersectObjects(meshes, false)[0];
       if (!hit?.face || hit.faceIndex == null) return null;
       const i = hit.object.userData.chunk as number;
-      const region = colourData[i].regions[hit.face.a];
+      // Long simplified triangles can straddle an area boundary: use the corner
+      // nearest the hit point rather than always the first one.
+      const local = hit.object.worldToLocal(hit.point.clone());
+      const position = (hit.object as Mesh).geometry.getAttribute("position");
+      let vertex = hit.face.a;
+      let best = Infinity;
+      for (const corner of [hit.face.a, hit.face.b, hit.face.c]) {
+        const d = nearest.fromBufferAttribute(position, corner).distanceToSquared(local);
+        if (d < best) {
+          best = d;
+          vertex = corner;
+        }
+      }
+      const region = colourData[i].regions[vertex];
       if (region === NO_REGION) return null;
       return { region, part: partForFace(partsByChunk[i], hit.faceIndex) };
     };
@@ -188,17 +202,25 @@ function createStage(
       if (hit) handlers.onTap(hit);
     };
     let lastHover: { x: number; y: number } | null = null;
+    // At most one pick per HOVER_THROTTLE_MS: a pick on the leading edge, then one
+    // trailing pick per window while the mouse keeps moving.
+    const scheduleHoverWindow = () => {
+      hoverTimer = window.setTimeout(() => {
+        hoverTimer = 0;
+        if (!lastHover) return;
+        const { x, y } = lastHover;
+        lastHover = null;
+        handlers.onHover(pick(x, y));
+        scheduleHoverWindow();
+      }, HOVER_THROTTLE_MS);
+    };
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse" || e.buttons) return;
       lastHover = { x: e.clientX, y: e.clientY };
       if (hoverTimer) return;
-      handlers.onHover(pick(e.clientX, e.clientY));
       lastHover = null;
-      hoverTimer = window.setTimeout(() => {
-        hoverTimer = 0;
-        if (lastHover) handlers.onHover(pick(lastHover.x, lastHover.y));
-        lastHover = null;
-      }, HOVER_THROTTLE_MS);
+      handlers.onHover(pick(e.clientX, e.clientY));
+      scheduleHoverWindow();
     };
     const onPointerLeave = () => {
       lastHover = null;
@@ -391,9 +413,13 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
       <BodyChartSelection value={value} onToggle={(key) => onChange(toggleRegion(value, key))} />
 
       <p className="body-chart-3d__credit">
-        Anatomy: BodyParts3D © DBCLS,{" "}
+        Anatomy adapted from BodyParts3D © DBCLS,{" "}
         <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
           CC BY 4.0
+        </a>{" "}
+        ·{" "}
+        <a href="/models/body-chart/ATTRIBUTION.md" target="_blank" rel="noopener noreferrer">
+          licence details
         </a>
       </p>
     </div>

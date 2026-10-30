@@ -60,7 +60,8 @@ design:
   `atlas.json` + `body-*.bin.gz` hold BodyParts3D converted to metres, Y-up, with +X as
   the patient's left and +Z as the front.
 - We download from that GitHub commit, never from Astra's CDN.
-- Credit line under the model: "Anatomy: BodyParts3D © DBCLS, CC BY 4.0". Full CC BY and
+- Credit line under the model: "Anatomy adapted from BodyParts3D © DBCLS, CC BY 4.0 · licence
+  details" (the last link opens the full notice). Full CC BY and
   MIT notices ship in `public/models/body-chart/ATTRIBUTION.md`.
 
 ## Patient experience
@@ -76,7 +77,7 @@ design:
    "Left thigh · Rectus femoris".
 5. The selected-area chips, the "Somewhere else / not sure" option, the selected count and
    the rest of the step behave exactly as now.
-6. Under the canvas: a one-line hint and the credit line.
+6. Under the canvas: a one-line hint and the credit line, "Anatomy adapted from BodyParts3D © DBCLS, CC BY 4.0 · licence details".
 7. A small "Use simple chart instead" link is above the model. It is also the keyboard and
    screen-reader route.
 
@@ -92,6 +93,11 @@ The wizard swaps one import. Nothing downstream changes.
 - `regionKeyForVertex(rule, side, x, y, z)` splits a segment into areas by height, plus
   depth for back versus front and for buttock versus hip, plus lateral distance for the
   trunk "side" area.
+- Trunk structures are split by the angle around the body: front within 55° → chest or
+  abdomen; behind within 55° → back areas; otherwise side below the armpits. Above the
+  armpits the front half is chest and the back half upper-back. Trapezius and levator
+  scapulae use the back segment; front-of-neck muscles (sternocleidomastoid, strap
+  muscles, platysma, scalenes) are fixed to neck.
 - Side comes from the part name (`left`/`right`), else from the vertex's x sign.
 - Every key it returns is a `BODY_REGIONS` key.
 
@@ -109,8 +115,8 @@ The wizard swaps one import. Nothing downstream changes.
 
 - Downloads the pinned Human Atlas files into `.cache/` (gitignored).
 - Keeps the skeletal, muscular and connective systems, minus excluded parts.
-- Simplifies with `meshoptimizer` to a 200k-triangle budget, at 2% error and 48 triangles
-  minimum per part.
+- Simplifies with `meshoptimizer` at a 2% error limit (48 triangles minimum per part). The
+  error limit binds before the 200k-triangle target, giving about 300k triangles.
 - Quantises, bakes the areas, and writes `public/models/body-chart/{manifest.json,
   chunk-N.bin.gz, ATTRIBUTION.md}` plus `docs/body-chart-3d-mapping.md` (a part → area
   table for spot-checks).
@@ -151,7 +157,7 @@ The wizard swaps one import. Nothing downstream changes.
 
 ### 8. Prefetch
 
-- `components/booking-flow.tsx` calls `prefetchBodyModel()` on mount (the service step).
+- `components/booking-flow.tsx` calls `prefetchBodyModel()` when the patient reaches the time step (step 2).
 - `/patient/assessment` relies on the chart's own load.
 
 ## Data flow

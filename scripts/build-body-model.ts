@@ -17,6 +17,7 @@ import { regionKeyForVertex, ruleForPart, sideOf, type KeptRule } from "../lib/b
 import {
   MAX_CHUNK_VERTICES,
   MODEL_SYSTEMS,
+  NO_REGION,
   POSITION_SCALE,
   writeChunk,
   type BodyModelManifest,
@@ -211,7 +212,7 @@ async function main() {
 
     const positions = new Int16Array(vertexCount * 3);
     const normals = new Int8Array(vertexCount * 3);
-    const regions = new Uint8Array(vertexCount);
+    const regions = new Uint8Array(vertexCount).fill(NO_REGION);
     const side = sideOf(p.name);
     for (let old = 0; old < remap.length; old++) {
       const v = remap[old];

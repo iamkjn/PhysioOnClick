@@ -215,10 +215,12 @@ export function BookingFlow() {
     }
   }, []);
 
-  // Warm the 3D body chart the assessment shows on the next step.
+  // Warm the 3D body chart once the patient reaches the time step: the
+  // assessment that shows it follows straight after. Skipped on step 1 so
+  // visitors who leave early (and crawlers) don't download the model.
   useEffect(() => {
-    prefetchBodyModel();
-  }, []);
+    if (step === 2) prefetchBodyModel();
+  }, [step]);
 
   const service = useMemo(() => bookServiceFor(serviceId), [serviceId]);
 

@@ -67,8 +67,9 @@ export function BodyChart({ value, onChange, readOnly = false, idPrefix = "bc" }
       data-view={view}
     >
       {/* Front/back is view-only navigation, not data editing, so it stays
-          interactive even in readOnly mode. "Show bones" and "somewhere
-          else" do edit chart state/selection, so those stay gated below. */}
+          interactive even in readOnly mode. "Show bones" edits chart state, so
+          it stays gated below; the "somewhere else" gating now lives in
+          BodyChartSelection. */}
       <div className="body-chart__toolbar">
         <div className="body-chart__views" role="group" aria-label="Body view">
           <button type="button" className="body-chart__view-btn" aria-pressed={view === "front"} onClick={() => setView("front")}>

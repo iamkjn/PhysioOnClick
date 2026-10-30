@@ -1,6 +1,6 @@
 // lib/body-model-loader.ts
 // Downloads and decodes the 3D body-chart model once per page load and shares
-// it. The booking flow prefetches it on the service step, so the assessment's
+// it. The booking flow prefetches it once the patient reaches the time step, so the assessment's
 // 3D chart usually opens instantly. Also decides whether this browser should
 // get the 3D chart at all.
 
@@ -71,7 +71,10 @@ function detect(): boolean {
   if (typeof DecompressionStream === "undefined") return false;
   try {
     const canvas = document.createElement("canvas");
-    return !!(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+    const gl = (canvas.getContext("webgl2") || canvas.getContext("webgl")) as WebGLRenderingContext | null;
+    if (!gl) return false;
+    gl.getExtension?.("WEBGL_lose_context")?.loseContext(); // free the probe context straight away
+    return true;
   } catch {
     return false;
   }
@@ -85,9 +88,9 @@ export function canUse3D(): boolean {
 
 /** Start downloading the model at idle time, if this browser will use it. */
 export function prefetchBodyModel(): void {
-  if (typeof window === "undefined" || !canUse3D()) return;
+  if (typeof window === "undefined") return;
   const start = () => {
-    loadBodyModel().catch(() => {});
+    if (canUse3D()) loadBodyModel().catch(() => {});
   };
   if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(start, { timeout: 4000 });
   else window.setTimeout(start, 1500);
