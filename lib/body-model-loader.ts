@@ -20,7 +20,8 @@ let support: boolean | null = null;
 
 // Static hosts may serve .gz with or without Content-Encoding; fetch already
 // decodes the former, so check the gzip magic bytes rather than decode twice.
-async function readFile(response: Response, expectedBytes: number): Promise<ArrayBuffer> {
+// Also used by lib/exercise-anatomy/addon-loader.ts for the add-on model.
+export async function readModelFile(response: Response, expectedBytes: number): Promise<ArrayBuffer> {
   if (!response.ok) throw new Error(`Body model request failed (${response.status})`);
   const payload = await response.arrayBuffer();
   const head = new Uint8Array(payload, 0, Math.min(2, payload.byteLength));
@@ -40,7 +41,7 @@ export function loadBodyModel(): Promise<BodyModel> {
     totalBytes = manifest.chunks.reduce((n, c) => n + c.gzipBytes, 0);
     const chunks = await Promise.all(
       manifest.chunks.map(async (chunk) => {
-        const buffer = await readFile(await fetch(`${BODY_MODEL_DIR}/${chunk.file}`), chunk.bytes);
+        const buffer = await readModelFile(await fetch(`${BODY_MODEL_DIR}/${chunk.file}`), chunk.bytes);
         loadedBytes += chunk.gzipBytes;
         listeners.forEach((listener) => listener(loadedBytes, totalBytes));
         return readChunk(chunk, buffer);
