@@ -12,7 +12,7 @@ export const POST_OP_GENERAL: Record<string, ExerciseAnatomy> = {
     main: ["gastrocnemius", "soleus", "tibialis-anterior"],
     helpers: [],
     howItHelps:
-      "Pointing your feet away and pulling them back works your calf muscles and the muscle at the front of your shin. As your calves squeeze and relax, they can help keep blood moving in your legs while you are resting in bed more than usual, and help stop your ankles getting stiff.",
+      "Pointing your feet away and pulling them back works your calf muscles and the muscle at the front of your shin. As your calves squeeze and relax, they can help keep blood moving in your legs while you are resting in bed more than usual, and help limit stiffness in your ankles.",
     tissue: "post-surgery",
     view: "right",
     status: "draft",
@@ -38,7 +38,7 @@ export const POST_OP_GENERAL: Record<string, ExerciseAnatomy> = {
     main: ["gluteus-medius"],
     helpers: ["gluteus-minimus", "tfl-it-band"],
     howItHelps:
-      "Sliding your leg out to the side, with your kneecap and toes pointing up, gently works the muscles on the side of your hip while keeping to your hip precautions. Working these muscles after a hip replacement can help them hold your pelvis level as you get back to standing and walking.",
+      "Sliding your leg out to the side, with your kneecap and toes pointing up, gently works the muscles on the side of your hip while you keep to your hip precautions. Working these muscles after a hip replacement can help them hold your pelvis level as you get back to standing and walking.",
     tissue: "post-surgery",
     status: "draft",
   },
@@ -46,7 +46,7 @@ export const POST_OP_GENERAL: Record<string, ExerciseAnatomy> = {
     main: ["quadriceps", "gluteus-maximus"],
     helpers: ["triceps"],
     howItHelps:
-      "Pushing up through your hands and your stronger leg works your thigh and buttock muscles, with the backs of your arms helping, and lowering slowly works them again on the way down. Standing for short spells, keeping to the weight your surgeon allows through the operated leg, helps build strength and confidence for your first steps with a frame.",
+      "Pushing up through your hands and your other leg works your thigh and buttock muscles, with the backs of your arms helping, and lowering slowly works them again. Standing for short spells, keeping to the weight your surgeon allows through the operated leg, helps build strength and confidence for your first steps with a frame.",
     tissue: "post-surgery",
     status: "draft",
   },
@@ -70,7 +70,7 @@ export const POST_OP_GENERAL: Record<string, ExerciseAnatomy> = {
     main: ["scar-tissue"],
     helpers: [],
     howItHelps:
-      "Once your wound has fully healed, moving the skin in small, slow circles around the scar helps it glide over the tissue underneath instead of sticking down. This can help the scar and the skin around it feel softer and less tight, which may make bending, stretching and moving that area more comfortable.",
+      "Once your wound has fully healed and your surgeon or physio says it is fine to start, moving the skin in small, slow circles around the scar can help it glide over the tissue underneath instead of sticking down. This may help the scar feel softer and less tight, and make moving that area more comfortable.",
     tissue: "post-surgery",
     status: "draft",
   },
@@ -118,7 +118,7 @@ export const POST_OP_GENERAL: Record<string, ExerciseAnatomy> = {
     main: ["quadriceps", "gluteus-maximus", "gastrocnemius"],
     helpers: ["gluteus-medius", "soleus", "rhomboids", "middle-trapezius"],
     howItHelps:
-      "Sit-to-stands, step-ups, band rows and calf raises work your thighs, buttocks, calves and upper back in movements you use every day. Building up the circuit steadily, within any limits from your surgeon or physio, can help both sides share the work evenly as you get back to your normal activities.",
+      "Movements such as sit-to-stands, step-ups, band rows and calf raises work your thighs, buttocks, calves and upper back in ways you use every day. Building up the circuit steadily, within any limits from your surgeon or physio, can help both sides share the work evenly as you get back to your normal activities.",
     tissue: "post-surgery",
     status: "draft",
   },
@@ -132,7 +132,7 @@ export const POST_OP_GENERAL: Record<string, ExerciseAnatomy> = {
   },
   "graduated-return-to-driving-readiness": {
     main: ["quadriceps", "cervical-spine"],
-    helpers: ["tibialis-anterior", "thoracic-spine"],
+    helpers: ["gastrocnemius", "thoracic-spine"],
     howItHelps:
       "Pressing the brake hard works the front of your thigh, and checking your mirrors and blind spots turns your neck and upper back. Practising in your parked car can show you whether these movements feel quick and comfortable. Feeling comfortable here does not mean you are cleared to drive, so always check with your surgeon and insurer first.",
     tissue: "post-surgery",
@@ -166,7 +166,7 @@ export const POST_OP_GENERAL: Record<string, ExerciseAnatomy> = {
     main: ["quadriceps", "gluteus-maximus", "pectoralis-major"],
     helpers: ["triceps", "front-deltoid", "iliopsoas"],
     howItHelps:
-      "Sit-to-stands work your thighs and buttocks, wall push-ups work your chest, shoulders and the backs of your arms, and marching keeps your hips moving and raises your heart rate. Together they can help build the everyday strength you need to get up from a chair, push open doors and stay active, with no equipment needed.",
+      "Sit-to-stands work your thighs and buttocks, wall push-ups work your chest, shoulders and the backs of your arms, and marching keeps your hips moving and raises your heart rate. Together they can help build the everyday strength you need to get up from a chair, push open doors and stay active, using just a chair and a wall.",
     status: "draft",
   },
   "pain-pacing-activity-plan": {
