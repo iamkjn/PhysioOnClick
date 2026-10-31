@@ -2913,6 +2913,11 @@ Append to the very end of `app/globals.css`:
   background: radial-gradient(ellipse at 50% 40%, #fff 0%, var(--color-surface) 75%);
   overflow: hidden;
 }
+/* The canvas host fills the stage; loading text, badge and the corner button sit beside it. */
+.exercise-body-3d__canvas {
+  position: absolute;
+  inset: 0;
+}
 .exercise-body-3d__stage canvas {
   display: block;
   width: 100%;
