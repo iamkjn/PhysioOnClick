@@ -91,8 +91,12 @@ const MUSCLE_TABLE = {
   "shoulder-joint": {
     label: "Shoulder joint",
     plain: "the ball and socket where your upper arm bone meets your shoulder blade",
-    source: "base",
-    parts: [/^(right|left) (humerus|scapula)$/i],
+    source: "none",
+    parts: [],
+    standIn: {
+      parts: [/^(right|left) (humerus|scapula)$/i],
+      note: "The shoulder joint itself isn't in the 3D model, so the upper arm bone and shoulder blade that form it are lit instead.",
+    },
     view: "right",
   },
   "biceps-brachii": { label: "Biceps", plain: "front of your upper arm", source: "base", parts: [/biceps brachii/i], view: "front" },

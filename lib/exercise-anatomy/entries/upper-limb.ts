@@ -26,7 +26,7 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
     main: ["shoulder-joint"],
     helpers: [],
     howItHelps:
-      "Letting your arm hang and swing from a gentle rock of your body moves your shoulder joint while the muscles around it stay relaxed. Keeping the joint moving like this helps limit stiffness without asking the repaired tendon to work, which can make dressing and washing easier to get back to as you recover.",
+      "Letting your arm hang and swing from a gentle rock of your body moves your shoulder joint while the muscles around it stay relaxed. Keeping the joint moving like this helps limit stiffness while putting very little load on the repaired tendon, which can make dressing and washing easier to get back to as you recover.",
     tissue: "post-surgery",
     status: "draft",
   },
@@ -40,7 +40,7 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "shoulder-internal-rotation-band": {
     main: ["subscapularis"],
-    helpers: ["pectoralis-major"],
+    helpers: ["pectoralis-major", "teres-major"],
     howItHelps:
       "Turning your forearm inwards against the band strengthens the rotator cuff muscle on the front of your shoulder blade, with help from your chest muscle. Working it alongside the muscles that turn your arm out helps balance strength around the joint, which can make lifting, pushing and reaching behind your back feel steadier.",
     tissue: "muscle-tendon",
@@ -114,7 +114,7 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
     main: ["wrist-extensors"],
     helpers: ["finger-extensors"],
     howItHelps:
-      "With your elbow straight, bending your wrist down stretches the muscles along the top of your forearm, which attach at the outside of your elbow. Easing tightness here can make gripping, lifting and typing more comfortable while a sore tennis elbow settles.",
+      "With your elbow straight, bending your wrist down stretches the muscles along the top of your forearm, which attach at the outside of your elbow. Easing tightness here can make gripping, lifting and typing more comfortable when tennis elbow is sore.",
     tissue: "muscle-tendon",
     status: "draft",
   },
@@ -130,7 +130,7 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
     main: ["wrist-flexors"],
     helpers: ["finger-flexors"],
     howItHelps:
-      "With your elbow straight, pulling your hand back stretches the muscles on the palm side of your forearm, which attach at the inside of your elbow. Easing tightness here can make gripping, lifting and carrying more comfortable while a sore golfer's elbow settles.",
+      "With your elbow straight, pulling your hand back stretches the muscles on the palm side of your forearm, which attach at the inside of your elbow. Easing tightness here can make gripping, lifting and carrying more comfortable when golfer's elbow is sore.",
     tissue: "muscle-tendon",
     status: "draft",
   },
@@ -211,8 +211,8 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
     status: "draft",
   },
   "tendon-glide-exercises": {
-    main: ["finger-flexors", "median-nerve"],
-    helpers: ["hand-intrinsics"],
+    main: ["finger-flexors"],
+    helpers: ["hand-intrinsics", "median-nerve"],
     howItHelps:
       "Moving your fingers through a set of shapes helps the tendons that bend them, and the median nerve beside them, glide through the tunnel at your wrist. Keeping them moving freely may help ease stiffness and tingling, which can make gripping, writing and fine hand tasks more comfortable.",
     tissue: "nerve-brain",
