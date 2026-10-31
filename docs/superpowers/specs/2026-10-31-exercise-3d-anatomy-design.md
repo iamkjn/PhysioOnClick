@@ -53,6 +53,26 @@ look, their Google presence, the booking prompts) must not be disturbed.
    muscles under "skeletal" (tibialis anterior, fibularis, levator scapulae,
    subscapularis) and tensor fasciae latae under "connective".
 
+### Refinements found while planning (2026-10-31)
+
+6. **Files live in folders.** The data and helpers go in `lib/exercise-anatomy/`
+   (`types.ts`, `muscles.ts`, `healing.ts`, `addon-parts.ts`, `addon-loader.ts`,
+   `scene.ts`, `entries/*.ts`, `index.ts`). The components go in
+   `components/exercise-library/`, next to the other library components. This replaces
+   the single-file names under "Architecture" below.
+7. **Headings say "Main focus" / "Also working", not "muscles".** Some targets aren't
+   muscles: McKenzie press-up targets the lower back discs, and Spanish squat the kneecap
+   tendon. The legend says "Main focus" / "Helpers".
+8. **The 3D body takes the picture's exact square.** Its view buttons, legend, notes and
+   credit sit just under the square while 3D is open. Content below therefore moves only
+   after the patient taps, which doesn't count as layout shift.
+9. **One shared-library change.** `lib/body-model-loader.ts` exports its private
+   download-and-gunzip helper as `readModelFile`, so the add-on loader reuses it. Its
+   behaviour is unchanged and covered by the existing loader tests.
+10. **The model ships no "tap to select".** The exercise view is read-only: a tap shows a
+    name, and lit parts are picked first, so a tap lands on the highlighted muscle even
+    under see-through ones.
+
 ## What the model has
 
 The live booking model (569 parts) has the major limb, shoulder and back muscles:
