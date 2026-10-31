@@ -24,6 +24,9 @@ import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
 import { ReferenceOnlyNote } from "@/components/exercise-library/reference-only-label";
 import { EmbedExerciseButton } from "@/components/exercise-library/embed-exercise-button";
+import { ExerciseAnatomySection } from "@/components/exercise-library/exercise-anatomy-section";
+import { ExerciseHeroMedia } from "@/components/exercise-library/exercise-hero-media";
+import { canShow3D, startView, visibleAnatomy } from "@/lib/exercise-anatomy";
 import { ExerciseImage } from "@/components/exercise-image";
 import { ExerciseVideo } from "@/components/exercise-library/exercise-video";
 import { Reveal } from "@/components/reveal";
@@ -128,6 +131,19 @@ export default async function ExerciseDetailPage({
   const { ordinary: ordinaryMistakes, safety: safetyLine } = splitMistakes(
     exercise.mistakes ?? [],
   );
+  // Approved anatomy (or any draft on dev). Without it the page renders as before.
+  const anatomy = visibleAnatomy(exercise.slug);
+  const heroImage = (
+    <ExerciseImage
+      exerciseId={exercise.id}
+      name={exercise.title}
+      pose={exercise.pose}
+      size={640}
+      className="exlib-detail-hero__image"
+      variant="full"
+      decorative={false}
+    />
+  );
 
   return (
     <div className="site-shell">
@@ -172,15 +188,19 @@ export default async function ExerciseDetailPage({
 
       <section className="exlib-detail-hero">
         <div className="exlib-detail-hero__media">
-          <ExerciseImage
-            exerciseId={exercise.id}
-            name={exercise.title}
-            pose={exercise.pose}
-            size={640}
-            className="exlib-detail-hero__image"
-            variant="full"
-            decorative={false}
-          />
+          {anatomy && canShow3D(anatomy) ? (
+            <ExerciseHeroMedia
+              slug={exercise.slug}
+              title={exercise.title}
+              main={anatomy.main}
+              helpers={anatomy.helpers}
+              view={startView(anatomy)}
+            >
+              {heroImage}
+            </ExerciseHeroMedia>
+          ) : (
+            heroImage
+          )}
         </div>
 
         <div className="exlib-detail-hero__copy">
@@ -378,6 +398,8 @@ export default async function ExerciseDetailPage({
           </TrackedBookLink>
         </aside>
       </section>
+
+      {anatomy ? <ExerciseAnatomySection anatomy={anatomy} stage={exercise.stage} /> : null}
 
       <section className="page-section stack">
         <ExerciseSafetyNote variant="compact" />
