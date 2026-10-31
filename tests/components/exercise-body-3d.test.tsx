@@ -4,7 +4,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 // vi.mock factories are hoisted above everything, so shared mocks come from vi.hoisted.
 const { stage, created, loadBodyModel, loadAnatomyAddon } = vi.hoisted(() => ({
   stage: { setView: vi.fn(), setWholeBody: vi.fn(), dispose: vi.fn() },
-  created: { handlers: null as null | { onTap(label: string | null): void }, sources: 0 },
+  created: { handlers: null as null | { onTap(label: string | null): void; onContextLost(): void; onRotate(): void }, sources: 0 },
   loadBodyModel: vi.fn(),
   loadAnatomyAddon: vi.fn(),
 }));
@@ -12,7 +12,7 @@ const { stage, created, loadBodyModel, loadAnatomyAddon } = vi.hoisted(() => ({
 vi.mock("three", () => ({}));
 vi.mock("three/examples/jsm/controls/OrbitControls.js", () => ({ OrbitControls: class {} }));
 vi.mock("@/components/exercise-library/exercise-body-3d-stage", () => ({
-  createAnatomyStage: vi.fn((_t: unknown, _o: unknown, _h: unknown, sources: unknown[], _opts: unknown, handlers: { onTap(label: string | null): void }) => {
+  createAnatomyStage: vi.fn((_t: unknown, _o: unknown, _h: unknown, sources: unknown[], _opts: unknown, handlers: { onTap(label: string | null): void; onContextLost(): void; onRotate(): void }) => {
     created.handlers = handlers;
     created.sources = sources.length;
     return stage;
@@ -47,6 +47,23 @@ describe("ExerciseBody3D", () => {
     expect(loadAnatomyAddon).not.toHaveBeenCalled();
   });
 
+  it("keeps the corner button outside the image role", async () => {
+    render(
+      <ExerciseBody3D
+        title="Clam"
+        main={["gluteus-medius"]}
+        helpers={[]}
+        view="right"
+        corner={<button type="button">Back to picture</button>}
+        onError={vi.fn()}
+      />,
+    );
+    await waitFor(() => expect(screen.getByRole("button", { name: "Back view" })).toBeEnabled());
+    const corner = screen.getByRole("button", { name: "Back to picture" });
+    expect(corner).toBeInTheDocument();
+    expect(screen.getByRole("img").contains(corner)).toBe(false);
+  });
+
   it("loads the add-on when a muscle lives there", async () => {
     render(<ExerciseBody3D title="Kegel" main={["pelvic-floor"]} helpers={[]} view="front" onError={vi.fn()} />);
     await waitFor(() => expect(created.sources).toBe(2));
@@ -67,10 +84,30 @@ describe("ExerciseBody3D", () => {
 
   it("reports a failed download", async () => {
     loadBodyModel.mockRejectedValue(new Error("offline"));
-    vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     const onError = vi.fn();
     render(<ExerciseBody3D title="Clam" main={["gluteus-medius"]} helpers={[]} view="right" onError={onError} />);
     await waitFor(() => expect(onError).toHaveBeenCalled());
+    consoleError.mockRestore();
+  });
+
+  it("never builds the scene if it unmounts before the model arrives", async () => {
+    let resolve!: (model: unknown) => void;
+    loadBodyModel.mockReturnValue(new Promise((r) => { resolve = r; }));
+    const { unmount } = render(<ExerciseBody3D title="Clam" main={["gluteus-medius"]} helpers={[]} view="right" onError={vi.fn()} />);
+    unmount();
+    resolve({ manifest: {}, chunks: [] });
+    await new Promise((r) => setTimeout(r, 50));
+    expect(created.handlers).toBeNull();
+    expect(stage.dispose).not.toHaveBeenCalled();
+  });
+
+  it("reports a lost WebGL context", async () => {
+    const onError = vi.fn();
+    render(<ExerciseBody3D title="Clam" main={["gluteus-medius"]} helpers={[]} view="right" onError={onError} />);
+    await waitFor(() => expect(created.handlers).not.toBeNull());
+    act(() => created.handlers!.onContextLost());
+    expect(onError).toHaveBeenCalled();
   });
 
   it("disposes the scene when it unmounts", async () => {

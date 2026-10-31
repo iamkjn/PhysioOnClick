@@ -97,7 +97,10 @@ export function ExerciseBody3D({ title, main, helpers, view: startView, corner, 
 
   return (
     <div className="exercise-body-3d">
-      <div ref={stageRef} className="exercise-body-3d__stage" role="img" aria-label={label}>
+      <div className="exercise-body-3d__stage">
+        {/* Only the canvas host is the image; the loading text, badge and corner
+            button sit beside it so assistive tech still reaches them. */}
+        <div ref={stageRef} className="exercise-body-3d__canvas" role="img" aria-label={label} />
         {!ready && (
           <div className="body-chart-3d__loading">
             <span>Loading the 3D body…</span>
