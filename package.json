@@ -20,7 +20,8 @@
     "upload": "npm run clean && opennextjs-cloudflare build && node scripts/patch-opennext-worker.mjs && opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "test:rules": "vitest run --config vitest.rules.config.ts",
-    "build:body-model": "tsx scripts/build-body-model.ts"
+    "build:body-model": "tsx scripts/build-body-model.ts",
+    "build:anatomy-addon": "tsx scripts/build-anatomy-addon.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
