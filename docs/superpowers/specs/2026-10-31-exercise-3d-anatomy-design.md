@@ -101,7 +101,8 @@ shows").
 ### The picture (top of the page)
 
 - The illustration stays the default, exactly as today.
-- A small "View in 3D" button sits in the illustration's bottom-right corner. Tapping it
+- A small "View in 3D" button sits in the illustration's top-right corner (the bottom-right
+  holds the "© physioonclick.co.uk" watermark, which it must not cover). Tapping it
   swaps the illustration for the 3D body **in the same box**, so nothing else on the
   page moves. A "Back to picture" button in the same corner swaps back. The illustration
   stays mounted (hidden), so it doesn't reload.

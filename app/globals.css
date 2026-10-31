@@ -17036,11 +17036,11 @@ textarea:focus {
 .exlib-hero-media__toggle {
   position: absolute;
   right: 10px;
-  bottom: 10px;
+  top: 10px;
   z-index: 3;
   display: inline-flex;
   align-items: center;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0.45rem 0.95rem;
   border: 0;
   border-radius: 999px;
@@ -17117,6 +17117,7 @@ textarea:focus {
 }
 .exercise-body-3d__tip {
   margin: 0;
+  min-height: 1.4em;
   text-align: center;
   color: var(--color-navy);
   font-size: var(--text-sm);
@@ -17154,6 +17155,9 @@ textarea:focus {
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--text-xs);
+  text-align: center;
+}
+.exercise-body-3d .body-chart-3d__credit {
   text-align: center;
 }
 
