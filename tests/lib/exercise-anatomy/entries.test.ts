@@ -19,6 +19,11 @@ describe("exercise anatomy entries", () => {
     for (const [slug, entry] of Object.entries(EXERCISE_ANATOMY)) expect(entryProblems(entry), slug).toEqual([]);
   });
 
+  it("has an entry for every exercise in the library", () => {
+    const missing = exercises.filter((e) => !e.retired && !EXERCISE_ANATOMY[e.slug]).map((e) => e.slug);
+    expect(missing).toEqual([]);
+  });
+
   it("keeps face exercises out of 3D", () => {
     for (const e of exercises.filter((x) => x.bodyPart === "Face")) {
       const entry = EXERCISE_ANATOMY[e.slug];
