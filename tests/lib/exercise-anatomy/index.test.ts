@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { canShow3D, entryProblems, isVisible, startView } from "@/lib/exercise-anatomy";
+import { canShow3D, entryProblems, isVisible, startView, visibleAnatomy } from "@/lib/exercise-anatomy";
 import { HEALING_STAGES, healingCopyVisible } from "@/lib/exercise-anatomy/healing";
 import type { ExerciseAnatomy } from "@/lib/exercise-anatomy/types";
 
@@ -78,5 +78,14 @@ describe("entryProblems", () => {
       true
     );
     expect(entryProblems(entry({ howItHelps: "This will heal your hip. Do it daily." }))).toContain("howItHelps makes a promise");
+  });
+});
+
+describe("visibleAnatomy", () => {
+  it("ignores object built-ins and unknown slugs, even with drafts on", () => {
+    vi.stubEnv("NEXT_PUBLIC_EXERCISE_ANATOMY_DRAFTS", "1");
+    expect(visibleAnatomy("constructor")).toBeNull();
+    expect(visibleAnatomy("__proto__")).toBeNull();
+    expect(visibleAnatomy("not-an-exercise")).toBeNull();
   });
 });

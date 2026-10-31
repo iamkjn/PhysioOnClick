@@ -18,15 +18,15 @@ export const HEALING_STAGES = [
 
 export const TISSUE_LINES: Record<TissueTrack, string> = {
   "muscle-tendon":
-    "Muscles and tendons: muscle strains often settle within a few weeks, but tendons rebuild strength slowly, often over three months or more, so steady, gradual loading matters.",
+    "Muscles and tendons: a strained muscle often settles within a few weeks. Tendons get stronger more slowly, so build up the work steadily and give them time.",
   "joint-ligament":
-    "Joints and ligaments: swelling and soreness usually ease over the first few weeks, while ligaments keep remodelling for months. Strength and balance work protects the joint as they do.",
+    "Joints and ligaments: swelling and soreness usually ease first, but your ligaments keep getting stronger for months. Strength and balance work helps protect the joint in the meantime.",
   "post-surgery":
-    "After surgery: follow your surgeon's and physio's limits first. Tissues usually knit over about six weeks, then strength and confidence are rebuilt step by step.",
+    "After surgery: follow your surgeon's and physio's limits first. As the area heals, you rebuild strength and confidence step by step.",
   "nerve-brain":
     "Nerves and the brain: recovery after a nerve or brain injury is often slow and can carry on for months. Regular, repeated practice helps your brain and nerves relearn movement.",
   "pelvic-floor":
-    "Pelvic floor: like any muscle, it gets stronger with regular practice. Most people notice a difference after about three months of daily exercises.",
+    "Pelvic floor: like any muscle, your pelvic floor gets stronger with regular practice. It can take a few months to notice a difference, so keep going as your physio advises.",
 };
 
 export const HEALING_CLOSING = "Everyone heals at their own pace. Your physio will tell you when to move on.";

@@ -19,7 +19,7 @@ export function isVisible(entry: ExerciseAnatomy): boolean {
 }
 
 export function visibleAnatomy(slug: string): ExerciseAnatomy | null {
-  const entry = EXERCISE_ANATOMY[slug];
+  const entry = Object.hasOwn(EXERCISE_ANATOMY, slug) ? EXERCISE_ANATOMY[slug] : undefined;
   return entry && isVisible(entry) ? entry : null;
 }
 
