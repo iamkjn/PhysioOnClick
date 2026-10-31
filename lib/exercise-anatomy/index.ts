@@ -9,9 +9,10 @@ import { MUSCLES } from "@/lib/exercise-anatomy/muscles";
 import type { BodyView, ExerciseAnatomy } from "@/lib/exercise-anatomy/types";
 import { LOWER_LIMB } from "@/lib/exercise-anatomy/entries/lower-limb";
 import { UPPER_LIMB } from "@/lib/exercise-anatomy/entries/upper-limb";
+import { SPINE } from "@/lib/exercise-anatomy/entries/spine";
 
 /** One record per drafting batch (entries/*.ts). */
-export const ANATOMY_BATCHES: readonly Readonly<Record<string, ExerciseAnatomy>>[] = [LOWER_LIMB, UPPER_LIMB];
+export const ANATOMY_BATCHES: readonly Readonly<Record<string, ExerciseAnatomy>>[] = [LOWER_LIMB, UPPER_LIMB, SPINE];
 
 export const EXERCISE_ANATOMY: Readonly<Record<string, ExerciseAnatomy>> = Object.assign({}, ...ANATOMY_BATCHES);
 
