@@ -43,7 +43,7 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
     main: ["rectus-abdominis"],
     helpers: ["pelvic-floor"],
     howItHelps:
-      "Lifting your head and shoulders a small way, with the towel for support, gently works the long muscle down the front of your tummy while keeping the middle flat, with no doming. Building strength at a level your tummy can control can make sitting up, getting out of bed, lifting and carrying more comfortable while your tummy recovers.",
+      "Lifting your head and shoulders a small way, with the towel for support, gently works the long muscle down the front of your tummy. Keeping the middle flat, with no doming, means you build strength at a level your tummy can control, which can make sitting up, getting out of bed and lifting more comfortable.",
     status: "draft",
   },
   "pelvic-floor-relaxation-drop": {
@@ -96,7 +96,7 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
     main: ["pelvic-floor"],
     helpers: ["quadriceps", "gluteus-maximus", "gastrocnemius"],
     howItHelps:
-      "Jogging, hopping and single-leg moves put quick, repeated pressure on your pelvic floor, so this check shows how well it copes with impact before you run. Getting through it with no leaks, heaviness or pain suggests you are ready to build up running gradually, while any symptoms mean your pelvic floor needs more time and a check with your physio.",
+      "Jogging, hopping and single-leg moves put quick, repeated pressure on your pelvic floor, so this check shows how well it copes with impact before you run. Getting through with no leaks, heaviness or pain suggests you may be ready to build up gradually, while any symptoms are a sign to stop and talk to your physio.",
     tissue: "pelvic-floor",
     status: "draft",
   },
@@ -109,9 +109,9 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
   },
   "reverse-kegel-pelvic-floor-lengthening": {
     main: ["pelvic-floor"],
-    helpers: ["diaphragm"],
+    helpers: [],
     howItHelps:
-      "Letting your pelvic floor gently lengthen and bulge slightly downward as you breathe out is the opposite of a squeeze, and helps muscles that hold too much tension learn to let go. A pelvic floor that can relax fully may help ease pelvic pain and make sex and emptying your bladder and bowel more comfortable.",
+      "Letting your pelvic floor gently lengthen and soften slightly downward as you breathe out is the opposite of a squeeze, and helps muscles that hold too much tension learn to let go. A pelvic floor that can relax fully may help ease pelvic pain and make sex and emptying your bladder and bowel more comfortable.",
     status: "draft",
   },
 
@@ -136,7 +136,7 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
     main: ["orbicularis-oculi"],
     helpers: [],
     howItHelps:
-      "Softly closing both eyes works the ring of muscle around each eye, which protects your eye when you blink and sleep. Gentle, even practice without squeezing can help your eyelids close more fully and comfortably, while keeping your mouth still may help stop unwanted movements spreading across your face.",
+      "Softly closing both eyes works the ring of muscle around each eye, which protects your eye when you blink and sleep. Gentle, even practice without squeezing can help your eyelids close more fully and comfortably, and keeping your mouth still lets your eyes do the work on their own.",
     tissue: "nerve-brain",
     status: "draft",
   },
@@ -160,7 +160,7 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
     main: ["zygomaticus", "risorius"],
     helpers: [],
     howItHelps:
-      "Widening your smile up and out works the cheek muscles that lift the corners of your mouth and the muscles that pull them sideways. Holding the stronger side back so both sides move together can help you build a fuller, more even smile, which many people find helps them feel more confident when they laugh and talk.",
+      "Widening your smile up and out works the cheek muscles that lift the corners of your mouth and the muscle that pulls them sideways. Holding the stronger side back so both sides move together can help you build a fuller, more even smile, which may help you feel more confident when you laugh and talk.",
     tissue: "nerve-brain",
     status: "draft",
   },
@@ -168,7 +168,7 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
     main: ["levator-palpebrae"],
     helpers: [],
     howItHelps:
-      "Opening your eyes wide while your eyebrows stay still works the muscle that lifts each upper eyelid, while the ring of muscle around your eye stays relaxed. Practising an even, relaxed opening on both sides can help your eyes look more balanced, which may help your face feel more natural when you talk with people.",
+      "Opening your eyes wide while your eyebrows stay still works the muscle that lifts each upper eyelid, so your forehead does not take over. Practising an even opening on both sides can help your eyes look more balanced, which may help your face feel more natural when you talk with people.",
     tissue: "nerve-brain",
     status: "draft",
   },
@@ -183,7 +183,7 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
 
   // Paediatric (play-based motor skills)
   "animal-walk-circuit": {
-    main: ["deltoid", "rectus-abdominis", "gluteus-maximus"],
+    main: ["deltoid",  "external-oblique",  "gluteus-maximus"],
     helpers: ["triceps", "quadriceps", "hamstrings"],
     howItHelps:
       "Bear and crab walks have your child take their weight through their hands and feet, working their shoulders, tummy and buttocks while their arms and legs learn to move in turn. Building whole-body strength and coordination through play can help your child with climbing, running and keeping up in the playground.",
@@ -237,23 +237,22 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
     main: ["latissimus-dorsi", "erector-spinae"],
     helpers: ["rear-deltoid", "triceps", "neck-extensors"],
     howItHelps:
-      "Pulling along the floor with both arms works the broad muscles of your child's back and shoulders, while the muscles beside the spine keep their head and chest lifted. Building upper-body and trunk strength in a game can help your child with climbing, pushing up from the floor and sitting steadily at a table.",
+      "Pulling along the floor with both arms works the broad muscles of your child's back and shoulders, while the muscles beside the spine keep their head and chest lifted. Building upper-body and trunk strength in a game can help your child with climbing, reaching and sitting steadily at a table.",
     status: "draft",
   },
   "single-leg-hop-game": {
     main: ["quadriceps", "gastrocnemius", "gluteus-maximus"],
     helpers: ["soleus", "gluteus-medius"],
     howItHelps:
-      "Hopping from spot to spot works the thigh, calf and buttock muscles of your child's leg as they push off and land softly. Starting on the stronger leg and building up on the injured one can help your child rebuild power, balance and trust in their leg, ready for running, jumping and playground games.",
-    tissue: "joint-ligament",
+      "Hopping from spot to spot works the thigh, calf and buttock muscles of your child's leg as they push off and land softly. Starting on the stronger leg and building up on the injured one can help your child rebuild power, balance and trust in their leg as they return to running, jumping and playground games.",
     view: "right",
     status: "draft",
   },
   "sensory-motor-circuit-multi-station": {
     main: ["quadriceps", "gluteus-maximus"],
-    helpers: ["deltoid", "erector-spinae"],
+    helpers: [],
     howItHelps:
-      "The muscles your child uses depend on the stations their physio has chosen, but most circuits get the big muscles of the legs, hips and shoulders working through jumping, crawling, pushing or carrying. This mix of movement and calming input can help your child feel more settled and ready to focus, play and join in.",
+      "Your child's physio chooses the stations, so the muscles worked will vary. A mix of movement and calming input, such as a firm cushion squash or slow rocking, may help your child feel more settled and ready to focus, play and join in.",
     view: "right",
     status: "draft",
   },
