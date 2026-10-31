@@ -143,7 +143,7 @@ const MUSCLE_TABLE = {
     view: "front",
   },
 
-  // Nerves (no limb nerves in the model)
+  // Nerves and brain (not in the model: stand-ins, or text only for the brain)
   "median-nerve": {
     label: "Median nerve",
     plain: "the nerve running down the inside of your arm to your hand",
@@ -165,6 +165,13 @@ const MUSCLE_TABLE = {
       note: "Nerves aren't in the 3D model. The sciatic nerve runs under piriformis and down between the hamstrings, so they are lit instead.",
     },
     view: "back",
+  },
+  "nervous-system": {
+    label: "Nervous system",
+    plain: "your brain and nerves, which can become more sensitive when pain lasts",
+    source: "none",
+    parts: [],
+    view: "front",
   },
 
   // Spine and trunk
@@ -268,6 +275,9 @@ const MUSCLE_TABLE = {
   risorius: { label: "Risorius", plain: "the muscle that pulls the corners of your mouth sideways", source: "none", parts: [], view: "front" },
   buccinator: { label: "Buccinator", plain: "the cheek muscle that holds air in your mouth", source: "none", parts: [], view: "front" },
   "orbicularis-oris": { label: "Orbicularis oris", plain: "the ring of muscle around your lips", source: "none", parts: [], view: "front" },
+
+  // Skin and scars (not in any model: text only)
+  "scar-tissue": { label: "Scar tissue", plain: "your healed scar and the skin around it", source: "none", parts: [], view: "front" },
 } satisfies Record<string, MuscleGroup>;
 
 export type MuscleKey = keyof typeof MUSCLE_TABLE;
