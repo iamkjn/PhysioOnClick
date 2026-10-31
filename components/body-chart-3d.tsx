@@ -386,7 +386,7 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
         ref={stageRef}
         className="body-chart-3d__stage"
         role="img"
-        aria-label="3D body. Drag sideways to turn it, and tap where you feel it."
+        aria-label="3D body that turns all the way round (360°). Drag sideways to turn it, and tap where you feel it."
       >
         {!regions && (
           <div className="body-chart-3d__loading">
@@ -394,9 +394,22 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
             <progress max={1} value={progress} />
           </div>
         )}
+        {/* Tells patients up front that the body can be turned, not just tapped. */}
+        {regions ? (
+          <div className="body-chart-3d__badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+              <path d="M21 4v5h-5" />
+            </svg>
+            <span>
+              <strong>360°</strong>
+              <span>Drag to turn</span>
+            </span>
+          </div>
+        ) : null}
       </div>
 
-      <p className="body-chart-3d__hint">Drag sideways to turn the body. Tap where you feel it.</p>
+      <p className="body-chart-3d__hint">Drag sideways to spin the body all the way round. Tap where you feel it.</p>
 
       {shown && regions ? (
         <div className="body-chart__tooltip">

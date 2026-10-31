@@ -16392,6 +16392,48 @@ textarea:focus {
   width: 160px;
   accent-color: var(--color-primary);
 }
+.body-chart-3d__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem 0.35rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  border-radius: var(--radius-chip);
+  background: var(--color-primary-light);
+  color: var(--color-text-primary);
+  font-size: var(--text-xs);
+  line-height: 1.15;
+  pointer-events: none;
+}
+/* Two short lines keep the label clear of the head on phone-width stages. */
+.body-chart-3d__badge > span {
+  display: flex;
+  flex-direction: column;
+}
+.body-chart-3d__badge svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--color-primary-dark);
+  animation: body-chart-3d-turn 2.4s ease-in-out 0.6s 3;
+}
+.body-chart-3d__badge strong {
+  color: var(--color-primary-dark);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+@keyframes body-chart-3d-turn {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-200deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .body-chart-3d__badge svg {
+    animation: none;
+  }
+}
 .body-chart-3d__hint {
   margin: 0;
   color: var(--color-text-secondary);
