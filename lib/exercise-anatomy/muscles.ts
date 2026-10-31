@@ -193,7 +193,7 @@ const MUSCLE_TABLE = {
   },
   "rectus-abdominis": {
     label: "Rectus abdominis",
-    plain: "the six-pack muscle down the front of your tummy",
+    plain: "the long muscle down the front of your tummy",
     source: "none",
     parts: [],
     standIn: {

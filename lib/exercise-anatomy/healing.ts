@@ -24,7 +24,7 @@ export const TISSUE_LINES: Record<TissueTrack, string> = {
   "post-surgery":
     "After surgery: follow your surgeon's and physio's limits first. As the area heals, you rebuild strength and confidence step by step.",
   "nerve-brain":
-    "Nerves and the brain: recovery after a nerve or brain injury is often slow and can carry on for months. Regular, repeated practice helps your brain and nerves relearn movement.",
+    "Nerves and the brain: a sensitive or irritated nerve often settles gradually. After a nerve or brain injury, recovery can be slow and carry on for months. Gentle, regular practice helps your nerves move more freely and your brain relearn movement, so build up steadily.",
   "pelvic-floor":
     "Pelvic floor: like any muscle, your pelvic floor can get stronger with regular practice. It can take a few months to notice a difference, so keep going as your physio advises.",
 };

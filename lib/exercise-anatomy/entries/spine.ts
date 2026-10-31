@@ -11,7 +11,6 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     helpers: ["hamstrings", "erector-spinae", "gluteus-medius"],
     howItHelps:
       "Lifting and lowering your hips with control strengthens your buttock muscles, with help from the backs of your thighs and the long muscles beside your spine. Stronger hip and trunk muscles help share the load with your back, which can make bending, lifting and getting up from a chair feel easier.",
-    tissue: "joint-ligament",
     status: "draft",
   },
   "bird-dog": {
@@ -19,7 +18,6 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     helpers: ["gluteus-maximus", "external-oblique"],
     howItHelps:
       "Reaching out one arm and the opposite leg while your back stays still trains the muscles beside your spine, including the small deep ones, to hold it steady. Better control of your back while your arms and legs move can help you bend, reach and carry with more confidence.",
-    tissue: "joint-ligament",
     status: "draft",
   },
   "mckenzie-press-up": {
@@ -27,15 +25,13 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     helpers: [],
     howItHelps:
       "Pressing your upper body up while your hips stay relaxed gently bends your lower back backwards, moving its joints and discs. For many people, repeating it helps back and leg symptoms ease, or move up out of the leg towards the back, which is a good sign. This can make sitting, standing and walking more comfortable.",
-    tissue: "joint-ligament",
     status: "draft",
   },
   "standing-extension": {
     main: ["lumbar-discs", "lumbar-spine"],
     helpers: [],
     howItHelps:
-      "Leaning gently backwards from standing eases the joints and discs of your lower back into the same backward bend as the press-up, without needing to lie down. Because you can do it almost anywhere, it can be a handy way to ease your back between exercise sessions or after a long spell of sitting.",
-    tissue: "joint-ligament",
+      "Leaning gently backwards from standing takes the joints and discs of your lower back into a backward bend, like the press-up does, without needing to lie down. Because you can do it almost anywhere, it can be a handy way to ease your back between exercise sessions or after a long spell of sitting.",
     status: "draft",
   },
   "prone-cobra": {
@@ -50,15 +46,13 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     helpers: ["gluteus-medius"],
     howItHelps:
       "Holding your body in a straight line on your side works the muscles down the side of your trunk that stop it bending sideways. Stronger side muscles can help keep your back steady when you carry a bag in one hand, reach to one side or get in and out of bed.",
-    tissue: "joint-ligament",
     status: "draft",
   },
   "segmental-rolling": {
     main: ["thoracic-spine", "lumbar-spine"],
-    helpers: ["external-oblique"],
+    helpers: [],
     howItHelps:
-      "Rolling onto your side one part at a time gently moves your mid and lower back, with the muscles at the side of your tummy turning your trunk. Finding a slow, relaxed way to roll during a flare-up can make getting in and out of bed easier and help you move with confidence while your back settles.",
-    tissue: "joint-ligament",
+      "Rolling onto your side one part at a time gently moves your mid and lower back without needing a big effort. Finding a slow, relaxed way to roll during a flare-up can make getting in and out of bed easier and help you move with confidence while your back settles.",
     status: "draft",
   },
   "pelvic-tilt": {
@@ -80,8 +74,7 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     main: ["lumbar-spine", "erector-spinae"],
     helpers: [],
     howItHelps:
-      "Drawing your knees towards your chest gently rounds your lower back, stretching the muscles beside your spine and opening up the spaces the nerves pass through. If you have spinal stenosis, you may find this position eases your back and leg symptoms, making it a useful way to settle things after standing or walking.",
-    tissue: "joint-ligament",
+      "Drawing your knees towards your chest gently rounds your lower back, stretching the muscles beside your spine and, for many people, giving the nerves a little more room. If you have spinal stenosis, you may find this position eases your back and leg symptoms, making it a useful way to settle things after standing or walking.",
     status: "draft",
   },
   "sciatic-nerve-glide": {
@@ -96,7 +89,7 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     main: ["gluteus-maximus", "quadriceps"],
     helpers: ["hamstrings", "erector-spinae"],
     howItHelps:
-      "Lifting a light object by bending at your hips and knees lets your buttock and thigh muscles drive the lift, while the long muscles beside your spine hold your back in its natural curve. Practising with light loads and building up gradually can help you lift at home and at work with more confidence.",
+      "Lifting a light object by bending at your hips and knees lets your buttock and thigh muscles drive the lift, while the long muscles beside your spine keep your back steady. Practising with light loads and building up gradually can help you lift at home and at work with more confidence.",
     view: "right",
     status: "draft",
   },
@@ -107,14 +100,13 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     helpers: ["sternocleidomastoid", "neck-extensors"],
     howItHelps:
       "Slowly turning your head from side to side moves the small joints of your neck through a comfortable range, with the muscles at the side and back of your neck doing the turning. Keeping your neck moving can ease stiffness and make it easier to look over your shoulder when you drive or cross the road.",
-    tissue: "joint-ligament",
     status: "draft",
   },
   "neck-side-flexion-stretch": {
     main: ["upper-trapezius", "scalenes"],
     helpers: ["levator-scapulae"],
     howItHelps:
-      "Tilting your ear towards your shoulder gently stretches the muscles down the opposite side of your neck and across the top of that shoulder. Easing tightness here can make your neck feel looser and more comfortable when you look around or sit for long spells.",
+      "Tilting your ear towards your shoulder gently stretches the muscles down the opposite side of your neck and across the top of the shoulder on that side. Easing tightness here can make your neck feel looser and more comfortable when you look around or sit for long spells.",
     status: "draft",
   },
   "isometric-neck-hold": {
@@ -130,7 +122,6 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     helpers: ["neck-extensors"],
     howItHelps:
       "With your head against the wall, gliding your chin straight back works the deep muscles at the front of your neck and gently stretches the small muscles at the base of your skull. Easing tension at the top of your neck may help reduce headaches that start there and make long spells at a screen more comfortable.",
-    tissue: "joint-ligament",
     status: "draft",
   },
   "levator-scapulae-stretch": {
@@ -145,7 +136,6 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     helpers: [],
     howItHelps:
       "Holding a tiny, gentle nod trains the deep muscles at the front of your neck, which help hold it steady, without the bigger surface muscles taking over. Building their endurance can help your neck cope better with desk work and screen time, and may mean neck pain flares up less often.",
-    tissue: "joint-ligament",
     status: "draft",
   },
   "prone-neck-extension": {
@@ -153,7 +143,6 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     helpers: ["deep-neck-flexors"],
     howItHelps:
       "Lifting your head level against gravity, with your chin gently tucked, strengthens the muscles at the back of your neck that hold your head up. Stronger neck muscles with more stamina can help you hold your head comfortably for longer at a desk, behind the wheel or when reading.",
-    tissue: "joint-ligament",
     status: "draft",
   },
 
@@ -163,7 +152,6 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     helpers: ["neck-extensors"],
     howItHelps:
       "Sliding your chin straight back, like a drawer closing, gently works the deep muscles at the front of your neck and eases the muscles at the base of your skull. Practising this small movement can ease neck stiffness and help you sit and use a screen with your head comfortably balanced.",
-    tissue: "joint-ligament",
     status: "draft",
   },
 
@@ -192,11 +180,10 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
 
   // Core
   "dead-bug": {
-    main: ["transversus-abdominis", "external-oblique"],
-    helpers: ["rectus-abdominis", "iliopsoas"],
+    main: ["rectus-abdominis", "external-oblique"],
+    helpers: ["iliopsoas"],
     howItHelps:
-      "Keeping your lower back gently pressed down while you slowly move an arm and the opposite leg trains your deep and side tummy muscles to hold your trunk steady. This control can help your back feel steadier when you reach, lift, carry or play sport.",
-    tissue: "joint-ligament",
+      "Keeping your lower back gently pressed down while you slowly move an arm and the opposite leg trains your tummy muscles, at the front and the side, to hold your trunk steady. This control can help your back feel steadier when you reach, lift, carry or play sport.",
     status: "draft",
   },
 };
