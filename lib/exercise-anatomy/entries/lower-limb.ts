@@ -18,7 +18,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     main: ["hamstrings", "quadriceps"],
     helpers: ["iliopsoas"],
     howItHelps:
-      "Heel slides gently work your knee into more bend, with the back of your thigh doing the bending as the front of your thigh eases into a stretch. Getting back more knee bend makes it easier to sit in a chair, climb stairs and get in and out of a car.",
+      "Heel slides gently work your knee into more bend, with the back of your thigh doing the bending as the front of your thigh eases into a stretch. Getting back more knee bend can make it easier to sit in a chair, climb stairs and get in and out of a car.",
     tissue: "post-surgery",
     view: "right",
     status: "draft",
@@ -40,8 +40,8 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     status: "draft",
   },
   "terminal-knee-extension-band": {
-    main: ["vastus-medialis"],
-    helpers: ["quadriceps"],
+    main: ["quadriceps"],
+    helpers: [],
     howItHelps:
       "Straightening your knee against the band works your thigh muscle through the last part of the movement, which you often feel most just above your kneecap. Being able to straighten your knee fully and firmly helps it feel steadier when you stand, walk and use stairs.",
     tissue: "joint-ligament",
@@ -83,13 +83,13 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     main: ["quadriceps", "patellar-tendon"],
     helpers: ["gluteus-maximus"],
     howItHelps:
-      "Holding this squat works the front of your thighs and the tendon just below your kneecap hard, while the band keeps your shins upright. Steady holds like this let you keep loading the tendon during a flare-up, so you can stay active and keep training while it calms down.",
+      "Holding this squat works the front of your thighs hard and loads the tendon just below your kneecap steadily, while the band keeps your shins upright. Steady holds like this let you keep loading the tendon during a flare-up, so you can stay active and keep training while it calms down.",
     tissue: "muscle-tendon",
     status: "draft",
   },
   "reverse-nordic": {
     main: ["quadriceps", "patellar-tendon"],
-    helpers: ["iliopsoas", "rectus-abdominis"],
+    helpers: ["iliopsoas"],
     howItHelps:
       "Leaning back slowly from your knees works the front of your thigh and the tendon below your kneecap while the muscle lengthens under control. This builds strength through a long range, which helps your knee cope with jumping, landing and slowing down in sport.",
     tissue: "muscle-tendon",
@@ -126,7 +126,6 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     helpers: ["gluteus-maximus"],
     howItHelps:
       "Tucking your tailbone under and shifting forwards stretches the muscles at the front of the hip and thigh of your back leg. Easing tightness here, which often builds up from long spells of sitting, can let you stand taller and stride out more freely.",
-    tissue: "muscle-tendon",
     status: "draft",
   },
   "deep-squat-mobility": {
@@ -147,9 +146,9 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "hip-hitch": {
     main: ["gluteus-medius"],
-    helpers: ["gluteus-minimus", "tfl-it-band", "quadratus-lumborum"],
+    helpers: ["gluteus-minimus", "tfl-it-band"],
     howItHelps:
-      "Lifting your pelvis level from a dip trains the muscles on the side of your standing hip, the ones that stop your pelvis dropping each time you take a step. Building them up gives you a steadier pelvis when you walk and climb stairs.",
+      "Lifting your pelvis level from a dip trains the muscles on the side of your standing hip, the ones that stop your pelvis dropping each time you take a step. Building them up helps you keep your pelvis steadier when you walk and climb stairs.",
     tissue: "muscle-tendon",
     status: "draft",
   },
@@ -173,7 +172,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     main: ["gluteus-maximus"],
     helpers: ["hamstrings", "gluteus-medius"],
     howItHelps:
-      "Bridging on one leg puts much more load through the buttock of your working leg, while the back of your thigh and the side of your hip help keep your pelvis level. This builds the single-leg strength that steadies your pelvis on stairs and when running, and supports your hip and knee.",
+      "Bridging on one leg puts much more load through the buttock of your working leg, while the back of your thigh helps lift and the side of your hip keeps your pelvis level. This builds the single-leg strength that steadies your pelvis on stairs and when running, and supports your hip and knee.",
     tissue: "muscle-tendon",
     status: "draft",
   },
@@ -210,6 +209,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     howItHelps:
       "Tracing letters with your toes moves your ankle up, down and side to side, gently working the muscles all around your lower leg. Getting back movement in every direction helps your ankle cope with walking, turning and uneven ground as the sprain settles.",
     tissue: "joint-ligament",
+    view: "right",
     status: "draft",
   },
   "resisted-ankle-eversion": {
@@ -254,7 +254,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "seated-calf-raise": {
     main: ["soleus", "achilles-tendon"],
-    helpers: ["gastrocnemius"],
+    helpers: [],
     howItHelps:
       "Raising your heels with your knees bent shifts the work onto the deeper calf muscle, which straight-knee raises work less, and loads the Achilles tendon it pulls on. A strong deep calf helps with longer walks and runs, where it takes much of the strain.",
     tissue: "muscle-tendon",
@@ -266,7 +266,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     main: ["hamstrings"],
     helpers: ["gluteus-maximus", "erector-spinae"],
     howItHelps:
-      "Lowering your body slowly works the back of your thighs hard while the muscles lengthen, much like the strain they take when you sprint. Building this strength helps a recovered hamstring cope with fast running and sport.",
+      "Lowering your body slowly works the back of your thighs hard while the muscles lengthen, much like the strain they take when you sprint. Building this strength helps a recovering hamstring cope with fast running and sport.",
     tissue: "muscle-tendon",
     status: "draft",
   },
@@ -275,7 +275,6 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     helpers: ["gastrocnemius"],
     howItHelps:
       "Hinging forwards from your hips with your raised leg straight gently stretches the back of your thigh. Easing hamstring tightness can make bending, reaching your feet and taking longer strides feel more comfortable.",
-    tissue: "muscle-tendon",
     status: "draft",
   },
 
