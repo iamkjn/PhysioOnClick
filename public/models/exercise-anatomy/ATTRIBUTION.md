@@ -15,6 +15,8 @@ Adaptations by PhysioOnClick: kept only the pelvic floor muscles, diaphragm, dee
 flexors and intervertebral disks; simplified with meshoptimizer; quantised positions and
 normals; merged into chunks.
 
+Changes: the right longus colli is a mirror image of the left longus colli (the source has the left side only).
+
 ## Packaging
 
 Converted geometry taken from Human Atlas (https://github.com/ashemag/human-atlas) at commit

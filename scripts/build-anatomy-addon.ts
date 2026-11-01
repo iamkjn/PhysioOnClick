@@ -6,6 +6,12 @@
 // both with one transform. Vertices carry NO_REGION: none of this is part of
 // the booking chart, and the booking model files are not touched.
 //
+// The source has the longus colli on the left only. The body is symmetric about
+// x = 0, so each left longus colli part with no right counterpart in the source
+// gets a mirrored "right" copy (x negated on positions and normals, triangle
+// winding reversed so faces still point outwards), appended after the source
+// parts and noted in ATTRIBUTION.md. That keeps the deep neck flexors even.
+//
 // Run from the repo root: npm run build:anatomy-addon
 // (reuses .cache/human-atlas/ from build:body-model, or downloads it once)
 
@@ -37,6 +43,8 @@ const MAX_ERROR = 0.02;
 const MIN_TRIANGLES = 48;
 const MAX_GZIP_BYTES = 500_000;
 const KEEP_SYSTEMS: readonly ModelSystem[] = ["skeletal", "muscular"];
+/** Source parts that exist on the left only and are mirrored to the right. */
+const MIRROR_LEFT = / part of left longus colli$/i;
 
 interface SourcePart {
   name: string;
@@ -74,6 +82,19 @@ function concat<T extends Int16Array | Int8Array | Uint8Array | Uint16Array>(lis
   return out;
 }
 
+/** Mirror image across x = 0: x negated on positions and normals, each triangle's winding reversed so faces still point outwards. */
+function mirrorX(positions: Int16Array, normals: Int8Array, indices: Uint32Array): [Int16Array, Int8Array, Uint32Array] {
+  const p = positions.slice();
+  const n = normals.slice();
+  const t = indices.slice();
+  for (let v = 0; v < p.length; v += 3) {
+    p[v] = -p[v];
+    n[v] = -n[v];
+  }
+  for (let i = 0; i < t.length; i += 3) [t[i + 1], t[i + 2]] = [t[i + 2], t[i + 1]];
+  return [p, n, t];
+}
+
 const ATTRIBUTION = `# Exercise anatomy add-on attribution
 
 ## Anatomy data
@@ -90,6 +111,8 @@ Attribution 4.0 International (CC BY 4.0).
 Adaptations by PhysioOnClick: kept only the pelvic floor muscles, diaphragm, deep neck
 flexors and intervertebral disks; simplified with meshoptimizer; quantised positions and
 normals; merged into chunks.
+
+Changes: the right longus colli is a mirror image of the left longus colli (the source has the left side only).
 
 ## Packaging
 
@@ -139,34 +162,19 @@ async function main() {
     pending = empty();
   };
 
-  for (const p of kept) {
-    const src = sources[p.chunk];
-    const pos = new Float32Array(src, p.positions, p.vertexCount * 3);
-    const nrm = new Int16Array(src, p.normals, p.vertexCount * 3);
-    const idx = new Uint32Array(src, p.indices, p.indexCount);
-    const target = Math.min(p.indexCount, Math.max(MIN_TRIANGLES * 3, Math.floor((p.indexCount * ratio) / 3) * 3));
-    const [simplified] = MeshoptSimplifier.simplify(idx, pos, 3, target, MAX_ERROR);
-    const [remap, vertexCount] = MeshoptSimplifier.compactMesh(simplified); // rewrites `simplified` in place
-    if (vertexCount > MAX_CHUNK_VERTICES) throw new Error(`${p.name} has ${vertexCount} vertices after simplification`);
+  /** Adds one part's quantised geometry (indices local to the part) to the pending chunk. */
+  const append = (name: string, system: number, positions: Int16Array, normals: Int8Array, local: Uint32Array) => {
+    const vertexCount = positions.length / 3;
+    if (vertexCount > MAX_CHUNK_VERTICES) throw new Error(`${name} has ${vertexCount} vertices after simplification`);
     if (pending.vertexCount + vertexCount > MAX_CHUNK_VERTICES) flush();
 
-    const positions = new Int16Array(vertexCount * 3);
-    const normals = new Int8Array(vertexCount * 3);
     const regions = new Uint8Array(vertexCount).fill(NO_REGION);
-    for (let old = 0; old < remap.length; old++) {
-      const v = remap[old];
-      if (v === 0xffffffff) continue;
-      for (let k = 0; k < 3; k++) {
-        positions[v * 3 + k] = Math.round((pos[old * 3 + k] / POSITION_SCALE) * 32767);
-        normals[v * 3 + k] = Math.round((nrm[old * 3 + k] / 32767) * 127);
-      }
-    }
-    const indices = new Uint16Array(simplified.length);
-    for (let i = 0; i < simplified.length; i++) indices[i] = simplified[i] + pending.vertexCount;
+    const indices = new Uint16Array(local.length);
+    for (let i = 0; i < local.length; i++) indices[i] = local[i] + pending.vertexCount;
 
     parts.push({
-      name: p.name,
-      system: systems.indexOf(p.system as ModelSystem),
+      name,
+      system,
       chunk: chunks.length,
       firstVertex: pending.vertexCount,
       vertexCount,
@@ -179,7 +187,39 @@ async function main() {
     pending.indices.push(indices);
     pending.vertexCount += vertexCount;
     pending.indexCount += indices.length;
+  };
+
+  const sourceNames = new Set(atlas.parts.map((p) => p.name));
+  const mirrors: Parameters<typeof append>[] = [];
+
+  for (const p of kept) {
+    const src = sources[p.chunk];
+    const pos = new Float32Array(src, p.positions, p.vertexCount * 3);
+    const nrm = new Int16Array(src, p.normals, p.vertexCount * 3);
+    const idx = new Uint32Array(src, p.indices, p.indexCount);
+    const target = Math.min(p.indexCount, Math.max(MIN_TRIANGLES * 3, Math.floor((p.indexCount * ratio) / 3) * 3));
+    const [simplified] = MeshoptSimplifier.simplify(idx, pos, 3, target, MAX_ERROR);
+    const [remap, vertexCount] = MeshoptSimplifier.compactMesh(simplified); // rewrites `simplified` in place
+
+    const positions = new Int16Array(vertexCount * 3);
+    const normals = new Int8Array(vertexCount * 3);
+    for (let old = 0; old < remap.length; old++) {
+      const v = remap[old];
+      if (v === 0xffffffff) continue;
+      for (let k = 0; k < 3; k++) {
+        positions[v * 3 + k] = Math.round((pos[old * 3 + k] / POSITION_SCALE) * 32767);
+        normals[v * 3 + k] = Math.round((nrm[old * 3 + k] / 32767) * 127);
+      }
+    }
+    const system = systems.indexOf(p.system as ModelSystem);
+    append(p.name, system, positions, normals, simplified);
+
+    if (MIRROR_LEFT.test(p.name)) {
+      const right = p.name.replace(/\bleft\b/i, (s) => (s === "Left" ? "Right" : "right"));
+      if (!sourceNames.has(right)) mirrors.push([right, system, ...mirrorX(positions, normals, simplified)]);
+    }
   }
+  for (const m of mirrors) append(...m);
   flush();
 
   const triangles = parts.reduce((n, p) => n + p.indexCount / 3, 0);

@@ -65,6 +65,22 @@ describe("committed exercise-anatomy add-on model", () => {
     }
   });
 
+  it("mirrors each left longus colli part to the right (the source has the left side only)", () => {
+    const lefts = addon.parts.filter((p) => / part of left longus colli$/.test(p.name));
+    expect(lefts).toHaveLength(3);
+    for (const left of lefts) {
+      const right = addon.parts.find((p) => p.name === left.name.replace("left", "right"))!;
+      expect(right, left.name).toBeDefined();
+      expect([right.chunk, right.system, right.vertexCount, right.indexCount]).toEqual([left.chunk, left.system, left.vertexCount, left.indexCount]);
+      const c = addon.chunks[right.chunk];
+      const raw = gunzipSync(fs.readFileSync(path.join(ROOT, "exercise-anatomy", c.file)));
+      const { positions } = readChunk(c, raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.length));
+      const span = (p: typeof left) => Array.from(positions.subarray(p.firstVertex * 3, (p.firstVertex + p.vertexCount) * 3));
+      // x negated (0 - x, so a zero stays +0), y and z unchanged
+      expect(span(right), right.name).toEqual(span(left).map((n, k) => (k % 3 ? n : 0 - n)));
+    }
+  });
+
   it("leaves the booking model untouched", () => {
     expect(base.parts).toHaveLength(569);
     expect(base.parts.filter((p) => ADDON_PART.test(p.name))).toEqual([]);

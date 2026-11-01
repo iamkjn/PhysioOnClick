@@ -59,12 +59,15 @@
   ],
   "deep-neck-flexors": [
     "Inferior oblique part of left longus colli",
+    "Inferior oblique part of right longus colli",
     "Left longus capitis",
     "Left rectus capitis anterior",
     "Right longus capitis",
     "Right rectus capitis anterior",
     "Superior oblique part of left longus colli",
-    "Vertical intermediate part of left longus colli"
+    "Superior oblique part of right longus colli",
+    "Vertical intermediate part of left longus colli",
+    "Vertical intermediate part of right longus colli"
   ],
   "deltoid": [
     "Acromial part of left deltoid",
