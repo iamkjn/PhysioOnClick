@@ -284,7 +284,10 @@
     "Intervertebral disk of third cervical vertebra"
   ],
   "neck-extensors": [
+    "Left cervical rotator",
+    "Left iliocostalis cervicis",
     "Left longissimus capitis",
+    "Left longissimus cervicis",
     "Left obliquus capitis inferior",
     "Left obliquus capitis superior",
     "Left rectus capitis posterior major",
@@ -293,7 +296,10 @@
     "Left semispinalis cervicis",
     "Left splenius capitis",
     "Left splenius cervicis",
+    "Right cervical rotator",
+    "Right iliocostalis cervicis",
     "Right longissimus capitis",
+    "Right longissimus cervicis",
     "Right obliquus capitis inferior",
     "Right obliquus capitis superior",
     "Right rectus capitis posterior major",
@@ -301,7 +307,11 @@
     "Right semispinalis capitis",
     "Right semispinalis cervicis",
     "Right splenius capitis",
-    "Right splenius cervicis"
+    "Right splenius cervicis",
+    "Set of interspinales cervicis",
+    "Spinalis",
+    "set of interspinales cervicis",
+    "spinalis"
   ],
   "nervous-system": [],
   "orbicularis-oculi": [],

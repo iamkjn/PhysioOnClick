@@ -75,8 +75,8 @@ export const POST_OP_GENERAL: Record<string, ExerciseAnatomy> = {
     status: "draft",
   },
   "graduated-weight-bearing": {
-    main: ["quadriceps", "gluteus-maximus"],
-    helpers: [],
+    main: ["leg-bones"],
+    helpers: ["quadriceps", "gluteus-maximus"],
     howItHelps:
       "Pressing your healing leg onto the scales teaches you how the weight your surgeon allows feels, while your thigh and buttock muscles hold the leg steady. Putting through the right amount, and no more, helps you follow your surgeon's plan as you build back towards walking with less support.",
     tissue: "post-surgery",
@@ -142,8 +142,8 @@ export const POST_OP_GENERAL: Record<string, ExerciseAnatomy> = {
 
   // General
   "general-mobility-warm-up": {
-    main: ["deltoid", "thoracic-spine", "iliopsoas"],
-    helpers: ["upper-trapezius", "cervical-spine", "gastrocnemius", "tibialis-anterior"],
+    main: ["shoulder-joint", "thoracic-spine", "cervical-spine"],
+    helpers: ["deltoid", "upper-trapezius", "iliopsoas", "gastrocnemius"],
     howItHelps:
       "Shoulder rolls, head turns, arm circles, gentle twists, marching and rocking from toes to heels take your main joints through easy, comfortable movement. Warming up like this can help your body feel looser and readier for other exercise, and it makes a gentle movement break during long spells of sitting.",
     status: "draft",

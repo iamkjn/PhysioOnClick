@@ -104,7 +104,7 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
   },
   "neck-side-flexion-stretch": {
     main: ["upper-trapezius", "scalenes"],
-    helpers: ["levator-scapulae"],
+    helpers: [],
     howItHelps:
       "Tilting your ear towards your shoulder gently stretches the muscles down the opposite side of your neck and across the top of the shoulder on that side. Easing tightness here can make your neck feel looser and more comfortable when you look around or sit for long spells.",
     status: "draft",
@@ -126,7 +126,7 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
   },
   "levator-scapulae-stretch": {
     main: ["levator-scapulae"],
-    helpers: ["upper-trapezius"],
+    helpers: [],
     howItHelps:
       "Looking down towards the opposite armpit, with your hand keeping your shoulder down, stretches the muscle that runs from the side of your neck to the top of your shoulder blade. Easing tightness here can make turning and tilting your head more comfortable and may ease the ache at the base of your neck.",
     status: "draft",
@@ -164,8 +164,8 @@ export const SPINE: Record<string, ExerciseAnatomy> = {
     status: "draft",
   },
   "thoracic-rotation-open-book": {
-    main: ["thoracic-spine"],
-    helpers: ["pectoralis-major"],
+    main: ["thoracic-spine", "pectoralis-major"],
+    helpers: [],
     howItHelps:
       "Opening your top arm towards the ceiling while your knees stay together turns your mid-back and gently stretches across the front of your chest. Getting more twist back through your mid-back can make it easier to look over your shoulder, reach behind you and turn in your seat.",
     status: "draft",

@@ -56,4 +56,9 @@ describe("lit parts per muscle group", () => {
       "Right spinalis thoracis",
     ]);
   });
+
+  it("keeps the neck extensors and the trunk erector spinae apart", () => {
+    expect(locked["neck-extensors"]).toHaveLength(28);
+    expect(locked["neck-extensors"].filter((n) => locked["erector-spinae"].includes(n))).toEqual([]);
+  });
 });

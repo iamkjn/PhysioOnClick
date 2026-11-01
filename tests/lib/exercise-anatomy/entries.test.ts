@@ -25,7 +25,13 @@ describe("exercise anatomy entries", () => {
   });
 
   it("keeps exercises whose main muscles are all unmodelled text-only", () => {
-    for (const slug of ["median-nerve-glide", "sciatic-nerve-glide", "diastasis-safe-curl-up", "core-bracing-post-abdominal-surgery"]) {
+    for (const slug of [
+      "median-nerve-glide",
+      "sciatic-nerve-glide",
+      "diastasis-safe-curl-up",
+      "core-bracing-post-abdominal-surgery",
+      "sensory-motor-circuit-multi-station",
+    ]) {
       expect(canShow3D(EXERCISE_ANATOMY[slug]), slug).toBe(false);
     }
   });

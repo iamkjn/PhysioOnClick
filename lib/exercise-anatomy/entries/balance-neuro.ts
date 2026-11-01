@@ -204,7 +204,7 @@ export const BALANCE_NEURO: Record<string, ExerciseAnatomy> = {
     status: "draft",
   },
   "coordination-drills-finger-to-nose": {
-    main: ["biceps-brachii", "triceps"],
+    main: ["biceps-brachii", "brachialis", "triceps"],
     helpers: ["front-deltoid"],
     howItHelps:
       "Bending your elbow to bring your finger to your nose, then straightening it to reach the target, works the muscles at the front and back of your upper arm in turn. Slow, smooth practice, with your eyes guiding your finger, can help your brain fine-tune these movements, which may make everyday tasks such as eating and drinking feel more controlled.",

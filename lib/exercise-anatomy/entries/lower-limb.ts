@@ -107,7 +107,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "clam-shell": {
     main: ["gluteus-medius"],
-    helpers: ["gluteus-minimus", "deep-hip-rotators"],
+    helpers: ["gluteus-maximus", "deep-hip-rotators"],
     howItHelps:
       "Clams wake up and strengthen the muscles on the side of your hip without loading a sore knee or back. Stronger hip muscles keep your knee in line and your pelvis level when you walk, climb stairs or stand on one leg.",
     tissue: "muscle-tendon",
@@ -130,7 +130,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "deep-squat-mobility": {
     main: ["gluteus-maximus", "adductors"],
-    helpers: ["quadriceps", "soleus"],
+    helpers: ["quadriceps"],
     howItHelps:
       "Holding a supported deep squat gently bends your hips and knees as far as is comfortable, while your buttock and inner-thigh muscles ease into a stretch. Keeping this range helps with low tasks such as gardening, picking things up from the floor and getting up from a low seat.",
     tissue: "joint-ligament",
@@ -154,7 +154,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "banded-hip-external-rotation": {
     main: ["deep-hip-rotators", "gluteus-medius"],
-    helpers: ["gluteus-minimus", "gluteus-maximus"],
+    helpers: ["gluteus-maximus"],
     howItHelps:
       "Pressing your knees apart against the band works the deep muscles at the back of your hip and the side of your buttock. These muscles help steady the ball of your hip in its socket and control your hip and pelvis as you walk, climb stairs and stand on one leg.",
     tissue: "muscle-tendon",
@@ -230,7 +230,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "calf-stretch-gastrocnemius": {
     main: ["gastrocnemius"],
-    helpers: ["soleus"],
+    helpers: [],
     howItHelps:
       "Leaning into the wall with your back knee straight gently stretches the big calf muscle. Easing calf tightness may reduce the pull on your Achilles tendon, which can make walking, stairs and your first steps in the morning more comfortable.",
     tissue: "muscle-tendon",
@@ -272,7 +272,7 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "standing-hamstring-stretch": {
     main: ["hamstrings"],
-    helpers: ["gastrocnemius"],
+    helpers: [],
     howItHelps:
       "Hinging forwards from your hips with your raised leg straight gently stretches the back of your thigh. Easing hamstring tightness can make bending, reaching your feet and taking longer strides feel more comfortable.",
     status: "draft",

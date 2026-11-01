@@ -40,7 +40,7 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "shoulder-internal-rotation-band": {
     main: ["subscapularis"],
-    helpers: ["pectoralis-major", "teres-major"],
+    helpers: ["pectoralis-major", "latissimus-dorsi", "teres-major"],
     howItHelps:
       "Turning your forearm inwards against the band strengthens the rotator cuff muscle on the front of your shoulder blade, with help from your chest muscle. Working it alongside the muscles that turn your arm out helps balance strength around the joint, which can make lifting, pushing and reaching behind your back feel steadier.",
     tissue: "muscle-tendon",
@@ -48,7 +48,7 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "wall-slide": {
     main: ["serratus-anterior", "lower-trapezius"],
-    helpers: ["deltoid"],
+    helpers: ["front-deltoid"],
     howItHelps:
       "Sliding your forearms up the wall works the muscles that turn your shoulder blades upwards and hold them against your ribs, helping your arms rise smoothly. Gently winning back this overhead range can make reaching into high cupboards, hanging out washing and doing your hair more comfortable.",
     tissue: "muscle-tendon",
@@ -71,7 +71,7 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
   },
   "scapular-retraction-band-row": {
     main: ["middle-trapezius", "rhomboids"],
-    helpers: ["lower-trapezius", "rear-deltoid"],
+    helpers: ["lower-trapezius", "rear-deltoid", "latissimus-dorsi"],
     howItHelps:
       "Pulling your elbows back and drawing your shoulder blades together works the muscles between and just below your shoulder blades. Stronger upper-back muscles give your shoulder blades better control as your arms move, which can ease the strain on a sore shoulder and help with pulling tasks like opening heavy doors.",
     tissue: "muscle-tendon",
@@ -112,7 +112,7 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
   // Wrist
   "wrist-extensor-stretch": {
     main: ["wrist-extensors"],
-    helpers: ["finger-extensors"],
+    helpers: [],
     howItHelps:
       "With your elbow straight, bending your wrist down stretches the muscles along the top of your forearm, which attach at the outside of your elbow. Easing tightness here can make gripping, lifting and typing more comfortable when tennis elbow is sore.",
     tissue: "muscle-tendon",
@@ -127,8 +127,8 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
     status: "draft",
   },
   "wrist-flexor-stretch": {
-    main: ["wrist-flexors"],
-    helpers: ["finger-flexors"],
+    main: ["wrist-flexors", "finger-flexors"],
+    helpers: [],
     howItHelps:
       "With your elbow straight, pulling your hand back stretches the muscles on the palm side of your forearm, which attach at the inside of your elbow. Easing tightness here can make gripping, lifting and carrying more comfortable when golfer's elbow is sore.",
     tissue: "muscle-tendon",
@@ -211,8 +211,8 @@ export const UPPER_LIMB: Record<string, ExerciseAnatomy> = {
     status: "draft",
   },
   "tendon-glide-exercises": {
-    main: ["finger-flexors"],
-    helpers: ["hand-intrinsics", "median-nerve"],
+    main: ["finger-flexors", "median-nerve"],
+    helpers: ["hand-intrinsics"],
     howItHelps:
       "Moving your fingers through a set of shapes helps the tendons that bend them, and the median nerve beside them, glide through the tunnel at your wrist. Keeping them moving freely may help ease stiffness and tingling, which can make gripping, writing and fine hand tasks more comfortable.",
     tissue: "nerve-brain",

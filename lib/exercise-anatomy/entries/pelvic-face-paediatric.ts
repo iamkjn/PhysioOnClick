@@ -41,7 +41,7 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
   },
   "diastasis-safe-curl-up": {
     main: ["rectus-abdominis"],
-    helpers: ["pelvic-floor"],
+    helpers: ["pelvic-floor", "transversus-abdominis"],
     howItHelps:
       "Lifting your head and shoulders a small way, with the towel for support, gently works the long muscle down the front of your tummy. Keeping the middle flat, with no doming, means you build strength at a level your tummy can control, which can make sitting up, getting out of bed and lifting more comfortable.",
     status: "draft",
@@ -62,7 +62,7 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
   },
   "bridge-with-pelvic-floor-engagement": {
     main: ["gluteus-maximus", "pelvic-floor"],
-    helpers: ["hamstrings", "gluteus-medius"],
+    helpers: ["hamstrings", "gluteus-medius", "transversus-abdominis"],
     howItHelps:
       "Lifting your pelvic floor just before you raise your hips, and keeping it lifted, links pelvic floor control with a bridge that strengthens your buttock muscles. Practising the two together can help your pelvic floor keep supporting you during everyday effort, such as lifting, climbing stairs or getting up from the floor.",
     tissue: "pelvic-floor",
@@ -87,7 +87,7 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
   },
   "side-lying-hip-abduction-pregnancy-safe": {
     main: ["gluteus-medius"],
-    helpers: ["gluteus-minimus", "deep-hip-rotators"],
+    helpers: ["deep-hip-rotators", "gluteus-maximus"],
     howItHelps:
       "Lifting your top knee a small way, with your feet together and pillows for support, strengthens the muscles on the side of your hip while your pelvis stays still. Stronger hip muscles can help steady your pelvis, which may make walking, climbing stairs and turning over in bed more comfortable during pregnancy.",
     status: "draft",
@@ -249,11 +249,10 @@ export const PELVIC_FACE_PAEDIATRIC: Record<string, ExerciseAnatomy> = {
     status: "draft",
   },
   "sensory-motor-circuit-multi-station": {
-    main: ["quadriceps", "gluteus-maximus"],
+    main: ["brain"],
     helpers: [],
     howItHelps:
       "Your child's physio chooses the stations, so the muscles worked will vary. A mix of movement and calming input, such as a firm cushion squash or slow rocking, may help your child feel more settled and ready to focus, play and join in.",
-    view: "right",
     status: "draft",
   },
 };

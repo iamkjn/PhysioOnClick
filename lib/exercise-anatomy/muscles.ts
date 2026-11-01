@@ -28,7 +28,7 @@ const MUSCLE_TABLE = {
   },
   iliopsoas: { label: "Iliopsoas", plain: "deep hip flexor at the front of your hip", source: "base", parts: [/psoas major|iliacus/i], view: "front" },
   quadriceps: { label: "Quadriceps", plain: "front of your thigh", source: "base", parts: [/rectus femoris|vastus (lateralis|medialis|intermedius)/i], view: "front" },
-  "vastus-medialis": { label: "Vastus medialis", plain: "inner front of your thigh, just above the knee", source: "base", parts: [/vastus medialis/i], view: "front" },
+  "vastus-medialis": { label: "Vastus medialis", plain: "inner front of your thigh, bulging just above your knee", source: "base", parts: [/vastus medialis/i], view: "front" },
   "rectus-femoris": { label: "Rectus femoris", plain: "the thigh muscle that also lifts your leg at the hip", source: "base", parts: [/rectus femoris/i], view: "front" },
   hamstrings: { label: "Hamstrings", plain: "back of your thigh", source: "base", parts: [/biceps femoris|semitendinosus|semimembranosus/i], view: "back" },
   adductors: { label: "Adductors", plain: "inner thigh", source: "base", parts: [/adductor (longus|brevis|magnus|minimus)|gracilis|pectineus/i], view: "front" },
@@ -47,8 +47,8 @@ const MUSCLE_TABLE = {
   soleus: { label: "Soleus", plain: "deep calf muscle", source: "base", parts: [/soleus/i], view: "back" },
   "achilles-tendon": { label: "Achilles tendon", plain: "back of your ankle", source: "base", parts: [/calcaneal tendon/i], view: "back" },
   "tibialis-anterior": { label: "Tibialis anterior", plain: "front of your shin", source: "base", parts: [/tibialis anterior/i], view: "front" },
-  "tibialis-posterior": { label: "Tibialis posterior", plain: "deep inside of your lower leg, supporting your arch", source: "base", parts: [/tibialis posterior/i], view: "back" },
-  fibularis: { label: "Fibularis (peroneals)", plain: "outside of your lower leg and ankle", source: "base", parts: [/fibularis (longus|brevis)/i], view: "right" },
+  "tibialis-posterior": { label: "Tibialis posterior", plain: "deep in the back of your lower leg, its tendon running behind your inner ankle to support your arch", source: "base", parts: [/tibialis posterior/i], view: "back" },
+  fibularis: { label: "Fibularis longus and brevis (peroneals)", plain: "outside of your lower leg and ankle", source: "base", parts: [/fibularis (longus|brevis)/i], view: "right" },
   "foot-intrinsics": {
     label: "Small foot muscles",
     plain: "the muscles in the sole of your foot",
@@ -56,7 +56,7 @@ const MUSCLE_TABLE = {
     parts: [
       /(lumbrical|plantar interosseous|abductor digiti minimi|flexor digiti minimi brevis|opponens digiti minimi) of (right|left) foot|abductor hallucis|flexor digitorum brevis|flexor hallucis brevis|flexor accessorius|adductor hallucis/i,
     ],
-    view: "front",
+    view: "right",
   },
   "leg-bones": { label: "Leg bones", plain: "the long bones of your thighs and lower legs", source: "base", parts: [/^(right|left) (femur|tibia|fibula)$/i], view: "front" },
 
@@ -89,7 +89,7 @@ const MUSCLE_TABLE = {
   rhomboids: { label: "Rhomboids", plain: "between your shoulder blades", source: "base", parts: [/rhomboid (major|minor)/i], view: "back" },
   "upper-trapezius": { label: "Upper trapezius", plain: "top of your shoulders and neck", source: "base", parts: [/descending part of (right|left) trapezius/i], view: "back" },
   "middle-trapezius": { label: "Middle trapezius", plain: "across your upper back", source: "base", parts: [/transverse part of (right|left) trapezius/i], view: "back" },
-  "lower-trapezius": { label: "Lower trapezius", plain: "middle of your back, below your shoulder blades", source: "base", parts: [/ascending part of (right|left) trapezius/i], view: "back" },
+  "lower-trapezius": { label: "Lower trapezius", plain: "middle of your back, between and below your shoulder blades", source: "base", parts: [/ascending part of (right|left) trapezius/i], view: "back" },
   "levator-scapulae": { label: "Levator scapulae", plain: "side and back of your neck", source: "base", parts: [/levator scapulae/i], view: "back" },
   "shoulder-joint": {
     label: "Shoulder joint bones",
@@ -126,15 +126,15 @@ const MUSCLE_TABLE = {
     view: "front",
   },
   "wrist-joint": {
-    label: "Wrist joint",
-    plain: "the small bones and joints of your wrist",
+    label: "Wrist bones",
+    plain: "the eight small bones of your wrist, which form its joints",
     source: "base",
     parts: [/^(right|left) (scaphoid|lunate|triquetral|pisiform|trapezium|trapezoid|capitate|hamate)$/i],
     view: "front",
   },
   "hand-intrinsics": {
     label: "Small hand muscles",
-    plain: "the muscles in your palm and between your fingers",
+    plain: "the muscles in your palm and between the bones of your hand",
     source: "base",
     parts: [
       /(lumbricals|interossei) of (right|left) hand|(abductor digiti minimi|flexor digiti minimi brevis|opponens digiti minimi) of (right|left) hand|abductor pollicis brevis|flexor pollicis brevis|opponens pollicis|adductor pollicis/i,
@@ -164,12 +164,12 @@ const MUSCLE_TABLE = {
     parts: [],
     view: "front",
   },
-  brain: { label: "Brain", plain: "the parts of your brain that plan your movements and share your attention", source: "none", parts: [], view: "front" },
+  brain: { label: "Brain", plain: "the parts of your brain that take in what you sense, plan your movements and share your attention", source: "none", parts: [], view: "front" },
 
   // Spine and trunk
   "erector-spinae": {
-    label: "Erector spinae",
-    plain: "the long muscles either side of your mid and lower back",
+    label: "Erector spinae (trunk part)",
+    plain: "the long muscles either side of your spine, from your pelvis up to the base of your neck",
     source: "base",
     parts: [/iliocostalis (lumborum|thoracis)|longissimus thoracis|\bspinalis thoracis/i],
     view: "back",
@@ -223,18 +223,30 @@ const MUSCLE_TABLE = {
     plain: "the cushions between the bones of your lower back",
     source: "addon",
     parts: [/intervertebral disk of (first|second|third|fourth|fifth) lumbar vertebra/i],
-    view: "back",
+    view: "right",
   },
   "neck-discs": {
     label: "Neck discs",
     plain: "the cushions between the bones of your neck",
     source: "addon",
     parts: [/intervertebral disk of (axis|(third|fourth|fifth|sixth|seventh) cervical vertebra)/i],
+    view: "right",
+  },
+  "lumbar-spine": {
+    label: "Lower back vertebrae and sacrum",
+    plain: "the five bones of your lower back and the sacrum below them, which form its joints",
+    source: "base",
+    parts: [/^(first|second|third|fourth|fifth) lumbar vertebra$|^sacrum$/i],
     view: "back",
   },
-  "lumbar-spine": { label: "Lower back joints", plain: "the bones and joints of your lower back", source: "base", parts: [/^(first|second|third|fourth|fifth) lumbar vertebra$|^sacrum$/i], view: "back" },
-  "thoracic-spine": { label: "Mid-back joints", plain: "the bones and joints of your upper and mid back", source: "base", parts: [/^\w+ thoracic vertebra$/i], view: "back" },
-  "cervical-spine": { label: "Neck joints", plain: "the bones and joints of your neck", source: "base", parts: [/^\w+ cervical vertebra$|^atlas$|^axis$/i], view: "back" },
+  "thoracic-spine": {
+    label: "Mid-back vertebrae",
+    plain: "the 12 bones of your spine between your neck and lower back, which form its joints",
+    source: "base",
+    parts: [/^\w+ thoracic vertebra$/i],
+    view: "back",
+  },
+  "cervical-spine": { label: "Neck vertebrae", plain: "the seven bones of your spine in your neck, which form its joints", source: "base", parts: [/^\w+ cervical vertebra$|^atlas$|^axis$/i], view: "back" },
 
   // Neck
   "deep-neck-flexors": {
@@ -248,7 +260,9 @@ const MUSCLE_TABLE = {
     label: "Neck extensors",
     plain: "the muscles at the back of your neck",
     source: "base",
-    parts: [/semispinalis (capitis|cervicis)|splenius (capitis|cervicis)|longissimus capitis|rectus capitis posterior|obliquus capitis/i],
+    parts: [
+      /semispinalis (capitis|cervicis)|splenius (capitis|cervicis)|longissimus (capitis|cervicis)|iliocostalis cervicis|^spinalis$|rectus capitis posterior|obliquus capitis|interspinales cervicis|cervical rotator/i,
+    ],
     view: "back",
   },
   sternocleidomastoid: { label: "Sternocleidomastoid", plain: "the muscle running down the side of your neck", source: "base", parts: [/sternocleidomastoid/i], view: "right" },

@@ -42,7 +42,7 @@ describe("ExerciseBody3D", () => {
     expect(screen.getByText("Main focus")).toBeInTheDocument();
     expect(screen.getByText("Helpers")).toBeInTheDocument();
     expect(screen.getByText("Not in the 3D model, so not lit: multifidus.")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: /Erector spinae and Multifidus as the main focus/ })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /Erector spinae \(trunk part\) and Multifidus as the main focus/ })).toBeInTheDocument();
     expect(created.sources).toBe(1);
     expect(loadAnatomyAddon).not.toHaveBeenCalled();
   });
