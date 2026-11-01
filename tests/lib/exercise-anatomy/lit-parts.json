@@ -1,0 +1,501 @@
+{
+  "achilles-tendon": [
+    "Left calcaneal tendon",
+    "Right calcaneal tendon"
+  ],
+  "adductors": [
+    "Left adductor brevis",
+    "Left adductor longus",
+    "Left adductor magnus",
+    "Left adductor minimus",
+    "Left gracilis",
+    "Left pectineus",
+    "Right adductor brevis",
+    "Right adductor longus",
+    "Right adductor magnus",
+    "Right adductor minimus",
+    "Right gracilis",
+    "Right pectineus"
+  ],
+  "biceps-brachii": [
+    "Long head of left biceps brachii",
+    "Long head of right biceps brachii",
+    "Short head of left biceps brachii",
+    "Short head of right biceps brachii"
+  ],
+  "brachialis": [
+    "Left brachialis",
+    "Right brachialis"
+  ],
+  "brachioradialis": [
+    "Left brachioradialis",
+    "Right brachioradialis"
+  ],
+  "brain": [],
+  "buccinator": [],
+  "cervical-spine": [
+    "Atlas",
+    "Axis",
+    "Fifth cervical vertebra",
+    "Fourth cervical vertebra",
+    "Seventh cervical vertebra",
+    "Sixth cervical vertebra",
+    "Third cervical vertebra"
+  ],
+  "corrugator": [],
+  "deep-hip-rotators": [
+    "Left gemellus inferior",
+    "Left gemellus superior",
+    "Left obturator externus",
+    "Left obturator internus",
+    "Left piriformis",
+    "Left quadratus femoris",
+    "Right gemellus inferior",
+    "Right gemellus superior",
+    "Right obturator externus",
+    "Right obturator internus",
+    "Right piriformis",
+    "Right quadratus femoris"
+  ],
+  "deep-neck-flexors": [
+    "Inferior oblique part of left longus colli",
+    "Left longus capitis",
+    "Left rectus capitis anterior",
+    "Right longus capitis",
+    "Right rectus capitis anterior",
+    "Superior oblique part of left longus colli",
+    "Vertical intermediate part of left longus colli"
+  ],
+  "deltoid": [
+    "Acromial part of left deltoid",
+    "Acromial part of right deltoid",
+    "Clavicular part of left deltoid",
+    "Clavicular part of right deltoid",
+    "Spinal part of left deltoid",
+    "Spinal part of right deltoid"
+  ],
+  "diaphragm": [
+    "Diaphragm"
+  ],
+  "erector-spinae": [
+    "Left iliocostalis lumborum",
+    "Left iliocostalis thoracis",
+    "Left longissimus thoracis",
+    "Left spinalis thoracis",
+    "Right iliocostalis lumborum",
+    "Right iliocostalis thoracis",
+    "Right longissimus thoracis",
+    "Right spinalis thoracis"
+  ],
+  "external-oblique": [
+    "Left external oblique",
+    "Right external oblique"
+  ],
+  "fibularis": [
+    "Left fibularis brevis",
+    "Left fibularis longus",
+    "Right fibularis brevis",
+    "Right fibularis longus"
+  ],
+  "finger-extensors": [
+    "Left extensor digiti minimi",
+    "Left extensor digitorum",
+    "Left extensor indicis",
+    "Left extensor pollicis brevis",
+    "Left extensor pollicis longus",
+    "Right extensor digiti minimi",
+    "Right extensor digitorum",
+    "Right extensor indicis",
+    "Right extensor pollicis brevis",
+    "Right extensor pollicis longus"
+  ],
+  "finger-flexors": [
+    "Left flexor digitorum profundus",
+    "Left flexor digitorum superficialis",
+    "Left flexor pollicis longus",
+    "Right flexor digitorum profundus",
+    "Right flexor digitorum superficialis",
+    "Right flexor pollicis longus"
+  ],
+  "foot-intrinsics": [
+    "Abductor digiti minimi of left foot",
+    "Abductor digiti minimi of right foot",
+    "First lumbrical of left foot",
+    "First lumbrical of right foot",
+    "First plantar interosseous of left foot",
+    "First plantar interosseous of right foot",
+    "Flexor digiti minimi brevis of left foot",
+    "Flexor digiti minimi brevis of right foot",
+    "Fourth lumbrical of left foot",
+    "Fourth lumbrical of right foot",
+    "Lateral head of left flexor hallucis brevis",
+    "Lateral head of right flexor hallucis brevis",
+    "Left abductor hallucis",
+    "Left flexor accessorius",
+    "Left flexor digitorum brevis",
+    "Medial head of left flexor hallucis brevis",
+    "Medial head of right flexor hallucis brevis",
+    "Oblique head of left adductor hallucis",
+    "Oblique head of right adductor hallucis",
+    "Opponens digiti minimi of left foot",
+    "Opponens digiti minimi of right foot",
+    "Right abductor hallucis",
+    "Right flexor accessorius",
+    "Right flexor digitorum brevis",
+    "Second lumbrical of left foot",
+    "Second lumbrical of right foot",
+    "Second plantar interosseous of left foot",
+    "Second plantar interosseous of right foot",
+    "Third lumbrical of left foot",
+    "Third lumbrical of right foot",
+    "Third plantar interosseous of left foot",
+    "Third plantar interosseous of right foot",
+    "Transverse head of left adductor hallucis",
+    "Transverse head of right adductor hallucis"
+  ],
+  "forearm-rotators": [
+    "Humeral head of left pronator teres",
+    "Humeral head of right pronator teres",
+    "Left pronator quadratus",
+    "Left supinator",
+    "Right pronator quadratus",
+    "Right supinator",
+    "Ulnar head of left pronator teres",
+    "Ulnar head of right pronator teres"
+  ],
+  "front-deltoid": [
+    "Clavicular part of left deltoid",
+    "Clavicular part of right deltoid"
+  ],
+  "frontalis": [],
+  "gastrocnemius": [
+    "Lateral head of left gastrocnemius",
+    "Lateral head of right gastrocnemius",
+    "Medial head of left gastrocnemius",
+    "Medial head of right gastrocnemius"
+  ],
+  "gluteus-maximus": [
+    "Left gluteus maximus",
+    "Right gluteus maximus"
+  ],
+  "gluteus-medius": [
+    "Left gluteus medius",
+    "Right gluteus medius"
+  ],
+  "gluteus-minimus": [
+    "Left gluteus minimus",
+    "Right gluteus minimus"
+  ],
+  "hamstrings": [
+    "Left semimembranosus",
+    "Left semitendinosus",
+    "Long head of left biceps femoris",
+    "Long head of right biceps femoris",
+    "Right semimembranosus",
+    "Right semitendinosus",
+    "Short head of left biceps femoris",
+    "Short head of right biceps femoris"
+  ],
+  "hand-intrinsics": [
+    "Abductor digiti minimi of left hand",
+    "Abductor digiti minimi of right hand",
+    "Flexor digiti minimi brevis of left hand",
+    "Flexor digiti minimi brevis of right hand",
+    "Left abductor pollicis brevis",
+    "Left flexor pollicis brevis",
+    "Left opponens pollicis",
+    "Oblique head of left adductor pollicis",
+    "Oblique head of right adductor pollicis",
+    "Opponens digiti minimi of left hand",
+    "Opponens digiti minimi of right hand",
+    "Right abductor pollicis brevis",
+    "Right flexor pollicis brevis",
+    "Right opponens pollicis",
+    "Set of dorsal interossei of left hand",
+    "Set of dorsal interossei of right hand",
+    "Set of lumbricals of left hand",
+    "Set of lumbricals of right hand",
+    "Set of palmar interossei of left hand",
+    "Set of palmar interossei of right hand",
+    "Superficial head of left flexor pollicis brevis",
+    "Superficial head of right flexor pollicis brevis",
+    "Transverse head of left adductor pollicis",
+    "Transverse head of right adductor pollicis"
+  ],
+  "iliopsoas": [
+    "Left iliacus",
+    "Left psoas major",
+    "Right iliacus",
+    "Right psoas major"
+  ],
+  "infraspinatus": [
+    "Left infraspinatus muscle",
+    "Right infraspinatus muscle"
+  ],
+  "intercostals": [
+    "External intercostal muscle",
+    "external intercostal muscle"
+  ],
+  "latissimus-dorsi": [],
+  "leg-bones": [
+    "Left femur",
+    "Left fibula",
+    "Left tibia",
+    "Right femur",
+    "Right fibula",
+    "Right tibia"
+  ],
+  "levator-palpebrae": [],
+  "levator-scapulae": [
+    "Left levator scapulae",
+    "Right levator scapulae"
+  ],
+  "lower-trapezius": [
+    "Ascending part of left trapezius",
+    "Ascending part of right trapezius"
+  ],
+  "lumbar-discs": [
+    "Intervertebral disk of fifth lumbar vertebra",
+    "Intervertebral disk of first lumbar vertebra",
+    "Intervertebral disk of fourth lumbar vertebra",
+    "Intervertebral disk of second lumbar vertebra",
+    "Intervertebral disk of third lumbar vertebra"
+  ],
+  "lumbar-spine": [
+    "Fifth lumbar vertebra",
+    "First lumbar vertebra",
+    "Fourth lumbar vertebra",
+    "Sacrum",
+    "Second lumbar vertebra",
+    "Third lumbar vertebra"
+  ],
+  "median-nerve": [],
+  "middle-trapezius": [
+    "Transverse part of left trapezius",
+    "Transverse part of right trapezius"
+  ],
+  "multifidus": [],
+  "neck-discs": [
+    "Intervertebral disk of axis",
+    "Intervertebral disk of fifth cervical vertebra",
+    "Intervertebral disk of fourth cervical vertebra",
+    "Intervertebral disk of seventh cervical vertebra",
+    "Intervertebral disk of sixth cervical vertebra",
+    "Intervertebral disk of third cervical vertebra"
+  ],
+  "neck-extensors": [
+    "Left longissimus capitis",
+    "Left obliquus capitis inferior",
+    "Left obliquus capitis superior",
+    "Left rectus capitis posterior major",
+    "Left rectus capitis posterior minor",
+    "Left semispinalis capitis",
+    "Left semispinalis cervicis",
+    "Left splenius capitis",
+    "Left splenius cervicis",
+    "Right longissimus capitis",
+    "Right obliquus capitis inferior",
+    "Right obliquus capitis superior",
+    "Right rectus capitis posterior major",
+    "Right rectus capitis posterior minor",
+    "Right semispinalis capitis",
+    "Right semispinalis cervicis",
+    "Right splenius capitis",
+    "Right splenius cervicis"
+  ],
+  "nervous-system": [],
+  "orbicularis-oculi": [],
+  "orbicularis-oris": [],
+  "patella": [
+    "Left patella",
+    "Right patella"
+  ],
+  "patellar-tendon": [],
+  "pectoralis-major": [
+    "Abdominal part of left pectoralis major",
+    "Abdominal part of right pectoralis major",
+    "Clavicular part of left pectoralis major",
+    "Clavicular part of right pectoralis major",
+    "Sternocostal part of left pectoralis major",
+    "Sternocostal part of right pectoralis major"
+  ],
+  "pectoralis-minor": [
+    "Left pectoralis minor",
+    "Right pectoralis minor"
+  ],
+  "pelvic-floor": [
+    "External anal sphincter",
+    "Left coccygeus",
+    "Left iliococcygeus",
+    "Left pubococcygeus",
+    "Left puborectalis",
+    "Right coccygeus",
+    "Right iliococcygeus",
+    "Right pubococcygeus",
+    "Right puborectalis",
+    "superficial perineal muscle"
+  ],
+  "quadratus-lumborum": [],
+  "quadriceps": [
+    "Left rectus femoris",
+    "Left vastus intermedius",
+    "Left vastus lateralis",
+    "Left vastus medialis",
+    "Right rectus femoris",
+    "Right vastus intermedius",
+    "Right vastus lateralis",
+    "Right vastus medialis"
+  ],
+  "rear-deltoid": [
+    "Spinal part of left deltoid",
+    "Spinal part of right deltoid"
+  ],
+  "rectus-abdominis": [],
+  "rectus-femoris": [
+    "Left rectus femoris",
+    "Right rectus femoris"
+  ],
+  "rhomboids": [
+    "Left rhomboid major",
+    "Left rhomboid minor",
+    "Right rhomboid major",
+    "Right rhomboid minor"
+  ],
+  "risorius": [],
+  "rotator-cuff": [
+    "Left infraspinatus muscle",
+    "Left subscapularis",
+    "Left supraspinatus",
+    "Left teres minor",
+    "Right infraspinatus muscle",
+    "Right subscapularis",
+    "Right supraspinatus",
+    "Right teres minor"
+  ],
+  "scalenes": [
+    "Left scalenus anterior",
+    "Left scalenus medius",
+    "Left scalenus posterior",
+    "Right scalenus anterior",
+    "Right scalenus medius",
+    "Right scalenus posterior"
+  ],
+  "scar-tissue": [],
+  "sciatic-nerve": [],
+  "serratus-anterior": [
+    "Left serratus anterior",
+    "Right serratus anterior"
+  ],
+  "shoulder-joint": [
+    "Left humerus",
+    "Left scapula",
+    "Right humerus",
+    "Right scapula"
+  ],
+  "soleus": [
+    "Left soleus",
+    "Right soleus"
+  ],
+  "sternocleidomastoid": [
+    "Left sternocleidomastoid",
+    "Right sternocleidomastoid"
+  ],
+  "subscapularis": [
+    "Left subscapularis",
+    "Right subscapularis"
+  ],
+  "supraspinatus": [
+    "Left supraspinatus",
+    "Right supraspinatus"
+  ],
+  "teres-major": [
+    "Left teres major",
+    "Right teres major"
+  ],
+  "teres-minor": [
+    "Left teres minor",
+    "Right teres minor"
+  ],
+  "tfl-it-band": [
+    "Left iliotibial tract",
+    "Left tensor fasciae latae",
+    "Right iliotibial tract",
+    "Right tensor fasciae latae"
+  ],
+  "thoracic-spine": [
+    "Eighth thoracic vertebra",
+    "Eleventh thoracic vertebra",
+    "Fifth thoracic vertebra",
+    "First thoracic vertebra",
+    "Fourth thoracic vertebra",
+    "Ninth thoracic vertebra",
+    "Second thoracic vertebra",
+    "Seventh thoracic vertebra",
+    "Sixth thoracic vertebra",
+    "Tenth thoracic vertebra",
+    "Third thoracic vertebra",
+    "Twelfth thoracic vertebra"
+  ],
+  "tibialis-anterior": [
+    "Left tibialis anterior",
+    "Right tibialis anterior"
+  ],
+  "tibialis-posterior": [
+    "Left tibialis posterior",
+    "Right tibialis posterior"
+  ],
+  "transversus-abdominis": [],
+  "triceps": [
+    "Lateral head of left triceps brachii",
+    "Lateral head of right triceps brachii",
+    "Long head of left triceps brachii",
+    "Long head of right triceps brachii",
+    "Medial head of left triceps brachii",
+    "Medial head of right triceps brachii"
+  ],
+  "upper-trapezius": [
+    "Descending part of left trapezius",
+    "Descending part of right trapezius"
+  ],
+  "vastus-medialis": [
+    "Left vastus medialis",
+    "Right vastus medialis"
+  ],
+  "wrist-extensors": [
+    "Left extensor carpi radialis brevis",
+    "Left extensor carpi radialis longus",
+    "Left extensor carpi ulnaris",
+    "Right extensor carpi radialis brevis",
+    "Right extensor carpi radialis longus",
+    "Right extensor carpi ulnaris"
+  ],
+  "wrist-flexors": [
+    "Humeral head of left flexor carpi ulnaris",
+    "Humeral head of right flexor carpi ulnaris",
+    "Left flexor carpi radialis",
+    "Left palmaris longus",
+    "Right flexor carpi radialis",
+    "Right palmaris longus",
+    "Ulnar head of left flexor carpi ulnaris",
+    "Ulnar head of right flexor carpi ulnaris"
+  ],
+  "wrist-joint": [
+    "Left capitate",
+    "Left hamate",
+    "Left lunate",
+    "Left pisiform",
+    "Left scaphoid",
+    "Left trapezium",
+    "Left trapezoid",
+    "Left triquetral",
+    "Right capitate",
+    "Right hamate",
+    "Right lunate",
+    "Right pisiform",
+    "Right scaphoid",
+    "Right trapezium",
+    "Right trapezoid",
+    "Right triquetral"
+  ],
+  "zygomaticus": []
+}

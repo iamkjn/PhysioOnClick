@@ -55,7 +55,7 @@ describe("committed exercise-anatomy add-on model", () => {
     for (const key of keys) expect(sideProblem(names, MUSCLES[key].parts), key).toBeNull();
   });
 
-  it("never lights an add-on part for a base or stand-in muscle", () => {
+  it("never lights an add-on part for a base or unmodelled muscle", () => {
     const names = addon.parts.map((p) => p.name);
     const keys = (Object.keys(MUSCLES) as MuscleKey[]).filter((k) => MUSCLES[k].source !== "addon");
     expect(keys.length).toBeGreaterThan(0);

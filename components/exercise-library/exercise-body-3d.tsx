@@ -3,16 +3,16 @@
 // components/exercise-library/exercise-body-3d.tsx
 // The exercise page's 3D view: the live body model with this exercise's main
 // muscles and helpers lit, Front/Back/Left/Right, a close-up/whole-body
-// switch, tap-to-name, a legend and any "approximate" notes. Loaded with
-// import() from exercise-hero-media.tsx only after "View in 3D", and it
-// imports three.js and the scene the same lazy way.
+// switch, tap-to-name, a legend and a note naming any muscle that isn't in the
+// model (so isn't lit). Loaded with import() from exercise-hero-media.tsx only
+// after "View in 3D", and it imports three.js and the scene the same lazy way.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { AnatomyStage } from "@/components/exercise-library/exercise-body-3d-stage";
 import { loadBodyModel, onBodyModelProgress } from "@/lib/body-model-loader";
 import { loadAnatomyAddon } from "@/lib/exercise-anatomy/addon-loader";
 import { MUSCLES, type MuscleKey } from "@/lib/exercise-anatomy/muscles";
-import { needsAddon, standInNotes } from "@/lib/exercise-anatomy/scene";
+import { needsAddon, unlitNote } from "@/lib/exercise-anatomy/scene";
 import type { BodyView } from "@/lib/exercise-anatomy/types";
 
 const VIEWS: { id: BodyView; label: string; aria: string }[] = [
@@ -89,7 +89,7 @@ export function ExerciseBody3D({ title, main, helpers, view: startView, corner, 
 
   const mainLabels = main.map((k) => MUSCLES[k].label);
   const helperLabels = helpers.map((k) => MUSCLES[k].label);
-  const notes = standInNotes([...main, ...helpers]);
+  const unlit = unlitNote([...main, ...helpers]);
   const label =
     `3D body for ${title}, showing ${joinList(mainLabels)} as the main focus` +
     (helperLabels.length ? ` with ${joinList(helperLabels)} helping` : "") +
@@ -170,11 +170,7 @@ export function ExerciseBody3D({ title, main, helpers, view: startView, corner, 
           </li>
         ) : null}
       </ul>
-      {notes.map((note) => (
-        <p key={note} className="exercise-body-3d__note">
-          {note}
-        </p>
-      ))}
+      {unlit ? <p className="exercise-body-3d__note">{unlit}</p> : null}
 
       <p className="body-chart-3d__credit">
         Anatomy adapted from BodyParts3D © DBCLS,{" "}

@@ -22,10 +22,9 @@ export interface DrawGroup {
   materialIndex: number;
 }
 
-/** The patterns to light for one muscle: its own parts, or its stand-in's. */
+/** The patterns to light for one muscle: its own parts only. A muscle that is not in any model lights nothing. */
 export function patternsFor(key: MuscleKey): readonly RegExp[] {
-  const m = MUSCLES[key];
-  return m.source === "none" ? (m.standIn?.parts ?? []) : m.parts;
+  return MUSCLES[key].source === "none" ? [] : MUSCLES[key].parts;
 }
 
 /** Role of each part (same order as `parts`). Main wins over helper. */
@@ -92,23 +91,16 @@ export function displayPartName(name: string): string {
   return n.charAt(0).toUpperCase() + n.slice(1);
 }
 
-const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
-
 /** What a tapped part is called, in this exercise's terms. */
 export function partLabel(partName: string, main: readonly MuscleKey[], helpers: readonly MuscleKey[]): string {
   const roles: [readonly MuscleKey[], string][] = [
     [main, "main focus"],
     [helpers, "helper"],
   ];
-  // Within a role, a muscle the part really belongs to beats a stand-in for one that isn't modelled.
   for (const [keys, role] of roles) {
     for (const key of keys) {
       const m = MUSCLES[key];
-      if (m.source !== "none" && m.parts.some((r) => r.test(partName))) return `${m.label}: ${m.plain} (${role})`;
-    }
-    for (const key of keys) {
-      const m = MUSCLES[key];
-      if (m.source === "none" && m.standIn?.parts.some((r) => r.test(partName))) return `${displayPartName(partName)}, near the ${lowerFirst(m.label)} (${role})`;
+      if (patternsFor(key).some((r) => r.test(partName))) return `${m.label}: ${m.plain} (${role})`;
     }
   }
   return displayPartName(partName);
@@ -118,13 +110,14 @@ export function needsAddon(keys: readonly MuscleKey[]): boolean {
   return keys.some((k) => MUSCLES[k].source === "addon");
 }
 
-export function standInNotes(keys: readonly MuscleKey[]): string[] {
-  return [
-    ...new Set(
-      keys.flatMap((k) => {
-        const m = MUSCLES[k];
-        return m.source === "none" && m.standIn ? [m.standIn.note] : [];
-      })
-    ),
-  ];
+/** Labels (deduped, in the order given) of the muscles that are not in any model, so nothing is lit for them. */
+export function unlitMuscles(keys: readonly MuscleKey[]): string[] {
+  return [...new Set(keys.filter((k) => MUSCLES[k].source === "none").map((k) => MUSCLES[k].label))];
+}
+
+/** The 3D view's note naming the muscles it cannot light, or null when every muscle is in a model. */
+export function unlitNote(keys: readonly MuscleKey[]): string | null {
+  const labels = unlitMuscles(keys);
+  if (!labels.length) return null;
+  return `Not in the 3D model, so not lit: ${labels.map((l) => l.charAt(0).toLowerCase() + l.slice(1)).join(", ")}.`;
 }

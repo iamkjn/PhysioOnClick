@@ -44,8 +44,8 @@ look, their Google presence, the booking prompts) must not be disturbed.
    flexors; McKenzie press-up is another top-20 page and is about the disc. So the add-on
    holds pelvic floor + diaphragm + deep neck flexors + discs.
 3. **Nerves are not in the model** (the atlas has only head nerves). Nerve-glide
-   exercises (median nerve glide is a top-20 page) light the muscles along the nerve's
-   path instead, with a note.
+   exercises (median nerve glide is a top-20 page) are text-only: nothing is lit for a
+   nerve (see refinement 11).
 4. **The tissue line is optional.** General fitness and falls-prevention balance
    exercises do not heal one tissue. They show the stages strip without a tissue line,
    rather than being forced into one of the five tracks.
@@ -72,6 +72,10 @@ look, their Google presence, the booking prompts) must not be disturbed.
 10. **The model ships no "tap to select".** The exercise view is read-only: a tap shows a
     name, and lit parts are picked first, so a tap lands on the highlighted muscle even
     under see-through ones.
+11. **Exact match only (owner, 2026-11-01): no stand-ins.** A muscle that isn't in the
+    model is listed in the text and named in a "Not in the 3D model, so not lit" note;
+    the 3D view shows only when at least one main muscle is in the model. Group part
+    lists are locked by `tests/lib/exercise-anatomy/lit-parts.json`.
 
 ## What the model has
 
@@ -89,11 +93,9 @@ deep neck flexors and the intervertebral discs.
 
 **Not in any open model we use:** latissimus dorsi, rectus abdominis, transversus
 abdominis, internal oblique, quadratus lumborum, multifidus, limb nerves, knee ligaments
-and menisci, facial muscles. Each of these gets a **stand-in**: the nearest parts that
-are in the model, lit the same way, plus a note under the body. For example: multifidus
-→ the deep lumbar rotators and interspinales beside it; rectus abdominis → linea alba
-and the front of external oblique; median nerve → the forearm flexors it runs between.
-Facial muscles get no stand-in, so face exercises show text only (see "When the button
+and menisci, facial muscles. Nothing is lit in their place: they are listed in the text
+section and named in a note under the body ("Not in the 3D model, so not lit: …"). An
+exercise whose main muscles are all in this list shows text only (see "When the button
 shows").
 
 ## Patient experience
@@ -119,9 +121,8 @@ shows").
   Front/Back/Left/Right buttons, horizontal drag to turn (a vertical swipe still scrolls
   the page on phones). Tapping any part names it, e.g. "Gluteus medius: side of your
   hip (main muscle)".
-- A legend under the body: "Main muscles" / "Helpers", plus any stand-in note, e.g.
-  "Approximate: multifidus isn't in the 3D model, so the small muscles beside it are
-  lit instead."
+- A legend under the body: "Main muscles" / "Helpers", plus a "not lit" note when a
+  muscle isn't in the model, e.g. "Not in the 3D model, so not lit: multifidus."
 
 ### When the button shows
 
@@ -129,8 +130,9 @@ The button renders only when all of these are true:
 
 1. The exercise has an anatomy entry that is visible (see Rollout: approved on prod,
    any draft on dev).
-2. Every main muscle can be drawn (in the model, in the add-on, or by a stand-in).
-   Face muscles cannot, so the 8 face exercises get no button.
+2. At least one main muscle is actually in the model or the add-on. Face muscles,
+   nerves and the other unmodelled muscles cannot be drawn, so the 8 face exercises (and
+   any other exercise whose main muscles are all unmodelled) get no button.
 3. The entry does not set `hide3D` (kept for clinical overrides, e.g. if Shivaliba
    prefers no 3D for a page).
 4. The browser can do 3D (`canUse3D()`: WebGL available, no Save-Data). This check
@@ -199,7 +201,7 @@ the shared copy: the four stage captions, the five tissue lines and the closing 
   Console before the sheet goes out; any newer top page replaces the lowest.
 - The review sheet goes in `docs/exercises-review/`, following the existing batch files.
   For each exercise it shows: the dev link, main muscles, helpers, how-it-helps text,
-  any stand-in note, the tissue line, and "Approve / Change: ____".
+  any "not lit" note, the tissue line, and "Approve / Change: ____".
 - The sheet also carries the shared copy (stage captions, tissue lines, closing line).
 - Her answers are applied as edits and `status: "approved"`. Later batches go by body
   area.
@@ -219,7 +221,6 @@ interface MuscleGroup {
   plain: string;        // "side of your hip"
   parts: RegExp[];      // matched against model part names, both sides
   source: "base" | "addon" | "none";
-  standIn?: { parts: RegExp[]; note: string };   // when source is "none"
   view: BodyView;       // best side to see it from
 }
 ```
@@ -329,7 +330,9 @@ healing copy.
 - Every dictionary group with source `base` matches at least one part on each side in
   `public/models/body-chart/manifest.json`.
 - Every `addon` group matches parts in the add-on manifest.
-- Every stand-in matches parts.
+- The exact part names every group lights are locked in
+  `tests/lib/exercise-anatomy/lit-parts.json`; the test recomputes them from the
+  manifests and fails on any difference (a group that isn't in a model lights nothing).
 - Every `EXERCISE_ANATOMY` key is a real exercise slug.
 - Every exercise has an entry (the drafts are complete).
 - Main has 1–3 items, helpers 0–4, no overlap, `howItHelps` at most 60 words, tissue is
@@ -360,7 +363,7 @@ against a master build. Only build hashes and inert script references may differ
 **Browser on dev, desktop and phone width:**
 
 - A knee, a shoulder, a back, a pelvic-floor (add-on) and a chin-tuck (add-on)
-  exercise, plus one stand-in page.
+  exercise, plus one page with a "not lit" note.
 - Page scroll works over the viewer on touch.
 - No console errors.
 - The illustration (the page's largest image) is unchanged and loads the same.
@@ -385,7 +388,8 @@ against a master build. Only build hashes and inert script references may differ
 - The model is one adult male body. Pregnancy, postnatal and children's exercises show
   the same body; the pelvic floor shape differs between sexes. Shivaliba reviews the
   pelvic-health pages with this in mind and can set `hide3D` on any of them.
-- Some muscles are approximate (the stand-ins listed above), and the legend says so.
+- Some muscles aren't in the model (listed above). They are never lit in place of
+  something else; the 3D view names them in a "not lit" note.
 - No ligaments, menisci or limb nerves; the text section carries that detail.
 - Drafts are Claude-written clinical content. None reaches prod without Shivaliba's
   approval.

@@ -24,6 +24,12 @@ describe("exercise anatomy entries", () => {
     expect(missing).toEqual([]);
   });
 
+  it("keeps exercises whose main muscles are all unmodelled text-only", () => {
+    for (const slug of ["median-nerve-glide", "sciatic-nerve-glide", "diastasis-safe-curl-up", "core-bracing-post-abdominal-surgery"]) {
+      expect(canShow3D(EXERCISE_ANATOMY[slug]), slug).toBe(false);
+    }
+  });
+
   it("keeps face exercises out of 3D", () => {
     for (const e of exercises.filter((x) => x.bodyPart === "Face")) {
       const entry = EXERCISE_ANATOMY[e.slug];

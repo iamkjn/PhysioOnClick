@@ -23,7 +23,7 @@ function sideProblem(names: readonly string[], patterns: readonly RegExp[]): str
 describe("muscle dictionary", () => {
   it("uses case-insensitive, stateless patterns", () => {
     for (const [key, m] of entries) {
-      for (const r of [...m.parts, ...(m.standIn?.parts ?? [])]) {
+      for (const r of m.parts) {
         expect(r.flags, key).toContain("i");
         expect(r.global || r.sticky, key).toBe(false);
       }
@@ -36,20 +36,14 @@ describe("muscle dictionary", () => {
     }
   });
 
-  it("gives a muscle that is not in the model no parts, and any stand-in real base parts", () => {
+  it("gives a muscle that is not in the model no parts", () => {
     for (const [key, m] of entries.filter(([, m]) => m.source === "none")) {
       expect(m.parts, key).toHaveLength(0);
-      if (m.standIn) {
-        expect(sideProblem(baseNames, m.standIn.parts), key).toBeNull();
-        expect(m.standIn.note, key).toMatch(/isn't in the 3D model|aren't in the 3D model/);
-      }
     }
   });
 
-  it("only gives stand-ins to muscles that are not in the model", () => {
-    for (const [key, m] of entries.filter(([, m]) => m.source !== "none")) {
-      expect(m.standIn, key).toBeUndefined();
-    }
+  it("has no stand-ins: a group lights only its own parts", () => {
+    for (const [key, m] of entries) expect(Object.keys(m).sort(), key).toEqual(["label", "parts", "plain", "source", "view"]);
   });
 
   it("writes labels capitalised and plain words lower-case with no full stop", () => {
@@ -63,7 +57,7 @@ describe("muscle dictionary", () => {
   it("keeps the face out of 3D (the model has no facial muscles)", () => {
     for (const key of ["frontalis", "orbicularis-oculi", "zygomaticus", "orbicularis-oris", "buccinator"] as MuscleKey[]) {
       expect(MUSCLES[key].source).toBe("none");
-      expect(MUSCLES[key].standIn).toBeUndefined();
+      expect(MUSCLES[key].parts).toHaveLength(0);
     }
   });
 });

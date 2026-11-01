@@ -15,10 +15,8 @@ export interface MuscleGroup {
   /** "side of your hip": shown as "Gluteus medius (side of your hip)" */
   plain: string;
   source: MuscleSource;
-  /** Matched against model part names (case-insensitive, never /g). Empty when source is "none". */
+  /** Matched against model part names (case-insensitive, never /g). Empty when source is "none": a group lights only its own parts. */
   parts: readonly RegExp[];
-  /** Nearest base-model parts, lit instead when the muscle itself is not in any model. */
-  standIn?: { parts: readonly RegExp[]; note: string };
   /** The side it is best seen from; the 3D view starts there. */
   view: BodyView;
 }

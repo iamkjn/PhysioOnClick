@@ -43,10 +43,14 @@ describe("healing copy", () => {
 });
 
 describe("canShow3D", () => {
-  it("allows muscles in the model, in the add-on or with a stand-in", () => {
+  it("allows muscles that are in the model or the add-on", () => {
     expect(canShow3D(entry())).toBe(true);
     expect(canShow3D(entry({ main: ["pelvic-floor"] }))).toBe(true);
-    expect(canShow3D(entry({ main: ["multifidus"] }))).toBe(true);
+  });
+
+  it("needs at least one main muscle that is actually in the model", () => {
+    expect(canShow3D(entry({ main: ["multifidus"] }))).toBe(false);
+    expect(canShow3D(entry({ main: ["erector-spinae", "multifidus"] }))).toBe(true);
   });
 
   it("refuses face muscles and clinical overrides", () => {

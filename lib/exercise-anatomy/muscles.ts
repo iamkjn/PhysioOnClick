@@ -1,11 +1,15 @@
 // lib/exercise-anatomy/muscles.ts
 // Muscle dictionary for the exercise pages: plain-English names plus the model
 // part names each one lights up (base = public/models/body-chart, addon =
-// public/models/exercise-anatomy). The base groups and stand-ins are checked
-// against the committed manifest in tests/lib/exercise-anatomy/muscles.test.ts,
-// and the add-on groups against theirs in
-// tests/lib/exercise-anatomy/addon-model.test.ts (which also checks that no
-// base group lights an add-on part), so a typo fails a test, not the page.
+// public/models/exercise-anatomy). Exact match only: a group lights its own
+// parts and nothing else. A group that is not in any model has source "none"
+// and lights nothing; the 3D view names it in a "not lit" note instead. The
+// base groups are checked against the committed manifest in
+// tests/lib/exercise-anatomy/muscles.test.ts, the add-on groups against theirs
+// in tests/lib/exercise-anatomy/addon-model.test.ts (which also checks that no
+// base group lights an add-on part), and the exact part names every group
+// lights are locked in tests/lib/exercise-anatomy/lit-parts.json, so a typo or
+// a loosened pattern fails a test, not the page.
 // Pure data with no exercise entries: safe for client bundles.
 
 import type { MuscleGroup } from "@/lib/exercise-anatomy/types";
@@ -35,7 +39,6 @@ const MUSCLE_TABLE = {
     plain: "the tendon just below your kneecap",
     source: "none",
     parts: [],
-    standIn: { parts: [/patella/i], note: "The patellar tendon isn't in the 3D model, so the kneecap it attaches to is lit instead." },
     view: "front",
   },
 
@@ -78,10 +81,6 @@ const MUSCLE_TABLE = {
     plain: "the broad muscle across your back and side",
     source: "none",
     parts: [],
-    standIn: {
-      parts: [/teres major|serratus posterior inferior/i],
-      note: "Latissimus dorsi isn't in the 3D model, so the muscles lying just under it are lit instead.",
-    },
     view: "back",
   },
   "pectoralis-major": { label: "Pectoralis major", plain: "your chest muscle", source: "base", parts: [/pectoralis major/i], view: "front" },
@@ -93,32 +92,28 @@ const MUSCLE_TABLE = {
   "lower-trapezius": { label: "Lower trapezius", plain: "middle of your back, below your shoulder blades", source: "base", parts: [/ascending part of (right|left) trapezius/i], view: "back" },
   "levator-scapulae": { label: "Levator scapulae", plain: "side and back of your neck", source: "base", parts: [/levator scapulae/i], view: "back" },
   "shoulder-joint": {
-    label: "Shoulder joint",
-    plain: "the ball and socket where your upper arm bone meets your shoulder blade",
-    source: "none",
-    parts: [],
-    standIn: {
-      parts: [/^(right|left) (humerus|scapula)$/i],
-      note: "The shoulder joint itself isn't in the 3D model, so the upper arm bone and shoulder blade that form it are lit instead.",
-    },
+    label: "Shoulder joint bones",
+    plain: "your upper arm bone and shoulder blade, which meet at the shoulder joint",
+    source: "base",
+    parts: [/^(right|left) (humerus|scapula)$/i],
     view: "right",
   },
   "biceps-brachii": { label: "Biceps", plain: "front of your upper arm", source: "base", parts: [/biceps brachii/i], view: "front" },
   brachialis: { label: "Brachialis", plain: "deep front of your upper arm", source: "base", parts: [/\bbrachialis\b/i], view: "front" },
   brachioradialis: { label: "Brachioradialis", plain: "thumb side of your forearm, helping bend your elbow", source: "base", parts: [/brachioradialis/i], view: "front" },
-  triceps: { label: "Triceps", plain: "back of your upper arm", source: "base", parts: [/triceps brachii|anconeus/i], view: "back" },
+  triceps: { label: "Triceps", plain: "back of your upper arm", source: "base", parts: [/triceps brachii/i], view: "back" },
   "wrist-extensors": { label: "Wrist extensors", plain: "top of your forearm, bending your wrist back", source: "base", parts: [/extensor carpi (radialis longus|radialis brevis|ulnaris)/i], view: "back" },
   "finger-extensors": {
     label: "Finger and thumb extensors",
     plain: "top of your forearm and back of your hand, straightening your fingers and thumb",
     source: "base",
-    parts: [/extensor digitorum$|extensor indicis|extensor digiti minimi|extensor pollicis (longus|brevis)|abductor pollicis longus/i],
+    parts: [/extensor digitorum$|extensor indicis|extensor digiti minimi|extensor pollicis (longus|brevis)/i],
     view: "back",
   },
   "wrist-flexors": { label: "Wrist flexors", plain: "inside of your forearm, bending your wrist towards your palm", source: "base", parts: [/flexor carpi (radialis|ulnaris)|palmaris longus/i], view: "front" },
   "finger-flexors": {
-    label: "Finger flexors",
-    plain: "inside of your forearm, bending your fingers",
+    label: "Finger and thumb flexors",
+    plain: "inside of your forearm, bending your fingers and thumb",
     source: "base",
     parts: [/flexor digitorum (superficialis|profundus)|flexor pollicis longus/i],
     view: "front",
@@ -147,16 +142,12 @@ const MUSCLE_TABLE = {
     view: "front",
   },
 
-  // Nerves and brain (not in the model: stand-ins, or text only for the brain)
+  // Nerves and brain (not in any model: text only, nothing is lit)
   "median-nerve": {
     label: "Median nerve",
     plain: "the nerve running down the inside of your arm to your hand",
     source: "none",
     parts: [],
-    standIn: {
-      parts: [/flexor digitorum superficialis|flexor carpi radialis|pronator teres|palmaris longus/i],
-      note: "Nerves aren't in the 3D model. The median nerve runs between these forearm muscles, so they are lit instead.",
-    },
     view: "front",
   },
   "sciatic-nerve": {
@@ -164,10 +155,6 @@ const MUSCLE_TABLE = {
     plain: "the nerve running from your lower back down the back of your leg",
     source: "none",
     parts: [],
-    standIn: {
-      parts: [/piriformis|biceps femoris|semitendinosus|semimembranosus/i],
-      note: "Nerves aren't in the 3D model. The sciatic nerve runs past piriformis and down between the hamstrings, so they are lit instead.",
-    },
     view: "back",
   },
   "nervous-system": {
@@ -180,16 +167,18 @@ const MUSCLE_TABLE = {
   brain: { label: "Brain", plain: "the parts of your brain that plan your movements and share your attention", source: "none", parts: [], view: "front" },
 
   // Spine and trunk
-  "erector-spinae": { label: "Erector spinae", plain: "the long muscles either side of your spine", source: "base", parts: [/iliocostalis|longissimus|\bspinalis\b/i], view: "back" },
+  "erector-spinae": {
+    label: "Erector spinae",
+    plain: "the long muscles either side of your mid and lower back",
+    source: "base",
+    parts: [/iliocostalis (lumborum|thoracis)|longissimus thoracis|\bspinalis thoracis/i],
+    view: "back",
+  },
   multifidus: {
     label: "Multifidus",
     plain: "small deep muscles that steady each joint of your lower back",
     source: "none",
     parts: [],
-    standIn: {
-      parts: [/lumbar rotator|interspinales lumborum|lumbar intertransversarius/i],
-      note: "Multifidus isn't in the 3D model, so the small deep muscles beside it on your lower spine are lit instead.",
-    },
     view: "back",
   },
   "quadratus-lumborum": {
@@ -197,10 +186,6 @@ const MUSCLE_TABLE = {
     plain: "deep muscle between your lowest rib and your pelvis",
     source: "none",
     parts: [],
-    standIn: {
-      parts: [/lateral lumbar intertransversarius|iliocostalis lumborum/i],
-      note: "Quadratus lumborum isn't in the 3D model, so the muscles next to it are lit instead.",
-    },
     view: "back",
   },
   "rectus-abdominis": {
@@ -208,10 +193,6 @@ const MUSCLE_TABLE = {
     plain: "the long muscle down the front of your tummy",
     source: "none",
     parts: [],
-    standIn: {
-      parts: [/linea alba|external oblique/i],
-      note: "Rectus abdominis isn't in the 3D model, so the tummy muscle beside it and the band down its middle are lit instead.",
-    },
     view: "front",
   },
   "transversus-abdominis": {
@@ -219,14 +200,16 @@ const MUSCLE_TABLE = {
     plain: "the deepest tummy muscle, wrapping round like a corset",
     source: "none",
     parts: [],
-    standIn: {
-      parts: [/linea alba|external oblique/i],
-      note: "Transversus abdominis isn't in the 3D model, so the tummy muscles over it are lit instead.",
-    },
     view: "front",
   },
   "external-oblique": { label: "External oblique", plain: "side of your tummy", source: "base", parts: [/external oblique/i], view: "right" },
-  intercostals: { label: "Intercostals", plain: "small muscles between your ribs", source: "base", parts: [/external intercostal/i], view: "right" },
+  intercostals: {
+    label: "External intercostals",
+    plain: "small muscles between your ribs that lift them as you breathe in",
+    source: "base",
+    parts: [/external intercostal/i],
+    view: "right",
+  },
   diaphragm: { label: "Diaphragm", plain: "the dome-shaped breathing muscle under your ribs", source: "addon", parts: [/\bdiaphragm\b/i], view: "front" },
   "pelvic-floor": {
     label: "Pelvic floor muscles",
@@ -258,7 +241,7 @@ const MUSCLE_TABLE = {
     label: "Deep neck flexors",
     plain: "deep muscles at the front of your neck",
     source: "addon",
-    parts: [/longus colli|longus capitis|rectus capitis (anterior|lateralis)/i],
+    parts: [/longus colli|longus capitis|rectus capitis anterior/i],
     view: "right",
   },
   "neck-extensors": {
@@ -287,5 +270,5 @@ const MUSCLE_TABLE = {
 
 export type MuscleKey = keyof typeof MUSCLE_TABLE;
 
-/** Widened so every entry reads as a MuscleGroup (optional standIn included). */
+/** Widened so every entry reads as a MuscleGroup. */
 export const MUSCLES: Readonly<Record<MuscleKey, MuscleGroup>> = MUSCLE_TABLE;

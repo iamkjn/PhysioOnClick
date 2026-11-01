@@ -29,10 +29,9 @@ export function visibleAnatomy(slug: string): ExerciseAnatomy | null {
   return entry && isVisible(entry) ? entry : null;
 }
 
-/** Every main muscle must be drawable: in a model, or lit by a stand-in. */
+/** The 3D button shows when at least one main muscle is actually in a model (nothing else is ever lit for it). */
 export function canShow3D(entry: ExerciseAnatomy): boolean {
-  if (entry.hide3D) return false;
-  return entry.main.every((key) => MUSCLES[key].source !== "none" || MUSCLES[key].standIn !== undefined);
+  return !entry.hide3D && entry.main.some((key) => MUSCLES[key].source !== "none");
 }
 
 export function startView(entry: ExerciseAnatomy): BodyView {

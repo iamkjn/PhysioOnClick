@@ -35,16 +35,27 @@ beforeEach(() => {
 afterEach(() => vi.clearAllMocks());
 
 describe("ExerciseBody3D", () => {
-  it("loads, then shows the controls, legend and stand-in note", async () => {
-    render(<ExerciseBody3D title="Bird Dog" main={["multifidus"]} helpers={["gluteus-maximus"]} view="back" onError={vi.fn()} />);
+  it("loads, then shows the controls, legend and not-lit note", async () => {
+    render(<ExerciseBody3D title="Bird Dog" main={["erector-spinae", "multifidus"]} helpers={["gluteus-maximus"]} view="back" onError={vi.fn()} />);
     expect(screen.getByText("Loading the 3D body…")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole("button", { name: "Back view" })).toBeEnabled());
     expect(screen.getByText("Main focus")).toBeInTheDocument();
     expect(screen.getByText("Helpers")).toBeInTheDocument();
-    expect(screen.getByText(/Multifidus isn't in the 3D model/)).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: /Multifidus as the main focus/ })).toBeInTheDocument();
+    expect(screen.getByText("Not in the 3D model, so not lit: multifidus.")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /Erector spinae and Multifidus as the main focus/ })).toBeInTheDocument();
     expect(created.sources).toBe(1);
     expect(loadAnatomyAddon).not.toHaveBeenCalled();
+  });
+
+  it("names the muscle that is not lit, and shows no note when every muscle is in the model", async () => {
+    const { unmount } = render(<ExerciseBody3D title="Dead Bug" main={["rectus-abdominis", "external-oblique"]} helpers={[]} view="front" onError={vi.fn()} />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Back view" })).toBeEnabled());
+    expect(screen.getByText("Not in the 3D model, so not lit: rectus abdominis.")).toBeInTheDocument();
+    unmount();
+
+    render(<ExerciseBody3D title="Clam" main={["gluteus-medius"]} helpers={[]} view="right" onError={vi.fn()} />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Back view" })).toBeEnabled());
+    expect(screen.queryByText(/Not in the 3D model/)).not.toBeInTheDocument();
   });
 
   it("keeps the corner button outside the image role", async () => {
