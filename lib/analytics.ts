@@ -111,7 +111,9 @@ export type LibraryEvent =
   | "library_selftest_cta_click"
   | "library_area_view"
   | "library_embed_copy"
-  | "library_3d_view";
+  | "library_3d_view"
+  | "library_3d_picker_open"
+  | "library_3d_picker_area_click";
 
 /**
  * Fire a public exercise-library analytics event. Thin typed wrapper over

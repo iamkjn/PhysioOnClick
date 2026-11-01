@@ -13742,6 +13742,176 @@ textarea:focus {
   }
 }
 
+/* Opt-in 3D "tap where it hurts" picker (.exlib-bodymap-3d*), a client island
+   between the heading and the cards. Reuses booking's 3D chart; the stage is
+   resized here so it sits wide and shorter than the booking step. */
+
+.exlib-bodymap-3d {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.exlib-bodymap-3d__bar {
+  display: flex;
+  justify-content: center;
+}
+
+.exlib-bodymap-3d__toggle {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 1.15rem;
+  border: 1.5px solid var(--color-primary-dark);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+.exlib-bodymap-3d__toggle:hover {
+  transform: translateY(-1px);
+  background: var(--color-primary-light);
+  box-shadow: 0 8px 20px rgba(22, 34, 50, 0.08);
+}
+
+.exlib-bodymap-3d__toggle:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.exlib-bodymap-3d__toggle[aria-expanded="true"] {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: #fff;
+}
+
+.exlib-bodymap-3d__note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+.exlib-bodymap-3d__note:empty {
+  display: none;
+}
+
+.exlib-bodymap-3d__panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+  gap: var(--space-5);
+  align-items: start;
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.exlib-bodymap-3d__chart {
+  min-width: 0;
+}
+
+.exlib-bodymap-3d .body-chart-3d__stage {
+  max-width: none;
+  aspect-ratio: auto;
+  height: 420px;
+}
+
+.exlib-bodymap-3d__result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.exlib-bodymap-3d__region {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  line-height: 1.2;
+  color: var(--color-navy);
+}
+
+.exlib-bodymap-3d__prompt,
+.exlib-bodymap-3d__fallback {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  line-height: 1.55;
+}
+
+.exlib-bodymap-3d__fallback a {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.exlib-bodymap-3d__links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exlib-bodymap-3d__link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.6rem 0.95rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  background: var(--color-bg);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.exlib-bodymap-3d__link::after {
+  content: "\2192";
+  margin-left: auto;
+  padding-left: var(--space-3);
+}
+
+.exlib-bodymap-3d__link:hover,
+.exlib-bodymap-3d__link:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 8px 20px rgba(22, 34, 50, 0.08);
+}
+
+@media (max-width: 760px) {
+  .exlib-bodymap-3d__panel {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    padding: var(--space-3);
+  }
+
+  .exlib-bodymap-3d .body-chart-3d__stage {
+    height: 360px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exlib-bodymap-3d__toggle,
+  .exlib-bodymap-3d__link {
+    transition: none;
+  }
+
+  .exlib-bodymap-3d__toggle:hover,
+  .exlib-bodymap-3d__link:hover,
+  .exlib-bodymap-3d__link:focus-visible {
+    transform: none;
+  }
+}
+
 /* "Using these exercises safely" shared guidance note.
    Rendered across the exercise library: `full` on the index + body-area pages,
    `compact` on exercise + condition-hub pages. Clarity "note" styling: a

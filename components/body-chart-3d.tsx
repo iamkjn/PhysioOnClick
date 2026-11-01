@@ -277,17 +277,23 @@ function createStage(
   }
 }
 
-interface Props {
+export interface BodyChart3DProps {
   value: string[];
   onChange: (next: string[]) => void;
   onReady?: () => void;
   onError?: () => void;
+  /**
+   * One area at a time (the exercise library's "Where does it hurt?" picker):
+   * a tap replaces the selection instead of toggling it, and the chips list
+   * and booking hint are left out because the caller shows its own result.
+   */
+  single?: boolean;
 }
 
-export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
+export function BodyChart3D({ value, onChange, onReady, onError, single = false }: BodyChart3DProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<Stage | null>(null);
-  const latest = useRef({ value, onChange, onReady, onError });
+  const latest = useRef({ value, onChange, onReady, onError, single });
   const [regions, setRegions] = useState<string[] | null>(null);
   const [progress, setProgress] = useState(0);
   const [view, setView] = useState<View | null>("front");
@@ -296,7 +302,7 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
   const [announce, setAnnounce] = useState("");
 
   useEffect(() => {
-    latest.current = { value, onChange, onReady, onError };
+    latest.current = { value, onChange, onReady, onError, single };
   });
 
   useEffect(() => onBodyModelProgress((loaded, total) => setProgress(total ? loaded / total : 0)), []);
@@ -316,7 +322,7 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
         stage = createStage(THREE, OrbitControls, host, model, {
           onTap(hit) {
             const key = model.manifest.regions[hit.region];
-            const next = toggleRegion(latest.current.value, key);
+            const next = latest.current.single ? [key] : toggleRegion(latest.current.value, key);
             latest.current.onChange(next);
             setTip(next.includes(key) ? hit : null);
             setAnnounce(`${regionLabel(key)} ${next.includes(key) ? "selected" : "removed"}`);
@@ -409,7 +415,9 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
         ) : null}
       </div>
 
-      <p className="body-chart-3d__hint">Drag sideways to spin the body all the way round. Tap where you feel it.</p>
+      {single ? null : (
+        <p className="body-chart-3d__hint">Drag sideways to spin the body all the way round. Tap where you feel it.</p>
+      )}
 
       {shown && regions ? (
         <div className="body-chart__tooltip">
@@ -421,7 +429,7 @@ export function BodyChart3D({ value, onChange, onReady, onError }: Props) {
         {announce}
       </p>
 
-      <BodyChartSelection value={value} onToggle={(key) => onChange(toggleRegion(value, key))} />
+      {single ? null : <BodyChartSelection value={value} onToggle={(key) => onChange(toggleRegion(value, key))} />}
 
       <p className="body-chart-3d__credit">
         Anatomy adapted from BodyParts3D © DBCLS,{" "}
