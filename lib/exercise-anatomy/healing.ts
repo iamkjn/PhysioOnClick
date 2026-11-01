@@ -29,7 +29,7 @@ export const TISSUE_LINES: Record<TissueTrack, string> = {
     "Pelvic floor: like any muscle, your pelvic floor can get stronger with regular practice. It can take a few months to notice a difference, so keep going as your physio advises.",
 };
 
-export const HEALING_CLOSING = "Everyone heals at their own pace. Your physio will tell you when to move on.";
+export const HEALING_CLOSING = "Everyone progresses at their own pace. Your physio will tell you when to move on.";
 
 export function healingCopyVisible(): boolean {
   return HEALING_COPY_STATUS === "approved" || draftsVisible();

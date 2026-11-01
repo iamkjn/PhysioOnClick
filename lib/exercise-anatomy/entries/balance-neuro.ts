@@ -43,7 +43,7 @@ export const BALANCE_NEURO: Record<string, ExerciseAnatomy> = {
     main: ["gluteus-medius", "soleus", "tibialis-anterior"],
     helpers: ["gastrocnemius", "quadriceps"],
     howItHelps:
-      "Slowly moving your weight from side to side, then forwards and back, works the muscles at the sides of your hips and around your ankles that control how far you can lean and still come back to the middle. Getting used to taking weight evenly through each leg can help you feel more confident standing, stepping and reaching.",
+      "Slowly moving your weight from side to side, then forwards and back, works the muscles at the sides of your hips and around your ankles that control how far you can lean. With a worktop or sturdy chair to hold, getting used to taking weight evenly through each leg can help you feel more confident standing and stepping.",
     tissue: "nerve-brain",
     status: "draft",
   },
@@ -120,17 +120,17 @@ export const BALANCE_NEURO: Record<string, ExerciseAnatomy> = {
     status: "draft",
   },
   "turning-practice": {
-    main: ["gluteus-medius", "deep-hip-rotators"],
-    helpers: [],
+    main: ["gluteus-medius"],
+    helpers: ["deep-hip-rotators"],
     howItHelps:
-      "Turning in a curve with several small steps keeps your weight moving from foot to foot, working the muscles at the side and back of your hips that steady and turn your pelvis. Practising slow, controlled turns, with your eyes leading, can help you feel steadier when you change direction, such as turning round in the kitchen, bathroom or hallway.",
+      "Turning in a curve with several small steps keeps your weight moving from foot to foot, working the muscles at the side and back of your hips that steady and turn your pelvis. With a wall or worktop within reach, slow turns with your eyes leading can help you feel steadier when you change direction in the kitchen or hallway.",
     status: "draft",
   },
   "dual-task-walking": {
     main: ["gluteus-medius", "quadriceps", "gastrocnemius"],
     helpers: [],
     howItHelps:
-      "Walking works the muscles of your hips, thighs and calves, and adding a simple thinking task trains your brain to keep your walking steady while your attention is elsewhere. On a familiar route, this can help you feel more confident when you walk and think at once, such as chatting with a friend or finding your way round a shop.",
+      "Walking works the muscles of your hips, thighs and calves, and adding a simple thinking task trains your brain to keep your walking steady while your attention is elsewhere. With someone beside you or a wall alongside at first, this can help you feel more confident when you walk and think at once, such as chatting with a friend.",
     status: "draft",
   },
   "uneven-surface-walking": {
@@ -187,7 +187,6 @@ export const BALANCE_NEURO: Record<string, ExerciseAnatomy> = {
     helpers: ["iliopsoas", "erector-spinae"],
     howItHelps:
       "Huge arm reaches and long steps work the muscles of your shoulders, hips and thighs through their fullest range, while standing tall works the muscles along your spine. With Parkinson's, movements can become smaller without you noticing. Practising movements that feel bigger than they need to be can help your everyday steps and reaches become larger and more confident.",
-    tissue: "nerve-brain",
     status: "draft",
   },
   "rhythmic-stepping-to-a-beat": {
@@ -195,7 +194,6 @@ export const BALANCE_NEURO: Record<string, ExerciseAnatomy> = {
     helpers: ["rectus-femoris"],
     howItHelps:
       "Stepping in time to a beat works the deep hip flexors that lift your knees and the shin muscles that lift your toes, so each foot clears the floor and lands heel first. For many people with Parkinson's, a steady rhythm helps keep steps even, and restarting the beat can help you get going again if your feet freeze.",
-    tissue: "nerve-brain",
     status: "draft",
   },
   "multiple-sclerosis-fatigue-paced-circuit": {
@@ -210,7 +208,6 @@ export const BALANCE_NEURO: Record<string, ExerciseAnatomy> = {
     helpers: ["front-deltoid"],
     howItHelps:
       "Bending your elbow to bring your finger to your nose, then straightening it to reach the target, works the muscles at the front and back of your upper arm in turn. Slow, smooth practice, with your eyes guiding your finger, can help your brain fine-tune these movements, which may make everyday tasks such as eating and drinking feel more controlled.",
-    tissue: "nerve-brain",
     status: "draft",
   },
   "heel-shin-slide-coordination": {
@@ -218,7 +215,6 @@ export const BALANCE_NEURO: Record<string, ExerciseAnatomy> = {
     helpers: ["iliopsoas", "adductors"],
     howItHelps:
       "Sliding your heel slowly down and back up your other shin works the muscles at the back and front of your thigh in turn, while your hip holds the leg steady. Keeping your heel on a straight track gives your brain practice at guiding your leg, which may help you place your feet more accurately as you walk.",
-    tissue: "nerve-brain",
     view: "right",
     status: "draft",
   },

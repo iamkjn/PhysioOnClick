@@ -174,7 +174,7 @@ const MUSCLE_TABLE = {
     parts: [],
     view: "front",
   },
-  brain: { label: "Brain", plain: "the parts of your brain that plan and control your movements", source: "none", parts: [], view: "front" },
+  brain: { label: "Brain", plain: "the parts of your brain that plan your movements and share your attention", source: "none", parts: [], view: "front" },
 
   // Spine and trunk
   "erector-spinae": { label: "Erector spinae", plain: "the long muscles either side of your spine", source: "base", parts: [/iliocostalis|longissimus|\bspinalis\b/i], view: "back" },
