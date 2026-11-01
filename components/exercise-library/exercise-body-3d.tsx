@@ -33,10 +33,12 @@ export interface ExerciseBody3DProps {
   view: BodyView;
   /** Rendered inside the stage's corner (the "Back to picture" button). */
   corner?: ReactNode;
+  /** Rendered directly under the stage (the library preview's "Picture view" button). */
+  afterStage?: ReactNode;
   onError(): void;
 }
 
-export function ExerciseBody3D({ title, main, helpers, view: startView, corner, onError }: ExerciseBody3DProps) {
+export function ExerciseBody3D({ title, main, helpers, view: startView, corner, afterStage, onError }: ExerciseBody3DProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<AnatomyStage | null>(null);
   const onErrorRef = useRef(onError);
@@ -121,6 +123,7 @@ export function ExerciseBody3D({ title, main, helpers, view: startView, corner, 
         ) : null}
         {corner}
       </div>
+      {afterStage}
 
       <div className="exercise-body-3d__controls">
         <div className="body-chart__views" role="group" aria-label="Body view">

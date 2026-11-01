@@ -17225,6 +17225,18 @@ textarea:focus {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
+/* Library preview: the switch sits under the picture/stage, not on it. */
+.exlib-hero-media__toggle--below {
+  position: static;
+  display: flex;
+  width: fit-content;
+  margin: var(--space-3) auto 0;
+  box-shadow: none;
+}
+/* Inside the viewer the column gap already spaces it. */
+.exercise-body-3d > .exlib-hero-media__toggle--below {
+  margin-top: 0;
+}
 .exlib-hero-media__note {
   margin: 0;
   color: var(--color-text-secondary);

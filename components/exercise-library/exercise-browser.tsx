@@ -4,9 +4,19 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import { ExerciseImage } from "@/components/exercise-image";
+import { ExerciseHeroMedia } from "@/components/exercise-library/exercise-hero-media";
 import { ReferenceOnlyBadge, ReferenceOnlyNote } from "@/components/exercise-library/reference-only-label";
 import type { Exercise } from "@/lib/exercise-library";
+import type { MuscleKey } from "@/lib/exercise-anatomy/muscles";
+import type { BodyView } from "@/lib/exercise-anatomy/types";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
+
+/** What the preview needs for its "See in 3D" switch, decided server-side. */
+export type BrowserAnatomy = {
+  main: MuscleKey[];
+  helpers: MuscleKey[];
+  view: BodyView;
+};
 
 type BrowserExercise = Pick<
   Exercise,
@@ -37,6 +47,9 @@ type ExerciseBrowserProps = {
   // CPU-time limit in production. Doing the same ranking here, once, only
   // for `selected`, keeps the cost O(n) per view instead of O(n^2) per load.
   conditionSlugsBySlug: Record<string, string[]>;
+  // Exercises whose preview offers the 3D muscle view (same rule as the
+  // exercise page). Absent slugs show the picture only.
+  anatomyBySlug?: Record<string, BrowserAnatomy>;
 };
 
 const RELATED_LIMIT = 3;
@@ -75,7 +88,7 @@ function trackExerciseClick(exercise: BrowserExercise, source: string) {
   });
 }
 
-export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBrowserProps) {
+export function ExerciseBrowser({ exercises, conditionSlugsBySlug, anatomyBySlug = {} }: ExerciseBrowserProps) {
   const [query, setQuery] = useState("");
   const [area, setArea] = useState("All");
   const [selectedSlug, setSelectedSlug] = useState(exercises[0]?.slug ?? "");
@@ -128,8 +141,21 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
   }, [conditionSlugsBySlug, exercises, selected]);
 
   const previewSteps = selected ? firstUsefulSteps(selected) : [];
+  const anatomy = selected && Object.hasOwn(anatomyBySlug, selected.slug) ? anatomyBySlug[selected.slug] : null;
 
   if (!selected) return null;
+
+  const previewImage = (
+    <ExerciseImage
+      exerciseId={selected.id}
+      name={selected.title}
+      pose={selected.pose}
+      size={560}
+      className="exlib-browser__main-image"
+      variant="full"
+      decorative={false}
+    />
+  );
 
   return (
     <section className="exlib-browser" id="exercise-browser" aria-labelledby="exercise-browser-title">
@@ -213,15 +239,22 @@ export function ExerciseBrowser({ exercises, conditionSlugsBySlug }: ExerciseBro
 
         <article className="exlib-browser__detail">
           <div className="exlib-browser__media">
-            <ExerciseImage
-              exerciseId={selected.id}
-              name={selected.title}
-              pose={selected.pose}
-              size={560}
-              className="exlib-browser__main-image"
-              variant="full"
-              decorative={false}
-            />
+            {anatomy ? (
+              // Keyed by slug: choosing another exercise starts back on its picture.
+              <ExerciseHeroMedia
+                key={selected.slug}
+                slug={selected.slug}
+                title={selected.title}
+                main={anatomy.main}
+                helpers={anatomy.helpers}
+                view={anatomy.view}
+                togglePlacement="below"
+              >
+                {previewImage}
+              </ExerciseHeroMedia>
+            ) : (
+              previewImage
+            )}
           </div>
           <div className="exlib-browser__copy">
             <div className="exlib-browser__chips" aria-label="Exercise details">

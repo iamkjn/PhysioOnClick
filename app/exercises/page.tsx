@@ -13,10 +13,14 @@ import {
   getSelfTest,
   programForCondition,
 } from "@/lib/exercise-library";
+import { canShow3D, startView, visibleAnatomy } from "@/lib/exercise-anatomy";
 import { breadcrumbs } from "@/lib/structured-data";
 import { BodyMap } from "@/components/exercise-library/body-map";
 import { ConditionCard } from "@/components/exercise-library/condition-card";
-import { ExerciseBrowser } from "@/components/exercise-library/exercise-browser";
+import {
+  ExerciseBrowser,
+  type BrowserAnatomy,
+} from "@/components/exercise-library/exercise-browser";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
 import { SavedPlanList } from "@/components/exercise-library/saved-plan-list";
@@ -87,6 +91,21 @@ export default function ExerciseLibraryIndexPage() {
       conditionsForExercise(exercise.slug).map((condition) => condition.slug),
     ]),
   );
+  // The 3D muscle view for the browser preview, decided here on the server
+  // exactly as the exercise page decides it (visibleAnatomy keeps the
+  // drafts gating identical), so the anatomy entries stay out of the client
+  // bundle: the browser only gets slug -> muscles + start view.
+  const anatomyBySlug: Record<string, BrowserAnatomy> = {};
+  for (const exercise of browserExercises) {
+    const anatomy = visibleAnatomy(exercise.slug);
+    if (anatomy && canShow3D(anatomy)) {
+      anatomyBySlug[exercise.slug] = {
+        main: anatomy.main,
+        helpers: anatomy.helpers,
+        view: startView(anatomy),
+      };
+    }
+  }
   // Plain-link index of every exercise, grouped by body area: gives each
   // exercise page a crawl path from this frequently-crawled hub.
   const exercisesByArea = BODY_AREAS.map((area) => ({
@@ -151,6 +170,7 @@ export default function ExerciseLibraryIndexPage() {
         <ExerciseBrowser
           exercises={browserExercises}
           conditionSlugsBySlug={conditionSlugsBySlug}
+          anatomyBySlug={anatomyBySlug}
         />
       </section>
 

@@ -6,6 +6,9 @@
 // reloads. The 3D viewer, three.js and the model download only after a tap
 // (warmed on mouse hover/focus). Browsers without WebGL, or with Save-Data on, never
 // see the switch; server HTML never has it.
+// `togglePlacement="below"` (the /exercises browser preview) puts the switch
+// under the picture/stage instead of in its corner, labelled "See in 3D" /
+// "Picture view"; the default corner placement is the exercise page's.
 
 import { useCallback, useRef, useState, useSyncExternalStore, type ComponentType, type PointerEvent, type ReactNode } from "react";
 import type { ExerciseBody3DProps } from "@/components/exercise-library/exercise-body-3d";
@@ -24,10 +27,17 @@ interface Props {
   main: MuscleKey[];
   helpers: MuscleKey[];
   view: BodyView;
+  togglePlacement?: "corner" | "below";
   children: ReactNode;
 }
 
-export function ExerciseHeroMedia({ slug, title, main, helpers, view, children }: Props) {
+const LABELS = {
+  corner: { show: "View in 3D", hide: "Back to picture" },
+  below: { show: "See in 3D", hide: "Picture view" },
+} as const;
+
+export function ExerciseHeroMedia({ slug, title, main, helpers, view, togglePlacement = "corner", children }: Props) {
+  const below = togglePlacement === "below";
   const supported = useSyncExternalStore(noSubscribe, canUse3D, noSupportOnServer);
   const [open, setOpen] = useState(false);
   const [Viewer, setViewer] = useState<ComponentType<ExerciseBody3DProps> | null>(null);
@@ -81,12 +91,12 @@ export function ExerciseHeroMedia({ slug, title, main, helpers, view, children }
     <button
       ref={toggleRef}
       type="button"
-      className="exlib-hero-media__toggle"
+      className={below ? "exlib-hero-media__toggle exlib-hero-media__toggle--below" : "exlib-hero-media__toggle"}
       onClick={open ? hide : show}
       onPointerEnter={open || failed ? undefined : warmOnHover}
       onFocus={open || failed ? undefined : warm}
     >
-      {open ? "Back to picture" : "View in 3D"}
+      {open ? LABELS[togglePlacement].hide : LABELS[togglePlacement].show}
     </button>
   ) : null;
 
@@ -95,15 +105,26 @@ export function ExerciseHeroMedia({ slug, title, main, helpers, view, children }
       <div className="exlib-hero-media__frame">
         <div hidden={open}>{children}</div>
         {!open ? toggle : null}
-        {open && Viewer ? <Viewer title={title} main={main} helpers={helpers} view={view} corner={toggle} onError={fail} /> : null}
+        {open && Viewer ? (
+          <Viewer
+            title={title}
+            main={main}
+            helpers={helpers}
+            view={view}
+            corner={below ? null : toggle}
+            afterStage={below ? toggle : null}
+            onError={fail}
+          />
+        ) : null}
         {open && !Viewer ? (
           <div className="exercise-body-3d__stage">
             <div className="body-chart-3d__loading">
               <span>Loading the 3D body…</span>
             </div>
-            {toggle}
+            {below ? null : toggle}
           </div>
         ) : null}
+        {open && !Viewer && below ? toggle : null}
       </div>
       {/* Always mounted, so filling it is announced; empty, it takes no space. */}
       <p className="exlib-hero-media__note" role="status">
