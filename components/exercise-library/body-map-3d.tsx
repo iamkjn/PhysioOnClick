@@ -111,7 +111,7 @@ export function BodyMap3D() {
                           className="exlib-bodymap-3d__link"
                           onClick={() => trackLibraryEvent("library_3d_picker_area_click", area.key)}
                         >
-                          See {area.label} exercises
+                          See {area.label.charAt(0).toLowerCase() + area.label.slice(1)} exercises
                         </Link>
                       </li>
                     ))}

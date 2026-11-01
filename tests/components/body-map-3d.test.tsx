@@ -73,7 +73,7 @@ describe("BodyMap3D", () => {
     await openPicker();
     fireEvent.click(screen.getByRole("button", { name: "tap knee-left" }));
     expect(screen.getByText("Left knee")).toBeInTheDocument();
-    const link = screen.getByRole("link", { name: "See Knee exercises" });
+    const link = screen.getByRole("link", { name: "See knee exercises" });
     expect(link).toHaveAttribute("href", "/exercises/area/knee");
     expect(screen.getByTestId("chart-value")).toHaveTextContent("knee-left");
     fireEvent.click(link);
@@ -89,8 +89,8 @@ describe("BodyMap3D", () => {
     expect(screen.queryByText("Left knee")).not.toBeInTheDocument();
     const links = screen.getAllByRole("link");
     expect(links.map((l) => [l.textContent, l.getAttribute("href")])).toEqual([
-      ["See Hip & groin exercises", "/exercises/area/hip"],
-      ["See Knee exercises", "/exercises/area/knee"],
+      ["See hip & groin exercises", "/exercises/area/hip"],
+      ["See knee exercises", "/exercises/area/knee"],
     ]);
   });
 
