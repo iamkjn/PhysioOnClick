@@ -30,9 +30,9 @@ describe("isVisible", () => {
 });
 
 describe("healing copy", () => {
-  it("follows the drafts flag while it is still a draft", () => {
+  it("shows the approved copy whether or not the drafts flag is on", () => {
     vi.stubEnv("NEXT_PUBLIC_EXERCISE_ANATOMY_DRAFTS", "");
-    expect(healingCopyVisible()).toBe(false);
+    expect(healingCopyVisible()).toBe(true);
     vi.stubEnv("NEXT_PUBLIC_EXERCISE_ANATOMY_DRAFTS", "1");
     expect(healingCopyVisible()).toBe(true);
   });

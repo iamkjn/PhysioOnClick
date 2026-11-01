@@ -70,7 +70,8 @@ describe("app/exercises/[slug] page", () => {
 
     expect(container).toHaveTextContent(exercise.setup!);
 
-    const orderedLists = container.querySelectorAll("ol");
+    // The anatomy section's recovery-stages strip is the page's other <ol>.
+    const orderedLists = container.querySelectorAll("ol:not(.exlib-anatomy__stages)");
     expect(orderedLists).toHaveLength(1);
     for (const step of exercise.steps!) {
       expect(orderedLists[0]).toHaveTextContent(step);

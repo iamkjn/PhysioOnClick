@@ -30,10 +30,10 @@ describe("ExerciseAnatomySection", () => {
     expect(screen.queryByRole("heading", { name: "Also working" })).not.toBeInTheDocument();
   });
 
-  it("hides the healing copy while it is a draft and the drafts flag is off", () => {
+  it("shows the approved healing copy with the drafts flag off", () => {
     vi.stubEnv("NEXT_PUBLIC_EXERCISE_ANATOMY_DRAFTS", "");
     const { container } = render(<ExerciseAnatomySection anatomy={entry} stage="Strength phase" />);
-    expect(container.querySelector("[data-healing]")).toBeNull();
+    expect(container.querySelector("[data-healing]")).not.toBeNull();
   });
 
   it("marks this exercise's stage and shows its tissue line when the copy is visible", () => {

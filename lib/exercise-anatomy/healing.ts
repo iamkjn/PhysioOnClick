@@ -6,7 +6,7 @@
 import { draftsVisible } from "@/lib/exercise-anatomy/drafts";
 import type { AnatomyStatus, TissueTrack } from "@/lib/exercise-anatomy/types";
 
-export const HEALING_COPY_STATUS: AnatomyStatus = "draft";
+export const HEALING_COPY_STATUS: AnatomyStatus = "approved";
 
 /** The catalogue's four recovery stages, in order. "Facial rehab" has no strip. */
 export const HEALING_STAGES = [
