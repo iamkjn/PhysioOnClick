@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { NO_REGION, readChunk, type BodyModelManifest } from "@/lib/body-model-format";
 import { ADDON_PART } from "@/lib/exercise-anatomy/addon-parts";
 import { MUSCLES, type MuscleKey } from "@/lib/exercise-anatomy/muscles";
+import { patternsFor } from "@/lib/exercise-anatomy/scene";
 
 const ROOT = path.join(process.cwd(), "public", "models");
 const read = (dir: string) => JSON.parse(fs.readFileSync(path.join(ROOT, dir, "manifest.json"), "utf8")) as BodyModelManifest;
@@ -52,6 +53,16 @@ describe("committed exercise-anatomy add-on model", () => {
     const keys = (Object.keys(MUSCLES) as MuscleKey[]).filter((k) => MUSCLES[k].source === "addon");
     expect(keys.length).toBeGreaterThan(0);
     for (const key of keys) expect(sideProblem(names, MUSCLES[key].parts), key).toBeNull();
+  });
+
+  it("never lights an add-on part for a base or stand-in muscle", () => {
+    const names = addon.parts.map((p) => p.name);
+    const keys = (Object.keys(MUSCLES) as MuscleKey[]).filter((k) => MUSCLES[k].source !== "addon");
+    expect(keys.length).toBeGreaterThan(0);
+    for (const key of keys) {
+      const stray = names.filter((n) => patternsFor(key).some((r) => r.test(n)));
+      expect(stray, key).toEqual([]);
+    }
   });
 
   it("leaves the booking model untouched", () => {

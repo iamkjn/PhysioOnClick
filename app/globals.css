@@ -17028,7 +17028,6 @@ textarea:focus {
 .exlib-hero-media {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
 }
 .exlib-hero-media__frame {
   position: relative;
@@ -17060,6 +17059,9 @@ textarea:focus {
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
+}
+.exlib-hero-media__note:not(:empty) {
+  margin-top: var(--space-3);
 }
 
 .exercise-body-3d {

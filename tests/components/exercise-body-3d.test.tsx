@@ -70,6 +70,19 @@ describe("ExerciseBody3D", () => {
     expect(screen.queryByText("Helpers")).not.toBeInTheDocument();
   });
 
+  it("links the add-on's licence details only when the add-on is in use", async () => {
+    const { unmount } = render(<ExerciseBody3D title="Kegel" main={["pelvic-floor"]} helpers={[]} view="front" onError={vi.fn()} />);
+    await waitFor(() => expect(created.sources).toBe(2));
+    expect(screen.getByRole("link", { name: "add-on details" })).toHaveAttribute("href", "/models/exercise-anatomy/ATTRIBUTION.md");
+    unmount();
+    created.sources = 0;
+
+    render(<ExerciseBody3D title="Clam" main={["gluteus-medius"]} helpers={[]} view="right" onError={vi.fn()} />);
+    await waitFor(() => expect(created.sources).toBe(1));
+    expect(screen.queryByRole("link", { name: "add-on details" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "licence details" })).toHaveAttribute("href", "/models/body-chart/ATTRIBUTION.md");
+  });
+
   it("turns the body, zooms out and names a tapped part", async () => {
     render(<ExerciseBody3D title="Clam" main={["gluteus-medius"]} helpers={[]} view="right" onError={vi.fn()} />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Back view" })).toBeEnabled());

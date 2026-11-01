@@ -100,11 +100,15 @@ export function partLabel(partName: string, main: readonly MuscleKey[], helpers:
     [main, "main focus"],
     [helpers, "helper"],
   ];
+  // Within a role, a muscle the part really belongs to beats a stand-in for one that isn't modelled.
   for (const [keys, role] of roles) {
     for (const key of keys) {
       const m = MUSCLES[key];
       if (m.source !== "none" && m.parts.some((r) => r.test(partName))) return `${m.label}: ${m.plain} (${role})`;
-      if (m.standIn?.parts.some((r) => r.test(partName))) return `${displayPartName(partName)}, near the ${lowerFirst(m.label)} (${role})`;
+    }
+    for (const key of keys) {
+      const m = MUSCLES[key];
+      if (m.source === "none" && m.standIn?.parts.some((r) => r.test(partName))) return `${displayPartName(partName)}, near the ${lowerFirst(m.label)} (${role})`;
     }
   }
   return displayPartName(partName);

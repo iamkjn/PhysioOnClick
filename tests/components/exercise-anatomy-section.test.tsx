@@ -47,6 +47,14 @@ describe("ExerciseAnatomySection", () => {
     expect(screen.getByText(HEALING_CLOSING)).toBeInTheDocument();
   });
 
+  it("separates the label, the marker and the caption with spaces", () => {
+    vi.stubEnv("NEXT_PUBLIC_EXERCISE_ANATOMY_DRAFTS", "1");
+    const { container } = render(<ExerciseAnatomySection anatomy={entry} stage="Strength phase" />);
+    expect(container.querySelector('[aria-current="step"]')!.textContent).toBe(
+      "Strength This exercise Build strength so the area copes with more."
+    );
+  });
+
   it("drops the stages strip for facial rehab but keeps the tissue line", () => {
     vi.stubEnv("NEXT_PUBLIC_EXERCISE_ANATOMY_DRAFTS", "1");
     const face: ExerciseAnatomy = { ...entry, main: ["zygomaticus"], helpers: [], tissue: "nerve-brain" };

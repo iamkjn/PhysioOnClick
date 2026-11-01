@@ -101,6 +101,14 @@ describe("labels", () => {
     expect(partLabel("Right teres major", ["latissimus-dorsi"], [])).toBe("Teres major, near the latissimus dorsi (main focus)");
   });
 
+  it("prefers a direct match over a stand-in within the same role", () => {
+    // Dead bug: rectus abdominis is a stand-in (lit via the external oblique), but
+    // the external oblique is itself a main muscle, so a tapped oblique is named as itself.
+    expect(partLabel("Right external oblique", ["rectus-abdominis", "external-oblique"], [])).toBe(
+      "External oblique: side of your tummy (main focus)"
+    );
+  });
+
   it("falls back to the part's own name", () => {
     expect(partLabel("Right femur", ["gluteus-medius"], [])).toBe("Femur");
   });

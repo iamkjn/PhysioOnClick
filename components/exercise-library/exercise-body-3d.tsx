@@ -185,6 +185,15 @@ export function ExerciseBody3D({ title, main, helpers, view: startView, corner, 
         <a href="/models/body-chart/ATTRIBUTION.md" target="_blank" rel="noopener noreferrer">
           licence details
         </a>
+        {needsAddon([...main, ...helpers]) ? (
+          <>
+            {" "}
+            ·{" "}
+            <a href="/models/exercise-anatomy/ATTRIBUTION.md" target="_blank" rel="noopener noreferrer">
+              add-on details
+            </a>
+          </>
+        ) : null}
       </p>
     </div>
   );

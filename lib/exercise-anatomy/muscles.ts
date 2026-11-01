@@ -1,9 +1,12 @@
 // lib/exercise-anatomy/muscles.ts
 // Muscle dictionary for the exercise pages: plain-English names plus the model
 // part names each one lights up (base = public/models/body-chart, addon =
-// public/models/exercise-anatomy). tests/lib/exercise-anatomy/muscles.test.ts
-// checks every pattern against the committed manifests, so a typo fails a test,
-// not the page. Pure data with no exercise entries: safe for client bundles.
+// public/models/exercise-anatomy). The base groups and stand-ins are checked
+// against the committed manifest in tests/lib/exercise-anatomy/muscles.test.ts,
+// and the add-on groups against theirs in
+// tests/lib/exercise-anatomy/addon-model.test.ts (which also checks that no
+// base group lights an add-on part), so a typo fails a test, not the page.
+// Pure data with no exercise entries: safe for client bundles.
 
 import type { MuscleGroup } from "@/lib/exercise-anatomy/types";
 
@@ -26,7 +29,7 @@ const MUSCLE_TABLE = {
   hamstrings: { label: "Hamstrings", plain: "back of your thigh", source: "base", parts: [/biceps femoris|semitendinosus|semimembranosus/i], view: "back" },
   adductors: { label: "Adductors", plain: "inner thigh", source: "base", parts: [/adductor (longus|brevis|magnus|minimus)|gracilis|pectineus/i], view: "front" },
   "tfl-it-band": { label: "Tensor fasciae latae and IT band", plain: "outside of your hip and thigh", source: "base", parts: [/tensor fasciae latae|iliotibial tract/i], view: "right" },
-  patella: { label: "Kneecap (patella)", plain: "the bone at the front of your knee", source: "base", parts: [/patella/i], view: "front" },
+  patella: { label: "Patella", plain: "your kneecap, the bone at the front of your knee", source: "base", parts: [/patella/i], view: "front" },
   "patellar-tendon": {
     label: "Patellar tendon",
     plain: "the tendon just below your kneecap",
@@ -163,7 +166,7 @@ const MUSCLE_TABLE = {
     parts: [],
     standIn: {
       parts: [/piriformis|biceps femoris|semitendinosus|semimembranosus/i],
-      note: "Nerves aren't in the 3D model. The sciatic nerve runs under piriformis and down between the hamstrings, so they are lit instead.",
+      note: "Nerves aren't in the 3D model. The sciatic nerve runs past piriformis and down between the hamstrings, so they are lit instead.",
     },
     view: "back",
   },
@@ -196,7 +199,7 @@ const MUSCLE_TABLE = {
     parts: [],
     standIn: {
       parts: [/lateral lumbar intertransversarius|iliocostalis lumborum/i],
-      note: "Quadratus lumborum isn't in the 3D model, so the deep muscles next to it are lit instead.",
+      note: "Quadratus lumborum isn't in the 3D model, so the muscles next to it are lit instead.",
     },
     view: "back",
   },
@@ -247,8 +250,8 @@ const MUSCLE_TABLE = {
     view: "back",
   },
   "lumbar-spine": { label: "Lower back joints", plain: "the bones and joints of your lower back", source: "base", parts: [/^(first|second|third|fourth|fifth) lumbar vertebra$|^sacrum$/i], view: "back" },
-  "thoracic-spine": { label: "Mid-back joints", plain: "the bones and joints of your upper and mid back", source: "base", parts: [/thoracic vertebra$/i], view: "back" },
-  "cervical-spine": { label: "Neck joints", plain: "the bones and joints of your neck", source: "base", parts: [/cervical vertebra$|^atlas$|^axis$/i], view: "back" },
+  "thoracic-spine": { label: "Mid-back joints", plain: "the bones and joints of your upper and mid back", source: "base", parts: [/^\w+ thoracic vertebra$/i], view: "back" },
+  "cervical-spine": { label: "Neck joints", plain: "the bones and joints of your neck", source: "base", parts: [/^\w+ cervical vertebra$|^atlas$|^axis$/i], view: "back" },
 
   // Neck
   "deep-neck-flexors": {

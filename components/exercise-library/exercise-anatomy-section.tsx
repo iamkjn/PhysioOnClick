@@ -48,8 +48,12 @@ export function ExerciseAnatomySection({ anatomy, stage }: { anatomy: ExerciseAn
                 <ol className="exlib-anatomy__stages">
                   {HEALING_STAGES.map((s, i) => (
                     <li key={s.stage} aria-current={i === current ? "step" : undefined} className={i === current ? "is-current" : undefined}>
-                      <strong>{s.label}</strong>
-                      {i === current ? <span className="exlib-anatomy__here">This exercise</span> : null}
+                      <strong>{s.label}</strong>{" "}
+                      {i === current ? (
+                        <>
+                          <span className="exlib-anatomy__here">This exercise</span>{" "}
+                        </>
+                      ) : null}
                       <span>{s.caption}</span>
                     </li>
                   ))}

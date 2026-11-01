@@ -1,11 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import type { ExerciseBody3DProps } from "@/components/exercise-library/exercise-body-3d";
 
-const { support, track } = vi.hoisted(() => ({ support: { ok: true }, track: vi.fn() }));
+const { support, track, loadBodyModel } = vi.hoisted(() => ({
+  support: { ok: true },
+  track: vi.fn(),
+  loadBodyModel: vi.fn(() => new Promise(() => {})),
+}));
 vi.mock("@/lib/body-model-loader", () => ({
   canUse3D: () => support.ok,
-  loadBodyModel: vi.fn(() => new Promise(() => {})),
+  loadBodyModel: () => loadBodyModel(),
 }));
 vi.mock("@/lib/analytics", () => ({ trackLibraryEvent: (...args: unknown[]) => track(...args) }));
 vi.mock("@/components/exercise-library/exercise-body-3d", () => ({
@@ -22,11 +27,14 @@ vi.mock("@/components/exercise-library/exercise-body-3d", () => ({
 
 import { ExerciseHeroMedia } from "@/components/exercise-library/exercise-hero-media";
 
-function renderMedia() {
+function renderMedia(before?: ReactNode) {
   return render(
-    <ExerciseHeroMedia slug="clam-shell" title="Clam Shell" main={["gluteus-medius"]} helpers={[]} view="right">
-      <img alt="Clam Shell exercise demonstration" src="/x.png" />
-    </ExerciseHeroMedia>
+    <>
+      {before}
+      <ExerciseHeroMedia slug="clam-shell" title="Clam Shell" main={["gluteus-medius"]} helpers={[]} view="right">
+        <img alt="Clam Shell exercise demonstration" src="/x.png" />
+      </ExerciseHeroMedia>
+    </>
   );
 }
 
@@ -70,5 +78,45 @@ describe("ExerciseHeroMedia", () => {
     expect(screen.queryByTestId("viewer")).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("The 3D view couldn't load");
     expect(screen.getByRole("button", { name: "View in 3D" })).toBeInTheDocument();
+  });
+
+  it("keeps the status note mounted but empty until 3D fails, so the fill is announced", async () => {
+    renderMedia();
+    expect(screen.getByRole("status")).toBeEmptyDOMElement();
+    fireEvent.click(screen.getByRole("button", { name: "View in 3D" }));
+    await screen.findByTestId("viewer");
+    expect(screen.getByRole("status")).toBeEmptyDOMElement();
+    fireEvent.click(screen.getByRole("button", { name: "stub error" }));
+    expect(screen.getByRole("status")).toHaveTextContent("The 3D view couldn't load");
+  });
+
+  it("does not download the model when a touch starts on the switch", () => {
+    renderMedia();
+    fireEvent.pointerEnter(screen.getByRole("button", { name: "View in 3D" }), { pointerType: "touch" });
+    expect(loadBodyModel).not.toHaveBeenCalled();
+  });
+
+  it("warms the model once when a mouse hovers the switch", () => {
+    renderMedia();
+    fireEvent.pointerEnter(screen.getByRole("button", { name: "View in 3D" }), { pointerType: "mouse" });
+    expect(loadBodyModel).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not re-download the model when focus returns to the switch after a failure", async () => {
+    renderMedia();
+    fireEvent.click(screen.getByRole("button", { name: "View in 3D" }));
+    await screen.findByTestId("viewer");
+    fireEvent.click(screen.getByRole("button", { name: "stub error" }));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "View in 3D" }));
+    expect(loadBodyModel).not.toHaveBeenCalled();
+  });
+
+  it("leaves focus alone when the patient has moved on while the viewer loads", async () => {
+    renderMedia(<input aria-label="elsewhere" />);
+    fireEvent.click(screen.getByRole("button", { name: "View in 3D" }));
+    const other = screen.getByLabelText("elsewhere");
+    other.focus();
+    await screen.findByTestId("viewer");
+    expect(document.activeElement).toBe(other);
   });
 });
