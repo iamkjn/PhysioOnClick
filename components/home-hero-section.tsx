@@ -26,9 +26,14 @@ const HomeDashboard = dynamic(
 
 export function HomeHeroSection({
   founderName,
+  homeVisitPrice,
+  videoPrice,
   initialSignedIn = false,
 }: {
   founderName: string;
+  /** Formatted initial-assessment prices, derived from lib/home-visit-pricing by app/page.tsx. */
+  homeVisitPrice: string;
+  videoPrice: string;
   initialSignedIn?: boolean;
 }) {
   const [user, setUser] = useState<User | null>(null);
@@ -104,37 +109,38 @@ export function HomeHeroSection({
       <div className="home-hero-overlay" />
       <div className="site-shell home-hero-content">
         <div className="home-hero-text">
-          <span className="location-pill">Online Across the UK</span>
+          <span className="location-pill">Home visits in Glasgow · Video UK-wide</span>
           <h1>
-            Expert Physiotherapy,
-            <span> One Click Away</span>
+            Physiotherapy home visits
+            <span> in Glasgow</span>
           </h1>
           <p className="home-hero-copy">
-            Evidence-based physiotherapy by {founderName}, HCPC registered physiotherapist. Online consultations
-            across the UK.
+            {founderName}, an HCPC registered physiotherapist, comes to your home in Glasgow, Paisley or
+            Hamilton, including neurological rehabilitation for stroke, Parkinson&rsquo;s, MS and FND. Home
+            assessment {homeVisitPrice}, or {videoPrice} by video anywhere in the UK.
           </p>
           <div className="button-row">
             <Link
               className="button primary"
-              href="/book"
+              href="/book?visit=home"
               prefetch
               onClick={() => track("book_now_click", { source: "homepage_hero" })}
             >
-              Book Your Session
+              Book a home visit
             </Link>
-            <Link className="button secondary inverted" href="/services" prefetch>
-              Explore Services
+            <Link className="button secondary inverted" href="/physiotherapy-home-visits-glasgow" prefetch>
+              Check areas &amp; prices
             </Link>
           </div>
-          {/* Below the two primary CTAs rather than a third competing button —
-              answers "is this actually online?" for a visitor who isn't ready
-              to book yet, without diluting the hero's conversion hierarchy. */}
+          {/* Video is the second option: a quiet link under the CTAs rather
+              than a third competing button, for visitors outside the
+              home-visit area. */}
           <Link
             href="/how-online-physiotherapy-works"
             className="home-hero-secondary-link"
-            style={{ color: "inherit", textDecoration: "underline", opacity: 0.85 }}
+            style={{ color: "inherit", textDecoration: "underline", opacity: 0.85, marginTop: "0.75rem" }}
           >
-            See how online physiotherapy works
+            Outside Glasgow? See how video appointments work
           </Link>
         </div>
       </div>

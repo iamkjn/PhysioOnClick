@@ -4,27 +4,54 @@ import { ProtectedImageFrame } from "@/components/image-protection";
 import Link from "next/link";
 import { cookies } from "next/headers";
 
-import { founder, initialAssessmentPrice } from "@/lib/site-data";
-import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
+import { founder } from "@/lib/site-data";
+import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
 import { Reveal } from "@/components/reveal";
 import { TrustpilotReviews } from "@/components/trustpilot-reviews";
 
-// openGraph is inherited from the root layout — metadata merges per field.
-// Title keeps "Online Physiotherapy" first (already ranking for it) and adds
-// the price, which most ranking competitors show and ours undercuts.
+// Leads with Glasgow home visits (incl. neuro rehab) and keeps video across
+// the UK as the second option: Search Console, Aug-Nov 2026, showed ~480
+// impressions for physio + Glasgow/near me/home (~360 of them neuro, stroke,
+// Parkinson's, MS or FND + Glasgow) against 14 for physio + online/video.
+// Prices come from lib/home-visit-pricing, never hardcoded.
+const videoPrice = formatPounds(sessionPricePence("initial-assessment"));
+const homeVisitPrice = formatPounds(
+  sessionPricePence("initial-assessment") + travelFeePence("initial-assessment", "home")
+);
+const title = "Physio Home Visits in Glasgow & Neuro Rehab | PhysioOnClick";
+const description = `HCPC registered physio home visits in Glasgow, including neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, or ${videoPrice} by video across the UK.`;
+
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
-  title: `Online Physiotherapy UK – Video Assessment £${initialAssessmentPrice} | PhysioOnClick`,
-  description: `Online physiotherapy across the UK with an HCPC-registered physio: £${initialAssessmentPrice} video assessment, no GP referral, tailored exercise plans and insurance-ready invoices.`,
+  title,
+  description,
   keywords: [
+    "physiotherapy home visits Glasgow",
+    "neurological physiotherapy Glasgow",
+    "home physio Glasgow",
     "online physiotherapy UK",
     "private physiotherapy insurance invoice",
-    "physiotherapy receipt for insurance",
-    "claim physiotherapy through health insurance",
-    "HCPC online physio",
   ],
+  // A page-level openGraph/twitter replaces the root layout's whole object, so
+  // the share image is restated here alongside the homepage's own wording.
+  openGraph: {
+    type: "website",
+    siteName: "PhysioOnClick",
+    locale: "en_GB",
+    url: "/",
+    title,
+    description,
+    // alt describes the image as it is (its text still reads "online").
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "PhysioOnClick — online physiotherapy across the UK" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/og-default.png"],
+  },
 };
 
 export default async function HomePage() {
@@ -37,7 +64,12 @@ export default async function HomePage() {
 
   return (
     <>
-      <HomeHeroSection founderName={founder.name} initialSignedIn={initialSignedIn} />
+      <HomeHeroSection
+        founderName={founder.name}
+        homeVisitPrice={homeVisitPrice}
+        videoPrice={videoPrice}
+        initialSignedIn={initialSignedIn}
+      />
 
       <Reveal direction="fade">
         <section className="trust-bar-section">
