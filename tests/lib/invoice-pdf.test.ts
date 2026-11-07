@@ -1,6 +1,8 @@
 import zlib from "node:zlib";
 import { describe, expect, it } from "vitest";
 import { generateInvoicePdf, invoiceDeliveryLine, invoiceLineItems, type InvoicePdfInput } from "@/lib/invoice-pdf";
+import { formatGbp } from "@/lib/invoice";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
 
 /**
  * Every page content stream, inflated. pdf-lib writes standard-font text as
@@ -105,39 +107,56 @@ describe("generateInvoicePdf", () => {
   });
 });
 
-describe("invoice travel-fee row", () => {
-  it("splits a home visit into service and travel rows", () => {
-    expect(invoiceLineItems({ amountPence: 5500, serviceLabel: "Initial Assessment (home visit)", travelFeePence: 1500 })).toEqual([
-      { label: "Initial Assessment (home visit)", amountPence: 4000 },
-      { label: "Travel fee (home visit)", amountPence: 1500 },
+// A home visit is one whole price (lib/home-visit-pricing): the invoice prints
+// a single service row at the whole amount paid, never a separate travel row.
+describe("invoice line items", () => {
+  const HOME_PENCE = sessionPricePence("initial-assessment", "home");
+  const HOME_BUNDLE_PENCE = sessionPricePence("bundle-4", "home");
+
+  it("is one row at the whole amount for a home visit, a home bundle and a video booking", () => {
+    expect(invoiceLineItems({ amountPence: HOME_PENCE, serviceLabel: "Initial Assessment (home visit)" })).toEqual([
+      { label: "Initial Assessment (home visit)", amountPence: HOME_PENCE },
+    ]);
+    expect(invoiceLineItems({ amountPence: HOME_BUNDLE_PENCE, serviceLabel: "4 Session Bundle (home visits)" })).toEqual([
+      { label: "4 Session Bundle (home visits)", amountPence: HOME_BUNDLE_PENCE },
     ]);
     expect(invoiceLineItems({ amountPence: 4000, serviceLabel: "Initial Online Assessment" })).toEqual([
       { label: "Initial Online Assessment", amountPence: 4000 },
     ]);
   });
 
-  it("prints the travel row only when a travel fee is passed", async () => {
-    const withFee = pdfContent(
-      await generateInvoicePdf({ ...BASE_INPUT, amountPence: 5500, visitType: "home", travelFeePence: 1500 })
-    );
-    expect(withFee).toContain(hex("Travel fee (home visit)"));
-    expect(withFee).toContain(hex("£15.00"));
-    const without = pdfContent(await generateInvoicePdf(BASE_INPUT));
-    expect(without).not.toContain(hex("Travel fee"));
-  });
-});
-
-describe("invoice travel-fee row label", () => {
-  it("uses the passed label with the visit count", async () => {
-    expect(
-      invoiceLineItems({ amountPence: 18000, serviceLabel: "4 Session Bundle (home visits)", travelFeePence: 6000, travelFeeLabel: "Travel fee (4 home visits × £15)" })
-    ).toEqual([
-      { label: "4 Session Bundle (home visits)", amountPence: 12000 },
-      { label: "Travel fee (4 home visits × £15)", amountPence: 6000 },
-    ]);
+  it("prints a home visit at its whole price with no travel row", async () => {
     const content = pdfContent(
-      await generateInvoicePdf({ ...BASE_INPUT, amountPence: 18000, visitType: "home", travelFeePence: 6000, travelFeeLabel: "Travel fee (4 home visits × £15)" })
+      await generateInvoicePdf({
+        ...BASE_INPUT,
+        amountPence: HOME_PENCE,
+        serviceLabel: "Initial Assessment (home visit)",
+        visitType: "home",
+      })
     );
-    expect(content).toContain(hex("Travel fee (4 home visits × £15)"));
+    expect(content).toContain(hex(formatGbp(HOME_PENCE)));
+    // The video part of the price is never printed as its own row.
+    expect(content).not.toContain(hex(formatGbp(sessionPricePence("initial-assessment"))));
+    expect(content).not.toContain(hex("Travel"));
+    expect(content).not.toContain(hex("travel"));
+  });
+
+  it("prints a home bundle at its whole price with no travel row", async () => {
+    const content = pdfContent(
+      await generateInvoicePdf({
+        ...BASE_INPUT,
+        amountPence: HOME_BUNDLE_PENCE,
+        serviceLabel: "4 Session Bundle (home visits)",
+        visitType: "home",
+      })
+    );
+    expect(content).toContain(hex(formatGbp(HOME_BUNDLE_PENCE)));
+    expect(content).not.toContain(hex(formatGbp(sessionPricePence("bundle-4"))));
+    expect(content).not.toContain(hex("Travel"));
+  });
+
+  it("prints no travel row on a video invoice", async () => {
+    const content = pdfContent(await generateInvoicePdf(BASE_INPUT));
+    expect(content).not.toContain(hex("Travel"));
   });
 });

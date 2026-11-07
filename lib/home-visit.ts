@@ -1,6 +1,6 @@
 /**
  * Home visits (Glasgow area) are booked through the same flow and calendar as
- * video calls, at the video price plus a travel fee (lib/home-visit-pricing).
+ * video calls, at one all-in home-visit price (lib/home-visit-pricing).
  * This module holds the shared vocabulary and the
  * address validation used by both the booking UI and /api/checkout/create.
  *

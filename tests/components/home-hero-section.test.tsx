@@ -21,12 +21,12 @@ vi.mock('@/components/home-dashboard', () => ({ HomeDashboard: () => <div>Dashbo
 
 import { HomeHeroSection } from '@/components/home-hero-section'
 
-const props = { founderName: 'Jane', homeVisitPrice: '£55', videoPrice: '£40' }
+const props = { founderName: 'Jane', homeVisitPrice: '£80', videoPrice: '£40' }
 
 describe('HomeHeroSection', () => {
   it('shows the marketing hero immediately while auth is resolving (SSR-visible H1/CTAs)', () => {
     render(<HomeHeroSection {...props} />)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Physiotherapy home visits in Glasgow')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Physiotherapy at home in Glasgow')
     expect(document.querySelector('.skeleton-hero')).not.toBeInTheDocument()
   })
 
@@ -36,8 +36,8 @@ describe('HomeHeroSection', () => {
     const copy = document.querySelector('.home-hero-copy')?.textContent ?? ''
     expect(copy).toContain('Jane, an HCPC registered physiotherapist, comes to your home')
     expect(copy).toContain('neurological rehabilitation')
-    expect(copy).toContain('Home assessment £55')
-    expect(copy.indexOf('Home assessment £55')).toBeLessThan(copy.indexOf('£40 by video anywhere in the UK'))
+    expect(copy).toContain('Home assessment £80')
+    expect(copy.indexOf('Home assessment £80')).toBeLessThan(copy.indexOf('£40 by video anywhere in the UK'))
   })
 
   it('books a home visit first and makes the home-visits page prominent', () => {
@@ -71,7 +71,7 @@ describe('HomeHeroSection', () => {
     render(<HomeHeroSection {...props} />)
     await waitFor(() => expect(authStateCallback).not.toBeNull())
     act(() => authStateCallback!({ uid: 'anon-1', isAnonymous: true }))
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Physiotherapy home visits in Glasgow')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Physiotherapy at home in Glasgow')
     expect(screen.queryByText('Dashboard')).not.toBeInTheDocument()
   })
 

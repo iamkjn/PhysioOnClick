@@ -52,19 +52,22 @@ class TimeDetailsScreen extends StatefulWidget {
     this.initialPersonName,
     this.addressRepository,
     this.homeVisitRepository,
+    this.checkoutRepository,
     super.key,
   });
 
   /// Injectable for tests; real implementations are used when null.
   final AddressRepository? addressRepository;
   final HomeVisitRepository? homeVisitRepository;
+  final CheckoutRepository? checkoutRepository;
 
   @override
   State<TimeDetailsScreen> createState() => _TimeDetailsScreenState();
 }
 
 class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
-  final _repo = CheckoutRepository();
+  late final CheckoutRepository _repo =
+      widget.checkoutRepository ?? CheckoutRepository();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _discountController = TextEditingController();
@@ -157,13 +160,13 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
     _loadSlots();
   }
 
-  /// Session price (discounted when a code is applied) plus any home-visit
-  /// travel fee. The discount applies to the session only, never the fee.
+  /// The whole price for this visit type (a home visit's price already
+  /// includes the home extra). When a code is applied, the server's
+  /// discounted whole price is used as-is: the discount covers the whole
+  /// price, home visits included, so nothing is added on top.
   int get _checkoutPence {
-    final total = totalPence(widget.service, widget.visitType);
     final discounted = _discountApplied ? _discountedAmountPence : null;
-    if (discounted == null) return total;
-    return discounted + travelFeePence(widget.service, widget.visitType);
+    return discounted ?? sessionPricePence(widget.service, widget.visitType);
   }
 
   String get _discountCode => _discountController.text.trim().toUpperCase();
@@ -203,6 +206,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
         code: code,
         email: email,
         service: widget.service.apiId,
+        visitType: widget.visitType.name,
       );
       if (!mounted) return;
       setState(() {
@@ -282,7 +286,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(
-                        homePriceSummary(widget.service),
+                        homeVisitPriceLabel(widget.service),
                         style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                       ),
                     ),

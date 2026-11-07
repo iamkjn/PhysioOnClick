@@ -14,7 +14,7 @@ import { getDependents, type Dependent } from "@/lib/dependents";
 import { accountUserOrNull } from "@/lib/guest-booking";
 import { DEFAULT_VISIT_TYPE, normalisePostcode, validateHomeVisit, type VisitType } from "@/lib/home-visit";
 import { isCoveredPostcode, outOfAreaMessage } from "@/lib/home-visit-area";
-import { formatPounds, sessionPricePence, travelFeeLabel, travelFeePence } from "@/lib/home-visit-pricing";
+import { formatPounds, sessionPricePence } from "@/lib/home-visit-pricing";
 import { usePerson } from "@/components/person-provider";
 import { BookingStepService } from "@/components/booking-step-service";
 import { addAddress, getAddresses, getUsualAddressId, type SavedAddress } from "@/lib/patient-addresses";
@@ -95,7 +95,7 @@ export function BookingFlow() {
   // Only an exercise link (?body_part / ?exercise) pre-fills an area.
   const [focusAreas, setFocusAreas] = useState<FocusArea[]>([]);
   // Video (UK-wide) or a home visit in a covered postcode district — same
-  // calendar; a home visit adds a travel fee per visit (lib/home-visit-pricing).
+  // calendar; a home visit has its own whole price (lib/home-visit-pricing).
   // The address is personal data: it stays in component state and the
   // checkout POST body only (never analytics, logs or the URL).
   const [visitType, setVisitType] = useState<VisitType>(DEFAULT_VISIT_TYPE);
@@ -407,9 +407,6 @@ export function BookingFlow() {
   }
 
   const included = includedFor(serviceId, visitType);
-  // Travel only counts once the postcode is covered: until then (or for an
-  // uncovered postcode) the rail shows the plain session price.
-  const travel = visitType === "home" && isCoveredPostcode(homePostcode) ? travelFeePence(serviceId, visitType) : 0;
   const railChecklist = step === 2 ? included.slice(0, 3) : included;
   const stepAnnouncement =
     step === 1 ? "Step 1 of 3: book your appointment." : "Step 2 of 3: time and your details.";
@@ -484,15 +481,12 @@ export function BookingFlow() {
         <div className="book-rail-spacer" />
         <div className="book-rail-divider" />
 
-        {travel > 0 ? (
-          <div className="book-rail-travel">
-            <span>{travelFeeLabel(serviceId)}</span>
-            <span>{formatPounds(travel)}</span>
-          </div>
-        ) : null}
+        {/* The rail title already says "(home visit)", so the total is the whole
+            home price as soon as home is chosen; an uncovered postcode can't
+            reach checkout. */}
         <div className="book-rail-total">
           <span className="book-rail-total-label">Total</span>
-          <span className="book-rail-total-price">{formatPounds(sessionPricePence(serviceId) + travel)}</span>
+          <span className="book-rail-total-price">{formatPounds(sessionPricePence(serviceId, visitType))}</span>
         </div>
         <p className="book-rail-reassure">Free to reschedule up to 24 hours before your session.</p>
         <Link href="/how-online-physiotherapy-works" className="book-rail-reassure" style={{ textDecoration: "underline" }}>

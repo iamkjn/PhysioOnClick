@@ -3,14 +3,14 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
+import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@/lib/structured-data";
 
-// Home visits cost the video price plus a travel fee per visit, so every
-// figure here is derived from lib/home-visit-pricing rather than hardcoded.
+// A home visit has its own whole price (no separate fee), so every figure here
+// is derived from lib/home-visit-pricing rather than hardcoded.
 const videoInitial = formatPounds(sessionPricePence("initial-assessment"));
-const homeInitial = formatPounds(sessionPricePence("initial-assessment") + travelFeePence("initial-assessment", "home"));
-const travelFee = formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE);
+const homeInitial = homeVisitPrices.initial;
+const homeFollowUp = homeVisitPrices.followUp;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/glasgow-physiotherapist" },
@@ -31,7 +31,7 @@ const faqItems = [
   },
   {
     question: "How much does a home visit cost?",
-    answer: `A home visit costs the video appointment price plus a ${travelFee} travel fee per visit. The initial assessment is ${videoInitial} by video or ${homeInitial} as a home visit. Bundles booked as home visits include the travel fee for every visit, paid when you book. See the pricing page for the full list.`
+    answer: `A home visit is one all-in price: ${homeInitial} for the initial assessment and ${homeFollowUp} for a follow-up, with nothing added at checkout. By video, the initial assessment is ${videoInitial}. Bundles booked as home visits cover every visit, paid when you book. See the pricing page for the full list.`
   },
   {
     question: "Can I book a video appointment if I live outside Glasgow?",
@@ -73,8 +73,7 @@ export default function GlasgowPage() {
           <p className="lead">
             PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. If you are in the
             Glasgow area you can book a home visit, and video appointments are available anywhere in the UK.
-            The initial assessment is {videoInitial} by video, or {homeInitial} as a home visit (the video
-            price plus a {travelFee} travel fee).
+            The initial assessment is {homeInitial} as a home visit, all in, or {videoInitial} by video.
           </p>
           {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
             <p>
@@ -106,7 +105,7 @@ export default function GlasgowPage() {
             <li>Glasgow-based, HCPC registered physiotherapist</li>
             <li>Home visits in the Glasgow area, with no clinic or premises</li>
             <li>Video appointments anywhere in the UK</li>
-            <li>The same booking flow for both; home visits add a {travelFee} travel fee per visit</li>
+            <li>The same booking flow for both, with one all-in price for each</li>
             <li>
               Living elsewhere in Scotland?{" "}
               <Link href="/online-physiotherapy-scotland" prefetch>
@@ -160,9 +159,9 @@ export default function GlasgowPage() {
         <section className="page-section stack">
           <h2>Home visit and video prices</h2>
           <p>
-            The initial assessment is {videoInitial} by video or {homeInitial} as a home visit. A home visit
-            costs the video price plus a {travelFee} travel fee per visit, shown as its own line at checkout.
-            Bundles booked as home visits include the travel fee for every visit, paid when you book. See{" "}
+            A home visit is {homeInitial} for the initial assessment and {homeFollowUp} for a follow-up. That
+            is the whole price, with nothing added at checkout. By video, the initial assessment is{" "}
+            {videoInitial}. Bundles booked as home visits cover every visit, paid when you book. See{" "}
             <Link href="/pricing">pricing</Link> for the full list. If you are not sure which suits you, the{" "}
             <Link href="/how-online-physiotherapy-works">how it works</Link> page explains the booking steps.
           </p>

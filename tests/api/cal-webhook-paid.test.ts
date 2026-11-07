@@ -38,6 +38,7 @@ vi.mock("@/lib/firebase-admin", () => ({
   FieldValue: { serverTimestamp: () => "TS" },
 }));
 import { POST } from "@/app/api/cal-webhook/route";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
 
 const SECRET = "cal_secret";
 function signed(body: string) {
@@ -82,23 +83,27 @@ describe("cal-webhook paid reconciliation", () => {
     );
   });
 
-  it("copies the home-visit travel fee from the payment onto the booking", async () => {
+  it("copies the whole home-visit amount paid onto the booking, with no travel fee", async () => {
+    const homePence = sessionPricePence("initial-assessment", "home");
     payData.current = {
-      amountPence: 4000,
+      amountPence: homePence,
       status: "paid",
       visitType: "home",
       homeVisitAddress: "7 Example Street, G31 4HS",
+      // A payment doc written under the old split pricing: never copied any more.
       travelFeePence: 1500,
     };
     await POST(signed(BODY));
     expect(bookingRef.update).toHaveBeenCalledWith(
       expect.objectContaining({
         paid: true,
+        amountPaidPence: homePence,
         visitType: "home",
         homeVisitAddress: "7 Example Street, G31 4HS",
-        travelFeePence: 1500,
       }),
     );
+    const updates = bookingRef.update.mock.calls.map((c) => c[0]);
+    expect(updates.some((u) => "travelFeePence" in u)).toBe(false);
   });
 
   it("adds no visit fields for a video booking", async () => {

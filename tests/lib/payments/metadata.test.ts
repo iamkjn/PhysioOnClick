@@ -54,7 +54,9 @@ describe("booking intent <-> Stripe metadata", () => {
   });
 });
 
-describe("travel fee metadata", () => {
+// A home visit is one whole price (lib/home-visit-pricing), so checkout
+// metadata no longer carries a separate travel fee.
+describe("home-visit metadata carries no travel fee", () => {
   const base = {
     service: "initial-assessment" as const,
     startISO: "2999-01-01T10:00:00.000Z",
@@ -62,17 +64,22 @@ describe("travel fee metadata", () => {
     email: "ada@example.com",
     timeZone: "Europe/London",
   };
-  it("round-trips travelFeePence for a home visit", () => {
-    const meta = intentToMetadata({ ...base, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS", travelFeePence: "1500" });
-    expect(meta.travelFeePence).toBe("1500");
-    expect(metadataToIntent(meta)?.travelFeePence).toBe("1500");
-  });
-  it("drops travelFeePence on a video booking", () => {
-    const meta = intentToMetadata({ ...base, visitType: "video", travelFeePence: "1500" });
+  it("round-trips a home visit without any travelFeePence", () => {
+    const meta = intentToMetadata({ ...base, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS" });
     expect(meta).not.toHaveProperty("travelFeePence");
-    expect(metadataToIntent({ ...meta, travelFeePence: "1500" })).not.toHaveProperty("travelFeePence");
+    const back = metadataToIntent(meta);
+    expect(back).toMatchObject({ visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS" });
+    expect(back).not.toHaveProperty("travelFeePence");
   });
-  it("ignores a non-numeric travelFeePence", () => {
-    expect(metadataToIntent({ ...intentToMetadata({ ...base, visitType: "home", homeVisitAddress: "x, G1 1AA" }), travelFeePence: "abc" })).not.toHaveProperty("travelFeePence");
+  it("never writes a travelFeePence even if an intent still carries one", () => {
+    const stale = { ...base, visitType: "home" as const, homeVisitAddress: "7 Example Street, G31 4HS", travelFeePence: "1500" };
+    expect(intentToMetadata(stale as BookingIntent)).not.toHaveProperty("travelFeePence");
+    expect(intentToMetadata({ ...stale, visitType: "video" } as BookingIntent)).not.toHaveProperty("travelFeePence");
+  });
+  it("drops a stale travelFeePence from an old checkout session's metadata", () => {
+    const home = intentToMetadata({ ...base, visitType: "home", homeVisitAddress: "x, G1 1AA" });
+    expect(metadataToIntent({ ...home, travelFeePence: "1500" })).not.toHaveProperty("travelFeePence");
+    const video = intentToMetadata({ ...base, visitType: "video" });
+    expect(metadataToIntent({ ...video, travelFeePence: "1500" })).not.toHaveProperty("travelFeePence");
   });
 });

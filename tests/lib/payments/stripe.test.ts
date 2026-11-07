@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createStripeCheckout } from "@/lib/payments/stripe";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
 
 const INPUT = {
   intent: {
@@ -114,22 +115,40 @@ describe("createStripeCheckout line items", () => {
     expect(body.get("line_items[1][price_data][unit_amount]")).toBeNull();
   });
 
-  it("adds the travel fee as a second line item", async () => {
+  it("sends a home visit as one line item at the whole price, with no travel fee", async () => {
     const fetchMock = stubOk();
+    const homePence = sessionPricePence("initial-assessment", "home");
     await createStripeCheckout({
-      intent: { ...intent, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS", travelFeePence: "1500" },
-      amountPence: 3600,
+      intent: { ...intent, visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS" },
+      amountPence: homePence,
       serviceLabel: "Initial Assessment (home visit)",
-      extraLineItems: [{ name: "Travel fee (1 home visit × £15)", amountPence: 1500 }],
       successUrl: "s",
       cancelUrl: "c",
     });
     const body = bodyOf(fetchMock);
-    expect(body.get("line_items[0][price_data][unit_amount]")).toBe("3600");
+    expect(body.get("line_items[0][price_data][unit_amount]")).toBe(String(homePence));
+    expect(body.get("line_items[0][price_data][product_data][name]")).toBe("Initial Assessment (home visit)");
+    expect(body.get("line_items[1][price_data][unit_amount]")).toBeNull();
+    expect(body.get("metadata[visitType]")).toBe("home");
+    expect(body.get("metadata[travelFeePence]")).toBeNull();
+    expect(body.toString()).not.toMatch(/travel/i);
+  });
+
+  it("still appends any extra line items it is given after the service", async () => {
+    const fetchMock = stubOk();
+    await createStripeCheckout({
+      intent,
+      amountPence: 4000,
+      serviceLabel: "Initial Online Assessment",
+      extraLineItems: [{ name: "Extra item", amountPence: 500 }],
+      successUrl: "s",
+      cancelUrl: "c",
+    });
+    const body = bodyOf(fetchMock);
+    expect(body.get("line_items[0][price_data][unit_amount]")).toBe("4000");
     expect(body.get("line_items[1][quantity]")).toBe("1");
     expect(body.get("line_items[1][price_data][currency]")).toBe("gbp");
-    expect(body.get("line_items[1][price_data][unit_amount]")).toBe("1500");
-    expect(body.get("line_items[1][price_data][product_data][name]")).toBe("Travel fee (1 home visit × £15)");
-    expect(body.get("metadata[travelFeePence]")).toBe("1500");
+    expect(body.get("line_items[1][price_data][unit_amount]")).toBe("500");
+    expect(body.get("line_items[1][price_data][product_data][name]")).toBe("Extra item");
   });
 });

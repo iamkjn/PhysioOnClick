@@ -6,7 +6,7 @@ import { onlinePhysioPages } from "@/lib/online-physio-pages";
 import { services, pricing } from "@/lib/site-data";
 import { practiceNode } from "@/lib/structured-data";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
+import { formatPounds, homeVisitPricePence } from "@/lib/home-visit-pricing";
 
 // Home visits in the Glasgow area are offered, so no data file may deny them.
 const DENIALS = [
@@ -104,9 +104,10 @@ describe("practiceNode home visits", () => {
   });
 });
 
-// Home visits cost the video price plus a travel fee per visit, and coverage
-// is checked from the postcode at booking. Copy written before that change
-// said "same prices" and "we'll confirm by email"; none may survive.
+// A home visit has its own whole (all-in) price, and coverage is checked from
+// the postcode at booking. Copy written before those changes said "same
+// prices", "we'll confirm by email" or quoted a separate travel fee; none may
+// survive.
 describe("home visit pricing and coverage copy", () => {
   const STALE = [
     /same prices?/i,
@@ -133,8 +134,8 @@ describe("home visit pricing and coverage copy", () => {
     for (const phrase of STALE) expect(src).not.toMatch(phrase);
   });
 
-  // One price "for both" video and home visits is wrong now that home visits
-  // add a travel fee: a "£" or a price expression, then "for both" / "whether
+  // One price "for both" video and home visits is wrong now that a home visit
+  // has its own whole price: a "£" or a price expression, then "for both" / "whether
   // you choose" within the same sentence (or the reverse order).
   const SINGLE_PRICE_FOR_BOTH = [
     /(£|\{[^}]*(price|initial)[^}]*\})[^.]{0,80}\b(for both|whether you choose)\b/i,
@@ -151,18 +152,56 @@ describe("home visit pricing and coverage copy", () => {
     expect(src).not.toMatch(/Glasgow area only|only in the Glasgow area/i);
   });
 
-  it("the chat prompt states the travel fee and the covered area", () => {
+  it("the chat prompt states the whole home-visit prices and the covered area", () => {
     const prompt = buildSystemPrompt();
-    expect(prompt).toContain(`plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit`);
+    expect(prompt).toContain("A home visit has one all-in price with no separate fee");
+    expect(prompt).toContain(`${formatPounds(homeVisitPricePence("initial-assessment"))} for the initial assessment`);
+    expect(prompt).toContain(`${formatPounds(homeVisitPricePence("follow-up"))} for a follow-up`);
+    expect(prompt).toContain(`${formatPounds(homeVisitPricePence("bundle-4"))} for the 4-session bundle`);
+    expect(prompt).toContain(`${formatPounds(homeVisitPricePence("bundle-8"))} for the 8-session bundle`);
     expect(prompt).toContain(HOME_VISIT_AREA_LABEL);
     expect(prompt).not.toMatch(/confirm by email/i);
   });
 
-  it("the neuro FAQ's literal travel fee matches the constant", () => {
-    // site-data cannot import the constant (import cycle), so pin it here.
+  it("the chat prompt never prices a home visit as video plus a travel fee", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).not.toMatch(/plus a £\d+ travel fee/i);
+    expect(prompt).not.toMatch(/travel fee per visit/i);
+    expect(prompt).not.toMatch(/video price plus/i);
+    // The only "travel fee" left is the instruction not to call it one.
+    const mentions = prompt.match(/travel fee/gi) ?? [];
+    expect(mentions).toHaveLength(1);
+    expect(prompt).toContain("Never describe any part of it as a travel fee.");
+  });
+
+  it("the neuro FAQs quote no price figure and no travel fee", () => {
     const neuro = services.find((s) => s.slug === "neurological-rehabilitation")!;
-    const faq = neuro.faqs.find((f) => /in person/i.test(f.question))!;
-    expect(faq.answer).toContain(`video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit`);
+    const homeFaqs = neuro.faqs.filter((f) => /in person|at home/i.test(f.question));
+    expect(homeFaqs.length).toBeGreaterThanOrEqual(2);
+    for (const faq of homeFaqs) {
+      expect(faq.answer).toMatch(/one all-in (home-visit )?price/i);
+      expect(faq.answer).not.toMatch(/£\d/);
+      expect(faq.answer).not.toMatch(/travel fee/i);
+    }
+  });
+
+  const NO_TRAVEL_FEE_FILES = [
+    ...FILES.filter((f) => f !== "lib/chat-prompt.ts"),
+    "app/cancellation-policy/page.tsx",
+    "app/physiotherapy-home-visits-glasgow/page.tsx",
+    "app/online-physiotherapy-for/[slug]/page.tsx",
+    "lib/guides.ts",
+  ];
+
+  it.each(NO_TRAVEL_FEE_FILES)("%s never mentions a travel fee", (file) => {
+    const src = readFileSync(file, "utf8");
+    expect(src).not.toMatch(/travel fee/i);
+    expect(src).not.toMatch(/HOME_VISIT_TRAVEL_FEE_PENCE|travelFeePence/);
+  });
+
+  it("no service, pricing or guide data mentions a travel fee", () => {
+    const data = JSON.stringify({ guides, onlinePhysioPages, services, pricing });
+    expect(data).not.toMatch(/travel fee/i);
   });
 
   it("initial assessment and follow-up descriptions are visit-neutral", () => {

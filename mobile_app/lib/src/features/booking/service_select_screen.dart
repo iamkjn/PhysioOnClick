@@ -396,7 +396,6 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
   Widget _serviceCard(ResolvedService s) {
     final theme = Theme.of(context);
     final selected = s.id == _selectedId;
-    final travel = travelFeePence(s, _visit);
     final title = serviceLabelFor(s, _visit);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -430,8 +429,7 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
                       Text(s.description, style: theme.textTheme.bodyMedium),
                       const SizedBox(height: 8),
                       Text(
-                        '${formatPounds(totalPence(s, _visit))} · ${s.duration}'
-                        '${travel > 0 ? ' · incl. ${formatPounds(travel)} travel' : ''}',
+                        '${formatPounds(sessionPricePence(s, _visit))} · ${s.duration}',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                           fontWeight: FontWeight.w600,

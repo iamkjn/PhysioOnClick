@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { EXERCISE_DISCLAIMER } from "@/lib/exercise-disclaimer";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
+import { homeVisitPrices } from "@/lib/home-visit-pricing";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
@@ -82,11 +82,11 @@ export default function TermsPage() {
           <h2>Home visits (Glasgow area)</h2>
           <p>
             Home visits are offered in {HOME_VISIT_AREA_LABEL}, booked through the same booking flow as
-            video appointments. A home visit is charged at the price of the equivalent video appointment
-            plus a travel fee of {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} per visit. The travel fee is
-            shown separately at checkout and on your invoice. If you book a session bundle as home visits,
-            the price you pay when you book includes the travel fee for every visit in the bundle. Discount
-            codes apply to the session price only, not to the travel fee.
+            video appointments. A home visit has its own all-in price, shown when you choose a home visit and
+            at checkout (currently {homeVisitPrices.initial} for an initial assessment and{" "}
+            {homeVisitPrices.followUp} for a follow-up); there is no separate fee. If you book a session bundle
+            as home visits, the price you pay when you book covers every visit in the bundle. Discount codes
+            apply to the whole price.
           </p>
           <p>
             Home visits are available only for postcodes in the area we cover. When you book a home visit

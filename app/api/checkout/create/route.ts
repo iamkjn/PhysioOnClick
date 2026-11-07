@@ -6,7 +6,7 @@ import { createStripeCheckout } from "@/lib/payments/stripe";
 import type { BookingIntent } from "@/lib/payments";
 import { DEFAULT_VISIT_TYPE, isVisitType, validateHomeVisit, type VisitType } from "@/lib/home-visit";
 import { isCoveredPostcode } from "@/lib/home-visit-area";
-import { sessionPricePence, travelFeeLabel, travelFeePence } from "@/lib/home-visit-pricing";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_TIMEZONE = "Europe/London";
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     resolvedTimeZone = timeZone;
   }
 
-  // Home visits (covered postcodes only, see lib/home-visit-area) add a travel fee (lib/home-visit-pricing). Any address sent with a video booking is ignored so it is never stored. Errors never echo the address back.
+  // Home visits (covered postcodes only, see lib/home-visit-area) have their own whole price (lib/home-visit-pricing). Any address sent with a video booking is ignored so it is never stored. Errors never echo the address back.
   let resolvedVisitType: VisitType = DEFAULT_VISIT_TYPE;
   if (visitType !== undefined && visitType !== null) {
     if (!isVisitType(visitType)) return bad("Invalid visit type.");
@@ -104,10 +104,10 @@ export async function POST(request: Request) {
         .slice(0, 10)
     : undefined;
 
-  const originalAmountPence = sessionPricePence(service);
+  // One whole price per visit type (a home visit includes everything); a
+  // discount comes off that whole price.
+  const originalAmountPence = sessionPricePence(service, resolvedVisitType);
   let amountPence = originalAmountPence;
-  // Home visits add £15 per visit on top of the (possibly discounted) session price.
-  const travelPence = travelFeePence(service, resolvedVisitType);
   let appliedDiscount:
     | { code: string; percent: number; amountPence: number }
     | null = null;
@@ -118,6 +118,7 @@ export async function POST(request: Request) {
       code: cleanedDiscountCode,
       email: normalizedEmail,
       service,
+      visitType: resolvedVisitType,
     });
     if (!discount.ok) return bad(discount.error);
     amountPence = discount.amountPence;
@@ -146,7 +147,6 @@ export async function POST(request: Request) {
     focusAreas: cleanedFocus,
     visitType: resolvedVisitType,
     ...(homeVisitAddress ? { homeVisitAddress } : {}),
-    ...(travelPence > 0 ? { travelFeePence: String(travelPence) } : {}),
     ...(appliedDiscount
       ? {
           discountCode: appliedDiscount.code,
@@ -162,10 +162,9 @@ export async function POST(request: Request) {
 
   const result = await createStripeCheckout({
     intent,
-    // The first line item is the session (after any discount); travel is its own line.
+    // A single line item at the whole price (after any discount).
     amountPence,
     serviceLabel: serviceLabelFor(service, resolvedVisitType),
-    ...(travelPence > 0 ? { extraLineItems: [{ name: travelFeeLabel(service), amountPence: travelPence }] } : {}),
     successUrl: `${siteUrl}/book/success?session_id={CHECKOUT_SESSION_ID}`,
     cancelUrl: `${siteUrl}/book?cancelled=1`,
   });

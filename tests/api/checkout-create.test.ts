@@ -5,7 +5,8 @@ vi.mock("@/lib/payments/stripe", () => ({
 }));
 import { createStripeCheckout } from "@/lib/payments/stripe";
 import { POST } from "@/app/api/checkout/create/route";
-import { bookServiceFor } from "@/lib/cal-services";
+import { bookServiceFor, serviceLabelFor } from "@/lib/cal-services";
+import { HOME_VISIT_EXTRA_PENCE, sessionPricePence } from "@/lib/home-visit-pricing";
 
 function req(body: unknown) {
   return new Request("http://localhost/api/checkout/create", {
@@ -151,26 +152,31 @@ describe("POST /api/checkout/create — visit type", () => {
     expect(res.status).toBe(400);
   });
 
-  it("charges the session price plus a £15 travel fee for a covered home visit", async () => {
+  it("charges the whole home-visit price as one line for a covered home visit", async () => {
     okStripe();
     const res = await POST(req({ ...VALID, visitType: "home", homeAddressLine: " 7 Example Street ", homePostcode: "g31 4hs" }));
     expect(res.status).toBe(200);
     expect(lastIntent().visitType).toBe("home");
     expect(lastIntent().homeVisitAddress).toBe("7 Example Street, G31 4HS");
-    expect(lastIntent().travelFeePence).toBe("1500");
-    const { bookServiceFor } = await import("@/lib/cal-services");
-    const session = Math.round(bookServiceFor("initial-assessment").price * 100);
+    expect(lastIntent()).not.toHaveProperty("travelFeePence");
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(arg.amountPence).toBe(session);
-    expect(arg.extraLineItems).toEqual([{ name: "Travel fee (1 home visit × £15)", amountPence: 1500 }]);
+    expect(arg.amountPence).toBe(sessionPricePence("initial-assessment", "home"));
+    expect(arg.amountPence).toBe(SESSION_PENCE + HOME_VISIT_EXTRA_PENCE);
+    expect(arg.serviceLabel).toBe(serviceLabelFor("initial-assessment", "home"));
+    expect(arg).not.toHaveProperty("extraLineItems");
+    expect(JSON.stringify(arg)).not.toMatch(/travel/i);
   });
 
-  it("charges every visit's travel fee upfront on a home bundle", async () => {
+  it("charges every visit's whole price upfront on a home bundle, as one line", async () => {
     okStripe();
     await POST(req({ ...VALID, service: "bundle-4", visitType: "home", homeAddressLine: "7 Example Street", homePostcode: "G31 4HS" }));
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(arg.intent.travelFeePence).toBe("6000");
-    expect(arg.extraLineItems).toEqual([{ name: "Travel fee (4 home visits × £15)", amountPence: 6000 }]);
+    expect(arg.amountPence).toBe(sessionPricePence("bundle-4", "home"));
+    expect(arg.amountPence).toBe(
+      sessionPricePence("bundle-4") + HOME_VISIT_EXTRA_PENCE * bookServiceFor("bundle-4").sessions
+    );
+    expect(arg.intent).not.toHaveProperty("travelFeePence");
+    expect(arg).not.toHaveProperty("extraLineItems");
   });
 
   it("rejects a home visit outside the covered area without echoing the address", async () => {
@@ -182,23 +188,28 @@ describe("POST /api/checkout/create — visit type", () => {
     expect(createStripeCheckout).not.toHaveBeenCalled();
   });
 
-  it("sends a video booking with no travel fee and no extra line items", async () => {
+  it("sends a video booking at the video price with no extra line items", async () => {
     okStripe();
     await POST(req(VALID));
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(arg.amountPence).toBe(sessionPricePence("initial-assessment", "video"));
     expect(arg.intent).not.toHaveProperty("travelFeePence");
-    expect(arg.extraLineItems).toBeUndefined();
+    expect(arg).not.toHaveProperty("extraLineItems");
   });
 
-  it("does not discount the travel fee on a home visit", async () => {
+  it("applies a discount code to the whole home-visit price", async () => {
     okStripe();
     const res = await POST(req({
       ...VALID, discountCode: "new10", visitType: "home", homeAddressLine: "7 Example Street", homePostcode: "G31 4HS",
     }));
     expect(res.status).toBe(200);
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(arg.amountPence).toBe(DISCOUNTED_PENCE);
-    expect(arg.extraLineItems[0].amountPence).toBe(1500);
-    expect(arg.intent.discountAmountPence).toBe(String(DISCOUNT_PENCE));
+    const whole = sessionPricePence("initial-assessment", "home");
+    const discount = Math.round(whole * 0.1);
+    expect(arg.amountPence).toBe(whole - discount);
+    expect(arg.intent.originalAmountPence).toBe(String(whole));
+    expect(arg.intent.discountAmountPence).toBe(String(discount));
+    expect(arg.intent.discountPercent).toBe("10");
+    expect(arg).not.toHaveProperty("extraLineItems");
   });
 });

@@ -4,7 +4,6 @@ import { PRACTICE_PHONE } from "@/lib/structured-data";
 import { formatGbp, issuerField } from "@/lib/invoice";
 import { INVOICE_AVATAR_PNG_BASE64 } from "@/lib/invoice-avatar";
 import type { VisitType } from "@/lib/home-visit";
-import { TRAVEL_FEE_FALLBACK_LABEL } from "@/lib/home-visit-pricing";
 
 export type InvoicePdfInput = {
   invoiceNumber: string;
@@ -16,20 +15,14 @@ export type InvoicePdfInput = {
   sessionDateISO: string | null;
   /** "home" prints the home-visit delivery line; anything else keeps the video wording. Never pass the address. */
   visitType?: VisitType;
-  /** Home visits: printed as its own row; the service row shows amount minus this. */
-  travelFeePence?: number;
-  /** Label for the travel row, e.g. "Travel fee (4 home visits × £15)"; defaults to "Travel fee (home visit)". */
-  travelFeeLabel?: string;
 };
 
-/** The rows printed under "Service details": the service, then the travel fee if any. */
-export function invoiceLineItems(
-  input: Pick<InvoicePdfInput, "amountPence" | "serviceLabel" | "travelFeePence" | "travelFeeLabel">
-) {
-  const travel = input.travelFeePence && input.travelFeePence > 0 ? input.travelFeePence : 0;
-  const rows = [{ label: input.serviceLabel, amountPence: input.amountPence - travel }];
-  if (travel) rows.push({ label: input.travelFeeLabel || TRAVEL_FEE_FALLBACK_LABEL, amountPence: travel });
-  return rows;
+/**
+ * The rows printed under "Service details": one row at the whole amount paid.
+ * A home visit is one price (lib/home-visit-pricing), never a separate fee.
+ */
+export function invoiceLineItems(input: Pick<InvoicePdfInput, "amountPence" | "serviceLabel">) {
+  return [{ label: input.serviceLabel, amountPence: input.amountPence }];
 }
 
 /** The "how it was delivered" line under the service name. No address, by design. */
@@ -253,20 +246,14 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Uint8A
   textAt(input.serviceLabel, MARGIN, rowY, { f: bold, size: 12.5 });
   textAt(invoiceDeliveryLine(input.visitType), MARGIN, rowY - 17, { size: 9.3, color: MUTED });
   textAt(fmtDate(input.sessionDateISO), MARGIN + 270, rowY, { size: 11.5, color: MUTED });
-  const lineItems = invoiceLineItems(input);
-  textRight(formatGbp(lineItems[0].amountPence), right, rowY, { f: bold, size: 12.5 });
-  const travelRow = lineItems[1];
-  const extra = travelRow ? 40 : 0;
-  if (travelRow) {
-    textAt(travelRow.label, MARGIN, rowY - 40, { f: bold, size: 11.5 });
-    textRight(formatGbp(travelRow.amountPence), right, rowY - 40, { f: bold, size: 11.5 });
-  }
-  rule(rowY - 34 - extra);
+  const [lineItem] = invoiceLineItems(input);
+  textRight(formatGbp(lineItem.amountPence), right, rowY, { f: bold, size: 12.5 });
+  rule(rowY - 34);
 
   const totalW = 218;
   const totalH = 82;
   const totalX = right - totalW;
-  const totalY = rowY - 126 - extra;
+  const totalY = rowY - 126;
   roundedRect(totalX, totalY, totalW, totalH, 10, WASH, TOTAL_BORDER);
   label("Total paid", totalX + 18, totalY + totalH - 28);
   textRight(formatGbp(input.amountPence), totalX + totalW - 18, totalY + 24, { f: bold, size: 22 });

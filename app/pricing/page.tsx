@@ -3,12 +3,7 @@ import Link from "next/link";
 
 import { serviceLabelFor } from "@/lib/cal-services";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import {
-  HOME_VISIT_TRAVEL_FEE_PENCE,
-  formatPounds,
-  sessionPricePence,
-  travelFeePence
-} from "@/lib/home-visit-pricing";
+import { formatPounds, homeVisitPricePence, homeVisitPrices } from "@/lib/home-visit-pricing";
 import { getPublicPricing } from "@/lib/public-content";
 import { bundleSessionCount, initialAssessmentPrice, payAsYouGoPrice, pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
@@ -21,8 +16,8 @@ const followUp = pricing.find((item) => item.id === "follow-up")?.price ?? 0;
 // in the snippet, and ours undercuts most of them.
 export const metadata: Metadata = {
   alternates: { canonical: "/pricing" },
-  title: `Online Physio Prices: £${initialAssessmentPrice} Assessment, £${followUp} Follow-Up | PhysioOnClick`,
-  description: `Online physio with an HCPC-registered physio: £${initialAssessmentPrice} video assessment, £${followUp} follow-ups, bundles to save more. No GP referral; insurance-ready invoices.`
+  title: `Physio Prices Glasgow: ${homeVisitPrices.initial} Home Visit, £${initialAssessmentPrice} Video | PhysioOnClick`,
+  description: `Clear physio prices: ${homeVisitPrices.initial} home assessment and ${homeVisitPrices.followUp} follow-ups in Glasgow, all in, or £${initialAssessmentPrice} by video UK-wide. No GP referral; insurance-ready invoices.`
 };
 
 export const dynamic = "force-static";
@@ -54,6 +49,39 @@ export default function PricingPage() {
       </section>
 
       <section className="page-section stack pricing-sections">
+        {/* Home visits first: most searches and enquiries are local (Glasgow). */}
+        <div>
+          <Reveal direction="up">
+            <h2>
+              Home visits in Glasgow{" "}
+              <span>(one all-in price per visit)</span>
+            </h2>
+          </Reveal>
+          <p className="muted">
+            We visit {HOME_VISIT_AREA_LABEL}. The price you see is the price you pay, with nothing added at
+            checkout or on your invoice; bundles cover every visit upfront.
+          </p>
+          <div className="pricing-grid pricing-grid-two">
+            {[...online, ...packages].map((item) => (
+              <article key={item.id} className="simple-price-card">
+                <h3>{serviceLabelFor(item.id, "home")}</h3>
+                <strong>{formatPounds(homeVisitPricePence(item.id))}</strong>
+                <p className="muted">{item.duration}</p>
+              </article>
+            ))}
+          </div>
+          <div style={{ marginTop: "1rem" }}>
+            <TrackedBookLink
+              className="button primary"
+              href="/book?visit=home"
+              source="pricing_page_home_visit"
+              event="book_now_click"
+            >
+              Book a home visit
+            </TrackedBookLink>
+          </div>
+        </div>
+
         <div>
           <Reveal direction="up">
             <h2>Video appointments <span>(UK-wide)</span></h2>
@@ -106,41 +134,6 @@ export default function PricingPage() {
                 </Reveal>
               );
             })}
-          </div>
-        </div>
-
-        <div>
-          <Reveal direction="up">
-            <h2>
-              Home visits in Glasgow{" "}
-              <span>(video price + {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit)</span>
-            </h2>
-          </Reveal>
-          <p className="muted">
-            We visit {HOME_VISIT_AREA_LABEL}. The travel fee is a fixed {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} per visit,
-            shown as its own line at checkout and on your invoice; bundles include every visit&apos;s fee upfront. Discount
-            codes apply to the session price.
-          </p>
-          <div className="pricing-grid pricing-grid-two">
-            {[...online, ...packages].map((item) => (
-              <article key={item.id} className="simple-price-card">
-                <h3>{serviceLabelFor(item.id, "home")}</h3>
-                <strong>{formatPounds(sessionPricePence(item.id) + travelFeePence(item.id, "home"))}</strong>
-                <p className="muted">
-                  {formatPounds(sessionPricePence(item.id))} + {formatPounds(travelFeePence(item.id, "home"))} travel
-                </p>
-              </article>
-            ))}
-          </div>
-          <div style={{ marginTop: "1rem" }}>
-            <TrackedBookLink
-              className="button primary"
-              href="/book?visit=home"
-              source="pricing_page_home_visit"
-              event="book_now_click"
-            >
-              Book a home visit
-            </TrackedBookLink>
           </div>
         </div>
 

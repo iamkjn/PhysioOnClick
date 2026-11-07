@@ -150,9 +150,9 @@ export const services: Service[] = [
       "patellofemoral-pain",
       "achilles-tendinopathy"
     ],
-    seoTitle: "Online Physio for Back, Neck & Joint Pain | PhysioOnClick",
+    seoTitle: "Back, Neck & Joint Pain Physio at Home or Online | PhysioOnClick",
     seoDescription:
-      "Video physiotherapy for back, neck, shoulder, knee and tendon pain with an HCPC-registered physio, UK-wide."
+      "Physiotherapy for back, neck, shoulder, knee and tendon pain at home in Glasgow, or by video UK-wide, with an HCPC-registered physio."
   },
   {
     slug: "post-surgical-rehabilitation",
@@ -197,7 +197,7 @@ export const services: Service[] = [
       {
         question: "Can I have post-surgical rehab at home?",
         answer:
-          "Yes, if you live in the Glasgow area. Home visits are available for post-surgical rehab, at the video price plus a travel fee per visit, and can include hands-on treatment (manual therapy) where appropriate. The same rule applies: rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
+          "Yes, if you live in the Glasgow area. Home visits are available for post-surgical rehab, at one all-in home-visit price (see the pricing page), and can include hands-on treatment (manual therapy) where appropriate. The same rule applies: rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
       },
       {
         question: "Do you work with my surgeon or NHS physio team?",
@@ -211,9 +211,9 @@ export const services: Service[] = [
       "after-acl-reconstruction",
       "acl-rehabilitation"
     ],
-    seoTitle: "Online Rehab After Knee, Hip & ACL Surgery | PhysioOnClick",
+    seoTitle: "Post-Surgery Rehab at Home in Glasgow or Online | PhysioOnClick",
     seoDescription:
-      "Physio-led online rehab after knee or hip replacement, ACL reconstruction, rotator cuff repair and fractures."
+      "Physio-led rehab after knee or hip replacement, ACL reconstruction, rotator cuff repair and fractures, at home in Glasgow or online UK-wide."
   },
   {
     slug: "neurological-rehabilitation",
@@ -260,8 +260,9 @@ export const services: Service[] = [
       {
         question: "Can I have neurological rehab at home?",
         answer:
-          // Wording approved in clinical sign-off round 3 (2026-10-06). "£15" literal: see the note below.
-          "If you live in Glasgow (G1–G53), Paisley (PA1–PA3) or Hamilton (ML3), your physiotherapist can come to your home. For many neurological conditions, home is where the practice matters most: your own stairs, your own chair, the route to your front door. A family member or carer is welcome to join and learn how to support practice between sessions. A home visit costs the video price plus a £15 travel fee, and can include hands-on treatment where appropriate. Outside the area, sessions are by video. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy."
+          // Wording approved in clinical sign-off round 3 (2026-10-06); only the price sentence changed since
+          // (2026-11-07: one all-in home-visit price, no figure here, see the note below).
+          "If you live in Glasgow (G1–G53), Paisley (PA1–PA3) or Hamilton (ML3), your physiotherapist can come to your home. For many neurological conditions, home is where the practice matters most: your own stairs, your own chair, the route to your front door. A family member or carer is welcome to join and learn how to support practice between sessions. A home visit has one all-in price, shown when you book, and can include hands-on treatment where appropriate. Outside the area, sessions are by video. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy."
       },
       {
         question: "Do you offer stroke physiotherapy in Glasgow?",
@@ -296,16 +297,16 @@ export const services: Service[] = [
       {
         question: "I'm in Glasgow — can I see you in person?",
         answer:
-          // "£15" is literal here: importing HOME_VISIT_TRAVEL_FEE_PENCE would create an
+          // No price figure here: importing lib/home-visit-pricing would create an
           // import cycle (lib/home-visit-pricing -> lib/cal-services -> this file).
-          // tests/lib/home-visit-copy.test.ts keeps it in step with the constant.
-          "Yes, through home visits in the Glasgow area, at the video price plus a £15 travel fee per visit. Elsewhere in Scotland and the UK, appointments are by video, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. When you book a home visit you enter your postcode and see straight away whether we cover it, and we'll tell you at triage if another kind of neuro physiotherapy would suit you better."
+          // tests/lib/home-visit-copy.test.ts checks no old fee wording comes back.
+          "Yes, through home visits in the Glasgow area, at one all-in home-visit price shown when you book. Elsewhere in Scotland and the UK, appointments are by video, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. When you book a home visit you enter your postcode and see straight away whether we cover it, and we'll tell you at triage if another kind of neuro physiotherapy would suit you better."
       }
     ],
-    headline: "Neurological Physiotherapy in Glasgow: Home Visits & Online",
-    seoTitle: "Neuro Physio Glasgow – Home Visits & Online | PhysioOnClick",
+    headline: "Neurological Physiotherapy at Home in Glasgow, and Online",
+    seoTitle: "Neuro Physio at Home in Glasgow & Online | PhysioOnClick",
     seoDescription:
-      "Neurological physiotherapy in Glasgow with home visits, plus video sessions UK-wide: stroke, Parkinson's, MS, FND, balance and mobility."
+      "Neurological physiotherapy at home in Glasgow, plus video sessions UK-wide: stroke rehabilitation, Parkinson's, MS, FND, balance and mobility."
   },
   {
     slug: "paediatric-physiotherapy",

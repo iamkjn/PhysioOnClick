@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
+import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { breadcrumbs, PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@/lib/structured-data";
 
 // The home-visit page: what happens at a visit, who it suits and where we go.
@@ -11,13 +11,13 @@ import { breadcrumbs, PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@
 // visit or video); this one owns the home-visit intent. Every price is derived
 // from lib/home-visit-pricing, never hardcoded.
 const videoInitial = formatPounds(sessionPricePence("initial-assessment"));
-const homeInitial = formatPounds(sessionPricePence("initial-assessment") + travelFeePence("initial-assessment", "home"));
-const travelFee = formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE);
+const homeInitial = homeVisitPrices.initial;
+const homeFollowUp = homeVisitPrices.followUp;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/physiotherapy-home-visits-glasgow" },
-  title: "Physio Home Visits Glasgow, Paisley & Hamilton | PhysioOnClick",
-  description: `Physiotherapy home visits across Glasgow (G1–G53), Paisley and Hamilton by an HCPC registered physio. ${homeInitial} home assessment, hands-on treatment where appropriate.`
+  title: "Home Physiotherapy Glasgow, Paisley & Hamilton | PhysioOnClick",
+  description: `Home physiotherapy in Glasgow (G1–G53), Paisley and Hamilton from an HCPC registered physio. ${homeInitial} home assessment, all in; hands-on treatment where appropriate.`
 };
 
 const faqItems = [
@@ -27,7 +27,7 @@ const faqItems = [
   },
   {
     question: "How much does a physiotherapy home visit cost?",
-    answer: `A home visit costs the video appointment price plus a ${travelFee} travel fee per visit. The initial assessment is ${homeInitial} as a home visit (${videoInitial} by video). Bundles booked as home visits include the travel fee for every visit, paid when you book.`
+    answer: `A home visit is one all-in price: ${homeInitial} for the initial assessment and ${homeFollowUp} for a follow-up, with nothing added at checkout (${videoInitial} for an assessment by video). Bundles booked as home visits cover every visit, paid when you book.`
   },
   {
     question: "Do I need a GP referral for a home visit?",
@@ -83,8 +83,7 @@ export default function HomeVisitsGlasgowPage() {
           <h1>Physiotherapy home visits in Glasgow, Paisley and Hamilton</h1>
           <p className="lead">
             A Glasgow-based, HCPC registered physiotherapist comes to you. The initial home assessment is{" "}
-            {homeInitial}: the {videoInitial} assessment price plus a {travelFee} travel fee. Home visits
-            cover {HOME_VISIT_AREA_LABEL}.
+            {homeInitial} all in, and follow-ups are {homeFollowUp}. Home visits cover {HOME_VISIT_AREA_LABEL}.
           </p>
           {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
             <p>

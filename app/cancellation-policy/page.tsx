@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import { Reveal } from "@/components/reveal";
-import { HOME_VISIT_TRAVEL_FEE_PENCE, formatPounds } from "@/lib/home-visit-pricing";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/cancellation-policy" },
@@ -64,8 +63,8 @@ export default function CancellationPolicyPage() {
           <p>
             If we decline or cannot attend a home visit because your address is outside the area we cover or
             we have a safety concern at the address, you will get a full refund or a new appointment,
-            whichever you prefer. The notice rules above apply to your own cancellations. Any full refund for a
-            home visit includes its travel fee.
+            whichever you prefer. The notice rules above apply to your own cancellations. A full refund for a
+            home visit is the whole home-visit price you paid.
           </p>
         </article>
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
@@ -73,8 +72,8 @@ export default function CancellationPolicyPage() {
           <p>
             Each session in a package follows the same 24-hour notice rule. If you decide to stop a package,
             we will refund the sessions you have not used, worked out as the package price divided by the
-            number of sessions, multiplied by the sessions remaining. For a home-visit package, the refund for each
-            unused session also includes that session&apos;s {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee.
+            number of sessions, multiplied by the sessions remaining. For a home-visit package, that is the whole
+            home-visit package price you paid.
             Package sessions are valid for 12 months from the date of purchase.
           </p>
         </article>

@@ -9,6 +9,8 @@ const db = {
 };
 vi.mock("@/lib/firebase-admin", () => ({ getAdminDb: () => db }));
 import { getReceiptBySession } from "@/lib/patient-receipt";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
+import { serviceLabelFor } from "@/lib/cal-services";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -54,23 +56,26 @@ describe("getReceiptBySession", () => {
     expect((await getReceiptBySession("cs_v"))!.serviceLabel).toBe("Initial Online Assessment");
   });
 
-  it("returns the stored travel fee for a home visit and 0 for video", async () => {
+  it("returns the whole amount paid for a home visit, with no travel fields", async () => {
     bookingsGet.mockResolvedValue({ empty: true, docs: [] });
-    const pay = (extra: Record<string, unknown>) => ({
+    const homePence = sessionPricePence("initial-assessment", "home");
+    paymentsGet.mockResolvedValue({
       empty: false,
       docs: [{ data: () => ({
         status: "paid", invoiceNumber: "INV-2026-AB12CD", paidAt: "2026-07-31T10:00:00.000Z",
-        amountPence: 5500, service: "initial-assessment", email: "ada@example.com", ...extra,
+        amountPence: homePence, service: "initial-assessment", email: "ada@example.com", visitType: "home",
       }) }],
     });
-    paymentsGet.mockResolvedValue(pay({ visitType: "home", travelFeePence: 1500 }));
-    expect((await getReceiptBySession("cs_h"))!.travelFeePence).toBe(1500);
-    paymentsGet.mockResolvedValue(pay({}));
-    expect((await getReceiptBySession("cs_v"))!.travelFeePence).toBe(0);
+    const r = (await getReceiptBySession("cs_h"))!;
+    expect(r.amountPence).toBe(homePence);
+    expect(r).not.toHaveProperty("travelFeePence");
+    expect(r).not.toHaveProperty("travelFeeLabel");
   });
 });
 
-describe("getReceiptBySession travel fee label", () => {
+describe("getReceiptBySession under the old split travel fee", () => {
+  // Payments taken before 2026-11-07 stored travelFeePence beside the total.
+  // amountPence already includes it, so the receipt shows that whole amount.
   const pay = (extra: Record<string, unknown>) => ({
     empty: false,
     docs: [{ data: () => ({
@@ -79,21 +84,23 @@ describe("getReceiptBySession travel fee label", () => {
     }) }],
   });
 
-  it("labels the travel row with the visit count, like the Stripe line item", async () => {
+  it("shows the whole amount paid and drops the stored travel fee", async () => {
     bookingsGet.mockResolvedValue({ empty: true, docs: [] });
     paymentsGet.mockResolvedValue(pay({ visitType: "home", travelFeePence: 6000 }));
-    expect((await getReceiptBySession("cs_b4"))!.travelFeeLabel).toBe("Travel fee (4 home visits × £15)");
+    const r = (await getReceiptBySession("cs_b4"))!;
+    expect(r.amountPence).toBe(18000);
+    expect(r.serviceLabel).toBe(serviceLabelFor("bundle-4", "home"));
+    expect(r).not.toHaveProperty("travelFeePence");
+    expect(r).not.toHaveProperty("travelFeeLabel");
+    expect(JSON.stringify(r)).not.toMatch(/travel/i);
   });
 
-  it("falls back to a plain label for a service it does not recognise", async () => {
-    bookingsGet.mockResolvedValue({ empty: true, docs: [] });
-    paymentsGet.mockResolvedValue(pay({ service: "legacy", visitType: "home", travelFeePence: 1500 }));
-    expect((await getReceiptBySession("cs_x"))!.travelFeeLabel).toBe("Travel fee (home visit)");
-  });
-
-  it("has no travel label for a video receipt", async () => {
+  it("has no travel fields on a video receipt", async () => {
     bookingsGet.mockResolvedValue({ empty: true, docs: [] });
     paymentsGet.mockResolvedValue(pay({ amountPence: 12000 }));
-    expect((await getReceiptBySession("cs_v"))!.travelFeeLabel).toBe("");
+    const r = (await getReceiptBySession("cs_v"))!;
+    expect(r.amountPence).toBe(12000);
+    expect(r).not.toHaveProperty("travelFeePence");
+    expect(r).not.toHaveProperty("travelFeeLabel");
   });
 });

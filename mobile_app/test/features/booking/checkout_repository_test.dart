@@ -207,4 +207,43 @@ void main() {
     expect(kCheckoutUnreachable,
         "We couldn't reach the booking service. Please check your connection and try again.");
   });
+
+  test('validateDiscount sends visitType (video by default) and parses the whole-price discount', () async {
+    final bodies = <Map<String, dynamic>>[];
+    final client = MockClient((request) async {
+      expect(request.url.path, '/api/checkout/discount');
+      final body = jsonDecode(request.body) as Map<String, dynamic>;
+      bodies.add(body);
+      final home = body['visitType'] == 'home';
+      return http.Response(
+        jsonEncode({
+          'ok': true,
+          'discount': {
+            'percent': 10,
+            'amountPence': home ? 7200 : 3600,
+            'originalAmountPence': home ? 8000 : 4000,
+            'discountAmountPence': home ? 800 : 400,
+          },
+        }),
+        200,
+      );
+    });
+    final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
+
+    final video = await repo.validateDiscount(code: ' new10 ', email: 'Pat@Example.com', service: 'initial-assessment');
+    final home = await repo.validateDiscount(
+        code: 'NEW10', email: 'pat@example.com', service: 'initial-assessment', visitType: 'home');
+
+    expect(bodies[0], {
+      'code': 'NEW10',
+      'email': 'pat@example.com',
+      'service': 'initial-assessment',
+      'visitType': 'video',
+    });
+    expect(bodies[1]['visitType'], 'home');
+    expect(video.amountPence, 3600);
+    expect(home.amountPence, 7200);
+    expect(home.originalAmountPence, 8000);
+    expect(home.discountAmountPence, 800);
+  });
 }

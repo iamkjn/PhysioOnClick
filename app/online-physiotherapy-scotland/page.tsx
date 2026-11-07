@@ -4,14 +4,14 @@ import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { allOnlinePhysioSlugs, getOnlinePhysioPage } from "@/lib/online-physio-pages";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
+import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { practiceRef } from "@/lib/structured-data";
 import { absoluteUrl } from "@/lib/utils";
 
-// Home visits cost the video price plus a travel fee, so the two prices are
-// derived separately from lib/home-visit-pricing.
+// A home visit has its own whole price, so the two prices are derived
+// separately from lib/home-visit-pricing.
 const videoInitial = formatPounds(sessionPricePence("initial-assessment"));
-const homeInitial = formatPounds(sessionPricePence("initial-assessment") + travelFeePence("initial-assessment", "home"));
+const homeInitial = homeVisitPrices.initial;
 
 // CLINICAL REVIEW GATE: draft copy pending Shivaliba Zala's sign-off
 // (docs/seo/phase-b-clinical-review.md). Dev site only until then.

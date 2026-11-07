@@ -5,7 +5,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 
 import { founder } from "@/lib/site-data";
-import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
+import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
 import { Reveal } from "@/components/reveal";
@@ -15,22 +15,24 @@ import { TrustpilotReviews } from "@/components/trustpilot-reviews";
 // the UK as the second option: Search Console, Aug-Nov 2026, showed ~480
 // impressions for physio + Glasgow/near me/home (~360 of them neuro, stroke,
 // Parkinson's, MS or FND + Glasgow) against 14 for physio + online/video.
-// Prices come from lib/home-visit-pricing, never hardcoded.
+// Wording also borrows the "physiotherapy at home" phrasing the Glasgow
+// home-physio competition ranks with (2026-11-07 comparison). Prices come from
+// lib/home-visit-pricing, never hardcoded.
 const videoPrice = formatPounds(sessionPricePence("initial-assessment"));
-const homeVisitPrice = formatPounds(
-  sessionPricePence("initial-assessment") + travelFeePence("initial-assessment", "home")
-);
-const title = "Physio Home Visits in Glasgow & Neuro Rehab | PhysioOnClick";
-const description = `HCPC registered physio home visits in Glasgow, including neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, or ${videoPrice} by video across the UK.`;
+const homeVisitPrice = homeVisitPrices.initial;
+const title = "Physio at Home in Glasgow & Neuro Rehab | PhysioOnClick";
+const description = `Home physiotherapy in Glasgow from an HCPC registered physio, including neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, or ${videoPrice} by video.`;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
   title,
   description,
   keywords: [
-    "physiotherapy home visits Glasgow",
-    "neurological physiotherapy Glasgow",
-    "home physio Glasgow",
+    "home physiotherapy Glasgow",
+    "physiotherapy at home Glasgow",
+    "physio home visits Glasgow",
+    "neurological physiotherapy at home",
+    "stroke rehabilitation at home Glasgow",
     "online physiotherapy UK",
     "private physiotherapy insurance invoice",
   ],
@@ -76,7 +78,8 @@ export default async function HomePage() {
           <div className="site-shell trust-bar">
             <span>HCPC Registered</span>
             <span>CSP Member</span>
-            <span>Online appointments across the UK</span>
+            <span>Home visits in Glasgow</span>
+            <span>Video appointments across the UK</span>
           </div>
         </section>
       </Reveal>
@@ -118,8 +121,8 @@ export default async function HomePage() {
       <section className="page-section simple-section">
         <Reveal direction="up">
           <div className="site-shell section-heading">
-            <h2>Our Services</h2>
-            <p>Comprehensive physiotherapy services tailored to your needs, delivered by an experienced specialist.</p>
+            <h2>What we can help with</h2>
+            <p>Physiotherapy at home in the Glasgow area, or by video anywhere in the UK, from one HCPC registered physiotherapist.</p>
           </div>
         </Reveal>
         <div className="site-shell simple-card-grid">
@@ -243,7 +246,7 @@ export default async function HomePage() {
           </details>
           <details>
             <summary>Can I be seen in person?</summary>
-            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit costs the video price plus a {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit and can include hands-on treatment (manual therapy) where appropriate. We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
+            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit is {homeVisitPrices.initial} for the initial assessment and {homeVisitPrices.followUp} for a follow-up, all in, and can include hands-on treatment (manual therapy) where appropriate. We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
           </details>
           <details>
             <summary>Is online physiotherapy actually effective?</summary>

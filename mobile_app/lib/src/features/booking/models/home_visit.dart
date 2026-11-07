@@ -3,18 +3,25 @@ import 'book_service.dart';
 /// Mirrors lib/home-visit.ts + lib/home-visit-pricing.ts on the web app.
 enum VisitType { video, home }
 
-const int kHomeVisitTravelFeePence = 1500;
+/// What a home visit adds to the video price, per visit (owner decision
+/// 2026-11-07). Patients only ever see the whole price, never this figure on
+/// its own, and there is no separate "travel fee". This is the only place the
+/// amount is defined: every home price is derived from it plus the video
+/// price in book_service.dart. Mirrors the web app's home-visit pricing.
+const int kHomeVisitExtraPence = 4000;
 
-int sessionPricePence(ResolvedService s) => (s.price * 100).round();
+/// The video (online) price of [s] in pence.
+int videoPricePence(ResolvedService s) => (s.price * 100).round();
 
-int travelFeePence(ResolvedService s, VisitType v) =>
-    v == VisitType.home ? kHomeVisitTravelFeePence * s.sessions : 0;
+/// The whole price of [s] in pence for visit type [v]: the video price, or
+/// for a home visit the video price plus [kHomeVisitExtraPence] for every
+/// visit in the service (bundles pay for all their visits upfront). Discount
+/// codes apply to this whole amount; the server computes the discounted one.
+int sessionPricePence(ResolvedService s, VisitType v) =>
+    videoPricePence(s) +
+    (v == VisitType.home ? kHomeVisitExtraPence * s.sessions : 0);
 
-/// Session + travel. Discounts apply to the session price only, elsewhere.
-int totalPence(ResolvedService s, VisitType v) =>
-    sessionPricePence(s) + travelFeePence(s, v);
-
-/// "£55" for whole pounds, "£51.50" otherwise.
+/// "£80" for whole pounds, "£51.50" otherwise.
 String formatPounds(int pence) =>
     pence % 100 == 0 ? '£${pence ~/ 100}' : '£${(pence / 100).toStringAsFixed(2)}';
 
@@ -27,13 +34,14 @@ String serviceLabelFor(ResolvedService s, VisitType v) {
   };
 }
 
-String travelFeeLabel(ResolvedService s) =>
-    'Travel fee (${s.sessions} home visit${s.sessions == 1 ? '' : 's'} × ${formatPounds(kHomeVisitTravelFeePence)})';
-
-/// "£40 session + £15 travel" (bundles: "£120 sessions + £60 travel").
-String homePriceSummary(ResolvedService s) =>
-    '${formatPounds(sessionPricePence(s))} session${s.sessions == 1 ? '' : 's'}'
-    ' + ${formatPounds(travelFeePence(s, VisitType.home))} travel';
+/// The whole home-visit price as one figure: "£80 home visit", or for
+/// bundles "£280 for 4 home visits".
+String homeVisitPriceLabel(ResolvedService s) {
+  final price = formatPounds(sessionPricePence(s, VisitType.home));
+  return s.sessions == 1
+      ? '$price home visit'
+      : '$price for ${s.sessions} home visits';
+}
 
 /// "g31  4hs" -> "G31 4HS". Too-short input is only trimmed/upper-cased.
 String normalisePostcode(String raw) {

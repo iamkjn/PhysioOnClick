@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Home visits (Glasgow area) ride the same pay-first path as video bookings:
-// visitType + address travel in Stripe metadata, and the payments webhook must
+// visitType + address ride in Stripe metadata, and the payments webhook must
 // pass them on to Cal.com, the Firestore records and the receipt email.
 
 const bookingDoc = { update: vi.fn().mockResolvedValue(undefined) };
@@ -42,6 +42,7 @@ import { createCalBooking } from "@/lib/cal-booking";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
 import { generateInvoicePdf } from "@/lib/invoice-pdf";
 import { POST } from "@/app/api/payments/webhook/route";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
 
 const SECRET = "whsec_test";
 
@@ -202,26 +203,47 @@ describe("POST /api/payments/webhook — home-visit Cal.com event", () => {
   });
 });
 
-describe("POST /api/payments/webhook — travel fee", () => {
-  it("stores the travel fee on the payment doc and the booking doc", async () => {
-    await POST(signedRequest(eventWith({ visitType: "home", homeVisitAddress: ADDRESS, travelFeePence: "1500" })));
+describe("POST /api/payments/webhook — whole home-visit price", () => {
+  // A home visit is one whole price (lib/home-visit-pricing): Stripe's
+  // amount_total is the whole amount, with no separate travel fee anywhere.
+  const HOME_PENCE = sessionPricePence("initial-assessment", "home");
+  function homeEvent(extra: Record<string, string> = {}) {
+    const event = eventWith({ visitType: "home", homeVisitAddress: ADDRESS, ...extra });
+    event.data.object.amount_total = HOME_PENCE;
+    return event;
+  }
+
+  it("stores the whole amount paid on the payment doc and the booking doc, with no travel fee", async () => {
+    await POST(signedRequest(homeEvent()));
     const paid = paymentDocRef.set.mock.calls.map((c) => c[0]).find((d) => d.status === "paid");
-    expect(paid.travelFeePence).toBe(1500);
-    expect(bookingDoc.update.mock.calls[0][0].travelFeePence).toBe(1500);
+    expect(paid.amountPence).toBe(HOME_PENCE);
+    expect(paid).not.toHaveProperty("travelFeePence");
+    const bookingWrite = bookingDoc.update.mock.calls[0][0];
+    expect(bookingWrite.amountPaidPence).toBe(HOME_PENCE);
+    expect(bookingWrite).not.toHaveProperty("travelFeePence");
   });
 
-  it("passes the travel fee to the invoice and the receipt email", async () => {
-    await POST(signedRequest(eventWith({ visitType: "home", homeVisitAddress: ADDRESS, travelFeePence: "1500" })));
-    expect((generateInvoicePdf as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].travelFeePence).toBe(1500);
-    expect((sendReceiptEmail as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].travelFeePence).toBe(1500);
+  it("ignores a stale travelFeePence left in checkout metadata", async () => {
+    await POST(signedRequest(homeEvent({ travelFeePence: "1500" })));
+    const paid = paymentDocRef.set.mock.calls.map((c) => c[0]).find((d) => d.status === "paid");
+    expect(paid.amountPence).toBe(HOME_PENCE);
+    expect(paid).not.toHaveProperty("travelFeePence");
+    expect(bookingDoc.update.mock.calls[0][0]).not.toHaveProperty("travelFeePence");
+    expect(vi.mocked(generateInvoicePdf).mock.calls[0][0]).not.toHaveProperty("travelFeePence");
+    expect(vi.mocked(sendReceiptEmail).mock.calls[0][0]).not.toHaveProperty("travelFeePence");
   });
 
-  it("labels the travel fee with the visit count on the invoice and the receipt email, but does not store the label", async () => {
-    await POST(signedRequest(eventWith({ visitType: "home", homeVisitAddress: ADDRESS, travelFeePence: "1500" })));
-    expect((generateInvoicePdf as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].travelFeeLabel).toBe("Travel fee (1 home visit × £15)");
-    expect((sendReceiptEmail as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0].travelFeeLabel).toBe("Travel fee (1 home visit × £15)");
-    const paid = paymentDocRef.set.mock.calls.map((c) => c[0]).find((d) => d.status === "paid");
-    expect(paid).not.toHaveProperty("travelFeeLabel");
+  it("passes the whole amount to the invoice and the receipt email, with no travel fields", async () => {
+    await POST(signedRequest(homeEvent()));
+    const invoiceArgs = vi.mocked(generateInvoicePdf).mock.calls[0][0];
+    const emailArgs = vi.mocked(sendReceiptEmail).mock.calls[0][0];
+    expect(invoiceArgs.amountPence).toBe(HOME_PENCE);
+    expect(emailArgs.amountPence).toBe(HOME_PENCE);
+    for (const args of [invoiceArgs, emailArgs]) {
+      expect(args).not.toHaveProperty("travelFeePence");
+      expect(args).not.toHaveProperty("travelFeeLabel");
+    }
+    expect(JSON.stringify(invoiceArgs)).not.toMatch(/travel/i);
   });
 
   it("adds no travel fee anywhere for a video booking", async () => {

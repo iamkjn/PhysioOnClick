@@ -182,6 +182,8 @@ void main() {
       expect(find.text('Book your appointment'), findsOneWidget);
       expect(find.text('How would you like to be seen?'), findsOneWidget);
       expect(find.text('Initial Online Assessment'), findsOneWidget);
+      expect(find.text('£40 · 60 min'), findsOneWidget);
+      expect(find.text('£30 · 30 min'), findsOneWidget);
       expect(find.text('Focus area (optional)'), findsNothing);
       expect(find.byKey(const Key('postcodeField')), findsNothing);
       await tester.tap(find.text('Continue to times'));
@@ -190,7 +192,7 @@ void main() {
       expect(continued!.homeAddress, isNull);
     });
 
-    testWidgets('home + covered postcode shows dropdown and £55', (tester) async {
+    testWidgets('home + covered postcode shows dropdown and the whole £80 price', (tester) async {
       await big(tester);
       await tester.pumpWidget(app());
       await tester.pumpAndSettle();
@@ -201,8 +203,12 @@ void main() {
       expect(find.text('We visit G31.'), findsOneWidget);
       expect(addressDropdown(), findsOneWidget);
       expect(find.text('Initial Assessment (home visit)'), findsOneWidget);
-      expect(find.textContaining('£55'), findsOneWidget);
-      expect(find.textContaining('incl. £15 travel'), findsWidgets);
+      expect(find.text('£80 · 60 min'), findsOneWidget);
+      expect(find.text('£70 · 30 min'), findsOneWidget);
+      expect(find.text('£280 · Flexible'), findsOneWidget);
+      expect(find.text('£545 · Flexible'), findsOneWidget);
+      expect(find.textContaining('travel'), findsNothing);
+      expect(find.textContaining('incl.'), findsNothing);
     });
 
     testWidgets('uncovered shows message and switching to video works', (tester) async {

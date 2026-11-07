@@ -7,7 +7,7 @@ import { getCondition, getSelfTest } from "@/lib/exercise-library";
 import { getGuide } from "@/lib/guides";
 import { PAGE_DISCLAIMER } from "@/lib/exercise-disclaimer";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit";
-import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
+import { homeVisitPrices } from "@/lib/home-visit-pricing";
 import {
   allOnlinePhysioSlugs,
   getOnlinePhysioPage,
@@ -150,8 +150,8 @@ export default async function OnlinePhysioLandingPage({
         <p data-home-visit>
           If you live in {HOME_VISIT_AREA_LABEL}, you can{" "}
           <Link href="/book?visit=home">book a home visit</Link> instead of a video call. A home visit
-          costs the video price plus a {formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit,
-          and can include hands-on treatment (manual therapy) where appropriate. Video sessions cannot
+          is {homeVisitPrices.initial} for the initial assessment and {homeVisitPrices.followUp} for a follow-up,
+          all in, and can include hands-on treatment (manual therapy) where appropriate. Video sessions cannot
           include hands-on treatment.
           {homeVisitClearance(page.serviceSlug) ? <> {homeVisitClearance(page.serviceSlug)}</> : null}
         </p>

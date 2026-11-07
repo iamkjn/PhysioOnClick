@@ -1,25 +1,30 @@
-import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { bookServiceFor } from "@/lib/cal-services";
 import type { VisitType } from "@/lib/home-visit";
 import type { BookServiceId } from "@/lib/site-data";
 
 /**
- * Home visits cost the video price plus a travel fee per visit (owner decision
- * 2026-10-04). Bundles pay every visit's fee upfront. Discount codes never
- * reduce the travel fee. This is the only place the fee is defined.
+ * A home visit costs the video price plus this much per visit (owner decision
+ * 2026-11-07: £40, priced just under the Glasgow home-physio competition; it
+ * replaced a separately shown £15 "travel fee"). Patients only ever see the
+ * whole home-visit price, never a separate fee line. Bundles pay every visit's
+ * amount upfront. This is the only place the amount is defined.
  */
-export const HOME_VISIT_TRAVEL_FEE_PENCE = 1500;
+export const HOME_VISIT_EXTRA_PENCE = 4000;
 
-export function sessionPricePence(service: BookServiceId): number {
-  return Math.round(bookServiceFor(service).price * 100);
+/**
+ * What the patient pays before any discount: the video price, or for a home
+ * visit the whole home-visit price (video price + HOME_VISIT_EXTRA_PENCE per
+ * visit). Discount codes apply to this whole figure.
+ */
+export function sessionPricePence(service: BookServiceId, visitType?: VisitType): number {
+  const { price, sessions } = bookServiceFor(service);
+  const videoPence = Math.round(price * 100);
+  return visitType === "home" ? videoPence + HOME_VISIT_EXTRA_PENCE * sessions : videoPence;
 }
 
-export function travelFeePence(service: BookServiceId, visitType?: VisitType): number {
-  if (visitType !== "home") return 0;
-  return HOME_VISIT_TRAVEL_FEE_PENCE * bookServiceFor(service).sessions;
-}
-
-export function totalPence(input: { sessionPence: number; discountPence: number; travelFeePence: number }): number {
-  return Math.max(0, input.sessionPence - input.discountPence) + input.travelFeePence;
+/** The whole price of a service booked as home visits. */
+export function homeVisitPricePence(service: BookServiceId): number {
+  return sessionPricePence(service, "home");
 }
 
 /** "£55" for whole pounds, "£51.50" otherwise. */
@@ -27,23 +32,8 @@ export function formatPounds(pence: number): string {
   return pence % 100 === 0 ? `£${pence / 100}` : `£${(pence / 100).toFixed(2)}`;
 }
 
-export function travelFeeLabel(service: BookServiceId): string {
-  const visits = bookServiceFor(service).sessions;
-  return `Travel fee (${visits} home visit${visits === 1 ? "" : "s"} × ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)})`;
-}
-
-export const TRAVEL_FEE_FALLBACK_LABEL = "Travel fee (home visit)";
-
-/**
- * Label for a travel fee that has already been charged (receipt page, invoice
- * PDF, receipt email). Uses the same per-visit breakdown as the Stripe line
- * item, but only when the charge still matches the current fee for that
- * service; an unknown service, or a payment taken at a different fee, gets
- * the plain label so an old receipt never shows the wrong per-visit rate.
- */
-export function chargedTravelFeeLabel(service: unknown, chargedPence: number): string {
-  if (isBookServiceId(service) && travelFeePence(service, "home") === chargedPence) {
-    return travelFeeLabel(service);
-  }
-  return TRAVEL_FEE_FALLBACK_LABEL;
-}
+/** Formatted whole home-visit prices for marketing copy ("£80"). */
+export const homeVisitPrices = {
+  initial: formatPounds(homeVisitPricePence("initial-assessment")),
+  followUp: formatPounds(homeVisitPricePence("follow-up")),
+};

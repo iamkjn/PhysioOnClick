@@ -111,7 +111,7 @@ export function HomeHeroSection({
         <div className="home-hero-text">
           <span className="location-pill">Home visits in Glasgow · Video UK-wide</span>
           <h1>
-            Physiotherapy home visits
+            Physiotherapy at home
             <span> in Glasgow</span>
           </h1>
           <p className="home-hero-copy">

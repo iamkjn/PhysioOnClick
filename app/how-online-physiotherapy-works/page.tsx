@@ -5,7 +5,7 @@ import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { initialAssessmentPrice } from "@/lib/site-data";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
+import { homeVisitPrices } from "@/lib/home-visit-pricing";
 import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
@@ -57,7 +57,7 @@ const practicalQuestions = [
   },
   {
     question: "Can I be seen in person?",
-    answer: `Yes, through home visits in ${HOME_VISIT_AREA_LABEL}. We have no clinic or premises. Video appointments are available anywhere in the UK. A home visit costs the video price plus a ${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee per visit, and can include hands-on treatment (manual therapy) where appropriate; video sessions cannot. Choose your visit type when you book; for a home visit you enter your postcode and see straight away whether we cover it.`
+    answer: `Yes, through home visits in ${HOME_VISIT_AREA_LABEL}. We have no clinic or premises. Video appointments are available anywhere in the UK. A home visit is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, all in, and can include hands-on treatment (manual therapy) where appropriate; video sessions cannot. Choose your visit type when you book; for a home visit you enter your postcode and see straight away whether we cover it.`
   },
   {
     question: "Do I need a GP referral?",

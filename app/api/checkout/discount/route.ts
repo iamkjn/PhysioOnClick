@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 
 import { isBookServiceId } from "@/lib/cal-services";
 import { validateCheckoutDiscount } from "@/lib/checkout-discounts";
+import { isVisitType } from "@/lib/home-visit";
 import { EMAIL_RE, LIMITS } from "@/lib/validation";
 
 type Body = {
   code?: unknown;
   email?: unknown;
   service?: unknown;
+  visitType?: unknown;
 };
 
 function bad(error: string) {
@@ -21,11 +23,15 @@ export async function POST(request: Request) {
     return bad("Enter your email before applying a discount code.");
   }
   if (!isBookServiceId(body.service)) return bad("Invalid service.");
+  if (body.visitType !== undefined && body.visitType !== null && !isVisitType(body.visitType)) {
+    return bad("Invalid visit type.");
+  }
 
   const discount = await validateCheckoutDiscount({
     code: body.code,
     email,
     service: body.service,
+    ...(isVisitType(body.visitType) ? { visitType: body.visitType } : {}),
   });
   if (!discount.ok) return bad(discount.error);
 

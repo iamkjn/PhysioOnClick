@@ -12,18 +12,20 @@ vi.mock("@/components/home-dashboard", () => ({ HomeDashboard: () => <div>Dashbo
 vi.mock("@/components/trustpilot-reviews", () => ({ TrustpilotReviews: () => null }));
 
 import HomePage, { metadata } from "@/app/page";
-import { formatPounds, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
+import { formatPounds, homeVisitPricePence, sessionPricePence } from "@/lib/home-visit-pricing";
 
+// A home visit has one whole price (lib/home-visit-pricing), never a fee on top.
 const video = formatPounds(sessionPricePence("initial-assessment"));
-const home = formatPounds(sessionPricePence("initial-assessment") + travelFeePence("initial-assessment", "home"));
+const home = formatPounds(homeVisitPricePence("initial-assessment"));
+const homeFollowUp = formatPounds(homeVisitPricePence("follow-up"));
 
 describe("homepage metadata", () => {
   const title = String(metadata.title);
   const description = String(metadata.description);
 
-  it("leads the title with Glasgow home visits and neuro rehab", () => {
+  it("leads the title with physio at home in Glasgow and neuro rehab", () => {
     expect(title.length).toBeLessThanOrEqual(60);
-    expect(title).toMatch(/^Physio Home Visits in Glasgow/);
+    expect(title).toMatch(/^Physio at Home in Glasgow/);
     expect(title).toMatch(/Neuro Rehab/);
     expect(title).not.toMatch(/Online Physiotherapy UK/);
   });
@@ -33,8 +35,8 @@ describe("homepage metadata", () => {
     expect(description.length).toBeLessThanOrEqual(160);
     expect(description).toContain(`${home} home assessment`);
     expect(description).toContain(`${video} by video`);
-    expect(description.indexOf("home visits in Glasgow")).toBeGreaterThanOrEqual(0);
-    expect(description.indexOf("home visits in Glasgow")).toBeLessThan(description.indexOf("video"));
+    expect(description.indexOf("Home physiotherapy in Glasgow")).toBe(0);
+    expect(description.indexOf(`${home} home assessment`)).toBeLessThan(description.indexOf(`${video} by video`));
     expect(description).toMatch(/stroke, Parkinson's, MS and FND/);
   });
 
@@ -61,5 +63,24 @@ describe("homepage hero", () => {
     const hero = container.querySelector(".home-hero");
     expect(hero?.textContent).toContain(`Home assessment ${home}`);
     expect(hero?.textContent).toContain(`${video} by video`);
+  });
+});
+
+describe("homepage home-visit pricing", () => {
+  it("quotes the whole home-visit prices in the in-person FAQ, with no travel fee", async () => {
+    const { container } = render(await HomePage());
+    const faq = [...container.querySelectorAll("details")].find((d) =>
+      /Can I be seen in person\?/.test(d.querySelector("summary")?.textContent ?? ""),
+    );
+    expect(faq).toBeDefined();
+    expect(faq!.textContent).toContain(
+      `A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up, all in`,
+    );
+    expect(faq!.textContent).not.toMatch(/travel fee|video price plus/i);
+  });
+
+  it("never mentions a travel fee anywhere on the page", async () => {
+    const { container } = render(await HomePage());
+    expect(container.textContent).not.toMatch(/travel fee/i);
   });
 });

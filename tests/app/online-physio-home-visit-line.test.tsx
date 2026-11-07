@@ -1,12 +1,13 @@
 // Round-2 sign-off Q7/Q8 (2026-10-04): home visits are offered for neuro and
 // post-op care too, so every landing page shows the home-visit line, and it
 // says hands-on treatment is available at a home visit. Neuro and post-op pages
-// keep their clearance requirement alongside the line.
+// keep their clearance requirement alongside the line. A home visit has one
+// whole price (lib/home-visit-pricing), quoted as such with no travel fee.
 import { cleanup, render } from "@testing-library/react";
 import OnlinePhysioPage from "@/app/online-physiotherapy-for/[slug]/page";
 import { onlinePhysioPages } from "@/lib/online-physio-pages";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit";
-import { formatPounds, HOME_VISIT_TRAVEL_FEE_PENCE } from "@/lib/home-visit-pricing";
+import { homeVisitPrices } from "@/lib/home-visit-pricing";
 
 const LINE = "book a home visit";
 const NEURO = ["stroke-rehabilitation", "parkinsons", "multiple-sclerosis", "functional-neurological-disorder"];
@@ -24,12 +25,16 @@ async function homeVisit(slug: string) {
 afterEach(() => cleanup());
 
 describe("home-visit line on condition pages", () => {
-  it.each(onlinePhysioPages.map((p) => p.slug))("appears once on %s, with area, fee and hands-on wording", async (slug) => {
+  it.each(onlinePhysioPages.map((p) => p.slug))("appears once on %s, with area, whole price and hands-on wording", async (slug) => {
     const r = await homeVisit(slug);
     expect(r.text).toContain(LINE);
     expect(r.links).toBe(1);
     expect(r.text).toContain(HOME_VISIT_AREA_LABEL);
-    expect(r.text).toContain(`${formatPounds(HOME_VISIT_TRAVEL_FEE_PENCE)} travel fee`);
+    expect(r.text).toMatch(
+      new RegExp(`is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up,\\s+all in`),
+    );
+    expect(r.text).not.toMatch(/travel fee/i);
+    expect(r.text).not.toMatch(/video price plus/i);
     expect(r.text).toMatch(/hands-on treatment \(manual therapy\)/);
     expect(r.text).toMatch(/Video sessions cannot include hands-on treatment/);
     expect(r.text).not.toContain("The same applies at home");

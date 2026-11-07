@@ -4,6 +4,7 @@ import { describe, it, expect } from 'vitest'
 // Next.js Link renders as <a> in tests — no mock needed
 import TermsPage from '@/app/terms/page'
 import { EXERCISE_DISCLAIMER } from '@/lib/exercise-disclaimer'
+import { homeVisitPrices } from '@/lib/home-visit-pricing'
 
 describe('Terms & Conditions page', () => {
   it('renders all 9 required section headings', () => {
@@ -56,10 +57,16 @@ describe('Terms & Conditions page', () => {
     expect(screen.getByRole('heading', { name: 'Home visits (Glasgow area)' })).toBeInTheDocument()
     const text = screen.getByRole('heading', { name: 'Home visits (Glasgow area)' }).closest('article')?.textContent ?? ''
     expect(text).not.toMatch(/same prices/)
-    expect(text).toMatch(/price of the equivalent video appointment\s+plus a travel fee of £15 per visit/)
+    expect(text).toMatch(/A home visit has its own all-in price,\s+shown when you choose a home visit and\s+at checkout/)
+    expect(text).toMatch(
+      new RegExp(`currently ${homeVisitPrices.initial} for an initial assessment and\\s+${homeVisitPrices.followUp} for a follow-up\\); there is no separate fee`),
+    )
     expect(text).toMatch(/Glasgow \(G1–G53\), Paisley \(PA1–PA3\) and Hamilton \(ML3\)/)
-    expect(text).toMatch(/shown separately at checkout and on your invoice/)
-    expect(text).toMatch(/travel fee for every visit in the bundle/)
+    expect(text).toMatch(/the price you pay when you book covers every visit in the bundle/)
+    expect(text).toMatch(/Discount codes\s+apply to the whole price/)
+    expect(text).not.toMatch(/travel fee/i)
+    expect(text).not.toMatch(/shown separately/i)
+    expect(text).not.toMatch(/session price only/i)
     expect(text).toMatch(/cannot be booked for a postcode outside the area we cover/)
     expect(text).not.toMatch(/confirm by email/)
     expect(text).toMatch(/under 18/)

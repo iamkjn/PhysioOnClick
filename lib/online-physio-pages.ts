@@ -48,7 +48,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "sciatica",
     name: "Sciatica",
     h1: "Online physiotherapy for sciatica",
-    seoTitle: "Online Physiotherapy for Sciatica | PhysioOnClick",
+    seoTitle: "Sciatica Physio Online or at Home in Glasgow | PhysioOnClick",
     seoDescription:
       "Can sciatica be treated online? How a video physio assessment works for leg pain from the back, what the plan involves, and when to be seen in person.",
     answer:
@@ -132,7 +132,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "low-back-pain",
     name: "Lower back pain",
     h1: "Online physiotherapy for lower back pain",
-    seoTitle: "Online Physiotherapy for Back Pain | PhysioOnClick",
+    seoTitle: "Back Pain Physio Online or at Home in Glasgow | PhysioOnClick",
     seoDescription:
       "How a video physio appointment works for lower back pain: what we check, what a plan of exercise and advice involves, and when you need urgent care in person.",
     answer:
@@ -212,7 +212,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "neck-pain",
     name: "Neck pain",
     h1: "Online physiotherapy for neck pain",
-    seoTitle: "Online Physiotherapy for Neck Pain | PhysioOnClick",
+    seoTitle: "Neck Pain Physio Online or at Home in Glasgow | PhysioOnClick",
     seoDescription:
       "How a video physio consultation works for neck pain: what we look at on camera, the exercises and advice in a typical plan, and symptoms that need urgent care.",
     answer:
@@ -293,7 +293,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "shoulder-pain",
     name: "Shoulder pain",
     h1: "Online physiotherapy for shoulder pain",
-    seoTitle: "Online Physiotherapy for Shoulder Pain | PhysioOnClick",
+    seoTitle: "Shoulder Pain Physio Online or at Home in Glasgow | PhysioOnClick",
     seoDescription:
       "How video physiotherapy works for shoulder pain: the movements we check on camera, what an exercise plan involves, and when to get urgent in-person care.",
     answer:
@@ -370,7 +370,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "knee-pain",
     name: "Knee pain",
     h1: "Online physiotherapy for knee pain",
-    seoTitle: "Online Physiotherapy for Knee Pain | PhysioOnClick",
+    seoTitle: "Knee Pain Physio Online or at Home in Glasgow | PhysioOnClick",
     seoDescription:
       "Remote physiotherapy for knee pain and knee osteoarthritis: what the PEAK trial found, what we check on video, and when you need to be seen in person.",
     answer:
@@ -450,7 +450,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "plantar-fasciitis",
     name: "Plantar fasciitis",
     h1: "Online physiotherapy for plantar fasciitis (heel pain)",
-    seoTitle: "Online Physiotherapy for Plantar Fasciitis | PhysioOnClick",
+    seoTitle: "Plantar Fasciitis Physio Online or at Home | PhysioOnClick",
     seoDescription:
       "How a video physio appointment works for plantar fasciitis and heel pain: what we check on camera, the exercises in a plan, and when to get urgent help.",
     answer:
@@ -522,7 +522,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "tennis-elbow",
     name: "Tennis elbow",
     h1: "Online physiotherapy for tennis elbow",
-    seoTitle: "Online Physiotherapy for Tennis Elbow | PhysioOnClick",
+    seoTitle: "Tennis Elbow Physio Online or at Home in Glasgow | PhysioOnClick",
     seoDescription:
       "How video physiotherapy works for tennis elbow: the grip and wrist checks we do on camera, what the exercise plan involves, and when to get urgent care.",
     answer:
@@ -596,7 +596,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     slug: "hip-pain",
     name: "Hip pain",
     h1: "Online physiotherapy for hip pain",
-    seoTitle: "Online Physiotherapy for Hip Pain | PhysioOnClick",
+    seoTitle: "Hip Pain Physio Online or at Home in Glasgow | PhysioOnClick",
     seoDescription:
       "How a video physio appointment works for hip pain, including gluteal tendinopathy and hip osteoarthritis: what we check on camera and when to get urgent care.",
     answer:
@@ -675,7 +675,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     nameInSentence: "knee replacement",
     about: { type: "SurgicalProcedure", name: "Knee replacement" },
     h1: "Online physiotherapy after knee replacement",
-    seoTitle: "Online Physio After Knee Replacement | PhysioOnClick",
+    seoTitle: "Knee Replacement Rehab Online or at Home, Glasgow | PhysioOnClick",
     seoDescription:
       "How video physiotherapy fits after a knee replacement: when rehab can start, what a session covers, and which symptoms go back to your surgical team or 999.",
     answer:
@@ -765,7 +765,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     nameInSentence: "hip replacement",
     about: { type: "SurgicalProcedure", name: "Hip replacement" },
     h1: "Online physiotherapy after hip replacement",
-    seoTitle: "Online Physio After Hip Replacement | PhysioOnClick",
+    seoTitle: "Hip Replacement Rehab Online or at Home, Glasgow | PhysioOnClick",
     seoDescription:
       "How video physiotherapy fits after a hip replacement: when rehab can start, why your surgeon sets the precautions, and which symptoms need urgent care or 999.",
     answer:
@@ -855,7 +855,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     nameInSentence: "rotator cuff repair",
     about: { type: "SurgicalProcedure", name: "Rotator cuff repair" },
     h1: "Online physiotherapy after rotator cuff repair",
-    seoTitle: "Online Physio After Rotator Cuff Repair | PhysioOnClick",
+    seoTitle: "Rotator Cuff Repair Rehab Online or at Home | PhysioOnClick",
     seoDescription:
       "How video physiotherapy fits after rotator cuff repair surgery: sling and protection phases set by your surgeon, what we check, and when to get urgent care.",
     answer:
@@ -940,7 +940,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     nameInSentence: "stroke recovery",
     about: { type: "MedicalCondition", name: "Stroke" },
     h1: "Online physiotherapy for stroke recovery",
-    seoTitle: "Online Physiotherapy for Stroke Recovery | PhysioOnClick",
+    seoTitle: "Stroke Rehab at Home in Glasgow or Online | PhysioOnClick",
     seoDescription:
       "Video physiotherapy to support stroke recovery after hospital discharge: who it suits, the clearance you need first, what we check and when 999 applies.",
     answer:
@@ -1037,7 +1037,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     name: "Parkinson's",
     nameInSentence: "Parkinson's",
     h1: "Online physiotherapy for Parkinson's",
-    seoTitle: "Online Physiotherapy for Parkinson's | PhysioOnClick",
+    seoTitle: "Parkinson's Physio at Home in Glasgow or Online | PhysioOnClick",
     seoDescription:
       "How video physiotherapy can support movement, walking and balance with Parkinson's: the clearance you need first, what we check, and when to call 999.",
     answer:
@@ -1132,7 +1132,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     name: "Multiple sclerosis",
     nameInSentence: "MS",
     h1: "Online physiotherapy for multiple sclerosis",
-    seoTitle: "Online Physiotherapy for Multiple Sclerosis | PhysioOnClick",
+    seoTitle: "MS Physio at Home in Glasgow or Online | PhysioOnClick",
     seoDescription:
       "How video physiotherapy can support movement problems and muscle pain in multiple sclerosis: the clearance you need first, and when to call 999 or go to A&E.",
     answer:
@@ -1219,7 +1219,7 @@ export const onlinePhysioPages: OnlinePhysioPage[] = [
     name: "Functional neurological disorder",
     nameInSentence: "FND",
     h1: "Online physiotherapy for functional neurological disorder (FND)",
-    seoTitle: "Online Physiotherapy for FND | PhysioOnClick",
+    seoTitle: "FND Physio at Home in Glasgow or Online | PhysioOnClick",
     seoDescription:
       "What online physiotherapy can and cannot offer for functional neurological disorder (FND): a neurologist diagnoses it, outcomes vary, and when to call 999.",
     answer:

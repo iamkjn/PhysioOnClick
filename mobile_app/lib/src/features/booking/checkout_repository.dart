@@ -175,10 +175,15 @@ class CheckoutRepository {
     return body!['url'] as String;
   }
 
+  /// Previews a discount code. [visitType] uses the same wire value as
+  /// [createCheckoutSession] (`VisitType.name`: "video" or "home"); for
+  /// "home" the server returns `amountPence` computed on the whole home-visit
+  /// price, which is the final total to show — nothing is added on top.
   Future<CheckoutDiscount> validateDiscount({
     required String code,
     required String email,
     required String service,
+    String visitType = 'video',
   }) async {
     final uri = Uri.parse('$kApiBase/api/checkout/discount');
     final res = await _client
@@ -189,6 +194,7 @@ class CheckoutRepository {
             'code': code.trim().toUpperCase(),
             'email': email.trim().toLowerCase(),
             'service': service,
+            'visitType': visitType,
           }),
         )
         .timeout(const Duration(seconds: 20));

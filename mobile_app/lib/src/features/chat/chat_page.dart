@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../appointments/appointments_screen.dart';
+import '../booking/models/book_service.dart';
+import '../booking/models/home_visit.dart';
 import '../booking/service_select_screen.dart';
 
 // ─── Theme constants ────────────────────────────────────────────────────────
@@ -59,14 +61,29 @@ const _services = [
   ),
 ];
 
-const _pricingText =
-    'Online sessions (UK-wide):\n'
-    '• Initial Online Assessment (60 min) — £40\n'
-    '• Online Follow-Up (30 min) — £30\n\n'
-    'Packages:\n'
-    '• 4-Session Bundle — £120\n'
-    '• 8-Session Bundle — £225\n\n'
-    'New patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.';
+/// Prices come from the booking catalogue (book_service.dart) and, for home
+/// visits, the per-visit home extra (kHomeVisitExtraPence in home_visit.dart),
+/// so this reply always matches what the booking flow charges. Home visits are
+/// shown as one whole price, never as a session price plus a separate fee.
+@visibleForTesting
+String chatPricingText() {
+  final initial = bookServiceFor(BookServiceId.initialAssessment);
+  final followUp = bookServiceFor(BookServiceId.followUp);
+  final bundle4 = bookServiceFor(BookServiceId.bundle4);
+  final bundle8 = bookServiceFor(BookServiceId.bundle8);
+  String online(ResolvedService s) => formatPounds(sessionPricePence(s, VisitType.video));
+  String home(ResolvedService s) => formatPounds(sessionPricePence(s, VisitType.home));
+  return 'Online sessions (UK-wide):\n'
+      '• Initial Online Assessment (${initial.minutes} min) — ${online(initial)}\n'
+      '• Online Follow-Up (${followUp.minutes} min) — ${online(followUp)}\n\n'
+      'Home visits (Glasgow area):\n'
+      '• Initial Assessment at home (${initial.minutes} min) — ${home(initial)}\n'
+      '• Follow-Up at home (${followUp.minutes} min) — ${home(followUp)}\n\n'
+      'Packages:\n'
+      '• 4-Session Bundle — ${online(bundle4)} online, ${home(bundle4)} at home\n'
+      '• 8-Session Bundle — ${online(bundle8)} online, ${home(bundle8)} at home\n\n'
+      'New patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.';
+}
 
 const _insuranceText =
     'Yes — paid sessions include an insurance-ready PDF invoice.\n\n'
@@ -170,7 +187,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _tapPricing(BuildContext _) {
-    _botReply(_pricingText, chips: _backChips());
+    _botReply(chatPricingText(), chips: _backChips());
   }
 
   void _tapInsurance(BuildContext _) {

@@ -15,7 +15,7 @@ import {
   type VisitType,
 } from "@/lib/home-visit";
 import { isCoveredPostcode, outOfAreaMessage, outwardCode } from "@/lib/home-visit-area";
-import { formatPounds, sessionPricePence, travelFeePence } from "@/lib/home-visit-pricing";
+import { formatPounds, sessionPricePence } from "@/lib/home-visit-pricing";
 
 type Props = {
   services: Array<CalService & PricingItem>;
@@ -376,7 +376,6 @@ export function BookingStepService({
             <div className="book-service-grid" role="group" aria-label="Service">
               {services.map((s) => {
                 const selected = s.id === serviceId;
-                const travel = travelFeePence(s.id, visitType);
                 return (
                   <button
                     type="button"
@@ -392,11 +391,9 @@ export function BookingStepService({
                     ) : null}
                     <span className="book-service-name">{serviceLabelFor(s.id, visitType)}</span>
                     <span className="book-service-desc">{s.description}</span>
-                    <span className="book-service-price">{formatPounds(sessionPricePence(s.id) + travel)}</span>{" "}
+                    {/* One whole price for the chosen visit type: a home visit has no separate fee. */}
+                    <span className="book-service-price">{formatPounds(sessionPricePence(s.id, visitType))}</span>{" "}
                     <span className="book-service-duration">{s.duration}</span>
-                    {travel > 0 ? (
-                      <span className="book-service-travel">incl. {formatPounds(travel)} travel</span>
-                    ) : null}
                   </button>
                 );
               })}

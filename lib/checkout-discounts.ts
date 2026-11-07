@@ -1,5 +1,7 @@
-import { bookServiceFor, isBookServiceId } from "@/lib/cal-services";
+import { isBookServiceId } from "@/lib/cal-services";
 import { getAdminDb } from "@/lib/firebase-admin";
+import type { VisitType } from "@/lib/home-visit";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
 import type { BookServiceId } from "@/lib/site-data";
 
 const NEW_PATIENT_DISCOUNT_CODE = "NEW10";
@@ -35,6 +37,8 @@ export async function validateCheckoutDiscount(input: {
   code: unknown;
   email: string;
   service: BookServiceId;
+  /** A home visit's discount comes off its whole price (lib/home-visit-pricing). */
+  visitType?: VisitType;
 }): Promise<CheckoutDiscount> {
   const code = normaliseDiscountCode(input.code);
   if (!code) return { ok: false, error: "Enter a discount code first." };
@@ -44,7 +48,7 @@ export async function validateCheckoutDiscount(input: {
     return { ok: false, error: "This discount code is only for new patients." };
   }
 
-  const originalAmountPence = Math.round(bookServiceFor(input.service).price * 100);
+  const originalAmountPence = sessionPricePence(input.service, input.visitType);
   const discountAmountPence = Math.round(originalAmountPence * (NEW_PATIENT_DISCOUNT_PERCENT / 100));
   return {
     ok: true,

@@ -4,7 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Home visits are booked through the same flow as video calls: step 1 starts
 // with the visit choice, and a home visit needs a covered postcode (then an
-// address) before services and Continue appear. Home prices include travel.
+// address) before services and Continue appear. A home visit has one whole
+// price (lib/home-visit-pricing): no travel fee is ever shown.
 
 const mocks = vi.hoisted(() => ({
   authMock: { currentUser: null as unknown },
@@ -135,16 +136,16 @@ describe('booking visit type', () => {
 
     const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
     expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(
-      formatPounds(sessionPricePence('initial-assessment') + 1500),
+      formatPounds(sessionPricePence('initial-assessment', 'home')),
     )
-    expect(document.querySelector('.book-rail-travel')?.textContent).toContain('Travel fee (1 home visit × £15)')
+    expect(document.querySelector('.book-rail-travel')).toBeNull()
 
     await user.click(screen.getByRole('radio', { name: /Video consultation/ }))
     expect(screen.queryByLabelText('Address')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Postcode')).not.toBeInTheDocument()
     expect(document.querySelector('.book-rail-travel')).toBeNull()
     expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(
-      formatPounds(sessionPricePence('initial-assessment')),
+      formatPounds(sessionPricePence('initial-assessment', 'video')),
     )
   })
 
@@ -182,7 +183,7 @@ describe('booking visit type', () => {
     expect(screen.getByRole('button', { name: /Continue to times/ })).toBeInTheDocument()
   })
 
-  it('shows home prices including travel on the service cards', async () => {
+  it('shows the whole home-visit price on the service cards, with no travel note', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
@@ -190,18 +191,29 @@ describe('booking visit type', () => {
     const prices = [...document.querySelectorAll('.book-service-price')].map((n) => n.textContent)
     const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
     expect(prices).toEqual([
-      formatPounds(sessionPricePence('initial-assessment') + 1500),
-      formatPounds(sessionPricePence('follow-up') + 1500),
-      formatPounds(sessionPricePence('bundle-4') + 6000),
-      formatPounds(sessionPricePence('bundle-8') + 12000),
+      formatPounds(sessionPricePence('initial-assessment', 'home')),
+      formatPounds(sessionPricePence('follow-up', 'home')),
+      formatPounds(sessionPricePence('bundle-4', 'home')),
+      formatPounds(sessionPricePence('bundle-8', 'home')),
     ])
-    expect([...document.querySelectorAll('.book-service-travel')].map((n) => n.textContent)).toEqual([
-      'incl. £15 travel',
-      'incl. £15 travel',
-      'incl. £60 travel',
-      'incl. £120 travel',
-    ])
+    expect(prices).toEqual(['£80', '£70', '£280', '£545'])
+    expect(document.querySelectorAll('.book-service-travel')).toHaveLength(0)
+    const grid = document.querySelector('.book-service-grid')
+    expect(grid?.textContent).not.toMatch(/travel/i)
     expect(screen.getByRole('button', { name: /Initial Assessment \(home visit\)/ })).toBeInTheDocument()
+  })
+
+  it('shows the video prices on the service cards for a video call', async () => {
+    render(<BookingFlow />)
+    const prices = [...document.querySelectorAll('.book-service-price')].map((n) => n.textContent)
+    const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
+    expect(prices).toEqual([
+      formatPounds(sessionPricePence('initial-assessment', 'video')),
+      formatPounds(sessionPricePence('follow-up', 'video')),
+      formatPounds(sessionPricePence('bundle-4', 'video')),
+      formatPounds(sessionPricePence('bundle-8', 'video')),
+    ])
+    expect(document.querySelector('.book-service-grid')?.textContent).not.toMatch(/travel/i)
   })
 
   it('moves between the visit cards with the arrow keys', async () => {
@@ -367,7 +379,7 @@ describe('booking visit type', () => {
     expect(document.querySelector('.book-rail-list')?.textContent).not.toMatch(/video/i)
   })
 
-  it('shows the session price plus travel on the pay button for a home visit', async () => {
+  it('shows the whole home-visit price on the pay button for a home visit', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
@@ -375,7 +387,7 @@ describe('booking visit type', () => {
     await user.type(await screen.findByLabelText('Address'), '7 Example Street')
     await user.click(screen.getByRole('button', { name: /Continue to times/ }))
     const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
-    const total = formatPounds(sessionPricePence('initial-assessment') + 1500)
+    const total = formatPounds(sessionPricePence('initial-assessment', 'home'))
     await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
     await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
     await user.click(screen.getByRole('option', { name: '09:00' }))
@@ -384,6 +396,50 @@ describe('booking visit type', () => {
     await user.click(screen.getByRole('checkbox', { name: /consent/i }))
     expect(screen.getByRole('button', { name: /Continue to payment/ })).toHaveTextContent(
       `Continue to payment · ${total}`,
+    )
+  })
+
+  it('sends the visit type with the discount check and shows the discounted whole price', async () => {
+    const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
+    const whole = sessionPricePence('initial-assessment', 'home')
+    const discounted = whole - Math.round(whole * 0.1)
+    const base = fetchMock.getMockImplementation()!
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      if (String(url).includes('/api/checkout/discount')) {
+        return {
+          ok: true,
+          json: async () => ({
+            ok: true,
+            discount: { percent: 10, amountPence: discounted, discountAmountPence: whole - discounted, originalAmountPence: whole },
+          }),
+        }
+      }
+      return base(url, init)
+    })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BookingFlow />)
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    await user.type(screen.getByLabelText('Postcode'), 'G31 4HS')
+    await user.type(await screen.findByLabelText('Address'), '7 Example Street')
+    await user.click(screen.getByRole('button', { name: /Continue to times/ }))
+    await waitFor(() => expect(screen.getByLabelText(/Thursday, 20 August 2026/)).toBeEnabled())
+    await user.click(screen.getByLabelText(/Thursday, 20 August 2026/))
+    await user.click(screen.getByRole('option', { name: '09:00' }))
+    await user.type(screen.getByLabelText('Full name'), 'Alex Morgan')
+    await user.type(screen.getByLabelText('Email'), 'alex@example.com')
+    await user.click(screen.getByRole('checkbox', { name: /consent/i }))
+    await user.type(screen.getByLabelText('Discount code'), 'new10')
+    await user.click(screen.getByRole('button', { name: 'Apply' }))
+    await screen.findByText('Discount applied.')
+    const call = fetchMock.mock.calls.find(([url]) => String(url).includes('/api/checkout/discount'))
+    expect(JSON.parse(String((call![1] as RequestInit).body))).toEqual({
+      code: 'NEW10',
+      email: 'alex@example.com',
+      service: 'initial-assessment',
+      visitType: 'home',
+    })
+    expect(screen.getByRole('button', { name: /Continue to payment/ })).toHaveTextContent(
+      `Continue to payment · ${formatPounds(discounted)}`,
     )
   })
 
@@ -428,27 +484,28 @@ describe('booking visit type', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
-  it('leaves travel out of the rail until the postcode is covered', async () => {
+  it('shows the whole home price in the rail as soon as a home visit is chosen, whatever the postcode', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
-    const video = formatPounds(sessionPricePence('initial-assessment'))
+    const video = formatPounds(sessionPricePence('initial-assessment', 'video'))
+    const home = formatPounds(sessionPricePence('initial-assessment', 'home'))
     render(<BookingFlow />)
-    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
-    // Pending: nothing entered yet.
-    expect(document.querySelector('.book-rail-travel')).toBeNull()
     expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(video)
-    // Uncovered.
+    await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
+    // Nothing entered yet: already the whole home price, not the video price.
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(home)
+    expect(document.querySelector('.book-rail-travel')).toBeNull()
+    // Uncovered: still the home price (the rail price never depends on the postcode).
     const postcode = screen.getByLabelText('Postcode')
     await user.type(postcode, 'EH1 1AA')
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(home)
     expect(document.querySelector('.book-rail-travel')).toBeNull()
-    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(video)
-    // Covered.
+    // Covered: the same whole price, with no travel row.
     await user.clear(postcode)
     await user.type(postcode, 'G31 4HS')
-    expect(document.querySelector('.book-rail-travel')?.textContent).toContain('Travel fee (1 home visit × £15)')
-    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(
-      formatPounds(sessionPricePence('initial-assessment') + 1500),
-    )
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(home)
+    expect(document.querySelector('.book-rail-travel')).toBeNull()
+    expect(document.querySelector('.book-rail')?.textContent ?? '').not.toMatch(/travel/i)
   })
 
   it('moves focus to the video card after "Book a video consultation instead"', async () => {

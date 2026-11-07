@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
+import { formatGbp } from "@/lib/invoice";
 
 const INPUT = {
   to: "ada@example.com", patientName: "Ada", invoiceNumber: "INV-2026-AB12CD",
@@ -68,20 +70,23 @@ describe("sendReceiptEmail", () => {
     expect(body.html).not.toContain("Home visit");
   });
 
-  it("shows the travel fee and the session price for a home visit", async () => {
+  it("shows a home visit's whole price as the amount paid, with no travel line", async () => {
     vi.stubEnv("RESEND_API_KEY", "re_test");
     const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
+    const homePence = sessionPricePence("initial-assessment", "home");
     await sendReceiptEmail({
       to: "ada@example.com", patientName: "Ada", invoiceNumber: "INV-1",
-      serviceLabel: "Initial Assessment (home visit)", amountPence: 5500,
+      serviceLabel: "Initial Assessment (home visit)", amountPence: homePence,
       receiptUrl: "https://x/receipt", visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS",
-      travelFeePence: 1500,
     });
     const sent = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
-    expect(sent.html).toContain("Travel fee:</strong> £15.00");
-    expect(sent.html).toContain("Amount paid:</strong> £55.00");
-    expect(sent.text).toContain("Travel fee: £15.00");
+    expect(sent.html).toContain(`Amount paid:</strong> ${formatGbp(homePence)}`);
+    expect(sent.text).toContain(`Amount paid: ${formatGbp(homePence)}`);
+    expect(sent.html).not.toMatch(/travel/i);
+    expect(sent.text).not.toMatch(/travel/i);
+    // The video part of the price is never shown as its own amount.
+    expect(sent.text).not.toContain(formatGbp(sessionPricePence("initial-assessment")));
   });
 
   it("shows no travel fee for a video booking", async () => {
@@ -94,17 +99,19 @@ describe("sendReceiptEmail", () => {
     expect(sent.text).not.toContain("Travel fee");
   });
 
-  it("labels the travel line with the visit count when a label is passed", async () => {
+  it("shows a home bundle's whole price once, with no per-visit travel line", async () => {
     vi.stubEnv("RESEND_API_KEY", "re_test");
     const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
+    const bundlePence = sessionPricePence("bundle-4", "home");
     await sendReceiptEmail({
-      ...INPUT, serviceLabel: "4 Session Bundle (home visits)", amountPence: 18000,
+      ...INPUT, serviceLabel: "4 Session Bundle (home visits)", amountPence: bundlePence,
       visitType: "home", homeVisitAddress: "7 Example Street, G31 4HS",
-      travelFeePence: 6000, travelFeeLabel: "Travel fee (4 home visits × £15)",
     });
     const sent = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
-    expect(sent.html).toContain("Travel fee (4 home visits × £15):</strong> £60.00");
-    expect(sent.text).toContain("Travel fee (4 home visits × £15): £60.00");
+    expect(sent.html).toContain(`Amount paid:</strong> ${formatGbp(bundlePence)}`);
+    expect(sent.text).toContain(`Amount paid: ${formatGbp(bundlePence)}`);
+    expect(sent.html).not.toMatch(/travel/i);
+    expect(sent.text).not.toMatch(/travel/i);
   });
 });
