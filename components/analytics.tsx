@@ -15,8 +15,11 @@ export function Analytics() {
     return null;
   }
 
-  // Both ids are live on the site: gtag.js uses gaId, Firebase Analytics its own.
-  const measurementIds = [...new Set([gaId, firebaseMeasurementId].filter((id): id is string => Boolean(id)))];
+  // Every id that sends page views: gtag.js (gaId), Firebase Analytics, and the
+  // Google Ads setting, which on the live site holds a second GA4 tag (G-...).
+  const measurementIds = [
+    ...new Set([gaId, firebaseMeasurementId, googleAdsId].filter((id): id is string => Boolean(id))),
+  ];
 
   return (
     <>
