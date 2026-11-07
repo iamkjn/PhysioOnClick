@@ -85,6 +85,12 @@ const nextConfig = {
     return [
       ...devNoIndexHeaders,
       ...imageRouteNoIndexHeaders,
+      // The admin area is also disallowed in app/robots.ts. This covers crawlers
+      // that reach it anyway, so it can never be listed in search results.
+      {
+        source: "/admin/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
       // --- Security headers (every route) ---------------------------------
       {
         source: "/:path*",

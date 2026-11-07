@@ -19,6 +19,7 @@
 
 import { firebaseApp, firebaseMeasurementId } from "./firebase";
 import { trackGrowthEvent } from "./growth-tracking";
+import { isInternalLocation } from "./internal-paths";
 import type { Analytics } from "firebase/analytics";
 
 type AnalyticsModule = typeof import("firebase/analytics");
@@ -39,10 +40,12 @@ function hasConsent(): boolean {
 }
 
 // The full gate. Returns true only when it is safe to load and use Analytics:
-// in the browser, with a configured app + measurementId, and granted consent.
+// in the browser, on a patient-facing page of the live site, with a configured app +
+// measurementId, and granted consent.
 function analyticsUsable(): boolean {
   return (
     typeof window !== "undefined" &&
+    !isInternalLocation(window.location) &&
     Boolean(firebaseApp) &&
     Boolean(firebaseMeasurementId) &&
     hasConsent()

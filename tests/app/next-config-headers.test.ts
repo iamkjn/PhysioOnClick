@@ -34,6 +34,12 @@ describe("next.config.mjs headers", () => {
     }
   });
 
+  it("noindexes the admin area on production", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://physioonclick.co.uk");
+    const rules = await loadHeaders();
+    expect(robotsTagFor(rules, "/admin/:path*")).toBe("noindex, nofollow");
+  });
+
   it("does not noindex real pages or the exercise illustrations on production", async () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://physioonclick.co.uk");
     const rules = await loadHeaders();

@@ -1,7 +1,10 @@
 import Script from "next/script";
 
+import { internalVisitGuardScript } from "@/lib/internal-paths";
+
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
 const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
+const firebaseMeasurementId = process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID;
 
 // Google Consent Mode v2. Default everything to "denied" BEFORE gtag.js loads,
 // so Analytics sets no cookies until the visitor accepts via the cookie banner
@@ -12,10 +15,14 @@ export function Analytics() {
     return null;
   }
 
+  // Both ids are live on the site: gtag.js uses gaId, Firebase Analytics its own.
+  const measurementIds = [...new Set([gaId, firebaseMeasurementId].filter((id): id is string => Boolean(id)))];
+
   return (
     <>
       <Script id="ga-consent-default" strategy="afterInteractive">
         {`
+          ${internalVisitGuardScript(measurementIds)}
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
