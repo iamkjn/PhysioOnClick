@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { APPOINTMENT_HOURS, APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { breadcrumbs, PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@/lib/structured-data";
@@ -17,13 +18,22 @@ const homeFollowUp = homeVisitPrices.followUp;
 export const metadata: Metadata = {
   alternates: { canonical: "/physiotherapy-home-visits-glasgow" },
   title: "Home Physiotherapy Glasgow, Paisley & Hamilton | PhysioOnClick",
-  description: `Home physiotherapy in Glasgow (G1–G53), Paisley and Hamilton from an HCPC registered physio. ${homeInitial} home assessment, all in; hands-on treatment where appropriate.`
+  description: `Home physiotherapy in Glasgow (G1–G53), Paisley and Hamilton on weekday evenings and weekends, from an HCPC registered physio. ${homeInitial} home assessment, all in.`
 };
 
 const faqItems = [
   {
     question: "Which areas do your home visits cover?",
     answer: `Home visits cover ${HOME_VISIT_AREA_LABEL}. When you book, choose "Home visit in Glasgow" and enter your postcode: you'll see straight away whether we cover it. A home visit cannot be booked for a postcode outside the area, so we'll suggest a video appointment instead.`
+  },
+  {
+    question: "When do home visits happen?",
+    answer: `${APPOINTMENT_HOURS_SENTENCE} You don't need to take time off work, and someone who helps you at home can be there too. ${HOME_VISIT_NOTICE_SENTENCE} The booking page shows every free time.`
+  },
+  {
+    question: "Can a family member or carer be there?",
+    answer:
+      "Yes. They're welcome to join and learn how to help with your exercises between visits, which often makes a real difference for neurological rehab after a stroke or with Parkinson's, MS or FND. Your written plan comes by email after the session, so it's easy to share with them."
   },
   {
     question: "How much does a physiotherapy home visit cost?",
@@ -85,6 +95,10 @@ export default function HomeVisitsGlasgowPage() {
             A Glasgow-based, HCPC registered physiotherapist comes to you. The initial home assessment is{" "}
             {homeInitial} all in, and follow-ups are {homeFollowUp}. Home visits cover {HOME_VISIT_AREA_LABEL}.
           </p>
+          <p>
+            Visits run {APPOINTMENT_HOURS.weekdays.phrase}, and {APPOINTMENT_HOURS.weekends.phrase}, so you
+            don&rsquo;t need to take time off work.
+          </p>
           {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
             <p>
               Not sure if a home visit is right for you? Call or text <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>.
@@ -107,6 +121,7 @@ export default function HomeVisitsGlasgowPage() {
         <div className="page-hero-aside checklist-panel">
           <h2>Who home visits suit</h2>
           <ul className="clean-list">
+            <li>People who work during the day: visits are on weekday evenings and at weekends</li>
             <li>Anyone who would rather not travel or find parking while in pain</li>
             <li>
               Recovery after <Link href="/online-physiotherapy-for/knee-replacement-rehab">knee</Link> or{" "}
@@ -114,7 +129,7 @@ export default function HomeVisitsGlasgowPage() {
             </li>
             <li>
               <Link href="/services/neurological-rehabilitation">Neurological rehabilitation</Link> such as stroke or
-              Parkinson&rsquo;s, with a family member or carer welcome to join
+              Parkinson&rsquo;s, with a family member or carer welcome to join and learn how to help
             </li>
             <li>Balance, mobility and falls-risk concerns, practised in your own home</li>
             <li>Problems where hands-on treatment may help alongside exercise</li>
@@ -131,6 +146,7 @@ export default function HomeVisitsGlasgowPage() {
               <li>Hands-on treatment (manual therapy) where appropriate</li>
               <li>A tailored exercise plan with clear milestones, set up for the space you actually have</li>
               <li>A written summary after your session</li>
+              <li>Family members or carers welcome to join and learn how to help with your exercises between visits</li>
               <li>Follow-ups by home visit or video with the same physiotherapist</li>
             </ul>
           </div>

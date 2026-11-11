@@ -941,6 +941,12 @@ p {
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
+/* Homepage "Built around your week" cards: the two selling points get an
+   accent rule so they read as the reason to choose us, not another list. */
+.home-week-card {
+  border-top: 3px solid var(--color-primary);
+}
+
 .simple-service-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 18px 44px rgba(22, 34, 50, 0.1);

@@ -32,7 +32,7 @@ describe('HomeHeroSection', () => {
 
   it('leads with Glasgow home visits, including neurological rehabilitation', () => {
     render(<HomeHeroSection {...props} />)
-    expect(screen.getByText('Home visits in Glasgow · Video UK-wide')).toBeInTheDocument()
+    expect(screen.getByText('Home visits in Glasgow · Evenings & weekends')).toBeInTheDocument()
     const copy = document.querySelector('.home-hero-copy')?.textContent ?? ''
     expect(copy).toContain('Jane, an HCPC registered physiotherapist, comes to your home')
     expect(copy).toContain('neurological rehabilitation')

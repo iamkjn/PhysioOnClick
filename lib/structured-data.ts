@@ -17,6 +17,7 @@
 //   - sameAs for Facebook once the page is created
 
 import { absoluteUrl } from "@/lib/utils";
+import { openingHoursSpecification } from "@/lib/appointment-hours";
 import { stripLinks } from "@/lib/content-types";
 import { founder, services, withPrices } from "@/lib/site-data";
 // Import the conditions array directly, not `getCondition` from the
@@ -113,22 +114,9 @@ export function practiceNode() {
         url: absoluteUrl("/glasgow-physiotherapist")
       }
     },
-    // Mirrors the hours already published on /contact. If those change, change
-    // both — contradicting hours are worse than none.
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "08:00",
-        closes: "18:00"
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Saturday",
-        opens: "09:00",
-        closes: "13:00"
-      }
-    ],
+    // Same source as /contact and the booking calendar (lib/appointment-hours):
+    // contradicting hours are worse than none.
+    openingHoursSpecification: openingHoursSpecification(),
     logo: absoluteUrl("/social/physioonclick-avatar.png"),
     image: absoluteUrl("/og-default.png"),
     sameAs: [

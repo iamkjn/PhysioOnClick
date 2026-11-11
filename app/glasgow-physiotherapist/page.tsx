@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@/lib/structured-data";
@@ -15,7 +16,7 @@ const homeFollowUp = homeVisitPrices.followUp;
 export const metadata: Metadata = {
   alternates: { canonical: "/glasgow-physiotherapist" },
   title: "Physiotherapist Glasgow: Home Visits & Online | PhysioOnClick",
-  description: `Physiotherapist in Glasgow offering home visits in the Glasgow area, plus video appointments UK-wide. No GP referral. ${videoInitial} video assessment, ${homeInitial} home visit.`
+  description: `Physiotherapist in Glasgow: home visits on weekday evenings and weekends, plus video UK-wide. No GP referral. ${videoInitial} video assessment, ${homeInitial} home visit.`
 };
 
 const faqItems = [
@@ -28,6 +29,10 @@ const faqItems = [
     question: "Can I be seen in person in Glasgow?",
     answer:
       `Yes, through home visits in the Glasgow area. We do not have a clinic or premises, so all in-person care happens at your home. Choose "Home visit in Glasgow" when you book and enter your postcode, and you'll see straight away whether we cover it. Home visits cover ${HOME_VISIT_AREA_LABEL}.`
+  },
+  {
+    question: "When are appointments available?",
+    answer: `${APPOINTMENT_HOURS_SENTENCE} That's the same for home visits and video, so you don't need to take time off work. ${HOME_VISIT_NOTICE_SENTENCE}`
   },
   {
     question: "How much does a home visit cost?",
@@ -75,6 +80,7 @@ export default function GlasgowPage() {
             Glasgow area you can book a home visit, and video appointments are available anywhere in the UK.
             The initial assessment is {homeInitial} as a home visit, all in, or {videoInitial} by video.
           </p>
+          <p>{APPOINTMENT_HOURS_SENTENCE} No time off work needed.</p>
           {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
             <p>
               Prefer to talk first? Call or text <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>.
@@ -105,6 +111,7 @@ export default function GlasgowPage() {
             <li>Glasgow-based, HCPC registered physiotherapist</li>
             <li>Home visits in the Glasgow area, with no clinic or premises</li>
             <li>Video appointments anywhere in the UK</li>
+            <li>Weekday evenings and weekends, for home visits and video</li>
             <li>The same booking flow for both, with one all-in price for each</li>
             <li>
               Living elsewhere in Scotland?{" "}

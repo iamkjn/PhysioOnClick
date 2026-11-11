@@ -4,6 +4,7 @@ import { ProtectedImageFrame } from "@/components/image-protection";
 import Link from "next/link";
 import { cookies } from "next/headers";
 
+import { APPOINTMENT_HOURS, APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { founder } from "@/lib/site-data";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { getPublicServices } from "@/lib/public-content";
@@ -21,7 +22,9 @@ import { TrustpilotReviews } from "@/components/trustpilot-reviews";
 const videoPrice = formatPounds(sessionPricePence("initial-assessment"));
 const homeVisitPrice = homeVisitPrices.initial;
 const title = "Physio at Home in Glasgow & Neuro Rehab | PhysioOnClick";
-const description = `Home physiotherapy in Glasgow from an HCPC registered physio, including neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, or ${videoPrice} by video.`;
+// Evenings and weekends lead because they are the remarkable part: most
+// people in pain, and the family who help them, work during the day.
+const description = `Home physiotherapy in Glasgow on weekday evenings and weekends, including neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, or ${videoPrice} by video.`;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -79,10 +82,48 @@ export default async function HomePage() {
             <span>HCPC Registered</span>
             <span>CSP Member</span>
             <span>Home visits in Glasgow</span>
+            <span>Evenings &amp; weekends</span>
             <span>Video appointments across the UK</span>
           </div>
         </section>
       </Reveal>
+
+      {/* The two things worth telling a friend about: visits outside working
+          hours, and teaching the family who help at home. They reinforce each
+          other: an evening or weekend visit is when that family can be there. */}
+      <section className="page-section simple-section home-week-section" aria-labelledby="home-week-heading">
+        <Reveal direction="up">
+          <div className="site-shell section-heading">
+            <span className="eyebrow">Built around your week</span>
+            <h2 id="home-week-heading">Physio that fits around work and family</h2>
+          </div>
+        </Reveal>
+        <div className="site-shell simple-card-grid">
+          <Reveal direction="up">
+            <article className="simple-service-card home-week-card">
+              <h3>Evenings and weekends</h3>
+              <p>
+                Home visits and video appointments run {APPOINTMENT_HOURS.weekdays.phrase}, and{" "}
+                {APPOINTMENT_HOURS.weekends.phrase}. No time off work, and no travelling across town while
+                you&rsquo;re sore.
+              </p>
+              <Link href="/book?visit=home" prefetch>See free times →</Link>
+            </article>
+          </Reveal>
+          <Reveal direction="up" delay={75}>
+            <article className="simple-service-card home-week-card">
+              <h3>We teach the family too</h3>
+              <p>
+                Living with a stroke, Parkinson&rsquo;s, MS or FND? Because we visit in the evening and at the
+                weekend, the person who helps you at home can be there, even if they work during the day. We
+                show them how to help with your exercises between visits, and your written plan comes by
+                email afterwards, ready to share.
+              </p>
+              <Link href="/services/neurological-rehabilitation" prefetch>Neuro rehab at home →</Link>
+            </article>
+          </Reveal>
+        </div>
+      </section>
 
       <section className="page-section simple-section">
         <Reveal direction="up">
@@ -249,6 +290,14 @@ export default async function HomePage() {
             <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit is {homeVisitPrices.initial} for the initial assessment and {homeVisitPrices.followUp} for a follow-up, all in, and can include hands-on treatment (manual therapy) where appropriate. We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
           </details>
           <details>
+            <summary>When are appointments available?</summary>
+            <p>{APPOINTMENT_HOURS_SENTENCE} That&rsquo;s the same for home visits and video, so you can be seen without taking time off work. {HOME_VISIT_NOTICE_SENTENCE} The <Link href="/book" prefetch>booking page</Link> shows every free time.</p>
+          </details>
+          <details>
+            <summary>Can a family member or carer be there?</summary>
+            <p>Yes, and for neurological rehab it often makes a real difference. They&rsquo;re welcome to join and learn how to help with your exercises between sessions. Evening and weekend visits make it easier for someone who works during the day to be there.</p>
+          </details>
+          <details>
             <summary>Is online physiotherapy actually effective?</summary>
             <p>It depends on your condition. For many muscle and joint problems, a guided video assessment lets us reach a working diagnosis and set up an exercise-based plan, and we review your progress regularly and adjust it. If we think you need to be seen in person, we&rsquo;ll tell you plainly. See <Link href="/glasgow-physiotherapist" prefetch>how this works for Glasgow patients specifically</Link>.</p>
           </details>
@@ -267,7 +316,7 @@ export default async function HomePage() {
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Ready when you are</span>
           <h2>Book your first session</h2>
-          <p>Get a tailored physiotherapy plan from an HCPC registered specialist, delivered online across the UK.</p>
+          <p>A home visit in Glasgow on a weekday evening or at the weekend, or a video appointment anywhere in the UK.</p>
           <Link className="button secondary cta-white" href="/book">
             Book your session
           </Link>

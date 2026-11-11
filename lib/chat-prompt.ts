@@ -1,4 +1,5 @@
 import { founder, pricing, services } from "@/lib/site-data";
+import { APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPricePence } from "@/lib/home-visit-pricing";
 
@@ -30,6 +31,8 @@ export function buildSystemPrompt(patient?: PatientContext): string {
 
   const featureSummary = [
     `- Appointments are video calls anywhere in the UK, or home visits in ${HOME_VISIT_AREA_LABEL}. A home visit has one all-in price with no separate fee: ${formatPounds(homeVisitPricePence("initial-assessment"))} for the initial assessment, ${formatPounds(homeVisitPricePence("follow-up"))} for a follow-up, ${formatPounds(homeVisitPricePence("bundle-4"))} for the 4-session bundle and ${formatPounds(homeVisitPricePence("bundle-8"))} for the 8-session bundle as home visits (a bundle is paid upfront). Never describe any part of it as a travel fee. The patient chooses the visit type when booking and enters their postcode, and the booking page shows straight away whether it is covered; a home visit cannot be booked for an uncovered postcode, so suggest a video appointment instead. There is no clinic or premises, and home visits are not offered outside the covered area. Video sessions cannot include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of care where appropriate. Never claim specific hands-on techniques, and never offer acupuncture or needles (not offered). Home visits are available for musculoskeletal, post-surgical and neurological physiotherapy: post-surgical rehab starts once the surgical team has said the patient is ready for outpatient or community physiotherapy (following any restrictions or precautions they give), and neurological rehab needs the GP or specialist team to confirm it is safe to begin physiotherapy, at home or by video.`,
+    `- ${APPOINTMENT_HOURS_SENTENCE} This applies to home visits and video. ${HOME_VISIT_NOTICE_SENTENCE} The booking page shows the actual free times, so never promise a specific time; point the patient to it instead.`,
+    "- Family members or carers are welcome to join a session and learn how to help with the patient's exercises between sessions. This matters most for neurological rehab.",
     "- Online booking with self-referral; no GP referral is required for private physiotherapy.",
     "- Pre-appointment assessment form that captures symptoms, body area, safety checks, consent and goals before the session.",
     "- Patient portal for appointments, family/member profiles, invoices, notifications, recovery tracking and assigned exercise plans.",

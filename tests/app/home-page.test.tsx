@@ -84,3 +84,37 @@ describe("homepage home-visit pricing", () => {
     expect(container.textContent).not.toMatch(/travel fee/i);
   });
 });
+
+describe("homepage evenings, weekends and family", () => {
+  it("leads the snippet with evenings and weekends", () => {
+    expect(String(metadata.description)).toContain("on weekday evenings and weekends");
+  });
+
+  it("shows the two selling points right after the trust bar", async () => {
+    const { container } = render(await HomePage());
+    const section = container.querySelector(".home-week-section");
+    expect(section).not.toBeNull();
+    const text = section!.textContent ?? "";
+    expect(text).toContain("Evenings and weekends");
+    expect(text).toContain("on weekday evenings from 6pm to 9pm, and on Saturdays and Sundays from 9am to 7pm");
+    expect(text).toContain("We teach the family too");
+    // It sits above "Meet your physiotherapist", so it is the first thing after the trust bar.
+    const all = container.textContent ?? "";
+    expect(all.indexOf("We teach the family too")).toBeLessThan(all.indexOf("Meet your physiotherapist"));
+    expect(section!.querySelector('a[href="/book?visit=home"]')).not.toBeNull();
+    expect(section!.querySelector('a[href="/services/neurological-rehabilitation"]')).not.toBeNull();
+  });
+
+  it("answers when appointments are, including the 24-hour home-visit notice", async () => {
+    const { container } = render(await HomePage());
+    const faq = [...container.querySelectorAll("details")].find((d) =>
+      /When are appointments available\?/.test(d.querySelector("summary")?.textContent ?? ""),
+    );
+    expect(faq?.textContent).toContain("Home visits need booking at least 24 hours ahead.");
+  });
+
+  it("lists evenings and weekends in the trust bar", async () => {
+    const { container } = render(await HomePage());
+    expect(container.querySelector(".trust-bar")?.textContent).toContain("Evenings & weekends");
+  });
+});

@@ -4,6 +4,7 @@ import { Avatar } from "@/components/avatar";
 import { ContactForm } from "@/components/contact-form";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { APPOINTMENT_HOURS } from "@/lib/appointment-hours";
 import { founder } from "@/lib/site-data";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/structured-data";
 
@@ -76,8 +77,8 @@ export default function ContactPage() {
                   <svg {...iconProps}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>
                 </span>
                 <div>
-                  <strong>Hours</strong>
-                  <span>Mon-Fri: 8am-6pm<br />Sat: 9am-1pm</span>
+                  <strong>Appointment hours</strong>
+                  <span>{APPOINTMENT_HOURS.weekdays.short}<br />{APPOINTMENT_HOURS.weekends.short}</span>
                 </div>
               </li>
             </ul>

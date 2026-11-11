@@ -109,14 +109,15 @@ export function HomeHeroSection({
       <div className="home-hero-overlay" />
       <div className="site-shell home-hero-content">
         <div className="home-hero-text">
-          <span className="location-pill">Home visits in Glasgow · Video UK-wide</span>
+          <span className="location-pill">Home visits in Glasgow · Evenings &amp; weekends</span>
           <h1>
             Physiotherapy at home
             <span> in Glasgow</span>
           </h1>
           <p className="home-hero-copy">
             {founderName}, an HCPC registered physiotherapist, comes to your home in Glasgow, Paisley or
-            Hamilton, including neurological rehabilitation for stroke, Parkinson&rsquo;s, MS and FND. Home
+            Hamilton on weekday evenings and at weekends, so there&rsquo;s no need to take time off work.
+            That includes neurological rehabilitation for stroke, Parkinson&rsquo;s, MS and FND. Home
             assessment {homeVisitPrice}, or {videoPrice} by video anywhere in the UK.
           </p>
           <div className="button-row">
