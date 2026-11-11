@@ -225,7 +225,7 @@ export default async function HomePage() {
           <Reveal direction="up" delay={150}>
             <article className="simple-service-card">
               <h3>3. Personalised plan</h3>
-              <p>You leave with a working diagnosis, a written explanation of what&rsquo;s going on, and exercises to start immediately &mdash; not a wait-and-see appointment.</p>
+              <p>You leave with a working diagnosis, a written explanation of what&rsquo;s going on, and exercises to start immediately &mdash; not a wait-and-see appointment. We use a 3D model of the body to show you the area involved and the muscles each exercise works.</p>
             </article>
           </Reveal>
           <Reveal direction="up" delay={225}>

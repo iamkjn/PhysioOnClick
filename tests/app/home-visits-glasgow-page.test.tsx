@@ -33,3 +33,10 @@ describe("physiotherapy-home-visits-glasgow", () => {
     expect(text).not.toMatch(/same prices|acupuncture is available/i);
   });
 });
+
+describe("physiotherapy-home-visits-glasgow 3D explanation", () => {
+  it("says a 3D model shows the area involved and the muscles each exercise works", () => {
+    const text = render(<Page />).container.textContent ?? "";
+    expect(text).toContain("A 3D model of the body on screen, to show you the area involved and the muscles each of your exercises works");
+  });
+});

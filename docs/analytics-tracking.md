@@ -67,6 +67,7 @@ Below, "custom events" means events beyond these three sitewide ones.
 | `app/pricing/page.tsx` | `page_view`. Bottom CTA band: `book_now_click` `{ source: "pricing_page" }`. (Per-plan "Book Now"/"Get Started" cards are plain `/book?service=` links, not separately tracked — see "Confirmed gap on public marketing pages" note in the project brief; only the one primary CTA is instrumented here.) |
 | `app/glasgow-physiotherapist/page.tsx` | `page_view`. Hero CTA: `book_now_click` `{ source: "glasgow_page" }`. |
 | `app/physiotherapy-home-visits-glasgow/page.tsx` | `page_view`. Hero CTA: `book_now_click` `{ source: "home_visits_page" }`. |
+| `app/plan/page.tsx` | `page_view` (fridge-magnet QR target, so scans arrive with `utm_source=fridge_magnet`). Book links: `book_now_click` `{ source: "fridge_magnet_plan" }` (patient's next visit) and `{ source: "fridge_magnet_new" }` (someone new). |
 | `app/online-physiotherapy-scotland/page.tsx` | `page_view`. Hero CTA: `book_now_click` `{ source: "scotland_page" }`. |
 | `app/how-online-physiotherapy-works/page.tsx` | `page_view`. Bottom CTA band: `book_now_click` `{ source: "how_it_works_page" }`. |
 | `app/contact/page.tsx` | `page_view`. "Book an appointment" CTA: `book_now_click` `{ source: "contact_page" }`. The contact form itself (`components/contact-form.tsx`) is not separately tracked. |

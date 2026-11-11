@@ -143,6 +143,7 @@ export default function HomeVisitsGlasgowPage() {
             <h2>What happens at a home visit</h2>
             <ul className="clean-list">
               <li>An assessment at your home, covering your history, goals and how you move</li>
+              <li>A 3D model of the body on screen, to show you the area involved and the muscles each of your exercises works</li>
               <li>Hands-on treatment (manual therapy) where appropriate</li>
               <li>A tailored exercise plan with clear milestones, set up for the space you actually have</li>
               <li>A written summary after your session</li>

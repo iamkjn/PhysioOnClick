@@ -135,6 +135,7 @@ export default function GlasgowPage() {
             <h2>What a home visit includes</h2>
             <ul className="clean-list">
               <li>A physiotherapy assessment at your home, covering your history and how you move</li>
+              <li>A 3D model of the body on screen, to show you the area involved and the muscles each exercise works</li>
               <li>Hands-on treatment (manual therapy) where appropriate</li>
               <li>A tailored exercise plan with clear milestones</li>
               <li>A written summary after your session</li>
