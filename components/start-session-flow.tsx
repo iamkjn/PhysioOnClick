@@ -59,6 +59,7 @@ import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminSelfTestSelector } from "@/components/admin-self-test-selector";
 import { AdminAssessmentReviewItem } from "@/components/admin-assessment-review";
 import { AdminClinicalAssistant } from "@/components/admin-clinical-assistant";
+import { AdminPrintPlanButton } from "@/components/admin-print-plan-button";
 import type { AdminClinicalAssistantContext, AdminClinicalSummaryPatch } from "@/lib/admin-clinical-assistant";
 
 function getPainColor(score: number): string {
@@ -1470,6 +1471,9 @@ export function StartSessionFlow({ bookingId }: Props) {
                   </button>
                 ) : (
                   <>
+                    {publishedSummaryId && (
+                      <AdminPrintPlanButton summaryId={publishedSummaryId} className="button secondary" />
+                    )}
                     {publishedSummaryId && (
                       <button type="button" onClick={() => void handleResendPlan()} disabled={resending} className="button secondary">
                         {resending ? "Sending..." : "Resend plan email"}

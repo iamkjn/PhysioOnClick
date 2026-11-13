@@ -6,6 +6,7 @@ import Link from "next/link";
 import { getBooking, getPatientBookings, displayBookingStatus, type BookingRecord } from "@/lib/patient-bookings";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { AdminAssessmentReview } from "@/components/admin-assessment-review";
+import { AdminPrintPlanButton } from "@/components/admin-print-plan-button";
 import { SkeletonRow } from "@/components/skeleton";
 
 interface Props {
@@ -187,12 +188,15 @@ export function AdminSessionView({ bookingId }: Props) {
                       <div><dt>Recovery</dt><dd>{summary.recoveryPercent}%, pain {summary.painScore}/10</dd></div>
                     </dl>
                   )}
-                  <Link
-                    href={`/admin/session/${b.id}#self-assessment`}
-                    style={{ fontSize: "var(--text-xs)", color: "var(--color-primary-dark)", fontWeight: 600 }}
-                  >
-                    View session →
-                  </Link>
+                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flexWrap: "wrap" }}>
+                    <Link
+                      href={`/admin/session/${b.id}#self-assessment`}
+                      style={{ fontSize: "var(--text-xs)", color: "var(--color-primary-dark)", fontWeight: 600 }}
+                    >
+                      View session →
+                    </Link>
+                    {summary?.hasPlanPdf && <AdminPrintPlanButton summaryId={summary.id} />}
+                  </div>
                 </div>
               );
             })}
