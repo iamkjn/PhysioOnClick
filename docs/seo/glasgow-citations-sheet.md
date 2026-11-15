@@ -1,6 +1,6 @@
 # Glasgow Citations Sheet — PhysioOnClick
 
-Source of truth: `lib/structured-data.ts` (PRACTICE_PHONE), `lib/site-data.ts` (invoiceIssuer, pricing), `lib/home-visit-pricing.ts` (video price + £15 travel). Use this block **character-for-character** on every listing.
+Source of truth: `lib/structured-data.ts` (PRACTICE_PHONE), `lib/site-data.ts` (invoiceIssuer, pricing), `lib/home-visit-pricing.ts` (home price = video price + £30 per visit, always shown as one all-in price; never mention travel). Use this block **character-for-character** on every listing.
 
 ## 1. Canonical NAP
 
@@ -11,16 +11,16 @@ PhysioOnClick
 https://physioonclick.co.uk
 ```
 - Service-area business: **hide the street address** wherever the platform allows; show service areas instead.
-- Service areas: Glasgow (G1–G53), Paisley (PA1–PA3), Hamilton (ML3); video physiotherapy UK-wide.
+- Service areas: Glasgow and everywhere within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian and west Fife); video physiotherapy UK-wide.
 - Practitioner: Shivaliba Zala, HCPC-registered physiotherapist, HCPC no. **PH155757**.
-- Prices: initial assessment £40 (video) / £55 (home visit = video price + £15 travel).
+- Prices (2026-11-15): home visit £80 assessment / £70 follow-up, both 60 min, all in; video £50 assessment (60 min) / £40 follow-up (30 min). Bundles: home £280 / £545, video £160 / £305.
 - Hours: copy exactly from the GBP profile — do not invent.
 
 ### Description (≤750 chars)
-PhysioOnClick is a Glasgow physiotherapy practice run by Shivaliba Zala, an HCPC-registered physiotherapist (PH155757). We offer home-visit physiotherapy across Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3), and video physiotherapy anywhere in the UK. We help with back, neck, shoulder, knee and tendon pain, sports injuries, post-operative rehab and neurological rehabilitation. Every patient gets a full assessment, a clear explanation of what is going on, and a personalised exercise plan you can follow in our app. Initial assessment £40 by video or £55 at home. Book online in minutes and pay securely; insurance-ready receipts are provided so you can claim from your insurer.
+PhysioOnClick is a Glasgow physiotherapy practice run by Shivaliba Zala, an HCPC-registered physiotherapist (PH155757). We offer home-visit physiotherapy across Glasgow and up to about an hour's drive away, on weekday evenings and at weekends, and video physiotherapy anywhere in the UK. We help with back, neck, shoulder, knee and tendon pain, sports injuries, post-operative rehab and neurological rehabilitation. Home visits can include hands-on treatment (manual therapy) where appropriate. Every patient gets a full assessment and a personalised exercise plan. Initial assessment £80 at home (all in) or £50 by video. Book online and pay securely; insurance-ready receipts are provided so you can claim from your insurer.
 
 ### Description (≤250 chars)
-HCPC-registered physiotherapist offering home visits across Glasgow, Paisley and Hamilton, plus video physio UK-wide. Back, neck, sports and neuro rehab. Initial assessment from £40. Book online.
+HCPC-registered physiotherapist offering home visits across Glasgow and up to an hour's drive, evenings and weekends, plus video physio UK-wide. Back, neck, sports and neuro rehab. Home assessment £80, video £50. Book online.
 
 > Before posting, confirm every condition named (esp. neuro rehab, post-op) appears on the live site; trim any that don't.
 
