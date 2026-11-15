@@ -261,7 +261,8 @@ export const services: Service[] = [
         question: "Can I have neurological rehab at home?",
         answer:
           // Wording approved in clinical sign-off round 3 (2026-10-06); only the price sentence changed since
-          // (2026-11-07: one all-in home-visit price, no figure here, see the note below).
+          // (2026-11-07: one all-in home-visit price, no figure here, see the note below) and the area
+          // sentence (2026-11-15: coverage widened to about an hour's drive, see lib/home-visit-area.ts).
           "If you live in Glasgow or within about an hour's drive (including Lanarkshire, Renfrewshire, Ayrshire, Falkirk, Stirling and West Lothian), your physiotherapist can come to your home. For many neurological conditions, home is where the practice matters most: your own stairs, your own chair, the route to your front door. A family member or carer is welcome to join and learn how to support practice between sessions. A home visit has one all-in price, shown when you book, and can include hands-on treatment where appropriate. Outside the area, sessions are by video. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy."
       },
       {
