@@ -115,8 +115,8 @@ export function HomeHeroSection({
             <span> in Glasgow</span>
           </h1>
           <p className="home-hero-copy">
-            {founderName}, an HCPC registered physiotherapist, comes to your home in Glasgow, Paisley or
-            Hamilton on weekday evenings and at weekends, so there&rsquo;s no need to take time off work.
+            {founderName}, an HCPC registered physiotherapist, comes to your home in Glasgow and the
+            surrounding area on weekday evenings and at weekends, so there&rsquo;s no need to take time off work.
             That includes neurological rehabilitation for stroke, Parkinson&rsquo;s, MS and FND. Home
             assessment {homeVisitPrice}, or {videoPrice} by video anywhere in the UK.
           </p>

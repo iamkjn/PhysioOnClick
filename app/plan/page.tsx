@@ -51,7 +51,7 @@ export default function PlanPage() {
         <div className="page-hero-aside checklist-panel">
           <h2>Saw this on a friend&rsquo;s fridge?</h2>
           <ul className="clean-list">
-            <li>Physiotherapy at home in Glasgow, Paisley and Hamilton, from an HCPC registered physiotherapist</li>
+            <li>Physiotherapy at home in Glasgow and within an hour&rsquo;s drive, from an HCPC registered physiotherapist</li>
             <li>{APPOINTMENT_HOURS_SENTENCE}</li>
             <li>Family members or carers are welcome to join and learn how to help</li>
             <li>

@@ -26,14 +26,21 @@ describe("isCoveredPostcode", () => {
     expect(isCoveredPostcode("PA3 2AA")).toBe(true);
     expect(isCoveredPostcode("ML3 6AA")).toBe(true);
   });
-  it("rejects districts just outside the area", () => {
-    for (const pc of ["G54 1AA", "G60 1AA", "G84 1AA", "PA4 8AA", "PA5 1AA", "ML1 1AA", "ML4 1AA", "EH1 1AA"]) {
+  it("covers Kilmarnock KA3 (the patient who was wrongly turned away) and the rest of the hour's-drive area", () => {
+    expect(isCoveredPostcode("KA3 7BJ")).toBe(true);
+    expect(isCoveredPostcode("ka3 7bj")).toBe(true);
+    for (const pc of ["G60 1AA", "G74 1AA", "G84 7AA", "PA15 1AA", "ML1 1AA", "KA7 1AA", "KA30 8AA", "FK1 1AA", "EH54 6AA", "KY11 1AA"]) {
+      expect(isCoveredPostcode(pc)).toBe(true);
+    }
+  });
+  it("rejects districts outside an hour's drive or only reachable by ferry", () => {
+    for (const pc of ["G54 1AA", "G70 1AA", "G79 1AA", "KA26 9AA", "KA27 8AA", "KA28 0AA", "PA20 0AA", "PA23 7AA", "EH1 1AA", "FK17 8AA", "KY1 1AA", "PH1 1AA", "DG1 1AA"]) {
       expect(isCoveredPostcode(pc)).toBe(false);
     }
   });
   it("does not confuse G1 with G10-G19 or PA1 with PA10+", () => {
     expect(HOME_VISIT_DISTRICTS.has("G1")).toBe(true);
-    expect(isCoveredPostcode("PA10 1AA")).toBe(false);
+    expect(isCoveredPostcode("PA20 1AA")).toBe(false);
     expect(isCoveredPostcode("ML30 1AA")).toBe(false);
   });
   it("rejects empty or garbage input", () => {
@@ -44,7 +51,9 @@ describe("isCoveredPostcode", () => {
 
 describe("copy", () => {
   it("names the covered area and the district in the out-of-area message", () => {
-    expect(HOME_VISIT_AREA_LABEL).toBe("Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3)");
+    expect(HOME_VISIT_AREA_LABEL).toBe(
+      "Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian and west Fife)",
+    );
     expect(outOfAreaMessage("eh1 1aa")).toBe(
       "We don't offer home visits in EH1 yet. Video consultations work anywhere in the UK, or contact us and we'll see if we can help.",
     );

@@ -23,7 +23,8 @@ export const VISIT_TYPE_LABELS: Record<VisitType, string> = {
  * (which re-exports it) because that module imports normalisePostcode from
  * this one; importing back would create a runtime cycle.
  */
-export const HOME_VISIT_AREA_LABEL = "Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3)";
+export const HOME_VISIT_AREA_LABEL =
+  "Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian and west Fife)";
 
 export const HOME_VISIT_HINT = `Home visits cover ${HOME_VISIT_AREA_LABEL}.`;
 

@@ -109,7 +109,16 @@ export function practiceNode() {
         areaServed: [
           { "@type": "City", name: "Glasgow" },
           { "@type": "City", name: "Paisley" },
-          { "@type": "City", name: "Hamilton" }
+          { "@type": "City", name: "Hamilton" },
+          { "@type": "City", name: "Kilmarnock" },
+          { "@type": "City", name: "Ayr" },
+          { "@type": "City", name: "East Kilbride" },
+          { "@type": "City", name: "Motherwell" },
+          { "@type": "City", name: "Greenock" },
+          { "@type": "City", name: "Falkirk" },
+          { "@type": "City", name: "Stirling" },
+          { "@type": "City", name: "Livingston" },
+          { "@type": "City", name: "Dunfermline" }
         ],
         url: absoluteUrl("/glasgow-physiotherapist")
       }
