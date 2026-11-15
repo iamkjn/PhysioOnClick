@@ -9,7 +9,8 @@ import { PersonSwitcher } from "@/components/person-switcher";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
 import { PatientDashboard } from "@/components/patient-dashboard";
 import { usePerson, usePatientTarget } from "@/components/person-provider";
-import { useCaredForPatients } from "@/hooks/use-cared-for-patients";
+import { useCarerLinks } from "@/hooks/use-cared-for-patients";
+import { CarerVerifyEmailCard } from "@/components/carer-verify-email-card";
 import { getAssignedExercises, getRecoveryScoreSeries } from "@/lib/recovery";
 import { getPatientBookings } from "@/lib/patient-bookings";
 import { formatPersonName } from "@/lib/name-format";
@@ -70,7 +71,8 @@ export function HomeDashboard({ user }: { user: User }) {
   // usePatientTarget resolves whose record that is — own, a dependent's, or
   // (carer mode, lib/carer-access.ts) a patient who listed this user's email.
   const personCtx = usePerson();
-  const caredFor = useCaredForPatients(user);
+  const carerLinks = useCarerLinks(user);
+  const caredFor = carerLinks ? carerLinks.patients : null;
   const target = usePatientTarget(user.uid, displayName) ?? {
     ownerUid: user.uid,
     personId: user.uid,
@@ -223,6 +225,8 @@ export function HomeDashboard({ user }: { user: User }) {
             }}
           />
         </header>
+
+        {carerLinks?.verifyEmail ? <CarerVerifyEmailCard user={user} /> : null}
 
         <div className={showRecoveryRing ? "home-dashboard-grid" : "home-dashboard-grid home-dashboard-grid--full"}>
           {/* The recovery ring is meaningless (and always empty) before a

@@ -19,6 +19,7 @@ import { SignJWT, createRemoteJWKSet, decodeJwt, importPKCS8, jwtVerify } from "
  *   snapshot.docs/.empty/.size, doc.data()/.exists/.id/.ref
  *   FieldValue.serverTimestamp() / FieldValue.arrayUnion()
  *   auth.verifyIdToken() / auth.generateSignInWithEmailLink() / auth.generatePasswordResetLink()
+ *   / auth.generateEmailVerificationLink()
  *
  * ponytail: this is not a general Firestore client. Anything outside the list
  * above (transactions, collectionGroup, aggregates, streaming) is unimplemented
@@ -684,6 +685,29 @@ export class Auth {
       method: "POST",
       body: JSON.stringify({
         requestType: "PASSWORD_RESET",
+        email,
+        returnOobLink: true,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`sendOobCode failed (${res.status}): ${await res.text()}`);
+    }
+    const json = (await res.json()) as { oobLink?: string };
+    if (!json.oobLink) throw new Error("sendOobCode returned no link");
+    return json.oobLink;
+  }
+
+  /**
+   * Email-verification link for a password account, returned (not sent) for
+   * the same reason as generatePasswordResetLink: we send it through Resend.
+   * Password sign-ups are otherwise never verified, and carer access
+   * (firestore.rules isCarerOf) requires token.email_verified.
+   */
+  async generateEmailVerificationLink(email: string): Promise<string> {
+    const res = await apiFetch(`${IDENTITY_HOST}/accounts:sendOobCode`, {
+      method: "POST",
+      body: JSON.stringify({
+        requestType: "VERIFY_EMAIL",
         email,
         returnOobLink: true,
       }),
