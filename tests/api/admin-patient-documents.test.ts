@@ -209,3 +209,30 @@ describe("POST /api/admin/patient-documents", () => {
     expect(entriesAdd).not.toHaveBeenCalled();
   });
 });
+
+describe("POST — session notes (text only)", () => {
+  it("saves a note with no file and no storage upload", async () => {
+    entriesAdd.mockResolvedValue({ id: "note1" });
+    const res = await POST(postForm({
+      uid: UID, title: "Home visit 1", documentDate: "2026-11-15", type: "session-note",
+      summary: "Independent walking started.", bookingId: "TnGJ8DQUra34P8CXfjbh",
+    }));
+    expect(res.status).toBe(201);
+    expect(uploadObject).not.toHaveBeenCalled();
+    expect(entriesAdd.mock.calls[0][0]).toMatchObject({
+      type: "session-note", summary: "Independent walking started.", storagePath: "", size: 0,
+      bookingId: "TnGJ8DQUra34P8CXfjbh", visibility: "admin-only",
+    });
+  });
+
+  it("requires the note text", async () => {
+    const res = await POST(postForm({ uid: UID, title: "Home visit 1", documentDate: "2026-11-15", type: "session-note" }));
+    expect(res.status).toBe(400);
+    expect(entriesAdd).not.toHaveBeenCalled();
+  });
+
+  it("still requires a file for documents", async () => {
+    const res = await POST(postForm({ uid: UID, title: "Letter", documentDate: "2026-11-15", type: "discharge-letter", summary: "x" }));
+    expect(res.status).toBe(400);
+  });
+});

@@ -24,6 +24,8 @@ type SessionPackage = {
   remainingSessions: number;
   status: string;
   visitType?: "home";
+  /** Physio-arranged: progress is shown, but the patient doesn't book from it. */
+  manual?: boolean;
 };
 
 type SlotMap = Record<string, string[]>;
@@ -444,11 +446,16 @@ function SessionPackagesPanel({
     <div className="panel stack">
       <div className="section-heading" style={{ marginBottom: 0 }}>
         <h2>Session packages</h2>
-        <p className="muted">Use your paid bundle credits to book follow-up sessions without paying again.</p>
+        <p className="muted">
+          {packages.every((p) => p.manual)
+            ? "Your treatment plan. Your physio arranges each visit with you."
+            : "Use your paid bundle credits to book follow-up sessions without paying again."}
+        </p>
       </div>
       {packages.map((pack) => {
         const progress = pack.totalSessions ? Math.round((pack.usedSessions / pack.totalSessions) * 100) : 0;
-        const canBook = pack.remainingSessions > 0 && pack.status !== "complete";
+        const hasRemaining = pack.remainingSessions > 0 && pack.status !== "complete";
+        const canBook = hasRemaining && !pack.manual;
         return (
           <article key={pack.id} className="panel" style={{ boxShadow: "none" }}>
             <div style={{ display: "flex", gap: "1rem", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
@@ -462,6 +469,8 @@ function SessionPackagesPanel({
                 <button type="button" className="button small" onClick={() => loadSlots(pack.id, pack.visitType)}>
                   Book next session
                 </button>
+              ) : hasRemaining ? (
+                <span className="pill-link">Your physio arranges these visits</span>
               ) : (
                 <span className="pill-link" aria-label="Package complete">Complete</span>
               )}

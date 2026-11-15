@@ -5045,6 +5045,14 @@ textarea:focus {
   font-size: var(--text-xs);
 }
 
+.admin-doc-note-text {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
 .admin-doc-flags {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

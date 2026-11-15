@@ -79,8 +79,24 @@ describe("AdminPatientDocuments", () => {
   it("opens the add-document form", async () => {
     render(<AdminPatientDocuments patientUid={UID} personId={UID} />);
     await screen.findByText("Immediate Discharge Letter");
-    fireEvent.click(screen.getByRole("button", { name: "Add document" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add note or document" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Save to private history" })).toBeTruthy());
     expect(screen.getByLabelText(/Physio flags/)).toBeTruthy();
+  });
+});
+
+describe("AdminPatientDocuments — session notes", () => {
+  it("shows a note's text inline with no View button", async () => {
+    fetchMock.mockImplementation(async () => new Response(JSON.stringify({
+      history: [{
+        id: "n1", personId: UID, type: "session-note", title: "Home visit 1", documentDate: "2026-11-15",
+        summary: "Independent walking started.", storagePath: "", contentType: "", size: 0,
+      }],
+      uploads: [],
+    }), { status: 200 }));
+    render(<AdminPatientDocuments patientUid={UID} personId={UID} />);
+    expect(await screen.findByText("Independent walking started.")).toBeTruthy();
+    expect(screen.getByText(/Session note · 15 Nov 2026/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "View Home visit 1" })).toBeNull();
   });
 });

@@ -140,3 +140,24 @@ describe("GET /api/package-sessions", () => {
     expect(packages[0]).not.toHaveProperty("visitType");
   });
 });
+
+describe("physio-arranged (manual) packages", () => {
+  it("GET flags the package as manual so the portal shows progress without a booking button", async () => {
+    state.pack = basePack({ manual: true, totalSessions: 7, usedSessions: 1, remainingSessions: 6 });
+    const snap = { docs: [{ id: "cs_1", data: () => state.pack }] };
+    db.collection.mockImplementationOnce(
+      () => ({ where: () => ({ limit: () => ({ get: async () => snap }) }) }) as never,
+    );
+    const res = await GET(new NextRequest("http://localhost/api/package-sessions", { headers: { Authorization: "Bearer t" } }));
+    const { packages } = await res.json();
+    expect(packages[0]).toMatchObject({ manual: true, remainingSessions: 6, totalSessions: 7 });
+  });
+
+  it("POST refuses to self-book from a manual package and changes nothing", async () => {
+    state.pack = basePack({ manual: true, visitType: "home" });
+    const res = await POST(postRequest());
+    expect(res.status).toBe(400);
+    expect(bookingsAdd).not.toHaveBeenCalled();
+    expect(packageRef.update).not.toHaveBeenCalled();
+  });
+});

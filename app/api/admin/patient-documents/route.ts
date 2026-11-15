@@ -5,6 +5,7 @@ import {
   HISTORY_DOCUMENT_TYPES,
   HISTORY_PREFIX,
   MAX_DOCUMENT_BYTES,
+  SESSION_NOTE_TYPE,
   UPLOADS_PREFIX,
   VIEWABLE_TYPES,
   displayUploadName,
@@ -79,6 +80,7 @@ export async function GET(request: Request) {
         summary: str(d.summary),
         pastMedicalHistory: str(d.pastMedicalHistory),
         physioFlags: str(d.physioFlags),
+        bookingId: str(d.bookingId),
         storagePath: str(d.storagePath) ?? "",
         contentType: str(d.contentType) ?? "application/octet-stream",
         size: typeof d.size === "number" ? d.size : 0,
@@ -127,7 +129,9 @@ export async function POST(request: Request) {
   const summary = String(form.get("summary") ?? "").trim();
   const physioFlags = String(form.get("physioFlags") ?? "").trim();
   const source = String(form.get("source") ?? "").trim();
+  const bookingId = String(form.get("bookingId") ?? "").trim();
   const file = form.get("file");
+  const isNote = type === SESSION_NOTE_TYPE;
 
   if (!UID_RE.test(uid) || !UID_RE.test(personId)) {
     return NextResponse.json({ error: "Bad request" }, { status: 400 });
@@ -144,25 +148,45 @@ export async function POST(request: Request) {
   if (summary.length > 4000 || physioFlags.length > 2000 || source.length > 200) {
     return NextResponse.json({ error: "Text is too long." }, { status: 400 });
   }
+  if (bookingId && !UID_RE.test(bookingId)) {
+    return NextResponse.json({ error: "Bad request" }, { status: 400 });
+  }
   // Duck-typed rather than `instanceof File`: the File class formData() hands
   // back isn't always the global one (undici vs. other realms).
-  if (!isUploadedFile(file) || file.size === 0) {
+  const hasFile = isUploadedFile(file) && file.size > 0;
+  if (isNote) {
+    // A session note is the text itself; a file is optional.
+    if (summary.length < 2) {
+      return NextResponse.json({ error: "Write the session note." }, { status: 400 });
+    }
+  } else if (!hasFile) {
     return NextResponse.json({ error: "Attach the document file." }, { status: 400 });
   }
-  const contentType = VIEWABLE_TYPES[fileExtension(file.name)];
-  if (!contentType || (file.type && file.type !== contentType)) {
-    return NextResponse.json({ error: "Upload a PDF, PNG, JPG or WEBP file." }, { status: 400 });
-  }
-  if (file.size > MAX_DOCUMENT_BYTES) {
-    return NextResponse.json({ error: "Choose a file smaller than 10 MB." }, { status: 400 });
+
+  let storagePath = "";
+  let contentType = "";
+  let size = 0;
+  if (hasFile) {
+    const upload = file as UploadedFile;
+    contentType = VIEWABLE_TYPES[fileExtension(upload.name)] ?? "";
+    if (!contentType || (upload.type && upload.type !== contentType)) {
+      return NextResponse.json({ error: "Upload a PDF, PNG, JPG or WEBP file." }, { status: 400 });
+    }
+    if (upload.size > MAX_DOCUMENT_BYTES) {
+      return NextResponse.json({ error: "Choose a file smaller than 10 MB." }, { status: 400 });
+    }
+    storagePath = `${HISTORY_PREFIX}${uid}/${documentDate}-${Date.now()}-${safeFileName(upload.name)}`;
+    size = upload.size;
   }
 
   const col = entriesCollection();
   if (!col) return NextResponse.json({ error: "Unavailable" }, { status: 500 });
 
-  const storagePath = `${HISTORY_PREFIX}${uid}/${documentDate}-${Date.now()}-${safeFileName(file.name)}`;
-  const uploaded = await uploadObject(storagePath, new Uint8Array(await file.arrayBuffer()), contentType);
-  if (!uploaded.ok) return NextResponse.json({ error: "Upload failed. Try again." }, { status: 502 });
+  if (hasFile) {
+    const bytes = new Uint8Array(await (file as UploadedFile).arrayBuffer());
+    const uploaded = await uploadObject(storagePath, bytes, contentType);
+    if (!uploaded.ok) return NextResponse.json({ error: "Upload failed. Try again." }, { status: 502 });
+  }
 
   const ref = await col.add({
     patientUid: uid,
@@ -174,9 +198,10 @@ export async function POST(request: Request) {
     ...(source ? { source } : {}),
     ...(summary ? { summary } : {}),
     ...(physioFlags ? { physioFlags } : {}),
+    ...(bookingId ? { bookingId } : {}),
     storagePath,
     contentType,
-    size: file.size,
+    size,
     uploadedBy: gate.decoded.email ?? "",
     uploadedAt: FieldValue.serverTimestamp(),
   });

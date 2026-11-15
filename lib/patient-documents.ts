@@ -23,7 +23,11 @@ export const VIEWABLE_TYPES: Record<string, string> = {
   webp: "image/webp",
 };
 
+/** A text-only clinical note (no file), e.g. what was found at a session. */
+export const SESSION_NOTE_TYPE = "session-note";
+
 export const HISTORY_DOCUMENT_TYPES = [
+  { value: SESSION_NOTE_TYPE, label: "Session note" },
   { value: "discharge-letter", label: "Discharge letter" },
   { value: "referral", label: "Referral letter" },
   { value: "scan-report", label: "Scan / imaging report" },
@@ -42,6 +46,9 @@ export type HistoryEntry = {
   summary?: string;
   pastMedicalHistory?: string;
   physioFlags?: string;
+  /** The booking a session note belongs to, if any. */
+  bookingId?: string;
+  /** Empty for a session note (text only, nothing to open). */
   storagePath: string;
   contentType: string;
   size: number;

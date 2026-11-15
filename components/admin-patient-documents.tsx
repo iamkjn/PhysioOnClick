@@ -2,12 +2,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { FileText, Lock, TriangleAlert } from "lucide-react";
+import { FileText, Lock, NotebookPen, TriangleAlert } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 import {
   HISTORY_DOCUMENT_TYPES,
+  SESSION_NOTE_TYPE,
   displayUploadName,
   formatBytes,
   type HistoryEntry,
@@ -140,7 +141,7 @@ export function AdminPatientDocuments({ patientUid, personId }: Props) {
       }
       form.reset();
       setAdding(false);
-      toast.show("Document added to private history.", "success");
+      toast.show("Saved to private history.", "success");
       await load();
     } catch {
       setFormError("Could not save the document. Try again.");
@@ -167,11 +168,11 @@ export function AdminPatientDocuments({ patientUid, personId }: Props) {
             setFormError("");
           }}
         >
-          {adding ? "Cancel" : "Add document"}
+          {adding ? "Cancel" : "Add note or document"}
         </button>
       </div>
       <p className="muted admin-docs-note">
-        Hospital letters and reports for your reference. Never shown in the patient&apos;s app or to
+        Session notes, hospital letters and reports for your reference. Never shown in the patient&apos;s app or to
         anyone using their login.
       </p>
 
@@ -179,7 +180,7 @@ export function AdminPatientDocuments({ patientUid, personId }: Props) {
         <form className="assessment-review-form admin-docs-form" onSubmit={(e) => void handleAdd(e)}>
           <label>
             Title
-            <input className="input" name="title" required minLength={2} maxLength={160} placeholder="e.g. Discharge letter, Crosshouse" />
+            <input className="input" name="title" required minLength={2} maxLength={160} placeholder="e.g. Home visit 1, or Discharge letter" />
           </label>
           <label>
             Document date
@@ -187,7 +188,7 @@ export function AdminPatientDocuments({ patientUid, personId }: Props) {
           </label>
           <label>
             Type
-            <select className="input" name="type" defaultValue="discharge-letter">
+            <select className="input" name="type" defaultValue={SESSION_NOTE_TYPE}>
               {HISTORY_DOCUMENT_TYPES.map((t) => (
                 <option key={t.value} value={t.value}>{t.label}</option>
               ))}
@@ -198,7 +199,7 @@ export function AdminPatientDocuments({ patientUid, personId }: Props) {
             <input className="input" name="source" maxLength={200} />
           </label>
           <label className="admin-docs-wide">
-            Summary
+            Note / summary
             <textarea className="input" name="summary" rows={3} maxLength={4000} />
           </label>
           <label className="admin-docs-wide">
@@ -206,8 +207,8 @@ export function AdminPatientDocuments({ patientUid, personId }: Props) {
             <textarea className="input" name="physioFlags" rows={2} maxLength={2000} />
           </label>
           <label className="admin-docs-wide">
-            File (PDF, PNG, JPG or WEBP, up to 10 MB)
-            <input className="input" name="file" type="file" required accept=".pdf,.png,.jpg,.jpeg,.webp" />
+            File (PDF, PNG, JPG or WEBP, up to 10 MB; not needed for a session note)
+            <input className="input" name="file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" />
           </label>
           {formError && <span className="field-error admin-docs-wide" role="alert">{formError}</span>}
           <div className="admin-docs-wide">
@@ -238,10 +239,14 @@ export function AdminPatientDocuments({ patientUid, personId }: Props) {
         <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>No history documents yet.</p>
       ) : (
         <ul className="admin-docs-list">
-          {history.map((entry) => (
-            <li key={entry.id} className="admin-doc-row">
+          {history.map((entry) => {
+            const isNote = entry.type === SESSION_NOTE_TYPE;
+            return (
+            <li key={entry.id} className={`admin-doc-row${isNote ? " admin-doc-row--note" : ""}`}>
               <div className="admin-doc-head">
-                <span className="admin-patient-booking-icon" aria-hidden="true"><FileText /></span>
+                <span className="admin-patient-booking-icon" aria-hidden="true">
+                  {isNote ? <NotebookPen /> : <FileText />}
+                </span>
                 <div>
                   <strong>{entry.title}</strong>
                   <span>
@@ -250,22 +255,25 @@ export function AdminPatientDocuments({ patientUid, personId }: Props) {
                       .join(" · ")}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  className="button small"
-                  onClick={() => void openDocument(entry.storagePath)}
-                  aria-label={`View ${entry.title}`}
-                >
-                  View
-                </button>
+                {entry.storagePath && (
+                  <button
+                    type="button"
+                    className="button small"
+                    onClick={() => void openDocument(entry.storagePath)}
+                    aria-label={`View ${entry.title}`}
+                  >
+                    View
+                  </button>
+                )}
               </div>
+              {isNote && entry.summary && <p className="admin-doc-note-text">{entry.summary}</p>}
               {entry.physioFlags && (
                 <div className="admin-doc-flags">
                   <TriangleAlert aria-hidden="true" />
                   <p><strong>Physio flags:</strong> {entry.physioFlags}</p>
                 </div>
               )}
-              {(entry.summary || entry.pastMedicalHistory || entry.consultant) && (
+              {!isNote && (entry.summary || entry.pastMedicalHistory || entry.consultant) && (
                 <details className="admin-doc-details">
                   <summary>Summary and medical history</summary>
                   {entry.summary && <p>{entry.summary}</p>}
@@ -276,7 +284,8 @@ export function AdminPatientDocuments({ patientUid, personId }: Props) {
                 </details>
               )}
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
 

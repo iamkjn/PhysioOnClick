@@ -21,6 +21,9 @@ type PackageDoc = {
   /** Set by the payments webhook for a bundle bought as a home visit. */
   visitType?: VisitType;
   homeVisitAddress?: string;
+  /** Admin-managed plan: the physio arranges and records each visit, so the
+   *  patient sees progress but can't book from it (no address/Cal flow). */
+  manual?: boolean;
 };
 
 type FollowUpCheckIn = {
@@ -113,6 +116,7 @@ export async function GET(request: NextRequest) {
         status: data.status ?? "active",
         // Lets the portal show home-visit times. The address never leaves the server.
         ...(data.visitType === "home" ? { visitType: "home" as const } : {}),
+        ...(data.manual === true ? { manual: true } : {}),
       };
     })
     .filter((item) => item.totalSessions > 1);
@@ -151,6 +155,9 @@ export async function POST(request: NextRequest) {
 
   const pack = packageSnap.data() as PackageDoc;
   if (pack.ownerUid !== user.uid) return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+  if (pack.manual === true) {
+    return NextResponse.json({ error: "Your physio arranges these sessions." }, { status: 400 });
+  }
   const remaining = Number(pack.remainingSessions ?? 0);
   const total = Number(pack.totalSessions ?? 0);
   const used = Number(pack.usedSessions ?? 0);
