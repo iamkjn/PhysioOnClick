@@ -4986,6 +4986,126 @@ textarea:focus {
   font-size: var(--text-xs);
 }
 
+/* Admin patient: private history & documents (components/admin-patient-documents.tsx) */
+.admin-docs-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.admin-docs-eyebrow svg {
+  width: 13px;
+  height: 13px;
+}
+
+.admin-docs-note {
+  margin: 0;
+  font-size: var(--text-xs);
+}
+
+.admin-docs-form .admin-docs-wide {
+  grid-column: 1 / -1;
+}
+
+.admin-docs-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-doc-row {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: #fbfdfe;
+}
+
+.admin-doc-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.admin-doc-head strong {
+  display: block;
+  color: #043246;
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.admin-doc-head span:not(.admin-patient-booking-icon) {
+  display: block;
+  margin-top: 0.15rem;
+  color: #60747d;
+  font-size: var(--text-xs);
+}
+
+.admin-doc-flags {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2);
+  align-items: start;
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid var(--color-warning);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--color-warning) 9%, var(--color-surface, #fff));
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+.admin-doc-flags svg {
+  width: 16px;
+  height: 16px;
+  margin-top: 0.1rem;
+  color: var(--color-warning);
+}
+
+.admin-doc-details {
+  font-size: var(--text-xs);
+  line-height: 1.55;
+}
+
+.admin-doc-details summary {
+  cursor: pointer;
+  color: #0a77a8;
+  font-weight: 600;
+}
+
+.admin-doc-details p {
+  margin: var(--space-2) 0 0;
+}
+
+.admin-docs-uploads {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.admin-docs-uploads h3 {
+  margin: 0;
+  color: #043246;
+  font-size: var(--text-base);
+}
+
+@media (max-width: 560px) {
+  .admin-docs-form {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-doc-head {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .admin-doc-head .button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
 .admin-outline-action {
   padding: 6px 10px;
   border: 1.5px solid var(--color-primary-dark);

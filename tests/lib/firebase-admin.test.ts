@@ -534,3 +534,32 @@ describe("auth", () => {
     ).rejects.toThrow(/no link/);
   });
 });
+
+describe("listObjects", () => {
+  it("lists a prefix through the Storage JSON API and normalises sizes", async () => {
+    process.env.FIREBASE_ADMIN_STORAGE_BUCKET = "bucket.test";
+    const { calls } = mockFetch({
+      items: [{ name: "patient-uploads/u1/1-a.pdf", size: "2048", contentType: "application/pdf", updated: "2026-11-15T10:00:00Z" }],
+    });
+    const { listObjects } = await loadModule();
+    const items = await listObjects("patient-uploads/u1/");
+    expect(items).toEqual([
+      { name: "patient-uploads/u1/1-a.pdf", size: 2048, contentType: "application/pdf", updated: "2026-11-15T10:00:00Z" },
+    ]);
+    const url = new URL(calls[0].url);
+    expect(url.pathname).toBe("/storage/v1/b/bucket.test/o");
+    expect(url.searchParams.get("prefix")).toBe("patient-uploads/u1/");
+    expect(calls[0].headers.Authorization).toBe("Bearer ya29.test-token");
+  });
+
+  it("returns [] when the API fails or there is no bucket", async () => {
+    process.env.FIREBASE_ADMIN_STORAGE_BUCKET = "bucket.test";
+    mockFetch({ error: "nope" }, 403);
+    const { listObjects } = await loadModule();
+    expect(await listObjects("x/")).toEqual([]);
+
+    delete process.env.FIREBASE_ADMIN_STORAGE_BUCKET;
+    const again = await loadModule();
+    expect(await again.listObjects("x/")).toEqual([]);
+  });
+});

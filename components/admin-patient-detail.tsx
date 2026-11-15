@@ -25,6 +25,7 @@ import { AdminRecoverySummary } from "@/components/admin-recovery-summary";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminAssessmentReview } from "@/components/admin-assessment-review";
+import { AdminPatientDocuments } from "@/components/admin-patient-documents";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
@@ -458,6 +459,9 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           )}
         </div>
       </section>
+
+      {/* 4b. Private history documents (admin-only) + files on their account */}
+      <AdminPatientDocuments patientUid={patientUid} personId={person.id} />
 
       {/* 5. Patient assessment forms and check-ups */}
       {awaitingAssessment && (

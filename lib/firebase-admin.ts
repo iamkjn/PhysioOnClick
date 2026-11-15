@@ -760,3 +760,41 @@ export async function downloadObject(path: string): Promise<Uint8Array | null> {
     return null;
   }
 }
+
+export type StorageObjectInfo = {
+  name: string;
+  size: number;
+  contentType: string;
+  updated: string;
+};
+
+/**
+ * Lists objects under a prefix (first page, up to `max`). Returns [] on any
+ * failure — callers treat "couldn't list" the same as "nothing there".
+ */
+export async function listObjects(prefix: string, max = 100): Promise<StorageObjectInfo[]> {
+  const bucket = process.env.FIREBASE_ADMIN_STORAGE_BUCKET;
+  if (!bucket) return [];
+  try {
+    const token = await getAccessToken();
+    const params = new URLSearchParams({
+      prefix,
+      maxResults: String(max),
+      fields: "items(name,size,contentType,updated)",
+    });
+    const url = `https://storage.googleapis.com/storage/v1/b/${bucket}/o?${params}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) return [];
+    const json = (await res.json()) as {
+      items?: { name: string; size?: string; contentType?: string; updated?: string }[];
+    };
+    return (json.items ?? []).map((item) => ({
+      name: item.name,
+      size: Number(item.size ?? 0),
+      contentType: item.contentType ?? "application/octet-stream",
+      updated: item.updated ?? "",
+    }));
+  } catch {
+    return [];
+  }
+}
