@@ -27,7 +27,7 @@ describe("physiotherapy-home-visits-glasgow", () => {
     );
     expect(text).not.toMatch(/travel fee/i);
     expect(text).not.toMatch(/assessment price plus/i);
-    expect(text).toContain("G1–G53");
+    expect(text).toContain("Kilmarnock");
     expect(text).toContain("GP or specialist team must confirm");
     expect(text).toContain("responsible adult");
     expect(text).not.toMatch(/same prices|acupuncture is available/i);

@@ -462,7 +462,7 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
           style: theme.textTheme.bodyMedium,
         ),
         const SizedBox(height: 4),
-        Text('Home visits cover Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3).',
+        Text('Home visits cover Glasgow and the surrounding area within about an hour\'s drive.',
             style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
         const SizedBox(height: 10),
         OutlinedButton(

@@ -17,8 +17,8 @@ const homeFollowUp = homeVisitPrices.followUp;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/physiotherapy-home-visits-glasgow" },
-  title: "Home Physiotherapy Glasgow, Paisley & Hamilton | PhysioOnClick",
-  description: `Home physiotherapy in Glasgow (G1–G53), Paisley and Hamilton on weekday evenings and weekends, from an HCPC registered physio. ${homeInitial} home assessment, all in.`
+  title: "Home Physiotherapy Glasgow & Surrounding Areas | PhysioOnClick",
+  description: `Home physiotherapy in Glasgow and up to an hour's drive away, on evenings and weekends, from an HCPC registered physio. ${homeInitial} home assessment, all in.`
 };
 
 const faqItems = [
@@ -90,7 +90,7 @@ export default function HomeVisitsGlasgowPage() {
       <section className="page-hero page-hero-split">
         <div className="stack">
           <span className="eyebrow">Home visits</span>
-          <h1>Physiotherapy home visits in Glasgow, Paisley and Hamilton</h1>
+          <h1>Physiotherapy home visits in Glasgow and the surrounding area</h1>
           <p className="lead">
             A Glasgow-based, HCPC registered physiotherapist comes to you. The initial home assessment is{" "}
             {homeInitial} all in, and follow-ups are {homeFollowUp}. Home visits cover {HOME_VISIT_AREA_LABEL}.
@@ -169,11 +169,13 @@ export default function HomeVisitsGlasgowPage() {
         <section className="page-section stack">
           <h2>Postcodes and areas we visit</h2>
           <p>
-            Every Glasgow postcode from G1 to G53, plus Paisley (PA1 to PA3) and Hamilton (ML3). That
-            includes the city centre and Merchant City, the West End (Partick, Hyndland, Hillhead), the
-            Southside (Shawlands, Pollokshields, Govanhill), the East End (Dennistoun, Parkhead, Shettleston),
-            the North (Springburn, Maryhill), and areas such as Bearsden, Milngavie, Bishopbriggs, Rutherglen,
-            Cambuslang, Newton Mearns, Giffnock and Clarkston. Enter your postcode when you book to confirm.
+            All of Glasgow and everywhere within about an hour&rsquo;s drive. That includes the city centre,
+            the West End, the Southside, the East End and the North of Glasgow; Bearsden, Milngavie,
+            Bishopbriggs, Kirkintilloch, Cumbernauld, Clydebank, Dumbarton and Helensburgh; Rutherglen,
+            Cambuslang, East Kilbride, Newton Mearns, Giffnock and Barrhead; Paisley, Renfrew, Johnstone,
+            Erskine, Greenock and Gourock; Hamilton, Motherwell, Wishaw, Coatbridge, Airdrie and Lanark;
+            Kilmarnock, Ayr, Prestwick, Troon, Irvine and Largs; Falkirk, Stirling and Alloa; Livingston,
+            Bathgate and Linlithgow; and Dunfermline. Enter your postcode when you book to confirm.
           </p>
           <p>
             Outside these areas? <Link href="/online-physiotherapy-scotland">Online physiotherapy in Scotland</Link>{" "}

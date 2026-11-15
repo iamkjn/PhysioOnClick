@@ -61,7 +61,7 @@ describe('Terms & Conditions page', () => {
     expect(text).toMatch(
       new RegExp(`currently ${homeVisitPrices.initial} for an initial assessment and\\s+${homeVisitPrices.followUp} for a follow-up\\); there is no separate fee`),
     )
-    expect(text).toMatch(/Glasgow \(G1–G53\), Paisley \(PA1–PA3\) and Hamilton \(ML3\)/)
+    expect(text).toContain("Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian and west Fife)")
     expect(text).toMatch(/the price you pay when you book covers every visit in the bundle/)
     expect(text).toMatch(/Discount codes\s+apply to the whole price/)
     expect(text).not.toMatch(/travel fee/i)

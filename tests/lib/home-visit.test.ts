@@ -15,7 +15,7 @@ describe("home-visit helpers", () => {
     expect(VISIT_TYPE_LABELS.video).toBe("Video call (anywhere in the UK)");
     expect(VISIT_TYPE_LABELS.home).toBe("Home visit in Glasgow");
     expect(HOME_VISIT_HINT).toBe(
-      "Home visits cover Glasgow (G1–G53), Paisley (PA1–PA3) and Hamilton (ML3).",
+      "Home visits cover Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian and west Fife).",
     );
     expect(HOME_ADDRESS_MAX).toBe(120);
     expect(HOME_POSTCODE_MAX).toBe(10);

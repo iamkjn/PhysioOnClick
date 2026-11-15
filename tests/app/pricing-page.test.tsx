@@ -13,7 +13,7 @@ describe("pricing page home visits", () => {
     render(<PricingPage />);
     expect(screen.getByRole("heading", { name: /Home visits in Glasgow/ })).toBeInTheDocument();
     expect(screen.getByText(/The price you see is the price you pay, with nothing added at\s+checkout or on your invoice/)).toBeInTheDocument();
-    expect(screen.getByText(/Glasgow \(G1–G53\), Paisley \(PA1–PA3\) and Hamilton \(ML3\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Glasgow and the surrounding area within about an hour/)).toBeInTheDocument();
     for (const id of ["initial-assessment", "follow-up", "bundle-4", "bundle-8"] as const) {
       expect(screen.getByText(formatPounds(homeVisitPricePence(id)))).toBeInTheDocument();
     }

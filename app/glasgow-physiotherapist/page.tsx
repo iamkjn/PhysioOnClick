@@ -180,12 +180,13 @@ export default function GlasgowPage() {
         <section className="page-section stack">
           <h2>Areas we cover for home visits</h2>
           <p>
-            Home visits cover every Glasgow postcode from G1 to G53, plus Paisley (PA1 to PA3) and
-            Hamilton (ML3). That includes the city centre and Merchant City, the West End (Partick,
-            Hyndland, Hillhead), the Southside (Shawlands, Pollokshields, Govanhill), the East End
-            (Dennistoun, Parkhead, Shettleston), the North (Springburn, Maryhill), and areas such as
-            Bearsden, Milngavie, Bishopbriggs, Rutherglen, Cambuslang, Newton Mearns, Giffnock and
-            Clarkston. Enter your postcode when you book to confirm.
+            Home visits cover all of Glasgow and everywhere within about an hour&rsquo;s drive. That
+            includes the city centre and Merchant City, the West End (Partick, Hyndland, Hillhead), the
+            Southside (Shawlands, Pollokshields, Govanhill), the East End (Dennistoun, Parkhead,
+            Shettleston), the North (Springburn, Maryhill), and further out Bearsden, Milngavie,
+            Bishopbriggs, Cumbernauld, East Kilbride, Newton Mearns, Paisley, Greenock, Hamilton,
+            Motherwell, Airdrie, Kilmarnock, Ayr, Irvine, Falkirk, Stirling, Livingston and Dunfermline.
+            Enter your postcode when you book to confirm.
           </p>
           <h2>Common problems we treat in Glasgow</h2>
           <ul className="clean-list">
