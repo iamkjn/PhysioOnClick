@@ -20,6 +20,12 @@ interface Props {
   personId: string;
   personName: string;
   chartRef: React.RefObject<HTMLDivElement | null>;
+  /**
+   * Include the patient's self-assessment forms. False for carers
+   * (lib/carer-access.ts): firestore.rules never lets a carer read them, so
+   * the report simply leaves that section out.
+   */
+  includeAssessmentForms?: boolean;
 }
 
 // Clarity System palette as literal hex — jsPDF runs outside the DOM and can't
@@ -63,7 +69,7 @@ function assessmentPsfsAverage(form: PatientAssessmentFormRecord): string {
   return `${Math.round((total / scored.length) * 10) / 10}/10`;
 }
 
-export function DownloadReportButton({ uid, personId, personName, chartRef }: Props) {
+export function DownloadReportButton({ uid, personId, personName, chartRef, includeAssessmentForms = true }: Props) {
   const [generating, setGenerating] = useState(false);
 
   async function handleDownload() {
@@ -78,7 +84,9 @@ export function DownloadReportButton({ uid, personId, personName, chartRef }: Pr
         await Promise.all([
           getPainLogs(uid, personId, 56),
           getClinicalAssessments(uid, personId, 56),
-          getPatientAssessmentForms(uid, personId),
+          includeAssessmentForms
+            ? getPatientAssessmentForms(uid, personId)
+            : Promise.resolve([] as PatientAssessmentFormRecord[]),
           getAssignedExercises(uid, personId),
           getExerciseLogs(uid, personId, 56),
           getMotionSessions(uid, personId, 60),

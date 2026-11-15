@@ -90,6 +90,15 @@ service firebase.storage {
       allow read, write: if false;
     }
 
+    // Sensitive clinical documents (admin-only clinical history). Uploaded and
+    // read only server-side via the service account. No client, not the
+    // patient and never a carer (lib/carer-access.ts), may touch them.
+    // Carer access deliberately adds NO Storage grants at all: everything a
+    // carer needs (exercises, logs, pain scores) lives in Firestore.
+    match /clinical-history/{allPaths=**} {
+      allow read, write: if false;
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

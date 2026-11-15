@@ -24,6 +24,7 @@ import { AdminRecoverySummary } from "@/components/admin-recovery-summary";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminAssessmentReview } from "@/components/admin-assessment-review";
+import { AdminCarerAccess } from "@/components/admin-carer-access";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
@@ -356,7 +357,11 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
       {/* 2. Pain trend */}
       <AdminRecoveryChart patientUid={patientUid} personId={person.id} />
 
-      {/* 3. Bookings */}
+      {/* 3. Carer access — per account (the account holder's own record), so
+          it stays on the account holder whichever dependent is selected. */}
+      <AdminCarerAccess patientUid={patientUid} patientName={patient.displayName} />
+
+      {/* 4. Bookings */}
       <div className="panel admin-patient-card stack">
         <div className="admin-patient-section-head">
           <div>
@@ -422,7 +427,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         )}
       </div>
 
-      {/* 4. Clinical assessments (history only — recording an assessment lives
+      {/* 5. Clinical assessments (history only — recording an assessment lives
           on /admin/recovery, not on this screen) */}
       <section>
         <div className="panel admin-patient-card stack">
@@ -454,7 +459,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         </div>
       </section>
 
-      {/* 5. Patient assessment forms and check-ups */}
+      {/* 6. Patient assessment forms and check-ups */}
       {awaitingAssessment && (
         <span className="dashboard-status-pill status-pending" style={{ justifySelf: "start" }}>
           Awaiting assessment
@@ -469,7 +474,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         />
       </section>
 
-      {/* 6. Assigned exercises */}
+      {/* 7. Assigned exercises */}
       {adminUid && (
         <AdminExerciseAssigner
           adminUid={adminUid}
@@ -480,7 +485,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         />
       )}
 
-      {/* 7. Session summaries */}
+      {/* 8. Session summaries */}
       <div className="panel admin-patient-card stack">
         <div className="admin-patient-section-head">
           <div>

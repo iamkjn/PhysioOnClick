@@ -22,6 +22,11 @@ import { MotionCheckButton } from "@/components/motion-check-button";
 interface Props {
   uid: string;
   personId: string;
+  /**
+   * "Check your motion" saves a motionSessions doc. Carers (lib/carer-access.ts)
+   * may read past results but not record new ones, so carer mode passes false.
+   */
+  allowMotionCheck?: boolean;
 }
 
 // Convert a catalogue embed URL (…/embed/ID) to a watchable link (…/watch?v=ID).
@@ -33,7 +38,7 @@ function watchUrl(embed: string): string {
 // the physio's demo video where one exists, a "Check your motion" button where a
 // motion target exists, the latest motion result, and a per-exercise "done
 // today" toggle plus a "mark all as done" shortcut for the daily check-off.
-export function AssignedExercises({ uid, personId }: Props) {
+export function AssignedExercises({ uid, personId, allowMotionCheck = true }: Props) {
   const [assigned, setAssigned] = useState<AssignedExercise[]>([]);
   const [todayLog, setTodayLog] = useState<ExerciseLog | null>(null);
   const [motionByExercise, setMotionByExercise] = useState<Record<string, MotionSession>>({});
@@ -268,7 +273,9 @@ export function AssignedExercises({ uid, personId }: Props) {
                     {expanded.has(ae.exerciseId) ? "Hide how-to ▴" : "How to do it ▾"}
                   </button>
                 )}
-                <MotionCheckButton exerciseId={ex.id} exercise={ex} uid={uid} personId={personId} />
+                {allowMotionCheck ? (
+                  <MotionCheckButton exerciseId={ex.id} exercise={ex} uid={uid} personId={personId} />
+                ) : null}
                 {ex.videoUrl && (
                   <a
                     href={watchUrl(ex.videoUrl)}
