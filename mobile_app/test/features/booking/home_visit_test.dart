@@ -13,6 +13,12 @@ void main() {
     BookServiceId.bundle8: [30500, 54500, '8 Session Bundle (home visit)'],
   };
 
+  test('a home follow-up is 60 minutes, video stays 30', () {
+    expect(sessionMinutes(svc(BookServiceId.followUp), VisitType.home), 60);
+    expect(sessionMinutes(svc(BookServiceId.followUp), VisitType.video), 30);
+    expect(sessionMinutes(svc(BookServiceId.initialAssessment), VisitType.home), 60);
+  });
+
   test('home extra is £30 per visit', () {
     expect(kHomeVisitExtraPence, 3000);
   });

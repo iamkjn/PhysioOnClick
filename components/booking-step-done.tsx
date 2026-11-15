@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, type RefObject } from "react";
+import type { RefObject } from "react";
 
-import { bookServiceFor, serviceLabelFor } from "@/lib/cal-services";
+import { minutesFor, serviceLabelFor } from "@/lib/cal-services";
+import { formatPounds, sessionPricePence } from "@/lib/home-visit-pricing";
 import { founder } from "@/lib/site-data";
 import { formatSlotChip, type BookingConfirmation } from "@/components/booking-flow";
 
@@ -39,7 +40,6 @@ type Props = {
 };
 
 export function BookingStepDone({ confirmation, titleRef }: Props) {
-  const service = useMemo(() => bookServiceFor(confirmation.serviceId), [confirmation.serviceId]);
   const firstName = confirmation.name.trim().split(/\s+/)[0] || "there";
   const isHomeVisit = confirmation.visitType === "home";
   const title = serviceLabelFor(confirmation.serviceId, confirmation.visitType);
@@ -62,7 +62,7 @@ export function BookingStepDone({ confirmation, titleRef }: Props) {
         <div className="book-done-actions">
           <a
             className="book-action-outline"
-            href={calendarHref(title, confirmation.start, service.minutes, isHomeVisit)}
+            href={calendarHref(title, confirmation.start, minutesFor(confirmation.serviceId, confirmation.visitType), isHomeVisit)}
             download="physioonclick-session.ics"
             aria-label="Add to calendar (downloads a calendar file)"
           >
@@ -90,7 +90,7 @@ export function BookingStepDone({ confirmation, titleRef }: Props) {
           <div className="book-summary-row">
             {/* No checkout route exists, so this is what's owed — not what's been charged. */}
             <span className="book-summary-label">Total</span>
-            <span className="book-summary-value">£{service.price}</span>
+            <span className="book-summary-value">{formatPounds(sessionPricePence(confirmation.serviceId, confirmation.visitType))}</span>
           </div>
         </div>
 

@@ -8,7 +8,7 @@ void main() {
     expect(text, contains('Online Follow-Up (30 min) — £40'));
     expect(text, contains('Home visits (Glasgow area):'));
     expect(text, contains('Initial Assessment at home (60 min) — £80'));
-    expect(text, contains('Follow-Up at home (30 min) — £70'));
+    expect(text, contains('Follow-Up at home (60 min) — £70'));
     expect(text, contains('4-Session Bundle — £160 online, £280 at home'));
     expect(text, contains('8-Session Bundle — £305 online, £545 at home'));
     expect(text.toLowerCase(), isNot(contains('travel')));

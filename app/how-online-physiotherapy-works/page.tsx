@@ -45,7 +45,7 @@ const steps = [
 const practicalQuestions = [
   {
     question: "How long is a session?",
-    answer: "An initial assessment is 60 minutes. Follow-up sessions are 30 minutes."
+    answer: "An initial assessment is 60 minutes. Follow-up sessions are 30 minutes by video, or 60 minutes at a home visit."
   },
   {
     question: "What do I need to join?",

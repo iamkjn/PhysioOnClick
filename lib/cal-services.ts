@@ -22,6 +22,9 @@ export type CalService = {
   /** Length of the booked session, matching the Cal.com event type. Drives the
    *  calendar-file end time. Bundles book a 60-min first session. */
   minutes: number;
+  /** Length of a home visit when it differs from `minutes` (the home event in
+   *  Cal.com is longer). Use minutesFor(). */
+  homeMinutes?: number;
   /** How many sessions the tier buys. Drives the rail checklist copy. */
   sessions: number;
   /** "What's included" checklist shown in the left rail. */
@@ -51,6 +54,10 @@ const CAL_SERVICES: Record<BookServiceId, CalService> = {
     calSlug: "online-follow-up",
     homeCalSlug: HOME_VISIT_FOLLOW_UP_SLUG,
     minutes: 30,
+    // Owner decision 2026-11-15: a home follow-up is 60 minutes (video stays
+    // 30). The Cal.com event follow-up-home-visit-in-glasgow was set to 60 in
+    // both accounts the same day; keep the two in step.
+    homeMinutes: 60,
     sessions: 1,
     included: [
       "30-minute video consultation",
@@ -130,11 +137,26 @@ export function serviceLabelFor(id: BookServiceId, visitType?: unknown): string 
   return HOME_VISIT_TITLES[id] ?? `${title} (home visit)`;
 }
 
-/** The rail's "What's included" list, with the session format matching the visit. */
+/** Length in minutes of one booked session of this tier, for the visit type. */
+export function minutesFor(id: BookServiceId, visitType?: unknown): number {
+  const service = CAL_SERVICES[id];
+  return visitType === "home" && service.homeMinutes ? service.homeMinutes : service.minutes;
+}
+
+/** The duration label shown on price cards ("60 min", or "Flexible" for bundles). */
+export function durationFor(id: BookServiceId, visitType?: unknown): string {
+  const service = bookServiceFor(id);
+  if (visitType === "home" && service.homeMinutes) return `${service.homeMinutes} min`;
+  return service.duration;
+}
+
+/** The rail's "What's included" list, with the session format and length matching the visit. */
 export function includedFor(id: BookServiceId, visitType?: unknown): string[] {
   const included = bookServiceFor(id).included;
   if (visitType !== "home") return included;
-  return included.map((item) => item.replace(/-minute video consultation$/, "-minute home visit"));
+  return included.map((item) =>
+    item.replace(/^\d+-minute video consultation$/, `${minutesFor(id, "home")}-minute home visit`)
+  );
 }
 
 export function allBookServices(): Array<CalService & PricingItem> {

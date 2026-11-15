@@ -3,7 +3,7 @@
 import { useRef, type KeyboardEvent, type RefObject } from "react";
 import Link from "next/link";
 
-import { serviceLabelFor, type CalService } from "@/lib/cal-services";
+import { durationFor, serviceLabelFor, type CalService } from "@/lib/cal-services";
 import type { BookServiceId, PricingItem } from "@/lib/site-data";
 import { AddressLookup } from "@/components/address-lookup";
 import { addressDisplay, type SavedAddress } from "@/lib/patient-addresses";
@@ -393,7 +393,7 @@ export function BookingStepService({
                     <span className="book-service-desc">{s.description}</span>
                     {/* One whole price for the chosen visit type: a home visit has no separate fee. */}
                     <span className="book-service-price">{formatPounds(sessionPricePence(s.id, visitType))}</span>{" "}
-                    <span className="book-service-duration">{s.duration}</span>
+                    <span className="book-service-duration">{durationFor(s.id, visitType)}</span>
                   </button>
                 );
               })}

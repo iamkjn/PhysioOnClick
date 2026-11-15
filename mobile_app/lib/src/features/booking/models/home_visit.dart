@@ -10,6 +10,13 @@ enum VisitType { video, home }
 /// price in book_service.dart. Mirrors the web app's home-visit pricing.
 const int kHomeVisitExtraPence = 3000;
 
+/// Length of one session of [s] for visit type [v], in minutes. A home
+/// follow-up is 60 minutes (owner, 2026-11-15; the Cal.com home follow-up
+/// event was changed to match); video follow-ups stay 30. Mirrors
+/// minutesFor() in the web app's lib/cal-services.ts.
+int sessionMinutes(ResolvedService s, VisitType v) =>
+    v == VisitType.home && s.id == BookServiceId.followUp ? 60 : s.minutes;
+
 /// The video (online) price of [s] in pence.
 int videoPricePence(ResolvedService s) => (s.price * 100).round();
 

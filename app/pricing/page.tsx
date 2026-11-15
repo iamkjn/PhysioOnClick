@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { serviceLabelFor } from "@/lib/cal-services";
+import { durationFor, serviceLabelFor } from "@/lib/cal-services";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPricePence, homeVisitPrices } from "@/lib/home-visit-pricing";
 import { getPublicPricing } from "@/lib/public-content";
@@ -68,7 +68,7 @@ export default function PricingPage() {
               <article key={item.id} className="simple-price-card">
                 <h3>{serviceLabelFor(item.id, "home")}</h3>
                 <strong>{formatPounds(homeVisitPricePence(item.id))}</strong>
-                <p className="muted">{item.duration}</p>
+                <p className="muted">{durationFor(item.id, "home")}</p>
               </article>
             ))}
           </div>
