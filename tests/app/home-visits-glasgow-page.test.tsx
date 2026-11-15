@@ -17,6 +17,7 @@ describe("physiotherapy-home-visits-glasgow", () => {
     expect(desc.length).toBeGreaterThanOrEqual(120);
     expect(desc.length).toBeLessThanOrEqual(160);
     expect(desc).toContain(home);
+    expect(desc).toContain(`${homeFollowUp} follow-ups`);
   });
 
   it("states derived prices, coverage and the safety conditions", () => {

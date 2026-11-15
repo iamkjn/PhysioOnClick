@@ -16,7 +16,7 @@ const homeFollowUp = homeVisitPrices.followUp;
 export const metadata: Metadata = {
   alternates: { canonical: "/glasgow-physiotherapist" },
   title: "Physiotherapist Glasgow: Home Visits & Online | PhysioOnClick",
-  description: `Physiotherapist in Glasgow: home visits on weekday evenings and weekends, plus video UK-wide. No GP referral. ${videoInitial} video assessment, ${homeInitial} home visit.`
+  description: `Physiotherapist in Glasgow: home visits on weekday evenings and weekends, video UK-wide. No GP referral. ${homeInitial} home visit, ${homeFollowUp} follow-up, ${videoInitial} video assessment.`
 };
 
 const faqItems = [

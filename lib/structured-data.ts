@@ -19,7 +19,10 @@
 import { absoluteUrl } from "@/lib/utils";
 import { openingHoursSpecification } from "@/lib/appointment-hours";
 import { stripLinks } from "@/lib/content-types";
-import { founder, services, withPrices } from "@/lib/site-data";
+import { founder, pricing, services, withPrices } from "@/lib/site-data";
+import { serviceLabelFor } from "@/lib/cal-services";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
+import type { VisitType } from "@/lib/home-visit";
 // Import the conditions array directly, not `getCondition` from the
 // `@/lib/exercise-library` barrel: this module is pulled into app/layout.tsx
 // (siteEntityGraph), so a value import from the barrel would drag the whole
@@ -61,6 +64,57 @@ export function practiceRef() {
 /** Reference-only pointer at the practitioner node. */
 export function personRef() {
   return { "@id": PERSON_ID };
+}
+
+/** One priced Offer per bookable service for a visit type. Prices come from
+ *  lib/home-visit-pricing (the same function checkout charges with), so the
+ *  graph can never drift from what a patient actually pays. */
+function priceOffers(visitType: VisitType) {
+  const home = visitType === "home";
+  return pricing.map((item) => {
+    // Video bundle titles ("4 Session Bundle") don't say how they're delivered.
+    const name = home
+      ? serviceLabelFor(item.id, "home")
+      : item.mode === "Package"
+        ? `${item.title} (video)`
+        : item.title;
+    return {
+      "@type": "Offer",
+      name,
+      price: sessionPricePence(item.id, visitType) / 100,
+      priceCurrency: "GBP",
+      url: absoluteUrl(home ? "/book?visit=home" : "/book"),
+      itemOffered: {
+        "@type": "Service",
+        name,
+        serviceType: home ? "Home visit physiotherapy" : "Online video consultation",
+        provider: practiceRef()
+      }
+    };
+  });
+}
+
+/** Machine-readable price list. Without it, Google's AI answer (2026-11-15)
+ *  guessed prices from page copy, showed "Follow-up: £40" and dropped the
+ *  £70 home follow-up. */
+export function priceCatalog() {
+  return {
+    "@type": "OfferCatalog",
+    name: "Physiotherapy prices",
+    url: absoluteUrl("/pricing"),
+    itemListElement: [
+      {
+        "@type": "OfferCatalog",
+        name: "Home visits in Glasgow (one all-in price per visit)",
+        itemListElement: priceOffers("home")
+      },
+      {
+        "@type": "OfferCatalog",
+        name: "Video appointments (UK-wide)",
+        itemListElement: priceOffers("video")
+      }
+    ]
+  };
 }
 
 /** The full practice entity. Emit this once sitewide (app/layout.tsx); every
@@ -123,6 +177,7 @@ export function practiceNode() {
         url: absoluteUrl("/glasgow-physiotherapist")
       }
     },
+    hasOfferCatalog: priceCatalog(),
     // Same source as /contact and the booking calendar (lib/appointment-hours):
     // contradicting hours are worse than none.
     openingHoursSpecification: openingHoursSpecification(),

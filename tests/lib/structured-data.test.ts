@@ -10,7 +10,12 @@ import {
   personRef,
   personNode,
   onlinePhysioWebPage,
+  practiceNode,
+  priceCatalog,
 } from '@/lib/structured-data'
+import { pricing } from '@/lib/site-data'
+import { serviceLabelFor } from '@/lib/cal-services'
+import { homeVisitPricePence, sessionPricePence } from '@/lib/home-visit-pricing'
 import { getOnlinePhysioPage } from '@/lib/online-physio-pages'
 
 const ex = exercises.find((e) => e.slug === 'clam-shell')!
@@ -172,5 +177,48 @@ describe('onlinePhysioWebPage about', () => {
   })
   it('names stroke as a condition', () => {
     expect(about('stroke-rehabilitation')).toEqual({ '@type': 'MedicalCondition', name: 'Stroke' })
+  })
+})
+
+describe('structured-data: priceCatalog', () => {
+  // Google's AI answer (2026-11-15) showed "Follow-up: £40" and no £70 home
+  // follow-up because the site published no machine-readable prices.
+  const catalog = practiceNode().hasOfferCatalog as {
+    '@type': string
+    itemListElement: { name: string; itemListElement: { name: string; price: number; priceCurrency: string; url: string }[] }[]
+  }
+  const [homeList, videoList] = catalog.itemListElement
+  const priceOf = (list: typeof homeList, name: string) => list.itemListElement.find((o) => o.name === name)?.price
+
+  it('is attached to the sitewide practice node', () => {
+    expect(catalog['@type']).toBe('OfferCatalog')
+    expect(catalog).toEqual(priceCatalog())
+  })
+
+  it('lists every home-visit price, including the follow-up, from the checkout pricing', () => {
+    expect(homeList.name).toMatch(/home visits/i)
+    expect(homeList.itemListElement).toHaveLength(pricing.length)
+    for (const item of pricing) {
+      expect(priceOf(homeList, serviceLabelFor(item.id, 'home'))).toBe(sessionPricePence(item.id, 'home') / 100)
+    }
+    expect(priceOf(homeList, 'Follow-Up (home visit)')).toBe(homeVisitPricePence('follow-up') / 100)
+  })
+
+  it('lists the video prices separately, and never labels a video price as a home follow-up', () => {
+    expect(videoList.name).toMatch(/video/i)
+    expect(priceOf(videoList, 'Online Follow-Up')).toBe(sessionPricePence('follow-up') / 100)
+    expect(priceOf(videoList, 'Initial Online Assessment')).toBe(sessionPricePence('initial-assessment') / 100)
+    for (const offer of videoList.itemListElement) {
+      expect(offer.name).not.toMatch(/home/i)
+      expect(offer.url.endsWith('/book')).toBe(true)
+    }
+  })
+
+  it('prices in GBP and links home offers to the home booking flow', () => {
+    for (const offer of [...homeList.itemListElement, ...videoList.itemListElement]) {
+      expect(offer.priceCurrency).toBe('GBP')
+      expect(offer.price).toBeGreaterThan(0)
+    }
+    for (const offer of homeList.itemListElement) expect(offer.url.endsWith('/book?visit=home')).toBe(true)
   })
 })

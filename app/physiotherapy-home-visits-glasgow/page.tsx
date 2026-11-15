@@ -18,7 +18,7 @@ const homeFollowUp = homeVisitPrices.followUp;
 export const metadata: Metadata = {
   alternates: { canonical: "/physiotherapy-home-visits-glasgow" },
   title: "Home Physiotherapy Glasgow & Surrounding Areas | PhysioOnClick",
-  description: `Home physiotherapy in Glasgow and up to an hour's drive away, on evenings and weekends, from an HCPC registered physio. ${homeInitial} home assessment, all in.`
+  description: `Home physiotherapy in Glasgow and up to an hour's drive away, on evenings and weekends, from an HCPC registered physio. ${homeInitial} assessment, ${homeFollowUp} follow-ups, all in.`
 };
 
 const faqItems = [

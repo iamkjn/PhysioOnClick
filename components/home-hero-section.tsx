@@ -27,12 +27,14 @@ const HomeDashboard = dynamic(
 export function HomeHeroSection({
   founderName,
   homeVisitPrice,
+  homeFollowUpPrice,
   videoPrice,
   initialSignedIn = false,
 }: {
   founderName: string;
-  /** Formatted initial-assessment prices, derived from lib/home-visit-pricing by app/page.tsx. */
+  /** Formatted prices, derived from lib/home-visit-pricing by app/page.tsx. */
   homeVisitPrice: string;
+  homeFollowUpPrice: string;
   videoPrice: string;
   initialSignedIn?: boolean;
 }) {
@@ -118,7 +120,8 @@ export function HomeHeroSection({
             {founderName}, an HCPC registered physiotherapist, comes to your home in Glasgow and the
             surrounding area on weekday evenings and at weekends, so there&rsquo;s no need to take time off work.
             That includes neurological rehabilitation for stroke, Parkinson&rsquo;s, MS and FND. Home
-            assessment {homeVisitPrice}, or {videoPrice} by video anywhere in the UK.
+            assessment {homeVisitPrice}, home follow-ups {homeFollowUpPrice}, or {videoPrice} by video anywhere
+            in the UK.
           </p>
           <div className="button-row">
             <Link

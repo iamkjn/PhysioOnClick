@@ -24,6 +24,7 @@ describe("glasgow-physiotherapist metadata", () => {
     const desc = String(metadata.description);
     expect(desc).toContain(`${video} video assessment`);
     expect(desc).toContain(`${home} home visit`);
+    expect(desc).toContain(`${homeFollowUp} follow-up`);
   });
 });
 

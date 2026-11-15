@@ -21,10 +21,14 @@ import { TrustpilotReviews } from "@/components/trustpilot-reviews";
 // lib/home-visit-pricing, never hardcoded.
 const videoPrice = formatPounds(sessionPricePence("initial-assessment"));
 const homeVisitPrice = homeVisitPrices.initial;
+const homeFollowUpPrice = homeVisitPrices.followUp;
 const title = "Physio at Home in Glasgow & Neuro Rehab | PhysioOnClick";
 // Evenings and weekends lead because they are the remarkable part: most
 // people in pain, and the family who help them, work during the day.
-const description = `Home physiotherapy in Glasgow on weekday evenings and weekends, including neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, or ${videoPrice} by video.`;
+// The home follow-up price is named on purpose: with only "£80 home, £40 by
+// video" here, Google's AI answer (2026-11-15) listed "Follow-up: £40" and
+// left the £70 home follow-up out.
+const description = `Home physiotherapy in Glasgow, evenings and weekends, incl. neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, ${homeFollowUpPrice} follow-ups, ${videoPrice} by video.`;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -72,6 +76,7 @@ export default async function HomePage() {
       <HomeHeroSection
         founderName={founder.name}
         homeVisitPrice={homeVisitPrice}
+        homeFollowUpPrice={homeFollowUpPrice}
         videoPrice={videoPrice}
         initialSignedIn={initialSignedIn}
       />

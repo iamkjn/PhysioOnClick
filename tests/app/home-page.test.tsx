@@ -34,6 +34,7 @@ describe("homepage metadata", () => {
     expect(description.length).toBeGreaterThanOrEqual(120);
     expect(description.length).toBeLessThanOrEqual(160);
     expect(description).toContain(`${home} home assessment`);
+    expect(description).toContain(`${homeFollowUp} follow-ups`);
     expect(description).toContain(`${video} by video`);
     expect(description.indexOf("Home physiotherapy in Glasgow")).toBe(0);
     expect(description.indexOf(`${home} home assessment`)).toBeLessThan(description.indexOf(`${video} by video`));
@@ -62,6 +63,7 @@ describe("homepage hero", () => {
     const { container } = render(await HomePage());
     const hero = container.querySelector(".home-hero");
     expect(hero?.textContent).toContain(`Home assessment ${home}`);
+    expect(hero?.textContent).toContain(`home follow-ups ${homeFollowUp}`);
     expect(hero?.textContent).toContain(`${video} by video`);
   });
 });
@@ -87,7 +89,7 @@ describe("homepage home-visit pricing", () => {
 
 describe("homepage evenings, weekends and family", () => {
   it("leads the snippet with evenings and weekends", () => {
-    expect(String(metadata.description)).toContain("on weekday evenings and weekends");
+    expect(String(metadata.description)).toContain("Glasgow, evenings and weekends");
   });
 
   it("shows the two selling points right after the trust bar", async () => {

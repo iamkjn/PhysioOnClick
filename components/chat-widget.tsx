@@ -10,6 +10,7 @@ import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { pricing } from "@/lib/site-data";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { homeVisitPrices } from "@/lib/home-visit-pricing";
+import { APPOINTMENT_HOURS_SENTENCE } from "@/lib/appointment-hours";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -373,7 +374,7 @@ export function ChatWidget() {
 
   function tapLocation() {
     addBot(
-      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, all in. Video sessions can't include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of your care where appropriate.\n\nAppointments are available Monday–Saturday. No GP referral is required — you can self-refer directly.`,
+      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, all in. Video sessions can't include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of your care where appropriate.\n\n${APPOINTMENT_HOURS_SENTENCE} No GP referral is required — you can self-refer directly.`,
       BACK_CHIPS,
     );
   }
