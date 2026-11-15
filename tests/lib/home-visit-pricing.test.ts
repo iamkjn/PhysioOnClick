@@ -18,15 +18,15 @@ describe("sessionPricePence", () => {
     expect(sessionPricePence("bundle-4")).toBe(Math.round(bookServiceFor("bundle-4").price * 100));
   });
 
-  it("keeps the video prices unchanged", () => {
-    expect(sessionPricePence("initial-assessment", "video")).toBe(4000);
-    expect(sessionPricePence("follow-up", "video")).toBe(3000);
-    expect(sessionPricePence("bundle-4", "video")).toBe(12000);
-    expect(sessionPricePence("bundle-8", "video")).toBe(22500);
+  it("charges £50, £40, £160 and £305 by video (owner, 2026-11-15)", () => {
+    expect(sessionPricePence("initial-assessment", "video")).toBe(5000);
+    expect(sessionPricePence("follow-up", "video")).toBe(4000);
+    expect(sessionPricePence("bundle-4", "video")).toBe(16000);
+    expect(sessionPricePence("bundle-8", "video")).toBe(30500);
   });
 
-  it("is the whole home-visit price for a home visit: video price + £40 per visit", () => {
-    expect(HOME_VISIT_EXTRA_PENCE).toBe(4000);
+  it("is the whole home-visit price for a home visit: video price + £30 per visit", () => {
+    expect(HOME_VISIT_EXTRA_PENCE).toBe(3000);
     for (const id of ["initial-assessment", "follow-up", "bundle-4", "bundle-8"] as const) {
       expect(sessionPricePence(id, "home")).toBe(
         videoPence(id) + HOME_VISIT_EXTRA_PENCE * bookServiceFor(id).sessions

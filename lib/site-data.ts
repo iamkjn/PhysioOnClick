@@ -473,7 +473,7 @@ export const pricing: PricingItem[] = [
     id: "initial-assessment",
     title: "Initial Online Assessment",
     duration: "60 min",
-    price: 40,
+    price: 50,
     description: "Assessment with tailored advice and exercise planning.",
     mode: "Online"
   },
@@ -481,7 +481,7 @@ export const pricing: PricingItem[] = [
     id: "follow-up",
     title: "Online Follow-Up",
     duration: "30 min",
-    price: 30,
+    price: 40,
     description: "Ongoing progression and accountability support.",
     mode: "Online"
   },
@@ -489,7 +489,7 @@ export const pricing: PricingItem[] = [
     id: "bundle-4",
     title: "4 Session Bundle",
     duration: "Flexible",
-    price: 120,
+    price: 160,
     description: "Cost-effective package for structured rehabilitation.",
     mode: "Package"
   },
@@ -497,7 +497,7 @@ export const pricing: PricingItem[] = [
     id: "bundle-8",
     title: "8 Session Bundle",
     duration: "Flexible",
-    price: 225,
+    price: 305,
     description: "Longer-term rehabilitation plan with review milestones.",
     mode: "Package"
   }

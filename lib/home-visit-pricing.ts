@@ -3,13 +3,16 @@ import type { VisitType } from "@/lib/home-visit";
 import type { BookServiceId } from "@/lib/site-data";
 
 /**
- * A home visit costs the video price plus this much per visit (owner decision
- * 2026-11-07: £40, priced just under the Glasgow home-physio competition; it
- * replaced a separately shown £15 "travel fee"). Patients only ever see the
- * whole home-visit price, never a separate fee line. Bundles pay every visit's
- * amount upfront. This is the only place the amount is defined.
+ * A home visit costs the video price plus this much per visit. Owner
+ * decisions: 2026-11-07 set home visits at £80 assessment / £70 follow-up
+ * (just under the Glasgow home-physio competition), replacing a separately
+ * shown £15 "travel fee"; 2026-11-15 raised video to £50 / £40 (bundles
+ * £160 / £305) and kept home visits where they were, so this dropped from
+ * £40 to £30 (home bundles stay £280 / £545). Patients only ever see the
+ * whole home-visit price, never a separate fee line. Bundles pay every
+ * visit's amount upfront. This is the only place the amount is defined.
  */
-export const HOME_VISIT_EXTRA_PENCE = 4000;
+export const HOME_VISIT_EXTRA_PENCE = 3000;
 
 /**
  * What the patient pays before any discount: the video price, or for a home

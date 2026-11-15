@@ -5,16 +5,16 @@ import 'package:mobile_app/src/features/booking/models/home_visit.dart';
 ResolvedService svc(BookServiceId id) => bookServiceFor(id);
 
 void main() {
-  // [video pence, home pence, home label]. Home = video + £40 per visit.
+  // [video pence, home pence, home label]. Home = video + £30 per visit.
   const cases = {
-    BookServiceId.initialAssessment: [4000, 8000, 'Initial Assessment (home visit)'],
-    BookServiceId.followUp: [3000, 7000, 'Follow-Up (home visit)'],
-    BookServiceId.bundle4: [12000, 28000, '4 Session Bundle (home visit)'],
-    BookServiceId.bundle8: [22500, 54500, '8 Session Bundle (home visit)'],
+    BookServiceId.initialAssessment: [5000, 8000, 'Initial Assessment (home visit)'],
+    BookServiceId.followUp: [4000, 7000, 'Follow-Up (home visit)'],
+    BookServiceId.bundle4: [16000, 28000, '4 Session Bundle (home visit)'],
+    BookServiceId.bundle8: [30500, 54500, '8 Session Bundle (home visit)'],
   };
 
-  test('home extra is £40 per visit', () {
-    expect(kHomeVisitExtraPence, 4000);
+  test('home extra is £30 per visit', () {
+    expect(kHomeVisitExtraPence, 3000);
   });
 
   test('pricing for all services and visit types', () {

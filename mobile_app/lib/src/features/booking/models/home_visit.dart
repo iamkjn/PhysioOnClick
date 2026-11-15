@@ -3,12 +3,12 @@ import 'book_service.dart';
 /// Mirrors lib/home-visit.ts + lib/home-visit-pricing.ts on the web app.
 enum VisitType { video, home }
 
-/// What a home visit adds to the video price, per visit (owner decision
-/// 2026-11-07). Patients only ever see the whole price, never this figure on
+/// What a home visit adds to the video price, per visit (owner decisions
+/// 2026-11-07 and 2026-11-15: video £50/£40, home stays £80/£70). Patients only ever see the whole price, never this figure on
 /// its own, and there is no separate "travel fee". This is the only place the
 /// amount is defined: every home price is derived from it plus the video
 /// price in book_service.dart. Mirrors the web app's home-visit pricing.
-const int kHomeVisitExtraPence = 4000;
+const int kHomeVisitExtraPence = 3000;
 
 /// The video (online) price of [s] in pence.
 int videoPricePence(ResolvedService s) => (s.price * 100).round();
