@@ -12,6 +12,7 @@ vi.mock('@/components/rehab-programs-section', () => ({ RehabProgramsSection: ()
 vi.mock('@/components/upload-panel', () => ({ UploadPanel: () => null }))
 
 vi.mock('@/components/address-book-manager', () => ({ AddressBookManager: () => null }))
+vi.mock('@/components/patient-carer-access', () => ({ PatientCarerAccess: () => null }))
 
 import AccountPage from '@/app/patient/account/page'
 

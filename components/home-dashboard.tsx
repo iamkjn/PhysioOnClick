@@ -8,7 +8,8 @@ import type { User } from "firebase/auth";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
 import { PatientDashboard } from "@/components/patient-dashboard";
-import { usePerson } from "@/components/person-provider";
+import { usePerson, usePatientTarget } from "@/components/person-provider";
+import { useCaredForPatients } from "@/hooks/use-cared-for-patients";
 import { getAssignedExercises, getRecoveryScoreSeries } from "@/lib/recovery";
 import { getPatientBookings } from "@/lib/patient-bookings";
 import { formatPersonName } from "@/lib/name-format";
@@ -66,30 +67,66 @@ export function HomeDashboard({ user }: { user: User }) {
   const firstName = displayName.split(" ")[0];
   // The active person is shared (and persisted) via PersonProvider so it
   // carries over to /book, /patient/recovery, and /patient/appointments.
+  // usePatientTarget resolves whose record that is — own, a dependent's, or
+  // (carer mode, lib/carer-access.ts) a patient who listed this user's email.
   const personCtx = usePerson();
-  const personId = personCtx?.personId ?? user.uid;
-  const personName = personCtx?.personId ? formatPersonName(personCtx.personName) : displayName;
-  const viewingOther = personId !== user.uid;
+  const caredFor = useCaredForPatients(user);
+  const target = usePatientTarget(user.uid, displayName) ?? {
+    ownerUid: user.uid,
+    personId: user.uid,
+    mode: "self" as const,
+    name: displayName,
+  };
+  const ownerUid = target.ownerUid;
+  const personId = target.personId;
+  const personName = target.name;
+  const isCarer = target.mode === "carer";
+  const viewingOther = target.mode !== "self";
+
+  // First visit by someone who cares for a patient but has no plan of their
+  // own (e.g. a partner who isn't a patient): open on the patient they care
+  // for rather than an empty dashboard. Only when no choice was ever saved on
+  // this browser, so it never overrides a pick they made.
+  const hasStoredChoice = personCtx?.hasStoredChoice;
+  const setCareFor = personCtx?.setCareFor;
+  useEffect(() => {
+    if (hasStoredChoice !== false || !setCareFor || !caredFor || caredFor.length === 0) return;
+    let cancelled = false;
+    getAssignedExercises(user.uid, user.uid)
+      .catch(() => [])
+      .then((own) => {
+        if (!cancelled && own.length === 0) setCareFor(caredFor[0].uid, caredFor[0].name, user.uid);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hasStoredChoice, setCareFor, caredFor, user.uid]);
 
   // Recovery-tracking UI ("Your recovery at a glance", "My recovery", "My
   // exercises") only means anything once a physio has assessed the patient
   // and assigned a recovery plan — before that every chart is empty/zeroed,
   // which reads as broken rather than "nothing yet". Gate all three on having
   // at least one active assigned exercise for the person in view.
-  const [hasRecoveryPlan, setHasRecoveryPlan] = useState(false);
+  // Keyed by the record it was loaded for, so switching person never shows
+  // the previous person's answer (and planLoaded reads false until it lands).
+  const recordKey = `${ownerUid}/${personId}`;
+  const [plan, setPlan] = useState<{ key: string; has: boolean } | null>(null);
+  const hasRecoveryPlan = plan?.key === recordKey && plan.has;
+  const planLoaded = plan?.key === recordKey;
   useEffect(() => {
     let cancelled = false;
-    getAssignedExercises(user.uid, personId)
+    const key = `${ownerUid}/${personId}`;
+    getAssignedExercises(ownerUid, personId)
       .then((exercises) => {
-        if (!cancelled) setHasRecoveryPlan(exercises.length > 0);
+        if (!cancelled) setPlan({ key, has: exercises.length > 0 });
       })
       .catch(() => {
-        if (!cancelled) setHasRecoveryPlan(false);
+        if (!cancelled) setPlan({ key, has: false });
       });
     return () => {
       cancelled = true;
     };
-  }, [user.uid, personId]);
+  }, [ownerUid, personId]);
 
   // The recovery ring and "Your recovery at a glance" charts stay hidden until
   // there's at least one pain check-in / assessment to plot — an empty ring and
@@ -99,7 +136,7 @@ export function HomeDashboard({ user }: { user: User }) {
   const [hasRecoveryData, setHasRecoveryData] = useState(false);
   useEffect(() => {
     let cancelled = false;
-    getRecoveryScoreSeries(user.uid, personId, 9999)
+    getRecoveryScoreSeries(ownerUid, personId, 9999)
       .then((series) => {
         if (!cancelled) setHasRecoveryData(series.length > 0);
       })
@@ -109,7 +146,7 @@ export function HomeDashboard({ user }: { user: User }) {
     return () => {
       cancelled = true;
     };
-  }, [user.uid, personId]);
+  }, [ownerUid, personId]);
 
   // The ring needs a check-in to mean anything; adherence + streak (inside
   // PatientDashboard) are exercise-driven and shown whenever there's a plan.
@@ -120,6 +157,10 @@ export function HomeDashboard({ user }: { user: User }) {
   // it's hidden rather than linking to a permanently empty list.
   const [hasBooked, setHasBooked] = useState(false);
   useEffect(() => {
+    // Bookings and invoices belong to the account that booked; a carer never
+    // sees the patient's, so there's nothing to look up in carer mode (the
+    // invoices link is dropped for carers below regardless of hasBooked).
+    if (isCarer) return;
     let cancelled = false;
     getPatientBookings(user.uid, personId)
       .then((bookings) => {
@@ -131,7 +172,24 @@ export function HomeDashboard({ user }: { user: User }) {
     return () => {
       cancelled = true;
     };
-  }, [user.uid, personId]);
+  }, [user.uid, personId, isCarer]);
+
+  // In carer mode only the patient's recovery and exercises are reachable, so
+  // the account-level links (the carer's own appointments, people, invoices)
+  // drop out and the two recovery links are relabelled for the patient.
+  const actions = SECONDARY_ACTIONS.filter((action) => {
+    if (!hasRecoveryPlan && (action.href === "/patient/recovery" || action.href === "/patient/exercises")) {
+      return false;
+    }
+    if (isCarer) return action.href === "/patient/recovery" || action.href === "/patient/exercises";
+    if (!hasBooked && action.href === "/patient/invoices") return false;
+    return true;
+  }).map((action) => {
+    if (!isCarer) return action;
+    if (action.href === "/patient/recovery") return { ...action, label: `${personName}'s recovery`, hint: "Pain and exercise trends" };
+    if (action.href === "/patient/exercises") return { ...action, label: `${personName}'s exercises`, hint: "Their assigned rehab plan" };
+    return action;
+  });
 
   return (
     <section className="home-dashboard">
@@ -144,9 +202,11 @@ export function HomeDashboard({ user }: { user: User }) {
               {greeting()}, {firstName}
             </h2>
             <p>
-              {viewingOther
-                ? `Following ${personName}'s recovery.`
-                : "Here's how your recovery is tracking today."}
+              {isCarer
+                ? `You're helping ${personName} with their recovery.`
+                : viewingOther
+                  ? `Following ${personName}'s recovery.`
+                  : "Here's how your recovery is tracking today."}
             </p>
           </div>
           <PersonSwitcher
@@ -154,6 +214,7 @@ export function HomeDashboard({ user }: { user: User }) {
             displayName={displayName}
             label="Viewing recovery for:"
             alwaysShow
+            caredFor={caredFor}
             onAddPerson={() => router.push("/patient/people")}
             onSelect={() => {
               // PersonSwitcher persists the selection via the shared
@@ -169,19 +230,13 @@ export function HomeDashboard({ user }: { user: User }) {
               so it's dropped entirely rather than shown blank — the quick-links
               nav below expands to fill the width it would have used (--full)
               instead of leaving it bare. */}
-          {showRecoveryRing ? <RecoveryPercentCard uid={user.uid} personId={personId} /> : null}
+          {showRecoveryRing ? <RecoveryPercentCard uid={ownerUid} personId={personId} /> : null}
 
           {/* "Book a session" intentionally omitted — the header's persistent
               "Book Now" button already covers booking, so repeating it here was
               redundant. */}
           <nav className="home-dashboard-actions" aria-label="Quick links">
-            {SECONDARY_ACTIONS.filter((action) => {
-              if (!hasRecoveryPlan && (action.href === "/patient/recovery" || action.href === "/patient/exercises")) {
-                return false;
-              }
-              if (!hasBooked && action.href === "/patient/invoices") return false;
-              return true;
-            }).map((action) => (
+            {actions.map((action) => (
               <Link key={action.href} className="home-action" href={action.href} prefetch>
                 <span className="home-action-icon" aria-hidden>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
@@ -198,10 +253,23 @@ export function HomeDashboard({ user }: { user: User }) {
           </nav>
         </div>
 
+        {isCarer && planLoaded && !hasRecoveryPlan ? (
+          <p className="muted">
+            {personName} doesn&rsquo;t have any exercises assigned yet. They&rsquo;ll show here once their physio adds them.
+          </p>
+        ) : null}
+
         {hasRecoveryPlan ? (
           <div className="home-dashboard-charts">
-            <h3 className="home-dashboard-charts-title">Your recovery at a glance</h3>
-            <PatientDashboard uid={user.uid} personId={personId} showPainChart={hasRecoveryData} />
+            <h3 className="home-dashboard-charts-title">
+              {isCarer ? `${personName}'s recovery at a glance` : "Your recovery at a glance"}
+            </h3>
+            <PatientDashboard
+              uid={ownerUid}
+              personId={personId}
+              showPainChart={hasRecoveryData}
+              possessive={isCarer ? `${personName}'s` : "My"}
+            />
           </div>
         ) : null}
       </div>

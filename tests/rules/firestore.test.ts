@@ -7,8 +7,23 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore'
-import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest'
+import {
+  arrayRemove,
+  arrayUnion,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  Timestamp,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 // Covers the two subcollections the mobile app writes through the client SDK
 // (patients/{uid}/favoriteBlogs and patients/{uid}/uploads) plus the surrounding
@@ -963,5 +978,493 @@ describe('users defaultAddressId', () => {
     const other = testEnv.authenticatedContext(OTHER).firestore()
     await assertFails(updateDoc(userRef(other), { defaultAddressId: 'addr-1' }))
     await assertFails(setDoc(userRef(other), { defaultAddressId: 'addr-1' }, { merge: true }))
+  })
+})
+
+// Carer access (lib/carer-access.ts): an admin lists a second person's email in
+// patients/{uid}.carerEmails; that person, signed in with their OWN verified
+// email, may act on the patient's own recovery record and nothing else.
+describe('carer access', () => {
+  const CARER = 'carer-uid'
+  const CARER_EMAIL = 'carer@example.com'
+  const DEP = 'dep-1'
+  const PATIENT_DOC = `patients/${PATIENT}`
+  const SELF = `patients/${PATIENT}/people/${PATIENT}`
+  const DEPENDENT = `patients/${PATIENT}/people/${DEP}`
+  const AT = Timestamp.fromDate(new Date('2026-11-14T09:00:00Z'))
+
+  const carerDb = (tokenOptions: Record<string, unknown> = {}) =>
+    testEnv
+      .authenticatedContext(CARER, { email: CARER_EMAIL, email_verified: true, ...tokenOptions })
+      .firestore()
+  const ownerDb = () =>
+    testEnv.authenticatedContext(PATIENT, { email: 'patient@example.com', email_verified: true }).firestore()
+  const adminDb = () => testEnv.authenticatedContext(ADMIN, { admin: true }).firestore()
+  const at = (db: unknown, p: string) => doc(db as never, p)
+  const list = (db: unknown, p: string) => getDocs(query(collection(db as never, p), orderBy('__name__')))
+
+  async function seed(docs: Record<string, Record<string, unknown>>) {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore()
+      for (const [p, data] of Object.entries(docs)) await setDoc(doc(db as never, p), data)
+    })
+  }
+
+  async function readRaw(p: string) {
+    let data: Record<string, unknown> | undefined
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      data = (await getDoc(doc(ctx.firestore() as never, p))).data()
+    })
+    return data
+  }
+
+  const seedPatient = (data: Record<string, unknown> = { name: 'Pat', carerEmails: [CARER_EMAIL] }) =>
+    seed({ [PATIENT_DOC]: data })
+
+  // The 8 recovery subcollections a carer may read, with a doc in each.
+  const GRANTED: Record<string, [string, Record<string, unknown>]> = {
+    clinicalAssessments: ['2026-11-14', { painScore: 4, mobilityScore: 6, physioNotes: '', sessionId: 's1' }],
+    painLogs: ['2026-11-14', { score: 3, note: '', loggedAt: AT }],
+    assignedExercises: ['ex1', { assignedBy: ADMIN, active: true }],
+    patientExerciseVideos: ['ex1', { url: 'https://youtu.be/dQw4w9WgXcQ' }],
+    exerciseLogs: ['2026-11-14', { completions: { ex1: true }, loggedAt: AT }],
+    painCheckins: ['0_3', { runNumber: 0, streakDay: 3, status: 'pending' }],
+    motionSessions: ['session-1', { exerciseId: 'squat', score: 76 }],
+    goals: ['current', { streakTarget: 7 }],
+  }
+  const GRANTED_NAMES = Object.keys(GRANTED)
+
+  async function seedRecord(base: string) {
+    const docs: Record<string, Record<string, unknown>> = {}
+    for (const [name, [id, data]] of Object.entries(GRANTED)) docs[`${base}/${name}/${id}`] = data
+    await seed(docs)
+  }
+
+  describe('reads on the patient’s own recovery record', () => {
+    beforeEach(async () => {
+      await seedPatient()
+      await seedRecord(SELF)
+    })
+
+    it.each(GRANTED_NAMES)('lets the carer get and list %s', async (name) => {
+      const [id] = GRANTED[name]
+      const db = carerDb()
+      await assertSucceeds(getDoc(at(db, `${SELF}/${name}/${id}`)))
+      await assertSucceeds(list(db, `${SELF}/${name}`))
+      await assertSucceeds(getDocs(collection(db as never, `${SELF}/${name}`)))
+    })
+
+    it.each(GRANTED_NAMES)('denies the carer %s on a dependent’s record', async (name) => {
+      await seedRecord(DEPENDENT)
+      const [id] = GRANTED[name]
+      const db = carerDb()
+      await assertFails(getDoc(at(db, `${DEPENDENT}/${name}/${id}`)))
+      await assertFails(list(db, `${DEPENDENT}/${name}`))
+    })
+
+    it('still lets the owner and admin read every granted collection', async () => {
+      for (const name of GRANTED_NAMES) {
+        await assertSucceeds(list(ownerDb(), `${SELF}/${name}`))
+        await assertSucceeds(list(adminDb(), `${SELF}/${name}`))
+      }
+    })
+
+    it('denies a different signed-in user who is not a carer', async () => {
+      const other = testEnv.authenticatedContext(OTHER, { email: 'other@example.com', email_verified: true }).firestore()
+      await assertFails(getDoc(at(other, `${SELF}/painLogs/2026-11-14`)))
+      await assertFails(list(other, `${SELF}/painLogs`))
+    })
+
+    it('denies an unauthenticated read', async () => {
+      const db = testEnv.unauthenticatedContext().firestore()
+      await assertFails(getDoc(at(db, `${SELF}/painLogs/2026-11-14`)))
+    })
+  })
+
+  describe('reads a carer never gets', () => {
+    beforeEach(async () => {
+      await seedPatient()
+      await seed({
+        [`${SELF}`]: { name: 'Pat' },
+        [`${SELF}/assessmentForms/form-1`]: { reviewStatus: 'awaiting_review' },
+        [`${SELF}/somethingNew/doc-1`]: { anything: true },
+        [`${PATIENT_DOC}/notifications/n1`]: { title: 'Hi', read: false },
+        [`${PATIENT_DOC}/followUps/f1`]: { dueDate: '2026-11-20', note: '' },
+        [`${PATIENT_DOC}/uploads/u1`]: { fileName: 'referral.pdf' },
+        [`${PATIENT_DOC}/favoriteBlogs/knee-pain-guide`]: { slug: 'knee-pain-guide' },
+        [`${PATIENT_DOC}/chatSessions/c1`]: { messages: [] },
+        [`${DEPENDENT}`]: { name: 'Child' },
+        [`${DEPENDENT}/assessmentForms/form-1`]: { reviewStatus: 'awaiting_review' },
+        'admin/clinicalHistory/entries/x': { patientUid: PATIENT, note: 'sensitive' },
+        'bookings/b1': { email: 'patient@example.com', bookedBy: PATIENT },
+        'payments/p1': { amount: 8000, uid: PATIENT },
+      })
+    })
+
+    it.each([
+      PATIENT_DOC,
+      `${SELF}`,
+      `${SELF}/assessmentForms/form-1`,
+      `${SELF}/somethingNew/doc-1`,
+      `${PATIENT_DOC}/notifications/n1`,
+      `${PATIENT_DOC}/followUps/f1`,
+      `${PATIENT_DOC}/uploads/u1`,
+      `${PATIENT_DOC}/favoriteBlogs/knee-pain-guide`,
+      `${PATIENT_DOC}/chatSessions/c1`,
+      `${DEPENDENT}`,
+      `${DEPENDENT}/assessmentForms/form-1`,
+      'admin/clinicalHistory/entries/x',
+      'bookings/b1',
+      'payments/p1',
+    ])('denies the carer reading %s', async (p) => {
+      await assertFails(getDoc(at(carerDb(), p)))
+    })
+
+    it.each([
+      `${SELF}/assessmentForms`,
+      `${PATIENT_DOC}/notifications`,
+      `${PATIENT_DOC}/followUps`,
+      `${PATIENT_DOC}/uploads`,
+      `${PATIENT_DOC}/favoriteBlogs`,
+      `${PATIENT_DOC}/chatSessions`,
+      `patients/${PATIENT}/people`,
+      'admin/clinicalHistory/entries',
+    ])('denies the carer listing %s', async (p) => {
+      await assertFails(list(carerDb(), p))
+    })
+
+    it('denies the carer querying the patient’s bookings', async () => {
+      const db = carerDb()
+      await assertFails(getDocs(query(collection(db as never, 'bookings'), where('bookedBy', '==', PATIENT))))
+      await assertFails(
+        getDocs(query(collection(db as never, 'bookings'), where('email', '==', 'patient@example.com')))
+      )
+    })
+
+    it('still lets the owner read their own booking (sanity check of the seed)', async () => {
+      await assertSucceeds(getDoc(at(ownerDb(), 'bookings/b1')))
+    })
+  })
+
+  describe('painLogs writes', () => {
+    const TODAY = `${SELF}/painLogs/2026-11-15`
+
+    beforeEach(async () => {
+      await seedPatient()
+    })
+
+    it('lets the carer log today’s score in the logPainScore shape (merge set)', async () => {
+      const db = carerDb()
+      await assertSucceeds(setDoc(at(db, TODAY), { score: 4, note: 'stiff', loggedAt: serverTimestamp() }, { merge: true }))
+    })
+
+    it('lets the carer update an existing log', async () => {
+      await seed({ [TODAY]: { score: 6, note: '', loggedAt: AT } })
+      const db = carerDb()
+      await assertSucceeds(setDoc(at(db, TODAY), { score: 3, note: 'better', loggedAt: serverTimestamp() }, { merge: true }))
+      await assertSucceeds(updateDoc(at(db, TODAY), { score: 2, note: 'better still', loggedAt: serverTimestamp() }))
+    })
+
+    it('rejects an extra field', async () => {
+      const db = carerDb()
+      await assertFails(
+        setDoc(at(db, TODAY), { score: 4, note: '', loggedAt: serverTimestamp(), loggedBy: CARER }, { merge: true })
+      )
+    })
+
+    it('rejects an out-of-range score and a non-timestamp loggedAt', async () => {
+      const db = carerDb()
+      await assertFails(setDoc(at(db, TODAY), { score: 11, note: '', loggedAt: serverTimestamp() }))
+      await assertFails(setDoc(at(db, TODAY), { score: 4, note: '', loggedAt: '2026-11-15' }))
+    })
+
+    it('denies the carer deleting a log', async () => {
+      await seed({ [TODAY]: { score: 6, note: '', loggedAt: AT } })
+      await assertFails(deleteDoc(at(carerDb(), TODAY)))
+    })
+
+    it('denies the carer writing a dependent’s pain log', async () => {
+      await assertFails(
+        setDoc(at(carerDb(), `${DEPENDENT}/painLogs/2026-11-15`), { score: 4, note: '', loggedAt: serverTimestamp() })
+      )
+    })
+  })
+
+  describe('exerciseLogs writes', () => {
+    const TODAY = `${SELF}/exerciseLogs/2026-11-15`
+
+    beforeEach(async () => {
+      await seedPatient()
+    })
+
+    it('lets the carer tick an exercise on a new day (toggleExerciseCompletion shape)', async () => {
+      const db = carerDb()
+      await assertSucceeds(
+        setDoc(at(db, TODAY), { completions: { ex1: true }, loggedAt: serverTimestamp() }, { merge: true })
+      )
+    })
+
+    it('lets the carer tick onto a doc the mobile app wrote extra fields to, keeping them', async () => {
+      await seed({ [TODAY]: { completions: {}, loggedAt: AT, mobileField: 'x' } })
+      const db = carerDb()
+      await assertSucceeds(
+        setDoc(at(db, TODAY), { completions: { ex1: true }, loggedAt: serverTimestamp() }, { merge: true })
+      )
+      await assertSucceeds(
+        setDoc(at(db, TODAY), { completions: { ex1: false, ex2: true }, loggedAt: serverTimestamp() }, { merge: true })
+      )
+      const data = await readRaw(TODAY)
+      expect(data?.mobileField).toBe('x')
+      expect(data?.completions).toEqual({ ex1: false, ex2: true })
+    })
+
+    it('denies the carer changing or dropping a mobile-written field', async () => {
+      await seed({ [TODAY]: { completions: {}, loggedAt: AT, mobileField: 'x' } })
+      const db = carerDb()
+      await assertFails(updateDoc(at(db, TODAY), { mobileField: 'y' }))
+      await assertFails(
+        setDoc(at(db, TODAY), { completions: { ex1: true }, loggedAt: serverTimestamp(), mobileField: 'y' }, { merge: true })
+      )
+      // A non-merge set replaces the doc, removing mobileField.
+      await assertFails(setDoc(at(db, TODAY), { completions: { ex1: true }, loggedAt: serverTimestamp() }))
+    })
+
+    it('rejects a create with an extra field or the wrong types', async () => {
+      const db = carerDb()
+      await assertFails(setDoc(at(db, TODAY), { completions: {}, loggedAt: serverTimestamp(), mobileField: 'x' }))
+      await assertFails(setDoc(at(db, TODAY), { completions: 'all', loggedAt: serverTimestamp() }))
+      await assertFails(setDoc(at(db, TODAY), { completions: { ex1: true }, loggedAt: '2026-11-15' }))
+    })
+
+    it('denies the carer deleting a log', async () => {
+      await seed({ [TODAY]: { completions: { ex1: true }, loggedAt: AT } })
+      await assertFails(deleteDoc(at(carerDb(), TODAY)))
+    })
+
+    it('denies the carer ticking a dependent’s exercises', async () => {
+      await assertFails(
+        setDoc(
+          at(carerDb(), `${DEPENDENT}/exerciseLogs/2026-11-15`),
+          { completions: { ex1: true }, loggedAt: serverTimestamp() },
+          { merge: true }
+        )
+      )
+    })
+  })
+
+  describe('painCheckins writes', () => {
+    const CHECKIN = `${SELF}/painCheckins/0_3`
+    const logged = () => ({ status: 'logged', score: 4, note: 'ok', loggedAt: serverTimestamp() })
+
+    beforeEach(async () => {
+      await seedPatient()
+    })
+
+    it('lets the carer log a score against a pending checkpoint', async () => {
+      await seed({ [CHECKIN]: { runNumber: 0, streakDay: 3, status: 'pending' } })
+      await assertSucceeds(updateDoc(at(carerDb(), CHECKIN), logged()))
+    })
+
+    it('denies the carer touching a checkpoint that is already logged', async () => {
+      await seed({ [CHECKIN]: { runNumber: 0, streakDay: 3, status: 'logged', score: 2, note: '', loggedAt: AT } })
+      await assertFails(updateDoc(at(carerDb(), CHECKIN), logged()))
+    })
+
+    it('denies the carer creating or deleting a checkpoint', async () => {
+      const db = carerDb()
+      await assertFails(setDoc(at(db, CHECKIN), { runNumber: 0, streakDay: 3, status: 'pending' }))
+      await seed({ [CHECKIN]: { runNumber: 0, streakDay: 3, status: 'pending' } })
+      await assertFails(deleteDoc(at(db, CHECKIN)))
+    })
+
+    it('denies the carer writing extra fields', async () => {
+      await seed({ [CHECKIN]: { runNumber: 0, streakDay: 3, status: 'pending' } })
+      await assertFails(updateDoc(at(carerDb(), CHECKIN), { ...logged(), runNumber: 99 }))
+    })
+  })
+
+  describe('collections a carer may only read', () => {
+    beforeEach(async () => {
+      await seedPatient()
+      await seedRecord(SELF)
+    })
+
+    const writes: Record<string, [string, Record<string, unknown>]> = {
+      assignedExercises: ['ex2', { assignedBy: CARER, active: true }],
+      goals: ['current', { streakTarget: 14 }],
+      motionSessions: ['session-2', { exerciseId: 'squat', score: 99 }],
+      clinicalAssessments: ['2026-11-15', { painScore: 1, mobilityScore: 9, physioNotes: '', sessionId: 's2' }],
+      patientExerciseVideos: ['ex1', { url: 'https://youtu.be/dQw4w9WgXcQ' }],
+    }
+
+    it.each(Object.keys(writes))('denies the carer creating, updating or deleting %s', async (name) => {
+      const [newId, data] = writes[name]
+      const [seededId] = GRANTED[name]
+      const db = carerDb()
+      await assertFails(setDoc(at(db, `${SELF}/${name}/${newId}-new`), data))
+      await assertFails(setDoc(at(db, `${SELF}/${name}/${seededId}`), data, { merge: true }))
+      await assertFails(deleteDoc(at(db, `${SELF}/${name}/${seededId}`)))
+    })
+  })
+
+  describe('who counts as a carer', () => {
+    const LOG = `${SELF}/painLogs/2026-11-14`
+    const write = (db: unknown) =>
+      setDoc(at(db, `${SELF}/painLogs/2026-11-15`), { score: 4, note: '', loggedAt: serverTimestamp() })
+
+    beforeEach(async () => {
+      await seed({ [LOG]: { score: 3, note: '', loggedAt: AT } })
+    })
+
+    it('denies a carer whose email is not verified', async () => {
+      await seedPatient()
+      const db = carerDb({ email_verified: false })
+      await assertFails(getDoc(at(db, LOG)))
+      await assertFails(write(db))
+    })
+
+    it('denies a token with no email_verified claim', async () => {
+      await seedPatient()
+      const db = testEnv.authenticatedContext(CARER, { email: CARER_EMAIL }).firestore()
+      await assertFails(getDoc(at(db, LOG)))
+    })
+
+    it('denies a token with no email at all', async () => {
+      await seedPatient()
+      const db = testEnv.authenticatedContext(CARER).firestore()
+      await assertFails(getDoc(at(db, LOG)))
+      await assertFails(write(db))
+    })
+
+    it('denies a verified email that is not on the list', async () => {
+      await seedPatient()
+      const db = carerDb({ email: 'stranger@example.com' })
+      await assertFails(getDoc(at(db, LOG)))
+      await assertFails(write(db))
+    })
+
+    it('allows the listed email in a different case (token email is lower-cased)', async () => {
+      await seedPatient()
+      const db = carerDb({ email: 'CARER@Example.com' })
+      await assertSucceeds(getDoc(at(db, LOG)))
+      await assertSucceeds(write(db))
+    })
+
+    it('denies once the carer is revoked (no carerEmails on the patient doc)', async () => {
+      await seedPatient({ name: 'Pat' })
+      const db = carerDb()
+      await assertFails(getDoc(at(db, LOG)))
+      await assertFails(write(db))
+    })
+
+    it('denies once the carer is revoked (empty carerEmails)', async () => {
+      await seedPatient({ name: 'Pat', carerEmails: [] })
+      await assertFails(getDoc(at(carerDb(), LOG)))
+    })
+
+    it('denies when there is no patient doc at all', async () => {
+      const db = carerDb()
+      await assertFails(getDoc(at(db, LOG)))
+      await assertFails(list(db, `${SELF}/painLogs`))
+      await assertFails(write(db))
+    })
+
+    it('denies a carer of one patient on another patient’s record', async () => {
+      await seedPatient()
+      await seed({
+        [`patients/${OTHER}`]: { name: 'Someone else', carerEmails: ['someone@example.com'] },
+        [`patients/${OTHER}/people/${OTHER}/painLogs/2026-11-14`]: { score: 3, note: '', loggedAt: AT },
+      })
+      await assertFails(getDoc(at(carerDb(), `patients/${OTHER}/people/${OTHER}/painLogs/2026-11-14`)))
+    })
+  })
+
+  describe('patients/{uid} carerEmails', () => {
+    it('lets the owner update other fields while keeping carerEmails', async () => {
+      await seedPatient()
+      const db = ownerDb()
+      await assertSucceeds(updateDoc(at(db, PATIENT_DOC), { name: 'Pat Smith' }))
+      await assertSucceeds(setDoc(at(db, PATIENT_DOC), { phone: '07123456789' }, { merge: true }))
+      await assertSucceeds(setDoc(at(db, PATIENT_DOC), { name: 'Pat', carerEmails: [CARER_EMAIL] }, { merge: true }))
+    })
+
+    it('lets the owner update a doc that has no carerEmails', async () => {
+      await seedPatient({ name: 'Pat' })
+      await assertSucceeds(updateDoc(at(ownerDb(), PATIENT_DOC), { name: 'Pat Smith' }))
+    })
+
+    it('lets the owner remove a carer', async () => {
+      await seedPatient({ name: 'Pat', carerEmails: [CARER_EMAIL, 'second@example.com'] })
+      const db = ownerDb()
+      await assertSucceeds(updateDoc(at(db, PATIENT_DOC), { carerEmails: arrayRemove('second@example.com') }))
+      await assertSucceeds(updateDoc(at(db, PATIENT_DOC), { carerEmails: [] }))
+      expect((await readRaw(PATIENT_DOC))?.carerEmails).toEqual([])
+    })
+
+    it('denies the owner adding a carer', async () => {
+      await seedPatient()
+      const db = ownerDb()
+      await assertFails(updateDoc(at(db, PATIENT_DOC), { carerEmails: [CARER_EMAIL, 'new@example.com'] }))
+      await assertFails(updateDoc(at(db, PATIENT_DOC), { carerEmails: arrayUnion('new@example.com') }))
+      await assertFails(updateDoc(at(db, PATIENT_DOC), { carerEmails: ['new@example.com'] }))
+      await assertFails(updateDoc(at(db, PATIENT_DOC), { carerEmails: ['CARER@example.com'] }))
+    })
+
+    it('denies the owner adding a first carer to a doc that has none', async () => {
+      await seedPatient({ name: 'Pat' })
+      await assertFails(updateDoc(at(ownerDb(), PATIENT_DOC), { carerEmails: ['new@example.com'] }))
+    })
+
+    it('denies the owner replacing carerEmails with a non-list', async () => {
+      await seedPatient()
+      await assertFails(updateDoc(at(ownerDb(), PATIENT_DOC), { carerEmails: CARER_EMAIL }))
+      await assertFails(updateDoc(at(ownerDb(), PATIENT_DOC), { carerEmails: null }))
+    })
+
+    it('denies the owner creating the doc with a carer already on it', async () => {
+      const db = ownerDb()
+      await assertFails(setDoc(at(db, PATIENT_DOC), { name: 'Pat', carerEmails: [CARER_EMAIL] }))
+      await assertFails(setDoc(at(db, PATIENT_DOC), { name: 'Pat', carerEmails: CARER_EMAIL }))
+    })
+
+    it('lets the owner create the doc in the normal sign-up shape', async () => {
+      const db = ownerDb()
+      await assertSucceeds(
+        setDoc(at(db, PATIENT_DOC), { name: 'Pat', email: 'patient@example.com', createdAt: serverTimestamp() }, { merge: true })
+      )
+    })
+
+    it('lets the owner create the doc with an empty carerEmails', async () => {
+      await assertSucceeds(setDoc(at(ownerDb(), PATIENT_DOC), { name: 'Pat', carerEmails: [] }))
+    })
+
+    it('lets an admin set carerEmails', async () => {
+      await seedPatient({ name: 'Pat' })
+      const db = adminDb()
+      await assertSucceeds(updateDoc(at(db, PATIENT_DOC), { carerEmails: [CARER_EMAIL, 'second@example.com'] }))
+      await assertSucceeds(updateDoc(at(db, PATIENT_DOC), { carerEmails: ['a@x.com', 'b@x.com', 'c@x.com', 'd@x.com', 'e@x.com'] }))
+    })
+
+    it('rejects a list of 6 even for an admin', async () => {
+      await seedPatient({ name: 'Pat' })
+      const six = ['a@x.com', 'b@x.com', 'c@x.com', 'd@x.com', 'e@x.com', 'f@x.com']
+      await assertFails(updateDoc(at(adminDb(), PATIENT_DOC), { carerEmails: six }))
+    })
+
+    it('denies the carer updating or reading the patient doc', async () => {
+      await seedPatient()
+      const db = carerDb()
+      await assertFails(updateDoc(at(db, PATIENT_DOC), { name: 'Hijacked' }))
+      await assertFails(updateDoc(at(db, PATIENT_DOC), { carerEmails: [CARER_EMAIL, 'friend@example.com'] }))
+      await assertFails(setDoc(at(db, PATIENT_DOC), { carerEmails: [] }, { merge: true }))
+      await assertFails(getDoc(at(db, PATIENT_DOC)))
+    })
+
+    it('denies another patient writing the doc', async () => {
+      await seedPatient()
+      const other = testEnv.authenticatedContext(OTHER).firestore()
+      await assertFails(updateDoc(at(other, PATIENT_DOC), { carerEmails: [] }))
+      await assertFails(setDoc(at(other, `patients/${OTHER}`), { name: 'O', carerEmails: [CARER_EMAIL] }))
+    })
   })
 })

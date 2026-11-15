@@ -18,6 +18,26 @@ service cloud.firestore {
         request.auth.token.email == resource.data.email;
     }
 
+    // Carer access (lib/carer-access.ts). An admin lists a second person's
+    // email in patients/{userId}.carerEmails (lower-cased). That person signs
+    // in with their OWN verified email (magic link) and may act on the
+    // patient's own recovery record, patients/{userId}/people/{userId}/...,
+    // and only on the recovery subcollections that call this below. Never a
+    // dependent's record (personId must equal userId), never the patients doc
+    // itself, assessment forms, notifications, uploads, chats, bookings,
+    // payments or admin/**. get() is not subject to these rules, so the carer
+    // needs no read on the patient doc. Always the LAST term of an || chain:
+    // it can error (no email claim, no patient doc), and an error there must
+    // only ever mean "deny".
+    function isCarerOf(userId, personId) {
+      return personId == userId &&
+        isSignedIn() &&
+        request.auth.token.email is string &&
+        request.auth.token.email_verified == true &&
+        request.auth.token.email.lower() in
+          get(/databases/$(database)/documents/patients/$(userId)).data.get('carerEmails', []);
+    }
+
     match /blogs/{blogId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
@@ -193,8 +213,25 @@ service cloud.firestore {
     }
 
     match /patients/{userId} {
-      allow read, update: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
-      allow create: if isSignedIn() && request.auth.uid == userId;
+      // carerEmails (who may act as this patient's carer) is admin-managed:
+      // the owner may leave it as it is or REMOVE carers (withdraw consent),
+      // but never add one, so a carer is always someone the clinic approved.
+      // Admin writes go through app/admin/carer-actions.ts (Admin SDK shim,
+      // bypasses rules); the cap here covers any direct admin-client write.
+      function carerEmailsOk(d) {
+        return d.get('carerEmails', []) is list && d.get('carerEmails', []).size() <= 5;
+      }
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow update: if carerEmailsOk(request.resource.data) && (
+        isAdmin() ||
+        (
+          isSignedIn() && request.auth.uid == userId &&
+          request.resource.data.get('carerEmails', []).hasOnly(resource.data.get('carerEmails', []))
+        )
+      );
+      allow create: if isSignedIn() && request.auth.uid == userId &&
+        request.resource.data.get('carerEmails', []) is list &&
+        request.resource.data.get('carerEmails', []).size() == 0;
       allow delete: if isAdmin();
     }
 
@@ -206,7 +243,9 @@ service cloud.firestore {
           d.physioNotes is string && d.physioNotes.size() <= 2000 &&
           d.sessionId is string && d.sessionId.size() <= 200;
       }
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      // Carers read the physio's scores: the recovery chart plots them.
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId) ||
+        isCarerOf(userId, personId);
       allow create, update: if isAdmin() && validAssessment(request.resource.data);
       allow delete: if isAdmin();
     }
@@ -301,11 +340,15 @@ service cloud.firestore {
     }
 
     match /patients/{userId}/people/{personId}/painLogs/{date} {
-      allow read, delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId) ||
+        isCarerOf(userId, personId);
+      allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
       // Shape written by lib/recovery.ts logPainScore: { score, note, loggedAt }.
       // score is an integer slider value; loggedAt is a serverTimestamp readers
       // call .toDate() on, so both are typed to keep the recovery views from throwing.
-      allow create, update: if (isAdmin() || (isSignedIn() && request.auth.uid == userId)) &&
+      // A carer may log today's score for the patient, in the same shape.
+      allow create, update: if (isAdmin() || (isSignedIn() && request.auth.uid == userId) ||
+          isCarerOf(userId, personId)) &&
         request.resource.data.keys().hasOnly(["score", "note", "loggedAt"]) &&
         request.resource.data.score is int &&
         request.resource.data.score >= 0 &&
@@ -316,7 +359,8 @@ service cloud.firestore {
     }
 
     match /patients/{userId}/people/{personId}/assignedExercises/{exerciseId} {
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId) ||
+        isCarerOf(userId, personId);
       allow write: if isAdmin();
     }
 
@@ -334,7 +378,9 @@ service cloud.firestore {
         return d.url is string && d.url.size() <= 500 &&
           d.url.matches('^https://(www\\.)?(youtube\\.com/|youtu\\.be/|m\\.youtube\\.com/).*');
       }
-      allow read, delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId) ||
+        isCarerOf(userId, personId);
+      allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
       allow create, update: if (isAdmin() || (isSignedIn() && request.auth.uid == userId)) &&
         validVideoUrl(request.resource.data);
     }
@@ -354,6 +400,20 @@ service cloud.firestore {
 
     match /patients/{userId}/people/{personId}/exerciseLogs/{date} {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      // A carer ticks exercises off for the patient (lib/recovery.ts
+      // toggleExerciseCompletion / setExercisesCompletion, a merge set of
+      // { completions, loggedAt }). The doc is shared with the mobile app,
+      // which writes other fields (memory: exerciseLogs dual writer), so an
+      // update only pins the keys the carer touches, never the whole doc.
+      allow read: if isCarerOf(userId, personId);
+      allow create: if isCarerOf(userId, personId) &&
+        request.resource.data.keys().hasOnly(['completions', 'loggedAt']) &&
+        request.resource.data.completions is map &&
+        request.resource.data.loggedAt is timestamp;
+      allow update: if isCarerOf(userId, personId) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['completions', 'loggedAt']) &&
+        request.resource.data.completions is map &&
+        request.resource.data.loggedAt is timestamp;
     }
 
     // Doctor-interval pain checkpoints (lib/pain-checkins.ts). Docs are only
@@ -364,10 +424,12 @@ service cloud.firestore {
     // never create, delete, or touch a checkpoint that's already logged/missed,
     // and can't write any field this rule doesn't explicitly allow.
     match /patients/{userId}/people/{personId}/painCheckins/{checkinId} {
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId) ||
+        isCarerOf(userId, personId);
       allow create, delete: if isAdmin();
+      // The owner or a carer logs a score against a still-pending checkpoint.
       allow update: if isAdmin() || (
-        isSignedIn() && request.auth.uid == userId &&
+        ((isSignedIn() && request.auth.uid == userId) || isCarerOf(userId, personId)) &&
         resource.data.status == 'pending' &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'score', 'note', 'loggedAt']) &&
         request.resource.data.status == 'logged' &&
@@ -386,6 +448,8 @@ service cloud.firestore {
     // condition exactly.
     match /patients/{userId}/people/{personId}/motionSessions/{sessionId} {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      // Carers see past motion-check scores on the exercise list (read only).
+      allow read: if isCarerOf(userId, personId);
     }
 
     // Admin-scheduled follow-up (scheduleFollowUp in app/admin/actions.ts, via
@@ -408,7 +472,8 @@ service cloud.firestore {
     // Admin-set daily streak goal (lib/goals.ts). The physio sets the target;
     // the owner may only read their own goal, never write it directly.
     match /patients/{userId}/people/{personId}/goals/{goalId} {
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId) ||
+        isCarerOf(userId, personId);
       // Defense in depth on top of the client-side checks in lib/goals.ts
       // setStreakGoal: streakTarget must be a whole number of at least 1 day;
       // painCheckinInterval (optional) must be null, or a whole-number divisor
@@ -475,7 +540,9 @@ service cloud.firestore {
         validUpload(request.resource.data);
     }
 
-    // Read-only catch-all. No blanket admin write: overlapping matches grant if ANY
+    // Read-only catch-all. Owner and admin only: carers get NO access through it,
+    // so a new subcollection is never shared with a carer by default.
+    // No blanket admin write: overlapping matches grant if ANY
     // allows, so a write rule here would let admin clients skip the validation in the
     // explicit subcollection matches above (e.g. clinicalAssessments caps). Every
     // server-side write (chat transcripts, cal-webhook) uses the Admin SDK shim,

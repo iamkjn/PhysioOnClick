@@ -12,6 +12,8 @@ interface Props {
   // flat "no data yet" panel. Adherence and streak are exercise-driven and stay
   // useful from day one, so the caller can hide just the chart.
   showPainChart?: boolean;
+  /** Caption possessive: "My" for the signed-in patient, "Mary's" in carer mode. */
+  possessive?: string;
 }
 
 // A chart card plus a caption link that deep-links into the full recovery
@@ -31,11 +33,11 @@ function DashboardCard({ children, caption, href }: { children: React.ReactNode;
 // The signed-in patient's home dashboard, styled after the mobile app's home
 // tab: at-a-glance pain trend, weekly adherence and daily streak, each linking
 // through to the full recovery view.
-export function PatientDashboard({ uid, personId, showPainChart = true }: Props) {
+export function PatientDashboard({ uid, personId, showPainChart = true, possessive = "My" }: Props) {
   return (
     <div className="patient-dashboard-grid">
       {showPainChart && (
-        <DashboardCard caption="My pain recovery" href="/patient/recovery">
+        <DashboardCard caption={`${possessive} pain recovery`} href="/patient/recovery">
           <div className="panel stack" style={{ gap: "var(--space-3)" }}>
             <h3 style={{ margin: 0 }}>Pain score</h3>
             <RecoveryChart uid={uid} personId={personId} />
@@ -43,11 +45,11 @@ export function PatientDashboard({ uid, personId, showPainChart = true }: Props)
         </DashboardCard>
       )}
 
-      <DashboardCard caption="My adherence" href="/patient/recovery">
+      <DashboardCard caption={`${possessive} adherence`} href="/patient/recovery">
         <AdherenceBar uid={uid} personId={personId} />
       </DashboardCard>
 
-      <DashboardCard caption="My daily streak" href="/patient/recovery">
+      <DashboardCard caption={`${possessive} daily streak`} href="/patient/recovery">
         <StreakCard uid={uid} personId={personId} />
       </DashboardCard>
     </div>
