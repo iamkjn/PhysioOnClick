@@ -23,6 +23,7 @@ const routes = [
   "/how-online-physiotherapy-works",
   "/glasgow-physiotherapist",
   "/physiotherapy-home-visits-glasgow",
+  "/manual-therapy-glasgow",
   "/online-physiotherapy-scotland",
   "/professional-standards",
   "/privacy-policy",

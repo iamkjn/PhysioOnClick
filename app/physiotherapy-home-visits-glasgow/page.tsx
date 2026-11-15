@@ -144,7 +144,10 @@ export default function HomeVisitsGlasgowPage() {
             <ul className="clean-list">
               <li>An assessment at your home, covering your history, goals and how you move</li>
               <li>A 3D model of the body on screen, to show you the area involved and the muscles each of your exercises works</li>
-              <li>Hands-on treatment (manual therapy) where appropriate</li>
+              <li>
+                Hands-on treatment (manual therapy) where appropriate:{" "}
+                <Link href="/manual-therapy-glasgow">joint mobilisation, soft tissue work and stretching</Link>
+              </li>
               <li>A tailored exercise plan with clear milestones, set up for the space you actually have</li>
               <li>A written summary after your session</li>
               <li>Family members or carers welcome to join and learn how to help with your exercises between visits</li>

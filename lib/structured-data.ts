@@ -88,6 +88,10 @@ function priceOffers(visitType: VisitType) {
         "@type": "Service",
         name,
         serviceType: home ? "Home visit physiotherapy" : "Online video consultation",
+        // Hands-on treatment is a home-visit-only service (signed off: never by video).
+        ...(home
+          ? { description: "Physiotherapy at home, including hands-on treatment (manual therapy) where appropriate" }
+          : {}),
         provider: practiceRef()
       }
     };
@@ -232,7 +236,7 @@ export function personNode() {
       "https://www.linkedin.com/in/dr-shivaliba-zala/",
       "https://www.csp.org.uk/user/zalashivali1998gmailcom"
     ],
-    knowsAbout: services.map((service) => service.title)
+    knowsAbout: [...services.map((service) => service.title), "Manual therapy"]
   };
 }
 

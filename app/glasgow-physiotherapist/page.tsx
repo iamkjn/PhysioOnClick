@@ -136,7 +136,10 @@ export default function GlasgowPage() {
             <ul className="clean-list">
               <li>A physiotherapy assessment at your home, covering your history and how you move</li>
               <li>A 3D model of the body on screen, to show you the area involved and the muscles each exercise works</li>
-              <li>Hands-on treatment (manual therapy) where appropriate</li>
+              <li>
+                Hands-on treatment (manual therapy) where appropriate:{" "}
+                <Link href="/manual-therapy-glasgow">what manual therapy at home includes</Link>
+              </li>
               <li>A tailored exercise plan with clear milestones</li>
               <li>A written summary after your session</li>
               <li>The same HCPC registered physiotherapist, with follow-ups by home visit or video</li>

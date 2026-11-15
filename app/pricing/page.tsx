@@ -59,7 +59,9 @@ export default function PricingPage() {
           </Reveal>
           <p className="muted">
             We visit {HOME_VISIT_AREA_LABEL}. The price you see is the price you pay, with nothing added at
-            checkout or on your invoice; bundles cover every visit upfront.
+            checkout or on your invoice; bundles cover every visit upfront. Every home visit can include{" "}
+            <Link href="/manual-therapy-glasgow">hands-on treatment (manual therapy)</Link> where appropriate, at
+            no extra cost.
           </p>
           <div className="pricing-grid pricing-grid-two">
             {[...online, ...packages].map((item) => (
