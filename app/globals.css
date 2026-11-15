@@ -4986,6 +4986,23 @@ textarea:focus {
   font-size: var(--text-xs);
 }
 
+/* Admin patient: "Send sign-in invite" (components/admin-portal-invite.tsx) */
+.admin-invite-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-invite-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.admin-invite-button svg {
+  width: 15px;
+  height: 15px;
+}
+
 /* Admin patient: private history & documents (components/admin-patient-documents.tsx) */
 .admin-docs-eyebrow {
   display: inline-flex;

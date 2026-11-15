@@ -20,6 +20,7 @@ import { calcAge } from "@/lib/age";
 import { formatPersonName } from "@/lib/name-format";
 import { Avatar } from "@/components/avatar";
 import { AdminCarerAccess } from "@/components/admin-carer-access";
+import { AdminPortalInvite } from "@/components/admin-portal-invite";
 import { PersonSwitcher } from "@/components/person-switcher";
 import { AdminRecoverySummary } from "@/components/admin-recovery-summary";
 import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
@@ -360,6 +361,9 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
 
       {/* 2b. Carer access — per account (the account holder's own record), so
           it stays on the account holder whichever dependent is selected. */}
+      <div className="admin-invite-row">
+        <AdminPortalInvite patientUid={patientUid} patientName={patient.displayName} />
+      </div>
       <AdminCarerAccess patientUid={patientUid} patientName={patient.displayName} />
 
       {/* 3. Bookings */}
