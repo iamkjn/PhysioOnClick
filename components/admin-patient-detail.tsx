@@ -357,11 +357,11 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
       {/* 2. Pain trend */}
       <AdminRecoveryChart patientUid={patientUid} personId={person.id} />
 
-      {/* 3. Carer access — per account (the account holder's own record), so
+      {/* 2b. Carer access — per account (the account holder's own record), so
           it stays on the account holder whichever dependent is selected. */}
       <AdminCarerAccess patientUid={patientUid} patientName={patient.displayName} />
 
-      {/* 4. Bookings */}
+      {/* 3. Bookings */}
       <div className="panel admin-patient-card stack">
         <div className="admin-patient-section-head">
           <div>
@@ -427,7 +427,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         )}
       </div>
 
-      {/* 5. Clinical assessments (history only — recording an assessment lives
+      {/* 4. Clinical assessments (history only — recording an assessment lives
           on /admin/recovery, not on this screen) */}
       <section>
         <div className="panel admin-patient-card stack">
@@ -459,7 +459,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         </div>
       </section>
 
-      {/* 6. Patient assessment forms and check-ups */}
+      {/* 5. Patient assessment forms and check-ups */}
       {awaitingAssessment && (
         <span className="dashboard-status-pill status-pending" style={{ justifySelf: "start" }}>
           Awaiting assessment
@@ -474,7 +474,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         />
       </section>
 
-      {/* 7. Assigned exercises */}
+      {/* 6. Assigned exercises */}
       {adminUid && (
         <AdminExerciseAssigner
           adminUid={adminUid}
@@ -485,7 +485,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         />
       )}
 
-      {/* 8. Session summaries */}
+      {/* 7. Session summaries */}
       <div className="panel admin-patient-card stack">
         <div className="admin-patient-section-head">
           <div>
