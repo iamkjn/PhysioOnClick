@@ -16,6 +16,7 @@ import {
 import { auth, firebaseEnabled } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
 import { ensureAppUserRecord, ensurePatientRecord } from "@/lib/patient-account";
+import { requestEmailVerification } from "@/lib/email-verification";
 import { LIMITS, validateDob, validateEmail, validateName } from "@/lib/validation";
 import { formatPersonName } from "@/lib/name-format";
 import { PasswordInput } from "@/components/password-input";
@@ -150,8 +151,11 @@ export function AuthPanel({ role, redirectTo = "/patient" }: { role: "patient" |
           await updateProfile(credential.user, { displayName: fullName });
         }
         runAfterSignIn(ensurePatientRecord(credential.user, fullName, dob), "ensurePatientRecord");
+        // Password sign-ups are never verified by Firebase on their own, and
+        // carer access needs a verified email (lib/email-verification.ts).
+        runAfterSignIn(requestEmailVerification(credential.user), "requestEmailVerification");
         track("sign_up", { method: "password" });
-        completePatientSignIn("Patient account created.");
+        completePatientSignIn("Patient account created. We've emailed you a link to confirm your address.");
         return;
       }
 

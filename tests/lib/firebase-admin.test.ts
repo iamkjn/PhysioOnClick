@@ -533,4 +533,21 @@ describe("auth", () => {
       getAdminAuth()!.generatePasswordResetLink("a@b.com"),
     ).rejects.toThrow(/no link/);
   });
+
+  it("requests an email verification link and returns the oobLink", async () => {
+    const { calls } = mockFetch({ oobLink: "https://example.com/__/auth/action?mode=verifyEmail&oobCode=abc" });
+    const { getAdminAuth } = await loadModule();
+
+    const link = await getAdminAuth()!.generateEmailVerificationLink("a@b.com");
+
+    expect(link).toContain("oobCode=abc");
+    expect(calls[0].url).toContain("accounts:sendOobCode");
+    expect(calls[0].body).toMatchObject({ requestType: "VERIFY_EMAIL", email: "a@b.com", returnOobLink: true });
+  });
+
+  it("throws when email verification sendOobCode returns no link", async () => {
+    mockFetch({});
+    const { getAdminAuth } = await loadModule();
+    await expect(getAdminAuth()!.generateEmailVerificationLink("a@b.com")).rejects.toThrow(/no link/);
+  });
 });

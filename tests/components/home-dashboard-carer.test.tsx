@@ -22,7 +22,15 @@ vi.mock('@/lib/patient-bookings', () => ({
 vi.mock('@/lib/dependents', () => ({ getDependents: vi.fn().mockResolvedValue([]) }))
 
 const caredForMock = vi.fn((): unknown => [])
-vi.mock('@/hooks/use-cared-for-patients', () => ({ useCaredForPatients: () => caredForMock() }))
+const verifyEmailMock = vi.fn(() => false)
+vi.mock('@/hooks/use-cared-for-patients', () => ({
+  useCaredForPatients: () => caredForMock(),
+  useCarerLinks: () => {
+    const patients = caredForMock()
+    return patients === null ? null : { patients, verifyEmail: verifyEmailMock() }
+  },
+  resetCaredForCache: vi.fn(),
+}))
 
 const PatientDashboardMock = vi.fn((_p: unknown) => <div data-testid="patient-dashboard" />)
 vi.mock('@/components/patient-dashboard', () => ({
@@ -42,6 +50,7 @@ beforeEach(() => {
   getRecoveryScoreSeries.mockReset().mockResolvedValue([])
   getPatientBookings.mockReset().mockResolvedValue([])
   caredForMock.mockReturnValue([MARY])
+  verifyEmailMock.mockReturnValue(false)
   PatientDashboardMock.mockClear()
 })
 
@@ -101,5 +110,24 @@ describe('HomeDashboard carer access', () => {
     render(<PersonProvider><HomeDashboard user={carer} /></PersonProvider>)
 
     expect(await screen.findByText(/Mary Smith doesn.t have any exercises assigned yet/)).toBeInTheDocument()
+  })
+
+  it('prompts a carer with an unverified email to confirm it (and shows no patient)', async () => {
+    caredForMock.mockReturnValue([])
+    verifyEmailMock.mockReturnValue(true)
+    getAssignedExercises.mockResolvedValue([])
+
+    render(<PersonProvider><HomeDashboard user={carer} /></PersonProvider>)
+
+    expect(await screen.findByText('Someone has given you access to help with their recovery.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Email me a confirmation link' })).toBeInTheDocument()
+    expect(getAssignedExercises).not.toHaveBeenCalledWith('patient-1', 'patient-1')
+  })
+
+  it('shows no prompt to a verified carer', async () => {
+    getAssignedExercises.mockResolvedValue([{ exerciseId: 'ex1', active: true }])
+    render(<PersonProvider><HomeDashboard user={carer} /></PersonProvider>)
+    await waitFor(() => expect(PatientDashboardMock).toHaveBeenCalled())
+    expect(screen.queryByText('Someone has given you access to help with their recovery.')).not.toBeInTheDocument()
   })
 })

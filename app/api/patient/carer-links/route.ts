@@ -23,15 +23,21 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Same bar as firestore.rules isCarerOf(): an unverified email (e.g. a
-  // password sign-up nobody confirmed) must never unlock someone's record.
   const email = normalizeCarerEmail(decoded.email);
-  if (!email || decoded.email_verified !== true) {
-    return NextResponse.json({ patients: [] });
-  }
+  if (!email) return NextResponse.json({ patients: [] });
 
   try {
     const snap = await db.collection("patients").where("carerEmails", "array-contains", email).get();
+
+    // Same bar as firestore.rules isCarerOf(): an unverified email (e.g. a
+    // password sign-up nobody confirmed) must never unlock someone's record.
+    // It only learns that SOMEONE listed this address, never who, so the home
+    // page can prompt them to confirm it (lib/email-verification.ts).
+    if (decoded.email_verified !== true) {
+      const listedByOthers = snap.docs.some((d) => d.id !== decoded.uid);
+      return NextResponse.json(listedByOthers ? { patients: [], verifyEmail: true } : { patients: [] });
+    }
+
     const patients: CaredForPatient[] = snap.docs
       .filter((d) => d.id !== decoded.uid)
       .map((d) => {

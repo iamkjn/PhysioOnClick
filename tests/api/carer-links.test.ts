@@ -39,11 +39,27 @@ describe('GET /api/patient/carer-links', () => {
     expect((await GET(req('t'))).status).toBe(401)
   })
 
-  it('returns nothing (and never queries) for an unverified email', async () => {
+  it('never returns patients for an unverified email, only a prompt to confirm it', async () => {
     verifyIdToken.mockResolvedValue({ uid: 'c1', email: 'carer@example.com', email_verified: false })
-    const res = await GET(req('t'))
-    expect(await res.json()).toEqual({ patients: [] })
-    expect(collection).not.toHaveBeenCalled()
+    queryGet.mockResolvedValue({
+      docs: [docSnap('p1', { displayName: 'mary smith', carerEmails: ['carer@example.com'] })],
+    })
+    const body = await (await GET(req('t'))).json()
+    expect(body).toEqual({ patients: [], verifyEmail: true })
+    // Who listed them stays hidden until the email is confirmed.
+    expect(JSON.stringify(body)).not.toMatch(/mary|p1/i)
+  })
+
+  it('an unverified email that nobody listed gets no prompt', async () => {
+    verifyIdToken.mockResolvedValue({ uid: 'c1', email: 'carer@example.com', email_verified: false })
+    queryGet.mockResolvedValue({ docs: [] })
+    expect(await (await GET(req('t'))).json()).toEqual({ patients: [] })
+  })
+
+  it('a missing email_verified claim counts as unverified', async () => {
+    verifyIdToken.mockResolvedValue({ uid: 'c1', email: 'carer@example.com' })
+    queryGet.mockResolvedValue({ docs: [docSnap('p1', { displayName: 'Mary', carerEmails: ['carer@example.com'] })] })
+    expect(await (await GET(req('t'))).json()).toEqual({ patients: [], verifyEmail: true })
   })
 
   it('returns nothing for a token without an email', async () => {

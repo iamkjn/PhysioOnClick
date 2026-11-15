@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { resetCaredForCache, useCaredForPatients } from '@/hooks/use-cared-for-patients'
+import { resetCaredForCache, useCaredForPatients, useCarerLinks } from '@/hooks/use-cared-for-patients'
 
 const fetchMock = vi.fn()
 
@@ -52,5 +52,14 @@ describe('useCaredForPatients', () => {
     expect(renderHook(() => useCaredForPatients(null)).result.current).toBeNull()
     expect(renderHook(() => useCaredForPatients(user, false)).result.current).toBeNull()
     expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('useCarerLinks surfaces the confirm-your-email prompt from the same single fetch', async () => {
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ patients: [], verifyEmail: true }) })
+    const links = renderHook(() => useCarerLinks(user))
+    const patients = renderHook(() => useCaredForPatients(user))
+    await waitFor(() => expect(links.result.current).toEqual({ patients: [], verifyEmail: true }))
+    await waitFor(() => expect(patients.result.current).toEqual([]))
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })
