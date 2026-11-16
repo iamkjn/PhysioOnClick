@@ -785,7 +785,7 @@ export const conditions: Condition[] = [
         stage: "Settle the pain",
         blurb:
           "Start here during a flare or if the knee is swollen. Use gentle range and low-load activation, keep walking within comfort in shorter bouts, and let swelling settle before adding load.",
-        exerciseSlugs: ["quad-sets", "straight-leg-raise", "stationary-bike"],
+        exerciseSlugs: ["quad-sets", "static-quadriceps", "last-degree-knee-extension", "straight-leg-raise", "stationary-bike"],
       },
       {
         stage: "Build strength",
@@ -1526,7 +1526,7 @@ export const conditions: Condition[] = [
         stage: "First days and weeks",
         blurb:
           "For reference only: in the early weeks, follow the programme your hospital team gave you. Sessions with us start once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Hospital programmes at this stage often focus on full straightening, gradually increasing bend, ankle pumps for circulation, and reactivating the thigh muscle. Do little and often through the day, and elevate the leg to manage swelling.",
-        exerciseSlugs: ["ankle-pumps-post-surgery", "quad-sets", "heel-slide", "straight-leg-raise"],
+        exerciseSlugs: ["ankle-pumps-post-surgery", "quad-sets", "heel-slide", "straight-leg-raise", "last-degree-knee-extension"],
       },
       {
         stage: "Build strength",
@@ -1748,7 +1748,7 @@ export const conditions: Condition[] = [
         stage: "Get started safely",
         blurb:
           "Begin here with support always within reach. Practise standing balance holding a worktop, simple weight-shifting and marching, and standing up from a chair. Aim for a little every day.",
-        exerciseSlugs: ["standing-on-one-leg-hand-support", "static-standing-balance-eyes-open", "marching-on-the-spot", "sit-to-stand-repetitions"],
+        exerciseSlugs: ["standing-on-one-leg-hand-support", "static-standing-balance-eyes-open", "high-sitting-hip-flexion", "marching-on-the-spot", "sit-to-stand-repetitions"],
       },
       {
         stage: "Build strength and balance",

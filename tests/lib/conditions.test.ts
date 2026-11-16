@@ -67,7 +67,7 @@ describe('conditions', () => {
     expect(conditions.reduce((n, c) => n + c.program.length, 0)).toBe(82)
     expect(
       conditions.reduce((n, c) => n + c.program.reduce((m, s) => m + s.exerciseSlugs.length, 0), 0),
-    ).toBe(289)
+    ).toBe(293) // +4 on 2026-11-16: ex-168/169 into knee OA + after knee replacement, ex-170 into falls prevention
   })
   it('no smart punctuation or non-Latin-1 characters', () => {
     const blob = JSON.stringify(conditions)
