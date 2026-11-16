@@ -6528,6 +6528,50 @@ export const exercises: Exercise[] = [
       notes: "Count one rep as one knee lift on each side. Your physio may change the number of repetitions for you."
     },
     helpsWith: ["Strengthening the muscles that lift the leg", "Lifting your feet clear when walking and on stairs", "Sitting balance and trunk control"]
+  },
+  // ex-171 (2026-11-16): general version of the PDF's "High Sitting Knee
+  // Extension". No approved artwork yet - not in uploadedImageIds, so the
+  // card falls back to the kneeExt figure until an image is supplied.
+  {
+    id: "ex-171",
+    slug: "high-sitting-knee-extension",
+    title: "High Sitting Knee Extension",
+    bodyPart: "Knee",
+    clinicalArea: "lower_limb",
+    tags: ["knee", "quad-strength", "early-rehab"],
+    condition: "Knee weakness and reduced mobility",
+    stage: "Early rehab",
+    description: "Sitting on the edge of a high bed or plinth with the lower legs hanging freely, straightening one knee at a time to strengthen the thigh muscle.",
+    aka: ["seated knee extension", "sitting knee extension", "high sitting quads", "seated leg straightening", "long arc quads", "LAQ"],
+    equipment: ["A high bed, plinth or firm table edge you can sit on with your feet off the floor"],
+    pose: "kneeExt",
+    setup: "Sit upright on the edge of a high bed or plinth with your thighs supported and your lower legs hanging freely. Rest your hands on the surface beside you for support, or have someone beside you if your balance is unsteady.",
+    steps: [
+      "Sit tall, with your weight even on both sides.",
+      "Straighten one knee fully, lifting the foot forwards.",
+      "Tighten the thigh and hold the knee straight for a few seconds.",
+      "Lower the foot back down slowly, then repeat with the other leg."
+    ],
+    cues: [
+      "Your trunk stays upright - do not lean back to help lift the leg.",
+      "The thigh stays resting on the bed; only the lower leg moves.",
+      "The movement is slow both up and down."
+    ],
+    mistakes: [
+      "Leaning backwards or rocking to swing the leg up.",
+      "Kicking the leg up quickly and letting it drop.",
+      "Holding your breath during the hold.",
+      "Stop and message your physio if you feel sharp pain in the knee, or you feel unsteady sitting on the edge."
+    ],
+    defaultDosage: {
+      sets: 2,
+      reps: 10,
+      holdSeconds: 3,
+      perDay: 1,
+      perWeek: 5,
+      notes: "Count one rep as one straightening on each leg. An ankle weight can be added later as strength improves - your physio will advise."
+    },
+    helpsWith: ["Strengthening the thigh muscle", "Getting the knee fully straight", "Building towards standing up and walking"]
   }
 ];
 

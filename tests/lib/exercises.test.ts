@@ -96,8 +96,8 @@ describe('catalogue move', () => {
     // 16 competitive-pass MSK loading exercises across ex-151..ex-167 = 174.
     // ex-162 was withdrawn pre-publication, leaving a deliberate id gap.
     // ex-168..ex-170 (2026-11-16): static quads, last degree knee extension,
-    // high sitting hip flexion = 177.
-    expect(exercises.length).toBe(177)
+    // high sitting hip flexion = 177; ex-171 high sitting knee extension = 178.
+    expect(exercises.length).toBe(178)
     expect(exercises[0].id).toBe('ex-1')
   })
 })

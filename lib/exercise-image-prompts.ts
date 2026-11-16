@@ -208,6 +208,7 @@ export const exerciseImagePrompts: Record<string, string> = {
   "ex-168": "a person lying back on a treatment bench with both legs straight and a small rolled towel under one knee, tightening the thigh to press the back of the knee down into the towel while the heel stays resting, the quadriceps above the kneecap contracting without movement",
   "ex-169": "a person lying back on a treatment bench with a pillow under one knee, straightening that knee to lift the heel while the back of the knee stays on the pillow, the quadriceps just above the kneecap working",
   "ex-170": "a person sitting upright on the edge of a high treatment bench with the lower legs hanging free, lifting one bent knee in a small seated march without leaning back, the hip flexor muscles at the front of the hip working",
+  "ex-171": "a person sitting upright on the edge of a high treatment bench with the thighs supported and the lower legs hanging free, straightening one knee to lift the foot forwards without leaning back, the quadriceps at the front of the thigh working",
 
   // Face (adapt the suffix mentally: close-up, both sides shown, no movement arrow)
   "face-smile": "close-up medical illustration of a face gently raising both corners of the mouth into a smile, both sides shown for symmetry, the muscles around the mouth and cheeks working",

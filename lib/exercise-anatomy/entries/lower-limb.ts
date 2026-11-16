@@ -112,6 +112,15 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     status: "approved",
   },
 
+  "high-sitting-knee-extension": {
+    main: ["quadriceps"],
+    helpers: [],
+    howItHelps:
+      "Straightening your knee while you sit works the front of your thigh through the whole movement, with the most effort as the knee locks straight. A stronger thigh muscle helps your knee feel steadier when you stand up, walk and use stairs.",
+    tissue: "joint-ligament",
+    status: "approved",
+  },
+
   // Hip
   "high-sitting-hip-flexion": {
     main: ["iliopsoas"],

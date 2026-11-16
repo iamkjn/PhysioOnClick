@@ -785,7 +785,7 @@ export const conditions: Condition[] = [
         stage: "Settle the pain",
         blurb:
           "Start here during a flare or if the knee is swollen. Use gentle range and low-load activation, keep walking within comfort in shorter bouts, and let swelling settle before adding load.",
-        exerciseSlugs: ["quad-sets", "static-quadriceps", "last-degree-knee-extension", "straight-leg-raise", "stationary-bike"],
+        exerciseSlugs: ["quad-sets", "static-quadriceps", "last-degree-knee-extension", "high-sitting-knee-extension", "straight-leg-raise", "stationary-bike"],
       },
       {
         stage: "Build strength",
