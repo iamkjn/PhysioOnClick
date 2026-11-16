@@ -50,7 +50,7 @@ describe('exercise-library: getExerciseBySlug / allExerciseSlugs', () => {
 
   it('allExerciseSlugs mirrors the source array exactly, in order', () => {
     expect(allExerciseSlugs()).toEqual(exercises.map((e) => e.slug))
-    expect(allExerciseSlugs().length).toBe(174)
+    expect(allExerciseSlugs().length).toBe(177)
   })
 })
 

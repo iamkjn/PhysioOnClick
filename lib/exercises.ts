@@ -6404,6 +6404,130 @@ export const exercises: Exercise[] = [
       notes: "A demanding exercise - start with a very small backward range, or hold a pole in front for support, and build up slowly over weeks."
     },
     helpsWith: ["Building quad strength through a long range", "Loading the front of the knee for jumping sports", "Improving control when landing and slowing down"]
+  },
+  // ex-168..ex-170: general (non-post-op) versions of three bed/plinth
+  // exercises, added 2026-11-16 with approved artwork. ex-168 is the general
+  // knee-pain counterpart of ex-104 Quad Sets (post knee replacement, towel
+  // under the ankle); this one presses the knee into a towel roll instead.
+  {
+    id: "ex-168",
+    slug: "static-quadriceps",
+    title: "Static Quadriceps",
+    bodyPart: "Knee",
+    clinicalArea: "lower_limb",
+    tags: ["knee", "quad-strength", "isometric", "early-rehab"],
+    condition: "Knee pain and quadriceps weakness",
+    stage: "Early rehab",
+    description: "Tightening the thigh muscle to press the back of the knee down into a small towel roll, waking up the quadriceps without moving the knee.",
+    aka: ["static quads", "SQE", "static quadriceps exercise", "quad set", "isometric quadriceps", "knee press into towel"],
+    equipment: ["A small rolled towel", "A bed, plinth or firm surface to lie or sit on"],
+    pose: "legRaise",
+    setup: "Lie on your back, or sit well supported with your back against the bed head, with both legs straight out in front of you. Place a small rolled towel under the knee you are working. Your heel stays resting on the bed.",
+    steps: [
+      "Tighten the muscle at the front of your thigh.",
+      "Press the back of your knee down firmly into the towel roll.",
+      "Hold the squeeze while you keep breathing normally, with your heel staying on the bed.",
+      "Relax the thigh fully and rest for a few seconds before the next one."
+    ],
+    cues: [
+      "The kneecap draws slightly up towards your hip as the thigh tightens.",
+      "You can feel the muscle above the kneecap go firm if you rest a hand on it.",
+      "Your heel stays supported on the bed - this is a squeeze, not a lift."
+    ],
+    mistakes: [
+      "Holding your breath or bearing down while you squeeze.",
+      "Lifting the heel off the bed instead of pressing the knee down.",
+      "Squeezing only your buttock and not the front of the thigh.",
+      "Stop and message your physio if the knee becomes hot, red and swollen, or your calf becomes painful and swollen."
+    ],
+    defaultDosage: {
+      reps: 10,
+      holdSeconds: 5,
+      perDay: 3,
+      perWeek: 7,
+      notes: "Build the hold up towards 10 seconds as it gets easier. Your physio may adjust this for you."
+    },
+    helpsWith: ["Waking up a weak or slow thigh muscle", "Getting the knee to straighten fully", "Building towards standing and walking with a steadier knee"]
+  },
+  {
+    id: "ex-169",
+    slug: "last-degree-knee-extension",
+    title: "Last Degree Knee Extension",
+    bodyPart: "Knee",
+    clinicalArea: "lower_limb",
+    tags: ["knee", "quad-strength", "range-of-motion", "early-rehab"],
+    condition: "Knee stiffness and quadriceps weakness",
+    stage: "Early rehab",
+    description: "Lying with the knee resting over a pillow and straightening it to lift the heel, strengthening the thigh muscle through the last few degrees of knee straightening.",
+    aka: ["last degree extension", "inner range quads", "inner range quadriceps", "short arc quads", "end-range knee extension", "knee extension over a pillow"],
+    equipment: ["A pillow or a firm cushion", "A bed, plinth or firm surface to lie on"],
+    pose: "legRaise",
+    setup: "Lie on your back, or half-lie propped on pillows, with a pillow under the knee you are working so the knee rests slightly bent. Keep the other leg straight and relaxed.",
+    steps: [
+      "Tighten the muscle at the front of your thigh.",
+      "Straighten your knee to lift your heel off the bed, keeping the back of your knee resting on the pillow.",
+      "Hold the knee as straight as it will go for a moment.",
+      "Lower the heel back down slowly and with control."
+    ],
+    cues: [
+      "The back of your knee stays in contact with the pillow - only the lower leg moves.",
+      "You feel the thigh working most just above the kneecap as the knee locks straight.",
+      "The lowering is slow, not a drop."
+    ],
+    mistakes: [
+      "Lifting the whole leg off the pillow instead of straightening the knee.",
+      "Flicking the leg up quickly and letting it fall back down.",
+      "Holding your breath during the hold.",
+      "Stop and message your physio if you feel sharp pain in the knee, or the knee swells after sessions."
+    ],
+    defaultDosage: {
+      reps: 10,
+      holdSeconds: 3,
+      perDay: 2,
+      perWeek: 7,
+      notes: "Your physio may change the pillow height, the hold time or the number of repetitions for you."
+    },
+    helpsWith: ["Getting the knee fully straight", "Strengthening the thigh muscle just above the kneecap", "Building towards a steadier knee when standing and walking"]
+  },
+  {
+    id: "ex-170",
+    slug: "high-sitting-hip-flexion",
+    title: "High Sitting Hip Flexion",
+    bodyPart: "Hip",
+    clinicalArea: "lower_limb",
+    tags: ["hip", "hip-flexor", "hip-strength", "early-rehab"],
+    condition: "Hip weakness and reduced mobility",
+    stage: "Early rehab",
+    description: "Sitting upright on the edge of a high bed or plinth and lifting one bent knee at a time in a small seated march, strengthening the muscles at the front of the hip.",
+    aka: ["seated hip flexion", "sitting hip flexion", "seated march", "seated marching", "seated knee lift", "high sitting knee lift"],
+    equipment: ["A high bed, plinth or firm table edge you can sit on with your feet off the floor"],
+    pose: null, // no close pose in POSE_SPECS (sitting on a high edge); name inference falls back to "standing"
+    setup: "Sit upright on the edge of a high bed or plinth with your thighs supported and your lower legs hanging freely. Rest your hands on the surface beside you for support.",
+    steps: [
+      "Sit tall, with your weight even on both sides.",
+      "Lift one bent knee a small way up towards your chest without leaning backwards.",
+      "Lower the leg slowly back to the start.",
+      "Repeat with the other leg, alternating in a slow seated march."
+    ],
+    cues: [
+      "Your trunk stays upright - the movement comes from the hip, not from leaning back.",
+      "The lift is small and controlled rather than high and swinging.",
+      "Each leg is lowered slowly, not dropped."
+    ],
+    mistakes: [
+      "Leaning backwards or rocking to help lift the leg.",
+      "Swinging the leg up quickly instead of lifting it with control.",
+      "Slumping through the back as you tire.",
+      "Stop and message your physio if you feel sharp pain in the hip or groin, or you feel unsteady sitting on the edge."
+    ],
+    defaultDosage: {
+      sets: 2,
+      reps: 10,
+      perDay: 1,
+      perWeek: 5,
+      notes: "Count one rep as one knee lift on each side. Your physio may change the number of repetitions for you."
+    },
+    helpsWith: ["Strengthening the muscles that lift the leg", "Lifting your feet clear when walking and on stairs", "Sitting balance and trunk control"]
   }
 ];
 

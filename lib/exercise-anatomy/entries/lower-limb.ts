@@ -95,8 +95,31 @@ export const LOWER_LIMB: Record<string, ExerciseAnatomy> = {
     tissue: "muscle-tendon",
     status: "approved",
   },
+  "static-quadriceps": {
+    main: ["quadriceps"],
+    helpers: [],
+    howItHelps:
+      "Pressing the back of your knee into the towel works the front of your thigh while the knee stays still. Getting this muscle working again is an early step towards a knee that straightens fully and feels steadier when you stand and walk.",
+    tissue: "joint-ligament",
+    status: "draft",
+  },
+  "last-degree-knee-extension": {
+    main: ["quadriceps"],
+    helpers: [],
+    howItHelps:
+      "Straightening your knee over the pillow works the front of your thigh through the last part of the movement, which you often feel just above your kneecap. Being able to lock your knee fully straight helps it feel steadier when you stand and walk.",
+    tissue: "joint-ligament",
+    status: "draft",
+  },
 
   // Hip
+  "high-sitting-hip-flexion": {
+    main: ["iliopsoas"],
+    helpers: ["rectus-femoris"],
+    howItHelps:
+      "Lifting each bent knee while you sit tall works the deep hip flexor at the front of your hip. Stronger hip flexors can help you lift your feet clear when you walk and step up onto stairs and kerbs.",
+    status: "draft",
+  },
   "hip-bridge": {
     main: ["gluteus-maximus"],
     helpers: ["hamstrings", "gluteus-medius"],

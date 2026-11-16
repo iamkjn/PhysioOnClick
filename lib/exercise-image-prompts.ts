@@ -205,6 +205,9 @@ export const exerciseImagePrompts: Record<string, string> = {
   "ex-165": "a seated person with the knees bent to a right angle and a weight resting across the thighs, raising and lowering the heels with the balls of the feet on a low block, the deep soleus calf muscle low on the lower leg working",
   "ex-166": "a person in a held squat with a strong band looped behind both knees and anchored in front, the shins kept vertical and the knees bent to a right angle, the quadriceps at the front of both thighs under sustained load",
   "ex-167": "a person kneeling upright on a mat with the body in a straight line from knees to head, leaning slowly backwards from the knees under control, the quadriceps along the front of the thighs under lengthening load",
+  "ex-168": "a person lying back on a treatment bench with both legs straight and a small rolled towel under one knee, tightening the thigh to press the back of the knee down into the towel while the heel stays resting, the quadriceps above the kneecap contracting without movement",
+  "ex-169": "a person lying back on a treatment bench with a pillow under one knee, straightening that knee to lift the heel while the back of the knee stays on the pillow, the quadriceps just above the kneecap working",
+  "ex-170": "a person sitting upright on the edge of a high treatment bench with the lower legs hanging free, lifting one bent knee in a small seated march without leaning back, the hip flexor muscles at the front of the hip working",
 
   // Face (adapt the suffix mentally: close-up, both sides shown, no movement arrow)
   "face-smile": "close-up medical illustration of a face gently raising both corners of the mouth into a smile, both sides shown for symmetry, the muscles around the mouth and cheeks working",
@@ -412,6 +415,11 @@ export const uploadedImageIds: ReadonlySet<string> = new Set<string>([
   "ex-165",
   "ex-166",
   "ex-167",
+  // Supplied approved artwork (2026-11-16), footer band removed and uploaded
+  // via scripts/upload-exercise-images-168-170.ts.
+  "ex-168",
+  "ex-169",
+  "ex-170",
 ]);
 
 export function hasUploadedImage(id: string): boolean {

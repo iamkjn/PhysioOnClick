@@ -96,7 +96,8 @@ export function AdminExerciseAssigner({
         e.title.toLowerCase().includes(q) ||
         e.bodyPart.toLowerCase().includes(q) ||
         e.condition.toLowerCase().includes(q) ||
-        e.tags.some((tag) => tag.toLowerCase().includes(q))),
+        e.tags.some((tag) => tag.toLowerCase().includes(q)) ||
+        (e.aka ?? []).some((name) => name.toLowerCase().includes(q))),
   );
   const visibleGalleryExercises = galleryExercises.slice(0, visibleLimit);
 

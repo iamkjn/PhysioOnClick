@@ -56,6 +56,26 @@ describe('AdminExerciseAssigner', () => {
     expect(getByRole('button', { name: /assign scapular setting/i })).toBeInTheDocument()
   })
 
+  it('finds exercises by their aliases and offers the new knee and hip entries', async () => {
+    getAssignedExercisesMock.mockResolvedValue([])
+    const { container, getByRole, queryByRole, getByLabelText } = render(
+      <AdminExerciseAssigner adminUid="a1" patientUid="p1" personId="p1" />
+    )
+    await waitFor(() => {
+      expect(container.querySelector('.skeleton-row-group')).not.toBeInTheDocument()
+    })
+
+    fireEvent.change(getByLabelText('Search exercises'), { target: { value: 'SQE' } })
+    expect(getByRole('button', { name: /assign static quadriceps/i })).toBeInTheDocument()
+
+    fireEvent.change(getByLabelText('Search exercises'), { target: { value: 'inner range quads' } })
+    expect(getByRole('button', { name: /assign last degree knee extension/i })).toBeInTheDocument()
+
+    fireEvent.change(getByLabelText('Search exercises'), { target: { value: 'seated march' } })
+    expect(getByRole('button', { name: /assign high sitting hip flexion/i })).toBeInTheDocument()
+    expect(queryByRole('button', { name: /assign static quadriceps/i })).not.toBeInTheDocument()
+  })
+
   it('can cancel a suggestion while keeping it available in the full gallery', async () => {
     getAssignedExercisesMock.mockResolvedValue([])
     const suggestion = { exercise: exercises[0], reason: 'Suggested: matches lower limb', score: 3 }

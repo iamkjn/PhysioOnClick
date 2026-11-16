@@ -31,7 +31,7 @@ describe('exercise image prompts', () => {
     }
   })
 
-  it('has an image prompt for every one of the 174 catalogue exercises', () => {
+  it('has an image prompt for every one of the 177 catalogue exercises', () => {
     const missing = exercises.filter((e) => !hasImagePrompt(e.id)).map((e) => e.id)
     expect(missing).toEqual([])
   })
@@ -56,7 +56,7 @@ describe('exercise image prompts', () => {
     }
   })
 
-  it('covers every one of the 174 catalogue exercises (2026-09-10 image library upload)', () => {
+  it('covers every one of the 177 catalogue exercises (2026-09-10 image library upload)', () => {
     const missing = exercises.filter((e) => !hasUploadedImage(e.id)).map((e) => e.id)
     expect(missing).toEqual([])
   })
