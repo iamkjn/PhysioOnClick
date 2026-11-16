@@ -27,6 +27,7 @@ import { AdminRecoveryChart } from "@/components/admin-recovery-chart";
 import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminAssessmentReview } from "@/components/admin-assessment-review";
 import { AdminPatientDocuments } from "@/components/admin-patient-documents";
+import { AdminPrintPlanButton } from "@/components/admin-print-plan-button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
@@ -536,6 +537,11 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
                         <p className="muted" style={{ margin: 0 }}>
                           Follow-up recommended in {summary.followUpWeeks} week{summary.followUpWeeks > 1 ? "s" : ""}.
                         </p>
+                      )}
+                      {summary.hasPlanPdf && (
+                        <div>
+                          <AdminPrintPlanButton summaryId={summary.id} />
+                        </div>
                       )}
                     </div>
                   )}

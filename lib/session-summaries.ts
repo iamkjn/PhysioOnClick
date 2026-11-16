@@ -15,6 +15,10 @@ export interface SessionSummary {
   painScore: number;
   recoveryPercent: number;
   publishedAt: Date;
+  /** True once the exercise-plan handout PDF has been generated and stored
+   *  (the generate route stamps `planPdfPath`). Older summaries, and ones
+   *  whose generation failed, have none until "Resend plan email" rebuilds it. */
+  hasPlanPdf?: boolean;
 }
 
 export async function getSessionSummary(bookingId: string): Promise<SessionSummary | null> {
@@ -40,6 +44,7 @@ export async function getSessionSummary(bookingId: string): Promise<SessionSumma
     painScore: (data.painScore as number) ?? 0,
     recoveryPercent: (data.recoveryPercent as number) ?? 0,
     publishedAt: ts?.toDate ? ts.toDate() : new Date(),
+    hasPlanPdf: typeof data.planPdfPath === "string" && data.planPdfPath.length > 0,
   };
 }
 
