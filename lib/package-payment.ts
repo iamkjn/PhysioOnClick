@@ -4,6 +4,7 @@
 // to see is returned: first name, plan, sessions, dates and amount.
 import { getAdminDb } from "@/lib/firebase-admin";
 import { formatDateRange } from "@/lib/treatment-packages";
+import { createStripeCheckout } from "@/lib/payments/stripe";
 
 export const PAY_TOKEN_RE = /^[a-f0-9]{32}$/;
 
@@ -57,4 +58,43 @@ export async function getPaymentRequest(token: string): Promise<PaymentRequestVi
     amountPence,
     status,
   };
+}
+
+/**
+ * Starts a fresh Stripe Checkout for an open package payment request. The
+ * amount always comes from the package doc. `returnPath` is where Stripe sends
+ * the payer back (the /pay page, or the patient portal).
+ */
+export async function startPackageCheckout(
+  view: PaymentRequestView,
+  returnPath = `/pay/${view.token}`,
+): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const back = new URL(returnPath, siteUrl);
+  const success = new URL(back);
+  success.searchParams.set("paid", "1");
+  const sessionsLabel = `${view.totalSessions} ${view.visitType === "home" ? "home visit" : "video session"}${view.totalSessions === 1 ? "" : "s"}`;
+  const result = await createStripeCheckout({
+    intent: {
+      // Required by the shared BookingIntent shape; unused for a package payment.
+      service: "follow-up",
+      startISO: "",
+      name: view.patientName,
+      email: view.email,
+      timeZone: "Europe/London",
+      visitType: view.visitType,
+    },
+    amountPence: view.amountPence,
+    serviceLabel: `${view.title} (${sessionsLabel})`,
+    successUrl: success.toString(),
+    cancelUrl: back.toString(),
+    metadataOverride: {
+      kind: "package-payment",
+      paymentRequestId: view.token,
+      packageId: view.packageId,
+      name: view.patientName,
+      email: view.email,
+    },
+  });
+  return result.ok ? { ok: true, url: result.url } : { ok: false, error: result.error };
 }

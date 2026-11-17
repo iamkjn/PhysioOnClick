@@ -29,6 +29,9 @@ import { AdminAssessmentReview } from "@/components/admin-assessment-review";
 import { AdminPatientDocuments } from "@/components/admin-patient-documents";
 import { AdminPrintPlanButton } from "@/components/admin-print-plan-button";
 import { AdminTreatmentPackages } from "@/components/admin-treatment-packages";
+import { formatPounds } from "@/lib/home-visit-pricing";
+import type { TreatmentPackage } from "@/lib/treatment-packages";
+import { Wallet } from "lucide-react";
 import { AdminExerciseDone } from "@/components/admin-exercise-done";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SkeletonRow } from "@/components/skeleton";
@@ -138,6 +141,10 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
   const [cancelling, setCancelling] = useState<string | null>(null);
   // Bumped after a visit is recorded from a treatment package, to reload bookings.
   const [bookingsVersion, setBookingsVersion] = useState(0);
+  // Physio-arranged packages (admin-created accounts only), reported up by
+  // AdminTreatmentPackages: remaining visits count as upcoming, and the
+  // amount / payment status shows in the summary.
+  const [managedPackages, setManagedPackages] = useState<TreatmentPackage[]>([]);
 
   useEffect(() => {
     let live = true;
@@ -268,6 +275,18 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
     };
   }, [bookings]);
   const latestAssessment = assessments?.[0];
+  const activeManaged = managedPackages.filter((p) => p.status !== "complete");
+  const plannedRemaining = activeManaged.reduce((n, p) => n + p.remainingSessions, 0);
+  const priced = managedPackages.filter((p) => p.pricePence > 0 && p.paidMethod !== "no-charge");
+  const duePence = priced.filter((p) => p.paymentStatus !== "paid").reduce((n, p) => n + p.pricePence, 0);
+  const payment = priced.length
+    ? duePence > 0
+      ? {
+          label: `${formatPounds(duePence)} due`,
+          note: priced.some((p) => p.paymentStatus === "link-sent") ? "Link sent" : "Not paid yet",
+        }
+      : { label: "Paid", note: formatPounds(priced.reduce((n, p) => n + p.pricePence, 0)) }
+    : null;
 
   // Exercises can only be *assigned* from this screen while the patient has a
   // submitted online assessment AND a completed session whose summary is still
@@ -332,6 +351,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
             initialPersonId={initialPersonId}
             onSelect={(id, name) => setPerson({ id, name: formatPersonName(name, "") })}
             alwaysShow
+            selfSuffix=""
           />
           <div className="admin-patient-contact" aria-label="Patient contact details">
             <span>{patient.email || "No email"}</span>
@@ -345,7 +365,8 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         <div className="admin-patient-kpi">
           <CalendarDays aria-hidden="true" />
           <span>Upcoming</span>
-          <strong>{bookings ? bookingCounts.upcoming : "..."}</strong>
+          <strong>{bookings ? bookingCounts.upcoming + plannedRemaining : "..."}</strong>
+          {plannedRemaining > 0 ? <small className="admin-patient-kpi__note">incl. {plannedRemaining} planned</small> : null}
         </div>
         <div className="admin-patient-kpi">
           <ClipboardCheck aria-hidden="true" />
@@ -362,6 +383,14 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           <span>Forms</span>
           <strong>{linkedBookingIds.length}</strong>
         </div>
+        {managedByPhysio && payment ? (
+          <div className="admin-patient-kpi">
+            <Wallet aria-hidden="true" />
+            <span>Payment</span>
+            <strong>{payment.label}</strong>
+            <small className="admin-patient-kpi__note">{payment.note}</small>
+          </div>
+        ) : null}
       </section>
 
       {/* 1. Recovery summary — ring, streak, adherence, latest self-reported pain */}
@@ -443,13 +472,18 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         )}
       </div>
 
-      {/* 3b. Physio-arranged treatment packages: record visits, payment link */}
-      <AdminTreatmentPackages
-        patientUid={patientUid}
-        personId={person.id}
-        patientName={activePersonName}
-        onVisitRecorded={() => setBookingsVersion((v) => v + 1)}
-      />
+      {/* 3b. Physio-arranged treatment packages: record visits, payment link.
+          Only for accounts the admin created: customers who sign up pay when
+          they book, so their record never shows package amounts or status. */}
+      {managedByPhysio ? (
+        <AdminTreatmentPackages
+          patientUid={patientUid}
+          personId={person.id}
+          patientName={activePersonName}
+          onVisitRecorded={() => setBookingsVersion((v) => v + 1)}
+          onPackagesChange={setManagedPackages}
+        />
+      ) : null}
 
       {/* 4. Clinical assessments (history only — recording an assessment lives
           on /admin/recovery, not on this screen) */}

@@ -17685,3 +17685,38 @@ textarea:focus {
 .pay-page__total dd { font-size: var(--text-xl); color: var(--color-navy); }
 .pay-page__button { width: 100%; justify-content: center; font-size: var(--text-base); }
 .pay-page__fine { margin: 0; font-size: var(--text-xs); }
+
+/* Patient portal: priced physio-arranged plan + Pay now (components/treatment-plan-pay-card.tsx) */
+.plan-pay { display: grid; gap: var(--space-3); }
+.plan-pay__card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5, 1.5rem);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-primary);
+  border-radius: var(--radius-card);
+}
+.plan-pay__card.is-paid { border-left-color: var(--color-success); }
+.plan-pay__info { flex: 1 1 260px; min-width: 0; }
+.plan-pay__eyebrow { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-primary-dark); }
+.plan-pay__info h3 { margin: 0.2rem 0; font-size: var(--text-lg); }
+.plan-pay__info p { margin: 0; font-size: var(--text-sm); color: var(--color-text-secondary); }
+.plan-pay__total { display: grid; gap: 0.35rem; justify-items: end; text-align: right; }
+.plan-pay__total > span:first-child { font-size: var(--text-sm); color: var(--color-text-secondary); }
+.plan-pay__total strong { font-size: var(--text-2xl); color: var(--color-navy); line-height: 1.1; }
+.plan-pay__paid { color: var(--color-success-dark); font-weight: 600; font-size: var(--text-sm); }
+.plan-pay__pending { color: var(--color-primary-dark); font-weight: 600; font-size: var(--text-sm); }
+.plan-pay__fine { margin: 0; font-size: var(--text-xs); color: var(--color-text-secondary); }
+@media (max-width: 560px) {
+  .plan-pay__total { justify-items: stretch; text-align: left; width: 100%; }
+  .plan-pay__total .button { width: 100%; justify-content: center; }
+}
+.admin-patient-kpi__note { font-size: var(--text-xs); color: var(--color-text-secondary); }
+.admin-patient-kpi__note { grid-column: 2; }
+@media (min-width: 1024px) {
+  .admin-patient-kpis:has(> :nth-child(5)) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}

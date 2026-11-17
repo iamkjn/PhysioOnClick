@@ -23,6 +23,8 @@ interface Props {
   patientName: string;
   /** Called after a visit is recorded so the bookings list can refresh. */
   onVisitRecorded?: () => void;
+  /** Reports the loaded packages (admin summary: planned visits, amount due). */
+  onPackagesChange?: (packages: TreatmentPackage[]) => void;
 }
 
 type FormState = {
@@ -80,7 +82,7 @@ function suggestion(form: FormState): number {
   });
 }
 
-export function AdminTreatmentPackages({ patientUid, personId, patientName, onVisitRecorded }: Props) {
+export function AdminTreatmentPackages({ patientUid, personId, patientName, onVisitRecorded, onPackagesChange }: Props) {
   const toast = useToast();
   const [packages, setPackages] = useState<TreatmentPackage[] | null>(null);
   const [loadError, setLoadError] = useState(false);
@@ -97,12 +99,14 @@ export function AdminTreatmentPackages({ patientUid, personId, patientName, onVi
       const json = await adminFetch(
         `/api/admin/packages?uid=${encodeURIComponent(patientUid)}&person=${encodeURIComponent(personId)}`,
       );
-      setPackages((json.packages as TreatmentPackage[]) ?? []);
+      const list = (json.packages as TreatmentPackage[]) ?? [];
+      setPackages(list);
+      onPackagesChange?.(list);
     } catch {
       setPackages([]);
       setLoadError(true);
     }
-  }, [patientUid, personId]);
+  }, [patientUid, personId, onPackagesChange]);
 
   useEffect(() => {
     setPackages(null);

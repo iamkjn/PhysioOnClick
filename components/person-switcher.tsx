@@ -28,6 +28,8 @@ interface Props {
    * Only recovery pages (home, recovery, exercises) pass it.
    */
   caredFor?: CaredForPatient[] | null;
+  /** Appended to the account holder's name. The admin page passes "" (the admin isn't the patient). */
+  selfSuffix?: string;
 }
 
 function carerLabel(p: CaredForPatient): string {
@@ -44,6 +46,7 @@ export function PersonSwitcher({
   onAddPerson,
   initialPersonId,
   caredFor,
+  selfSuffix = " (You)",
 }: Props) {
   // Optional: undefined when no PersonProvider is mounted (e.g. admin pages,
   // or this component rendered in isolation) — every use below is guarded.
@@ -200,7 +203,7 @@ export function PersonSwitcher({
           transition: "border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease"
         }}
       >
-        <option value={uid}>{displayLabel} (You)</option>
+        <option value={uid}>{displayLabel}{selfSuffix}</option>
         {dependents.map((dep) => (
           <option key={dep.id} value={dep.id}>
             {formatPersonName(dep.name)} ({dep.relationship})

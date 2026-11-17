@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { TreatmentPlanPayCard } from "@/components/treatment-plan-pay-card";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Avatar } from "@/components/avatar";
 import { EmptyState } from "@/components/empty-state";
@@ -203,6 +204,12 @@ export default function AppointmentsPage() {
             ))}
           </div>
         </section>
+      )}
+
+      {uid && (!personId || personId === uid) && (
+        <div className="page-section">
+          <TreatmentPlanPayCard ownerUid={uid} returnPath="/patient/appointments" />
+        </div>
       )}
 
       {packages.length > 0 && (

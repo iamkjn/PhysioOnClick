@@ -9,6 +9,7 @@ import { PersonSwitcher } from "@/components/person-switcher";
 import { RecoveryPercentCard } from "@/components/recovery-percent-card";
 import { PatientDashboard } from "@/components/patient-dashboard";
 import { usePerson, usePatientTarget } from "@/components/person-provider";
+import { TreatmentPlanPayCard } from "@/components/treatment-plan-pay-card";
 import { useCarerLinks } from "@/hooks/use-cared-for-patients";
 import { CarerVerifyEmailCard } from "@/components/carer-verify-email-card";
 import { getAssignedExercises, getRecoveryScoreSeries } from "@/lib/recovery";
@@ -227,6 +228,9 @@ export function HomeDashboard({ user }: { user: User }) {
         </header>
 
         {carerLinks?.verifyEmail ? <CarerVerifyEmailCard user={user} /> : null}
+
+        {/* Priced physio-arranged plan: total + Pay now, for patient or carer */}
+        {target.mode !== "dependent" ? <TreatmentPlanPayCard ownerUid={ownerUid} returnPath="/patient" /> : null}
 
         <div className={showRecoveryRing ? "home-dashboard-grid" : "home-dashboard-grid home-dashboard-grid--full"}>
           {/* The recovery ring is meaningless (and always empty) before a
