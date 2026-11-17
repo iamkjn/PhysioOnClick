@@ -10,6 +10,7 @@ import { RehabProgramsSection } from "@/components/rehab-programs-section";
 import { UploadPanel } from "@/components/upload-panel";
 import { AddressBookManager } from "@/components/address-book-manager";
 import { PatientCarerAccess } from "@/components/patient-carer-access";
+import { AccountPasswordSection } from "@/components/account-password-section";
 import { Skeleton, SkeletonForm, SkeletonRow } from "@/components/skeleton";
 import { PeopleIcon, ClipboardIcon } from "@/components/icons";
 import { formatPersonName } from "@/lib/name-format";
@@ -108,6 +109,14 @@ export default function AccountPage() {
       {/* Profile details */}
       <section className="page-section">
         <PatientProfileEditor />
+      </section>
+
+      {/* Password: create one (emailed-link accounts) or change it */}
+      <section id="password" className="page-section stack">
+        <div className="section-heading">
+          <h2>Password</h2>
+        </div>
+        <AccountPasswordSection />
       </section>
 
       {/* Carers the physio has given access to (patients/{uid}.carerEmails) */}

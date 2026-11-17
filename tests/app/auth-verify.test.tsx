@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import type { UserCredential } from 'firebase/auth'
 
@@ -26,6 +26,7 @@ vi.mock('firebase/auth', () => ({
   signInWithEmailLink: vi.fn(),
   linkWithCredential: vi.fn(),
   signOut: vi.fn(),
+  updatePassword: vi.fn(),
   EmailAuthProvider: {
     credentialWithLink: vi.fn((email: string, link: string) => ({ kind: 'emailLink', email, link })),
   },
@@ -57,7 +58,7 @@ vi.mock('next/navigation', () => ({
   }),
 }))
 
-import { isSignInWithEmailLink, linkWithCredential, signInWithEmailLink, signOut } from 'firebase/auth'
+import { isSignInWithEmailLink, linkWithCredential, signInWithEmailLink, signOut, updatePassword } from 'firebase/auth'
 import { ensurePatientRecord } from '@/lib/patient-account'
 import VerifyPageWrapper from '@/app/auth/verify/page'
 
@@ -297,6 +298,92 @@ describe('Auth verify page', () => {
         expect(screen.getByText(/expired or has already been used/i)).toBeInTheDocument()
       })
       expect(signInWithEmailLink).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('create-a-password offer after a link sign-in', () => {
+    const user = {
+      displayName: 'Jane Smith',
+      email: 'jane@example.com',
+      getIdToken: vi.fn().mockResolvedValue('mock-token'),
+    }
+
+    function mockPasswordStatus(hasPassword: boolean) {
+      global.fetch = vi.fn(async (url: RequestInfo | URL) =>
+        String(url).includes('/api/auth/password-status')
+          ? new Response(JSON.stringify({ hasPassword }), { status: 200 })
+          : new Response('{}', { status: 200 }),
+      ) as unknown as typeof fetch
+    }
+
+    beforeEach(() => {
+      vi.mocked(isSignInWithEmailLink).mockReturnValue(true)
+      vi.mocked(signInWithEmailLink).mockResolvedValue({ user } as unknown as UserCredential)
+      vi.mocked(updatePassword).mockReset()
+    })
+
+    it('offers a password, and does not auto-redirect, when the account has none', async () => {
+      mockPasswordStatus(false)
+      render(<VerifyPageWrapper />)
+
+      expect(await screen.findByText(/would you like a password/i)).toBeInTheDocument()
+      await new Promise((r) => setTimeout(r, 1700))
+      expect(push).not.toHaveBeenCalled()
+    })
+
+    it('saves the password and then shows how to sign in next time', async () => {
+      mockPasswordStatus(false)
+      vi.mocked(updatePassword).mockResolvedValue(undefined)
+      render(<VerifyPageWrapper />)
+
+      await screen.findByText(/would you like a password/i)
+      fireEvent.change(screen.getByLabelText(/^new password/i), { target: { value: 'longenough1' } })
+      fireEvent.change(screen.getByLabelText(/type it again/i), { target: { value: 'longenough1' } })
+      fireEvent.click(screen.getByRole('button', { name: /save my password/i }))
+
+      expect(await screen.findByText(/password saved/i)).toBeInTheDocument()
+      expect(updatePassword).toHaveBeenCalledWith(user, 'longenough1')
+      fireEvent.click(screen.getByRole('button', { name: /go to my page/i }))
+      expect(push).toHaveBeenCalledWith('/patient')
+    })
+
+    it('does not save mismatched passwords', async () => {
+      mockPasswordStatus(false)
+      render(<VerifyPageWrapper />)
+
+      await screen.findByText(/would you like a password/i)
+      fireEvent.change(screen.getByLabelText(/^new password/i), { target: { value: 'longenough1' } })
+      fireEvent.change(screen.getByLabelText(/type it again/i), { target: { value: 'different22' } })
+      fireEvent.click(screen.getByRole('button', { name: /save my password/i }))
+
+      expect(await screen.findByText(/don't match/i)).toBeInTheDocument()
+      expect(updatePassword).not.toHaveBeenCalled()
+    })
+
+    it('lets the user skip straight to the portal', async () => {
+      mockPasswordStatus(false)
+      render(<VerifyPageWrapper />)
+
+      await screen.findByText(/would you like a password/i)
+      fireEvent.click(screen.getByRole('button', { name: /skip for now/i }))
+      expect(push).toHaveBeenCalledWith('/patient')
+    })
+
+    it('goes straight to the portal when the account already has a password', async () => {
+      mockPasswordStatus(true)
+      render(<VerifyPageWrapper />)
+
+      await waitFor(() => expect(push).toHaveBeenCalledWith('/patient'), { timeout: 3000 })
+      expect(screen.queryByText(/would you like a password/i)).not.toBeInTheDocument()
+    })
+
+    it('never interrupts a booking-flow sign-in', async () => {
+      searchParamsMap = { email: 'jane@example.com', returnTo: '/book' }
+      mockPasswordStatus(false)
+      render(<VerifyPageWrapper />)
+
+      await waitFor(() => expect(push).toHaveBeenCalledWith('/book'), { timeout: 3000 })
+      expect(vi.mocked(global.fetch).mock.calls.some(([u]) => String(u).includes('password-status'))).toBe(false)
     })
   })
 })

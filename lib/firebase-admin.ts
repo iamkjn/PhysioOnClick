@@ -647,6 +647,25 @@ export class Auth {
     return { ...payload, uid: payload.sub, email: payload.email as string | undefined };
   }
 
+  /**
+   * Whether this account has a password. Email-link-only accounts (portal
+   * invites, magic links) have no passwordHash / passwordUpdatedAt; an account
+   * that ever set one does. Returns null if the user doesn't exist.
+   */
+  async hasPassword(uid: string): Promise<boolean | null> {
+    const res = await apiFetch(`${IDENTITY_HOST}/projects/${this.projectId}/accounts:lookup`, {
+      method: "POST",
+      body: JSON.stringify({ localId: [uid] }),
+    });
+    if (!res.ok) {
+      throw new Error(`accounts:lookup failed (${res.status}): ${await res.text()}`);
+    }
+    const json = (await res.json()) as { users?: { passwordHash?: string; passwordUpdatedAt?: number }[] };
+    const user = json.users?.[0];
+    if (!user) return null;
+    return Boolean(user.passwordHash || user.passwordUpdatedAt);
+  }
+
   async generateSignInWithEmailLink(
     email: string,
     settings: { url: string; handleCodeInApp?: boolean },

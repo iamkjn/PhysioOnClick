@@ -550,6 +550,31 @@ describe("auth", () => {
     const { getAdminAuth } = await loadModule();
     await expect(getAdminAuth()!.generateEmailVerificationLink("a@b.com")).rejects.toThrow(/no link/);
   });
+
+  it("reports no password for an emailed-link-only account", async () => {
+    const { calls } = mockFetch({ users: [{ localId: "uid-1", email: "a@b.com", emailVerified: true }] });
+    const { getAdminAuth } = await loadModule();
+
+    await expect(getAdminAuth()!.hasPassword("uid-1")).resolves.toBe(false);
+    expect(calls[0].url).toContain("/projects/physioonclick/accounts:lookup");
+    expect(calls[0].body).toEqual({ localId: ["uid-1"] });
+  });
+
+  it("reports a password when the account has a hash or update time", async () => {
+    mockFetch({ users: [{ localId: "uid-1", passwordHash: "UkVEQUNURUQ=", passwordUpdatedAt: 1700000000000 }] });
+    const { getAdminAuth } = await loadModule();
+    await expect(getAdminAuth()!.hasPassword("uid-1")).resolves.toBe(true);
+  });
+
+  it("returns null for an unknown user and throws on a failed lookup", async () => {
+    mockFetch({});
+    let mod = await loadModule();
+    await expect(mod.getAdminAuth()!.hasPassword("nobody")).resolves.toBeNull();
+
+    mockFetch({ error: "boom" }, 500);
+    mod = await loadModule();
+    await expect(mod.getAdminAuth()!.hasPassword("uid-1")).rejects.toThrow(/accounts:lookup failed/);
+  });
 });
 
 describe("listObjects", () => {

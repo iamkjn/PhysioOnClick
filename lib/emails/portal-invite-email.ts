@@ -43,11 +43,12 @@ export function buildPortalInviteEmail(input: PortalInviteInput): { subject: str
         <a href="${escapeHtml(input.signInLink)}" style="display:inline-block; background:#0EA5E9; color:#ffffff; text-decoration:none; padding:14px 32px; border-radius:8px; font-weight:700; font-size:15px;">Sign in now →</a>
       </p>
       <p style="margin:8px 0 20px; font-size:12.5px; color:#7C8FA0;">This button works once, within 24 hours. You don't need a password.</p>
+      <p style="margin:0 0 16px;">After you press the button you can <strong>create a password</strong>, so next time you just type your email and password.</p>
       <p style="margin:0 0 8px; font-weight:700;">Signing in again later</p>
       <ol style="margin:0 0 16px; padding-left:20px;">
         <li style="margin:0 0 6px;">Go to <a href="${escapeHtml(input.portalUrl)}" style="color:#0A77A8;">${escapeHtml(host)}</a></li>
-        <li style="margin:0 0 6px;">Type your email: <strong>${escapeHtml(input.recipientEmail)}</strong></li>
-        <li style="margin:0 0 6px;">Press <strong>Send sign-in link</strong>, then open the email we send and press the button.</li>
+        <li style="margin:0 0 6px;">Type your email: <strong>${escapeHtml(input.recipientEmail)}</strong> and your password, then press <strong>Continue</strong>.</li>
+        <li style="margin:0 0 6px;">No password, or forgotten it? Tap <strong>Send me a sign-in link</strong> instead, press <strong>Send sign-in link</strong>, then open the email we send and press the button.</li>
       </ol>
       <p style="margin:0 0 16px;">Once you're in, you stay signed in on that phone, tablet or computer.</p>
       <p style="margin:0; font-size:13px; color:#7C8FA0;">Any trouble? Just reply to this email and we'll help.</p>
@@ -56,7 +57,8 @@ export function buildPortalInviteEmail(input: PortalInviteInput): { subject: str
 
   const text = toPlainText(
     `${greeting}\n\n${intro}\n\nSign in now (works once, within 24 hours, no password needed): ${input.signInLink}\n\n` +
-      `Signing in again later:\n1. Go to ${input.portalUrl}\n2. Type your email: ${input.recipientEmail}\n3. Press "Send sign-in link", then open the email we send and press the button.\n\n` +
+      `After you press the link you can create a password, so next time you just type your email and password.\n\n` +
+      `Signing in again later:\n1. Go to ${input.portalUrl}\n2. Type your email: ${input.recipientEmail} and your password, then press "Continue".\n3. No password, or forgotten it? Tap "Send me a sign-in link" instead, press "Send sign-in link", then open the email we send and press the button.\n\n` +
       `Once you're in, you stay signed in on that phone, tablet or computer.\n\nAny trouble? Just reply to this email and we'll help.`,
   );
 

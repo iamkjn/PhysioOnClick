@@ -10,6 +10,7 @@ import {
   signInWithEmailLink,
   signOut,
   type Auth,
+  type User,
   type UserCredential,
 } from "firebase/auth";
 
@@ -18,8 +19,34 @@ import { track } from "@/lib/analytics";
 import { ensurePatientRecord } from "@/lib/patient-account";
 import { validateEmail, LIMITS } from "@/lib/validation";
 import { forgetGuestBooking, guestBookingMatches } from "@/lib/guest-booking";
+import { SetPasswordForm } from "@/components/set-password-form";
 
-type Stage = "verifying" | "needs-email" | "signing-in" | "success" | "error";
+type Stage =
+  | "verifying"
+  | "needs-email"
+  | "signing-in"
+  | "success"
+  | "set-password"
+  | "password-saved"
+  | "error";
+
+/**
+ * True only when the server positively says this account has no password
+ * (an emailed-link-only account). Any failure keeps the old behaviour: no
+ * offer, straight on to the portal.
+ */
+async function accountLacksPassword(idToken: string): Promise<boolean> {
+  try {
+    const res = await fetch("/api/auth/password-status", {
+      headers: { Authorization: `Bearer ${idToken}` },
+    });
+    if (!res.ok) return false;
+    const data = (await res.json()) as { hasPassword?: unknown };
+    return data.hasPassword === false;
+  } catch {
+    return false;
+  }
+}
 
 // Only these in-app destinations are legitimate post-sign-in landing spots.
 // The emailed link (and its query string) is attacker-editable once it sits in an
@@ -73,6 +100,7 @@ function VerifyPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [linkSent, setLinkSent] = useState(false);
+  const [signedInUser, setSignedInUser] = useState<User | null>(null);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Computed once per render from the URL, shared by the auto-redirect and
   // the manual "Continue now" fallback so both always agree on where to go.
@@ -113,6 +141,14 @@ function VerifyPage() {
         headers: { Authorization: `Bearer ${idToken}` },
       }).catch(() => { /* non-blocking */ });
       track("login", { method: "magic_link", role: "patient" });
+      // Offer a password to people heading to the portal whose account has
+      // none, so next time they can sign in without waiting for an email.
+      // Booking / assessment flows go straight on.
+      if (destination === "/patient" && (await accountLacksPassword(idToken))) {
+        setSignedInUser(credential.user);
+        setStage("set-password");
+        return;
+      }
       setStage("success");
       redirectTimerRef.current = setTimeout(() => router.push(destination), 1500);
     } catch (error) {
@@ -241,6 +277,57 @@ function VerifyPage() {
                 }}
               >
                 Continue now
+              </button>
+            </div>
+          )}
+
+          {stage === "set-password" && signedInUser && (
+            <div>
+              <h1>You are in!</h1>
+              <p style={{ margin: "0.75rem 0 0" }}>
+                <strong>Would you like a password?</strong> Then next time you can sign in with your email and
+                password, without waiting for an email.
+              </p>
+              <div style={{ marginTop: "1.25rem" }}>
+                <SetPasswordForm
+                  user={signedInUser}
+                  submitLabel="Save my password"
+                  onSaved={() => setStage("password-saved")}
+                />
+              </div>
+              <button
+                type="button"
+                className="button secondary full-width"
+                style={{ marginTop: "0.75rem" }}
+                onClick={() => router.push(destination)}
+              >
+                Skip for now
+              </button>
+              <p className="muted" style={{ margin: "0.75rem 0 0", fontSize: "0.85rem" }}>
+                You can also do this later from your account page.
+              </p>
+            </div>
+          )}
+
+          {stage === "password-saved" && (
+            <div role="status" aria-live="polite">
+              <h1>Password saved</h1>
+              <p style={{ margin: "0.75rem 0 0" }}>Next time you want to sign in:</p>
+              <ol style={{ margin: "0.5rem 0 0", paddingLeft: "1.25rem" }}>
+                <li>Go to <strong>physioonclick.co.uk/patient</strong></li>
+                <li>Type your email{signedInUser?.email ? <> (<strong>{signedInUser.email}</strong>)</> : null} and your new password</li>
+                <li>Press <strong>Continue</strong></li>
+              </ol>
+              <p className="muted" style={{ margin: "0.75rem 0 0", fontSize: "0.85rem" }}>
+                Forgot it? Tap &ldquo;Send me a sign-in link&rdquo; on the same page instead.
+              </p>
+              <button
+                type="button"
+                className="button primary full-width"
+                style={{ marginTop: "1rem" }}
+                onClick={() => router.push(destination)}
+              >
+                Go to my page
               </button>
             </div>
           )}
