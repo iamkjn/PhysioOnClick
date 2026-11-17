@@ -30,6 +30,8 @@ export type CreateCheckoutInput = {
   extraLineItems?: Array<{ name: string; amountPence: number }>;
   successUrl: string;
   cancelUrl: string;
+  /** Replaces the booking metadata entirely (package payments: kind=package-payment). */
+  metadataOverride?: Record<string, string>;
 };
 
 export type CreateCheckoutResult =

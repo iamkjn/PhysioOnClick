@@ -16,7 +16,7 @@ export async function createStripeCheckout(
   form.set("mode", "payment");
   form.set("success_url", input.successUrl);
   form.set("cancel_url", input.cancelUrl);
-  form.set("customer_email", input.intent.email);
+  if (input.intent.email) form.set("customer_email", input.intent.email);
   form.set("line_items[0][quantity]", "1");
   form.set("line_items[0][price_data][currency]", "gbp");
   form.set("line_items[0][price_data][unit_amount]", String(input.amountPence));
@@ -28,7 +28,7 @@ export async function createStripeCheckout(
     form.set(`line_items[${n}][price_data][unit_amount]`, String(item.amountPence));
     form.set(`line_items[${n}][price_data][product_data][name]`, item.name);
   });
-  for (const [key, value] of Object.entries(intentToMetadata(input.intent))) {
+  for (const [key, value] of Object.entries(input.metadataOverride ?? intentToMetadata(input.intent))) {
     form.set(`metadata[${key}]`, value);
   }
 

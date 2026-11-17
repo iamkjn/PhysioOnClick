@@ -37,13 +37,15 @@ export async function getReceiptBySession(sessionId: string): Promise<ReceiptDat
     email?: string;
     calBookingUid?: string;
     visitType?: string;
+    /** Package payments (lib/package-payment-webhook) have no booking to read a name from. */
+    patientName?: string;
   };
   if (pay.status !== "paid" || !pay.invoiceNumber) return null;
 
   const service = pay.service ?? "";
   const serviceLabel = isBookServiceId(service) ? serviceLabelFor(service, pay.visitType) : service;
 
-  let patientName = "";
+  let patientName = formatPersonName(pay.patientName, "");
   let sessionDate: string | null = null;
   if (pay.calBookingUid) {
     const bookSnap = await db

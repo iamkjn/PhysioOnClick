@@ -28,6 +28,8 @@ import { AdminExerciseAssigner } from "@/components/admin-exercise-assigner";
 import { AdminAssessmentReview } from "@/components/admin-assessment-review";
 import { AdminPatientDocuments } from "@/components/admin-patient-documents";
 import { AdminPrintPlanButton } from "@/components/admin-print-plan-button";
+import { AdminTreatmentPackages } from "@/components/admin-treatment-packages";
+import { AdminExerciseDone } from "@/components/admin-exercise-done";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
@@ -45,6 +47,8 @@ interface PatientRecord {
   phoneNumber?: string;
   photoUrl?: string;
   dob?: string;
+  /** Account the admin created for a patient they manage directly. */
+  createdByAdmin?: boolean;
 }
 
 interface Person {
@@ -116,6 +120,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           phoneNumber: (data.phoneNumber as string) || undefined,
           photoUrl: (data.photoUrl as string) || undefined,
           dob: (data.dob as string) || undefined,
+          createdByAdmin: data.createdByAdmin === true,
         });
         // Only claim the "primary" slot if we're not already viewing a
         // deep-linked dependent (PersonSwitcher fills that name in once its
@@ -131,6 +136,8 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
   const [bookingsError, setBookingsError] = useState(false);
   const [cancelTarget, setCancelTarget] = useState<{ id: string; calBookingUid: string; label: string } | null>(null);
   const [cancelling, setCancelling] = useState<string | null>(null);
+  // Bumped after a visit is recorded from a treatment package, to reload bookings.
+  const [bookingsVersion, setBookingsVersion] = useState(0);
 
   useEffect(() => {
     let live = true;
@@ -166,7 +173,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
       }
     })();
     return () => { live = false; };
-  }, [patientUid, person.id]);
+  }, [patientUid, person.id, bookingsVersion]);
 
   async function handleCancelConfirm() {
     const target = cancelTarget;
@@ -270,7 +277,10 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
   const hasPendingSummary = (bookings ?? []).some(
     (b) => displayStatus(b) === "completed" && summaries[b.id] === null
   );
-  const canAssignExercises = hasSubmittedAssessment && hasPendingSummary;
+  // Patients the admin set up and manages directly (no online assessment or
+  // self-booking) can always have their plan edited here.
+  const managedByPhysio = patient?.createdByAdmin === true;
+  const canAssignExercises = managedByPhysio || (hasSubmittedAssessment && hasPendingSummary);
   const assignReadOnlyReason = !hasSubmittedAssessment
     ? "Read-only — no online assessment has been submitted yet. Assign exercises on the Recovery management screen if needed."
     : "Read-only — every completed session has a summary. Assign exercises while writing a session summary, or on the Recovery management screen.";
@@ -433,6 +443,14 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         )}
       </div>
 
+      {/* 3b. Physio-arranged treatment packages: record visits, payment link */}
+      <AdminTreatmentPackages
+        patientUid={patientUid}
+        personId={person.id}
+        patientName={activePersonName}
+        onVisitRecorded={() => setBookingsVersion((v) => v + 1)}
+      />
+
       {/* 4. Clinical assessments (history only — recording an assessment lives
           on /admin/recovery, not on this screen) */}
       <section>
@@ -482,6 +500,9 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           onFormsChange={setLinkedBookingIds}
         />
       </section>
+
+      {/* 6a. Tick off exercises done in a session with the physio */}
+      <AdminExerciseDone patientUid={patientUid} personId={person.id} />
 
       {/* 6. Assigned exercises */}
       {adminUid && (

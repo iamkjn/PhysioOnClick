@@ -666,6 +666,37 @@ export class Auth {
     return Boolean(user.passwordHash || user.passwordUpdatedAt);
   }
 
+  /** Looks up an Auth account by email. Returns null when none exists. */
+  async getUserByEmail(email: string): Promise<{ uid: string; email: string; displayName?: string } | null> {
+    const res = await apiFetch(`${IDENTITY_HOST}/projects/${this.projectId}/accounts:lookup`, {
+      method: "POST",
+      body: JSON.stringify({ email: [email] }),
+    });
+    if (!res.ok) throw new Error(`accounts:lookup failed (${res.status}): ${await res.text()}`);
+    const json = (await res.json()) as { users?: Array<{ localId?: string; email?: string; displayName?: string }> };
+    const user = json.users?.[0];
+    if (!user?.localId) return null;
+    return { uid: user.localId, email: user.email ?? email, ...(user.displayName ? { displayName: user.displayName } : {}) };
+  }
+
+  /**
+   * Creates a passwordless Auth account (the patient signs in later with an
+   * email link). Admin-only: the request is authorised by the service account.
+   */
+  async createUser(input: { email: string; displayName?: string }): Promise<{ uid: string }> {
+    const res = await apiFetch(`${IDENTITY_HOST}/projects/${this.projectId}/accounts`, {
+      method: "POST",
+      body: JSON.stringify({
+        email: input.email,
+        ...(input.displayName ? { displayName: input.displayName } : {}),
+      }),
+    });
+    if (!res.ok) throw new Error(`accounts create failed (${res.status}): ${await res.text()}`);
+    const json = (await res.json()) as { localId?: string };
+    if (!json.localId) throw new Error("accounts create returned no uid");
+    return { uid: json.localId };
+  }
+
   async generateSignInWithEmailLink(
     email: string,
     settings: { url: string; handleCodeInApp?: boolean },

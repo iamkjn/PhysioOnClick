@@ -111,6 +111,7 @@ All `library_*` events go through the typed `trackLibraryEvent()` wrapper
 | `app/book/page.tsx` | `page_view`. `booking_step_service_done` `{ service_id, focus_areas }` and `booking_confirmed` `{ service_id, for_dependent }` from `components/booking-flow.tsx`, the custom 3-step service → time → confirmation flow. |
 | `app/book/success/page.tsx` | `page_view` only (post-payment landing page). |
 | `app/book/receipt/[session]/page.tsx` | `page_view` only (printable receipt, reachable by the unguessable Stripe session id). |
+| `app/pay/[token]/page.tsx` | `page_view` only (package payment page for physio-arranged plans, reachable by the unguessable payment-request token). |
 | `app/auth/verify/page.tsx` | `page_view`. `login` `{ method: "magic_link", role: "patient" }` on successful magic-link verification — the passwordless sign-in used both standalone and to link guest bookings to an account. |
 | `app/auth/verify-email/page.tsx` | `page_view` only. Confirms a password account's email (link from `/api/auth/verify-email`) so carer access can unlock; no custom events. |
 

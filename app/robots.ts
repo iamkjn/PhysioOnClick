@@ -22,6 +22,7 @@ export default function robots(): MetadataRoute.Robots {
         "/patient",
         "/api",
         "/auth",
+        "/pay",
         // The generated SVG image routes (/blog-images, /exercise-og, ...) are
         // deliberately NOT disallowed: they carry an X-Robots-Tag: noindex
         // header (next.config.mjs), and Google has to be able to crawl them

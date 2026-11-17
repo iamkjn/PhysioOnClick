@@ -6,6 +6,7 @@ import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { guestBookingOwnerFields } from "@/lib/guest-booking";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { metadataToIntent } from "@/lib/payments";
+import { settlePackagePayment } from "@/lib/package-payment-webhook";
 import { verifyStripeSignature } from "@/lib/payments/stripe";
 import { bookServiceFor, calSlugFor, serviceLabelFor } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
@@ -102,6 +103,13 @@ export async function POST(request: Request) {
   if (existing.exists) return NextResponse.json({ received: true }, { status: 200 });
 
   const session = event.data.object;
+
+  // Physio-arranged package paid from a /pay/{token} link: no Cal booking.
+  if (session.metadata?.kind === "package-payment") {
+    await settlePackagePayment(db, paymentRef, session);
+    return NextResponse.json({ received: true }, { status: 200 });
+  }
+
   const intent = metadataToIntent(session.metadata);
   if (!intent) {
     console.error("Stripe webhook missing booking metadata", session.id);

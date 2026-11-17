@@ -258,6 +258,42 @@ export async function setExercisesCompletion(
   await setDoc(ref, { completions, loggedAt: serverTimestamp() }, { merge: true });
 }
 
+// Admin: read one day's exercise log (any date, not just today) — backs the
+// "Exercises done with the physio" panel on the admin patient page.
+export async function getExerciseLogForDate(
+  uid: string,
+  personId: string,
+  dateKey: string
+): Promise<{ completions: Record<string, boolean>; physioMarked: Record<string, boolean> }> {
+  const snap = await getDoc(doc(personBase(uid, personId), "exerciseLogs", dateKey));
+  const data = snap.exists() ? snap.data() : {};
+  return {
+    completions: (data.completions as Record<string, boolean>) ?? {},
+    physioMarked: (data.physioMarked as Record<string, boolean>) ?? {},
+  };
+}
+
+// Admin: mark exercises done/not done on a given day because the patient did
+// them in a session with the physio. Writes the same `completions` map the
+// patient portal writes (so streaks and adherence count it) plus a
+// `physioMarked` map recording which ticks came from the physio. Admin-only
+// by firestore.rules (carers may only touch completions/loggedAt).
+export async function setExerciseCompletionByPhysio(
+  uid: string,
+  personId: string,
+  dateKey: string,
+  changes: Record<string, boolean>
+): Promise<void> {
+  const ref = doc(personBase(uid, personId), "exerciseLogs", dateKey);
+  const physioMarked: Record<string, boolean> = {};
+  for (const [id, done] of Object.entries(changes)) physioMarked[id] = done;
+  await setDoc(
+    ref,
+    { completions: changes, physioMarked, loggedAt: serverTimestamp() },
+    { merge: true }
+  );
+}
+
 export async function getExerciseLogs(
   uid: string,
   personId: string,

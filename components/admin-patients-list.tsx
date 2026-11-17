@@ -10,6 +10,7 @@ import { formatPersonName } from "@/lib/name-format";
 import { Avatar } from "@/components/avatar";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
+import { AdminAddPatient } from "@/components/admin-add-patient";
 
 type PersonKind = "primary" | "dependent";
 
@@ -131,6 +132,8 @@ export function AdminPatientsList() {
           </div>
         )}
       </section>
+
+      <AdminAddPatient />
 
       <div className="admin-directory-toolbar">
         <input
