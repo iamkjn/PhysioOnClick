@@ -34,6 +34,8 @@ export interface BookingRecord {
   patientId?: string;
   /** "home" for a Glasgow-area home visit; absent (= video) otherwise. */
   visitType?: "video" | "home";
+  /** Session added by the physio by hand: only the date matters, so no time is ever shown. */
+  dateOnly?: boolean;
   homeVisitAddress?: string;
 }
 
@@ -60,6 +62,11 @@ function resolveSessionDate(data: Record<string, unknown>): Date {
     if (!Number.isNaN(d.getTime())) return d;
   }
   return new Date(0);
+}
+
+/** Physio-added sessions (source "admin-manual") record a date only. */
+export function isDateOnlyBooking(data: Record<string, unknown>): boolean {
+  return data.dateOnly === true || data.source === "admin-manual";
 }
 
 function resolveAssessmentCompletedAt(data: Record<string, unknown>): Date | null {
@@ -91,6 +98,7 @@ function toBookingRecord(id: string, data: Record<string, unknown>): BookingReco
     bookedBy: typeof data.bookedBy === "string" ? data.bookedBy : undefined,
     patientId: typeof data.patientId === "string" ? data.patientId : undefined,
     visitType: data.visitType === "home" || data.visitType === "video" ? data.visitType : undefined,
+    ...(isDateOnlyBooking(data) ? { dateOnly: true } : {}),
     homeVisitAddress:
       data.visitType === "home" && typeof data.homeVisitAddress === "string" ? data.homeVisitAddress : undefined,
   };

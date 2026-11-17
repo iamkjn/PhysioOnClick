@@ -1,6 +1,8 @@
 // components/admin-session-view.tsx
 "use client";
 
+import { formatSessionWhen } from "@/lib/session-when";
+
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getBooking, getPatientBookings, displayBookingStatus, type BookingRecord } from "@/lib/patient-bookings";
@@ -23,17 +25,6 @@ const STATUS_CLASS: Record<BookingRecord["status"], string> = {
   completed: "dashboard-status-pill status-confirmed",
   cancelled: "dashboard-status-pill status-cancelled",
 };
-
-function formatDateTime(date: Date) {
-  return date.toLocaleString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 // Standalone deep link into a single session — reached from the admin
 // notification bell and the "Upcoming Sessions" overview (both only carry a
@@ -119,7 +110,7 @@ export function AdminSessionView({ bookingId }: Props) {
           <span className={STATUS_CLASS[displayBookingStatus(booking)]}>{STATUS_LABEL[displayBookingStatus(booking)]}</span>
         </div>
         <p className="muted" style={{ margin: 0, fontSize: "var(--text-sm)" }}>
-          {formatDateTime(booking.sessionDate)}
+          {formatSessionWhen(booking, { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
         </p>
         <div style={{ display: "flex", gap: "var(--space-4)", flexWrap: "wrap" }}>
           {booking.bookedBy && booking.patientId && (

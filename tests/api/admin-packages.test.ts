@@ -92,7 +92,7 @@ describe("admin packages", () => {
   it("records visits: assessment first, then follow-ups, no review email, completes at the end", async () => {
     const id = await create();
     for (const [i, date] of ["2026-11-15", "2026-11-16", "2026-11-17"].entries()) {
-      const res = await VISIT(req(`/api/admin/packages/${id}/visit`, { date, time: "12:00", note: i === 0 ? "Went well" : "" }), ctx(id));
+      const res = await VISIT(req(`/api/admin/packages/${id}/visit`, { date, note: i === 0 ? "Went well" : "" }), ctx(id));
       expect(res.status).toBe(201);
     }
     const bookings = mem.all("bookings").map(([, d]) => d);
@@ -102,7 +102,10 @@ describe("admin packages", () => {
       "Follow-Up (home visit)",
     ]);
     expect(bookings.every((b) => (b.reminders as { reviewRequestSent: boolean }).reviewRequestSent === true)).toBe(true);
-    expect(bookings[0]).toMatchObject({ bookedBy: UID, source: "admin-manual", packageId: id, packageSessionNumber: 1, visitType: "home" });
+    expect(bookings[0]).toMatchObject({
+      bookedBy: UID, source: "admin-manual", dateOnly: true, packageId: id, packageSessionNumber: 1, visitType: "home",
+      appointmentDate: "2026-11-15", appointmentTime: "18:00", appointmentLabel: "Sunday, 15 November 2026",
+    });
     expect(mem.get(`sessionPackages/${id}`)).toMatchObject({ usedSessions: 3, remainingSessions: 0, status: "complete" });
     const notes = mem.all("admin/clinicalHistory/entries").map(([, d]) => d);
     expect(notes).toHaveLength(1);

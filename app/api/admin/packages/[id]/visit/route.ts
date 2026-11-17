@@ -5,7 +5,9 @@ import { cleanText, loadManualPackage, noStore } from "@/lib/admin-packages-serv
 import { serviceLabelFor } from "@/lib/cal-services";
 import { isDateKey, londonWallTimeToDate } from "@/lib/treatment-packages";
 
-// Admin-only. Records that a visit in a physio-arranged package happened:
+// Admin-only. Records that a visit in a physio-arranged package happened.
+// Only the DATE matters for these visits: the time is stored as 18:00 for the
+// record and never shown (dateOnly: true).
 // writes a `bookings` doc for the date (shows as Completed once past), counts
 // it against the package and, optionally, saves a private session note.
 //
@@ -13,7 +15,7 @@ import { isDateKey, londonWallTimeToDate } from "@/lib/treatment-packages";
 // Trustpilot invite job never emails these patients, and no followUps /
 // sessionSummaries are created (those notify the patient).
 
-const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+const RECORD_TIME = "18:00";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const gate = await requireAdminRequest(request);
@@ -27,10 +29,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "Bad request" }, { status: 400 });
   }
   const date = cleanText(body.date, 10);
-  const time = cleanText(body.time, 5) || "12:00";
+  const time = RECORD_TIME;
   const note = cleanText(body.note, 4000);
   if (!isDateKey(date)) return NextResponse.json({ error: "Choose the visit date." }, { status: 400 });
-  if (!TIME_RE.test(time)) return NextResponse.json({ error: "Choose a valid time." }, { status: 400 });
 
   const loaded = await loadManualPackage(id);
   if (!loaded.ok) return loaded.response;
@@ -57,7 +58,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       day: "numeric",
       month: "long",
       year: "numeric",
-    }) + ` at ${time}`;
+    });
 
   const patientName = String(data.patientName ?? "");
   const bookingRef = await db.collection("bookings").add({
@@ -72,6 +73,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     notes: `Package session ${sessionNumber} of ${total}`,
     status: "upcoming",
     source: "admin-manual",
+    dateOnly: true,
     paid: data.paymentStatus === "paid",
     amountPaidPence: 0,
     paymentProvider: "package",

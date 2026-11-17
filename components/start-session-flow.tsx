@@ -1,5 +1,7 @@
 "use client";
 
+import { formatSessionWhen } from "@/lib/session-when";
+
 // components/start-session-flow.tsx
 // Focused clinician workspace: patient assessment -> screening -> self-check
 // tests -> clinical impression -> exercise plan -> session summary. Every
@@ -947,13 +949,7 @@ export function StartSessionFlow({ bookingId }: Props) {
           <p>
             {booking.service}
             <span aria-hidden="true"> · </span>
-            {booking.sessionDate.toLocaleDateString("en-GB", {
-              weekday: "short",
-              day: "numeric",
-              month: "short",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {formatSessionWhen(booking, { weekday: "short", day: "numeric", month: "short" })}
           </p>
         </div>
         <div className="session-workspace__save-state">
@@ -1010,7 +1006,7 @@ export function StartSessionFlow({ bookingId }: Props) {
                   patientUid={patientUid}
                   personId={personId}
                   form={form}
-                  bookings={[{ id: booking.id, service: booking.service, sessionDate: booking.sessionDate }]}
+                  bookings={[{ id: booking.id, service: booking.service, sessionDate: booking.sessionDate, dateOnly: booking.dateOnly }]}
                   forceOpen
                   showExerciseSuggestions={false}
                   onSaved={(updated) => {

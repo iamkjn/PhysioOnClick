@@ -240,7 +240,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
   // which (combined with AdminAssessmentReview's own derived-forms memo)
   // caused an infinite render loop. See admin-assessment-review.tsx.
   const assessmentBookings = useMemo(
-    () => bookings?.map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status })),
+    () => bookings?.map((b) => ({ id: b.id, service: b.service, sessionDate: b.sessionDate, status: b.status, dateOnly: b.dateOnly })),
     [bookings]
   );
   const awaitingAssessment = (bookings ?? []).some(

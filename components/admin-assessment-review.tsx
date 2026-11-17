@@ -1,5 +1,7 @@
 "use client";
 
+import { formatSessionWhen } from "@/lib/session-when";
+
 import { useEffect, useMemo, useState } from "react";
 import { auth } from "@/lib/firebase";
 import {
@@ -25,6 +27,7 @@ interface LinkedBooking {
   service: string;
   sessionDate: Date;
   status?: "upcoming" | "completed" | "cancelled";
+  dateOnly?: boolean;
 }
 
 interface Props {
@@ -90,17 +93,6 @@ function formatDate(date: Date | null) {
     day: "numeric",
     month: "short",
     year: "numeric",
-  });
-}
-
-function formatDateTime(date: Date | null) {
-  if (!date) return "Date not recorded";
-  return date.toLocaleString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
   });
 }
 
@@ -350,7 +342,7 @@ export function AdminAssessmentReviewItem({
               <>
                 {" - "}
                 {linkedBooking
-                  ? `Linked to ${linkedBooking.service} appointment on ${formatDateTime(linkedBooking.sessionDate)}`
+                  ? `Linked to ${linkedBooking.service} appointment on ${formatSessionWhen(linkedBooking)}`
                   : `Linked booking ${form.bookingId}`}
               </>
             )}

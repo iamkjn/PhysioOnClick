@@ -489,11 +489,10 @@ function VisitForm({
   onSubmit,
   onCancel,
 }: {
-  onSubmit: (body: { date: string; time: string; note: string }) => Promise<void>;
+  onSubmit: (body: { date: string; note: string }) => Promise<void>;
   onCancel: () => void;
 }) {
   const [date, setDate] = useState(todayKey());
-  const [time, setTime] = useState("12:00");
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -503,7 +502,7 @@ function VisitForm({
     setSaving(true);
     setError(null);
     try {
-      await onSubmit({ date, time, note });
+      await onSubmit({ date, note });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not record the visit.");
     } finally {
@@ -515,7 +514,6 @@ function VisitForm({
     <form className="admin-package-form stack" onSubmit={(e) => void submit(e)}>
       <div className="admin-package-form__grid">
         <label>Visit date<input className="input" type="date" required value={date} onChange={(e) => setDate(e.target.value)} /></label>
-        <label>Time<input className="input" type="time" required value={time} onChange={(e) => setTime(e.target.value)} /></label>
         <label className="admin-package-form__wide">
           Private session note (optional, admin only)
           <textarea className="input" rows={3} maxLength={4000} value={note} onChange={(e) => setNote(e.target.value)} />

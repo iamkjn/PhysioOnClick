@@ -1,6 +1,8 @@
 // components/admin-upcoming-sessions.tsx
 "use client";
 
+import { formatSessionWhen } from "@/lib/session-when";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getUpcomingBookingsAcrossPatients, type BookingRecord } from "@/lib/patient-bookings";
@@ -101,12 +103,7 @@ export function AdminUpcomingSessions() {
                       ) : null}
                     </td>
                     <td style={{ fontFamily: "var(--font-sans)" }}>
-                      {b.sessionDate.toLocaleString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {formatSessionWhen(b, { day: "numeric", month: "short" })}
                     </td>
                     <td style={{ fontFamily: "var(--font-sans)", fontWeight: soon ? 700 : 400, color: soon ? "var(--color-error)" : undefined }}>
                       {timeUntil(b.sessionDate, now)}
