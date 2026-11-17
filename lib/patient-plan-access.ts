@@ -4,6 +4,7 @@
 // firestore.rules isCarerOf and /api/patient/carer-links).
 import { getAdminAuth, getAdminDb, type DecodedIdToken } from "@/lib/firebase-admin";
 import { normalizeCarerEmail, readCarerEmails } from "@/lib/carer-access";
+import { isPhysioManagedAccount } from "@/lib/treatment-packages";
 
 export const OWNER_RE = /^[A-Za-z0-9_-]{6,128}$/;
 
@@ -29,7 +30,7 @@ export async function resolvePlanAccess(
   const snap = await db.collection("patients").doc(ownerUid).get();
   // Payment for a plan only applies to accounts the admin created: customers
   // who sign up themselves pay when they book.
-  const managedByPhysio = snap.exists && snap.data()?.createdByAdmin === true;
+  const managedByPhysio = snap.exists && isPhysioManagedAccount(snap.data());
   if (decoded.uid === ownerUid) return { ok: true, decoded, db, managedByPhysio };
 
   const email = normalizeCarerEmail(decoded.email);

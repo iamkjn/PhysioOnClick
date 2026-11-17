@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isPhysioManagedAccount,
   daysInclusive,
   formatDateRange,
   isDateKey,
@@ -39,6 +40,17 @@ describe("dates", () => {
   it("converts London wall time in GMT and BST", () => {
     expect(londonWallTimeToDate("2026-11-16", "12:00").toISOString()).toBe("2026-11-16T12:00:00.000Z");
     expect(londonWallTimeToDate("2026-07-01", "12:00").toISOString()).toBe("2026-07-01T11:00:00.000Z");
+  });
+});
+
+describe("isPhysioManagedAccount", () => {
+  it("accepts true, an admin email (older hand-made records) or managedByPhysio; rejects self sign-ups", () => {
+    expect(isPhysioManagedAccount({ createdByAdmin: true })).toBe(true);
+    expect(isPhysioManagedAccount({ createdByAdmin: "hello@physioonclick.co.uk" })).toBe(true);
+    expect(isPhysioManagedAccount({ managedByPhysio: true })).toBe(true);
+    expect(isPhysioManagedAccount({ authProvider: "password" })).toBe(false);
+    expect(isPhysioManagedAccount({ createdByAdmin: "" })).toBe(false);
+    expect(isPhysioManagedAccount(undefined)).toBe(false);
   });
 });
 

@@ -9,6 +9,17 @@ import { sessionPricePence } from "@/lib/home-visit-pricing";
 import type { VisitType } from "@/lib/home-visit";
 
 export const MAX_PACKAGE_SESSIONS = 60;
+
+/**
+ * Was this patient account set up by the practice (not a self sign-up)?
+ * `createdByAdmin` is `true` from the Add patient form, but older records made
+ * by hand store the admin's email there instead, so any non-empty value counts.
+ */
+export function isPhysioManagedAccount(data: Record<string, unknown> | undefined | null): boolean {
+  if (!data) return false;
+  const flag = data.createdByAdmin;
+  return data.managedByPhysio === true || flag === true || (typeof flag === "string" && flag.trim() !== "");
+}
 export const MAX_PACKAGE_PRICE_PENCE = 1_000_000; // £10,000 sanity cap
 
 export type PackagePaymentStatus = "unpaid" | "link-ready" | "link-sent" | "paid";

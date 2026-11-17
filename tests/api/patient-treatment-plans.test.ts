@@ -31,7 +31,7 @@ function pay(body: Record<string, unknown> = {}) {
 
 beforeEach(() => {
   mem = memoryFirestore({
-    [`patients/${OWNER}`]: { displayName: "Edwin Argo", email: "pat@example.com", carerEmails: ["carer@example.com"], createdByAdmin: true },
+    [`patients/${OWNER}`]: { displayName: "Edwin Argo", email: "pat@example.com", carerEmails: ["carer@example.com"], createdByAdmin: "hello@physioonclick.co.uk" },
     "sessionPackages/pkg0000001": {
       ownerUid: OWNER, patientId: OWNER, patientName: "Edwin Argo", email: "pat@example.com", manual: true,
       title: "Home visit treatment plan (7 visits)", visitType: "home", totalSessions: 7, usedSessions: 3,

@@ -30,7 +30,7 @@ import { AdminPatientDocuments } from "@/components/admin-patient-documents";
 import { AdminPrintPlanButton } from "@/components/admin-print-plan-button";
 import { AdminTreatmentPackages } from "@/components/admin-treatment-packages";
 import { formatPounds } from "@/lib/home-visit-pricing";
-import type { TreatmentPackage } from "@/lib/treatment-packages";
+import { isPhysioManagedAccount, type TreatmentPackage } from "@/lib/treatment-packages";
 import { Wallet } from "lucide-react";
 import { AdminExerciseDone } from "@/components/admin-exercise-done";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -123,7 +123,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           phoneNumber: (data.phoneNumber as string) || undefined,
           photoUrl: (data.photoUrl as string) || undefined,
           dob: (data.dob as string) || undefined,
-          createdByAdmin: data.createdByAdmin === true,
+          createdByAdmin: isPhysioManagedAccount(data),
         });
         // Only claim the "primary" slot if we're not already viewing a
         // deep-linked dependent (PersonSwitcher fills that name in once its
