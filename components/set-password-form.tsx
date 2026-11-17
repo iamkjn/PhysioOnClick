@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FirebaseError } from "firebase/app";
 import { updatePassword, type User } from "firebase/auth";
 import { PasswordInput } from "@/components/password-input";
+import { auth } from "@/lib/firebase";
 import { LIMITS } from "@/lib/validation";
 
 export const MIN_PASSWORD_LENGTH = 8;
@@ -56,7 +57,11 @@ export function SetPasswordForm({
     setSaving(true);
     setError("");
     try {
-      await updatePassword(user, password);
+      // Update the live session's user, not a possibly stale instance: changing
+      // a password revokes every other refresh token for the account, so
+      // updating a different User object would sign this browser out.
+      const live = auth?.currentUser;
+      await updatePassword(live && live.uid === user.uid ? live : user, password);
       setPassword("");
       setConfirm("");
       onSaved();
