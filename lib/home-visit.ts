@@ -28,6 +28,22 @@ export const HOME_VISIT_AREA_LABEL =
 
 export const HOME_VISIT_HINT = `Home visits cover ${HOME_VISIT_AREA_LABEL}.`;
 
+/** Main towns inside the covered area, for copy and the schema `areaServed`. */
+export const HOME_VISIT_TOWNS = [
+  "Glasgow",
+  "Paisley",
+  "Hamilton",
+  "Kilmarnock",
+  "Ayr",
+  "East Kilbride",
+  "Motherwell",
+  "Greenock",
+  "Falkirk",
+  "Stirling",
+  "Livingston",
+  "Dunfermline",
+] as const;
+
 export const HOME_ADDRESS_MAX = 120;
 export const HOME_POSTCODE_MAX = 10;
 

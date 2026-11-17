@@ -125,7 +125,7 @@ export default async function HomePage() {
                 show them how to help with your exercises between visits, and your written plan comes by
                 email afterwards, ready to share.
               </p>
-              <Link href="/services/neurological-rehabilitation" prefetch>Neuro rehab at home →</Link>
+              <Link href="/services/neurological-rehabilitation" prefetch>Neuro physio at home in Glasgow →</Link>
             </article>
           </Reveal>
         </div>

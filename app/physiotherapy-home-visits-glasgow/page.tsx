@@ -138,7 +138,7 @@ export default function HomeVisitsGlasgowPage() {
               <Link href="/online-physiotherapy-for/hip-replacement-rehab">hip replacement</Link>, once your surgical team says you are ready
             </li>
             <li>
-              <Link href="/services/neurological-rehabilitation">Neurological rehabilitation</Link> such as stroke or
+              <Link href="/services/neurological-rehabilitation">Neurological physiotherapy at home</Link> for stroke or
               Parkinson&rsquo;s, with a family member or carer welcome to join and learn how to help
             </li>
             <li>Balance, mobility and falls-risk concerns, practised in your own home</li>

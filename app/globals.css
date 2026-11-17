@@ -17338,6 +17338,26 @@ textarea:focus {
   margin: 0;
 }
 
+/* A link inside running text. Links inherit the text colour sitewide, so
+   without the underline a reader can't tell this one is clickable. */
+.inline-link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.inline-link:hover,
+.inline-link:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+.service-local-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 /* ──────────────────────────────────────────────────────────────
    Exercise 3D anatomy (exercise detail page)
    .exlib-hero-media  — picture <-> 3D switch in the hero

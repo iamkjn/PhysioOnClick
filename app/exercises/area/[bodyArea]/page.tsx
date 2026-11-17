@@ -130,6 +130,15 @@ export default async function ExerciseAreaPage({
           a shared house style and clinically reviewed by an HCPC-registered
           physiotherapist.
         </p>
+        {area.key === "neuro" ? (
+          <p data-neuro-local>
+            Near Glasgow?{" "}
+            <Link className="inline-link" href="/services/neurological-rehabilitation">
+              Neurological physiotherapy at home in Glasgow
+            </Link>{" "}
+            runs on weekday evenings and weekends, so family can join.
+          </p>
+        ) : null}
       </section>
 
       <section className="exlib-index-section">

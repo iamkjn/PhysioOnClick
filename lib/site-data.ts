@@ -30,6 +30,10 @@ export type Service = {
   /** Search-facing H1 when it should differ from `title` (which stays the short
    *  name used in cards, breadcrumbs and booking). Falls back to `title`. */
   headline?: string;
+  /** A "home visits across Glasgow" section for services people search for by
+   *  place ("neurological physiotherapy glasgow"). The page fills in the area,
+   *  towns, hours, prices and physiotherapist from their single sources. */
+  glasgowHomeVisits?: { heading: string; intro: string };
   seoTitle: string;
   seoDescription: string;
 };
@@ -307,9 +311,16 @@ export const services: Service[] = [
       }
     ],
     headline: "Neurological Physiotherapy at Home in Glasgow, and Online",
-    seoTitle: "Neuro Physio at Home in Glasgow & Online | PhysioOnClick",
+    glasgowHomeVisits: {
+      heading: "Neuro physiotherapy at home across Glasgow",
+      intro:
+        "For stroke, Parkinson's, MS, FND and balance problems, your physiotherapist comes to you, so you practise on your own stairs, in your own chair and on the route to your front door. A family member or carer is welcome to join and learn how to support practice between sessions. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy."
+    },
+    // Leads with the phrase most people search ("neurological physiotherapy
+    // glasgow", GSC Aug-Nov 2026); "neuro physio" variants match it anyway.
+    seoTitle: "Neurological Physiotherapy Glasgow | Home Visits | PhysioOnClick",
     seoDescription:
-      "Neurological physiotherapy at home in Glasgow, plus video sessions UK-wide: stroke rehabilitation, Parkinson's, MS, FND, balance and mobility."
+      "Neuro physio at home across Glasgow, on weekday evenings and weekends: stroke, Parkinson's, MS, FND and balance. Family welcome. Video sessions UK-wide."
   },
   {
     slug: "paediatric-physiotherapy",

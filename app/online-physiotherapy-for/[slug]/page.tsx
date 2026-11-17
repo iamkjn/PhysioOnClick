@@ -154,6 +154,15 @@ export default async function OnlinePhysioLandingPage({
           all in, and can include hands-on treatment (manual therapy) where appropriate. Video sessions cannot
           include hands-on treatment.
           {homeVisitClearance(page.serviceSlug) ? <> {homeVisitClearance(page.serviceSlug)}</> : null}
+          {page.serviceSlug === "neurological-rehabilitation" ? (
+            <>
+              {" "}More on{" "}
+              <Link className="inline-link" href="/services/neurological-rehabilitation">
+                neurological physiotherapy at home in Glasgow
+              </Link>
+              .
+            </>
+          ) : null}
         </p>
 
         <section>

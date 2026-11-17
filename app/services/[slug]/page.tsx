@@ -10,6 +10,9 @@ import { getCondition } from "@/lib/exercise-library";
 import { getOnlinePhysioPage } from "@/lib/online-physio-pages";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { founder, initialAssessmentPrice, pricing, services } from "@/lib/site-data";
+import { APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
+import { HOME_VISIT_AREA_LABEL, HOME_VISIT_TOWNS } from "@/lib/home-visit";
+import { homeVisitPrices } from "@/lib/home-visit-pricing";
 import { breadcrumbs, serviceSchema } from "@/lib/structured-data";
 import { formatCurrency } from "@/lib/utils";
 import { topicForPath } from "@/lib/practice-contact";
@@ -199,6 +202,48 @@ export default async function ServiceDetailPage({
           </article>
         </Reveal>
       </section>
+
+      {service.glasgowHomeVisits ? (
+        <section className="page-section stack simple-services-list" aria-labelledby="glasgow-home-visits">
+          <Reveal direction="up">
+            <div className="section-heading">
+              <h2 id="glasgow-home-visits">{service.glasgowHomeVisits.heading}</h2>
+              <p>{service.glasgowHomeVisits.intro}</p>
+            </div>
+          </Reveal>
+          <ul className="service-approach-list">
+            <li>
+              <strong>Where:</strong> {HOME_VISIT_AREA_LABEL}. Towns we visit include{" "}
+              {HOME_VISIT_TOWNS.slice(1, -1).join(", ")} and {HOME_VISIT_TOWNS.at(-1)}.
+            </li>
+            <li>
+              <strong>When:</strong> {APPOINTMENT_HOURS_SENTENCE} {HOME_VISIT_NOTICE_SENTENCE}
+            </li>
+            <li>
+              <strong>Price:</strong> {homeVisitPrices.initial} for the home assessment and{" "}
+              {homeVisitPrices.followUp} for a follow-up, all in. A home visit can include hands-on treatment
+              (manual therapy) where appropriate.
+            </li>
+            <li>
+              <strong>Who visits:</strong>{" "}
+              <Link className="inline-link" href="/about">{founder.name}</Link>, {founder.credentials[0]}.
+            </li>
+          </ul>
+          <div className="service-local-actions">
+            <TrackedBookLink
+              className="button primary"
+              href="/book?visit=home"
+              serviceSlug={service.slug}
+              source="service_detail_glasgow_home_visits"
+            >
+              Book a home visit
+            </TrackedBookLink>
+            <Link className="inline-link" href="/physiotherapy-home-visits-glasgow">
+              How home visits in Glasgow work
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
       <ServiceReviews reviews={curatedReviewsForService(service.slug)} />
 

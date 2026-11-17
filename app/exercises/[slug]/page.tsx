@@ -379,6 +379,17 @@ export default async function ExerciseDetailPage({
             <strong>Not getting better, or not sure this is the right exercise for you?</strong>{" "}
             A £{initialAssessmentPrice} online assessment with an HCPC-registered
             physiotherapist gets you a plan matched to your condition and stage.
+            {/* Neuro readers are the site's main local search audience
+                ("neurological physiotherapy glasgow"), so point them at it. */}
+            {exercise.clinicalArea === "neuro" ? (
+              <>
+                {" "}Near Glasgow?{" "}
+                <Link className="inline-link" href="/services/neurological-rehabilitation" data-neuro-local>
+                  Neurological physiotherapy at home in Glasgow
+                </Link>{" "}
+                runs on weekday evenings and weekends, so family can join.
+              </>
+            ) : null}
           </p>
           <TrackedBookLink
             className="button primary"

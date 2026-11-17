@@ -22,7 +22,7 @@ import { stripLinks } from "@/lib/content-types";
 import { founder, pricing, services, withPrices } from "@/lib/site-data";
 import { serviceLabelFor } from "@/lib/cal-services";
 import { sessionPricePence } from "@/lib/home-visit-pricing";
-import type { VisitType } from "@/lib/home-visit";
+import { HOME_VISIT_TOWNS, type VisitType } from "@/lib/home-visit";
 // Import the conditions array directly, not `getCondition` from the
 // `@/lib/exercise-library` barrel: this module is pulled into app/layout.tsx
 // (siteEntityGraph), so a value import from the barrel would drag the whole
@@ -163,20 +163,7 @@ export function practiceNode() {
         "@type": "Service",
         name: "Home visit physiotherapy",
         serviceType: "Home visit physiotherapy",
-        areaServed: [
-          { "@type": "City", name: "Glasgow" },
-          { "@type": "City", name: "Paisley" },
-          { "@type": "City", name: "Hamilton" },
-          { "@type": "City", name: "Kilmarnock" },
-          { "@type": "City", name: "Ayr" },
-          { "@type": "City", name: "East Kilbride" },
-          { "@type": "City", name: "Motherwell" },
-          { "@type": "City", name: "Greenock" },
-          { "@type": "City", name: "Falkirk" },
-          { "@type": "City", name: "Stirling" },
-          { "@type": "City", name: "Livingston" },
-          { "@type": "City", name: "Dunfermline" }
-        ],
+        areaServed: HOME_VISIT_TOWNS.map((name) => ({ "@type": "City", name })),
         url: absoluteUrl("/glasgow-physiotherapist")
       }
     },

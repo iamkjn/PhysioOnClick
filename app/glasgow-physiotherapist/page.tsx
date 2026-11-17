@@ -122,7 +122,7 @@ export default function GlasgowPage() {
             </li>
             <li>
               <Link href="/services/neurological-rehabilitation" prefetch>
-                Neurological physiotherapy
+                Neurological physiotherapy in Glasgow
               </Link>{" "}
               by video or home visit, for stroke, Parkinson&rsquo;s and balance problems. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy.
             </li>
