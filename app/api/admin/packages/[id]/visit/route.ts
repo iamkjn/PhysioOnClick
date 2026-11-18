@@ -61,7 +61,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     });
 
   const patientName = String(data.patientName ?? "");
-  const bookingRef = await db.collection("bookings").add({
+  // A visit planned in advance for this date (POST .../plan) becomes the
+  // recorded one, so it never shows twice.
+  const plannedSnap = await db.collection("bookings").where("packageId", "==", id).get();
+  const planned = plannedSnap.docs.find((d) => d.data().plannedVisit === true && d.data().appointmentDate === date);
+  const fields = {
     fullName: patientName,
     email: String(data.email ?? "").toLowerCase(),
     phone: "",
@@ -88,8 +92,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     packageTotalSessions: total,
     reminders: { reviewRequestSent: true },
     recordedBy: gate.decoded.email ?? gate.decoded.uid,
-    createdAt: FieldValue.serverTimestamp(),
-  });
+  };
+  let bookingRef: { id: string };
+  if (planned) {
+    await planned.ref.set({ ...fields, plannedVisit: false, recordedAt: FieldValue.serverTimestamp() }, { merge: true });
+    bookingRef = planned.ref;
+  } else {
+    bookingRef = await db.collection("bookings").add({ ...fields, createdAt: FieldValue.serverTimestamp() });
+  }
 
   await db.collection("sessionPackages").doc(id).update({
     usedSessions: sessionNumber,

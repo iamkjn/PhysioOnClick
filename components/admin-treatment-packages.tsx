@@ -2,7 +2,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CalendarCheck, Copy, Link2, Mail, Package, Pencil, Plus } from "lucide-react";
+import { CalendarCheck, CalendarPlus, Copy, Link2, Mail, Package, Pencil, Plus } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { formatPounds } from "@/lib/home-visit-pricing";
 import {
@@ -88,6 +88,7 @@ export function AdminTreatmentPackages({ patientUid, personId, patientName, onVi
   const [loadError, setLoadError] = useState(false);
   const [editing, setEditing] = useState<string | "new" | null>(null);
   const [recording, setRecording] = useState<string | null>(null);
+  const [planning, setPlanning] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [sendTarget, setSendTarget] = useState<TreatmentPackage | null>(null);
   const [paidTarget, setPaidTarget] = useState<TreatmentPackage | null>(null);
@@ -270,7 +271,20 @@ export function AdminTreatmentPackages({ patientUid, personId, patientName, onVi
                       </div>
                     )}
 
-                    {recording === p.id ? (
+                    {planning === p.id ? (
+                      <PlanForm
+                        onCancel={() => setPlanning(null)}
+                        onSubmit={async (date) => {
+                          const json = await adminFetch(`/api/admin/packages/${p.id}/plan`, {
+                            method: "POST",
+                            body: JSON.stringify({ dates: [date] }),
+                          });
+                          toast.show(json.created ? "Visit date added to their appointments." : "That date is already on their appointments.", "success");
+                          setPlanning(null);
+                          onVisitRecorded?.();
+                        }}
+                      />
+                    ) : recording === p.id ? (
                       <VisitForm
                         onCancel={() => setRecording(null)}
                         onSubmit={async (body) => {
@@ -294,6 +308,11 @@ export function AdminTreatmentPackages({ patientUid, personId, patientName, onVi
                         >
                           <CalendarCheck aria-hidden="true" /> {p.remainingSessions <= 0 ? "All sessions recorded" : "Record visit done"}
                         </button>
+                        {p.remainingSessions > 0 && (
+                          <button type="button" className="button small secondary" onClick={() => setPlanning(p.id)}>
+                            <CalendarPlus aria-hidden="true" /> Plan a visit date
+                          </button>
+                        )}
                         {!paid && p.pricePence > 0 && !p.paymentUrl && (
                           <button type="button" className="button small secondary" disabled={busy === `link:${p.id}`} onClick={() => void createLink(p)}>
                             <Link2 aria-hidden="true" /> {busy === `link:${p.id}` ? "Creating…" : "Create payment link"}
@@ -522,6 +541,42 @@ function VisitForm({
       {error && <p className="field-error" role="alert">{error}</p>}
       <div className="admin-package-card__actions">
         <button type="submit" className="button small primary" disabled={saving}>{saving ? "Saving…" : "Record visit"}</button>
+        <button type="button" className="text-button" onClick={onCancel} disabled={saving}>Cancel</button>
+      </div>
+    </form>
+  );
+}
+
+function PlanForm({ onSubmit, onCancel }: { onSubmit: (date: string) => Promise<void>; onCancel: () => void }) {
+  const [date, setDate] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      await onSubmit(date);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not add the date.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form className="admin-package-form stack" onSubmit={(e) => void submit(e)}>
+      <div className="admin-package-form__grid">
+        <label>
+          Planned visit date
+          <input className="input" type="date" required min={todayKey()} value={date} onChange={(e) => setDate(e.target.value)} />
+          <span className="muted admin-package-form__help">Shows on the patient&apos;s appointments (date only). When you record that visit as done, it becomes the completed one.</span>
+        </label>
+      </div>
+      {error && <p className="field-error" role="alert">{error}</p>}
+      <div className="admin-package-card__actions">
+        <button type="submit" className="button small primary" disabled={saving || !date}>{saving ? "Adding…" : "Add date"}</button>
         <button type="button" className="text-button" onClick={onCancel} disabled={saving}>Cancel</button>
       </div>
     </form>

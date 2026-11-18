@@ -6,6 +6,8 @@ export type GateBooking = {
   status: string;
   /** Drives the assessment's consent wording and consultationMode. */
   visitType?: "video" | "home";
+  /** Physio-added (date-only) sessions never need a pre-appointment assessment. */
+  dateOnly?: boolean;
 };
 
 export function selectTargetBooking(
@@ -14,7 +16,7 @@ export function selectTargetBooking(
 ): GateBooking | null {
   const now = Date.now();
   const eligible = bookings
-    .filter((b) => b.paid && b.status === "upcoming" && b.sessionDate.getTime() >= now)
+    .filter((b) => b.paid && !b.dateOnly && b.status === "upcoming" && b.sessionDate.getTime() >= now)
     .sort((a, b) => a.sessionDate.getTime() - b.sessionDate.getTime());
   if (eligible.length === 0) return null;
   if (preferredId) {

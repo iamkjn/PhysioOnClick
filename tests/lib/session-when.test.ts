@@ -18,3 +18,12 @@ describe("formatSessionWhen", () => {
     expect(isDateOnlyBooking({ source: "cal" })).toBe(false);
   });
 });
+
+import { selectTargetBooking } from "@/lib/assessment-gate";
+describe("assessment gate", () => {
+  it("never asks for an assessment for a physio-added (date-only) session", () => {
+    const future = new Date(Date.now() + 86_400_000);
+    expect(selectTargetBooking([{ id: "a", sessionDate: future, assessmentCompletedAt: null, paid: true, status: "upcoming", dateOnly: true }])).toBeNull();
+    expect(selectTargetBooking([{ id: "b", sessionDate: future, assessmentCompletedAt: null, paid: true, status: "upcoming" }])?.id).toBe("b");
+  });
+});

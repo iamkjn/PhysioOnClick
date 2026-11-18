@@ -70,6 +70,7 @@ function AssessmentPageInner() {
           paid: b.paid,
           status: b.status,
           visitType: b.visitType,
+          dateOnly: b.dateOnly,
         }));
         setTarget(selectTargetBooking(list, bookingParam));
       })

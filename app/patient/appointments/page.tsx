@@ -274,7 +274,7 @@ function BookingRow({ booking }: { booking: BookingRecord & { displayStatus: Boo
   });
   const isPackageFollowUp = Boolean(booking.packageSessionNumber && booking.packageSessionNumber > 1);
   const needsAssessment =
-    booking.paid && !isPackageFollowUp && booking.assessmentCompletedAt === null && booking.displayStatus === "upcoming";
+    booking.paid && !booking.dateOnly && !isPackageFollowUp && booking.assessmentCompletedAt === null && booking.displayStatus === "upcoming";
   const homeVisit = homeVisitLabel(booking.visitType, booking.homeVisitAddress);
   return (
     <div>

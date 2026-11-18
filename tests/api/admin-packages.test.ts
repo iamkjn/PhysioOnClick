@@ -165,3 +165,33 @@ describe("admin packages", () => {
     expect(res.status).toBe(400);
   });
 });
+
+import { POST as PLAN } from "@/app/api/admin/packages/[id]/plan/route";
+
+describe("planned visit dates", () => {
+  it("adds date-only planned visits, caps them at what's left, and recording on that date reuses the booking", async () => {
+    const id = await create(); // 3 sessions
+    await VISIT(req(`/api/admin/packages/${id}/visit`, { date: "2026-11-15" }), ctx(id));
+    const res = await PLAN(req(`/api/admin/packages/${id}/plan`, { dates: ["2026-11-16", "2026-11-17"] }), ctx(id));
+    expect(res.status).toBe(201);
+    const planned = mem.all("bookings").map(([, d]) => d).filter((b) => b.plannedVisit === true);
+    expect(planned).toHaveLength(2);
+    expect(planned[0]).toMatchObject({ paid: false, dateOnly: true, status: "upcoming", source: "admin-manual", reminders: { reviewRequestSent: true }, adminNotifiedAt: "TS" });
+    expect(planned[0].packageSessionNumber).toBeUndefined();
+    expect(mem.get(`sessionPackages/${id}`)).toMatchObject({ usedSessions: 1 });
+
+    // No room for a 4th visit.
+    expect((await PLAN(req(`/api/admin/packages/${id}/plan`, { dates: ["2026-11-18"] }), ctx(id))).status).toBe(400);
+    // Same date again is skipped, not duplicated.
+    const again = await PLAN(req(`/api/admin/packages/${id}/plan`, { dates: ["2026-11-16"] }), ctx(id));
+    expect(await again.json()).toMatchObject({ created: 0, skipped: 1 });
+
+    await VISIT(req(`/api/admin/packages/${id}/visit`, { date: "2026-11-16", note: "ok" }), ctx(id));
+    const all = mem.all("bookings").map(([, d]) => d);
+    expect(all).toHaveLength(3);
+    const on16 = all.filter((b) => b.appointmentDate === "2026-11-16");
+    expect(on16).toHaveLength(1);
+    expect(on16[0]).toMatchObject({ plannedVisit: false, packageSessionNumber: 2 });
+    expect(mem.get(`sessionPackages/${id}`)).toMatchObject({ usedSessions: 2, remainingSessions: 1 });
+  });
+});

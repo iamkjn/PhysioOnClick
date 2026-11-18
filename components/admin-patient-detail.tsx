@@ -244,7 +244,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
     [bookings]
   );
   const awaitingAssessment = (bookings ?? []).some(
-    (b) => b.paid && displayStatus(b) === "upcoming" && !linkedBookingIds.includes(b.id)
+    (b) => b.paid && !b.dateOnly && displayStatus(b) === "upcoming" && !linkedBookingIds.includes(b.id)
   );
 
   // ── Session summaries, one per booking ───────────────────────────────
@@ -276,7 +276,12 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
   }, [bookings]);
   const latestAssessment = assessments?.[0];
   const activeManaged = managedPackages.filter((p) => p.status !== "complete");
-  const plannedRemaining = activeManaged.reduce((n, p) => n + p.remainingSessions, 0);
+  // Remaining package visits that don't have a dated (planned) booking yet.
+  // Dated planned visits are already in bookingCounts.upcoming.
+  const plannedRemaining = activeManaged.reduce((n, p) => {
+    const dated = (bookings ?? []).filter((b) => b.packageId === p.id && displayStatus(b) === "upcoming").length;
+    return n + Math.max(0, p.remainingSessions - dated);
+  }, 0);
   const priced = managedPackages.filter((p) => p.pricePence > 0 && p.paidMethod !== "no-charge");
   const duePence = priced.filter((p) => p.paymentStatus !== "paid").reduce((n, p) => n + p.pricePence, 0);
   const payment = priced.length
@@ -366,7 +371,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
           <CalendarDays aria-hidden="true" />
           <span>Upcoming</span>
           <strong>{bookings ? bookingCounts.upcoming + plannedRemaining : "..."}</strong>
-          {plannedRemaining > 0 ? <small className="admin-patient-kpi__note">incl. {plannedRemaining} planned</small> : null}
+          {plannedRemaining > 0 ? <small className="admin-patient-kpi__note">incl. {plannedRemaining} not yet dated</small> : null}
         </div>
         <div className="admin-patient-kpi">
           <ClipboardCheck aria-hidden="true" />
