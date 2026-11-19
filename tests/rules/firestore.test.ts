@@ -1236,6 +1236,30 @@ describe('carer access', () => {
       await assertFails(setDoc(at(db, TODAY), { completions: { ex1: true }, loggedAt: '2026-11-15' }))
     })
 
+    it('lets the carer record that they ticked it (carerMarked), on a new day and an existing one', async () => {
+      const db = carerDb()
+      await assertSucceeds(
+        setDoc(at(db, TODAY), { completions: { ex1: true }, carerMarked: { ex1: true }, loggedAt: serverTimestamp() }, { merge: true })
+      )
+      await assertSucceeds(
+        setDoc(at(db, TODAY), { completions: { ex2: true }, carerMarked: { ex2: true }, loggedAt: serverTimestamp() }, { merge: true })
+      )
+      const data = await readRaw(TODAY)
+      expect(data?.carerMarked).toEqual({ ex1: true, ex2: true })
+    })
+
+    it('rejects a carerMarked that is not a map, and still refuses physioMarked', async () => {
+      const db = carerDb()
+      await assertFails(setDoc(at(db, TODAY), { completions: { ex1: true }, carerMarked: true, loggedAt: serverTimestamp() }))
+      await seed({ [TODAY]: { completions: {}, loggedAt: AT } })
+      await assertFails(
+        setDoc(at(db, TODAY), { completions: { ex1: true }, carerMarked: 'yes', loggedAt: serverTimestamp() }, { merge: true })
+      )
+      await assertFails(
+        setDoc(at(db, TODAY), { completions: { ex1: true }, physioMarked: { ex1: true }, loggedAt: serverTimestamp() }, { merge: true })
+      )
+    })
+
     it('denies the carer deleting a log', async () => {
       await seed({ [TODAY]: { completions: { ex1: true }, loggedAt: AT } })
       await assertFails(deleteDoc(at(carerDb(), TODAY)))

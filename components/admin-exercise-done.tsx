@@ -4,11 +4,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import {
+  exerciseTickSource,
   getAssignedExercises,
   getExerciseLogForDate,
   setExerciseCompletionByPhysio,
   todayKey,
   type AssignedExercise,
+  type ExerciseTickSource,
 } from "@/lib/recovery";
 import { exercises as allExercises } from "@/lib/site-data";
 import { formatDosage, resolveDosage } from "@/lib/exercises";
@@ -20,6 +22,12 @@ interface Props {
   personId: string;
 }
 
+const TICK_LABEL: Record<ExerciseTickSource, string> = {
+  physio: "with physio",
+  carer: "by carer",
+  patient: "by patient",
+};
+
 // "Exercises done with the physio": when the patient does their exercises in
 // a session with the physio, the physio ticks them off here for that day. It
 // counts exactly like the patient ticking them in the portal (streak,
@@ -30,6 +38,7 @@ export function AdminExerciseDone({ patientUid, personId }: Props) {
   const [assigned, setAssigned] = useState<AssignedExercise[] | null>(null);
   const [completions, setCompletions] = useState<Record<string, boolean>>({});
   const [physioMarked, setPhysioMarked] = useState<Record<string, boolean>>({});
+  const [carerMarked, setCarerMarked] = useState<Record<string, boolean>>({});
   const [logLoaded, setLogLoaded] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
 
@@ -50,12 +59,14 @@ export function AdminExerciseDone({ patientUid, personId }: Props) {
         if (!live) return;
         setCompletions(log.completions);
         setPhysioMarked(log.physioMarked);
+        setCarerMarked(log.carerMarked);
         setLogLoaded(true);
       })
       .catch(() => {
         if (!live) return;
         setCompletions({});
         setPhysioMarked({});
+        setCarerMarked({});
         setLogLoaded(true);
       });
     return () => { live = false; };
@@ -139,7 +150,9 @@ export function AdminExerciseDone({ patientUid, personId }: Props) {
                       {dose && <small className="muted"> · {dose}</small>}
                     </span>
                     {done && (
-                      <small className="admin-exercise-done__by">{physioMarked[a.exerciseId] ? "with physio" : "by patient"}</small>
+                      <small className="admin-exercise-done__by">
+                        {TICK_LABEL[exerciseTickSource(a.exerciseId, { physioMarked, carerMarked })]}
+                      </small>
                     )}
                   </label>
                 </li>

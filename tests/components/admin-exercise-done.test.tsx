@@ -26,7 +26,7 @@ beforeEach(() => {
     { exerciseId: a.id, assignedAt: new Date(), assignedBy: 'admin', active: true },
     { exerciseId: b.id, assignedAt: new Date(), assignedBy: 'admin', active: true },
   ])
-  getLog.mockResolvedValue({ completions: { [b.id]: true }, physioMarked: {} })
+  getLog.mockResolvedValue({ completions: { [b.id]: true }, physioMarked: {}, carerMarked: {} })
   setByPhysio.mockResolvedValue(undefined)
 })
 
@@ -42,6 +42,19 @@ describe('AdminExerciseDone', () => {
       expect(setByPhysio).toHaveBeenCalledWith('patientUid123', 'patientUid123', todayKey(), { [a.id]: true }),
     )
     expect(await screen.findByText('with physio')).toBeInTheDocument()
+  })
+
+  it('labels a carer’s tick "by carer", and the physio’s mark wins over it', async () => {
+    getLog.mockResolvedValue({
+      completions: { [a.id]: true, [b.id]: true },
+      physioMarked: { [b.id]: true },
+      carerMarked: { [a.id]: true, [b.id]: true },
+    })
+    render(<AdminExerciseDone patientUid="patientUid123" personId="patientUid123" />)
+    await screen.findByText(a.title)
+    expect(screen.getByText('by carer')).toBeInTheDocument()
+    expect(screen.getByText('with physio')).toBeInTheDocument()
+    expect(screen.queryByText('by patient')).not.toBeInTheDocument()
   })
 
   it('mark all done ticks every assigned exercise', async () => {

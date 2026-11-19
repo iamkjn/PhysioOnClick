@@ -27,6 +27,8 @@ interface Props {
    * may read past results but not record new ones, so carer mode passes false.
    */
   allowMotionCheck?: boolean;
+  /** A carer is ticking for the patient: recorded so the admin shows "by carer". */
+  byCarer?: boolean;
 }
 
 // Convert a catalogue embed URL (…/embed/ID) to a watchable link (…/watch?v=ID).
@@ -38,7 +40,7 @@ function watchUrl(embed: string): string {
 // the physio's demo video where one exists, a "Check your motion" button where a
 // motion target exists, the latest motion result, and a per-exercise "done
 // today" toggle plus a "mark all as done" shortcut for the daily check-off.
-export function AssignedExercises({ uid, personId, allowMotionCheck = true }: Props) {
+export function AssignedExercises({ uid, personId, allowMotionCheck = true, byCarer = false }: Props) {
   const [assigned, setAssigned] = useState<AssignedExercise[]>([]);
   const [todayLog, setTodayLog] = useState<ExerciseLog | null>(null);
   const [motionByExercise, setMotionByExercise] = useState<Record<string, MotionSession>>({});
@@ -110,7 +112,7 @@ export function AssignedExercises({ uid, personId, allowMotionCheck = true }: Pr
       loggedAt: new Date(),
     }));
     try {
-      await toggleExerciseCompletion(uid, personId, exerciseId, done);
+      await toggleExerciseCompletion(uid, personId, exerciseId, done, { byCarer });
     } catch {
       setTodayLog((prev) => ({
         date: todayKey(),
@@ -133,7 +135,7 @@ export function AssignedExercises({ uid, personId, allowMotionCheck = true }: Pr
       loggedAt: new Date(),
     });
     try {
-      await setExercisesCompletion(uid, personId, ids, true);
+      await setExercisesCompletion(uid, personId, ids, true, { byCarer });
       track("exercises_marked_all_done", { count: ids.length });
     } catch {
       setTodayLog(previous);

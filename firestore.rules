@@ -402,17 +402,21 @@ service cloud.firestore {
       allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
       // A carer ticks exercises off for the patient (lib/recovery.ts
       // toggleExerciseCompletion / setExercisesCompletion, a merge set of
-      // { completions, loggedAt }). The doc is shared with the mobile app,
-      // which writes other fields (memory: exerciseLogs dual writer), so an
-      // update only pins the keys the carer touches, never the whole doc.
+      // { completions, carerMarked, loggedAt }). carerMarked records which
+      // ticks came from a carer so the admin can label them "by carer".
+      // The doc is shared with the mobile app, which writes other fields
+      // (memory: exerciseLogs dual writer), so an update only pins the keys
+      // the carer touches, never the whole doc.
       allow read: if isCarerOf(userId, personId);
       allow create: if isCarerOf(userId, personId) &&
-        request.resource.data.keys().hasOnly(['completions', 'loggedAt']) &&
+        request.resource.data.keys().hasOnly(['completions', 'carerMarked', 'loggedAt']) &&
         request.resource.data.completions is map &&
+        request.resource.data.get('carerMarked', {}) is map &&
         request.resource.data.loggedAt is timestamp;
       allow update: if isCarerOf(userId, personId) &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['completions', 'loggedAt']) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['completions', 'carerMarked', 'loggedAt']) &&
         request.resource.data.completions is map &&
+        request.resource.data.get('carerMarked', {}) is map &&
         request.resource.data.loggedAt is timestamp;
     }
 
