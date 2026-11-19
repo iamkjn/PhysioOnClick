@@ -109,7 +109,9 @@ export async function saveMotionSession(
   const logRef = doc(base, "exerciseLogs", todayKey());
   batch.set(
     logRef,
-    { completions: { [s.exerciseId]: true }, loggedAt: serverTimestamp() },
+    // The patient did it themselves (carers can't run a motion check), so it
+    // clears any earlier carer mark for the label in admin.
+    { completions: { [s.exerciseId]: true }, carerMarked: { [s.exerciseId]: false }, loggedAt: serverTimestamp() },
     { merge: true }
   );
 

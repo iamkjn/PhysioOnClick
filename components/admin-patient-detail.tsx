@@ -36,6 +36,13 @@ import { AdminExerciseDone } from "@/components/admin-exercise-done";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
+import { latestPainReading } from "@/lib/recovery";
+
+/** "2026-11-18" -> "18 Nov" for the Latest pain tile. */
+function formatPainDate(dateKey: string): string {
+  const d = new Date(`${dateKey}T12:00:00`);
+  return Number.isNaN(d.getTime()) ? dateKey : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
 
 interface Props {
   patientUid: string;
@@ -232,6 +239,34 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
     return unsub;
   }, [patientUid, person.id]);
 
+  // ── Latest pain log (patient or carer), live like the assessments, so the
+  // "Latest pain" tile isn't limited to physio assessments ─────────────────
+  // Keyed by patient+person so switching person never shows the previous
+  // person's score while the new snapshot loads.
+  const painKey = `${patientUid}/${person.id}`;
+  const [painLogState, setPainLogState] = useState<{ key: string; log: { date: string; score: number } | null }>({
+    key: "",
+    log: null,
+  });
+  const latestPainLog = painLogState.key === painKey ? painLogState.log : null;
+
+  useEffect(() => {
+    if (!db) return;
+    const key = `${patientUid}/${person.id}`;
+    const col = collection(db, "patients", patientUid, "people", person.id, "painLogs");
+    // Ascending key scan, last doc in memory (emulator-safe, see above).
+    const unsub = onSnapshot(
+      query(col, orderBy("__name__")),
+      (snap) => {
+        const last = snap.docs[snap.docs.length - 1];
+        const score = last?.data().score;
+        setPainLogState({ key, log: last && typeof score === "number" ? { date: last.id, score } : null });
+      },
+      () => setPainLogState({ key, log: null })
+    );
+    return unsub;
+  }, [patientUid, person.id]);
+
   // ── Assessment-form linkage, reported up by AdminAssessmentReview so we
   // can flag bookings that are still awaiting a submitted assessment ──────
   const [linkedBookingIds, setLinkedBookingIds] = useState<string[]>([]);
@@ -275,6 +310,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
     };
   }, [bookings]);
   const latestAssessment = assessments?.[0];
+  const latestPain = latestPainReading(latestAssessment, latestPainLog);
   const activeManaged = managedPackages.filter((p) => p.status !== "complete");
   // Remaining package visits that don't have a dated (planned) booking yet.
   // Dated planned visits are already in bookingCounts.upcoming.
@@ -381,7 +417,12 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
         <div className="admin-patient-kpi">
           <Activity aria-hidden="true" />
           <span>Latest pain</span>
-          <strong>{latestAssessment ? `${latestAssessment.painScore}/10` : "None"}</strong>
+          <strong>{latestPain ? `${latestPain.score}/10` : "None"}</strong>
+          {latestPain ? (
+            <small className="admin-patient-kpi__note">
+              {latestPain.source === "physio" ? "Physio" : "Self-reported"} · {formatPainDate(latestPain.date)}
+            </small>
+          ) : null}
         </div>
         <div className="admin-patient-kpi">
           <FileText aria-hidden="true" />

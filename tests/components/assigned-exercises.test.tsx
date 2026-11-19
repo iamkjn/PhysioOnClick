@@ -42,11 +42,13 @@ vi.mock('@/lib/exercise-image-prompts', () => ({
 
 const getAssignedExercisesMock = vi.fn()
 const getTodayExerciseLogMock = vi.fn()
+const toggleExerciseCompletionMock = vi.fn()
+const setExercisesCompletionMock = vi.fn()
 vi.mock('@/lib/recovery', () => ({
   getAssignedExercises: (...args: unknown[]) => getAssignedExercisesMock(...args),
   getTodayExerciseLog: (...args: unknown[]) => getTodayExerciseLogMock(...args),
-  toggleExerciseCompletion: vi.fn(),
-  setExercisesCompletion: vi.fn(),
+  toggleExerciseCompletion: (...args: unknown[]) => toggleExerciseCompletionMock(...args),
+  setExercisesCompletion: (...args: unknown[]) => setExercisesCompletionMock(...args),
   todayKey: () => '2026-07-25',
 }))
 
@@ -73,6 +75,10 @@ describe('AssignedExercises', () => {
     getTodayExerciseLogMock.mockReset()
     getMotionSessionsMock.mockReset()
     getMotionSessionsMock.mockResolvedValue([])
+    toggleExerciseCompletionMock.mockReset()
+    toggleExerciseCompletionMock.mockResolvedValue(undefined)
+    setExercisesCompletionMock.mockReset()
+    setExercisesCompletionMock.mockResolvedValue(undefined)
   })
 
   it('shows SkeletonRow while loading', async () => {
@@ -126,6 +132,36 @@ describe('AssignedExercises', () => {
         screen.getByRole('button', { name: `${EXERCISE.title}: done today, tap to undo` }),
       ).toBeInTheDocument()
     })
+  })
+
+  it('records a patient tick as not by a carer', async () => {
+    getAssignedExercisesMock.mockResolvedValue([assignedExercise()])
+    getTodayExerciseLogMock.mockResolvedValue(null)
+    render(<AssignedExercises uid="u1" personId="p1" />)
+
+    await waitFor(() => expect(screen.getByText(EXERCISE.title)).toBeInTheDocument())
+    fireEvent.click(screen.getByRole('button', { name: `${EXERCISE.title}: mark as done` }))
+    await waitFor(() =>
+      expect(toggleExerciseCompletionMock).toHaveBeenCalledWith('u1', 'p1', FIXTURE_EX.id, true, { byCarer: false }),
+    )
+  })
+
+  it('records carer ticks as by a carer, for one exercise and for mark all', async () => {
+    getAssignedExercisesMock.mockResolvedValue([assignedExercise()])
+    getTodayExerciseLogMock.mockResolvedValue(null)
+    render(<AssignedExercises uid="patient-1" personId="patient-1" byCarer />)
+
+    await waitFor(() => expect(screen.getByText(EXERCISE.title)).toBeInTheDocument())
+    fireEvent.click(screen.getByRole('button', { name: `${EXERCISE.title}: mark as done` }))
+    await waitFor(() =>
+      expect(toggleExerciseCompletionMock).toHaveBeenCalledWith('patient-1', 'patient-1', FIXTURE_EX.id, true, { byCarer: true }),
+    )
+    fireEvent.click(screen.getByRole('button', { name: `${EXERCISE.title}: done today, tap to undo` }))
+    await waitFor(() => expect(toggleExerciseCompletionMock).toHaveBeenCalledTimes(2))
+    fireEvent.click(screen.getByRole('button', { name: 'Mark all as done' }))
+    await waitFor(() =>
+      expect(setExercisesCompletionMock).toHaveBeenCalledWith('patient-1', 'patient-1', [FIXTURE_EX.id], true, { byCarer: true }),
+    )
   })
 
   it('renders the exercise description and a "mark all as done" shortcut', async () => {

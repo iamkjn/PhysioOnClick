@@ -230,16 +230,29 @@ export async function getTodayExerciseLog(
   };
 }
 
+export interface CompletionOptions {
+  /** True when a carer (lib/carer-access.ts) ticks for the patient. */
+  byCarer?: boolean;
+}
+
+// Every portal tick also writes `carerMarked` for the same exercises: true
+// when a carer ticked, false when the patient did, so the latest tick decides
+// how the admin labels it (see exerciseTickSource).
 export async function toggleExerciseCompletion(
   uid: string,
   personId: string,
   exerciseId: string,
-  done: boolean
+  done: boolean,
+  options: CompletionOptions = {}
 ): Promise<void> {
   const ref = doc(personBase(uid, personId), "exerciseLogs", todayKey());
   await setDoc(
     ref,
-    { completions: { [exerciseId]: done }, loggedAt: serverTimestamp() },
+    {
+      completions: { [exerciseId]: done },
+      carerMarked: { [exerciseId]: options.byCarer === true },
+      loggedAt: serverTimestamp(),
+    },
     { merge: true }
   );
 }
@@ -250,12 +263,57 @@ export async function setExercisesCompletion(
   uid: string,
   personId: string,
   exerciseIds: string[],
-  done: boolean
+  done: boolean,
+  options: CompletionOptions = {}
 ): Promise<void> {
   const ref = doc(personBase(uid, personId), "exerciseLogs", todayKey());
   const completions: Record<string, boolean> = {};
-  for (const id of exerciseIds) completions[id] = done;
-  await setDoc(ref, { completions, loggedAt: serverTimestamp() }, { merge: true });
+  const carerMarked: Record<string, boolean> = {};
+  for (const id of exerciseIds) {
+    completions[id] = done;
+    carerMarked[id] = options.byCarer === true;
+  }
+  await setDoc(ref, { completions, carerMarked, loggedAt: serverTimestamp() }, { merge: true });
+}
+
+export type ExerciseTickSource = "physio" | "carer" | "patient";
+
+/** Who ticked an exercise on a day's log: the physio's mark wins, then a carer's. */
+export function exerciseTickSource(
+  exerciseId: string,
+  log: { physioMarked?: Record<string, boolean>; carerMarked?: Record<string, boolean> }
+): ExerciseTickSource {
+  if (log.physioMarked?.[exerciseId] === true) return "physio";
+  if (log.carerMarked?.[exerciseId] === true) return "carer";
+  return "patient";
+}
+
+export interface PainReading {
+  score: number;
+  /** YYYY-MM-DD */
+  date: string;
+  /** "physio" = clinical assessment; "self" = a pain log by the patient or their carer. */
+  source: "physio" | "self";
+}
+
+/**
+ * The most recent pain score from either the physio's latest clinical
+ * assessment or the latest pain log (patient or carer). On the same day the
+ * physio's assessment wins.
+ */
+export function latestPainReading(
+  assessment: { date: string; painScore: number } | null | undefined,
+  log: { date: string; score: number } | null | undefined
+): PainReading | null {
+  const physio = assessment && Number.isFinite(assessment.painScore)
+    ? { score: assessment.painScore, date: assessment.date, source: "physio" as const }
+    : null;
+  const self = log && Number.isFinite(log.score)
+    ? { score: log.score, date: log.date, source: "self" as const }
+    : null;
+  if (!physio) return self;
+  if (!self) return physio;
+  return self.date > physio.date ? self : physio;
 }
 
 // Admin: read one day's exercise log (any date, not just today) — backs the
@@ -264,12 +322,17 @@ export async function getExerciseLogForDate(
   uid: string,
   personId: string,
   dateKey: string
-): Promise<{ completions: Record<string, boolean>; physioMarked: Record<string, boolean> }> {
+): Promise<{
+  completions: Record<string, boolean>;
+  physioMarked: Record<string, boolean>;
+  carerMarked: Record<string, boolean>;
+}> {
   const snap = await getDoc(doc(personBase(uid, personId), "exerciseLogs", dateKey));
   const data = snap.exists() ? snap.data() : {};
   return {
     completions: (data.completions as Record<string, boolean>) ?? {},
     physioMarked: (data.physioMarked as Record<string, boolean>) ?? {},
+    carerMarked: (data.carerMarked as Record<string, boolean>) ?? {},
   };
 }
 

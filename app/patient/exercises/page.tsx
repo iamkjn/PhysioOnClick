@@ -136,7 +136,7 @@ export default function ExercisesPage() {
       ) : null}
 
       <section className="page-section">
-        <AssignedExercises uid={ownerUid} personId={personId} allowMotionCheck={!isCarer} />
+        <AssignedExercises uid={ownerUid} personId={personId} allowMotionCheck={!isCarer} byCarer={isCarer} />
       </section>
 
       <PatientSelfTests uid={ownerUid} personId={personId} />
