@@ -5,6 +5,8 @@ import {
   formatDateRange,
   isDateKey,
   londonWallTimeToDate,
+  packageDatesLabel,
+  packageServiceLabel,
   readTreatmentPackage,
   suggestedPackagePricePence,
 } from "@/lib/treatment-packages";
@@ -58,5 +60,43 @@ describe("readTreatmentPackage", () => {
   it("fills safe defaults for an older manual package", () => {
     const p = readTreatmentPackage("p1", { title: "Home visit treatment plan (7 visits)", totalSessions: 7, usedSessions: 2, remainingSessions: 5, visitType: "home", manual: true });
     expect(p).toMatchObject({ totalSessions: 7, usedSessions: 2, remainingSessions: 5, visitType: "home", paymentStatus: "unpaid", pricePence: 0, startDate: "" });
+  });
+});
+
+describe("packageServiceLabel (invoice/receipt line)", () => {
+  it("keeps a title that already states the count, never doubling it", () => {
+    expect(packageServiceLabel("Home visit treatment plan (7 visits)", 7, "home")).toBe(
+      "Home visit treatment plan (7 visits)",
+    );
+    expect(packageServiceLabel("Video plan - 4 sessions", 4)).toBe("Video plan - 4 sessions");
+    expect(packageServiceLabel("6 home visits", 6, "home")).toBe("6 home visits");
+  });
+
+  it("adds the count when the title does not say it", () => {
+    expect(packageServiceLabel("Treatment plan", 7, "home")).toBe("Treatment plan (7 home visits)");
+    expect(packageServiceLabel("Treatment plan", 1, "home")).toBe("Treatment plan (1 home visit)");
+    expect(packageServiceLabel("Treatment plan", 3)).toBe("Treatment plan (3 sessions)");
+    expect(packageServiceLabel("Treatment plan", 0, "home")).toBe("Treatment plan");
+  });
+
+  it("falls back to a plain name when the title is blank", () => {
+    expect(packageServiceLabel("", 7, "home")).toBe("Treatment plan (7 home visits)");
+  });
+});
+
+describe("packageDatesLabel (invoice/receipt date column)", () => {
+  it("prints a same-month range compactly", () => {
+    expect(packageDatesLabel("2026-11-15", "2026-11-21")).toBe("15\u201321 November 2026");
+  });
+  it("prints both months when the range crosses a month", () => {
+    expect(packageDatesLabel("2026-11-28", "2026-12-03")).toBe("28 November \u2013 3 December 2026");
+  });
+  it("prints both years when the range crosses a year", () => {
+    expect(packageDatesLabel("2026-12-28", "2027-01-03")).toBe("28 December 2026 \u2013 3 January 2027");
+  });
+  it("handles a single day, a start only, and no dates", () => {
+    expect(packageDatesLabel("2026-11-15", "2026-11-15")).toBe("15 November 2026");
+    expect(packageDatesLabel("2026-11-15", "")).toBe("From 15 November 2026");
+    expect(packageDatesLabel("", "")).toBe("");
   });
 });

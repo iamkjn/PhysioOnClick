@@ -41,6 +41,22 @@ describe("getReceiptBySession", () => {
     expect(r!.serviceLabel.length).toBeGreaterThan(0);
   });
 
+  it("carries a package payment's date range for the Session date column", async () => {
+    paymentsGet.mockResolvedValue({
+      empty: false,
+      docs: [{ data: () => ({
+        status: "paid", invoiceNumber: "INV-2026-PKG", paidAt: "2026-11-17T21:48:00.000Z",
+        amountPence: 49000, service: "Home visit treatment plan (7 visits)", email: "pat@example.com",
+        calBookingUid: "", kind: "package-payment", patientName: "Pat Example",
+        sessionDateText: "15\u201321 November 2026",
+      }) }],
+    });
+    const r = await getReceiptBySession("cs_pkg");
+    expect(r!.serviceLabel).toBe("Home visit treatment plan (7 visits)");
+    expect(r!.sessionDateText).toBe("15\u201321 November 2026");
+    expect(r!.sessionDate).toBeNull();
+  });
+
   it("labels a home-visit receipt as a home visit and a video receipt as before", async () => {
     bookingsGet.mockResolvedValue({ empty: true, docs: [] });
     const pay = (extra: Record<string, unknown>) => ({

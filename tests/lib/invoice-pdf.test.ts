@@ -97,6 +97,22 @@ describe("generateInvoicePdf", () => {
     expect(bytes.length).toBeGreaterThan(500);
   });
 
+  it("prints a package's date range in the Session date column instead of a dash", async () => {
+    const content = pdfContent(
+      await generateInvoicePdf({ ...BASE_INPUT, sessionDateISO: null, sessionDateText: "15\u201321 November 2026" }),
+    );
+    expect(content).toContain(hex("21 November 2026"));
+  });
+
+  it("wraps a long service name so it never runs into the Session date column", async () => {
+    const long = "Home visit treatment plan for knee and hip rehabilitation (7 visits)";
+    const content = pdfContent(await generateInvoicePdf({ ...BASE_INPUT, serviceLabel: long, visitType: "home" }));
+    expect(content).not.toContain(hex(long));
+    expect(content).toContain(hex("Home visit treatment plan"));
+    expect(content).toContain(hex("(7 visits)"));
+    expect(content).toContain(hex("Delivered as a home visit (Glasgow area)."));
+  });
+
   it("does not throw when patientName is empty (falls back to email)", async () => {
     const bytes = await generateInvoicePdf({
       invoiceNumber: "INV-2026-ZZ99YY88", paidAtISO: "2026-08-02T10:00:00.000Z",

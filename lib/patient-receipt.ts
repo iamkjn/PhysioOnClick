@@ -13,6 +13,8 @@ export type ReceiptData = {
   patientName: string;
   patientEmail: string;
   sessionDate: string | null;
+  /** A package payment's plan dates ("15–21 November 2026"), shown instead of sessionDate. */
+  sessionDateText: string | null;
   status: string;
 };
 
@@ -39,6 +41,7 @@ export async function getReceiptBySession(sessionId: string): Promise<ReceiptDat
     visitType?: string;
     /** Package payments (lib/package-payment-webhook) have no booking to read a name from. */
     patientName?: string;
+    sessionDateText?: string;
   };
   if (pay.status !== "paid" || !pay.invoiceNumber) return null;
 
@@ -73,6 +76,7 @@ export async function getReceiptBySession(sessionId: string): Promise<ReceiptDat
     patientName,
     patientEmail: pay.email ?? "",
     sessionDate,
+    sessionDateText: pay.sessionDateText?.trim() || null,
     status: pay.status,
   };
 }

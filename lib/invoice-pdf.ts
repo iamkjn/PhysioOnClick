@@ -13,6 +13,8 @@ export type InvoicePdfInput = {
   patientName: string;
   patientEmail: string;
   sessionDateISO: string | null;
+  /** Printed in the Session date column instead of sessionDateISO, e.g. a package's "15–21 November 2026". */
+  sessionDateText?: string;
   /** "home" prints the home-visit delivery line; anything else keeps the video wording. Never pass the address. */
   visitType?: VisitType;
 };
@@ -243,17 +245,25 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Uint8A
   rule(y - 14, INK, 1.2);
 
   const rowY = y - 46;
-  textAt(input.serviceLabel, MARGIN, rowY, { f: bold, size: 12.5 });
-  textAt(invoiceDeliveryLine(input.visitType), MARGIN, rowY - 17, { size: 9.3, color: MUTED });
-  textAt(fmtDate(input.sessionDateISO), MARGIN + 270, rowY, { size: 11.5, color: MUTED });
+  // The service name stops short of the Session date column: a long one (a
+  // package title such as "Home visit treatment plan (7 visits)") wraps onto
+  // a second line instead of being overprinted by the date.
+  const serviceSize = 12.5;
+  const serviceLineGap = serviceSize + 3;
+  const serviceLines = wrapText(input.serviceLabel, bold, serviceSize, 270 - 14).slice(0, 2);
+  serviceLines.forEach((line, i) => textAt(line, MARGIN, rowY - i * serviceLineGap, { f: bold, size: serviceSize }));
+  const extra = (serviceLines.length - 1) * serviceLineGap;
+  textAt(invoiceDeliveryLine(input.visitType), MARGIN, rowY - 17 - extra, { size: 9.3, color: MUTED });
+  const dateText = input.sessionDateText?.trim() || fmtDate(input.sessionDateISO);
+  textAt(dateText, MARGIN + 270, rowY, { size: 11.5, color: MUTED });
   const [lineItem] = invoiceLineItems(input);
   textRight(formatGbp(lineItem.amountPence), right, rowY, { f: bold, size: 12.5 });
-  rule(rowY - 34);
+  rule(rowY - 34 - extra);
 
   const totalW = 218;
   const totalH = 82;
   const totalX = right - totalW;
-  const totalY = rowY - 126;
+  const totalY = rowY - 126 - extra;
   roundedRect(totalX, totalY, totalW, totalH, 10, WASH, TOTAL_BORDER);
   label("Total paid", totalX + 18, totalY + totalH - 28);
   textRight(formatGbp(input.amountPence), totalX + totalW - 18, totalY + 24, { f: bold, size: 22 });

@@ -92,6 +92,41 @@ export function formatDateRange(startDate: string, endDate: string): string {
   return "";
 }
 
+/**
+ * The service line on a package's invoice and receipt. The admin usually names
+ * a package with its count already ("Home visit treatment plan (7 visits)"), so
+ * the count is only added when the title doesn't state one.
+ */
+export function packageServiceLabel(title: string, totalSessions: number, visitType?: "home" | "video"): string {
+  const name = title.trim() || "Treatment plan";
+  if (/\b\d+\s*(?:home\s+)?(?:visits?|sessions?)\b/i.test(name) || !(totalSessions > 0)) return name;
+  const unit = visitType === "home" ? "home visit" : "session";
+  return `${name} (${totalSessions} ${unit}${totalSessions === 1 ? "" : "s"})`;
+}
+
+/**
+ * The plan's dates for the invoice/receipt "Session date" column, e.g.
+ * "15–21 November 2026" or "28 November – 3 December 2026".
+ */
+export function packageDatesLabel(startDate: string, endDate: string): string {
+  if (!isDateKey(startDate)) return "";
+  const parts = (key: string) => {
+    const d = new Date(`${key}T12:00:00Z`);
+    return {
+      day: d.getUTCDate(),
+      month: d.toLocaleDateString("en-GB", { timeZone: "UTC", month: "long" }),
+      year: d.getUTCFullYear(),
+    };
+  };
+  const a = parts(startDate);
+  if (!isDateKey(endDate)) return `From ${a.day} ${a.month} ${a.year}`;
+  const b = parts(endDate);
+  if (startDate === endDate) return `${a.day} ${a.month} ${a.year}`;
+  if (a.year !== b.year) return `${a.day} ${a.month} ${a.year} \u2013 ${b.day} ${b.month} ${b.year}`;
+  if (a.month !== b.month) return `${a.day} ${a.month} \u2013 ${b.day} ${b.month} ${b.year}`;
+  return `${a.day}\u2013${b.day} ${b.month} ${b.year}`;
+}
+
 /** Read a sessionPackages doc into the admin shape, with safe defaults. */
 export function readTreatmentPackage(id: string, data: Record<string, unknown>): TreatmentPackage {
   const str = (k: string) => (typeof data[k] === "string" ? (data[k] as string) : "");

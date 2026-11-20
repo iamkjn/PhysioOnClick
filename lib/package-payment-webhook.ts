@@ -5,6 +5,7 @@
 import { FieldValue, type Firestore, type DocumentReference } from "@/lib/firebase-admin";
 import { makeInvoiceNumber } from "@/lib/invoice";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
+import { packageDatesLabel, packageServiceLabel } from "@/lib/treatment-packages";
 
 type Session = {
   id: string;
@@ -27,7 +28,8 @@ export async function settlePackagePayment(db: Firestore, paymentRef: DocumentRe
   const title = String(pkg?.title ?? "Treatment plan");
   const total = Number(pkg?.totalSessions ?? 0);
   const visitType = pkg?.visitType === "home" ? ("home" as const) : undefined;
-  const serviceLabel = `${title}${total ? ` (${total} ${visitType ? "home visit" : "session"}${total === 1 ? "" : "s"})` : ""}`;
+  const serviceLabel = packageServiceLabel(title, total, visitType);
+  const sessionDateText = packageDatesLabel(String(pkg?.startDate ?? ""), String(pkg?.endDate ?? ""));
   const email = meta.email || String(pkg?.email ?? "");
   const name = meta.name || String(pkg?.patientName ?? "");
 
@@ -42,6 +44,7 @@ export async function settlePackagePayment(db: Firestore, paymentRef: DocumentRe
     email,
     patientName: name,
     service: serviceLabel,
+    ...(sessionDateText ? { sessionDateText } : {}),
     packageId,
     paymentRequestId: token,
     invoiceNumber,
@@ -80,6 +83,7 @@ export async function settlePackagePayment(db: Firestore, paymentRef: DocumentRe
       patientName: name,
       patientEmail: email,
       sessionDateISO: null,
+      ...(sessionDateText ? { sessionDateText } : {}),
       ...(visitType ? { visitType } : {}),
     });
     const pdfPath = `invoices/${invoiceNumber}.pdf`;

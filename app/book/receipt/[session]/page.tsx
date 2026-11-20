@@ -227,7 +227,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ sessio
                 <div className="rcpt-item-title">{r.serviceLabel}</div>
                 <div className="rcpt-item-sub">Physiotherapy service</div>
               </td>
-              <td>{fmtDate(r.sessionDate)}</td>
+              <td>{r.sessionDateText ?? fmtDate(r.sessionDate)}</td>
               <td className="r">{formatGbp(r.amountPence)}</td>
             </tr>
           </tbody>
