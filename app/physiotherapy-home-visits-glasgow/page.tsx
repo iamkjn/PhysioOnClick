@@ -14,6 +14,10 @@ import { breadcrumbs, PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@
 const videoInitial = formatPounds(sessionPricePence("initial-assessment"));
 const homeInitial = homeVisitPrices.initial;
 const homeFollowUp = homeVisitPrices.followUp;
+// NHSGGC's MSK self-referral form can't take anyone who needs a home visit
+// (listed on this page, checked 2026-11-20). Only that fact is stated here.
+const NHSGGC_SELF_REFERRAL_URL =
+  "https://www.nhsggc.scot/hospitals-services/services-a-to-z/musculoskeletal-msk-physiotherapy/self-referral-to-adult-msk-physiotherapy/";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/physiotherapy-home-visits-glasgow" },
@@ -42,7 +46,7 @@ const faqItems = [
   {
     question: "Do I need a GP referral for a home visit?",
     answer:
-      "No, you can book directly. For neurological rehabilitation, your GP or specialist team must confirm it is safe for you to begin physiotherapy before you start. After an operation, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
+      "No, you can book directly, even though NHS Greater Glasgow and Clyde's online physio self-referral can't be used for a home visit. For neurological rehabilitation, your GP or specialist team must confirm it is safe for you to begin physiotherapy before you start. After an operation, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
   },
   {
     question: "Can a home visit include hands-on treatment?",
@@ -123,6 +127,11 @@ export default function HomeVisitsGlasgowPage() {
           <ul className="clean-list">
             <li>People who work during the day: visits are on weekday evenings and at weekends</li>
             <li>Anyone who would rather not travel or find parking while in pain</li>
+            <li>
+              People who need physio at home:{" "}
+              <a href={NHSGGC_SELF_REFERRAL_URL}>NHS Greater Glasgow and Clyde&rsquo;s physio self-referral</a> can&rsquo;t
+              be used if you need a home visit, but you can book one with us directly
+            </li>
             <li>
               Recovery after <Link href="/online-physiotherapy-for/knee-replacement-rehab">knee</Link> or{" "}
               <Link href="/online-physiotherapy-for/hip-replacement-rehab">hip replacement</Link>, once your surgical team says you are ready

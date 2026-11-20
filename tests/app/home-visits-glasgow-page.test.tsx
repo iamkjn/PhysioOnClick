@@ -35,6 +35,39 @@ describe("physiotherapy-home-visits-glasgow", () => {
   });
 });
 
+describe("physiotherapy-home-visits-glasgow NHS self-referral", () => {
+  // NHSGGC's MSK self-referral page lists "require a home visit" among the
+  // cases its form can't take (checked live 2026-11-20).
+  const NHSGGC_SELF_REFERRAL =
+    "https://www.nhsggc.scot/hospitals-services/services-a-to-z/musculoskeletal-msk-physiotherapy/self-referral-to-adult-msk-physiotherapy/";
+  const plain = (s: string | null) => (s ?? "").replace(/’/g, "'");
+
+  it("tells visitors NHSGGC self-referral can't be used for a home visit and links to the NHS page", () => {
+    const { container } = render(<Page />);
+    expect(plain(container.textContent)).toContain(
+      "NHS Greater Glasgow and Clyde's physio self-referral can't be used if you need a home visit, but you can book one with us directly",
+    );
+    expect(container.querySelector(`a[href="${NHSGGC_SELF_REFERRAL}"]`)).not.toBeNull();
+  });
+
+  it("adds the NHS point to the GP-referral answer and keeps the signed-off safety rules word for word", () => {
+    const { container } = render(<Page />);
+    const faq = [...container.querySelectorAll('script[type="application/ld+json"]')]
+      .map((s) => JSON.parse(s.textContent ?? "{}"))
+      .find((j) => j["@type"] === "FAQPage");
+    const answer: string = faq.mainEntity.find(
+      (q: { name: string }) => q.name === "Do I need a GP referral for a home visit?",
+    ).acceptedAnswer.text;
+    expect(answer).toContain(
+      "No, you can book directly, even though NHS Greater Glasgow and Clyde's online physio self-referral can't be used for a home visit.",
+    );
+    expect(answer).toContain("For neurological rehabilitation, your GP or specialist team must confirm it is safe for you to begin physiotherapy before you start.");
+    expect(answer).toContain(
+      "After an operation, rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you.",
+    );
+  });
+});
+
 describe("physiotherapy-home-visits-glasgow 3D explanation", () => {
   it("says a 3D model shows the area involved and the muscles each exercise works", () => {
     const text = render(<Page />).container.textContent ?? "";
