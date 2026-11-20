@@ -56,6 +56,18 @@ to whatever is listed for that page below:
 
 Below, "custom events" means events beyond these three sitewide ones.
 
+- **`contact_click`** with `{ method: "whatsapp" | "email", source, topic }`,
+  plus Growth events **`whatsapp_click`** / **`email_click`** `{ source, topic }`
+  — a tap on "WhatsApp us" or "Email us" (`components/contact-options.tsx`).
+  `source` is where the buttons sit: `contact_bar` (the phone-only bottom bar,
+  `components/contact-bar.tsx`, on `/`, `/about`, `/pricing`, `/contact`,
+  `/services`, `/services/*` and the three Glasgow pages), `home_visits_page`,
+  `glasgow_page`, `manual_therapy_page`, `service_detail_page`, `contact_page`,
+  `home_cta_band` or `pricing_cta_band`. `topic` is the prefilled message
+  (`general`, `home-visit`, `neuro`, `manual-therapy`; see `lib/practice-contact.ts`).
+  Shown in admin Growth as "WhatsApp & email taps" (`/admin/growth/contact-taps`).
+  A tap opens the visitor's app; it doesn't prove a message was sent.
+
 ## Public marketing
 
 | Page | Events |

@@ -7,6 +7,7 @@ import { formatPounds, homeVisitPricePence, homeVisitPrices } from "@/lib/home-v
 import { getPublicPricing } from "@/lib/public-content";
 import { bundleSessionCount, initialAssessmentPrice, payAsYouGoPrice, pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
+import { ContactOptions } from "@/components/contact-options";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 
@@ -195,6 +196,7 @@ export default function PricingPage() {
           >
             Book now
           </TrackedBookLink>
+          <ContactOptions topic="general" source="pricing_cta_band" tone="band" lead="Have a question about prices or cover? Message us." />
         </div>
       </section>
     </div>

@@ -3,7 +3,7 @@
 import { collection, limit, onSnapshot, orderBy, query } from "firebase/firestore";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, ArrowDownRight, BookmarkCheck, CalendarCheck2, Dumbbell, Globe2, MessageSquare, MousePointerClick } from "lucide-react";
+import { Activity, ArrowDownRight, BookmarkCheck, CalendarCheck2, Dumbbell, Globe2, MessageSquare, MousePointerClick, Send } from "lucide-react";
 
 import { db } from "@/lib/firebase";
 import { SkeletonStatGrid } from "@/components/skeleton";
@@ -121,6 +121,8 @@ function eventTitle(event: GrowthEvent) {
     const title = stringParam(event, "exercise_title") || stringParam(event, "exercise_slug");
     return title ? `Exercise saved: ${formatLabel(title)}` : "Exercise saved to plan";
   }
+  if (event.event === "whatsapp_click") return "WhatsApp tapped";
+  if (event.event === "email_click") return "Email tapped";
   if (event.event === "chat_message_sent") {
     const preview = stringParam(event, "message_preview");
     return preview ? `Patient asked: ${preview}` : "Patient chat message";
@@ -203,6 +205,7 @@ export function AdminGrowthDashboard() {
       exerciseViews: counts.get("library_view") ?? 0,
       exerciseSaves: counts.get("exercise_plan_saved") ?? 0,
       chatLeads: (counts.get("chat_booking_intent") ?? 0) + (counts.get("chat_message_sent") ?? 0),
+      contactTaps: (counts.get("whatsapp_click") ?? 0) + (counts.get("email_click") ?? 0),
       countries: sessionCountries.size,
       funnel: FUNNEL.map((step) => ({ ...step, count: counts.get(step.event) ?? 0 })),
       exerciseConversion: EXERCISE_CONVERSION.map((step) => ({ ...step, count: counts.get(step.event) ?? 0 })),
@@ -278,6 +281,12 @@ export function AdminGrowthDashboard() {
           <span>Chat leads</span>
           <strong>{stats.chatLeads}</strong>
           <small>Open lead records</small>
+        </Link>
+        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/contact-taps">
+          <Send aria-hidden="true" />
+          <span>WhatsApp &amp; email taps</span>
+          <strong>{stats.contactTaps}</strong>
+          <small>Open tap records</small>
         </Link>
         <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/countries">
           <Globe2 aria-hidden="true" />

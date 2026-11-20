@@ -12,6 +12,8 @@ import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { founder, initialAssessmentPrice, pricing, services } from "@/lib/site-data";
 import { breadcrumbs, serviceSchema } from "@/lib/structured-data";
 import { formatCurrency } from "@/lib/utils";
+import { topicForPath } from "@/lib/practice-contact";
+import { ContactOptions } from "@/components/contact-options";
 import { Reveal } from "@/components/reveal";
 import { ServiceReviews } from "@/components/service-reviews";
 import { curatedReviewsForService } from "@/lib/trustpilot-curated";
@@ -188,6 +190,11 @@ export default async function ServiceDetailPage({
                 </TrackedBookLink>
                 <p className="muted">From {formatCurrency(minOnlinePrice)} online</p>
               </div>
+              <ContactOptions
+                topic={topicForPath(`/services/${service.slug}`)}
+                source="service_detail_page"
+                lead="Not sure this is right for you? Ask us first."
+              />
             </div>
           </article>
         </Reveal>

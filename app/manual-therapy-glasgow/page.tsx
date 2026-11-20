@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { ContactOptions } from "@/components/contact-options";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { APPOINTMENT_HOURS, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { serviceLabelFor } from "@/lib/cal-services";
@@ -8,7 +9,7 @@ import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { pricing } from "@/lib/site-data";
 import { absoluteUrl } from "@/lib/utils";
-import { breadcrumbs, PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@/lib/structured-data";
+import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 
 // Owns the "manual therapy Glasgow" search intent. Hands-on treatment only
 // happens at home visits (never by video). The three techniques named here
@@ -146,11 +147,11 @@ export default function ManualTherapyGlasgowPage() {
             Home visits cover {HOME_VISIT_AREA_LABEL}, and run {APPOINTMENT_HOURS.weekdays.phrase}, and{" "}
             {APPOINTMENT_HOURS.weekends.phrase}. {HOME_VISIT_NOTICE_SENTENCE}
           </p>
-          {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
-            <p>
-              Not sure if hands-on treatment would help? Call or text <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>.
-            </p>
-          ) : null}
+          <ContactOptions
+            topic="manual-therapy"
+            source="manual_therapy_page"
+            lead="Not sure if hands-on treatment would help? Ask us first, with no obligation to book."
+          />
           <div className="button-row">
             <TrackedBookLink
               className="button primary"

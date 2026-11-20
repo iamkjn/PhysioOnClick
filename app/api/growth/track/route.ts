@@ -30,6 +30,8 @@ const ALLOWED_EVENTS = new Set([
   "chat_opened",
   "chat_message_sent",
   "chat_booking_intent",
+  "whatsapp_click",
+  "email_click",
 ]);
 
 const SAFE_PARAM_KEYS = new Set([
@@ -62,6 +64,7 @@ const SAFE_PARAM_KEYS = new Set([
   "message_length",
   "message_preview",
   "intent",
+  "topic",
 ]);
 
 function cleanString(value: unknown, max = 160) {

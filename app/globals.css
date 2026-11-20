@@ -17720,3 +17720,183 @@ textarea:focus {
 @media (min-width: 1024px) {
   .admin-patient-kpis:has(> :nth-child(5)) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
+
+/* ── WhatsApp / email contact options (components/contact-options.tsx,
+   components/contact-bar.tsx). WhatsApp uses its dark teal so white text
+   passes contrast (#25D366 with white text doesn't). ── */
+.contact-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.contact-options-lead {
+  margin: 0;
+  font-weight: 600;
+}
+
+.contact-options-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.contact-option,
+.contact-bar-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: var(--radius-input);
+  border: 1px solid transparent;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.contact-option--whatsapp,
+.contact-bar-link--whatsapp {
+  background: #075E54;
+  border-color: #075E54;
+  color: #FFFFFF;
+}
+
+.contact-option--whatsapp:hover,
+.contact-bar-link--whatsapp:hover {
+  background: #054A42;
+  border-color: #054A42;
+  color: #FFFFFF;
+}
+
+.contact-option--email,
+.contact-bar-link--email {
+  background: #FFFFFF;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.contact-option--email:hover,
+.contact-bar-link--email:hover {
+  border-color: var(--color-primary-dark);
+  color: var(--color-primary-dark);
+}
+
+.contact-option:focus-visible,
+.contact-bar-link:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.contact-icon {
+  flex: none;
+}
+
+.contact-options-fallback {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.contact-options-fallback a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Spacing where the block follows a sibling without a flex gap. */
+.service-split-cta + .contact-options {
+  margin-top: 1.25rem;
+}
+
+.contact-info-column > .contact-options {
+  margin-bottom: 1.5rem;
+}
+
+/* On the dark call-to-action bands. */
+.contact-options--band {
+  align-items: center;
+  margin-top: 1.75rem;
+  color: #FFFFFF;
+}
+
+.contact-options--band .contact-options-buttons {
+  justify-content: center;
+}
+
+.simple-cta-inner .contact-options p {
+  margin: 0 auto;
+}
+
+.contact-options--band .contact-options-lead {
+  color: #FFFFFF;
+}
+
+.contact-options--band .contact-options-fallback {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.contact-options--band .contact-option--whatsapp {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.contact-options--band .contact-option--email {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #FFFFFF;
+}
+
+.contact-options--band .contact-option--email:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #FFFFFF;
+  color: #FFFFFF;
+}
+
+/* Phone-only bar fixed to the bottom of the screen. */
+.contact-bar {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .contact-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    padding: 0.5rem max(12px, env(safe-area-inset-right, 0px)) calc(0.5rem + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+    background: var(--color-surface);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -6px 18px rgba(4, 50, 70, 0.08);
+  }
+
+  .contact-bar-link {
+    min-height: 46px;
+    padding: 0 0.75rem;
+  }
+
+  /* Keep the page end, the chat button and the cookie banner clear of the bar. */
+  body:has(.contact-bar) {
+    padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body:has(.contact-bar) .chat-trigger {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body:has(.contact-bar) .cookie-consent {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-option,
+  .contact-bar-link {
+    transition: none;
+  }
+}

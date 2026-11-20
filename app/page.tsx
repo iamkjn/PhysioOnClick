@@ -9,6 +9,7 @@ import { founder } from "@/lib/site-data";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
+import { ContactOptions } from "@/components/contact-options";
 import { Reveal } from "@/components/reveal";
 import { TrustpilotReviews } from "@/components/trustpilot-reviews";
 
@@ -325,6 +326,7 @@ export default async function HomePage() {
           <Link className="button secondary cta-white" href="/book">
             Book your session
           </Link>
+          <ContactOptions topic="general" source="home_cta_band" tone="band" lead="Have a question first? Message us." />
         </div>
       </section>
     </>

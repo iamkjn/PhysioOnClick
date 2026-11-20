@@ -7,6 +7,7 @@ import { AnalyticsTracker } from "@/components/analytics-tracker";
 import { TrustpilotInviteScript } from "@/components/trustpilot-invite-script";
 import { ConnectivityOverlay } from "@/components/connectivity-overlay";
 import { ChatWidget } from "@/components/chat-widget";
+import { ContactBar } from "@/components/contact-bar";
 import { CookieConsent } from "@/components/cookie-consent";
 import { PersonProvider } from "@/components/person-provider";
 import { ScrollReset } from "@/components/scroll-reset";
@@ -130,6 +131,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <SiteHeader />
             <main id="main-content">{children}</main>
             <SiteFooter />
+            <ContactBar />
             <Analytics />
             <AnalyticsTracker />
             <TrustpilotInviteScript />

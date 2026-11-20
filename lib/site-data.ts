@@ -1,3 +1,5 @@
+import { PRACTICE_EMAIL } from "@/lib/practice-contact";
+
 export type Service = {
   slug: string;
   title: string;
@@ -77,7 +79,7 @@ export const invoiceIssuer = {
   cspNumber: "128230",
   addressLines: ["7 Springfield Gardens", "Glasgow", "G31 4HS", "United Kingdom"],
   vatStatus: "Physiotherapy services are exempt from VAT (healthcare).",
-  contactEmail: "hello@physioonclick.co.uk",
+  contactEmail: PRACTICE_EMAIL,
   contactPhone: "" // TODO optional
 };
 

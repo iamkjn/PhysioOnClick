@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { ContactOptions } from "@/components/contact-options";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { APPOINTMENT_HOURS, APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
-import { breadcrumbs, PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@/lib/structured-data";
+import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 
 // The home-visit page: what happens at a visit, who it suits and where we go.
 // /glasgow-physiotherapist stays the general "physio in Glasgow" page (home
@@ -103,11 +104,11 @@ export default function HomeVisitsGlasgowPage() {
             Visits run {APPOINTMENT_HOURS.weekdays.phrase}, and {APPOINTMENT_HOURS.weekends.phrase}, so you
             don&rsquo;t need to take time off work.
           </p>
-          {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
-            <p>
-              Not sure if a home visit is right for you? Call or text <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>.
-            </p>
-          ) : null}
+          <ContactOptions
+            topic="home-visit"
+            source="home_visits_page"
+            lead="Not sure if a home visit is right for you? Ask us first, with no obligation to book."
+          />
           <div className="button-row">
             <TrackedBookLink
               className="button primary"

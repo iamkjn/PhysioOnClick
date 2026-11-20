@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 
 import { Avatar } from "@/components/avatar";
 import { ContactForm } from "@/components/contact-form";
+import { ContactOptions } from "@/components/contact-options";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { APPOINTMENT_HOURS } from "@/lib/appointment-hours";
+import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit";
+import { PRACTICE_EMAIL } from "@/lib/practice-contact";
 import { founder } from "@/lib/site-data";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/structured-data";
 
@@ -40,6 +43,11 @@ export default function ContactPage() {
         <Reveal direction="left">
           <div className="contact-info-column">
             <h2>Contact Information</h2>
+            <ContactOptions
+              topic="general"
+              source="contact_page"
+              lead="Message us on WhatsApp or by email, or use the form."
+            />
             <ul className="contact-info-list">
               <li>
                 <span className="contact-info-icon">
@@ -47,7 +55,7 @@ export default function ContactPage() {
                 </span>
                 <div>
                   <strong>Location</strong>
-                  <span>Online consultations across the UK</span>
+                  <span>Home visits across {HOME_VISIT_AREA_LABEL}; video appointments anywhere in the UK</span>
                 </div>
               </li>
               <li>
@@ -56,7 +64,7 @@ export default function ContactPage() {
                 </span>
                 <div>
                   <strong>Email</strong>
-                  <a className="contact-info-link" href="mailto:hello@physioonclick.co.uk">hello@physioonclick.co.uk</a>
+                  <a className="contact-info-link" href={`mailto:${PRACTICE_EMAIL}`}>{PRACTICE_EMAIL}</a>
                 </div>
               </li>
               {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (

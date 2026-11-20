@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { ContactOptions } from "@/components/contact-options";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
-import { PRACTICE_PHONE, PRACTICE_PHONE_HREF, practiceRef } from "@/lib/structured-data";
+import { practiceRef } from "@/lib/structured-data";
 
 // A home visit has its own whole price (no separate fee), so every figure here
 // is derived from lib/home-visit-pricing rather than hardcoded.
@@ -81,11 +82,11 @@ export default function GlasgowPage() {
             The initial assessment is {homeInitial} as a home visit, all in, or {videoInitial} by video.
           </p>
           <p>{APPOINTMENT_HOURS_SENTENCE} No time off work needed.</p>
-          {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? (
-            <p>
-              Prefer to talk first? Call or text <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>.
-            </p>
-          ) : null}
+          <ContactOptions
+            topic="home-visit"
+            source="glasgow_page"
+            lead="Prefer to ask a question first? Message us on WhatsApp or by email."
+          />
           <div className="button-row">
             <TrackedBookLink
               className="button primary"

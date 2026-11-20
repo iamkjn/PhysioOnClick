@@ -78,6 +78,12 @@ const METRICS: Record<string, MetricConfig> = {
     events: ["chat_message_sent", "chat_booking_intent"],
     empty: "No chat leads have been tracked yet.",
   },
+  "contact-taps": {
+    title: "WhatsApp & email taps",
+    description: "Every tap on a WhatsApp us or Email us button, with the page it was on. A tap opens the visitor's WhatsApp or mail app; it doesn't prove a message was sent, so check hello@ and WhatsApp too.",
+    events: ["whatsapp_click", "email_click"],
+    empty: "No WhatsApp or email taps have been tracked yet.",
+  },
   "page-views": {
     title: "Page views",
     description: "Every patient-side page view, newest first. Search by path to see one page.",
@@ -107,6 +113,8 @@ const EVENT_LABELS: Record<string, string> = {
   exercise_plan_saved: "Exercise saved to plan",
   chat_message_sent: "Patient chat message",
   chat_booking_intent: "Chat booking intent",
+  whatsapp_click: "WhatsApp tapped",
+  email_click: "Email tapped",
   service_view: "Service page viewed",
   service_click: "Service card clicked",
   booking_service_selected: "Booking service chosen",
