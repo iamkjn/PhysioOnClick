@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 const tracked = vi.hoisted(() => ({ track: vi.fn(), trackGrowthEvent: vi.fn() }));
@@ -14,8 +14,10 @@ describe("pricing page home visits", () => {
     expect(screen.getByRole("heading", { name: /Home visits in Glasgow/ })).toBeInTheDocument();
     expect(screen.getByText(/The price you see is the price you pay, with nothing added at\s+checkout or on your invoice/)).toBeInTheDocument();
     expect(screen.getByText(/Glasgow and the surrounding area within about an hour/)).toBeInTheDocument();
+    // Scoped to the full price list: the "Which one do I need?" chooser above it repeats £80 / £70.
+    const list = within(document.querySelector(".pricing-sections") as HTMLElement);
     for (const id of ["initial-assessment", "follow-up", "bundle-4", "bundle-8"] as const) {
-      expect(screen.getByText(formatPounds(homeVisitPricePence(id)))).toBeInTheDocument();
+      expect(list.getByText(formatPounds(homeVisitPricePence(id)))).toBeInTheDocument();
     }
     expect(screen.getByRole("link", { name: /Book a home visit/ })).toHaveAttribute("href", "/book?visit=home");
   });

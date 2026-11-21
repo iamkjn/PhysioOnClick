@@ -36,6 +36,12 @@ describe("ConditionHelp", () => {
     expect(trackGrowthEvent).toHaveBeenCalledWith("book_now_click", { source: "exercise_condition_callback" });
   });
 
+  it("can leave out the call back where the page already offers one", () => {
+    render(<ConditionHelp source="x" inline hideCallBack />);
+    expect(screen.queryByRole("link", { name: /request a call back/i })).toBeNull();
+    expect(screen.getByRole("link", { name: /email us about your condition/i })).toBeInTheDocument();
+  });
+
   it("hides the heading in the inline version", () => {
     render(<ConditionHelp source="x" inline />);
     expect(screen.queryByRole("heading")).toBeNull();

@@ -14,6 +14,11 @@ import { UK_PHONE_RE, validateName } from "@/lib/validation";
 
 export const VISIT_REQUEST_PATH = "/request-visit";
 
+/** /request-visit with the topic carried over, so the form's note starts with it. */
+export function visitRequestHrefAbout(about?: string): string {
+  return about ? `${VISIT_REQUEST_PATH}?about=${encodeURIComponent(about)}` : VISIT_REQUEST_PATH;
+}
+
 /** When the visit could happen; matches the practice's appointment hours. */
 export const VISIT_TIME_OPTIONS = [
   { id: "weekday-evening", label: `Weekday evening (${APPOINTMENT_HOURS.weekdays.short.replace(/^Mon–Fri:\s*/, "")})` },

@@ -18219,3 +18219,129 @@ textarea:focus {
 .exlib-next-step .condition-help p {
   flex: none;
 }
+
+/* Exercise pages, UK visitors: two clear options after the steps. */
+.exlib-uk-offer__options {
+  flex: 1 1 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.exlib-uk-offer__option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--surface);
+  min-width: 0;
+}
+
+.exlib-uk-offer__label {
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+.exlib-uk-offer__price {
+  font-family: var(--font-display, inherit);
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: var(--color-navy);
+}
+
+.exlib-uk-offer__option .button {
+  margin-top: auto;
+  justify-content: center;
+}
+
+@media (max-width: 560px) {
+  .exlib-uk-offer__options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Pricing page: "Which one do I need?" chooser under the heading. */
+.pricing-chooser {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pricing-chooser h2 {
+  margin: 0;
+}
+
+.pricing-chooser-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.pricing-chooser-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  min-width: 0;
+}
+
+.pricing-chooser-tile.is-featured {
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 0 0 1px var(--color-primary-dark) inset;
+}
+
+.pricing-chooser-tile h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.pricing-chooser-where {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+.pricing-chooser-price {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-display, inherit);
+  font-size: 2rem;
+  line-height: 1.1;
+  color: var(--color-navy);
+}
+
+.pricing-chooser-price small {
+  font-family: var(--font-sans, inherit);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.pricing-chooser-tile .button {
+  margin-top: auto;
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pricing-chooser-alt {
+  margin: 0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.pricing-chooser-alt a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 860px) {
+  .pricing-chooser-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

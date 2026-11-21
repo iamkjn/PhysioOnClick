@@ -7,7 +7,7 @@ import { formatPounds, homeVisitPricePence, homeVisitPrices } from "@/lib/home-v
 import { getPublicPricing } from "@/lib/public-content";
 import { bundleSessionCount, initialAssessmentPrice, payAsYouGoPrice, pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
-import { ConditionHelp } from "@/components/condition-help";
+import { PricingChooser } from "@/components/pricing-chooser";
 import { ContactOptions } from "@/components/contact-options";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -50,14 +50,13 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="page-section">
-        <ConditionHelp
-          about="which option suits me"
-          source="pricing_condition"
-          heading="Not sure which option suits you?"
-          lead="Tell us what's going on and we'll recommend the right visit or package, with no obligation to book."
+      <div className="page-section">
+        <PricingChooser
+          homeInitial={homeVisitPrices.initial}
+          homeFollowUp={homeVisitPrices.followUp}
+          videoInitial={`£${initialAssessmentPrice}`}
         />
-      </section>
+      </div>
 
       <section className="page-section stack pricing-sections">
         {/* Home visits first: most searches and enquiries are local (Glasgow). */}

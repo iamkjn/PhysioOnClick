@@ -6,12 +6,9 @@ import { PhoneCall } from "lucide-react";
 import { MailIcon, WhatsAppIcon, recordContactTap } from "@/components/contact-options";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF, conditionEmailHref, conditionWhatsappHref } from "@/lib/practice-contact";
-import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
+import { visitRequestHrefAbout } from "@/lib/visit-request";
 
-/** /request-visit with the topic carried over, so the form's note starts with it. */
-export function visitRequestHrefAbout(about?: string): string {
-  return about ? `${VISIT_REQUEST_PATH}?about=${encodeURIComponent(about)}` : VISIT_REQUEST_PATH;
-}
+export { visitRequestHrefAbout };
 
 /**
  * "Ask about your condition": for visitors who read a service, price list or
@@ -26,6 +23,7 @@ export function ConditionHelp({
   lead = "Tell us what's going on. Shivaliba will get back to you personally with what she'd suggest, with no obligation to book.",
   headingLevel = "h2",
   inline = false,
+  hideCallBack = false,
 }: {
   /** What the visitor was reading, e.g. "Neurological rehabilitation" or "Clamshell (exercise)". */
   about?: string;
@@ -36,6 +34,8 @@ export function ConditionHelp({
   headingLevel?: "h2" | "h3";
   /** No card or heading: sits inside another prompt. */
   inline?: boolean;
+  /** Leave out "Request a call back" where the surrounding prompt already offers it. */
+  hideCallBack?: boolean;
 }) {
   const Heading = headingLevel;
   return (
@@ -51,14 +51,16 @@ export function ConditionHelp({
           <MailIcon />
           Email us about your condition
         </a>
-        <Link
-          className="button secondary"
-          href={visitRequestHrefAbout(about)}
-          onClick={() => trackGrowthEvent("book_now_click", { source: `${source}_callback` })}
-        >
-          <PhoneCall className="contact-icon" size={18} aria-hidden="true" />
-          Request a call back
-        </Link>
+        {hideCallBack ? null : (
+          <Link
+            className="button secondary"
+            href={visitRequestHrefAbout(about)}
+            onClick={() => trackGrowthEvent("book_now_click", { source: `${source}_callback` })}
+          >
+            <PhoneCall className="contact-icon" size={18} aria-hidden="true" />
+            Request a call back
+          </Link>
+        )}
         <a
           className="button secondary condition-help-whatsapp"
           href={conditionWhatsappHref(about)}

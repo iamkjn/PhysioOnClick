@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { UkServiceLinks } from "@/components/uk-service-links";
 import Link from "next/link";
 import { ConditionHelp } from "@/components/condition-help";
+import { RegionSwitch } from "@/components/region-switch";
 import { notFound } from "next/navigation";
 
 import {
@@ -18,6 +19,8 @@ import { formatDosage, hasPrescribedDose, resolveDosage } from "@/lib/exercises"
 import { splitMistakes } from "@/lib/exercise-safety-line";
 import { buildEmbedSnippet, EMBEDS_ENABLED, embedPath } from "@/lib/exercise-embed";
 import { initialAssessmentPrice } from "@/lib/site-data";
+import { homeVisitPrices } from "@/lib/home-visit-pricing";
+import { visitRequestHrefAbout } from "@/lib/visit-request";
 import { breadcrumbs, exerciseWebPage } from "@/lib/structured-data";
 import { AddToPlanButton } from "@/components/exercise-library/add-to-plan-button";
 import { ByLine } from "@/components/exercise-library/by-line";
@@ -129,6 +132,24 @@ export default async function ExerciseDetailPage({
         .join(", ")
     : `${exercise.bodyPart} rehab`;
   const bookingHref = `/book?service=initial-assessment&source=exercise-detail&exercise=${encodeURIComponent(exercise.slug)}&body_part=${encodeURIComponent(exercise.bodyPart)}`;
+  const exerciseGrowthParams = {
+    exercise_slug: exercise.slug,
+    exercise_title: exercise.title,
+    body_part: exercise.bodyPart,
+    stage: exercise.stage,
+  };
+  // Neuro readers are the site's main local search audience ("neurological
+  // physiotherapy glasgow"), so the after-steps prompt points them at it.
+  const neuroLocal =
+    exercise.clinicalArea === "neuro" ? (
+      <>
+        {" "}Near Glasgow?{" "}
+        <Link className="inline-link" href="/services/neurological-rehabilitation" data-neuro-local>
+          Neurological physiotherapy at home in Glasgow
+        </Link>{" "}
+        runs on weekday evenings and weekends, so family can join.
+      </>
+    ) : null;
   const { ordinary: ordinaryMistakes, safety: safetyLine } = splitMistakes(
     exercise.mistakes ?? [],
   );
@@ -373,48 +394,99 @@ export default async function ExerciseDetailPage({
         </Reveal>
       </section>
 
-      {/* Booking prompt where most readers stop: straight after the steps. */}
+      {/* Booking prompt where most readers stop: straight after the steps.
+          Region-aware: UK readers get a UK offer (video UK-wide, home visit
+          near Glasgow); overseas readers, about four in five, can't use a UK
+          appointment, so they get honest advice instead. The server render
+          (and any visitor whose region is unknown) gets the default prompt.
+          Every variant keeps the neuro link: it's part of the neuro-Glasgow
+          internal linking and must stay in the rendered page. */}
       <section className="page-section">
-        <aside className="exlib-next-step" aria-label="Book an assessment">
-          <p>
-            <strong>Not getting better, or not sure this is the right exercise for you?</strong>{" "}
-            A £{initialAssessmentPrice} online assessment with an HCPC-registered
-            physiotherapist gets you a plan matched to your condition and stage.
-            {/* Neuro readers are the site's main local search audience
-                ("neurological physiotherapy glasgow"), so point them at it. */}
-            {exercise.clinicalArea === "neuro" ? (
-              <>
-                {" "}Near Glasgow?{" "}
-                <Link className="inline-link" href="/services/neurological-rehabilitation" data-neuro-local>
-                  Neurological physiotherapy at home in Glasgow
-                </Link>{" "}
-                runs on weekday evenings and weekends, so family can join.
-              </>
-            ) : null}
-          </p>
-          <TrackedBookLink
-            className="button primary"
-            href={bookingHref}
-            serviceSlug="initial-assessment"
-            source="exercise-page-after-steps"
-            growthEvent="exercise_booking_intent"
-            growthParams={{
-              exercise_slug: exercise.slug,
-              exercise_title: exercise.title,
-              body_part: exercise.bodyPart,
-              stage: exercise.stage,
-              booking_context: "exercise_detail_after_steps",
-            }}
-          >
-            Book a £{initialAssessmentPrice} assessment
-          </TrackedBookLink>
-          <ConditionHelp
-            inline
-            about={`${exercise.title} (exercise)`}
-            source="exercise_condition"
-            lead="Rather ask a physiotherapist first? Tell us what's going on and we'll suggest what would help."
-          />
-        </aside>
+        <RegionSwitch
+          fallback={
+            <aside className="exlib-next-step" aria-label="Book an assessment">
+              <p>
+                <strong>Not getting better, or not sure this is the right exercise for you?</strong>{" "}
+                A £{initialAssessmentPrice} online assessment with an HCPC-registered
+                physiotherapist gets you a plan matched to your condition and stage.
+                {neuroLocal}
+              </p>
+              <TrackedBookLink
+                className="button primary"
+                href={bookingHref}
+                serviceSlug="initial-assessment"
+                source="exercise-page-after-steps"
+                growthEvent="exercise_booking_intent"
+                growthParams={{ ...exerciseGrowthParams, booking_context: "exercise_detail_after_steps" }}
+              >
+                Book a £{initialAssessmentPrice} assessment
+              </TrackedBookLink>
+              <ConditionHelp
+                inline
+                about={`${exercise.title} (exercise)`}
+                source="exercise_condition"
+                lead="Rather ask a physiotherapist first? Tell us what's going on and we'll suggest what would help."
+              />
+            </aside>
+          }
+          uk={
+            <aside className="exlib-next-step exlib-uk-offer" aria-label="Get this checked by a physiotherapist" data-region-offer="uk">
+              <p>
+                <strong>In the UK? Get this checked by a physiotherapist.</strong>{" "}
+                Not getting better, or not sure this is the right exercise for you? An HCPC-registered
+                physiotherapist can match a plan to your condition and stage.
+                {neuroLocal}
+              </p>
+              <div className="exlib-uk-offer__options">
+                <div className="exlib-uk-offer__option">
+                  <span className="exlib-uk-offer__label">Video appointment, anywhere in the UK</span>
+                  <strong className="exlib-uk-offer__price">£{initialAssessmentPrice}</strong>
+                  <TrackedBookLink
+                    className="button primary"
+                    href={bookingHref}
+                    serviceSlug="initial-assessment"
+                    source="exercise-uk-offer-video"
+                    growthEvent="exercise_booking_intent"
+                    growthParams={{ ...exerciseGrowthParams, booking_context: "exercise_uk_offer_video" }}
+                  >
+                    Book a video assessment
+                  </TrackedBookLink>
+                </div>
+                <div className="exlib-uk-offer__option">
+                  <span className="exlib-uk-offer__label">Home visit, Glasgow and about an hour around</span>
+                  <strong className="exlib-uk-offer__price">{homeVisitPrices.initial}</strong>
+                  <TrackedBookLink
+                    className="button secondary"
+                    href={visitRequestHrefAbout(`${exercise.title} (exercise)`)}
+                    source="exercise-uk-offer-home"
+                    growthEvent="exercise_booking_intent"
+                    growthParams={{ ...exerciseGrowthParams, booking_context: "exercise_uk_offer_home" }}
+                  >
+                    Request a call back
+                  </TrackedBookLink>
+                </div>
+              </div>
+              <ConditionHelp
+                inline
+                about={`${exercise.title} (exercise)`}
+                source="exercise_condition_uk"
+                hideCallBack
+                lead="Not sure which? Tell us what's going on and we'll suggest what would help."
+              />
+            </aside>
+          }
+          overseas={
+            <aside className="exlib-next-step exlib-overseas-note" aria-label="Getting help" data-region-offer="overseas">
+              <p>
+                <strong>Not getting better, or not sure this exercise is right for you?</strong>{" "}
+                If it causes sharp pain, or you aren&apos;t improving after a couple of weeks, a
+                physiotherapist near you can check what&apos;s going on. PhysioOnClick appointments are
+                for people in the UK.
+                {neuroLocal}
+              </p>
+            </aside>
+          }
+        />
       </section>
 
       {anatomy ? <ExerciseAnatomySection anatomy={anatomy} stage={exercise.stage} /> : null}
@@ -491,22 +563,27 @@ export default async function ExerciseDetailPage({
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">This exercise is generic - you&apos;re not</span>
           <h2>Get a plan personalised to you</h2>
-          <TrackedBookLink
-            className="button secondary cta-white"
-            href={bookingHref}
-            serviceSlug="initial-assessment"
-            source="exercise-page-cta-band"
-            growthEvent="exercise_booking_intent"
-            growthParams={{
-              exercise_slug: exercise.slug,
-              exercise_title: exercise.title,
-              body_part: exercise.bodyPart,
-              stage: exercise.stage,
-              booking_context: "exercise_detail_bottom",
-            }}
-          >
-            Get my personalised plan
-          </TrackedBookLink>
+          <RegionSwitch
+            overseas={null}
+            fallback={
+              <TrackedBookLink
+                className="button secondary cta-white"
+                href={bookingHref}
+                serviceSlug="initial-assessment"
+                source="exercise-page-cta-band"
+                growthEvent="exercise_booking_intent"
+                growthParams={{
+                  exercise_slug: exercise.slug,
+                  exercise_title: exercise.title,
+                  body_part: exercise.bodyPart,
+                  stage: exercise.stage,
+                  booking_context: "exercise_detail_bottom",
+                }}
+              >
+                Get my personalised plan
+              </TrackedBookLink>
+            }
+          />
           {carePages.length ? (
             <p className="uk-service-links">
               Get physio help for:{" "}

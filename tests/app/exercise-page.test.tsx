@@ -1,5 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+
+// The after-steps prompt depends on the visitor's region (from the browser's
+// time zone). Pin it so the test machine's own time zone doesn't decide.
+const regionState = vi.hoisted(() => ({ region: "unknown" as "uk" | "overseas" | "unknown" }));
+vi.mock("@/lib/visitor-region", () => ({ browserRegion: () => regionState.region }));
 
 // Next.js <Link> renders as a plain <a> in tests - no mock needed.
 import ExercisePage, {
@@ -63,6 +68,49 @@ describe("app/exercises/[slug] page", () => {
     expect(link.getAttribute("href")).toContain("service=initial-assessment");
     const steps = container.querySelector("[data-steps]")!;
     expect(steps.compareDocumentPosition(prompt) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  describe("region-aware prompt after the steps", () => {
+    afterEach(() => {
+      regionState.region = "unknown";
+    });
+
+    it("offers UK readers a video assessment and a home-visit call back, with prices", async () => {
+      regionState.region = "uk";
+      const { initialAssessmentPrice } = await import("@/lib/site-data");
+      const { homeVisitPrices } = await import("@/lib/home-visit-pricing");
+      const { container } = await renderPage(SLUG);
+      const offer = container.querySelector('[data-region-offer="uk"]')!;
+      expect(offer).toHaveTextContent("In the UK?");
+      expect(offer).toHaveTextContent(`£${initialAssessmentPrice}`);
+      expect(offer).toHaveTextContent(homeVisitPrices.initial);
+      expect(screen.getByRole("link", { name: "Book a video assessment" }).getAttribute("href")).toContain(
+        "service=initial-assessment",
+      );
+      expect(screen.getByRole("link", { name: "Request a call back" }).getAttribute("href")).toMatch(
+        /^\/request-visit\?about=/,
+      );
+    });
+
+    it("gives overseas readers honest advice instead of booking buttons", async () => {
+      regionState.region = "overseas";
+      const { container } = await renderPage(SLUG);
+      const note = container.querySelector('[data-region-offer="overseas"]')!;
+      expect(note).toHaveTextContent(/physiotherapist near you/i);
+      expect(note.querySelector('a[href^="/book"]')).toBeNull();
+      expect(screen.queryByRole("link", { name: "Get my personalised plan" })).toBeNull();
+    });
+
+    it("keeps the neuro Glasgow link in every version", async () => {
+      const { allExerciseSlugs: slugs, getExerciseBySlug: get } = await import("@/lib/exercise-library");
+      const neuroSlug = slugs().find((s) => get(s)?.clinicalArea === "neuro")!;
+      for (const region of ["unknown", "uk", "overseas"] as const) {
+        regionState.region = region;
+        const { container, unmount } = await renderPage(neuroSlug);
+        expect(container.querySelector("[data-neuro-local]")).not.toBeNull();
+        unmount();
+      }
+    });
   });
 
   it("renders the setup text, an <ol> of every step, and every cue", async () => {
