@@ -10,6 +10,7 @@ import { auth, db } from "@/lib/firebase";
 import { AdminShell } from "@/components/admin-shell";
 import { AdminSignIn } from "@/components/admin-sign-in";
 import { SkeletonRow, SkeletonStatGrid } from "@/components/skeleton";
+import { channelLabel, classifyTrafficSource } from "@/lib/traffic-source";
 
 type GrowthEvent = {
   id: string;
@@ -21,6 +22,9 @@ type GrowthEvent = {
   countryName?: string;
   createdAtIso?: string;
   params?: Record<string, unknown>;
+  channel?: string;
+  referrerHost?: string;
+  userAgent?: string;
 };
 
 type MetricConfig = {
@@ -95,6 +99,12 @@ const METRICS: Record<string, MetricConfig> = {
     description: "Service page views, service card clicks and services chosen in booking.",
     events: ["service_view", "service_click", "booking_service_selected"],
     empty: "No service activity has been tracked yet.",
+  },
+  sources: {
+    title: "Where visitors came from",
+    description: "Every page view with the site or app the visit came from: a Facebook group post, Google, ChatGPT, an email link or typed in directly. Visits from Facebook's app are recognised even when it hides the link. Search \"facebook\" to see just those.",
+    events: ["page_view"],
+    empty: "No page views have been tracked yet.",
   },
   countries: {
     title: "Countries captured",
@@ -187,6 +197,10 @@ function eventTitle(event: GrowthEvent) {
 
 function eventDetails(event: GrowthEvent) {
   const details: string[] = [];
+  const channel = event.channel || classifyTrafficSource({ userAgent: event.userAgent ?? "" }).channel;
+  if (event.channel || channel !== "direct") {
+    details.push(`From: ${channelLabel(channel)}${event.referrerHost ? ` (${event.referrerHost})` : ""}`);
+  }
   const service = stringParam(event, "service_title") || stringParam(event, "service_slug") || stringParam(event, "service");
   if (service) details.push(`Service: ${formatLabel(service)}`);
 

@@ -67,6 +67,21 @@ Below, "custom events" means events beyond these three sitewide ones.
   (`general`, `home-visit`, `neuro`, `manual-therapy`; see `lib/practice-contact.ts`).
   Shown in admin Growth as "WhatsApp & email taps" (`/admin/growth/contact-taps`).
   A tap opens the visitor's app; it doesn't prove a message was sent.
+  Two more `source` values sit in the booking flow: `booking_details` (under the
+  "Time & your details" form, `components/booking-step-time.tsx`) and
+  `booking_assessment` (top of the pre-payment questionnaire,
+  `components/assessment-wizard.tsx` via its `contactTopic` prop).
+- **Visitor source** (Growth events only, not GA). Every Growth event carries
+  top-level `channel` (`facebook`, `instagram`, `google`, `google-ads`, `bing`,
+  `chatgpt`, `email`, `whatsapp`, `other`, `direct`, or a cleaned `utm_source`)
+  and `referrerHost` (bare host name or ""). `lib/growth-tracking.ts` works the
+  source out once per browser tab from the first page's `utm_source`, click ids
+  (`fbclid`, `gclid`, `msclkid`), the in-app browser's user agent (Facebook's
+  app often sends no referrer) and `document.referrer`
+  (`lib/traffic-source.ts`); the track route re-validates it and falls back to
+  the user agent for older cached pages. Shown in admin Growth as "Where
+  visitors came from" (`/admin/growth/sources`). Events before 21 Nov 2026 have
+  no `channel`; the dashboard infers Facebook from their stored user agent.
 
 ## Public marketing
 

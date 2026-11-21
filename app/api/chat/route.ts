@@ -1,7 +1,8 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, type Content } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
 import { buildSystemPrompt, type PatientContext } from "@/lib/chat-prompt";
+import { HOME_VISIT_TOWNS } from "@/lib/home-visit";
 import { AUTH_TOOL_DECLARATIONS, executeFunction, GUEST_TOOL_DECLARATIONS } from "@/lib/chat-tools";
 import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import { formatPersonName } from "@/lib/name-format";
@@ -75,11 +76,32 @@ async function fetchPatientContext(uid: string): Promise<PatientContext | undefi
 const MAX_MESSAGE_CHARS = 1000;
 const MAX_HISTORY_TEXT_CHARS = 2000;
 
-// Tried in order. Google retires/overloads models without notice, so a busy
-// or removed primary falls through to the next. Both must support the
-// @google/generative-ai function-calling flow below (the newest 3.8 models
-// reject its "function" role and need the @google/genai SDK instead).
-const CHAT_MODELS = ["gemini-3.5-flash", "gemini-3.1-flash-lite"];
+// Tried in order. Google retires/overloads models without notice, so a busy,
+// slow or removed model falls through to the next. flash-lite goes first: it
+// answers in under a second, while 3.5-flash has taken over a minute (Nov 2026),
+// which no chat visitor waits for.
+const CHAT_MODELS = ["gemini-3.1-flash-lite", "gemini-3.5-flash"];
+// Per model call. A model slower than this is treated as unavailable.
+const MODEL_TIMEOUT_MS = 15_000;
+
+// Places people name when asking "do you come to me?": the home-visit towns,
+// the Glasgow neighbourhoods the local Facebook groups cover, and the postcode
+// areas in the home-visit zone (G, PA, ML, KA, FK, EH, KY).
+const AREA_QUESTION_PATTERN = new RegExp(
+  [
+    "visit", "visits", "visiting", "come to", "come out", "my home", "my house", "at home",
+    "are you in", "do you cover", "postcode", "area", "areas", "cover", "covered", "near me",
+    "nearby", "travel", "local", "scotland", "lanarkshire", "renfrewshire", "dunbartonshire",
+    ...HOME_VISIT_TOWNS.map((town) => town.toLowerCase()),
+    "cambuslang", "rutherglen", "burnside", "bearsden", "milngavie", "clydebank", "dennistoun",
+    "shettleston", "giffnock", "newton mearns", "bishopbriggs", "kirkintilloch", "coatbridge",
+    "airdrie", "cumbernauld", "renfrew", "johnstone", "wishaw", "blantyre", "uddingston", "bothwell",
+    "(?:g|pa|ml|ka|fk|eh|ky)\\d{1,2}",
+  ]
+    .map((word) => `\\b${word}\\b`)
+    .join("|"),
+  "i",
+);
 
 const SITE_ACTION_RULES: Array<{
   pattern: RegExp;
@@ -92,6 +114,12 @@ const SITE_ACTION_RULES: Array<{
   {
     pattern: /\b(price|prices|pricing|cost|fee|fees|charge|charges|bundle|package|discount|new10|offer)\b/i,
     action: { type: "redirect", label: "View pricing", url: "/pricing" },
+  },
+  {
+    // "Do you visit Cambuslang?" — area and home-visit questions are the ones
+    // local buyers ask, so they must never be treated as off-topic.
+    pattern: AREA_QUESTION_PATTERN,
+    action: { type: "redirect", label: "Home visits in Glasgow", url: "/physiotherapy-home-visits-glasgow" },
   },
   {
     pattern: /\b(invoice|receipt|insurance|claim|reimbursement|cashback|policy|insurer)\b/i,
@@ -166,8 +194,8 @@ function isLikelyPhysioOnClickTopic(message: string): boolean {
 }
 
 function isRetryableModelError(error: unknown): boolean {
-  const text = error instanceof Error ? error.message : String(error);
-  return /\[(404|429|500|503)\b/.test(text);
+  const text = error instanceof Error ? `${error.name} ${error.message}` : String(error);
+  return /\[(404|429|500|503)\b/.test(text) || /abort|timed? ?out/i.test(text);
 }
 
 export async function POST(req: NextRequest) {
@@ -229,21 +257,25 @@ export async function POST(req: NextRequest) {
     // the next model if Google is overloaded/unavailable for this one.
     const runTurn = async (modelName: string) => {
       actionForClient = undefined;
-      const model = genAI.getGenerativeModel({
-        model: modelName,
-        systemInstruction: systemPrompt,
-        tools: [{ functionDeclarations: toolDeclarations }],
-      });
+      const model = genAI.getGenerativeModel(
+        {
+          model: modelName,
+          systemInstruction: systemPrompt,
+          tools: [{ functionDeclarations: toolDeclarations }],
+        },
+        { timeout: MODEL_TIMEOUT_MS },
+      );
 
-      const chat = model.startChat({
-        history: history.map(m => ({
-          role: m.role,
-          parts: [{ text: m.text }],
-        })),
-      });
+      // The conversation is built by hand rather than with the SDK's
+      // startChat(): ChatSession sends function results under the role
+      // "function", which Gemini now rejects ("Role 'function' is not
+      // supported", 400, Nov 2026). The API takes them as a user turn.
+      const contents: Content[] = [
+        ...history.map((m) => ({ role: m.role, parts: [{ text: m.text }] })),
+        { role: "user", parts: [{ text: message }] },
+      ];
 
-      let result = await chat.sendMessage(message);
-      let response = result.response;
+      let response = (await model.generateContent({ contents })).response;
 
       // Function call loop (handles one call per turn)
       const calls = response.functionCalls();
@@ -269,15 +301,13 @@ export async function POST(req: NextRequest) {
           ? await executeFunction(call.name, fnArgs, uid ?? "", db)
           : JSON.stringify({ error: "Database unavailable" });
 
-        result = await chat.sendMessage([
-          {
-            functionResponse: {
-              name: call.name,
-              response: { result: fnResult },
-            },
-          },
-        ]);
-        response = result.response;
+        // Send the model's own turn back unchanged: Gemini 3 needs the
+        // thoughtSignature it carries alongside the function call.
+        contents.push(
+          response.candidates?.[0]?.content ?? { role: "model", parts: [{ functionCall: call }] },
+          { role: "user", parts: [{ functionResponse: { name: call.name, response: { result: fnResult } } }] },
+        );
+        response = (await model.generateContent({ contents })).response;
       }
       return response;
     };

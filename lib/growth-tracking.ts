@@ -1,5 +1,7 @@
 "use client";
 
+import { classifyTrafficSource, type TrafficSource } from "@/lib/traffic-source";
+
 export type GrowthEventName =
   | "page_view"
   | "book_now_click"
@@ -33,6 +35,9 @@ export type GrowthEventName =
 export type GrowthEventParams = Record<string, string | number | boolean | null | undefined>;
 
 const SESSION_KEY = "poc-growth-session-id";
+// Per browser tab: the first page's referrer and URL say where this visit came
+// from, so it's worked out once and sent with every event of the visit.
+const SOURCE_KEY = "poc-growth-source";
 const MAX_PARAM_KEYS = 16;
 
 function sessionId() {
@@ -45,6 +50,27 @@ function sessionId() {
   } catch {
     return "session-unavailable";
   }
+}
+
+function visitSource(): TrafficSource {
+  try {
+    const saved = window.sessionStorage.getItem(SOURCE_KEY);
+    if (saved) return JSON.parse(saved) as TrafficSource;
+  } catch {
+    // Fall through and classify again.
+  }
+  const source = classifyTrafficSource({
+    referrer: document.referrer,
+    search: window.location.search,
+    userAgent: navigator.userAgent,
+    ownHost: window.location.host,
+  });
+  try {
+    window.sessionStorage.setItem(SOURCE_KEY, JSON.stringify(source));
+  } catch {
+    // Private mode: classify per event instead.
+  }
+  return source;
 }
 
 function cleanPath(path: string) {
@@ -79,6 +105,7 @@ export function trackGrowthEvent(event: GrowthEventName, params?: GrowthEventPar
     sessionId: sessionId(),
     path,
     referrer: document.referrer ? cleanPath(document.referrer) : "",
+    ...visitSource(),
     params: cleanParams(params),
   };
 

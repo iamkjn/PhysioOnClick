@@ -7,6 +7,7 @@ import { Activity, ArrowDownRight, BookmarkCheck, CalendarCheck2, Dumbbell, Glob
 
 import { db } from "@/lib/firebase";
 import { SkeletonStatGrid } from "@/components/skeleton";
+import { channelLabel, classifyTrafficSource } from "@/lib/traffic-source";
 
 type GrowthEvent = {
   id: string;
@@ -18,7 +19,15 @@ type GrowthEvent = {
   countryName?: string;
   createdAtIso?: string;
   params?: Record<string, unknown>;
+  /** Where the visit came from (facebook, google, direct...); missing on events before 21 Nov 2026. */
+  channel?: string;
+  userAgent?: string;
 };
+
+/** The visit's source, falling back to the in-app browser for older events. */
+function eventChannel(event: GrowthEvent) {
+  return event.channel || classifyTrafficSource({ userAgent: event.userAgent ?? "" }).channel;
+}
 
 function countryLabel(event: GrowthEvent) {
   if (event.countryName) return event.countryName;
@@ -171,6 +180,7 @@ export function AdminGrowthDashboard() {
     const services = new Map<string, Ranked>();
     const exercises = new Map<string, Ranked>();
     const countrySessions = new Map<string, Set<string>>();
+    const sourceSessions = new Map<string, Set<string>>();
     const chatQuestions: GrowthEvent[] = [];
 
     for (const event of list) {
@@ -188,6 +198,12 @@ export function AdminGrowthDashboard() {
         const set = countrySessions.get(country) ?? new Set<string>();
         set.add(event.sessionId);
         countrySessions.set(country, set);
+      }
+      if (event.sessionId) {
+        const channel = eventChannel(event);
+        const set = sourceSessions.get(channel) ?? new Set<string>();
+        set.add(event.sessionId);
+        sourceSessions.set(channel, set);
       }
       if (event.event === "chat_message_sent" && stringParam(event, "message_preview")) chatQuestions.push(event);
       if (event.sessionId) {
@@ -217,6 +233,10 @@ export function AdminGrowthDashboard() {
         .sort((a, b) => b.count - a.count)
         .slice(0, 6),
       chatQuestions: chatQuestions.slice(0, 6),
+      sources: [...sourceSessions.entries()]
+        .map(([channel, ids]) => ({ channel, count: ids.size }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 6),
     };
   }, [events]);
 
@@ -319,6 +339,12 @@ export function AdminGrowthDashboard() {
       </section>
 
       <div className="admin-growth-grid">
+        <InsightCard title="Where visitors came from" href="/admin/growth/sources">
+          <RankedList
+            items={stats.sources.map((row) => ({ key: row.channel, label: channelLabel(row.channel), note: "Visitors in this period", count: row.count }))}
+            empty="Visitor sources appear as new visits are tracked."
+          />
+        </InsightCard>
         <InsightCard title="Booking funnel" href="/admin/growth/book-clicks">
           <FunnelRows rows={stats.funnel} />
         </InsightCard>

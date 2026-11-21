@@ -25,6 +25,7 @@ import { LIMITS, validateEmail, validateName } from "@/lib/validation";
 import { formatPersonName } from "@/lib/name-format";
 import { PasswordInput } from "@/components/password-input";
 import { AssessmentWizard } from "@/components/assessment-wizard";
+import { ContactOptions } from "@/components/contact-options";
 import { sessionPricePence } from "@/lib/home-visit-pricing";
 import { guestBookingMatches, rememberGuestBooking } from "@/lib/guest-booking";
 
@@ -692,6 +693,7 @@ export function BookingStepTime({
         onSubmitted={(formId) => startCheckout(formId)}
         redirectingToPayment
         visitType={visit.visitType}
+        contactTopic={visit.visitType === "home" ? "home-visit" : "general"}
       />
     );
   }
@@ -1044,6 +1046,14 @@ export function BookingStepTime({
           </button>
         </div>
       </form>
+
+      <div className="book-talk-first">
+        <ContactOptions
+          topic={visit.visitType === "home" ? "home-visit" : "general"}
+          source="booking_details"
+          lead="Rather talk to someone first? Message Shivaliba and she'll get back to you."
+        />
+      </div>
     </section>
   );
 }

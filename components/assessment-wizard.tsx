@@ -10,6 +10,7 @@ import { Check } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import { BodyChartPicker } from "@/components/body-chart-picker";
+import { ContactOptions } from "@/components/contact-options";
 import { useToast } from "@/components/toast-provider";
 import {
   ASSESSMENT_LIMITS,
@@ -42,6 +43,7 @@ import {
 import { calcAge, formatAge } from "@/lib/age";
 import type { FocusArea } from "@/lib/cal-services";
 import type { VisitType } from "@/lib/home-visit";
+import type { ContactTopic } from "@/lib/practice-contact";
 import { formatPersonName } from "@/lib/name-format";
 import { regionToConditionGroups } from "@/lib/red-flag-groups";
 import { validateUKPhone } from "@/lib/validation";
@@ -64,6 +66,11 @@ interface Props {
    * "online" (the historical default).
    */
   visitType?: VisitType;
+  /**
+   * Shows a "Rather talk first?" WhatsApp/email block under the header. Set by
+   * the booking flow, where people stop at this questionnaire before paying.
+   */
+  contactTopic?: ContactTopic;
 }
 
 type StepId = "concern" | "health" | "safety" | "review";
@@ -297,6 +304,7 @@ export function AssessmentWizard({
   onSubmitted,
   redirectingToPayment = false,
   visitType,
+  contactTopic,
 }: Props) {
   const toast = useToast();
   const displayPersonName = formatPersonName(personName);
@@ -617,6 +625,16 @@ export function AssessmentWizard({
           <span>About 3 minutes</span>
         </div>
       </header>
+
+      {contactTopic ? (
+        <div className="assessment-wizard__talk">
+          <ContactOptions
+            topic={contactTopic}
+            source="booking_assessment"
+            lead="Rather talk to Shivaliba first? Message her and she'll get back to you."
+          />
+        </div>
+      ) : null}
 
       {focusAreas.length > 0 ? (
         <div className="assessment-wizard__carried" role="note">

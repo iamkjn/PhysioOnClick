@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { clientIp, isRateLimited } from "@/lib/rate-limit";
+import { classifyTrafficSource, cleanChannel, cleanReferrerHost } from "@/lib/traffic-source";
 
 const ALLOWED_EVENTS = new Set([
   "page_view",
@@ -165,11 +166,16 @@ export async function POST(request: Request) {
 
   const userAgent = cleanString(request.headers.get("user-agent"), 260);
   const country = countryFromHeaders(request.headers);
+  // The browser works out the visit's source from its referrer and landing URL.
+  // Older cached pages don't send one, so fall back to the in-app user agent.
+  const channel = cleanChannel(body.channel) || classifyTrafficSource({ userAgent }).channel;
   await db.collection("growthEvents").add({
     event,
     sessionId,
     path,
     referrer: cleanPath(body.referrer),
+    channel,
+    referrerHost: cleanReferrerHost(body.referrerHost),
     params: cleanParams(body.params),
     device: deviceFromUserAgent(userAgent),
     countryCode: country.countryCode,
