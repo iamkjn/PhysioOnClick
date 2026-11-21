@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, type Content } from "@google/generative-ai";
+import { FunctionCallingMode, GoogleGenerativeAI, type Content } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
 import { buildSystemPrompt, type PatientContext } from "@/lib/chat-prompt";
@@ -83,6 +83,8 @@ const MAX_HISTORY_TEXT_CHARS = 2000;
 const CHAT_MODELS = ["gemini-3.1-flash-lite", "gemini-3.5-flash"];
 // Per model call. A model slower than this is treated as unavailable.
 const MODEL_TIMEOUT_MS = 15_000;
+// Tools that only show the visitor a button; they return no data the model needs.
+const UI_ONLY_TOOLS = new Set(["redirect", "open_booking"]);
 
 // Places people name when asking "do you come to me?": the home-visit towns,
 // the Glasgow neighbourhoods the local Facebook groups cover, and the postcode
@@ -297,17 +299,30 @@ export async function POST(req: NextRequest) {
           };
         }
 
-        const fnResult = db
-          ? await executeFunction(call.name, fnArgs, uid ?? "", db)
-          : JSON.stringify({ error: "Database unavailable" });
+        if (UI_ONLY_TOOLS.has(call.name)) {
+          // A button-only call: the widget shows the button from
+          // actionForClient, so nothing needs sending back. Ask for the written
+          // answer with tools off. Round-tripping the call made the model reply
+          // "I've shown you the booking page" instead of answering, or nothing.
+          response = (
+            await model.generateContent({
+              contents,
+              toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
+            })
+          ).response;
+        } else {
+          const fnResult = db
+            ? await executeFunction(call.name, fnArgs, uid ?? "", db)
+            : JSON.stringify({ error: "Database unavailable" });
 
-        // Send the model's own turn back unchanged: Gemini 3 needs the
-        // thoughtSignature it carries alongside the function call.
-        contents.push(
-          response.candidates?.[0]?.content ?? { role: "model", parts: [{ functionCall: call }] },
-          { role: "user", parts: [{ functionResponse: { name: call.name, response: { result: fnResult } } }] },
-        );
-        response = (await model.generateContent({ contents })).response;
+          // Send the model's own turn back unchanged: Gemini 3 needs the
+          // thoughtSignature it carries alongside the function call.
+          contents.push(
+            response.candidates?.[0]?.content ?? { role: "model", parts: [{ functionCall: call }] },
+            { role: "user", parts: [{ functionResponse: { name: call.name, response: { result: fnResult } } }] },
+          );
+          response = (await model.generateContent({ contents })).response;
+        }
       }
       return response;
     };

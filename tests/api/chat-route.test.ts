@@ -4,6 +4,7 @@ const generateContent = vi.fn();
 const getGenerativeModel = vi.fn(() => ({ generateContent }));
 
 vi.mock("@google/generative-ai", () => ({
+  FunctionCallingMode: { AUTO: "AUTO", ANY: "ANY", NONE: "NONE" },
   GoogleGenerativeAI: vi.fn(function GoogleGenerativeAI() {
     return { getGenerativeModel };
   }),
@@ -86,6 +87,23 @@ describe("POST /api/chat", () => {
     generateContent.mockResolvedValueOnce(reply("Here is a poem about cats..."));
     const json = await (await post({ message: "Write me a long poem about my cats please" })).json();
     expect(json.reply).toMatch(/I can help with PhysioOnClick services/);
+  });
+
+  it("answers in words, with the button, when the model only asks to show a button", async () => {
+    const call = { name: "redirect", args: { label: "Home visits", url: "/physiotherapy-home-visits-glasgow" } };
+    generateContent
+      .mockResolvedValueOnce({ response: { text: () => "", functionCalls: () => [call], candidates: [] } })
+      .mockResolvedValueOnce(reply("Yes, I visit Cambuslang. The first visit is £80, all in."));
+
+    const json = await (await post({ message: "Do you visit Cambuslang?" })).json();
+
+    expect(json.reply).toBe("Yes, I visit Cambuslang. The first visit is £80, all in.");
+    expect(json.action).toMatchObject({ type: "redirect", url: "/physiotherapy-home-visits-glasgow" });
+    expect(executeFunction).not.toHaveBeenCalled();
+    // Second call: same conversation, tools switched off so it must write the answer.
+    const second = generateContent.mock.calls[1][0];
+    expect(second.toolConfig).toEqual({ functionCallingConfig: { mode: "NONE" } });
+    expect(second.contents.map((c: { role: string }) => c.role)).toEqual(["user"]);
   });
 
   it("tries the fast model first", async () => {
