@@ -17600,6 +17600,18 @@ textarea:focus {
 .admin-add-patient__carer { border: 1px solid var(--color-border); border-radius: var(--radius-card); padding: var(--space-3); margin: 0; }
 .admin-add-patient__carer legend { font-size: var(--text-sm); font-weight: 600; padding: 0 0.3rem; }
 .admin-add-patient__actions { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
+.admin-add-patient__duplicate {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  padding: var(--space-3);
+  border: 1.5px solid var(--color-warning);
+  border-radius: var(--radius-card);
+  font-size: var(--text-sm);
+}
+.admin-add-patient__duplicate p { margin: 0; }
+.admin-add-patient__duplicate ul { margin: 0; padding-left: 1.2rem; }
+.admin-add-patient__duplicate a { color: var(--color-primary-dark); font-weight: 600; }
 
 /* Admin: physio-arranged treatment packages (components/admin-treatment-packages.tsx)
    + exercises done with the physio (components/admin-exercise-done.tsx) */

@@ -47,6 +47,22 @@ export async function POST(request: Request) {
   const auth = getAdminAuth();
   if (!db || !auth) return NextResponse.json({ error: "Unavailable" }, { status: 500 });
 
+  // A patient may already have made their own account under another email
+  // (e.g. starting a booking online), so an email-only check misses them.
+  // Warn first; the admin resends with allowSameName once they've checked.
+  if (body.allowSameName !== true) {
+    const sameName = await db.collection("patients").where("displayName", "==", name).limit(5).get();
+    const possibleDuplicates = sameName.docs
+      .map((d) => ({ uid: d.id, name, email: String(d.data().email ?? "") }))
+      .filter((d) => d.email.toLowerCase() !== email);
+    if (possibleDuplicates.length) {
+      return NextResponse.json(
+        { error: `There is already an account for ${name}.`, possibleDuplicates },
+        { status: 409 },
+      );
+    }
+  }
+
   let uid: string;
   let existingAccount = false;
   try {

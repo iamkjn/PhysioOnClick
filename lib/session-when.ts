@@ -15,3 +15,17 @@ export function formatSessionWhen(
     timeZone: "Europe/London",
   });
 }
+
+/** Physio-added sessions (source "admin-manual") record a date only. */
+export function isDateOnlyBooking(data: Record<string, unknown>): boolean {
+  return data.dateOnly === true || data.source === "admin-manual";
+}
+
+/**
+ * Start Session (the live clinical wizard) is for sessions booked online only.
+ * Physio-added sessions are recorded by hand on the patient's package, so the
+ * admin screens never offer it for them.
+ */
+export function canStartSession(booking: { dateOnly?: boolean }): boolean {
+  return booking.dateOnly !== true;
+}

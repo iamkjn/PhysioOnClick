@@ -63,6 +63,22 @@ describe("POST /api/admin/patients", () => {
     expect(createUser).not.toHaveBeenCalled();
   });
 
+  it("warns before creating a second account under a name that already has one", async () => {
+    mem.store.set("patients/selfSignupUid", { displayName: "John Smith", email: "john@hotmail.example" });
+    const res = await POST(req({ name: "john smith", email: "john@icloud.example" }));
+    expect(res.status).toBe(409);
+    expect(await res.json()).toMatchObject({
+      possibleDuplicates: [{ uid: "selfSignupUid", email: "john@hotmail.example", name: "John Smith" }],
+    });
+    expect(createUser).not.toHaveBeenCalled();
+    expect(mem.get("patients/newPatientUid1")).toBeUndefined();
+
+    // The admin confirmed it really is a different person.
+    const again = await POST(req({ name: "john smith", email: "john@icloud.example", allowSameName: true }));
+    expect(again.status).toBe(201);
+    expect(mem.get("patients/newPatientUid1")).toMatchObject({ displayName: "John Smith", email: "john@icloud.example" });
+  });
+
   it("validates", async () => {
     expect((await POST(req({ name: "", email: "a@example.com" }))).status).toBe(400);
     expect((await POST(req({ name: "A", email: "nope" }))).status).toBe(400);

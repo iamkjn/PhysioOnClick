@@ -1,13 +1,14 @@
 // lib/age.ts
 // Shared age helpers. DOB is stored as an ISO date string ("YYYY-MM-DD") on
-// `patients`/`users` docs and on `dependents`. The default backfilled value for
-// pre-existing accounts is DEFAULT_DOB — treat an age derived from it as
-// "unknown" in the UI where that distinction matters.
+// `patients`/`users` docs and on `dependents`. Accounts made without a real
+// date of birth (Google sign-ups, accounts created while booking, carers) are
+// backfilled with DEFAULT_DOB. That is a placeholder, not an age: calcAge and
+// formatAge treat it as unknown so no screen shows "26 yrs" for it.
 
 export const DEFAULT_DOB = "2000-01-01";
 
 export function calcAge(dob: string | undefined | null, now: Date = new Date()): number | null {
-  if (!dob) return null;
+  if (!dob || dob === DEFAULT_DOB) return null;
   const d = new Date(dob);
   if (Number.isNaN(d.getTime())) return null;
   let age = now.getFullYear() - d.getFullYear();

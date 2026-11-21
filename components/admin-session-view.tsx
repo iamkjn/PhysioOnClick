@@ -1,7 +1,7 @@
 // components/admin-session-view.tsx
 "use client";
 
-import { formatSessionWhen } from "@/lib/session-when";
+import { canStartSession, formatSessionWhen } from "@/lib/session-when";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -121,7 +121,7 @@ export function AdminSessionView({ bookingId }: Props) {
               View full patient record →
             </Link>
           )}
-          {displayBookingStatus(booking) === "upcoming" && (
+          {displayBookingStatus(booking) === "upcoming" && canStartSession(booking) && (
             <Link
               href={`/admin/session/${bookingId}/start`}
               style={{ fontSize: "var(--text-sm)", color: "var(--color-primary-dark)", fontWeight: 600 }}

@@ -178,6 +178,52 @@ describe('AdminBookingsTable', () => {
     expect(screen.getByText('Unavailable')).toBeInTheDocument()
   })
 
+  it('offers Start Session only for online bookings, not physio-added ones', () => {
+    render(<AdminBookingsTable />)
+    act(() => {
+      emit?.({
+        docs: [
+          {
+            id: 'manual-visit',
+            data: () => ({
+              fullName: 'Manual Patient',
+              email: 'manual@example.com',
+              service: 'Follow-Up (home visit)',
+              appointmentDate: '2099-01-03',
+              appointmentTime: '18:00',
+              appointmentLabel: 'Sat 3 Jan 2099',
+              status: 'upcoming',
+              source: 'admin-manual',
+              dateOnly: true,
+              patientId: 'patient-manual',
+              bookedBy: 'patient-manual',
+            }),
+          },
+          {
+            id: 'online-booking',
+            data: () => ({
+              fullName: 'Online Patient',
+              email: 'online@example.com',
+              service: 'Follow-up',
+              appointmentDate: '2099-01-04',
+              appointmentTime: '10:00',
+              appointmentLabel: '4 Jan 2099 at 10:00',
+              status: 'upcoming',
+              calBookingUid: 'cal-online',
+              patientId: 'patient-online',
+              bookedBy: 'patient-online',
+            }),
+          },
+        ],
+      })
+    })
+
+    const startLinks = screen.getAllByRole('link', { name: 'Start Session' })
+    expect(startLinks).toHaveLength(1)
+    expect(startLinks[0]).toHaveAttribute('href', '/admin/session/online-booking/start')
+    expect(screen.getByText('Added manually')).toBeInTheDocument()
+  })
+
   it('opens submitted assessments in the canonical session workspace', () => {
     render(<AdminBookingsTable />)
     act(() => {

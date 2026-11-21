@@ -9,6 +9,7 @@ import { formatPersonName } from "@/lib/name-format";
 import { SkeletonTable } from "@/components/skeleton";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useToast } from "@/components/toast-provider";
+import { canStartSession, isDateOnlyBooking } from "@/lib/session-when";
 
 type BookingRecord = {
   id: string;
@@ -28,6 +29,8 @@ type BookingRecord = {
   assessmentFormId?: string;
   /** Glasgow-area home visit address; absent for video bookings. */
   homeVisitAddress?: string;
+  /** Physio-added session (source "admin-manual"): recorded by hand, never started here. */
+  dateOnly?: boolean;
 };
 
 type StatusFilter = "all" | "pending" | "upcoming" | "completed" | "cancelled";
@@ -123,6 +126,7 @@ export function AdminBookingsTable() {
             d.visitType === "home" && typeof d.homeVisitAddress === "string" && d.homeVisitAddress
               ? d.homeVisitAddress
               : undefined,
+          ...(isDateOnlyBooking(d) ? { dateOnly: true } : {}),
         };
       }));
       setLoading(false);
@@ -368,7 +372,7 @@ export function AdminBookingsTable() {
                     </div>
                   </td>
                   <td>
-                    {!item.summaryId && item.patientId && item.displayStatus !== "cancelled" && (
+                    {!item.summaryId && item.patientId && item.displayStatus !== "cancelled" && canStartSession(item) && (
                       // "Start Session" is the only way to add a summary now — the old
                       // one-shot "Write summary" quick form was retired and its fields
                       // (pain/recovery/outcome/notes/follow-up/streak goal/exercise
@@ -377,6 +381,13 @@ export function AdminBookingsTable() {
                       <Link href={`/admin/session/${item.id}/start`} className="summary-trigger">
                         Start Session
                       </Link>
+                    )}
+                    {!item.summaryId && item.displayStatus !== "cancelled" && !canStartSession(item) && (
+                      // Physio-added sessions are recorded by hand on the patient's
+                      // package, so there is no live session to start for them.
+                      <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>
+                        Added manually
+                      </span>
                     )}
                     {!item.summaryId && item.displayStatus === "cancelled" && (
                       <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontWeight: 600, fontFamily: "var(--font-sans)" }}>

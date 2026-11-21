@@ -14,6 +14,7 @@ import {
 import { Activity, CalendarDays, ClipboardCheck, FileText } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { getPatientBookings, displayBookingStatus, type BookingRecord } from "@/lib/patient-bookings";
+import { canStartSession } from "@/lib/session-when";
 import { getSessionSummary, type SessionSummary } from "@/lib/session-summaries";
 import { cancelCalBooking } from "@/app/admin/actions";
 import { calcAge } from "@/lib/age";
@@ -618,7 +619,7 @@ export function AdminPatientDetail({ patientUid, initialPersonId }: Props) {
                     <strong>
                       {b.service} · {b.sessionDate.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                     </strong>
-                    {status !== "cancelled" && summary === null && (
+                    {status !== "cancelled" && summary === null && canStartSession(b) && (
                       // "Start Session" is the only way to add a summary now — it opens
                       // the full screening -> self-tests -> diagnosis -> exercises ->
                       // summary wizard. The old one-shot "Write summary" quick form was

@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { formatPersonName } from "@/lib/name-format";
+import { isDateOnlyBooking } from "@/lib/session-when";
 
 export interface BookingRecord {
   id: string;
@@ -64,10 +65,9 @@ function resolveSessionDate(data: Record<string, unknown>): Date {
   return new Date(0);
 }
 
-/** Physio-added sessions (source "admin-manual") record a date only. */
-export function isDateOnlyBooking(data: Record<string, unknown>): boolean {
-  return data.dateOnly === true || data.source === "admin-manual";
-}
+// Physio-added sessions (source "admin-manual") record a date only. Lives in
+// lib/session-when so screens that don't load this module can share it.
+export { isDateOnlyBooking };
 
 function resolveAssessmentCompletedAt(data: Record<string, unknown>): Date | null {
   const ts = data.assessmentCompletedAt as { toDate?: () => Date } | undefined;

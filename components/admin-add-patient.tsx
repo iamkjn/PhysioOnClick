@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserPlus } from "lucide-react";
 import { auth } from "@/lib/firebase";
@@ -16,6 +17,9 @@ export function AdminAddPatient() {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Accounts that already carry this name (e.g. the patient signed up
+  // themselves under another email). Shown before anything is created.
+  const [duplicates, setDuplicates] = useState<{ uid: string; email: string }[]>([]);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -36,10 +40,12 @@ export function AdminAddPatient() {
     }));
     setOpen(true);
   }, []);
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (k === "name" || k === "email") setDuplicates([]);
     setForm((f) => ({ ...f, [k]: e.target.value }));
+  };
 
-  async function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent, allowSameName = false) {
     e.preventDefault();
     setSaving(true);
     setError(null);
@@ -49,9 +55,18 @@ export function AdminAddPatient() {
       const res = await fetch("/api/admin/patients", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, allowSameName }),
       });
-      const json = (await res.json().catch(() => ({}))) as { uid?: string; error?: string; existing?: boolean };
+      const json = (await res.json().catch(() => ({}))) as {
+        uid?: string;
+        error?: string;
+        existing?: boolean;
+        possibleDuplicates?: { uid: string; email: string }[];
+      };
+      if (res.status === 409 && json.possibleDuplicates?.length) {
+        setDuplicates(json.possibleDuplicates);
+        return;
+      }
       if (res.status === 409 && json.uid) {
         toast.show("This patient already has an account. Opening it.", "success");
         router.push(`/admin/patients/${json.uid}`);
@@ -98,6 +113,24 @@ export function AdminAddPatient() {
           <label>Relationship<input className="input" placeholder="e.g. Partner, Daughter" value={form.carerRelationship} onChange={set("carerRelationship")} /></label>
         </div>
       </fieldset>
+      {duplicates.length > 0 && (
+        <div className="admin-add-patient__duplicate" role="alert">
+          <p>
+            <strong>{form.name.trim()} may already have an account.</strong> Check it&apos;s not the same person before
+            creating another:
+          </p>
+          <ul>
+            {duplicates.map((d) => (
+              <li key={d.uid}>
+                <Link href={`/admin/patients/${d.uid}`}>{d.email || "No email on file"}</Link>
+              </li>
+            ))}
+          </ul>
+          <button type="button" className="button small" disabled={saving} onClick={(e) => void submit(e, true)}>
+            It&apos;s a different person, create anyway
+          </button>
+        </div>
+      )}
       {error && <p className="field-error" role="alert">{error}</p>}
       <div className="admin-add-patient__actions">
         <button type="submit" className="button primary" disabled={saving}>{saving ? "Creating…" : "Create patient"}</button>

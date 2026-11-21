@@ -7,7 +7,12 @@ describe("calcAge", () => {
   it("returns whole years, not yet counting an upcoming birthday", () => {
     expect(calcAge("2000-09-10", now)).toBe(25);
     expect(calcAge("2000-09-09", now)).toBe(26);
-    expect(calcAge("2000-01-01", now)).toBe(26);
+    expect(calcAge("2000-01-02", now)).toBe(26);
+  });
+
+  it("treats the placeholder DOB (no real date given) as unknown, never as an age", () => {
+    expect(calcAge(DEFAULT_DOB, now)).toBeNull();
+    expect(formatAge(DEFAULT_DOB)).toBe("");
   });
 
   it("treats missing / invalid / out-of-range input as unknown", () => {
@@ -18,7 +23,7 @@ describe("calcAge", () => {
   });
 
   it("formatAge is terse and blank when unknown", () => {
-    expect(formatAge("2000-01-01")).toMatch(/^\d+ yrs?$/);
+    expect(formatAge("2000-01-02")).toMatch(/^\d+ yrs?$/);
     expect(formatAge(undefined)).toBe("");
   });
 

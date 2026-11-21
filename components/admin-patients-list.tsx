@@ -11,8 +11,12 @@ import { Avatar } from "@/components/avatar";
 import { SkeletonRow } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 import { AdminAddPatient } from "@/components/admin-add-patient";
+import { normalizeCarerEmail, readCarerContact, readCarerEmails } from "@/lib/carer-access";
 
-type PersonKind = "primary" | "dependent";
+// A carer signs in with their own email, which (like any sign-in) writes a
+// bare `patients/{uid}` doc with no name. Those accounts are listed as carers
+// of the patient whose `carerEmails` names them, not as primary patients.
+type PersonKind = "primary" | "dependent" | "carer";
 
 interface PersonRow {
   key: string;
@@ -28,15 +32,25 @@ interface PersonRow {
   relationship?: string;
   ownerName?: string;
   ownerEmail?: string;
+  // carer only: who they look after, e.g. "Partner of Edwin Argo"
+  caresFor?: string;
 }
 
-type Filter = "all" | "primary" | "dependent";
+type Filter = "all" | "primary" | "dependent" | "carer";
 
 const FILTER_LABEL: Record<Filter, string> = {
   all: "All",
   primary: "Primary",
   dependent: "Dependents",
+  carer: "Carers",
 };
+
+interface CaredFor {
+  patientId: string;
+  patientName: string;
+  carerName: string;
+  relationship: string;
+}
 
 export function AdminPatientsList() {
   const [rows, setRows] = useState<PersonRow[]>([]);
@@ -54,10 +68,41 @@ export function AdminPatientsList() {
     ])
       .then(([patientsSnap, dependentsSnap]) => {
         const owners = new Map<string, { name: string; email: string }>();
+        const caredForByEmail = new Map<string, CaredFor[]>();
+        for (const d of patientsSnap.docs) {
+          const data = d.data();
+          const contact = readCarerContact(data);
+          for (const carerEmail of readCarerEmails(data)) {
+            const named = contact && contact.email === carerEmail ? contact : null;
+            const list = caredForByEmail.get(carerEmail) ?? [];
+            list.push({
+              patientId: d.id,
+              patientName: formatPersonName(data.displayName as string | undefined, "a patient"),
+              carerName: named?.name ?? "",
+              relationship: named?.relationship ?? "",
+            });
+            caredForByEmail.set(carerEmail, list);
+          }
+        }
         const primaries: PersonRow[] = patientsSnap.docs.map((d) => {
           const data = d.data();
+          const email = (data.email as string) || "";
+          const caredFor = caredForByEmail.get(normalizeCarerEmail(email));
+          if (caredFor?.length) {
+            const named = caredFor.find((c) => c.carerName);
+            return {
+              key: `c:${d.id}`,
+              kind: "carer" as const,
+              href: `/admin/patients/${caredFor[0].patientId}`,
+              name: formatPersonName((data.displayName as string) || named?.carerName, "Unnamed carer"),
+              photoUrl: (data.photoUrl as string) || undefined,
+              email,
+              relationship: "Carer",
+              caresFor: `${caredFor[0].relationship || "Carer"} of ${caredFor.map((c) => c.patientName).join(", ")}`,
+            };
+          }
           const name = formatPersonName(data.displayName as string | undefined, "Unnamed");
-          owners.set(d.id, { name, email: (data.email as string) || "" });
+          owners.set(d.id, { name, email });
           return {
             key: `p:${d.id}`,
             kind: "primary" as const,
@@ -65,7 +110,7 @@ export function AdminPatientsList() {
             name,
             photoUrl: (data.photoUrl as string) || undefined,
             dob: (data.dob as string) || undefined,
-            email: (data.email as string) || "",
+            email,
             phoneNumber: (data.phoneNumber as string) || undefined,
           };
         });
@@ -108,13 +153,15 @@ export function AdminPatientsList() {
         (r.phoneNumber ?? "").toLowerCase().includes(q) ||
         (r.relationship ?? "").toLowerCase().includes(q) ||
         (r.ownerName ?? "").toLowerCase().includes(q) ||
-        (r.ownerEmail ?? "").toLowerCase().includes(q)
+        (r.ownerEmail ?? "").toLowerCase().includes(q) ||
+        (r.caresFor ?? "").toLowerCase().includes(q)
       );
     });
   }, [rows, search, filter]);
 
   const primaryCount = rows.filter((r) => r.kind === "primary").length;
-  const dependentCount = rows.length - primaryCount;
+  const dependentCount = rows.filter((r) => r.kind === "dependent").length;
+  const carerCount = rows.filter((r) => r.kind === "carer").length;
 
   return (
     <div className="admin-directory">
@@ -129,6 +176,7 @@ export function AdminPatientsList() {
             <span><strong>{filtered.length}</strong> shown</span>
             <span><strong>{primaryCount}</strong> primary</span>
             <span><strong>{dependentCount}</strong> dependent</span>
+            {carerCount > 0 && <span><strong>{carerCount}</strong> {carerCount === 1 ? "carer" : "carers"}</span>}
           </div>
         )}
       </section>
@@ -177,7 +225,9 @@ export function AdminPatientsList() {
             const sub =
               p.kind === "primary"
                 ? `${p.email}${p.phoneNumber ? ` · ${p.phoneNumber}` : ""}${age !== null ? ` · ${age} yrs` : ""}`
-                : `${p.relationship} of ${p.ownerName}${age !== null ? ` · ${age} yrs` : ""}`;
+                : p.kind === "carer"
+                  ? `${p.caresFor}${p.email ? ` · ${p.email}` : ""}`
+                  : `${p.relationship} of ${p.ownerName}${age !== null ? ` · ${age} yrs` : ""}`;
             return (
               <Link
                 key={p.key}
@@ -189,7 +239,7 @@ export function AdminPatientsList() {
                 <span className="admin-patient-row-copy">
                   <strong>
                     {p.name}
-                    {p.kind === "dependent" && (
+                    {p.kind !== "primary" && (
                       <span className="dashboard-status-pill admin-patient-kind-pill">
                         {p.relationship}
                       </span>
