@@ -77,7 +77,17 @@ const HOST_PATTERN = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-
 
 /** Human label for a stored channel, e.g. "facebook" → "Facebook". */
 export function channelLabel(channel: string): string {
-  return CHANNEL_LABELS[channel] ?? channel;
+  const known = CHANNEL_LABELS[channel];
+  if (known) return known;
+  // A tagged link such as ?utm_source=fb-east-kilbride → "Facebook · East Kilbride",
+  // so each group post shows as its own source.
+  const tagged = channel.match(/^(fb|ig|gbp)-(.+)$/);
+  if (tagged) {
+    const network = { fb: "Facebook", ig: "Instagram", gbp: "Google Business Profile" }[tagged[1] as "fb" | "ig" | "gbp"];
+    const place = tagged[2].split(/[-.]+/).filter(Boolean).map((w) => w[0]!.toUpperCase() + w.slice(1)).join(" ");
+    return `${network} · ${place}`;
+  }
+  return channel;
 }
 
 /** Validates a channel sent by a browser; returns "" if it isn't a plain short slug. */
@@ -100,9 +110,13 @@ function channelFromHost(host: string): string {
 
 function channelFromUtm(source: string): string {
   const value = source.trim().toLowerCase();
-  if (/facebook|^fb$|^fb[_-]/.test(value)) return "facebook";
+  // A tag naming the post's place (fb-east-kilbride) is kept whole so the
+  // Growth tab can tell group posts apart; channelLabel() makes it readable.
+  const tagged = cleanChannel(value.replace(/[^a-z0-9.-]+/g, "-"));
+  if (/^(fb|ig|gbp)-[a-z0-9]/.test(tagged)) return tagged;
+  if (/facebook|^fb$/.test(value)) return "facebook";
   if (/instagram|^ig$/.test(value)) return "instagram";
-  if (/google|gbp|^gmb$/.test(value)) return "google";
+  if (/google|^gbp$|^gmb$/.test(value)) return "google";
   if (/chatgpt|openai/.test(value)) return "chatgpt";
   return cleanChannel(value.replace(/[^a-z0-9.-]+/g, "-").replace(/^-+|-+$/g, "")) || "other";
 }

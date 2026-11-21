@@ -32,6 +32,15 @@ describe("classifyTrafficSource", () => {
     expect(classifyTrafficSource({ referrer, userAgent: SAFARI, ownHost: own }).channel).toBe(channel);
   });
 
+  it("keeps a group tag so each Facebook group post counts separately, even inside Facebook's app", () => {
+    expect(classifyTrafficSource({ search: "?utm_source=fb-east-kilbride", userAgent: FB_IPHONE, ownHost: own }).channel).toBe(
+      "fb-east-kilbride",
+    );
+    expect(channelLabel("fb-east-kilbride")).toBe("Facebook · East Kilbride");
+    expect(channelLabel("fb-uddingston-bothwell")).toBe("Facebook · Uddingston Bothwell");
+    expect(classifyTrafficSource({ search: "?utm_source=facebook", ownHost: own }).channel).toBe("facebook");
+  });
+
   it("prefers an explicit utm_source", () => {
     expect(classifyTrafficSource({ search: "?utm_source=gbp&utm_medium=organic", ownHost: own }).channel).toBe("google");
     expect(classifyTrafficSource({ search: "?utm_source=Care Home Leaflet", ownHost: own }).channel).toBe("care-home-leaflet");
