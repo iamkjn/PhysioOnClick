@@ -87,7 +87,11 @@ export function formatDateRange(startDate: string, endDate: string): string {
     const part = (o: Intl.DateTimeFormatOptions) => d.toLocaleDateString("en-GB", { timeZone: "UTC", ...o });
     return `${part({ weekday: "short" })} ${d.getUTCDate()} ${part({ month: "short" })}${withYear ? ` ${d.getUTCFullYear()}` : ""}`;
   };
-  if (isDateKey(startDate) && isDateKey(endDate)) return `${fmt(startDate, false)} – ${fmt(endDate, true)}`;
+  if (isDateKey(startDate) && isDateKey(endDate)) {
+    // A one-day plan (a single visit) reads as that day, not "Sun 22 Nov – Sun 22 Nov".
+    if (startDate === endDate) return fmt(startDate, true);
+    return `${fmt(startDate, false)} – ${fmt(endDate, true)}`;
+  }
   if (isDateKey(startDate)) return `from ${fmt(startDate, true)}`;
   return "";
 }

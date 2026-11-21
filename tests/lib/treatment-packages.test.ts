@@ -39,6 +39,9 @@ describe("dates", () => {
     expect(formatDateRange("2026-11-15", "2026-11-21")).toBe("Sun 15 Nov – Sat 21 Nov 2026");
     expect(formatDateRange("", "")).toBe("");
   });
+  it("shows a one-day plan as a single date", () => {
+    expect(formatDateRange("2026-11-22", "2026-11-22")).toBe("Sun 22 Nov 2026");
+  });
   it("converts London wall time in GMT and BST", () => {
     expect(londonWallTimeToDate("2026-11-16", "12:00").toISOString()).toBe("2026-11-16T12:00:00.000Z");
     expect(londonWallTimeToDate("2026-07-01", "12:00").toISOString()).toBe("2026-07-01T11:00:00.000Z");
