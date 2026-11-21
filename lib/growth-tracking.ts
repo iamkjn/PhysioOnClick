@@ -30,7 +30,8 @@ export type GrowthEventName =
   | "chat_message_sent"
   | "chat_booking_intent"
   | "whatsapp_click"
-  | "email_click";
+  | "email_click"
+  | "visit_request_sent";
 
 export type GrowthEventParams = Record<string, string | number | boolean | null | undefined>;
 
@@ -52,7 +53,8 @@ function sessionId() {
   }
 }
 
-function visitSource(): TrafficSource {
+/** Where this visit came from (worked out once per tab); also sent with form submissions. */
+export function currentVisitSource(): TrafficSource {
   try {
     const saved = window.sessionStorage.getItem(SOURCE_KEY);
     if (saved) return JSON.parse(saved) as TrafficSource;
@@ -105,7 +107,7 @@ export function trackGrowthEvent(event: GrowthEventName, params?: GrowthEventPar
     sessionId: sessionId(),
     path,
     referrer: document.referrer ? cleanPath(document.referrer) : "",
-    ...visitSource(),
+    ...currentVisitSource(),
     params: cleanParams(params),
   };
 

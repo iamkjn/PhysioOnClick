@@ -121,7 +121,7 @@ const SITE_ACTION_RULES: Array<{
     // "Do you visit Cambuslang?" — area and home-visit questions are the ones
     // local buyers ask, so they must never be treated as off-topic.
     pattern: AREA_QUESTION_PATTERN,
-    action: { type: "redirect", label: "Home visits in Glasgow", url: "/physiotherapy-home-visits-glasgow" },
+    action: { type: "redirect", label: "Request a home visit", url: "/request-visit" },
   },
   {
     pattern: /\b(invoice|receipt|insurance|claim|reimbursement|cashback|policy|insurer)\b/i,

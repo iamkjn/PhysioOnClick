@@ -4,6 +4,8 @@ import { collection, doc, onSnapshot, orderBy, query, limit, updateDoc } from "f
 import { db } from "@/lib/firebase";
 import { SkeletonTable } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
+import { channelLabel } from "@/lib/traffic-source";
+import { timeLabels } from "@/lib/visit-request";
 
 type EnquiryRecord = {
   id: string;
@@ -14,7 +16,24 @@ type EnquiryRecord = {
   message: string;
   status: string;
   createdAtLabel: string;
+  /** Set on "Request a home visit" call-back requests. */
+  isVisitRequest: boolean;
+  postcode: string;
+  covered: boolean;
+  visitTimes: string[];
+  channel: string;
 };
+
+function telHref(phone: string) {
+  const digits = phone.replace(/[^\d+]/g, "");
+  return `tel:${digits.startsWith("0") ? `+44${digits.slice(1)}` : digits}`;
+}
+
+/** Opens Admin → Patients with "Add patient" pre-filled from a call-back request. */
+export function addPatientHref(item: { name: string; phone: string }) {
+  const params = new URLSearchParams({ add: "1", name: item.name, phone: item.phone });
+  return `/admin/patients?${params.toString()}`;
+}
 
 // dashboard-status-pill only ships status-pending/-confirmed/-cancelled
 // modifiers (warning/success/error) — "new" reuses the warning-toned pending
@@ -49,10 +68,15 @@ export function AdminEnquiriesTable() {
           id: d.id,
           name:           String(data.name || ""),
           email:          String(data.email || ""),
-          phone:          String(data.phone || "Not provided"),
+          phone:          String(data.phone || ""),
           service:        String(data.service || ""),
           message:        String(data.message || ""),
           status:         String(data.status || "new"),
+          isVisitRequest: data.kind === "visit-request",
+          postcode:       String(data.postcode || ""),
+          covered:        data.covered === true,
+          visitTimes:     Array.isArray(data.visitTimes) ? data.visitTimes.map(String) : [],
+          channel:        String(data.channel || ""),
           createdAtLabel: ts
             ? ts.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
             : "Just now",
@@ -83,7 +107,7 @@ export function AdminEnquiriesTable() {
             Enquiries
           </span>
           <h2>
-            Latest contact form submissions
+            Call-back requests and contact form messages
           </h2>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
@@ -111,7 +135,7 @@ export function AdminEnquiriesTable() {
                 <th scope="col">Received</th>
                 <th scope="col">Name</th>
                 <th scope="col">Service</th>
-                <th scope="col">Email</th>
+                <th scope="col">Contact</th>
                 <th scope="col">Message</th>
                 <th scope="col">Status</th>
               </tr>
@@ -131,9 +155,24 @@ export function AdminEnquiriesTable() {
                       {item.service}
                     </td>
                     <td style={{ color: "var(--color-text-secondary)", fontSize: "var(--text-xs)", fontFamily: "var(--font-sans)" }}>
-                      {item.email}
+                      {item.phone ? (
+                        <a href={telHref(item.phone)} style={{ fontWeight: 700, fontSize: "var(--text-sm)" }}>{item.phone}</a>
+                      ) : null}
+                      {item.email ? <div>{item.email}</div> : null}
+                      {item.isVisitRequest ? (
+                        <div style={{ marginTop: 4 }}>
+                          <a href={addPatientHref(item)} className="button small secondary">Add as patient</a>
+                        </div>
+                      ) : null}
                     </td>
                     <td className="dashboard-message-cell">
+                      {item.isVisitRequest ? (
+                        <p style={{ margin: "0 0 4px", color: "var(--color-navy)", fontFamily: "var(--font-sans)", fontWeight: 600 }}>
+                          {item.postcode} {item.covered ? "(in area)" : "(outside the home-visit area)"}
+                          {item.visitTimes.length ? ` · Suits: ${timeLabels(item.visitTimes).join(", ")}` : ""}
+                          {item.channel && item.channel !== "direct" ? ` · From ${channelLabel(item.channel)}` : ""}
+                        </p>
+                      ) : null}
                       <p
                         style={{
                           margin: 0,

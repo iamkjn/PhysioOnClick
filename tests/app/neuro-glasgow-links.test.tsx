@@ -30,7 +30,7 @@ describe("neuro physiotherapy Glasgow page", () => {
     expect(section).toHaveTextContent(APPOINTMENT_HOURS_SENTENCE);
     expect(section).toHaveTextContent(`${homeVisitPrices.initial} for the home assessment`);
     expect(section).toHaveTextContent(/GP or specialist team must confirm/);
-    expect(section?.querySelector('a[href="/book?visit=home"]')).not.toBeNull();
+    expect(section?.querySelector('a[href="/request-visit"]')).not.toBeNull();
   });
 
   it("is the only service page with that section", async () => {

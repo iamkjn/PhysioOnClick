@@ -8,6 +8,7 @@ import type { User } from "firebase/auth";
 
 import { SkeletonStatGrid, SkeletonText } from "@/components/skeleton";
 import { track } from "@/lib/analytics";
+import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 import { accountUserOrNull } from "@/lib/guest-booking";
 
 // home-dashboard.tsx's own tree (person-switcher.tsx -> lib/dependents.ts,
@@ -126,11 +127,11 @@ export function HomeHeroSection({
           <div className="button-row">
             <Link
               className="button primary"
-              href="/book?visit=home"
+              href={VISIT_REQUEST_PATH}
               prefetch
               onClick={() => track("book_now_click", { source: "homepage_hero" })}
             >
-              Book a home visit
+              Request a home visit
             </Link>
             <Link className="button secondary inverted" href="/physiotherapy-home-visits-glasgow" prefetch>
               Check areas &amp; prices

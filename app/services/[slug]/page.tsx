@@ -22,6 +22,7 @@ import { ServiceReviews } from "@/components/service-reviews";
 import { curatedReviewsForService } from "@/lib/trustpilot-curated";
 import { TrackGrowthView } from "@/components/track-view";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 import { TrackedContentLink } from "@/components/tracked-content-link";
 
 // Same reasoning as /blog/[slug]: build the six service pages once so the
@@ -232,11 +233,11 @@ export default async function ServiceDetailPage({
           <div className="service-local-actions">
             <TrackedBookLink
               className="button primary"
-              href="/book?visit=home"
+              href={VISIT_REQUEST_PATH}
               serviceSlug={service.slug}
               source="service_detail_glasgow_home_visits"
             >
-              Book a home visit
+              Request a home visit
             </TrackedBookLink>
             <Link className="inline-link" href="/physiotherapy-home-visits-glasgow">
               How home visits in Glasgow work

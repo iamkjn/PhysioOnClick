@@ -79,7 +79,7 @@ describe("POST /api/chat", () => {
       generateContent.mockResolvedValueOnce(reply("Yes, I visit there."));
       const json = await (await post({ message })).json();
       expect(json.reply).toBe("Yes, I visit there.");
-      expect(json.action).toMatchObject({ url: "/physiotherapy-home-visits-glasgow" });
+      expect(json.action).toMatchObject({ url: "/request-visit" });
     },
   );
 

@@ -40,10 +40,10 @@ describe('HomeHeroSection', () => {
     expect(copy.indexOf('Home assessment £80')).toBeLessThan(copy.indexOf('£40 by video anywhere in the UK'))
   })
 
-  it('books a home visit first and makes the home-visits page prominent', () => {
+  it('leads with the short home-visit request form and makes the home-visits page prominent', () => {
     render(<HomeHeroSection {...props} />)
-    const book = screen.getByRole('link', { name: 'Book a home visit' })
-    expect(book).toHaveAttribute('href', '/book?visit=home')
+    const book = screen.getByRole('link', { name: 'Request a home visit' })
+    expect(book).toHaveAttribute('href', '/request-visit')
     expect(book).toHaveClass('button', 'primary')
     const homeVisits = screen.getByRole('link', { name: 'Check areas & prices' })
     expect(homeVisits).toHaveAttribute('href', '/physiotherapy-home-visits-glasgow')

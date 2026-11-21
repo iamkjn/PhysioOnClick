@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { ContactOptions } from "@/components/contact-options";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 import { APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
@@ -90,11 +91,11 @@ export default function GlasgowPage() {
           <div className="button-row">
             <TrackedBookLink
               className="button primary"
-              href="/book?visit=home"
+              href={VISIT_REQUEST_PATH}
               source="glasgow_page_home_visit"
               event="book_now_click"
             >
-              Book a home visit
+              Request a home visit
             </TrackedBookLink>
             <TrackedBookLink
               className="button secondary"
@@ -222,8 +223,8 @@ export default function GlasgowPage() {
             <h2>Book a physiotherapy home visit in Glasgow</h2>
             <p>Choose a home visit or a video appointment, or get in touch if you have a question first.</p>
             <div className="button-row" style={{ justifyContent: "center" }}>
-              <Link className="button secondary cta-white" href="/book?visit=home">
-                Book a home visit
+              <Link className="button secondary cta-white" href={VISIT_REQUEST_PATH}>
+                Request a home visit
               </Link>
               <Link className="button secondary cta-white" href="/book">
                 Book a video appointment

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { ContactOptions } from "@/components/contact-options";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 import { APPOINTMENT_HOURS, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { serviceLabelFor } from "@/lib/cal-services";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
@@ -155,15 +156,20 @@ export default function ManualTherapyGlasgowPage() {
           <div className="button-row">
             <TrackedBookLink
               className="button primary"
-              href="/book?visit=home"
+              href={VISIT_REQUEST_PATH}
               source="manual_therapy_page"
               event="book_now_click"
             >
-              Book a home visit
+              Request a home visit
             </TrackedBookLink>
-            <Link className="button secondary" href="/pricing" prefetch>
-              See all prices
-            </Link>
+            <TrackedBookLink
+              className="button secondary"
+              href="/book?visit=home"
+              source="manual_therapy_page_online"
+              event="book_now_click"
+            >
+              Book and pay online
+            </TrackedBookLink>
           </div>
         </div>
         <div className="page-hero-aside checklist-panel">
@@ -254,14 +260,15 @@ export default function ManualTherapyGlasgowPage() {
             <h2>Book a home visit with hands-on treatment</h2>
             <p>
               {formatPounds(sessionPricePence("initial-assessment", "home"))} for the assessment, all in. Choose
-              &ldquo;Home visit in Glasgow&rdquo;, enter your postcode and pick a time.
+              &ldquo;Home visit in Glasgow&rdquo;, enter your postcode and pick a time, or leave your number and we&rsquo;ll
+              call you.
             </p>
             <div className="button-row" style={{ justifyContent: "center" }}>
-              <Link className="button secondary cta-white" href="/book?visit=home">
-                Book a home visit
+              <Link className="button secondary cta-white" href={VISIT_REQUEST_PATH}>
+                Request a home visit
               </Link>
-              <Link className="button inverted" href="/contact">
-                Ask a question first
+              <Link className="button inverted" href="/book?visit=home">
+                Book and pay online
               </Link>
             </div>
           </div>

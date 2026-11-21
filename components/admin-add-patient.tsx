@@ -1,7 +1,7 @@
 // components/admin-add-patient.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserPlus } from "lucide-react";
 import { auth } from "@/lib/firebase";
@@ -25,6 +25,17 @@ export function AdminAddPatient() {
     carerEmail: "",
     carerRelationship: "",
   });
+  // "Add as patient" on a call-back request links here with ?add=1&name=…&phone=…
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("add") !== "1") return;
+    setForm((f) => ({
+      ...f,
+      name: (params.get("name") ?? "").slice(0, 80),
+      phoneNumber: (params.get("phone") ?? "").slice(0, 20),
+    }));
+    setOpen(true);
+  }, []);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
