@@ -74,6 +74,13 @@ describe("VisitRequestForm", () => {
     );
   });
 
+  it("starts the note with the topic when it comes from a service or exercise page", async () => {
+    window.history.pushState({}, "", "/request-visit?about=Neurological%20rehabilitation");
+    render(<VisitRequestForm />);
+    await waitFor(() => expect(screen.getByLabelText(/what.s it for/i)).toHaveValue("About: Neurological rehabilitation\n"));
+    window.history.pushState({}, "", "/");
+  });
+
   it("keeps the details and shows the error if sending fails", async () => {
     fetchMock.mockResolvedValue({ ok: false, json: async () => ({ error: "Please call or text 07557 684395." }) });
     render(<VisitRequestForm />);

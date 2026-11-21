@@ -29,6 +29,12 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
   const formRef = useRef<HTMLFormElement>(null);
   const doneRef = useRef<HTMLHeadingElement>(null);
 
+  // "Request a call back" from a service, price or exercise page passes ?about=.
+  useEffect(() => {
+    const about = new URLSearchParams(window.location.search).get("about")?.trim().slice(0, 120);
+    if (about) setNote((current) => current || `About: ${about}\n`);
+  }, []);
+
   // The confirmation is much shorter than the form, so on a phone it can land
   // above the screen. Bring it into view and move focus to it.
   useEffect(() => {

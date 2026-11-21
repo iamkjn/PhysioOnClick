@@ -16,6 +16,7 @@ import { homeVisitPrices } from "@/lib/home-visit-pricing";
 import { breadcrumbs, serviceSchema } from "@/lib/structured-data";
 import { formatCurrency } from "@/lib/utils";
 import { topicForPath } from "@/lib/practice-contact";
+import { ConditionHelp } from "@/components/condition-help";
 import { ContactOptions } from "@/components/contact-options";
 import { Reveal } from "@/components/reveal";
 import { ServiceReviews } from "@/components/service-reviews";
@@ -122,6 +123,12 @@ export default async function ServiceDetailPage({
         <span>Physiotherapy Service</span>
         <h1>{service.headline ?? service.title}</h1>
         <p>{service.summary}</p>
+      </section>
+
+      {/* Visitors read one service page and leave (Nov 2026: every session
+          ended there). Give them a way to ask about their own problem. */}
+      <section className="page-section">
+        <ConditionHelp about={service.title} source="service_detail_condition" />
       </section>
 
       <section className="page-section stack simple-services-list">

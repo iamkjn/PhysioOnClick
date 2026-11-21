@@ -18132,3 +18132,78 @@ textarea:focus {
   font-weight: 700;
   color: var(--color-primary-dark);
 }
+
+/* "Ask about your condition" (components/condition-help.tsx): service pages,
+   pricing and exercise pages, for visitors who leave with a question. */
+.condition-help {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.condition-help--inline {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  margin-top: 0.9rem;
+}
+
+.condition-help-title {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.condition-help-lead {
+  margin: 0;
+  max-width: 62ch;
+}
+
+.condition-help-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.condition-help-actions .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.condition-help-small {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.condition-help-small a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .condition-help-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Inside the exercise page's "Not getting better?" prompt (a wrapping flex row):
+   take a full row under the booking button. Its paragraphs must not pick up
+   the prompt's `p { flex: 1 1 22rem }`, which in a column means 22rem tall. */
+.exlib-next-step .condition-help--inline {
+  flex: 1 1 100%;
+  margin-top: 0;
+  border-radius: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.exlib-next-step .condition-help p {
+  flex: none;
+}

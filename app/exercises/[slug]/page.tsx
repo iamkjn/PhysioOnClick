@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { UkServiceLinks } from "@/components/uk-service-links";
 import Link from "next/link";
+import { ConditionHelp } from "@/components/condition-help";
 import { notFound } from "next/navigation";
 
 import {
@@ -407,6 +408,12 @@ export default async function ExerciseDetailPage({
           >
             Book a £{initialAssessmentPrice} assessment
           </TrackedBookLink>
+          <ConditionHelp
+            inline
+            about={`${exercise.title} (exercise)`}
+            source="exercise_condition"
+            lead="Rather ask a physiotherapist first? Tell us what's going on and we'll suggest what would help."
+          />
         </aside>
       </section>
 

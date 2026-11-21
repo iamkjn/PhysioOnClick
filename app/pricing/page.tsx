@@ -7,6 +7,7 @@ import { formatPounds, homeVisitPricePence, homeVisitPrices } from "@/lib/home-v
 import { getPublicPricing } from "@/lib/public-content";
 import { bundleSessionCount, initialAssessmentPrice, payAsYouGoPrice, pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
+import { ConditionHelp } from "@/components/condition-help";
 import { ContactOptions } from "@/components/contact-options";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -47,6 +48,15 @@ export default function PricingPage() {
           <strong>New patient offer</strong>
           <span>Use code <b>NEW10</b> at checkout for 10% off your first booking.</span>
         </div>
+      </section>
+
+      <section className="page-section">
+        <ConditionHelp
+          about="which option suits me"
+          source="pricing_condition"
+          heading="Not sure which option suits you?"
+          lead="Tell us what's going on and we'll recommend the right visit or package, with no obligation to book."
+        />
       </section>
 
       <section className="page-section stack pricing-sections">

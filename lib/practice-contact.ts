@@ -12,7 +12,7 @@ export const PRACTICE_PHONE_HREF = "tel:+447557684395";
 /** The practice inbox (IONOS). Contact-form enquiries are also sent here. */
 export const PRACTICE_EMAIL = "hello@physioonclick.co.uk";
 
-export type ContactTopic = "general" | "home-visit" | "neuro" | "manual-therapy";
+export type ContactTopic = "general" | "home-visit" | "neuro" | "manual-therapy" | "condition";
 
 type TopicCopy = {
   /** Prefilled WhatsApp message. The patient can edit it before sending. */
@@ -37,6 +37,10 @@ const TOPICS: Record<ContactTopic, TopicCopy> = {
   "manual-therapy": {
     whatsapp: "Hi, I'd like to ask about hands-on physiotherapy at home.",
     subject: "Hands-on physiotherapy question",
+  },
+  condition: {
+    whatsapp: "Hi, I'd like some advice about my condition.",
+    subject: "Question about my condition",
   },
 };
 
@@ -76,4 +80,41 @@ export function topicForPath(pathname: string): ContactTopic {
   if (pathname === "/services/neurological-rehabilitation") return "neuro";
   if (pathname === "/manual-therapy-glasgow") return "manual-therapy";
   return "general";
+}
+
+function whatsappTextHref(text: string): string {
+  const digits = PRACTICE_PHONE_HREF.replace(/\D/g, "");
+  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
+}
+
+/** WhatsApp link asking for advice about a condition, naming what the visitor was reading. */
+export function conditionWhatsappHref(about?: string): string {
+  return whatsappTextHref(
+    about ? `Hi, I'd like some advice about my condition (I was reading about ${about}).` : TOPICS.condition.whatsapp,
+  );
+}
+
+/**
+ * "Email us about your condition": a mailto whose template asks for what a
+ * physio needs to reply usefully, with the page's service or exercise filled in.
+ */
+export function conditionEmailHref(about?: string): string {
+  const subject = encodeURIComponent(about ? `${TOPICS.condition.subject}: ${about}` : TOPICS.condition.subject);
+  const body = encodeURIComponent(
+    [
+      "Hello,",
+      "",
+      ...(about ? [`I'm asking about: ${about}`, ""] : []),
+      "What's going on, and for how long:",
+      "",
+      "What I'd like help with:",
+      "",
+      'My postcode (for a home visit), or "video" if I\'m further away:',
+      "",
+      "Best phone number and time to call:",
+      "",
+      "Thanks",
+    ].join("\n"),
+  );
+  return `mailto:${PRACTICE_EMAIL}?subject=${subject}&body=${body}`;
 }
