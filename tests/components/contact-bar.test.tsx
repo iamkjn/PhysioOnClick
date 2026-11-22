@@ -5,8 +5,8 @@ let pathname = "/";
 vi.mock("next/navigation", () => ({ usePathname: () => pathname }));
 vi.mock("@/lib/growth-tracking", () => ({ trackGrowthEvent: vi.fn() }));
 vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
-// The exercise library shows the bar to UK readers only (worked out from the
-// browser time zone). Pin it so the test machine's own time zone doesn't decide.
+// The bar shows to every reader, wherever they are. Pin the browser region
+// (worked out from the time zone) to prove it doesn't change that.
 const regionState = vi.hoisted(() => ({ region: "uk" as "uk" | "overseas" | "unknown" }));
 vi.mock("@/lib/visitor-region", () => ({ browserRegion: () => regionState.region }));
 
@@ -137,18 +137,23 @@ describe("ContactBar", () => {
     expect(screen.getByRole("link", { name: /whatsapp/i })).toHaveAttribute("href", whatsappHref("condition"));
   });
 
-  it("shows on exercise pages for UK readers, asking about their condition", () => {
+  it("shows on exercise pages, asking about their condition", () => {
     pathname = "/exercises/spanish-squat";
     render(<ContactBar />);
     expect(screen.getByRole("link", { name: /whatsapp/i })).toHaveAttribute("href", whatsappHref("condition"));
     expect(screen.getByRole("link", { name: /email/i })).toHaveAttribute("href", emailHref("condition"));
   });
 
-  it.each(["overseas", "unknown"] as const)("renders nothing on exercise pages when the region is %s", (region) => {
+  it.each(["overseas", "unknown"] as const)("also shows on exercise pages and self-checks when the region is %s", (region) => {
     regionState.region = region;
     pathname = "/exercises/spanish-squat";
-    const { container } = render(<ContactBar />);
-    expect(container).toBeEmptyDOMElement();
+    const { unmount } = render(<ContactBar />);
+    expect(screen.getByRole("link", { name: /whatsapp/i })).toHaveAttribute("href", whatsappHref("condition"));
+    expect(screen.getByRole("link", { name: /email/i })).toBeInTheDocument();
+    unmount();
+    pathname = "/exercises/tests";
+    render(<ContactBar />);
+    expect(screen.getByText(contactBarMessage("/exercises/tests").short)).toBeInTheDocument();
   });
 
   it("keeps showing on other pages for overseas readers", () => {

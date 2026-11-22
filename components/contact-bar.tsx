@@ -5,15 +5,13 @@ import { usePathname } from "next/navigation";
 import { PhoneCall } from "lucide-react";
 
 import { MailIcon, WhatsAppIcon, recordContactTap } from "@/components/contact-options";
-import { useVisitorRegion } from "@/components/region-switch";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { emailHref, topicForPath, whatsappHref } from "@/lib/practice-contact";
 import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 
-// Every public tab gets the bar. Kept off the printable receipt, the call-back
-// form itself, legal pages and the patient/admin areas. The exercise library
-// (and its self-checks) is listed but only shown to UK readers (see
-// ContactBar): most of its readers are overseas and can't use a UK appointment.
+// Every public tab gets the bar, for every reader wherever they are (overseas
+// exercise readers too, at the owner's request). Kept off the printable
+// receipt, the call-back form itself, legal pages and the patient/admin areas.
 const BAR_PATHS = new Set([
   "/",
   "/about",
@@ -154,11 +152,7 @@ export function contactBarMessage(pathname: string): ContactBarMessage {
  */
 export function ContactBar() {
   const pathname = usePathname() ?? "";
-  const region = useVisitorRegion();
   if (!showContactBar(pathname)) return null;
-  // The region is "unknown" in the static HTML and until the browser answers,
-  // so overseas readers never see the bar flash up and disappear.
-  if (isExercisePath(pathname) && region !== "uk") return null;
   const topic = topicForPath(pathname);
   const message = contactBarMessage(pathname);
 
