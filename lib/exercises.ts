@@ -1,4 +1,6 @@
 import type { ClinicalArea } from "@/lib/assessment-forms";
+import { draftsVisible } from "@/lib/exercise-anatomy/drafts";
+import { EXPANSION_2026_11_22 } from "@/lib/exercises-expansion-2026-11-22";
 
 export type ExerciseDosage = {
   sets?: number;
@@ -38,9 +40,18 @@ export type Exercise = {
   aka?: string[];
   /** Plain-language conditions/goals this exercise commonly helps with. */
   helpsWith?: string[];
+  /** New content awaiting clinical sign-off. A draft exists only in builds
+   * where `draftsVisible()` is on (the dev site); prod builds leave it out of
+   * `exercises` entirely, so it never reaches public pages, search, the
+   * sitemap, PDFs or the admin assigner. On sign-off: delete `draft` and set
+   * `reviewedOn` to the real review date. */
+  draft?: true;
+  /** ISO date this record was clinically reviewed. Records without one fall
+   * back to the library-wide `EXERCISE_LIBRARY_REVIEWED_ON`. */
+  reviewedOn?: string;
 };
 
-export const exercises: Exercise[] = [
+const BASE_CATALOGUE: Exercise[] = [
   {
     id: "ex-1",
     slug: "sit-to-stand-control",
@@ -6574,6 +6585,15 @@ export const exercises: Exercise[] = [
     helpsWith: ["Strengthening the thigh muscle", "Getting the knee fully straight", "Building towards standing up and walking"]
   }
 ];
+
+/** Every record, drafts included. Tests and tooling only - pages and patient
+ * tools must read `exercises`, which honours the draft gate. */
+export const allExercises: Exercise[] = [...BASE_CATALOGUE, ...EXPANSION_2026_11_22];
+
+/** The catalogue this build serves: drafts only where `draftsVisible()` (dev). */
+export const exercises: Exercise[] = draftsVisible()
+  ? allExercises
+  : allExercises.filter((exercise) => !exercise.draft);
 
 export function resolveDosage(
   ex: Exercise,

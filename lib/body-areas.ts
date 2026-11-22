@@ -18,6 +18,8 @@
  * by `app/sitemap.ts`. Pure data + pure lookups; no side effects.
  */
 
+import { draftsVisible } from "@/lib/exercise-anatomy/drafts";
+
 /** Kebab-case area key, used verbatim in the URL: `shoulder`, `lower-back`. */
 export type BodyAreaKey = string;
 
@@ -34,6 +36,8 @@ export type BodyArea = {
   conditionArea?: string;
   /** Display order (ascending). */
   order: number;
+  /** Holds only draft exercises: listed only where `draftsVisible()` (dev). */
+  draft?: true;
 };
 
 /**
@@ -48,7 +52,7 @@ export type BodyArea = {
  * whole-body pacing / conditioning exercises) gets its own `general` area
  * rather than being scattered. `Paediatric` becomes `children`.
  */
-export const BODY_AREAS: BodyArea[] = [
+const AREAS: BodyArea[] = [
   {
     key: "neck",
     label: "Neck",
@@ -156,7 +160,23 @@ export const BODY_AREAS: BodyArea[] = [
     bodyParts: ["General"],
     order: 14,
   },
+  // 2026-11-22 expansion. Draft until its exercises are clinically signed off;
+  // facial-palsy work stays under `neuro` (bodyPart "Face").
+  {
+    key: "jaw",
+    label: "Jaw",
+    blurb: "Gentle exercises for jaw pain, clicking and stiffness.",
+    bodyParts: ["Jaw"],
+    order: 15,
+    draft: true,
+  },
 ];
+
+/** Every area, drafts included. Tests and tooling only. */
+export const ALL_BODY_AREAS: BodyArea[] = AREAS;
+
+/** The areas this build serves: draft areas only where `draftsVisible()`. */
+export const BODY_AREAS: BodyArea[] = draftsVisible() ? AREAS : AREAS.filter((area) => !area.draft);
 
 const BY_KEY = new Map(BODY_AREAS.map((area) => [area.key, area]));
 

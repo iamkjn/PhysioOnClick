@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { fullImagePrompt, hasImagePrompt, hasUploadedImage, uploadedImageIds, exerciseImagePrompts, IMAGE_STYLE_PREFIX, IMAGE_STYLE_SUFFIX } from '@/lib/exercise-image-prompts'
-import { exercises } from '@/lib/exercises'
+import { allExercises, exercises } from '@/lib/exercises'
 
 describe('exercise image prompts', () => {
   it('fullImagePrompt wraps the entry in the style prefix + suffix', () => {
@@ -13,7 +13,8 @@ describe('exercise image prompts', () => {
     expect(hasImagePrompt('ex-does-not-exist')).toBe(false)
   })
   it('every prompt entry is a non-empty single-line string for a real exercise id', () => {
-    const ids = new Set(exercises.map((e) => e.id))
+    // Drafts are hidden from `exercises` in a prod-like run but are real records.
+    const ids = new Set(allExercises.map((e) => e.id))
     for (const [id, prompt] of Object.entries(exerciseImagePrompts)) {
       expect(ids.has(id)).toBe(true)
       expect(prompt.trim().length).toBeGreaterThan(10)

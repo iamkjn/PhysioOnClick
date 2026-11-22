@@ -1,9 +1,11 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { ANATOMY_BATCHES, EXERCISE_ANATOMY, canShow3D, entryProblems } from "@/lib/exercise-anatomy";
-import { exercises } from "@/lib/exercises";
+import { allExercises, exercises } from "@/lib/exercises";
 
-const slugs = new Set(exercises.map((e) => e.slug));
+// Draft exercises are absent from `exercises` in a prod-like test run, but
+// their (draft) anatomy entries still have to key a real record.
+const slugs = new Set(allExercises.map((e) => e.slug));
 
 describe("exercise anatomy entries", () => {
   it("keys every entry by a real exercise slug", () => {

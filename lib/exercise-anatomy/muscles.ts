@@ -165,6 +165,14 @@ const MUSCLE_TABLE = {
     view: "front",
   },
   brain: { label: "Brain", plain: "the parts of your brain that take in what you sense, plan your movements and share your attention", source: "none", parts: [], view: "front" },
+  // 2026-11-22 expansion: balance system for gaze stabilisation (text only).
+  "vestibular-system": {
+    label: "Vestibular system",
+    plain: "the balance organs in your inner ear and the brain pathways that keep your eyes steady when your head moves",
+    source: "none",
+    parts: [],
+    view: "front",
+  },
 
   // Spine and trunk
   "erector-spinae": {
@@ -277,6 +285,15 @@ const MUSCLE_TABLE = {
   risorius: { label: "Risorius", plain: "the muscle that pulls the corners of your mouth sideways", source: "none", parts: [], view: "front" },
   buccinator: { label: "Buccinator", plain: "the cheek muscle that holds air in your mouth", source: "none", parts: [], view: "front" },
   "orbicularis-oris": { label: "Orbicularis oris", plain: "the ring of muscle around your lips", source: "none", parts: [], view: "front" },
+
+  // Jaw (2026-11-22 expansion; no jaw muscles in any model we use: text only)
+  "jaw-muscles": {
+    label: "Jaw muscles and jaw joint",
+    plain: "the chewing muscles at the side of your face and the joint just in front of your ear",
+    source: "none",
+    parts: [],
+    view: "front",
+  },
 
   // Skin and scars (not in any model: text only)
   "scar-tissue": { label: "Scar tissue", plain: "your healed scar and the skin around it", source: "none", parts: [], view: "front" },

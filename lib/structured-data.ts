@@ -276,8 +276,9 @@ export function serviceSchema(service: { slug: string; title: string; summary: s
 // FAQ as bare `Question`/`Answer` nodes under `mainEntity`), which stays valid
 // and machine-readable without triggering a dead rich result.
 //
-// Phase 1 has no per-exercise clinical review date, so exercise pages share one
-// module constant. Condition hubs already carry their own `reviewedOn`.
+// The original catalogue has no per-exercise clinical review date, so those
+// pages share one module constant; records reviewed later carry their own
+// `Exercise.reviewedOn`. Condition hubs already carry their own `reviewedOn`.
 const REVIEW_DATE = "2026-09-08";
 
 /** Trim `text` to a single, tidy ~155-character sentence fragment for use as a
@@ -336,9 +337,10 @@ export function exerciseWebPage(ex: Exercise, path: string): object {
       ? { about: { "@type": "MedicalCondition", name: condition } }
       : {}),
     author: personRef(),
-    reviewedBy: personRef(),
+    // A draft has not been reviewed yet, so it claims no reviewer or date.
+    ...(ex.draft ? {} : { reviewedBy: personRef() }),
     ...LIBRARY_COPYRIGHT,
-    lastReviewed: REVIEW_DATE,
+    ...(ex.draft ? {} : { lastReviewed: ex.reviewedOn ?? REVIEW_DATE }),
     inLanguage: "en-GB",
     isPartOf: { "@id": absoluteUrl("/exercises") }
   };

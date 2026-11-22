@@ -18331,3 +18331,8 @@ body:has(.contact-bar):has(.exlib-tray) .chat-drawer {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Draft exercise notice (dev site only: drafts never reach a prod build). */
+.exlib-draft-note {
+  margin-block: var(--space-3);
+}

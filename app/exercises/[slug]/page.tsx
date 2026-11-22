@@ -83,6 +83,8 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: `/exercises/${slug}` },
+    // Drafts only exist on the dev site; keep them out of any index regardless.
+    ...(exercise.draft ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       type: "article",
       title,
@@ -228,6 +230,15 @@ export default async function ExerciseDetailPage({
         <div className="exlib-detail-hero__copy">
           <span className="eyebrow">Exercise library</span>
           <h1>{exercise.title}</h1>
+          {exercise.draft ? (
+            <aside className="exlib-safety exlib-safety--compact exlib-draft-note" role="note">
+              <p className="exlib-safety__title">Draft - awaiting clinical review</p>
+              <p>
+                This exercise is new and has not been signed off by our physiotherapist yet. It
+                is shown on the test site only.
+              </p>
+            </aside>
+          ) : null}
           <ReferenceOnlyNote />
           {exercise.aka?.length ? (
             <p className="muted">Also known as {exercise.aka.join(", ")}.</p>
@@ -556,7 +567,10 @@ export default async function ExerciseDetailPage({
       ) : null}
 
       <section className="page-section">
-        <ByLine reviewedOn={EXERCISE_LIBRARY_REVIEWED_ON} />
+        <ByLine
+          reviewedOn={exercise.reviewedOn ?? EXERCISE_LIBRARY_REVIEWED_ON}
+          pending={exercise.draft === true}
+        />
       </section>
 
       <section className="simple-cta-band">

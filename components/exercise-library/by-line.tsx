@@ -13,8 +13,34 @@ const initials = founder.name
 const longDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
-export function ByLine({ reviewedOn, updatedOn }: { reviewedOn: string; updatedOn?: string }) {
+export function ByLine({
+  reviewedOn,
+  updatedOn,
+  pending = false,
+}: {
+  reviewedOn: string;
+  updatedOn?: string;
+  /** Draft content not yet signed off: never claim a review that hasn't happened. */
+  pending?: boolean;
+}) {
   const reviewedLabel = longDate(reviewedOn);
+
+  if (pending) {
+    return (
+      <div className="exlib-byline">
+        <span className="exlib-byline__avatar" aria-hidden>
+          {initials}
+        </span>
+        <div className="exlib-byline__text">
+          <p className="exlib-byline__line">
+            Draft awaiting clinical review by {founder.name}, HCPC-registered
+            physiotherapist ({invoiceIssuer.hcpcNumber})
+          </p>
+          <p className="exlib-byline__meta">Not yet reviewed</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="exlib-byline">

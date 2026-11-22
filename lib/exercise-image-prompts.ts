@@ -209,6 +209,23 @@ export const exerciseImagePrompts: Record<string, string> = {
   "ex-169": "a person lying back on a treatment bench with a pillow under one knee, straightening that knee to lift the heel while the back of the knee stays on the pillow, the quadriceps just above the kneecap working",
   "ex-170": "a person sitting upright on the edge of a high treatment bench with the lower legs hanging free, lifting one bent knee in a small seated march without leaning back, the hip flexor muscles at the front of the hip working",
   "ex-171": "a person sitting upright on the edge of a high treatment bench with the thighs supported and the lower legs hanging free, straightening one knee to lift the foot forwards without leaning back, the quadriceps at the front of the thigh working",
+  // 2026-11-22 expansion (draft): describe the supplied Codex illustrations.
+  "ex-172": "a person sitting upright seen in a close three-quarter view of the head and shoulders, the mouth opened a small way with the jaw moving straight down and the tip of the tongue resting on the roof of the mouth just behind the upper front teeth, the chewing muscles and jaw joint working gently",
+  "ex-173": "a person with the elbow resting on a table and the hand held upright, touching the tip of the thumb gently to the tip of the index finger to make a round O shape, the small muscles at the base of the thumb working",
+  "ex-174": "a person with the forearm and hand resting palm up on a table and the fingers straight and together, lifting the thumb straight up towards the ceiling away from the palm, the small muscles at the base of the thumb working",
+  "ex-175": "a person with one hand resting flat palm down on a table, sliding the straight fingers apart into a wide spread and back together, the small muscles between the bones of the hand working",
+  "ex-176": "a person sitting on a chair with a bare foot flat on the floor, drawing the ball of the foot back towards the heel so the arch lifts into a small dome while the toes stay long, the small muscles in the sole of the foot working",
+  "ex-177": "two side-by-side panels of the same bare foot flat on the floor, one lifting only the big toe while the small toes stay down and one lifting only the four small toes while the big toe stays down, the small muscles of the foot controlling the toes",
+  "ex-178": "a person sitting on a chair with one ankle crossed over the other knee, one hand pulling the toes back towards the shin and the other hand supporting under the heel, the tissue along the sole and arch of the foot stretching",
+  "ex-179": "a person lying on their back on a mat with both legs straight and small foam rolls under the lower legs, a resistance band anchored to a post on the outer side of one foot and looped round the forefoot, turning the sole of that foot inwards against the band, the muscles on the inner side of the lower leg working",
+  "ex-180": "a person sitting on a mat leaning back on the hands with one leg straight and the other knee bent, a resistance band anchored low to a post beyond the straight leg's foot and looped over the top of that foot, pulling the foot up towards the shin, the muscle at the front of the shin working",
+  "ex-181": "a person standing facing a wall with both hands on it and the feet in a short staggered stance, bending both knees with both heels flat on the floor, the deeper soleus muscle low in the rear calf stretching",
+  "ex-182": "a person lying on their back on a mat with both knees bent and feet flat, pressing one heel down into the mat without lifting the hips, the hamstrings at the back of the working thigh tightening without movement",
+  "ex-183": "a person lying face down on a mat with the head resting on folded hands and a resistance band anchored low beyond the feet looped round one ankle, bending that knee to bring the heel towards the buttock with the hips kept down, the hamstrings at the back of the thigh working",
+  "ex-184": "a person lying on their back on a mat with knees bent and feet flat, squeezing a small soft ball between the knees with the hips resting down, the adductor muscles of the inner thighs working",
+  "ex-185": "a person sitting on a firm chair with the arms crossed over the chest, leaning the upper back gently backwards over the top of the backrest with the head kept in line with the upper back, the muscles along the upper spine working through a small comfortable range",
+  "ex-186": "a person sitting upright on a chair with hands resting on the thighs, eyes fixed on a small dot on a card mounted on a stand at eye level in front, turning the head slightly from side to side, the inner-ear balance system steadying the eyes",
+  "ex-187": "a person sitting relaxed on a chair with shoulders down and hands resting on the thighs, breathing out slowly through gently pursed lips with a soft airflow arrow from the mouth, the diaphragm and breathing muscles working in an easy rhythm",
 
   // Face (adapt the suffix mentally: close-up, both sides shown, no movement arrow)
   "face-smile": "close-up medical illustration of a face gently raising both corners of the mouth into a smile, both sides shown for symmetry, the muscles around the mouth and cheeks working",
@@ -421,6 +438,25 @@ export const uploadedImageIds: ReadonlySet<string> = new Set<string>([
   "ex-168",
   "ex-169",
   "ex-170",
+  // 2026-11-22 expansion drafts (Codex art, padded square, uploaded to DEV
+  // Storage only via scripts/upload-exercise-images-expansion-2026-11-22.ts;
+  // upload to prod before these records are published).
+  "ex-172",
+  "ex-173",
+  "ex-174",
+  "ex-175",
+  "ex-176",
+  "ex-177",
+  "ex-178",
+  "ex-179",
+  "ex-180",
+  "ex-181",
+  "ex-182",
+  "ex-183",
+  "ex-184",
+  "ex-185",
+  "ex-186",
+  "ex-187",
 ]);
 
 export function hasUploadedImage(id: string): boolean {

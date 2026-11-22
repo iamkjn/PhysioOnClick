@@ -7,13 +7,15 @@
  * does it hurt?" 3D picker on `/exercises`.
  *
  * Honesty rule: a region only links to an area whose exercises actually cover
- * it. Regions the library has no set for (head/jaw, chest, stomach, sides of
- * the trunk) map to an empty list, and the picker says so instead of guessing.
+ * it. Regions the library has no set for (chest, stomach, sides of the trunk)
+ * map to an empty list, and the picker says so instead of guessing. head-jaw
+ * links to the draft `jaw` area only in builds that serve drafts (dev).
  * Every model region must appear here and every key must exist in
  * `BODY_AREAS` (enforced by `tests/lib/exercise-library-3d-areas.test.ts`).
  */
 
 import { getBodyArea, type BodyArea } from "@/lib/body-areas";
+import { draftsVisible } from "@/lib/exercise-anatomy/drafts";
 
 const SIDED = (base: string, areas: string[]): [string, string[]][] => [
   [`${base}-left`, areas],
@@ -21,7 +23,7 @@ const SIDED = (base: string, areas: string[]): [string, string[]][] => [
 ];
 
 export const REGION_AREA_KEYS: Readonly<Record<string, readonly string[]>> = Object.fromEntries([
-  ["head-jaw", []],
+  ["head-jaw", draftsVisible() ? ["jaw"] : []],
   ["neck", ["neck"]],
   ["upper-back", ["upper-back"]],
   ["mid-back", ["upper-back"]],
