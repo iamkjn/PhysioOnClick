@@ -34,7 +34,10 @@ type Crop = { left: number; top: number; width: number; height: number };
 type Source = { id: string; slug: string; file: string; sha256: string; crop?: Crop };
 
 const SOURCES: Source[] = [
-  { id: "ex-172", slug: "controlled-jaw-opening", file: "controlled-jaw-opening.png", sha256: "1905f12475ffc2de1d471eecd1c40a13fd13bc36cbdafb8d0eb1f91595d54bf6" },
+  // ex-172 and ex-185 use v2: the originals showed the tongue lying on the
+  // lower teeth and the head tipped back. Regenerated with Codex image edit
+  // 2026-11-22; the originals must not be uploaded.
+  { id: "ex-172", slug: "controlled-jaw-opening", file: "controlled-jaw-opening-v2.png", sha256: "ec252bbf04874eb829f644b36b6fba9718934cad6784f8f4860d43ee9132218f" },
   { id: "ex-173", slug: "thumb-opposition", file: "thumb-opposition.png", sha256: "6f40638281c6226ebc3d165145d7092c9320185cfea995464d001deaf068f9fc" },
   { id: "ex-174", slug: "thumb-palmar-abduction", file: "thumb-palmar-abduction-v2.png", sha256: "e0d8c65f01e539747babb6b50227969f511c96af5dd02250af205d930807b880",
     // Landscape 1536x1024. Drop the 310px strip holding the shoulder (edge
@@ -50,7 +53,7 @@ const SOURCES: Source[] = [
   { id: "ex-182", slug: "hamstring-heel-dig-hold", file: "hamstring-heel-dig-isometric.png", sha256: "54951e060e8ec3e2baa42e007c84834b7129b60ee1a324c4ef885daede3ccf46" },
   { id: "ex-183", slug: "prone-hamstring-curl-with-band", file: "prone-band-hamstring-curl.png", sha256: "d3e3fc818ca05ad26b1e9000bedd605038b52b5fbed7979f68a4d201dac630dd" },
   { id: "ex-184", slug: "adductor-squeeze", file: "supine-adductor-squeeze.png", sha256: "e60c3907c8d0f34449be26d4521ce7a3b8a0814cd4eb523932c94367038ea66b" },
-  { id: "ex-185", slug: "seated-thoracic-extension", file: "seated-thoracic-extension.png", sha256: "690c0460be4b351bac9de29f9a3566085f5a6daa2154395994114fdcba986ba3" },
+  { id: "ex-185", slug: "seated-thoracic-extension", file: "seated-thoracic-extension-v2.png", sha256: "904f5e37792c4acd2da8870dda851bc0c0a7ef7370c670d086ba8d1979960c75" },
   { id: "ex-186", slug: "gaze-stabilisation-vor-x1", file: "seated-vor-x1.png", sha256: "987f8abf9d31cf0e8251f831087dbc03ce7a302a682445d0983944f319eb4487" },
   { id: "ex-187", slug: "pursed-lip-breathing", file: "pursed-lip-breathing.png", sha256: "f55c5376e859e276f1e2e2278f69620585d6eed8773e83283d8d235081cf6f6b" },
 ];

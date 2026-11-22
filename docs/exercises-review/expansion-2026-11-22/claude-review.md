@@ -21,25 +21,22 @@ each one is signed off.
 - **Images.** All 16 Codex illustrations were inspected. Rejected originals were not used. The
   landscape thumb image (ex-174) was trimmed and padded to a square with the whole hand kept.
 
-## Images: two need fixing or explicit sign-off
+## Images
+
+Two Codex originals were wrong and have been **regenerated** (Codex image edit, 22 Nov, changing
+only the faulty part). The v2 files are what the dev site now shows; the originals must not be used.
 
 | Exercise | Image | Note |
 |---|---|---|
-| ex-172 Controlled Jaw Opening | **Fix** | Tongue lies low on the lower teeth. The technique needs the tongue tip on the roof of the mouth. Regenerate, or approve knowingly. |
-| ex-185 Seated Thoracic Extension | **Fix** | Head tipped right back, eyes on the ceiling. The text says keep the head in line with the upper back. Regenerate with a neutral neck, or approve knowingly. |
+| ex-172 Controlled Jaw Opening | **Fixed (v2)** | Was: tongue lying on the lower teeth. Now: tongue tip raised to the roof of the mouth (underside of the tongue shows), small opening. Please confirm. |
+| ex-185 Seated Thoracic Extension | **Fixed (v2)** | Was: head tipped back, eyes on the ceiling. Now: head in line with the upper back, eyes forward. Please confirm. |
 | ex-179 Resisted Ankle Inversion | OK, check | Shows lying on the back (top-down view), so the text says lying, with sitting as an alternative. Confirm the band reads as anchored on the outside and the turn is at the ankle, not the hip. |
 | ex-180 Resisted Ankle Dorsiflexion | OK, check | Shading sits on the outer front of the shin; confirm it reads as tibialis anterior. |
 | ex-186 Gaze Stabilisation (VOR x1) | OK, check | Target looks further than arm's length; text says "about an arm's length away or at the distance your physio has set". |
 | All other 11 | OK | Match the written technique. |
 
-Correction prompts for Codex, if regenerating:
-
-- ex-172: "Same illustration and framing. Mouth opened a small way, the tip of the tongue visibly
-  touching the roof of the mouth just behind the upper front teeth (tongue raised, not lying on the
-  lower teeth). Jaw central. Small downward arrow by the chin. No text."
-- ex-185: "Same seated chair-back extension. Keep the head and neck in line with the upper back,
-  eyes looking forwards or only slightly up - do not tip the head back. Arms crossed on the chest.
-  Small range. No text."
+Files: `output/imagegen/physioonclick-expansion-2026-11-22/controlled-jaw-opening-v2.png` and
+`seated-thoracic-extension-v2.png` (hashes pinned in the upload script).
 
 ## Per exercise: what to confirm
 
@@ -111,7 +108,7 @@ of these 16 exercises have no hub until those exist.
 2. If ex-172 is approved, remove `draft: true` from the `jaw` area in `lib/body-areas.ts`.
 3. Upload the images to **prod** Storage before deploying (create-only; refuses to overwrite):
    `npx tsx --env-file=.env.production scripts/upload-exercise-images-expansion-2026-11-22.ts --src=output/imagegen/physioonclick-expansion-2026-11-22 --upload --bucket=<prod bucket>`
-   Replace any regenerated image in the script's list with its new file and hash first.
+   If any image is regenerated again, put its new file and hash in the script's list first.
 4. Update the catalogue counts in the tests (178 published), run the suite, deploy from a fresh
    worktree of origin/master, and check each new page shows its real image.
 
