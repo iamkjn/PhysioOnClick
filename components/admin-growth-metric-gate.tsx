@@ -10,6 +10,7 @@ import { auth, db } from "@/lib/firebase";
 import { AdminShell } from "@/components/admin-shell";
 import { AdminSignIn } from "@/components/admin-sign-in";
 import { SkeletonRow, SkeletonStatGrid } from "@/components/skeleton";
+import { contactEventTitle } from "@/lib/growth-event-labels";
 import { channelLabel, classifyTrafficSource } from "@/lib/traffic-source";
 
 type GrowthEvent = {
@@ -83,15 +84,15 @@ const METRICS: Record<string, MetricConfig> = {
     empty: "No chat leads have been tracked yet.",
   },
   "contact-taps": {
-    title: "WhatsApp & email taps",
-    description: "Every tap on a WhatsApp us or Email us button, with the page it was on. A tap opens the visitor's WhatsApp or mail app; it doesn't prove a message was sent, so check hello@ and WhatsApp too.",
-    events: ["whatsapp_click", "email_click"],
-    empty: "No WhatsApp or email taps have been tracked yet.",
+    title: "Call, WhatsApp & email taps",
+    description: "Every tap on the phone number, a WhatsApp us button or an Email us button, with the page it was on. A tap opens the visitor's phone, WhatsApp or mail app; it doesn't prove they called or sent anything, so check missed calls, texts, WhatsApp and hello@ too.",
+    events: ["call_click", "whatsapp_click", "email_click"],
+    empty: "No phone, WhatsApp or email taps have been tracked yet.",
   },
   "visit-requests": {
     title: "Call-back requests",
-    description: "Every \"Request a home visit\" form sent, with the page and where the visitor came from. The name, phone number and postcode are in the Enquiries tab and the email to hello@.",
-    events: ["visit_request_sent"],
+    description: "Everything that happened on the \"Request a home visit\" form: who started filling it in, what stopped them (which field, never what they typed), sends that failed, and requests sent. A start with nothing after it means they gave up. The name, phone number and postcode of sent requests are in the Enquiries tab and the email to hello@.",
+    events: ["visit_request_started", "visit_request_error", "visit_request_failed", "visit_request_sent"],
     empty: "No call-back requests yet.",
   },
   "page-views": {
@@ -129,9 +130,6 @@ const EVENT_LABELS: Record<string, string> = {
   exercise_plan_saved: "Exercise saved to plan",
   chat_message_sent: "Patient chat message",
   chat_booking_intent: "Chat booking intent",
-  whatsapp_click: "WhatsApp tapped",
-  email_click: "Email tapped",
-  visit_request_sent: "Call-back requested",
   service_view: "Service page viewed",
   service_click: "Service card clicked",
   booking_service_selected: "Booking service chosen",
@@ -199,7 +197,7 @@ function eventTitle(event: GrowthEvent) {
     const preview = stringParam(event, "message_preview");
     return preview ? `Patient asked: ${preview}` : "Patient chat message";
   }
-  return EVENT_LABELS[event.event] ?? formatLabel(event.event);
+  return contactEventTitle(event) ?? EVENT_LABELS[event.event] ?? formatLabel(event.event);
 }
 
 function eventDetails(event: GrowthEvent) {

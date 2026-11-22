@@ -81,6 +81,49 @@ describe("VisitRequestForm", () => {
     window.history.pushState({}, "", "/");
   });
 
+  it("records once that someone started filling in the form", () => {
+    render(<VisitRequestForm />);
+    expect(trackGrowthEvent).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText(/your name/i), { target: { value: "J" } });
+    fireEvent.change(screen.getByLabelText(/your name/i), { target: { value: "Jo" } });
+    fireEvent.change(screen.getByLabelText(/phone number/i), { target: { value: "07" } });
+    fireEvent.click(screen.getByRole("checkbox", { name: /saturday/i }));
+    const started = trackGrowthEvent.mock.calls.filter(([event]) => event === "visit_request_started");
+    expect(started).toEqual([["visit_request_started", { source: "request_visit_page", step: "name" }]]);
+  });
+
+  it("records which fields stopped the form, never what was typed", async () => {
+    render(<VisitRequestForm />);
+    fill("Jo Bloggs", "12345", "");
+    fireEvent.click(screen.getByRole("button", { name: /request a call back/i }));
+    await screen.findByText("Enter a UK phone number, e.g. 07123 456789.");
+    expect(trackGrowthEvent).toHaveBeenCalledWith("visit_request_error", {
+      source: "request_visit_page",
+      fields: "phone:invalid,postcode:missing",
+    });
+    expect(JSON.stringify(trackGrowthEvent.mock.calls)).not.toContain("12345");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("records a send that the server turned down, with its status", async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 503, json: async () => ({ error: "Please call or text 07557 684395." }) });
+    render(<VisitRequestForm />);
+    fill("John Smith", "07518 953611", "G72 8FE");
+    fireEvent.click(screen.getByRole("button", { name: /request a call back/i }));
+    await screen.findByRole("alert");
+    expect(trackGrowthEvent).toHaveBeenCalledWith("visit_request_failed", { source: "request_visit_page", status: 503 });
+    expect(trackGrowthEvent).not.toHaveBeenCalledWith("visit_request_sent", expect.anything());
+  });
+
+  it("records a send that never reached the server", async () => {
+    fetchMock.mockRejectedValue(new TypeError("Load failed"));
+    render(<VisitRequestForm />);
+    fill("John Smith", "07518 953611", "G72 8FE");
+    fireEvent.click(screen.getByRole("button", { name: /request a call back/i }));
+    await screen.findByRole("alert");
+    expect(trackGrowthEvent).toHaveBeenCalledWith("visit_request_failed", { source: "request_visit_page", status: 0 });
+  });
+
   it("keeps the details and shows the error if sending fails", async () => {
     fetchMock.mockResolvedValue({ ok: false, json: async () => ({ error: "Please call or text 07557 684395." }) });
     render(<VisitRequestForm />);

@@ -31,7 +31,11 @@ export type GrowthEventName =
   | "chat_booking_intent"
   | "whatsapp_click"
   | "email_click"
-  | "visit_request_sent";
+  | "visit_request_sent"
+  | "visit_request_started"
+  | "visit_request_error"
+  | "visit_request_failed"
+  | "call_click";
 
 export type GrowthEventParams = Record<string, string | number | boolean | null | undefined>;
 

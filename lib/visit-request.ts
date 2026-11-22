@@ -61,6 +61,20 @@ export function visitRequestErrors(input: { name: string; phone: string; postcod
   return errors;
 }
 
+/**
+ * Which fields stopped the form, for tracking: "name:missing,phone:invalid".
+ * Field names and the kind of problem only, never what the visitor typed.
+ */
+export function visitRequestErrorFields(
+  input: { name: string; phone: string; postcode: string; note?: string },
+  errors: ReturnType<typeof visitRequestErrors>,
+): string {
+  return (["name", "phone", "postcode", "note"] as const)
+    .filter((field) => errors[field])
+    .map((field) => `${field}:${(input[field] ?? "").trim() ? "invalid" : "missing"}`)
+    .join(",");
+}
+
 /** Validates and normalises a request body. Returns the first problem as `error`. */
 export function parseVisitRequest(body: Record<string, unknown>): { value: VisitRequest } | { error: string } {
   const name = typeof body.name === "string" ? body.name.trim().slice(0, 80) : "";

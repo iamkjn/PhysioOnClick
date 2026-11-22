@@ -69,7 +69,10 @@ export function ContactOptions({
   tone?: "default" | "band";
 }) {
   return (
-    <div className={tone === "band" ? "contact-options contact-options--band" : "contact-options"}>
+    <div
+      className={tone === "band" ? "contact-options contact-options--band" : "contact-options"}
+      data-contact-source={source}
+    >
       {lead ? <p className="contact-options-lead">{lead}</p> : null}
       <div className="contact-options-buttons">
         <a

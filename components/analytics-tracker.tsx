@@ -3,6 +3,7 @@
 import { Suspense, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
+import { CallTapTracker } from "@/components/call-tap-tracker";
 import { trackPageView } from "@/lib/analytics";
 
 // Logs a Firebase Analytics "page_view" on every App Router navigation. The
@@ -33,8 +34,11 @@ function PageViewTracker() {
 // dynamic at build. The fallback is null -- this renders nothing either way.
 export function AnalyticsTracker() {
   return (
-    <Suspense fallback={null}>
-      <PageViewTracker />
-    </Suspense>
+    <>
+      <Suspense fallback={null}>
+        <PageViewTracker />
+      </Suspense>
+      <CallTapTracker />
+    </>
   );
 }

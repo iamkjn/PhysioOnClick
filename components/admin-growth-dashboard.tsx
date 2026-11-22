@@ -7,6 +7,7 @@ import { Activity, ArrowDownRight, BookmarkCheck, CalendarCheck2, Dumbbell, Glob
 
 import { db } from "@/lib/firebase";
 import { SkeletonStatGrid } from "@/components/skeleton";
+import { contactEventTitle } from "@/lib/growth-event-labels";
 import { channelLabel, classifyTrafficSource } from "@/lib/traffic-source";
 
 type GrowthEvent = {
@@ -130,9 +131,8 @@ function eventTitle(event: GrowthEvent) {
     const title = stringParam(event, "exercise_title") || stringParam(event, "exercise_slug");
     return title ? `Exercise saved: ${formatLabel(title)}` : "Exercise saved to plan";
   }
-  if (event.event === "whatsapp_click") return "WhatsApp tapped";
-  if (event.event === "visit_request_sent") return "Call-back requested";
-  if (event.event === "email_click") return "Email tapped";
+  const contactTitle = contactEventTitle(event);
+  if (contactTitle) return contactTitle;
   if (event.event === "chat_message_sent") {
     const preview = stringParam(event, "message_preview");
     return preview ? `Patient asked: ${preview}` : "Patient chat message";
@@ -222,8 +222,10 @@ export function AdminGrowthDashboard() {
       exerciseViews: counts.get("library_view") ?? 0,
       exerciseSaves: counts.get("exercise_plan_saved") ?? 0,
       chatLeads: (counts.get("chat_booking_intent") ?? 0) + (counts.get("chat_message_sent") ?? 0),
-      contactTaps: (counts.get("whatsapp_click") ?? 0) + (counts.get("email_click") ?? 0),
+      contactTaps:
+        (counts.get("call_click") ?? 0) + (counts.get("whatsapp_click") ?? 0) + (counts.get("email_click") ?? 0),
       visitRequests: counts.get("visit_request_sent") ?? 0,
+      visitRequestsStarted: counts.get("visit_request_started") ?? 0,
       countries: sessionCountries.size,
       funnel: FUNNEL.map((step) => ({ ...step, count: counts.get(step.event) ?? 0 })),
       exerciseConversion: EXERCISE_CONVERSION.map((step) => ({ ...step, count: counts.get(step.event) ?? 0 })),
@@ -308,11 +310,15 @@ export function AdminGrowthDashboard() {
           <PhoneCall aria-hidden="true" />
           <span>Call-back requests</span>
           <strong>{stats.visitRequests}</strong>
-          <small>Details in the Enquiries tab</small>
+          <small>
+            {stats.visitRequestsStarted
+              ? `${stats.visitRequestsStarted} started the form · details in Enquiries`
+              : "Details in the Enquiries tab"}
+          </small>
         </Link>
         <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/contact-taps">
           <Send aria-hidden="true" />
-          <span>WhatsApp &amp; email taps</span>
+          <span>Call, WhatsApp &amp; email taps</span>
           <strong>{stats.contactTaps}</strong>
           <small>Open tap records</small>
         </Link>

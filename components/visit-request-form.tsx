@@ -7,7 +7,13 @@ import { currentVisitSource, trackGrowthEvent } from "@/lib/growth-tracking";
 import { isCoveredPostcode, outwardCode } from "@/lib/home-visit-area";
 import { normalisePostcode } from "@/lib/home-visit";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/practice-contact";
-import { VISIT_NOTE_MAX, VISIT_TIME_OPTIONS, visitRequestErrors, type VisitTimeId } from "@/lib/visit-request";
+import {
+  VISIT_NOTE_MAX,
+  VISIT_TIME_OPTIONS,
+  visitRequestErrorFields,
+  visitRequestErrors,
+  type VisitTimeId,
+} from "@/lib/visit-request";
 
 type Field = "name" | "phone" | "postcode" | "note";
 const FULL_POSTCODE = /^[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}$/;
@@ -28,6 +34,15 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
   const honeypot = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const doneRef = useRef<HTMLHeadingElement>(null);
+  const startedRef = useRef(false);
+
+  // Logged once, on the first keystroke or tick, so the Growth tab can tell
+  // "read it and left" from "started filling it in and gave up".
+  function markStarted(step: Field | "times") {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    trackGrowthEvent("visit_request_started", { source, step });
+  }
 
   // "Request a call back" from a service, price or exercise page passes ?about=.
   useEffect(() => {
@@ -48,6 +63,7 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
   const covered = postcodeComplete && isCoveredPostcode(normalised);
 
   function toggleTime(id: VisitTimeId) {
+    markStarted("times");
     setTimes((current) => (current.includes(id) ? current.filter((t) => t !== id) : [...current, id]));
   }
 
@@ -58,11 +74,16 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
     setErrors(found);
     const firstInvalid = (["name", "phone", "postcode", "note"] as Field[]).find((f) => found[f]);
     if (firstInvalid) {
+      trackGrowthEvent("visit_request_error", {
+        source,
+        fields: visitRequestErrorFields({ name, phone, postcode, note }, found),
+      });
       formRef.current?.querySelector<HTMLElement>(`#visit-${firstInvalid}`)?.focus();
       return;
     }
 
     setState("sending");
+    let status = 0;
     try {
       const res = await fetch("/api/visit-request", {
         method: "POST",
@@ -77,12 +98,15 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
           channel: currentVisitSource().channel,
         }),
       });
+      status = res.status;
       const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (!res.ok || !json.ok) throw new Error(json.error || "Sorry, that didn't send. Please try again.");
       trackGrowthEvent("visit_request_sent", { source, covered });
       track("visit_request_sent", { source, covered });
       setState("sent");
     } catch (error) {
+      // 0 = the request never reached the server (offline, blocked, timed out).
+      trackGrowthEvent("visit_request_failed", { source, status: status || 0 });
       setServerError(error instanceof Error ? error.message : "Sorry, that didn't send. Please try again.");
       setState("idle");
     }
@@ -91,7 +115,7 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
   if (state === "sent") {
     const first = name.trim().split(/\s+/)[0] ?? "";
     return (
-      <div className="visit-request-done" role="status" aria-live="polite">
+      <div className="visit-request-done" role="status" aria-live="polite" data-contact-source="request_visit_sent">
         <h2 ref={doneRef} tabIndex={-1}>
           Thanks{first ? `, ${first}` : ""}. We&rsquo;ll call you.
         </h2>
@@ -126,7 +150,10 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
           name="name"
           autoComplete="name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            markStarted("name");
+            setName(e.target.value);
+          }}
           maxLength={80}
           aria-invalid={errors.name ? true : undefined}
           aria-describedby={errors.name ? "visit-name-error" : undefined}
@@ -144,7 +171,10 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
           autoComplete="tel"
           placeholder="07123 456789"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => {
+            markStarted("phone");
+            setPhone(e.target.value);
+          }}
           maxLength={20}
           aria-invalid={errors.phone ? true : undefined}
           aria-describedby={errors.phone ? "visit-phone-error" : undefined}
@@ -161,7 +191,10 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
           autoCapitalize="characters"
           placeholder="G72 8FE"
           value={postcode}
-          onChange={(e) => setPostcode(e.target.value)}
+          onChange={(e) => {
+            markStarted("postcode");
+            setPostcode(e.target.value);
+          }}
           maxLength={10}
           aria-invalid={errors.postcode ? true : undefined}
           aria-describedby={errors.postcode ? "visit-postcode-error" : postcodeComplete ? "visit-postcode-hint" : undefined}
@@ -205,7 +238,10 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
           maxLength={VISIT_NOTE_MAX}
           placeholder="e.g. Mum had a fall last month and is unsteady on the stairs"
           value={note}
-          onChange={(e) => setNote(e.target.value)}
+          onChange={(e) => {
+            markStarted("note");
+            setNote(e.target.value);
+          }}
           aria-invalid={errors.note ? true : undefined}
           aria-describedby={errors.note ? "visit-note-error" : undefined}
         />

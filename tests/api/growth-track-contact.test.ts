@@ -37,4 +37,26 @@ describe("POST /api/growth/track contact taps", () => {
     expect(doc.event).toBe(event);
     expect(doc.params).toEqual({ source: "contact_bar", topic: "home-visit" });
   });
+
+  it("stores a phone number tap", async () => {
+    const res = await POST(req({ event: "call_click", sessionId: "session-12345", path: "/request-visit", params: { source: "footer" } }));
+    expect((await res.json()).saved).toBe(true);
+    expect(addMock.mock.calls[0][0]).toMatchObject({ event: "call_click", params: { source: "footer" } });
+  });
+
+  it("stores call-back form progress with the blocked fields and the failure status", async () => {
+    for (const [event, params] of [
+      ["visit_request_started", { source: "request_visit_page", step: "phone" }],
+      ["visit_request_error", { source: "request_visit_page", fields: "phone:invalid,postcode:missing" }],
+      ["visit_request_failed", { source: "request_visit_page", status: 503 }],
+    ] as const) {
+      const res = await POST(req({ event, sessionId: "session-12345", path: "/request-visit", params }));
+      expect((await res.json()).saved).toBe(true);
+    }
+    expect(addMock.mock.calls.map(([doc]) => [doc.event, doc.params])).toEqual([
+      ["visit_request_started", { source: "request_visit_page", step: "phone" }],
+      ["visit_request_error", { source: "request_visit_page", fields: "phone:invalid,postcode:missing" }],
+      ["visit_request_failed", { source: "request_visit_page", status: 503 }],
+    ]);
+  });
 });

@@ -1,6 +1,23 @@
 import { describe, expect, it } from "vitest";
 
-import { parseVisitRequest, timeLabels, visitRequestErrors } from "@/lib/visit-request";
+import { parseVisitRequest, timeLabels, visitRequestErrorFields, visitRequestErrors } from "@/lib/visit-request";
+
+describe("visitRequestErrorFields", () => {
+  it("lists each blocked field as missing or not accepted, in form order, without the values", () => {
+    const input = { name: "", phone: "12345", postcode: "", note: "" };
+    expect(visitRequestErrorFields(input, visitRequestErrors(input))).toBe("name:missing,phone:invalid,postcode:missing");
+  });
+
+  it("is empty when nothing is wrong", () => {
+    const input = { name: "Jo Bloggs", phone: "07518 953611", postcode: "G72 8FE" };
+    expect(visitRequestErrorFields(input, visitRequestErrors(input))).toBe("");
+  });
+
+  it("counts a note that is too long as not accepted", () => {
+    const input = { name: "Jo Bloggs", phone: "07518 953611", postcode: "G72 8FE", note: "x".repeat(501) };
+    expect(visitRequestErrorFields(input, visitRequestErrors(input))).toBe("note:invalid");
+  });
+});
 
 describe("visit request rules", () => {
   it("accepts just a name, phone and postcode, and normalises the postcode", () => {
