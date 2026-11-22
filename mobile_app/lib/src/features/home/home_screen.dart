@@ -32,8 +32,6 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   _HeroBanner(theme: theme),
                   const SizedBox(height: 14),
-                  _NewPatientOfferCard(theme: theme),
-                  const SizedBox(height: 24),
                   _TrustBar(theme: theme),
                   const SizedBox(height: 28),
                   Text(
@@ -83,62 +81,6 @@ class HomeScreen extends StatelessWidget {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _NewPatientOfferCard extends StatelessWidget {
-  const _NewPatientOfferCard({required this.theme});
-
-  final ThemeData theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => ServiceSelectScreen.go(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFFECFEFF),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF9ADCEE)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0891B2),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(Icons.local_offer_rounded, color: Colors.white),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'New patient offer',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Use NEW10 at checkout for 10% off your first booking.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF0E7490),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_rounded, color: Color(0xFF0891B2)),
-          ],
-        ),
       ),
     );
   }

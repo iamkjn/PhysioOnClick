@@ -22,8 +22,7 @@ int videoPricePence(ResolvedService s) => (s.price * 100).round();
 
 /// The whole price of [s] in pence for visit type [v]: the video price, or
 /// for a home visit the video price plus [kHomeVisitExtraPence] for every
-/// visit in the service (bundles pay for all their visits upfront). Discount
-/// codes apply to this whole amount; the server computes the discounted one.
+/// visit in the service (bundles pay for all their visits upfront).
 int sessionPricePence(ResolvedService s, VisitType v) =>
     videoPricePence(s) +
     (v == VisitType.home ? kHomeVisitExtraPence * s.sessions : 0);

@@ -82,7 +82,7 @@ String chatPricingText() {
       'Packages:\n'
       '• 4-Session Bundle — ${online(bundle4)} online, ${home(bundle4)} at home\n'
       '• 8-Session Bundle — ${online(bundle8)} online, ${home(bundle8)} at home\n\n'
-      'New patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.';
+      'No GP referral required — you can self-refer.';
 }
 
 const _insuranceText =

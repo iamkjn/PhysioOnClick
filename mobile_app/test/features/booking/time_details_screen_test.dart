@@ -1,13 +1,9 @@
-import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 // ignore: depend_on_referenced_packages
 import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
-import 'package:mobile_app/src/features/booking/checkout_repository.dart';
 import 'package:mobile_app/src/features/booking/models/book_service.dart';
 import 'package:mobile_app/src/features/booking/models/home_visit.dart';
 import 'package:mobile_app/src/features/booking/time_details_screen.dart';
@@ -56,7 +52,7 @@ void main() {
     expect(find.text('Sun'), findsOneWidget);
     // Continue button carries the price, matching web's "Continue to payment · £X".
     expect(find.textContaining('Continue to payment'), findsOneWidget);
-    expect(find.textContaining('£30'), findsWidgets);
+    expect(find.textContaining('£40'), findsWidgets);
   });
 
   testWidgets('shows an error message when slot loading fails (signed out)', (tester) async {
@@ -128,87 +124,20 @@ void main() {
     expect(find.text('£280 for 4 home visits'), findsOneWidget);
   });
 
-  group('discount code', () {
-    late List<Map<String, dynamic>> sent;
+  testWidgets('has no discount code box (NEW10 ended on 22 Nov 2026)', (tester) async {
+    tester.view.physicalSize = const Size(1200, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
 
-    /// Serves an empty slot list and answers the discount preview with
-    /// [discount], recording each discount request body in [sent].
-    CheckoutRepository repo(Map<String, dynamic> discount) => CheckoutRepository(
-          idTokenProvider: () async => null,
-          httpClient: MockClient((request) async {
-            if (request.url.path == '/api/checkout/discount') {
-              sent.add(jsonDecode(request.body) as Map<String, dynamic>);
-              return http.Response(jsonEncode({'ok': true, 'discount': discount}), 200);
-            }
-            return http.Response(jsonEncode({'slots': <String, dynamic>{}}), 200);
-          }),
-        );
+    await tester.pumpWidget(MaterialApp(
+      home: TimeDetailsScreen(service: bookServiceFor(BookServiceId.followUp)),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
-    Future<void> applyNew10(WidgetTester tester) async {
-      await tester.enterText(find.widgetWithText(TextField, 'Email'), 'pat@example.com');
-      await tester.enterText(find.widgetWithText(TextField, 'NEW10'), 'NEW10');
-      await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 50));
-    }
-
-    setUp(() => sent = []);
-
-    testWidgets('home visit sends visitType home and pays the server total as-is', (tester) async {
-      tester.view.physicalSize = const Size(1200, 3000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-
-      await tester.pumpWidget(MaterialApp(
-        home: TimeDetailsScreen(
-          service: bookServiceFor(BookServiceId.initialAssessment),
-          visitType: VisitType.home,
-          homeAddress: const HomeVisitAddress(line: '1 Main St', postcode: 'G31 4HS'),
-          checkoutRepository: repo({
-            'percent': 10,
-            'amountPence': 7200,
-            'originalAmountPence': 8000,
-            'discountAmountPence': 800,
-          }),
-        ),
-      ));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 50));
-      expect(find.text('Continue to payment · £80'), findsOneWidget);
-
-      await applyNew10(tester);
-
-      expect(sent.single['visitType'], 'home');
-      expect(sent.single['service'], 'initial-assessment');
-      // 10% off the whole £80, with nothing added on top.
-      expect(find.text('Continue to payment · £72'), findsOneWidget);
-    });
-
-    testWidgets('video sends visitType video and pays the server total', (tester) async {
-      tester.view.physicalSize = const Size(1200, 3000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-
-      await tester.pumpWidget(MaterialApp(
-        home: TimeDetailsScreen(
-          service: bookServiceFor(BookServiceId.followUp),
-          checkoutRepository: repo({
-            'percent': 10,
-            'amountPence': 2700,
-            'originalAmountPence': 3000,
-            'discountAmountPence': 300,
-          }),
-        ),
-      ));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 50));
-
-      await applyNew10(tester);
-
-      expect(sent.single['visitType'], 'video');
-      expect(find.text('Continue to payment · £27'), findsOneWidget);
-    });
+    expect(find.text('Discount code'), findsNothing);
+    expect(find.textContaining('NEW10'), findsNothing);
+    expect(find.widgetWithText(FilledButton, 'Apply'), findsNothing);
   });
 }

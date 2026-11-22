@@ -27,29 +27,6 @@ class CheckoutStatus {
   );
 }
 
-class CheckoutDiscount {
-  final int percent;
-  final int amountPence;
-  final int discountAmountPence;
-  final int originalAmountPence;
-
-  const CheckoutDiscount({
-    required this.percent,
-    required this.amountPence,
-    required this.discountAmountPence,
-    required this.originalAmountPence,
-  });
-
-  factory CheckoutDiscount.fromJson(
-    Map<String, dynamic> json,
-  ) => CheckoutDiscount(
-    percent: (json['percent'] as num?)?.toInt() ?? 0,
-    amountPence: (json['amountPence'] as num?)?.toInt() ?? 0,
-    discountAmountPence: (json['discountAmountPence'] as num?)?.toInt() ?? 0,
-    originalAmountPence: (json['originalAmountPence'] as num?)?.toInt() ?? 0,
-  );
-}
-
 /// A message from our server meant for the patient (shown verbatim).
 class CheckoutException implements Exception {
   final String message;
@@ -132,7 +109,6 @@ class CheckoutRepository {
     String? assessmentUid,
     String? assessmentPersonId,
     String? assessmentFormId,
-    String? discountCode,
   }) async {
     final uri = Uri.parse('$kApiBase/api/checkout/create');
     final res = await _client
@@ -154,8 +130,6 @@ class CheckoutRepository {
             if (assessmentPersonId != null)
               'assessmentPersonId': assessmentPersonId,
             if (assessmentFormId != null) 'assessmentFormId': assessmentFormId,
-            if (discountCode != null && discountCode.trim().isNotEmpty)
-              'discountCode': discountCode.trim().toUpperCase(),
           }),
         )
         .timeout(const Duration(seconds: 20));
@@ -173,45 +147,6 @@ class CheckoutRepository {
       throw Exception('Failed to start checkout (${res.statusCode})');
     }
     return body!['url'] as String;
-  }
-
-  /// Previews a discount code. [visitType] uses the same wire value as
-  /// [createCheckoutSession] (`VisitType.name`: "video" or "home"); for
-  /// "home" the server returns `amountPence` computed on the whole home-visit
-  /// price, which is the final total to show — nothing is added on top.
-  Future<CheckoutDiscount> validateDiscount({
-    required String code,
-    required String email,
-    required String service,
-    String visitType = 'video',
-  }) async {
-    final uri = Uri.parse('$kApiBase/api/checkout/discount');
-    final res = await _client
-        .post(
-          uri,
-          headers: await _authHeaders(),
-          body: jsonEncode({
-            'code': code.trim().toUpperCase(),
-            'email': email.trim().toLowerCase(),
-            'service': service,
-            'visitType': visitType,
-          }),
-        )
-        .timeout(const Duration(seconds: 20));
-
-    Map<String, dynamic>? body;
-    try {
-      body = jsonDecode(res.body) as Map<String, dynamic>;
-    } catch (_) {
-      body = null;
-    }
-
-    if (res.statusCode != 200 || body?['ok'] != true) {
-      final error = body?['error'] as String?;
-      throw Exception(error ?? 'That discount code could not be applied.');
-    }
-
-    return CheckoutDiscount.fromJson(body!['discount'] as Map<String, dynamic>);
   }
 
   Future<CheckoutStatus> pollCheckoutStatus(String sessionId) async {

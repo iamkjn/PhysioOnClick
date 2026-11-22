@@ -70,7 +70,6 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
       widget.checkoutRepository ?? CheckoutRepository();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _discountController = TextEditingController();
 
   late DateTime _viewMonth;
   Map<String, List<String>> _slots = {};
@@ -83,10 +82,6 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
   String? _selectedPersonId;
   String? _selectedPersonName;
   bool _consent = false;
-  bool _discountChecking = false;
-  bool _discountApplied = false;
-  String? _discountMessage;
-  int? _discountedAmountPence;
 
   /// Home-visit address; may be switched to the picked person's usual one.
   HomeVisitAddress? _homeAddress;
@@ -113,7 +108,6 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _discountController.dispose();
     super.dispose();
   }
 
@@ -161,70 +155,9 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
   }
 
   /// The whole price for this visit type (a home visit's price already
-  /// includes the home extra). When a code is applied, the server's
-  /// discounted whole price is used as-is: the discount covers the whole
-  /// price, home visits included, so nothing is added on top.
-  int get _checkoutPence {
-    final discounted = _discountApplied ? _discountedAmountPence : null;
-    return discounted ?? sessionPricePence(widget.service, widget.visitType);
-  }
-
-  String get _discountCode => _discountController.text.trim().toUpperCase();
-
-  void _clearDiscount() {
-    setState(() {
-      _discountApplied = false;
-      _discountedAmountPence = null;
-      _discountMessage = null;
-    });
-  }
-
-  Future<void> _applyDiscount() async {
-    final code = _discountCode;
-    final email = _emailController.text.trim();
-    if (code.isEmpty) {
-      setState(() => _discountMessage = 'Enter a discount code first.');
-      return;
-    }
-    if (email.isEmpty) {
-      setState(
-        () => _discountMessage =
-            'Enter your email before applying a discount code.',
-      );
-      return;
-    }
-
-    setState(() {
-      _discountChecking = true;
-      _discountApplied = false;
-      _discountedAmountPence = null;
-      _discountMessage = null;
-    });
-
-    try {
-      final discount = await _repo.validateDiscount(
-        code: code,
-        email: email,
-        service: widget.service.apiId,
-        visitType: widget.visitType.name,
-      );
-      if (!mounted) return;
-      setState(() {
-        _discountApplied = true;
-        _discountedAmountPence = discount.amountPence;
-        _discountMessage =
-            'NEW10 applied — ${discount.percent}% off your first booking.';
-      });
-    } catch (error) {
-      if (!mounted) return;
-      final raw = error.toString();
-      setState(() {
-        _discountMessage = raw.replaceFirst('Exception: ', '');
-      });
-    } finally {
-      if (mounted) setState(() => _discountChecking = false);
-    }
-  }
+  /// includes the home extra). There are no discount codes (NEW10 ended
+  /// on 22 Nov 2026).
+  int get _checkoutPence => sessionPricePence(widget.service, widget.visitType);
 
   Future<void> _onContinue() async {
     if (_selectedSlotIso == null || !_consent) return;
@@ -250,7 +183,6 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
           email: _emailController.text.trim(),
           personId: _selectedPersonId,
           personName: _selectedPersonName ?? _nameController.text.trim(),
-          discountCode: _discountApplied ? _discountCode : null,
           visitType: widget.visitType,
           homeAddress: _homeAddress,
         ),
@@ -401,29 +333,11 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: _emailController,
-                    onChanged: (_) {
-                      if (_discountApplied || _discountMessage != null) {
-                        _clearDiscount();
-                      }
-                    },
                     decoration: const InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 16),
-                  _DiscountPanel(
-                    controller: _discountController,
-                    checking: _discountChecking,
-                    applied: _discountApplied,
-                    message: _discountMessage,
-                    onApply: _applyDiscount,
-                    onChanged: () {
-                      if (_discountApplied || _discountMessage != null) {
-                        _clearDiscount();
-                      }
-                    },
                   ),
                   const SizedBox(height: 20),
                   CheckboxListTile(
@@ -446,10 +360,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed:
-                        (_selectedSlotIso == null ||
-                            !_consent ||
-                            _discountChecking)
+                    onPressed: (_selectedSlotIso == null || !_consent)
                         ? null
                         : _onContinue,
                     style: FilledButton.styleFrom(
@@ -457,9 +368,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: Text(
-                      _discountChecking
-                          ? 'Checking discount...'
-                          : 'Continue to payment · ${formatPounds(_checkoutPence)}',
+                      'Continue to payment · ${formatPounds(_checkoutPence)}',
                     ),
                   ),
                 ),
@@ -467,106 +376,6 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _DiscountPanel extends StatelessWidget {
-  const _DiscountPanel({
-    required this.controller,
-    required this.checking,
-    required this.applied,
-    required this.message,
-    required this.onApply,
-    required this.onChanged,
-  });
-
-  final TextEditingController controller;
-  final bool checking;
-  final bool applied;
-  final String? message;
-  final VoidCallback onApply;
-  final VoidCallback onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: applied ? const Color(0xFF16A34A) : AppColors.border,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Discount code',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'New patient? Use NEW10 for 10% off your first booking.',
-            style: theme.textTheme.bodySmall,
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  textCapitalization: TextCapitalization.characters,
-                  onChanged: (value) {
-                    final upper = value.toUpperCase();
-                    if (value != upper) {
-                      controller.value = controller.value.copyWith(
-                        text: upper,
-                        selection: TextSelection.collapsed(
-                          offset: upper.length,
-                        ),
-                      );
-                    }
-                    onChanged();
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'NEW10',
-                    border: OutlineInputBorder(),
-                    isDense: true,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              FilledButton(
-                onPressed: checking ? null : onApply,
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.teal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                ),
-                child: Text(checking ? 'Checking...' : 'Apply'),
-              ),
-            ],
-          ),
-          if (message != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              message!,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: applied ? const Color(0xFF15803D) : AppColors.error,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ],
       ),
     );
   }
