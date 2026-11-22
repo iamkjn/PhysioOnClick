@@ -15,9 +15,8 @@ import type { BookServiceId } from "@/lib/site-data";
 export const HOME_VISIT_EXTRA_PENCE = 3000;
 
 /**
- * What the patient pays before any discount: the video price, or for a home
- * visit the whole home-visit price (video price + HOME_VISIT_EXTRA_PENCE per
- * visit). Discount codes apply to this whole figure.
+ * What the patient pays: the video price, or for a home visit the whole
+ * home-visit price (video price + HOME_VISIT_EXTRA_PENCE per visit).
  */
 export function sessionPricePence(service: BookServiceId, visitType?: VisitType): number {
   const { price, sessions } = bookServiceFor(service);

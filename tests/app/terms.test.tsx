@@ -63,7 +63,7 @@ describe('Terms & Conditions page', () => {
     )
     expect(text).toContain("Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian and west Fife)")
     expect(text).toMatch(/the price you pay when you book covers every visit in the bundle/)
-    expect(text).toMatch(/Discount codes\s+apply to the whole price/)
+    expect(text).not.toMatch(/discount/i)
     expect(text).not.toMatch(/travel fee/i)
     expect(text).not.toMatch(/shown separately/i)
     expect(text).not.toMatch(/session price only/i)

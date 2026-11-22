@@ -179,11 +179,6 @@ export function BookingStepTime({
   const [error, setError] = useState<string | null>(null);
   const [consent, setConsent] = useState(false);
   const [selfDob, setSelfDob] = useState("");
-  const [discountCode, setDiscountCode] = useState("");
-  const [discountApplied, setDiscountApplied] = useState(false);
-  const [discountChecking, setDiscountChecking] = useState(false);
-  const [discountMessage, setDiscountMessage] = useState<string | null>(null);
-  const [discountedAmountPence, setDiscountedAmountPence] = useState<number | null>(null);
 
   // Once account + slot are settled we collect the pre-payment self-assessment
   // (see AssessmentWizard below) before ever hitting Stripe — so a physio has
@@ -198,12 +193,8 @@ export function BookingStepTime({
     assessmentUid: string;
     assessmentPersonId: string;
   } | null>(null);
-  // One whole price for the visit type (a home visit includes everything); a
-  // discount code comes off that whole price, as the server applies it.
-  const originalAmountPence = sessionPricePence(service.id, visit.visitType);
-  const checkoutAmountPence = discountApplied && discountedAmountPence !== null
-    ? discountedAmountPence
-    : originalAmountPence;
+  // One whole price for the visit type (a home visit includes everything).
+  const checkoutAmountPence = sessionPricePence(service.id, visit.visitType);
 
   const signedIn = Boolean(user);
   const signingIn = !signedIn && authMode === "signin";
@@ -592,7 +583,6 @@ export function BookingStepTime({
       trackGrowthEvent("checkout_started", {
         service_id: service.id,
         amount_pence: checkoutAmountPence,
-        discount_code: discountApplied ? discountCode.trim() : "",
         visit_type: visit.visitType,
       });
       const res = await fetch("/api/checkout/create", {
@@ -609,7 +599,6 @@ export function BookingStepTime({
           ...(visit.visitType === "home"
             ? { homeAddressLine: visit.homeAddressLine, homePostcode: visit.homePostcode }
             : {}),
-          ...(discountApplied ? { discountCode: discountCode.trim() } : {}),
           ...(assessmentFormId
             ? {
                 assessmentFormId,
@@ -630,53 +619,6 @@ export function BookingStepTime({
     } catch {
       setError("Something went wrong starting payment. Please try again.");
       setSubmitting(false);
-    }
-  }
-
-  async function applyDiscountCode() {
-    const cleaned = discountCode.trim().toUpperCase();
-    const payerEmail = signedIn && !editingDetails ? user?.email ?? "" : email;
-    setDiscountCode(cleaned);
-    setDiscountApplied(false);
-    setDiscountedAmountPence(null);
-    if (!cleaned) {
-      setDiscountMessage("Enter a discount code first.");
-      return;
-    }
-    if (validateEmail(payerEmail)) {
-      setDiscountMessage("Enter your email before applying a discount code.");
-      return;
-    }
-    setDiscountChecking(true);
-    setDiscountMessage(null);
-    try {
-      const res = await fetch("/api/checkout/discount", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code: cleaned,
-          email: payerEmail,
-          service: service.id,
-          visitType: visit.visitType,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok || typeof data.discount?.amountPence !== "number") {
-        setDiscountMessage(typeof data?.error === "string" ? data.error : "That discount code could not be applied.");
-        return;
-      }
-      setDiscountedAmountPence(data.discount.amountPence);
-      setDiscountApplied(true);
-      setDiscountMessage("Discount applied.");
-      trackGrowthEvent("discount_applied", {
-        discount_code: cleaned,
-        service_id: service.id,
-        amount_pence: data.discount.amountPence,
-      });
-    } catch {
-      setDiscountMessage("That discount code could not be checked. Please try again.");
-    } finally {
-      setDiscountChecking(false);
     }
   }
 
@@ -984,44 +926,6 @@ export function BookingStepTime({
               <a href="/terms">Terms</a>.
             </span>
           </label>
-
-          <div className="book-discount" aria-live="polite">
-            <label className="book-label" htmlFor="book-discount-code">
-              Discount code
-            </label>
-            <p className="book-discount-hint">
-              New patient? Use <strong>NEW10</strong> for 10% off your first booking.
-            </p>
-            <div className="book-discount-row">
-              <input
-                id="book-discount-code"
-                className="book-input"
-                autoComplete="off"
-                placeholder="NEW10"
-                value={discountCode}
-                onChange={(e) => {
-                  setDiscountCode(e.target.value.toUpperCase());
-                  setDiscountApplied(false);
-                  setDiscountedAmountPence(null);
-                  setDiscountMessage(null);
-                }}
-                maxLength={24}
-              />
-              <button
-                type="button"
-                className="book-discount-apply"
-                onClick={applyDiscountCode}
-                disabled={discountChecking}
-              >
-                {discountChecking ? "Checking…" : "Apply"}
-              </button>
-            </div>
-            {discountMessage ? (
-              <p className={`book-discount-message${discountApplied ? " is-success" : ""}`}>
-                {discountMessage}
-              </p>
-            ) : null}
-          </div>
         </div>
 
         <div className="book-panel-footer">
@@ -1031,18 +935,14 @@ export function BookingStepTime({
           <button
             type="submit"
             className="book-cta"
-            disabled={submitting || discountChecking || !selectedSlot || !consent}
+            disabled={submitting || !selectedSlot || !consent}
             aria-label={
               !submitting && (!selectedSlot || !consent)
                 ? `Confirm booking. Choose a time and confirm consent above first.`
                 : undefined
             }
           >
-            {submitting
-              ? "Starting payment…"
-              : discountChecking
-                ? "Checking discount…"
-                : `Continue to payment · ${formatCheckoutPrice(checkoutAmountPence)}`}
+            {submitting ? "Starting payment…" : `Continue to payment · ${formatCheckoutPrice(checkoutAmountPence)}`}
           </button>
         </div>
       </form>

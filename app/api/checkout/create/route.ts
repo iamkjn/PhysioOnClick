@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 import { isBookServiceId, serviceLabelFor } from "@/lib/cal-services";
-import { normaliseDiscountCode, validateCheckoutDiscount } from "@/lib/checkout-discounts";
 import { createStripeCheckout } from "@/lib/payments/stripe";
 import type { BookingIntent } from "@/lib/payments";
 import { DEFAULT_VISIT_TYPE, isVisitType, validateHomeVisit, type VisitType } from "@/lib/home-visit";
@@ -18,7 +17,6 @@ type Body = {
   email?: unknown;
   timeZone?: unknown;
   focusAreas?: unknown;
-  discountCode?: unknown;
   assessmentUid?: unknown;
   assessmentPersonId?: unknown;
   assessmentFormId?: unknown;
@@ -51,7 +49,6 @@ export async function POST(request: Request) {
     email,
     timeZone,
     focusAreas,
-    discountCode,
     assessmentUid,
     assessmentPersonId,
     assessmentFormId,
@@ -104,30 +101,10 @@ export async function POST(request: Request) {
         .slice(0, 10)
     : undefined;
 
-  // One whole price per visit type (a home visit includes everything); a
-  // discount comes off that whole price.
-  const originalAmountPence = sessionPricePence(service, resolvedVisitType);
-  let amountPence = originalAmountPence;
-  let appliedDiscount:
-    | { code: string; percent: number; amountPence: number }
-    | null = null;
-
-  const cleanedDiscountCode = normaliseDiscountCode(discountCode);
-  if (cleanedDiscountCode) {
-    const discount = await validateCheckoutDiscount({
-      code: cleanedDiscountCode,
-      email: normalizedEmail,
-      service,
-      visitType: resolvedVisitType,
-    });
-    if (!discount.ok) return bad(discount.error);
-    amountPence = discount.amountPence;
-    appliedDiscount = {
-      code: discount.code,
-      percent: discount.percent,
-      amountPence: discount.discountAmountPence,
-    };
-  }
+  // One whole price per visit type (a home visit includes everything). There
+  // are no discount codes: NEW10 ended on 22 Nov 2026, and a code sent by an
+  // old cached booking page is ignored, so the Stripe page shows the full price.
+  const amountPence = sessionPricePence(service, resolvedVisitType);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -147,14 +124,6 @@ export async function POST(request: Request) {
     focusAreas: cleanedFocus,
     visitType: resolvedVisitType,
     ...(homeVisitAddress ? { homeVisitAddress } : {}),
-    ...(appliedDiscount
-      ? {
-          discountCode: appliedDiscount.code,
-          discountPercent: String(appliedDiscount.percent),
-          originalAmountPence: String(originalAmountPence),
-          discountAmountPence: String(appliedDiscount.amountPence),
-        }
-      : {}),
     ...(isIdLike(assessmentUid) ? { assessmentUid } : {}),
     ...(isIdLike(assessmentPersonId) ? { assessmentPersonId } : {}),
     ...(isIdLike(assessmentFormId) ? { assessmentFormId } : {}),
@@ -162,7 +131,7 @@ export async function POST(request: Request) {
 
   const result = await createStripeCheckout({
     intent,
-    // A single line item at the whole price (after any discount).
+    // A single line item at the whole price.
     amountPence,
     serviceLabel: serviceLabelFor(service, resolvedVisitType),
     successUrl: `${siteUrl}/book/success?session_id={CHECKOUT_SESSION_ID}`,

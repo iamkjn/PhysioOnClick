@@ -399,23 +399,9 @@ describe('booking visit type', () => {
     )
   })
 
-  it('sends the visit type with the discount check and shows the discounted whole price', async () => {
+  it('has no discount code box: the pay button shows the full price', async () => {
     const { sessionPricePence, formatPounds } = await import('@/lib/home-visit-pricing')
     const whole = sessionPricePence('initial-assessment', 'home')
-    const discounted = whole - Math.round(whole * 0.1)
-    const base = fetchMock.getMockImplementation()!
-    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
-      if (String(url).includes('/api/checkout/discount')) {
-        return {
-          ok: true,
-          json: async () => ({
-            ok: true,
-            discount: { percent: 10, amountPence: discounted, discountAmountPence: whole - discounted, originalAmountPence: whole },
-          }),
-        }
-      }
-      return base(url, init)
-    })
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
@@ -428,18 +414,11 @@ describe('booking visit type', () => {
     await user.type(screen.getByLabelText('Full name'), 'Alex Morgan')
     await user.type(screen.getByLabelText('Email'), 'alex@example.com')
     await user.click(screen.getByRole('checkbox', { name: /consent/i }))
-    await user.type(screen.getByLabelText('Discount code'), 'new10')
-    await user.click(screen.getByRole('button', { name: 'Apply' }))
-    await screen.findByText('Discount applied.')
-    const call = fetchMock.mock.calls.find(([url]) => String(url).includes('/api/checkout/discount'))
-    expect(JSON.parse(String((call![1] as RequestInit).body))).toEqual({
-      code: 'NEW10',
-      email: 'alex@example.com',
-      service: 'initial-assessment',
-      visitType: 'home',
-    })
+    expect(screen.queryByLabelText(/discount code/i)).toBeNull()
+    expect(screen.queryByText(/NEW10/)).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Apply' })).toBeNull()
     expect(screen.getByRole('button', { name: /Continue to payment/ })).toHaveTextContent(
-      `Continue to payment · ${formatPounds(discounted)}`,
+      `Continue to payment · ${formatPounds(whole)}`,
     )
   })
 

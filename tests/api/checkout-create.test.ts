@@ -26,8 +26,6 @@ const VALID = {
 
 // Derived from the live price list so a price change doesn't break these tests.
 const SESSION_PENCE = Math.round(bookServiceFor("initial-assessment").price * 100);
-const DISCOUNT_PENCE = Math.round(SESSION_PENCE * 0.1);
-const DISCOUNTED_PENCE = SESSION_PENCE - DISCOUNT_PENCE;
 
 beforeEach(() => vi.clearAllMocks());
 afterEach(() => vi.restoreAllMocks());
@@ -67,30 +65,23 @@ describe("POST /api/checkout/create", () => {
     expect(arg.amountPence).toBe(SESSION_PENCE);
   });
 
-  it("applies the new patient discount code server-side", async () => {
+  it("charges the full price and drops a code sent by an old booking page (NEW10 has ended)", async () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://site.test");
     (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true, url: "https://checkout.stripe.com/c/cs_1", sessionId: "cs_1",
     });
 
-    const res = await POST(req({ ...VALID, discountCode: "new10" }));
+    for (const code of ["new10", "NEW10", "SAVE99"]) {
+      const res = await POST(req({ ...VALID, discountCode: code }));
+      expect(res.status).toBe(200);
+    }
 
-    expect(res.status).toBe(200);
-    const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(arg.amountPence).toBe(DISCOUNTED_PENCE);
-    expect(arg.intent.discountCode).toBe("NEW10");
-    expect(arg.intent.discountPercent).toBe("10");
-    expect(arg.intent.originalAmountPence).toBe(String(SESSION_PENCE));
-    expect(arg.intent.discountAmountPence).toBe(String(DISCOUNT_PENCE));
-  });
-
-  it("rejects unknown discount codes before Stripe checkout", async () => {
-    const res = await POST(req({ ...VALID, discountCode: "SAVE99" }));
-    const json = await res.json();
-
-    expect(res.status).toBe(400);
-    expect(json.error).toBe("Discount code not recognised.");
-    expect(createStripeCheckout).not.toHaveBeenCalled();
+    for (const [arg] of (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls) {
+      expect(arg.amountPence).toBe(SESSION_PENCE);
+      expect(arg.intent).not.toHaveProperty("discountCode");
+      expect(arg.intent).not.toHaveProperty("discountPercent");
+      expect(arg.intent).not.toHaveProperty("discountAmountPence");
+    }
   });
 });
 
@@ -197,19 +188,15 @@ describe("POST /api/checkout/create — visit type", () => {
     expect(arg).not.toHaveProperty("extraLineItems");
   });
 
-  it("applies a discount code to the whole home-visit price", async () => {
+  it("charges the whole home-visit price even if an old page sends a discount code", async () => {
     okStripe();
     const res = await POST(req({
       ...VALID, discountCode: "new10", visitType: "home", homeAddressLine: "7 Example Street", homePostcode: "G31 4HS",
     }));
     expect(res.status).toBe(200);
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    const whole = sessionPricePence("initial-assessment", "home");
-    const discount = Math.round(whole * 0.1);
-    expect(arg.amountPence).toBe(whole - discount);
-    expect(arg.intent.originalAmountPence).toBe(String(whole));
-    expect(arg.intent.discountAmountPence).toBe(String(discount));
-    expect(arg.intent.discountPercent).toBe("10");
+    expect(arg.amountPence).toBe(sessionPricePence("initial-assessment", "home"));
+    expect(arg.intent).not.toHaveProperty("discountAmountPence");
     expect(arg).not.toHaveProperty("extraLineItems");
   });
 });

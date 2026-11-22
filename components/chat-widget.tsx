@@ -83,7 +83,7 @@ const PRICING_TEXT = [
   "Packages:",
   ...pricing.filter((p) => p.mode === "Package").map((p) => `• ${p.title} — £${p.price}`),
   "",
-  "New patients can use code NEW10 at checkout for 10% off their first booking. No GP referral required — you can self-refer.",
+  "No GP referral required — you can self-refer.",
 ].join("\n");
 
 const INSURANCE_TEXT =

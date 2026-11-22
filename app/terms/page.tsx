@@ -85,8 +85,7 @@ export default function TermsPage() {
             video appointments. A home visit has its own all-in price, shown when you choose a home visit and
             at checkout (currently {homeVisitPrices.initial} for an initial assessment and{" "}
             {homeVisitPrices.followUp} for a follow-up); there is no separate fee. If you book a session bundle
-            as home visits, the price you pay when you book covers every visit in the bundle. Discount codes
-            apply to the whole price.
+            as home visits, the price you pay when you book covers every visit in the bundle.
           </p>
           <p>
             Home visits are available only for postcodes in the area we cover. When you book a home visit
