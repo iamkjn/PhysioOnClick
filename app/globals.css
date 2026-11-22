@@ -17936,6 +17936,11 @@ body:has(.contact-bar) {
   gap: 0.5rem;
 }
 
+/* The page's message as one short line above the buttons: phones only. */
+.contact-bar-note {
+  display: none;
+}
+
 /* Lift the chat button and its panel, the cookie banner, the exercise
    "My plan" tray and the questionnaire's Back/Next row above the bar. */
 body:has(.contact-bar) .chat-trigger {
@@ -17946,6 +17951,10 @@ body:has(.contact-bar) .chat-drawer {
   bottom: calc(var(--contact-bar-h) + 84px + env(safe-area-inset-bottom, 0px));
   height: min(720px, calc(100vh - var(--contact-bar-h) - 124px));
   max-height: calc(100vh - var(--contact-bar-h) - 124px);
+}
+
+body:has(.contact-bar) .toast-viewport {
+  bottom: calc(var(--contact-bar-h) + 1.5rem + env(safe-area-inset-bottom, 0px));
 }
 
 body:has(.contact-bar) .chat-toast {
@@ -17980,9 +17989,9 @@ body:has(.contact-bar):has(.exlib-tray) .chat-drawer {
 }
 
 @media (max-width: 720px) {
-  /* 8px + 46px button + 8px, plus the 1px top border. */
+  /* 6px + 18px message line + 6px + 46px buttons + 8px, plus the 1px top border. */
   body:has(.contact-bar) {
-    --contact-bar-h: 63px;
+    --contact-bar-h: 85px;
   }
 
   .contact-bar {
@@ -17995,9 +18004,23 @@ body:has(.contact-bar):has(.exlib-tray) .chat-drawer {
   }
 
   .contact-bar-inner {
-    display: block;
-    padding: 0.5rem 0;
+    display: grid;
+    gap: 6px;
+    padding: 6px 0 8px;
     min-height: 0;
+  }
+
+  .contact-bar-note {
+    display: block;
+    margin: 0;
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 18px;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .contact-bar-actions {

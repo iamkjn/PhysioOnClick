@@ -10,30 +10,44 @@ vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
 const regionState = vi.hoisted(() => ({ region: "uk" as "uk" | "overseas" | "unknown" }));
 vi.mock("@/lib/visitor-region", () => ({ browserRegion: () => regionState.region }));
 
-import { ContactBar, showContactBar } from "@/components/contact-bar";
+import { ContactBar, contactBarMessage, showContactBar } from "@/components/contact-bar";
 import { emailHref, whatsappHref } from "@/lib/practice-contact";
 
 beforeEach(() => {
   regionState.region = "uk";
 });
 
+// Every page with the bar, one per tab or section, so each message is checked.
+const BAR_PAGES = [
+  "/",
+  "/about",
+  "/pricing",
+  "/contact",
+  "/services",
+  "/services/neurological-rehabilitation",
+  "/services/back-pain",
+  "/glasgow-physiotherapist",
+  "/physiotherapy-home-visits-glasgow",
+  "/manual-therapy-glasgow",
+  "/guides",
+  "/guides/some-guide",
+  "/how-online-physiotherapy-works",
+  "/online-physiotherapy-for/runners",
+  "/online-physiotherapy-scotland",
+  "/book",
+  "/book/success",
+  "/exercises",
+  "/exercises/spanish-squat",
+  "/exercises/area/knee",
+  "/exercises/tests",
+  "/blog",
+  "/blog/some-post",
+  "/pay/abc123",
+  "/cancellation-policy",
+];
+
 describe("showContactBar", () => {
-  it.each([
-    "/",
-    "/about",
-    "/pricing",
-    "/contact",
-    "/services",
-    "/services/neurological-rehabilitation",
-    "/glasgow-physiotherapist",
-    "/physiotherapy-home-visits-glasgow",
-    "/manual-therapy-glasgow",
-    "/book",
-    "/book/success",
-    "/exercises",
-    "/exercises/spanish-squat",
-    "/exercises/area/knee",
-  ])("shows on %s", (path) => {
+  it.each(BAR_PAGES)("shows on %s", (path) => {
     expect(showContactBar(path)).toBe(true);
   });
 
@@ -44,9 +58,40 @@ describe("showContactBar", () => {
     "/plan",
     "/request-visit",
     "/embed/exercises/clam-shell",
-    "/blog/some-post",
+    "/privacy-policy",
+    "/auth/verify",
   ])("stays off %s", (path) => {
     expect(showContactBar(path)).toBe(false);
+  });
+});
+
+describe("contactBarMessage", () => {
+  it.each(BAR_PAGES)("has a message for %s whose phone version fits one line", (path) => {
+    const message = contactBarMessage(path);
+    expect(message.title.length).toBeGreaterThan(0);
+    expect(message.text.length).toBeGreaterThan(0);
+    expect(message.short.length).toBeGreaterThan(0);
+    // ~42 characters fit one line on a 320px-wide phone at the bar's text size.
+    expect(message.short.length).toBeLessThanOrEqual(42);
+  });
+
+  it("offers to book for people who find booking hard", () => {
+    expect(contactBarMessage("/book").title).toMatch(/finding it hard to book/i);
+    expect(contactBarMessage("/book").text).toMatch(/leave it to us/i);
+    expect(contactBarMessage("/book").short).toMatch(/leave it to us/i);
+  });
+
+  it("speaks to each tab differently", () => {
+    const titles = new Set(
+      ["/", "/about", "/services", "/exercises", "/exercises/tests", "/blog", "/pricing", "/book", "/contact"].map(
+        (path) => contactBarMessage(path).title,
+      ),
+    );
+    expect(titles.size).toBe(9);
+  });
+
+  it("gives the self-checks their own message, not the exercise one", () => {
+    expect(contactBarMessage("/exercises/tests").title).not.toBe(contactBarMessage("/exercises/clam-shell").title);
   });
 });
 
@@ -64,12 +109,32 @@ describe("ContactBar", () => {
     expect(screen.getByRole("link", { name: /whatsapp/i })).toHaveAttribute("href", whatsappHref("neuro"));
   });
 
-  it("shows WhatsApp, Email and Call me back on the booking page, with a booking message", () => {
+  it("on the booking page, offers to book for them by WhatsApp or email", () => {
     pathname = "/book";
     render(<ContactBar />);
     expect(screen.getByRole("link", { name: /whatsapp/i })).toHaveAttribute("href", whatsappHref("booking"));
+    expect(decodeURIComponent(whatsappHref("booking"))).toMatch(/book .*for me/i);
     expect(screen.getByRole("link", { name: /email/i })).toHaveAttribute("href", emailHref("booking"));
     expect(screen.getByRole("link", { name: /call me back/i })).toBeInTheDocument();
+  });
+
+  it("asks about the appointment after booking, not for help booking", () => {
+    pathname = "/book/success";
+    render(<ContactBar />);
+    expect(screen.getByRole("link", { name: /whatsapp/i })).toHaveAttribute("href", whatsappHref("appointment"));
+  });
+
+  it("asks for help with paying on the payment page", () => {
+    pathname = "/pay/abc123";
+    render(<ContactBar />);
+    expect(screen.getByRole("link", { name: /whatsapp/i })).toHaveAttribute("href", whatsappHref("payment"));
+  });
+
+  it("shows on blog posts for every reader, asking about their condition", () => {
+    regionState.region = "overseas";
+    pathname = "/blog/some-post";
+    render(<ContactBar />);
+    expect(screen.getByRole("link", { name: /whatsapp/i })).toHaveAttribute("href", whatsappHref("condition"));
   });
 
   it("shows on exercise pages for UK readers, asking about their condition", () => {
@@ -93,10 +158,13 @@ describe("ContactBar", () => {
     expect(screen.getByRole("link", { name: /whatsapp/i })).toBeInTheDocument();
   });
 
-  it("has a short lead line for wider screens", () => {
-    pathname = "/pricing";
+  it("shows the page's message: full on wider screens, short on phones", () => {
+    pathname = "/book";
+    const message = contactBarMessage("/book");
     render(<ContactBar />);
-    expect(screen.getByText(/ask the physio on whatsapp or by email/i)).toBeInTheDocument();
+    expect(screen.getByText(message.title)).toBeInTheDocument();
+    expect(screen.getByText(message.text)).toBeInTheDocument();
+    expect(screen.getByText(message.short)).toBeInTheDocument();
   });
 
   it("renders nothing on the printable receipt", () => {
