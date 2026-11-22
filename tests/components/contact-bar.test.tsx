@@ -172,6 +172,29 @@ describe("ContactBar", () => {
     expect(screen.getByText(message.short)).toBeInTheDocument();
   });
 
+  it.each(["/book", "/exercises/clam-shell", "/blog/some-post", "/physiotherapy-home-visits-glasgow"])(
+    "hides Call me back for overseas readers on %s but keeps WhatsApp and Email",
+    (path) => {
+      regionState.region = "overseas";
+      pathname = path;
+      render(<ContactBar />);
+      expect(screen.queryByRole("link", { name: /call me back/i })).not.toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /whatsapp/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /email/i })).toBeInTheDocument();
+    },
+  );
+
+  it.each(["uk", "unknown"] as const)("keeps Call me back when the region is %s", (region) => {
+    regionState.region = region;
+    pathname = "/exercises/clam-shell";
+    render(<ContactBar />);
+    expect(screen.getByRole("link", { name: /call me back/i })).toBeInTheDocument();
+  });
+
+  it("doesn't promise a call back in the contact page message", () => {
+    expect(contactBarMessage("/contact").text).not.toMatch(/call/i);
+  });
+
   it("renders nothing on the printable receipt", () => {
     pathname = "/book/receipt/cs_test_123";
     const { container } = render(<ContactBar />);

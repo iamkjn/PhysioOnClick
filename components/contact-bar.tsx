@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { PhoneCall } from "lucide-react";
 
 import { MailIcon, WhatsAppIcon, recordContactTap } from "@/components/contact-options";
+import { useVisitorRegion } from "@/components/region-switch";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { emailHref, topicForPath, whatsappHref } from "@/lib/practice-contact";
 import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
@@ -119,7 +120,7 @@ const MESSAGES = {
   },
   contact: {
     title: "Prefer a quick message?",
-    text: "WhatsApp or email us, or ask us to call you back.",
+    text: "WhatsApp or email us and we'll get back to you.",
     short: "Prefer a quick message? We're here.",
   },
 } satisfies Record<string, ContactBarMessage>;
@@ -147,12 +148,17 @@ export function contactBarMessage(pathname: string): ContactBarMessage {
 /**
  * Bar fixed to the bottom of the screen on every screen size, with a message
  * that fits the page ("Finding it hard to book? Leave it to us.") and three
- * buttons: "Call me back" opens the short visit-request form, then "WhatsApp"
- * and "Email" with a prefilled message for the page.
+ * buttons: "Call me back" opens the short visit-request form (not shown to
+ * overseas readers), then "WhatsApp" and "Email" with a prefilled message.
  */
 export function ContactBar() {
   const pathname = usePathname() ?? "";
+  const region = useVisitorRegion();
   if (!showContactBar(pathname)) return null;
+  // "Call me back" leads to the Glasgow home-visit form, so overseas readers
+  // don't get it. The region is "unknown" in the static HTML and until the
+  // browser answers, so UK readers never see the button pop in late.
+  const showCallBack = region !== "overseas";
   const topic = topicForPath(pathname);
   const message = contactBarMessage(pathname);
 
@@ -164,14 +170,16 @@ export function ContactBar() {
         </p>
         <p className="contact-bar-note">{message.short}</p>
         <div className="contact-bar-actions">
-          <Link
-            className="contact-bar-link contact-bar-link--callback"
-            href={VISIT_REQUEST_PATH}
-            onClick={() => trackGrowthEvent("book_now_click", { source: "contact_bar_callback" })}
-          >
-            <PhoneCall className="contact-icon" size={18} aria-hidden="true" />
-            Call me back
-          </Link>
+          {showCallBack ? (
+            <Link
+              className="contact-bar-link contact-bar-link--callback"
+              href={VISIT_REQUEST_PATH}
+              onClick={() => trackGrowthEvent("book_now_click", { source: "contact_bar_callback" })}
+            >
+              <PhoneCall className="contact-icon" size={18} aria-hidden="true" />
+              Call me back
+            </Link>
+          ) : null}
           <a
             className="contact-bar-link contact-bar-link--whatsapp"
             href={whatsappHref(topic)}

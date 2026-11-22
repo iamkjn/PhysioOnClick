@@ -18005,6 +18005,8 @@ body:has(.contact-bar):has(.exlib-tray) .chat-drawer {
 
   .contact-bar-inner {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
     gap: 6px;
     padding: 6px 0 8px;
     min-height: 0;
@@ -18023,10 +18025,20 @@ body:has(.contact-bar):has(.exlib-tray) .chat-drawer {
     text-overflow: ellipsis;
   }
 
+  /* "Call me back" takes the width it needs; WhatsApp and Email share the
+     rest equally (the whole row when overseas readers get no call-back). */
   .contact-bar-actions {
-    display: grid;
-    grid-template-columns: max-content minmax(0, 1fr) minmax(0, 1fr);
+    display: flex;
     gap: 0.5rem;
+  }
+
+  .contact-bar-actions .contact-bar-link {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .contact-bar-actions .contact-bar-link--callback {
+    flex: 0 0 auto;
   }
 
   .contact-bar-link {
