@@ -29,7 +29,7 @@ describe("REGION_AREA_KEYS", () => {
 
   it("matches the agreed table", () => {
     expect(REGION_AREA_KEYS).toEqual({
-      "head-jaw": [],
+      "head-jaw": ["jaw"],
       neck: ["neck"],
       "upper-back": ["upper-back"],
       "mid-back": ["upper-back"],

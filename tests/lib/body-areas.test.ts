@@ -14,9 +14,10 @@ import {
 } from "@/lib/exercise-library";
 
 // The curated public taxonomy: 13 body regions from the plan + a `general`
-// bucket for the `General` bodyPart exercises = 14. Every internal
-// `Exercise.bodyPart` clinical code must roll up into exactly one area.
-const EXPECTED_AREA_COUNT = 14;
+// bucket for the `General` bodyPart exercises = 14, + `jaw` (2026-11-22
+// expansion) = 15. Every internal `Exercise.bodyPart` clinical code must roll
+// up into exactly one area.
+const EXPECTED_AREA_COUNT = 15;
 
 // Clinical shorthand that must never surface in a public label. `Balance` is a
 // plain English word (kept in "Balance & falls" per the plan's verbatim map) so

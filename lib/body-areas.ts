@@ -160,15 +160,14 @@ const AREAS: BodyArea[] = [
     bodyParts: ["General"],
     order: 14,
   },
-  // 2026-11-22 expansion. Draft until its exercises are clinically signed off;
-  // facial-palsy work stays under `neuro` (bodyPart "Face").
+  // 2026-11-22 expansion (ex-172 Controlled Jaw Opening). Facial-palsy work
+  // stays under `neuro` (bodyPart "Face").
   {
     key: "jaw",
     label: "Jaw",
     blurb: "Gentle exercises for jaw pain, clicking and stiffness.",
     bodyParts: ["Jaw"],
     order: 15,
-    draft: true,
   },
 ];
 

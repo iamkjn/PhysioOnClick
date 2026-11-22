@@ -209,7 +209,7 @@ export const exerciseImagePrompts: Record<string, string> = {
   "ex-169": "a person lying back on a treatment bench with a pillow under one knee, straightening that knee to lift the heel while the back of the knee stays on the pillow, the quadriceps just above the kneecap working",
   "ex-170": "a person sitting upright on the edge of a high treatment bench with the lower legs hanging free, lifting one bent knee in a small seated march without leaning back, the hip flexor muscles at the front of the hip working",
   "ex-171": "a person sitting upright on the edge of a high treatment bench with the thighs supported and the lower legs hanging free, straightening one knee to lift the foot forwards without leaning back, the quadriceps at the front of the thigh working",
-  // 2026-11-22 expansion (draft): describe the supplied Codex illustrations.
+  // 2026-11-22 expansion: describe the supplied Codex illustrations (ex-172/185 v2).
   "ex-172": "a person sitting upright seen in a close three-quarter view of the head and shoulders, the mouth opened a small way with the jaw moving straight down and the tip of the tongue resting on the roof of the mouth just behind the upper front teeth, the chewing muscles and jaw joint working gently",
   "ex-173": "a person with the elbow resting on a table and the hand held upright, touching the tip of the thumb gently to the tip of the index finger to make a round O shape, the small muscles at the base of the thumb working",
   "ex-174": "a person with the forearm and hand resting palm up on a table and the fingers straight and together, lifting the thumb straight up towards the ceiling away from the palm, the small muscles at the base of the thumb working",
@@ -438,9 +438,8 @@ export const uploadedImageIds: ReadonlySet<string> = new Set<string>([
   "ex-168",
   "ex-169",
   "ex-170",
-  // 2026-11-22 expansion drafts (Codex art, padded square, uploaded to DEV
-  // Storage only via scripts/upload-exercise-images-expansion-2026-11-22.ts;
-  // upload to prod before these records are published).
+  // 2026-11-22 expansion (Codex art, ex-174 padded square), uploaded to dev
+  // and prod via scripts/upload-exercise-images-expansion-2026-11-22.ts.
   "ex-172",
   "ex-173",
   "ex-174",

@@ -2,11 +2,10 @@
 
 Prepared 22 November 2026 from the Codex expansion pack in this folder. For Shivaliba to review.
 
-**Status: draft, dev site only.** The new exercises (ex-172 to ex-187) appear on
-dev.physioonclick.co.uk once deployed there. Each page shows a "Draft - awaiting clinical review"
-notice and says "Not yet reviewed" instead of the usual reviewed by-line. A prod build leaves all
-16 out of every page, search, the sitemap, PDFs and the admin plan picker. Nothing goes live until
-each one is signed off.
+**Status: approved by Shivaliba on 22 November 2026 and published.** All 16 exercises (ex-172 to
+ex-187), their anatomy notes and illustrations (with the corrected jaw and thoracic v2 images) were
+signed off together. Each record carries `reviewedOn: "2026-11-22"`, so its page and structured
+data show that date. The sections below are kept as the record of what was checked.
 
 ## What was checked
 

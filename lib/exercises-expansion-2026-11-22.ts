@@ -3,10 +3,9 @@
 // catalogue for duplicates (none: each is a distinct movement, see
 // docs/exercises-review/expansion-2026-11-22/claude-review.md).
 //
-// Every record is `draft: true` until Shivaliba signs it off, so prod builds
-// leave all of them out (see `exercises` in lib/exercises.ts). On sign-off,
-// delete `draft` and set `reviewedOn` per record; move any still unapproved
-// ones out of a release rather than shipping them.
+// All 16 were built as drafts (dev-only) and signed off by Shivaliba on
+// 2026-11-22, so each carries its own `reviewedOn` and is published. The
+// jaw (ex-172) and thoracic (ex-185) illustrations are the corrected v2 art.
 import type { Exercise } from "@/lib/exercises";
 
 export const EXPANSION_2026_11_22: Exercise[] = [
@@ -48,7 +47,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Little and often suits a sore jaw: if it stays comfortable you can build up to 6 times a day. Your physio may adjust this for you."
     },
     helpsWith: ["Opening the mouth smoothly and evenly", "Relaxing tense chewing muscles", "Eating and talking more comfortably"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-173",
@@ -89,7 +88,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "One rep is one round, touching each fingertip in turn and holding each touch for about 3 seconds. Build up towards 10 rounds as long as your hand is no more painful afterwards. Your physio may adjust this for you."
     },
     helpsWith: ["Keeping the thumb and finger joints moving", "Fine hand tasks like doing up buttons and picking up coins", "Easing a stiff hand"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-174",
@@ -130,7 +129,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Build up to 10 repetitions, then to 10-second holds, as long as your thumb is no more painful afterwards. Your physio may adjust this for you."
     },
     helpsWith: ["Keeping the base of the thumb moving", "Opening the hand to hold a cup, bottle or jar", "Gently working the muscle that lifts and steadies the thumb"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-175",
@@ -171,7 +170,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Build up to 10 repetitions as long as your hand is no more painful afterwards. Rest the hand on days when the finger joints are red, hot and swollen. Your physio may adjust this for you."
     },
     helpsWith: ["Keeping the finger joints moving", "Opening the hand wide to hold larger objects", "Easing a stiff hand"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-176",
@@ -212,7 +211,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Start sitting. Once you can lift the arch easily without curling your toes, your physio may move you on to standing. If you have diabetes, numb feet or foot pain with no clear cause, have your feet checked before you start. Your physio may adjust this for you."
     },
     helpsWith: ["Better control of the arch of your foot", "Waking up the small muscles in the sole of your foot", "A steadier base for standing and balance exercises"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-177",
@@ -253,7 +252,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Count one rep as one big-toe lift and one small-toe lift. It often feels awkward at first, and using your hand to help is fine while you learn. Your physio may adjust this for you."
     },
     helpsWith: ["Better control of your toes", "Waking up the small muscles in your foot", "A steadier base for balance and walking"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-178",
@@ -295,7 +294,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "A round before your first steps in the morning, and another after a long spell of sitting, is often the most useful time. If you have diabetes, numbness in the foot, a recent injury, or you cannot put weight on the foot, have it assessed before you start. Your physio may adjust this for you."
     },
     helpsWith: ["More comfortable first steps in the morning", "Loosening a tight arch", "Easier standing and walking with heel pain"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-179",
@@ -336,7 +335,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Start with a light band and build up towards 3 sets of 15 as it gets easier. After a recent sprain or ankle surgery, check with your physio before adding a band. Your physio may also use this for pain along the inner ankle tendon, but only after assessing it. Your physio may adjust this for you."
     },
     helpsWith: ["Strengthening the muscles on the inner side of the ankle", "A steadier ankle on uneven ground", "Building towards walking and sport after an ankle injury"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-180",
@@ -378,7 +377,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Start with a light band and build up towards 3 sets of 15 as it gets easier. If your foot has started to drop or drag, or the weakness is getting worse, see your GP or physio before starting this on your own. Your physio may adjust this for you."
     },
     helpsWith: ["Strengthening the muscles that lift your foot", "Clearing your toes when you walk and on stairs", "Building ankle strength after an injury or time in a boot"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-181",
@@ -419,7 +418,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Often done straight after the straight-knee calf stretch, so both parts of the calf are covered. If you have pain right at the back of the heel bone, stretch more gently or ask your physio first. Your physio may adjust this for you."
     },
     helpsWith: ["Loosening a tight lower calf", "More comfortable first steps in the morning", "More ankle bend for stairs and squatting"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-182",
@@ -460,7 +459,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Use a steady, comfortable effort rather than a hard push, and build up gradually towards 3 sets of 15 if it stays comfortable. If you felt a pop, have large bruising or think you may have torn the muscle, get it checked before you start. Your physio may adjust this for you."
     },
     helpsWith: ["Gently loading a strained or sore hamstring", "Getting the back of the thigh working again without stretching it", "Building towards walking, stairs and stronger hamstring exercises"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-183",
@@ -502,7 +501,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Start with a light band and a comfortable range; move to a stronger band only when 2 sets of 12 feel smooth and easy. After a hamstring-graft ACL repair, recent knee surgery or a recent tendon injury, follow your own surgeon's or physio's plan first."
     },
     helpsWith: ["Strengthening the hamstring muscles at the back of the thigh", "Rebuilding strength after a hamstring strain when your physio says it is time", "Supporting the knee for walking, stairs and sport"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-184",
@@ -543,7 +542,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Start with a gentle squeeze and build towards a firmer one, and towards 20 repetitions, only while your groin pain does not increase. Unexplained groin or testicular pain, a lump in the groin, or a sudden injury with large bruising needs a medical check first."
     },
     helpsWith: ["Easing back into using the inner-thigh muscles after a groin strain", "Building strength for walking, stairs and changing direction", "Preparing for harder groin exercises your physio may add later"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-185",
@@ -584,7 +583,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Build up towards 10 repetitions as it becomes easier, keeping the lean small and comfortable. Your physio may adjust this for you."
     },
     helpsWith: ["Easing a stiff upper back", "Sitting more upright with less effort", "A movement break during long spells of sitting"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-186",
@@ -622,7 +621,7 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Your vestibular physiotherapist will set how long you do this for, how many times a day, how fast to turn your head and how much dizziness is acceptable for you. Only follow the plan they have written down for you. Your physio may adjust this for you."
     },
     helpsWith: ["Seeing clearly while you move your head", "Feeling steadier with everyday head movements", "Getting back to walking, reading signs and busy places with less dizziness"],
-    draft: true
+    reviewedOn: "2026-11-22"
   },
   {
     id: "ex-187",
@@ -664,6 +663,6 @@ export const EXPANSION_2026_11_22: Exercise[] = [
       notes: "Practise for a few minutes when you are calm and resting, so the technique comes easily when you are breathless, then use it as needed during and after activity. It is not an emergency treatment and does not replace your inhalers or other prescribed medicines. Your physio may adjust this for you."
     },
     helpsWith: ["Slowing your breathing down when you feel breathless", "Getting through stairs and everyday activities with more control", "Feeling calmer and more in control of your breathing"],
-    draft: true
+    reviewedOn: "2026-11-22"
   }
 ];

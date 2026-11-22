@@ -97,7 +97,8 @@ describe('catalogue move', () => {
     // ex-162 was withdrawn pre-publication, leaving a deliberate id gap.
     // ex-168..ex-170 (2026-11-16): static quads, last degree knee extension,
     // high sitting hip flexion = 177; ex-171 high sitting knee extension = 178.
-    expect(exercises.length).toBe(178)
+    // ex-172..ex-187 (2026-11-22 expansion, signed off same day) = 194.
+    expect(exercises.length).toBe(194)
     expect(exercises[0].id).toBe('ex-1')
   })
 })
