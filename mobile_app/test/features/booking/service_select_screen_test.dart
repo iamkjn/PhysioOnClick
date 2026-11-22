@@ -182,8 +182,8 @@ void main() {
       expect(find.text('Book your appointment'), findsOneWidget);
       expect(find.text('How would you like to be seen?'), findsOneWidget);
       expect(find.text('Initial Online Assessment'), findsOneWidget);
-      expect(find.text('£40 · 60 min'), findsOneWidget);
-      expect(find.text('£30 · 30 min'), findsOneWidget);
+      expect(find.text('£50 · 60 min'), findsOneWidget);
+      expect(find.text('£40 · 30 min'), findsOneWidget);
       expect(find.text('Focus area (optional)'), findsNothing);
       expect(find.byKey(const Key('postcodeField')), findsNothing);
       await tester.tap(find.text('Continue to times'));
