@@ -12,7 +12,7 @@ export const PRACTICE_PHONE_HREF = "tel:+447557684395";
 /** The practice inbox (IONOS). Contact-form enquiries are also sent here. */
 export const PRACTICE_EMAIL = "hello@physioonclick.co.uk";
 
-export type ContactTopic = "general" | "home-visit" | "neuro" | "manual-therapy" | "condition";
+export type ContactTopic = "general" | "home-visit" | "neuro" | "manual-therapy" | "condition" | "booking";
 
 type TopicCopy = {
   /** Prefilled WhatsApp message. The patient can edit it before sending. */
@@ -41,6 +41,10 @@ const TOPICS: Record<ContactTopic, TopicCopy> = {
   condition: {
     whatsapp: "Hi, I'd like some advice about my condition.",
     subject: "Question about my condition",
+  },
+  booking: {
+    whatsapp: "Hi, I have a question before I book an appointment.",
+    subject: "Question before booking",
   },
 };
 
@@ -79,6 +83,8 @@ export function topicForPath(pathname: string): ContactTopic {
   if (pathname === "/physiotherapy-home-visits-glasgow" || pathname === "/glasgow-physiotherapist") return "home-visit";
   if (pathname === "/services/neurological-rehabilitation") return "neuro";
   if (pathname === "/manual-therapy-glasgow") return "manual-therapy";
+  if (pathname === "/book" || pathname.startsWith("/book/")) return "booking";
+  if (pathname === "/exercises" || pathname.startsWith("/exercises/")) return "condition";
   return "general";
 }
 

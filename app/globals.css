@@ -17886,43 +17886,156 @@ textarea:focus {
   color: #FFFFFF;
 }
 
-/* Phone-only bar fixed to the bottom of the screen. */
+/* Contact bar fixed to the bottom of the screen on every screen size
+   (components/contact-bar.tsx). Phones: three buttons in a row. Wider screens:
+   a short lead line on the left, buttons on the right. Everything else that
+   sits at the bottom of the screen is lifted above it (see below). */
+body:has(.contact-bar) {
+  --contact-bar-h: 64px;
+  padding-bottom: calc(var(--contact-bar-h) + env(safe-area-inset-bottom, 0px));
+}
+
 .contact-bar {
-  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(16px, env(safe-area-inset-left, 0px));
+  background: var(--color-surface);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -6px 18px rgba(4, 50, 70, 0.08);
+}
+
+.contact-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: var(--shell);
+  /* The bar's 1px top border makes up the rest of --contact-bar-h. */
+  min-height: calc(var(--contact-bar-h) - 1px);
+  margin: 0 auto;
+}
+
+.contact-bar-lead {
+  margin: 0;
+  min-width: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.contact-bar-lead strong {
+  color: var(--ink);
+}
+
+.contact-bar-actions {
+  display: flex;
+  flex: none;
+  gap: 0.5rem;
+}
+
+/* Lift the chat button and its panel, the cookie banner, the exercise
+   "My plan" tray and the questionnaire's Back/Next row above the bar. */
+body:has(.contact-bar) .chat-trigger {
+  bottom: calc(var(--contact-bar-h) + 16px + env(safe-area-inset-bottom, 0px));
+}
+
+body:has(.contact-bar) .chat-drawer {
+  bottom: calc(var(--contact-bar-h) + 84px + env(safe-area-inset-bottom, 0px));
+  height: min(720px, calc(100vh - var(--contact-bar-h) - 124px));
+  max-height: calc(100vh - var(--contact-bar-h) - 124px);
+}
+
+body:has(.contact-bar) .chat-toast {
+  bottom: calc(var(--contact-bar-h) + 82px + env(safe-area-inset-bottom, 0px));
+}
+
+body:has(.contact-bar) .cookie-consent {
+  bottom: calc(var(--contact-bar-h) + 12px + env(safe-area-inset-bottom, 0px));
+}
+
+body:has(.contact-bar) .exlib-tray,
+body:has(.contact-bar) .assessment-wizard__nav {
+  bottom: calc(var(--contact-bar-h) + env(safe-area-inset-bottom, 0px));
+}
+
+/* With the "My plan" tray showing as well, the chat button goes above both. */
+body:has(.contact-bar):has(.exlib-tray) .chat-trigger {
+  bottom: calc(var(--contact-bar-h) + 84px + env(safe-area-inset-bottom, 0px));
+}
+
+body:has(.contact-bar):has(.exlib-tray) .chat-drawer {
+  bottom: calc(var(--contact-bar-h) + 152px + env(safe-area-inset-bottom, 0px));
+  height: min(720px, calc(100vh - var(--contact-bar-h) - 192px));
+  max-height: calc(100vh - var(--contact-bar-h) - 192px);
+}
+
+/* Tablets and small laptops: the lead line takes the space it has left. */
+@media (max-width: 900px) {
+  .contact-bar-lead {
+    font-size: 0.88rem;
+  }
 }
 
 @media (max-width: 720px) {
+  /* 8px + 46px button + 8px, plus the 1px top border. */
+  body:has(.contact-bar) {
+    --contact-bar-h: 63px;
+  }
+
   .contact-bar {
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+  }
+
+  .contact-bar-lead {
+    display: none;
+  }
+
+  .contact-bar-inner {
+    display: block;
+    padding: 0.5rem 0;
+    min-height: 0;
+  }
+
+  .contact-bar-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: max-content minmax(0, 1fr) minmax(0, 1fr);
     gap: 0.5rem;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 30;
-    padding: 0.5rem max(12px, env(safe-area-inset-right, 0px)) calc(0.5rem + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
-    background: var(--color-surface);
-    border-top: 1px solid var(--line);
-    box-shadow: 0 -6px 18px rgba(4, 50, 70, 0.08);
   }
 
   .contact-bar-link {
     min-height: 46px;
-    padding: 0 0.75rem;
+    padding: 0 0.6rem;
+    font-size: 0.92rem;
+    gap: 0.35rem;
+    white-space: nowrap;
   }
 
-  /* Keep the page end, the chat button and the cookie banner clear of the bar. */
+  /* The chat panel is a full-width sheet on phones; it covers the bar. */
+  body:has(.contact-bar) .chat-drawer,
+  body:has(.contact-bar):has(.exlib-tray) .chat-drawer {
+    bottom: 0;
+    height: min(88vh, 760px);
+    max-height: 88vh;
+  }
+
+  /* While that sheet is open, its close button goes back to the corner. */
+  body:has(.contact-bar):has(.chat-drawer) .chat-trigger,
+  body:has(.contact-bar):has(.exlib-tray):has(.chat-drawer) .chat-trigger {
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media print {
+  .contact-bar {
+    display: none !important;
+  }
+
   body:has(.contact-bar) {
-    padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
-  }
-
-  body:has(.contact-bar) .chat-trigger {
-    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
-  }
-
-  body:has(.contact-bar) .cookie-consent {
-    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: 0;
   }
 }
 
@@ -18095,20 +18208,6 @@ textarea:focus {
   .visit-request {
     grid-template-columns: minmax(0, 1fr);
     gap: 2rem;
-  }
-}
-
-/* The phone bar gets a third button for the call-back form. */
-@media (max-width: 720px) {
-  .contact-bar:has(.contact-bar-link--callback) {
-    grid-template-columns: max-content minmax(0, 1fr) minmax(0, 1fr);
-  }
-
-  .contact-bar:has(.contact-bar-link--callback) .contact-bar-link {
-    padding: 0 0.6rem;
-    font-size: 0.92rem;
-    gap: 0.35rem;
-    white-space: nowrap;
   }
 }
 
