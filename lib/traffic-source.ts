@@ -90,6 +90,26 @@ export function channelLabel(channel: string): string {
   return channel;
 }
 
+/** A stored growth event's source fields; older events (before 21 Nov 2026) only have a user agent. */
+export type EventSourceFields = { channel?: string; referrerHost?: string; userAgent?: string };
+
+/** The visit's channel, falling back to the in-app browser for events recorded before sources were. */
+export function eventChannel(event: EventSourceFields): string {
+  return event.channel || classifyTrafficSource({ userAgent: event.userAgent ?? "" }).channel;
+}
+
+/**
+ * Where a visit came from, for activity lists: "Facebook (m.facebook.com)",
+ * "Google", "Direct or unknown". The referring site is shown only when it adds
+ * something the channel name doesn't already say.
+ */
+export function eventSourceLabel(event: EventSourceFields): string {
+  const label = channelLabel(eventChannel(event));
+  const host = event.referrerHost?.replace(/^www\./, "") ?? "";
+  if (!host || label.toLowerCase() === host.toLowerCase()) return label;
+  return `${label} (${host})`;
+}
+
 /** Validates a channel sent by a browser; returns "" if it isn't a plain short slug. */
 export function cleanChannel(value: unknown): string {
   if (typeof value !== "string") return "";

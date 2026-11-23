@@ -1,7 +1,7 @@
 "use client";
 
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -10,8 +10,10 @@ import { auth, db } from "@/lib/firebase";
 import { AdminShell } from "@/components/admin-shell";
 import { AdminSignIn } from "@/components/admin-sign-in";
 import { SkeletonRow, SkeletonStatGrid } from "@/components/skeleton";
+import { AdminGrowthDayPicker, dayPhrase, useGrowthDay } from "@/components/admin-growth-day-picker";
 import { contactEventTitle } from "@/lib/growth-event-labels";
-import { channelLabel, classifyTrafficSource } from "@/lib/traffic-source";
+import { londonDayRange } from "@/lib/growth-day";
+import { eventSourceLabel } from "@/lib/traffic-source";
 
 type GrowthEvent = {
   id: string;
@@ -37,11 +39,13 @@ type MetricConfig = {
 };
 
 const PAGE_SIZE = 20;
+/** Safety cap on one day's events; a normal day is far below it. */
+const DAY_EVENT_LIMIT = 2000;
 
 const METRICS: Record<string, MetricConfig> = {
   sessions: {
-    title: "Tracked visitor sessions",
-    description: "Unique patient-side browser sessions, grouped from recent website activity.",
+    title: "People who visited",
+    description: "Everyone who used the website, counted once per phone or computer, with every page they opened and where they came from. The number is people; the list below is everything they did.",
     filter: (event) => Boolean(event.sessionId),
     empty: "No patient sessions have been tracked yet.",
   },
@@ -201,11 +205,7 @@ function eventTitle(event: GrowthEvent) {
 }
 
 function eventDetails(event: GrowthEvent) {
-  const details: string[] = [];
-  const channel = event.channel || classifyTrafficSource({ userAgent: event.userAgent ?? "" }).channel;
-  if (event.channel || channel !== "direct") {
-    details.push(`From: ${channelLabel(channel)}${event.referrerHost ? ` (${event.referrerHost})` : ""}`);
-  }
+  const details: string[] = [`From: ${eventSourceLabel(event)}`];
   const service = stringParam(event, "service_title") || stringParam(event, "service_slug") || stringParam(event, "service");
   if (service) details.push(`Service: ${formatLabel(service)}`);
 
@@ -239,7 +239,7 @@ function matchesMetric(event: GrowthEvent, config: MetricConfig) {
   return config.filter?.(event) ?? false;
 }
 
-export function AdminGrowthMetricGate({ metric }: { metric: string }) {
+export function AdminGrowthMetricGate({ metric, day }: { metric: string; day?: string }) {
   const [status, setStatus] = useState<"loading" | "out" | "forbidden" | "in">("loading");
 
   useEffect(() => {
@@ -289,42 +289,69 @@ export function AdminGrowthMetricGate({ metric }: { metric: string }) {
   return (
     <AdminShell backHref="/admin#growth" backLabel="← Growth">
       <main className="admin-standard-page">
-        <AdminGrowthMetric metric={metric} />
+        <AdminGrowthMetric metric={metric} initialDay={day} />
       </main>
     </AdminShell>
   );
 }
 
-function AdminGrowthMetric({ metric }: { metric: string }) {
+function AdminGrowthMetric({ metric, initialDay }: { metric: string; initialDay?: string }) {
   const config = METRICS[metric];
-  const [events, setEvents] = useState<GrowthEvent[] | null>(null);
+  const { day, today, isToday, setDay } = useGrowthDay(initialDay);
+  // Kept with their day, so picking another day shows loading, not stale records.
+  const [loaded, setLoaded] = useState<{ day: string; events: GrowthEvent[] } | null>(null);
+  const events = loaded?.day === day ? loaded.events : null;
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!db) {
-      setEvents([]);
+      setLoaded({ day, events: [] });
       setError("Database is not available.");
       return;
     }
+    // One UK day at a time, matching the Growth tab's counts.
+    let cancelled = false;
+    const { startIso, endIso } = londonDayRange(day);
     async function load() {
       if (!db) return;
       try {
-        const snap = await getDocs(query(collection(db, "growthEvents"), orderBy("createdAtIso", "desc"), limit(500)));
-        setEvents(snap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as Omit<GrowthEvent, "id">) })));
+        const snap = await getDocs(
+          query(
+            collection(db, "growthEvents"),
+            where("createdAtIso", ">=", startIso),
+            where("createdAtIso", "<", endIso),
+            orderBy("createdAtIso", "desc"),
+            limit(DAY_EVENT_LIMIT),
+          ),
+        );
+        if (cancelled) return;
+        setLoaded({ day, events: snap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as Omit<GrowthEvent, "id">) })) });
         setError("");
       } catch {
-        setEvents([]);
+        if (cancelled) return;
+        setLoaded({ day, events: [] });
         setError("Growth details could not be loaded. Check admin access and Firestore indexes.");
       }
     }
     load();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [day]);
+
+  // Keep ?day= in the address so a refresh or a shared link shows the same day.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (isToday) url.searchParams.delete("day");
+    else url.searchParams.set("day", day);
+    if (url.href !== window.location.href) window.history.replaceState(window.history.state, "", url);
+  }, [day, isToday]);
 
   useEffect(() => {
     setPage(1);
-  }, [metric, search]);
+  }, [metric, search, day]);
 
   const metricEvents = useMemo(() => {
     if (!config) return [];
@@ -373,7 +400,10 @@ function AdminGrowthMetric({ metric }: { metric: string }) {
     );
   }
 
-  if (events === null) return <SkeletonRow count={6} />;
+  const phrase = dayPhrase(day, today);
+  // "People who visited" counts each browser once, like the Growth tab; the rest count records.
+  const headCount =
+    metric === "sessions" ? new Set(metricEvents.map((event) => event.sessionId)).size : metricEvents.length;
 
   return (
     <section className="admin-growth-detail-page">
@@ -382,9 +412,12 @@ function AdminGrowthMetric({ metric }: { metric: string }) {
           <span className="dashboard-eyebrow">Growth detail</span>
           <h1>{config.title}</h1>
           <p>{config.description}</p>
+          <AdminGrowthDayPicker day={day} today={today} onChange={setDay} />
         </div>
-        <strong>{metricEvents.length}</strong>
+        {events === null ? null : <strong aria-label={`${headCount} ${phrase}`}>{headCount}</strong>}
       </div>
+
+      {events === null ? <SkeletonRow count={6} /> : null}
 
       {metric === "chat-leads" ? (
         <Link className="button button-secondary" href="/admin/chat-logs">
@@ -398,11 +431,11 @@ function AdminGrowthMetric({ metric }: { metric: string }) {
         className="input"
         value={search}
         onChange={(event) => setSearch(event.target.value)}
-        placeholder={`Search ${config.title.toLowerCase()} by page, service, exercise, country or session...`}
+        placeholder={`Search ${config.title.toLowerCase()} by page, source (e.g. facebook), service, exercise, country or session...`}
         aria-label={`Search ${config.title}`}
       />
 
-      {visibleEvents.length ? (
+      {events === null ? null : visibleEvents.length ? (
         <ul className="admin-growth-detail-list">
           {visibleEvents.map((event) => {
             const details = eventDetails(event);
@@ -423,7 +456,9 @@ function AdminGrowthMetric({ metric }: { metric: string }) {
           })}
         </ul>
       ) : (
-        <p className="muted">{search.trim() ? "No matching records found for this search." : config.empty}</p>
+        <p className="muted">
+          {search.trim() ? "No matching records found for this search." : isToday ? config.empty.replace(/ yet\.$/, " yet today.") : `Nothing recorded ${phrase}.`}
+        </p>
       )}
 
       {filtered.length ? (

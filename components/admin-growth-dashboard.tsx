@@ -1,14 +1,16 @@
 "use client";
 
-import { collection, limit, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Activity, ArrowDownRight, BookmarkCheck, CalendarCheck2, Dumbbell, Globe2, MessageSquare, MousePointerClick, PhoneCall, Send } from "lucide-react";
 
 import { db } from "@/lib/firebase";
 import { SkeletonStatGrid } from "@/components/skeleton";
+import { AdminGrowthDayPicker, dayPhrase, useGrowthDay } from "@/components/admin-growth-day-picker";
 import { contactEventTitle } from "@/lib/growth-event-labels";
-import { channelLabel, classifyTrafficSource } from "@/lib/traffic-source";
+import { londonDayRange } from "@/lib/growth-day";
+import { channelLabel, eventChannel, eventSourceLabel } from "@/lib/traffic-source";
 
 type GrowthEvent = {
   id: string;
@@ -22,13 +24,13 @@ type GrowthEvent = {
   params?: Record<string, unknown>;
   /** Where the visit came from (facebook, google, direct...); missing on events before 21 Nov 2026. */
   channel?: string;
+  /** The referring site's host name, e.g. m.facebook.com; empty for direct visits. */
+  referrerHost?: string;
   userAgent?: string;
 };
 
-/** The visit's source, falling back to the in-app browser for older events. */
-function eventChannel(event: GrowthEvent) {
-  return event.channel || classifyTrafficSource({ userAgent: event.userAgent ?? "" }).channel;
-}
+/** Safety cap on one day's events; a normal day is far below it. */
+const DAY_EVENT_LIMIT = 2000;
 
 function countryLabel(event: GrowthEvent) {
   if (event.countryName) return event.countryName;
@@ -150,27 +152,40 @@ function isPatientJourneyEvent(event: GrowthEvent) {
 }
 
 export function AdminGrowthDashboard() {
-  const [events, setEvents] = useState<GrowthEvent[] | null>(null);
+  const { day, today, isToday, setDay } = useGrowthDay();
+  // Events are kept with the day they belong to, so another day shows loading
+  // rather than the previous day's numbers.
+  const [loaded, setLoaded] = useState<{ day: string; events: GrowthEvent[] } | null>(null);
+  const events = loaded?.day === day ? loaded.events : null;
   const [error, setError] = useState("");
 
+  // Counts are per UK day: midnight to midnight, so they start again from 0
+  // each day. useGrowthDay follows today until another day is picked.
   useEffect(() => {
     if (!db) {
-      setEvents([]);
+      setLoaded({ day, events: [] });
       return;
     }
-    const q = query(collection(db, "growthEvents"), orderBy("createdAtIso", "desc"), limit(220));
+    const { startIso, endIso } = londonDayRange(day);
+    const q = query(
+      collection(db, "growthEvents"),
+      where("createdAtIso", ">=", startIso),
+      where("createdAtIso", "<", endIso),
+      orderBy("createdAtIso", "desc"),
+      limit(DAY_EVENT_LIMIT),
+    );
     return onSnapshot(
       q,
       (snapshot) => {
-        setEvents(snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as Omit<GrowthEvent, "id">) })));
+        setLoaded({ day, events: snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as Omit<GrowthEvent, "id">) })) });
         setError("");
       },
       () => {
-        setEvents([]);
+        setLoaded({ day, events: [] });
         setError("Growth tracking events could not be loaded. Check admin access and Firestore indexes.");
       },
     );
-  }, []);
+  }, [day]);
 
   const stats = useMemo(() => {
     const list = (events ?? []).filter(isPatientJourneyEvent);
@@ -216,6 +231,7 @@ export function AdminGrowthDashboard() {
 
     return {
       trackedSessions: sessionIds.size,
+      pageViews: counts.get("page_view") ?? 0,
       bookClicks: counts.get("book_now_click") ?? 0,
       checkouts: counts.get("checkout_started") ?? 0,
       bookings: counts.get("booking_confirmed") ?? 0,
@@ -246,67 +262,86 @@ export function AdminGrowthDashboard() {
 
   const recentActivity = useMemo(() => (events ?? []).filter(isPatientJourneyEvent).slice(0, 8), [events]);
 
+  // Detail pages open on the same day as the dashboard.
+  const forDay = (href: string) => (isToday ? href : `${href}?day=${day}`);
+  const phrase = dayPhrase(day, today);
+
+  const head = (
+    <div className="admin-growth-head">
+      <div>
+        <span className="dashboard-eyebrow">Growth tracking</span>
+        <h2>Patient journey live view</h2>
+        <p>Counts start again from 0 at midnight (UK time). Use the arrows or the date to look back at another day.</p>
+      </div>
+      <div className="admin-growth-head-controls">
+        <AdminGrowthDayPicker day={day} today={today} onChange={setDay} />
+        {isToday ? <span className="admin-growth-live"><span aria-hidden="true" /> Live</span> : null}
+      </div>
+    </div>
+  );
+
   if (events === null) {
-    return <SkeletonStatGrid count={3} />;
+    return (
+      <div className="admin-growth">
+        {head}
+        <SkeletonStatGrid count={3} />
+      </div>
+    );
   }
 
   return (
     <div className="admin-growth">
-      <div className="admin-growth-head">
-        <div>
-          <span className="dashboard-eyebrow">Growth tracking</span>
-          <h2>Patient journey live view</h2>
-          <p>Real-time, first-party patient events for reach, interest and booking conversion.</p>
-        </div>
-        <span className="admin-growth-live"><span aria-hidden="true" /> Live</span>
-      </div>
+      {head}
 
       {error ? <p className="form-error">{error}</p> : null}
+      {events.length >= DAY_EVENT_LIMIT ? (
+        <p className="muted">This day has more than {DAY_EVENT_LIMIT} events; counts cover the latest {DAY_EVENT_LIMIT}.</p>
+      ) : null}
 
       <div className="admin-growth-stats">
-        <Link className="admin-growth-stat admin-growth-stat-link is-primary" href="/admin/growth/sessions">
+        <Link className="admin-growth-stat admin-growth-stat-link is-primary" href={forDay("/admin/growth/sessions")}>
           <Activity aria-hidden="true" />
-          <span>Tracked visitor sessions</span>
+          <span>People who visited {phrase}</span>
           <strong>{stats.trackedSessions}</strong>
-          <small>Review latest activity</small>
+          <small>{stats.pageViews === 1 ? "1 page view" : `${stats.pageViews} page views`} · see each visit</small>
         </Link>
-        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/book-clicks">
+        <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/book-clicks")}>
           <MousePointerClick aria-hidden="true" />
           <span>Book clicks</span>
           <strong>{stats.bookClicks}</strong>
           <small>Open click records</small>
         </Link>
-        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/checkout-starts">
+        <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/checkout-starts")}>
           <ArrowDownRight aria-hidden="true" />
           <span>Checkout starts</span>
           <strong>{stats.checkouts}</strong>
           <small>Open checkout records</small>
         </Link>
-        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/confirmed">
+        <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/confirmed")}>
           <CalendarCheck2 aria-hidden="true" />
           <span>Confirmed</span>
           <strong>{stats.bookings}</strong>
           <small>Open confirmed records</small>
         </Link>
-        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/exercise-views">
+        <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/exercise-views")}>
           <Dumbbell aria-hidden="true" />
           <span>Exercise views</span>
           <strong>{stats.exerciseViews}</strong>
           <small>Open view records</small>
         </Link>
-        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/saved-exercises">
+        <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/saved-exercises")}>
           <BookmarkCheck aria-hidden="true" />
           <span>Saved exercises</span>
           <strong>{stats.exerciseSaves}</strong>
           <small>Open saved records</small>
         </Link>
-        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/chat-leads">
+        <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/chat-leads")}>
           <MessageSquare aria-hidden="true" />
           <span>Chat leads</span>
           <strong>{stats.chatLeads}</strong>
           <small>Open lead records</small>
         </Link>
-        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/visit-requests">
+        <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/visit-requests")}>
           <PhoneCall aria-hidden="true" />
           <span>Call-back requests</span>
           <strong>{stats.visitRequests}</strong>
@@ -316,13 +351,13 @@ export function AdminGrowthDashboard() {
               : "Details in the Enquiries tab"}
           </small>
         </Link>
-        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/contact-taps">
+        <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/contact-taps")}>
           <Send aria-hidden="true" />
           <span>Call, WhatsApp &amp; email taps</span>
           <strong>{stats.contactTaps}</strong>
           <small>Open tap records</small>
         </Link>
-        <Link className="admin-growth-stat admin-growth-stat-link" href="/admin/growth/countries">
+        <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/countries")}>
           <Globe2 aria-hidden="true" />
           <span>Countries captured</span>
           <strong>{stats.countries}</strong>
@@ -333,7 +368,7 @@ export function AdminGrowthDashboard() {
       <section className="admin-growth-card admin-growth-recent">
         <div className="admin-growth-card-head">
           <h3>Latest interactions</h3>
-          <small>Latest patient-side events across the website.</small>
+          <small>Newest first, with where each visitor came from.</small>
         </div>
         {recentActivity.length ? (
           <ul className="admin-growth-timeline">
@@ -341,6 +376,7 @@ export function AdminGrowthDashboard() {
               <li key={event.id}>
                 <span>{eventTitle(event)}</span>
                 <em>{event.path}</em>
+                <b className="admin-growth-source">From: {eventSourceLabel(event)}</b>
                 <small>
                   {formatTime(event.createdAtIso)} · {event.device ?? "device"} · {countryDisplay(event)}
                 </small>
@@ -348,39 +384,41 @@ export function AdminGrowthDashboard() {
             ))}
           </ul>
         ) : (
-          <p className="muted">Recent patient activity will appear here once visitors browse the website.</p>
+          <p className="muted">
+            {isToday ? "No visitors yet today. Activity will appear here as people browse the website." : `No website activity ${phrase}.`}
+          </p>
         )}
       </section>
 
       <div className="admin-growth-grid">
-        <InsightCard title="Where visitors came from" href="/admin/growth/sources">
+        <InsightCard title="Where visitors came from" href={forDay("/admin/growth/sources")}>
           <RankedList
-            items={stats.sources.map((row) => ({ key: row.channel, label: channelLabel(row.channel), note: "Visitors in this period", count: row.count }))}
+            items={stats.sources.map((row) => ({ key: row.channel, label: channelLabel(row.channel), note: `Visitors ${phrase}`, count: row.count }))}
             empty="Visitor sources appear as new visits are tracked."
           />
         </InsightCard>
-        <InsightCard title="Booking funnel" href="/admin/growth/book-clicks">
+        <InsightCard title="Booking funnel" href={forDay("/admin/growth/book-clicks")}>
           <FunnelRows rows={stats.funnel} />
         </InsightCard>
-        <InsightCard title="Exercise conversion" href="/admin/growth/exercise-views">
+        <InsightCard title="Exercise conversion" href={forDay("/admin/growth/exercise-views")}>
           <FunnelRows rows={stats.exerciseConversion} />
         </InsightCard>
-        <InsightCard title="Top pages" href="/admin/growth/page-views">
+        <InsightCard title="Top pages" href={forDay("/admin/growth/page-views")}>
           <RankedList items={stats.pages} empty="No page views recorded yet." />
         </InsightCard>
-        <InsightCard title="Country reach" href="/admin/growth/countries">
+        <InsightCard title="Country reach" href={forDay("/admin/growth/countries")}>
           <RankedList
             items={stats.countryReach.map((row) => ({ key: row.country, label: row.country, note: "Unique visitor sessions", count: row.count }))}
             empty="Country appears for new visits once captured."
           />
         </InsightCard>
-        <InsightCard title="Service interest" href="/admin/growth/service-interest">
+        <InsightCard title="Service interest" href={forDay("/admin/growth/service-interest")}>
           <RankedList items={stats.services} empty="Service views and clicks will appear as patients browse." />
         </InsightCard>
-        <InsightCard title="Exercise interest" href="/admin/growth/exercise-views">
+        <InsightCard title="Exercise interest" href={forDay("/admin/growth/exercise-views")}>
           <RankedList items={stats.exercises} empty="Exercise activity will appear as patients use the library." />
         </InsightCard>
-        <InsightCard title="Recent patient chat questions" href="/admin/growth/chat-leads" wide>
+        <InsightCard title="Recent patient chat questions" href={forDay("/admin/growth/chat-leads")} wide>
           {stats.chatQuestions.length ? (
             <ul className="admin-growth-timeline admin-growth-timeline--chat">
               {stats.chatQuestions.map((event) => (

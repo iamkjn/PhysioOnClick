@@ -5662,6 +5662,84 @@ textarea:focus {
   background: #10b981;
 }
 
+.admin-growth-head-controls {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.admin-growth-day {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-sans);
+}
+
+.admin-growth-day button,
+.admin-growth-day input {
+  min-height: 38px;
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: white;
+  color: #043246;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.admin-growth-day button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  padding: 0 0.6rem;
+  cursor: pointer;
+}
+
+.admin-growth-day button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-growth-day input {
+  padding: 0 0.6rem;
+}
+
+.admin-growth-day button:not(:disabled):hover,
+.admin-growth-day button:focus-visible,
+.admin-growth-day input:focus-visible {
+  border-color: #0ea5e9;
+  background: #f5fbfe;
+}
+
+.admin-growth-day button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-growth-day-label {
+  min-width: 4.5rem;
+  color: #365563;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-growth-timeline .admin-growth-source {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: #0a77a8;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .admin-growth-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
@@ -6371,6 +6449,11 @@ textarea:focus {
 @media (max-width: 900px) {
   .admin-growth-head {
     flex-direction: column;
+  }
+
+  .admin-growth-head-controls,
+  .admin-growth-detail-head .admin-growth-day {
+    justify-content: flex-start;
   }
 
   .admin-growth-grid {

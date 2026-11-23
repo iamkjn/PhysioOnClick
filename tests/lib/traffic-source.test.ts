@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { channelLabel, classifyTrafficSource, cleanChannel, cleanReferrerHost } from "@/lib/traffic-source";
+import { channelLabel, classifyTrafficSource, cleanChannel, cleanReferrerHost, eventSourceLabel } from "@/lib/traffic-source";
 
 const FB_IPHONE =
   "Mozilla/5.0 (iPhone; CPU iPhone OS 27_2_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/530.0.0.41.106;FBBV/1]";
@@ -73,5 +73,23 @@ describe("cleaning what a browser sends", () => {
     expect(channelLabel("facebook")).toBe("Facebook");
     expect(channelLabel("direct")).toBe("Direct or unknown");
     expect(channelLabel("care-home-leaflet")).toBe("care-home-leaflet");
+  });
+});
+
+describe("eventSourceLabel (activity lists)", () => {
+  it("names the channel and the referring site", () => {
+    expect(eventSourceLabel({ channel: "facebook", referrerHost: "m.facebook.com" })).toBe("Facebook (m.facebook.com)");
+    expect(eventSourceLabel({ channel: "google", referrerHost: "www.google.com" })).toBe("Google (google.com)");
+    expect(eventSourceLabel({ channel: "other", referrerHost: "glasgowlive.co.uk" })).toBe("Other website (glasgowlive.co.uk)");
+  });
+
+  it("shows tagged group posts and direct visits plainly", () => {
+    expect(eventSourceLabel({ channel: "fb-cambuslang" })).toBe("Facebook · Cambuslang");
+    expect(eventSourceLabel({ channel: "direct", referrerHost: "" })).toBe("Direct or unknown");
+  });
+
+  it("recognises Facebook-app visits recorded before sources were", () => {
+    expect(eventSourceLabel({ userAgent: "Mozilla/5.0 (iPhone) [FBAN/FBIOS;FBAV/530.0]" })).toBe("Facebook");
+    expect(eventSourceLabel({})).toBe("Direct or unknown");
   });
 });

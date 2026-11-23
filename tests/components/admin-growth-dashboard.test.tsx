@@ -14,6 +14,7 @@ vi.mock("firebase/firestore", () => ({
   limit: vi.fn(),
   orderBy: vi.fn(),
   query: vi.fn(),
+  where: vi.fn(),
   onSnapshot: (_q: unknown, next: (snapshot: unknown) => void) => {
     next({ docs: events.map(({ id, ...data }) => ({ id, data: () => data })) });
     return () => {};
