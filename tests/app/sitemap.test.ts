@@ -5,6 +5,7 @@ import ServiceDetailPage from "@/app/services/[slug]/page";
 import { blogArticles } from "@/lib/blog";
 import { guides } from "@/lib/guides";
 import { onlinePhysioPages } from "@/lib/online-physio-pages";
+import { homeVisitTowns } from "@/lib/home-visit-towns";
 import { services } from "@/lib/site-data";
 import {
   allBodyAreaKeys,
@@ -131,7 +132,8 @@ describe("app/sitemap.ts", () => {
         exerciseLibCount +
         1 +
         guides.length +
-        onlinePhysioPages.length,
+        onlinePhysioPages.length +
+        homeVisitTowns.length,
     );
   });
 });

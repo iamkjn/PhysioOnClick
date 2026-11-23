@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { ContactOptions } from "@/components/contact-options";
+import { HomeVisitTownLinks } from "@/components/home-visit-town-links";
+import { ServiceReviews } from "@/components/service-reviews";
 import { TrackedBookLink } from "@/components/tracked-book-link";
+import { curatedReviewsForServicesOverview } from "@/lib/trustpilot-curated";
 import { APPOINTMENT_HOURS, APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
@@ -196,6 +199,7 @@ export default function HomeVisitsGlasgowPage() {
             Kilmarnock, Ayr, Prestwick, Troon, Irvine and Largs; Falkirk, Stirling and Alloa; Livingston,
             Bathgate and Linlithgow; and Dunfermline. Enter your postcode when you book to confirm.
           </p>
+          <HomeVisitTownLinks />
           <p>
             Outside these areas? <Link href="/online-physiotherapy-scotland">Online physiotherapy in Scotland</Link>{" "}
             and video appointments across the UK are available, or read about{" "}
@@ -203,6 +207,8 @@ export default function HomeVisitsGlasgowPage() {
           </p>
         </section>
       </Reveal>
+
+      <ServiceReviews reviews={curatedReviewsForServicesOverview()} />
 
       <Reveal direction="up">
         <section className="page-section stack service-faqs">

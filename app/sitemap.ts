@@ -4,6 +4,7 @@ import { services } from "@/lib/site-data";
 import { blogArticles } from "@/lib/blog";
 import { guides } from "@/lib/guides";
 import { onlinePhysioPages } from "@/lib/online-physio-pages";
+import { homeVisitTownPath, homeVisitTowns } from "@/lib/home-visit-towns";
 import {
   allBodyAreaKeys,
   allConditionSlugs,
@@ -121,8 +122,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(p.reviewedOn),
   }));
 
+  // Town home-visit pages, derived from lib/home-visit-towns.ts so a new town
+  // can't drift out of the sitemap. No lastModified: no real content date yet.
+  const homeVisitTownEntries = homeVisitTowns.map((t) => ({ url: `${base}${homeVisitTownPath(t.slug)}` }));
+
   return [
     ...staticEntries,
+    ...homeVisitTownEntries,
     ...serviceEntries,
     ...blogEntries,
     ...guideEntries,

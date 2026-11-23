@@ -5,6 +5,7 @@ import { ContactOptions } from "@/components/contact-options";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 import { APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
+import { HomeVisitTownLinks } from "@/components/home-visit-town-links";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { practiceRef } from "@/lib/structured-data";
@@ -193,6 +194,7 @@ export default function GlasgowPage() {
             Motherwell, Airdrie, Kilmarnock, Ayr, Irvine, Falkirk, Stirling, Livingston and Dunfermline.
             Enter your postcode when you book to confirm.
           </p>
+          <HomeVisitTownLinks />
           <h2>Common problems we treat in Glasgow</h2>
           <ul className="clean-list">
             <li><Link href="/online-physiotherapy-for/low-back-pain">Low back pain</Link> and <Link href="/online-physiotherapy-for/sciatica">sciatica</Link></li>
