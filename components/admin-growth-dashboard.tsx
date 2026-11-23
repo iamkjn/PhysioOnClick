@@ -11,6 +11,7 @@ import { AdminGrowthDayPicker, dayPhrase, useGrowthDay } from "@/components/admi
 import { contactEventTitle } from "@/lib/growth-event-labels";
 import { londonDayRange } from "@/lib/growth-day";
 import { channelLabel, eventChannel, eventSourceLabel } from "@/lib/traffic-source";
+import { ukAreaOf, visitorPlace } from "@/lib/visitor-area";
 
 type GrowthEvent = {
   id: string;
@@ -20,6 +21,10 @@ type GrowthEvent = {
   sessionId?: string;
   countryCode?: string;
   countryName?: string;
+  /** Approximate town, region and UK postcode district (from 23 Nov 2026). */
+  city?: string;
+  region?: string;
+  postalDistrict?: string;
   createdAtIso?: string;
   params?: Record<string, unknown>;
   /** Where the visit came from (facebook, google, direct...); missing on events before 21 Nov 2026. */
@@ -38,8 +43,9 @@ function countryLabel(event: GrowthEvent) {
   return "";
 }
 
-function countryDisplay(event: GrowthEvent) {
-  return countryLabel(event) || "Country not captured";
+/** "Glasgow (G72), Scotland", or the country when no town was captured. */
+function placeDisplay(event: GrowthEvent) {
+  return visitorPlace(event) || countryLabel(event) || "Location not captured";
 }
 
 function formatLabel(value: string) {
@@ -187,16 +193,18 @@ export function AdminGrowthDashboard() {
     );
   }, [day]);
 
+  const phrase = dayPhrase(day, today);
+
   const stats = useMemo(() => {
     const list = (events ?? []).filter(isPatientJourneyEvent);
     const sessionIds = new Set(list.map((event) => event.sessionId).filter(Boolean));
-    const sessionCountries = new Map<string, string>();
     const counts = new Map<string, number>();
     const pages = new Map<string, Ranked>();
     const services = new Map<string, Ranked>();
     const exercises = new Map<string, Ranked>();
     const countrySessions = new Map<string, Set<string>>();
     const sourceSessions = new Map<string, Set<string>>();
+    const areaSessions = new Map<string, { label: string; ids: Set<string>; districts: Set<string> }>();
     const chatQuestions: GrowthEvent[] = [];
 
     for (const event of list) {
@@ -221,11 +229,14 @@ export function AdminGrowthDashboard() {
         set.add(event.sessionId);
         sourceSessions.set(channel, set);
       }
-      if (event.event === "chat_message_sent" && stringParam(event, "message_preview")) chatQuestions.push(event);
-      if (event.sessionId) {
-        const country = countryLabel(event);
-        if (country && !sessionCountries.has(event.sessionId)) sessionCountries.set(event.sessionId, country);
+      const area = event.sessionId ? ukAreaOf(event) : null;
+      if (area && event.sessionId) {
+        const row = areaSessions.get(area.key) ?? { label: area.label, ids: new Set<string>(), districts: new Set<string>() };
+        row.ids.add(event.sessionId);
+        if (area.district) row.districts.add(area.district);
+        areaSessions.set(area.key, row);
       }
+      if (event.event === "chat_message_sent" && stringParam(event, "message_preview")) chatQuestions.push(event);
       counts.set(event.event, (counts.get(event.event) ?? 0) + 1);
     }
 
@@ -242,7 +253,8 @@ export function AdminGrowthDashboard() {
         (counts.get("call_click") ?? 0) + (counts.get("whatsapp_click") ?? 0) + (counts.get("email_click") ?? 0),
       visitRequests: counts.get("visit_request_sent") ?? 0,
       visitRequestsStarted: counts.get("visit_request_started") ?? 0,
-      countries: sessionCountries.size,
+      // Different countries, not visitors: three people from Glasgow are one country.
+      countries: countrySessions.size,
       funnel: FUNNEL.map((step) => ({ ...step, count: counts.get(step.event) ?? 0 })),
       exerciseConversion: EXERCISE_CONVERSION.map((step) => ({ ...step, count: counts.get(step.event) ?? 0 })),
       pages: top(pages),
@@ -253,18 +265,26 @@ export function AdminGrowthDashboard() {
         .sort((a, b) => b.count - a.count)
         .slice(0, 6),
       chatQuestions: chatQuestions.slice(0, 6),
+      ukAreas: [...areaSessions.entries()]
+        .map(([key, row]) => ({
+          key,
+          label: row.label,
+          note: row.districts.size ? `Postcode areas: ${[...row.districts].sort().join(", ")}` : `Visitors ${phrase}`,
+          count: row.ids.size,
+        }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 8),
       sources: [...sourceSessions.entries()]
         .map(([channel, ids]) => ({ channel, count: ids.size }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 6),
     };
-  }, [events]);
+  }, [events, phrase]);
 
   const recentActivity = useMemo(() => (events ?? []).filter(isPatientJourneyEvent).slice(0, 8), [events]);
 
   // Detail pages open on the same day as the dashboard.
   const forDay = (href: string) => (isToday ? href : `${href}?day=${day}`);
-  const phrase = dayPhrase(day, today);
 
   const head = (
     <div className="admin-growth-head">
@@ -359,9 +379,9 @@ export function AdminGrowthDashboard() {
         </Link>
         <Link className="admin-growth-stat admin-growth-stat-link" href={forDay("/admin/growth/countries")}>
           <Globe2 aria-hidden="true" />
-          <span>Countries captured</span>
+          <span>Countries visitors came from</span>
           <strong>{stats.countries}</strong>
-          <small>Open country records</small>
+          <small>{stats.countryReach[0] ? `Most from ${stats.countryReach[0].country}` : "Open country records"}</small>
         </Link>
       </div>
 
@@ -378,7 +398,7 @@ export function AdminGrowthDashboard() {
                 <em>{event.path}</em>
                 <b className="admin-growth-source">From: {eventSourceLabel(event)}</b>
                 <small>
-                  {formatTime(event.createdAtIso)} · {event.device ?? "device"} · {countryDisplay(event)}
+                  {formatTime(event.createdAtIso)} · {event.device ?? "device"} · {placeDisplay(event)}
                 </small>
               </li>
             ))}
@@ -410,6 +430,12 @@ export function AdminGrowthDashboard() {
           <RankedList
             items={stats.countryReach.map((row) => ({ key: row.country, label: row.country, note: "Unique visitor sessions", count: row.count }))}
             empty="Country appears for new visits once captured."
+          />
+        </InsightCard>
+        <InsightCard title="UK towns and areas" href={forDay("/admin/growth/areas")}>
+          <RankedList
+            items={stats.ukAreas}
+            empty={`No UK town captured ${phrase}. Towns are recorded from 23 Nov 2026 and are approximate.`}
           />
         </InsightCard>
         <InsightCard title="Service interest" href={forDay("/admin/growth/service-interest")}>

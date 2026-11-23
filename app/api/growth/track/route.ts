@@ -1,8 +1,10 @@
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextResponse } from "next/server";
 
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { clientIp, isRateLimited } from "@/lib/rate-limit";
 import { classifyTrafficSource, cleanChannel, cleanReferrerHost } from "@/lib/traffic-source";
+import { cleanVisitorArea } from "@/lib/visitor-area";
 
 const ALLOWED_EVENTS = new Set([
   "page_view",
@@ -136,6 +138,21 @@ function countryFromHeaders(headers: Headers) {
   }
 }
 
+/**
+ * The visitor's approximate town, region and UK postcode district from
+ * Cloudflare's IP geolocation. The IP address itself is never stored.
+ * Outside a Worker (next dev, tests) there is no location.
+ */
+function areaFromCloudflare(countryCode: string) {
+  let cf: Record<string, unknown> | undefined;
+  try {
+    cf = getCloudflareContext().cf as Record<string, unknown> | undefined;
+  } catch {
+    cf = undefined;
+  }
+  return cleanVisitorArea({ city: cf?.city, region: cf?.region, postalCode: cf?.postalCode, countryCode });
+}
+
 function shouldIgnorePath(path: string) {
   return path === "/admin" || path.startsWith("/admin/") || path.startsWith("/codex-");
 }
@@ -174,6 +191,7 @@ export async function POST(request: Request) {
 
   const userAgent = cleanString(request.headers.get("user-agent"), 260);
   const country = countryFromHeaders(request.headers);
+  const area = areaFromCloudflare(country.countryCode);
   // The browser works out the visit's source from its referrer and landing URL.
   // Older cached pages don't send one, so fall back to the in-app user agent.
   const channel = cleanChannel(body.channel) || classifyTrafficSource({ userAgent }).channel;
@@ -188,6 +206,9 @@ export async function POST(request: Request) {
     device: deviceFromUserAgent(userAgent),
     countryCode: country.countryCode,
     countryName: country.countryName,
+    city: area.city,
+    region: area.region,
+    postalDistrict: area.postalDistrict,
     userAgent,
     createdAt: FieldValue.serverTimestamp(),
     createdAtIso: new Date().toISOString(),

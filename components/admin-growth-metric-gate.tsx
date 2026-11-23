@@ -14,6 +14,7 @@ import { AdminGrowthDayPicker, dayPhrase, useGrowthDay } from "@/components/admi
 import { contactEventTitle } from "@/lib/growth-event-labels";
 import { londonDayRange } from "@/lib/growth-day";
 import { eventSourceLabel } from "@/lib/traffic-source";
+import { ukAreaOf, visitorPlace } from "@/lib/visitor-area";
 
 type GrowthEvent = {
   id: string;
@@ -23,6 +24,10 @@ type GrowthEvent = {
   sessionId?: string;
   countryCode?: string;
   countryName?: string;
+  /** Approximate town, region and UK postcode district (from 23 Nov 2026). */
+  city?: string;
+  region?: string;
+  postalDistrict?: string;
   createdAtIso?: string;
   params?: Record<string, unknown>;
   channel?: string;
@@ -117,9 +122,15 @@ const METRICS: Record<string, MetricConfig> = {
     events: ["page_view"],
     empty: "No page views have been tracked yet.",
   },
+  areas: {
+    title: "UK towns and areas",
+    description: "Visits from the UK with the visitor's approximate town and postcode area, so you can see which nearby areas the website reaches. It comes from their internet connection, so it's approximate: people on mobile data often show the city their network goes through. Search a town or a postcode area such as G72. Recorded from 23 Nov 2026.",
+    filter: (event) => ukAreaOf(event) !== null,
+    empty: "No UK towns have been captured yet.",
+  },
   countries: {
-    title: "Countries captured",
-    description: "Patient sessions where country data was captured.",
+    title: "Countries visitors came from",
+    description: "Every visit where the visitor's country was recorded. The number is how many different countries; search a country's name to see only its visits.",
     filter: (event) => Boolean(event.countryName || event.countryCode),
     empty: "No country data has been captured yet.",
   },
@@ -371,6 +382,9 @@ function AdminGrowthMetric({ metric, initialDay }: { metric: string; initialDay?
         event.sessionId,
         event.countryName,
         event.countryCode,
+        event.city,
+        event.region,
+        event.postalDistrict,
         ...eventDetails(event),
         ...Object.values(event.params ?? {}).map((value) => String(value)),
       ]
@@ -401,9 +415,15 @@ function AdminGrowthMetric({ metric, initialDay }: { metric: string; initialDay?
   }
 
   const phrase = dayPhrase(day, today);
-  // "People who visited" counts each browser once, like the Growth tab; the rest count records.
+  // Counted like the Growth tab: people once per browser, countries and towns once each; the rest count records.
   const headCount =
-    metric === "sessions" ? new Set(metricEvents.map((event) => event.sessionId)).size : metricEvents.length;
+    metric === "sessions"
+      ? new Set(metricEvents.map((event) => event.sessionId)).size
+      : metric === "countries"
+        ? new Set(metricEvents.map(countryDisplay)).size
+        : metric === "areas"
+          ? new Set(metricEvents.map((event) => ukAreaOf(event)?.key)).size
+        : metricEvents.length;
 
   return (
     <section className="admin-growth-detail-page">
@@ -431,7 +451,7 @@ function AdminGrowthMetric({ metric, initialDay }: { metric: string; initialDay?
         className="input"
         value={search}
         onChange={(event) => setSearch(event.target.value)}
-        placeholder={`Search ${config.title.toLowerCase()} by page, source (e.g. facebook), service, exercise, country or session...`}
+        placeholder={`Search ${config.title.toLowerCase()} by page, source (e.g. facebook), town, postcode area, service, exercise, country or session...`}
         aria-label={`Search ${config.title}`}
       />
 
@@ -446,6 +466,12 @@ function AdminGrowthMetric({ metric, initialDay }: { metric: string; initialDay?
                 <em>{event.path}</em>
                 <p className="admin-growth-detail-country">
                   <strong>Country:</strong> {countryDisplay(event)}
+                  {visitorPlace(event) ? (
+                    <>
+                      {" · "}
+                      <strong>Area:</strong> {visitorPlace(event)}
+                    </>
+                  ) : null}
                 </p>
                 {details.length ? <p>{details.join(" · ")}</p> : null}
                 <small>

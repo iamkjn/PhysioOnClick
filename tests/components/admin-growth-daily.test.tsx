@@ -7,10 +7,12 @@ type Constraint = { field?: string; op?: string; value?: string };
 
 const h = vi.hoisted(() => {
   const events = [
-    // Today (23 Nov): two people, three page views.
-    { id: "1", event: "page_view", path: "/pricing", sessionId: "s1", channel: "facebook", referrerHost: "m.facebook.com", createdAtIso: "2026-11-23T10:01:00.000Z" },
-    { id: "2", event: "page_view", path: "/", sessionId: "s1", channel: "facebook", referrerHost: "m.facebook.com", createdAtIso: "2026-11-23T10:00:00.000Z" },
-    { id: "3", event: "page_view", path: "/", sessionId: "s2", channel: "google", referrerHost: "www.google.com", createdAtIso: "2026-11-23T00:05:00.000Z" },
+    // Today (23 Nov): three people (two in the UK, one abroad), three page views.
+    { id: "1", event: "page_view", path: "/pricing", sessionId: "s1", channel: "facebook", referrerHost: "m.facebook.com", countryName: "United Kingdom", countryCode: "GB", city: "Glasgow", region: "Scotland", postalDistrict: "G31", createdAtIso: "2026-11-23T10:01:00.000Z" },
+    { id: "2", event: "page_view", path: "/", sessionId: "s1", channel: "facebook", referrerHost: "m.facebook.com", countryName: "United Kingdom", countryCode: "GB", city: "Glasgow", region: "Scotland", postalDistrict: "G31", createdAtIso: "2026-11-23T10:00:00.000Z" },
+    // A third person today, from abroad.
+    { id: "5", event: "library_view", path: "/exercises/wall-slide", sessionId: "s4", channel: "direct", referrerHost: "", countryName: "Türkiye", countryCode: "TR", city: "Istanbul", region: "Istanbul", createdAtIso: "2026-11-23T09:00:00.000Z" },
+    { id: "3", event: "page_view", path: "/", sessionId: "s2", channel: "google", referrerHost: "www.google.com", countryName: "United Kingdom", countryCode: "GB", city: "Glasgow", region: "Scotland", postalDistrict: "G72", createdAtIso: "2026-11-23T00:05:00.000Z" },
     // Yesterday (22 Nov): one person, typed the address in.
     { id: "4", event: "page_view", path: "/services", sessionId: "s3", channel: "direct", referrerHost: "", createdAtIso: "2026-11-22T21:00:00.000Z" },
   ];
@@ -58,10 +60,35 @@ describe("AdminGrowthDashboard daily counts", () => {
     expect(h.ranges.at(-1)).toEqual({ start: "2026-11-23T00:00:00.000Z", end: "2026-11-24T00:00:00.000Z" });
     const stat = visitorsStat();
     expect(within(stat).getByText("People who visited today")).toBeInTheDocument();
-    expect(within(stat).getByText("2")).toBeInTheDocument();
+    expect(within(stat).getByText("3")).toBeInTheDocument();
     expect(within(stat).getByText(/3 page views/)).toBeInTheDocument();
     expect(stat).toHaveAttribute("href", "/admin/growth/sessions");
     expect(screen.getByText("Live")).toBeInTheDocument();
+  });
+
+  it("counts different countries, not visitors", () => {
+    render(<AdminGrowthDashboard />);
+    const card = screen.getByRole("link", { name: /countries visitors came from/i });
+    expect(within(card).getByText("2")).toBeInTheDocument();
+    expect(within(card).getByText("Most from United Kingdom")).toBeInTheDocument();
+    expect(card).toHaveAttribute("href", "/admin/growth/countries");
+  });
+
+  it("ranks UK towns by visitors, with the postcode areas seen", () => {
+    render(<AdminGrowthDashboard />);
+    const card = screen.getByRole("heading", { name: "UK towns and areas" }).closest("section")!;
+    const glasgow = within(card).getByText("Glasgow, Scotland").closest("li")!;
+    expect(within(glasgow).getByText("2")).toBeInTheDocument();
+    expect(within(glasgow).getByText("Postcode areas: G31, G72")).toBeInTheDocument();
+    expect(within(card).queryByText(/Istanbul/)).not.toBeInTheDocument();
+    expect(within(card).getByRole("link", { name: /view records/i })).toHaveAttribute("href", "/admin/growth/areas");
+  });
+
+  it("shows each visitor's approximate town in the latest interactions", () => {
+    render(<AdminGrowthDashboard />);
+    const latest = screen.getByRole("heading", { name: "Latest interactions" }).closest("section")!;
+    expect(within(latest).getAllByText(/Glasgow \(G31\), Scotland/)).toHaveLength(2);
+    expect(within(latest).getByText(/Istanbul, Türkiye/)).toBeInTheDocument();
   });
 
   it("shows where each visitor came from in the latest interactions", () => {
@@ -87,7 +114,7 @@ describe("AdminGrowthDashboard daily counts", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Back to today" }));
     expect(within(visitorsStat()).getByText("People who visited today")).toBeInTheDocument();
-    expect(within(visitorsStat()).getByText("2")).toBeInTheDocument();
+    expect(within(visitorsStat()).getByText("3")).toBeInTheDocument();
   });
 
   it("jumps to a date typed in the date box", () => {
@@ -101,7 +128,7 @@ describe("AdminGrowthDashboard daily counts", () => {
   it("starts again from 0 when the date changes at midnight", () => {
     vi.setSystemTime(new Date("2026-11-23T23:59:50.000Z"));
     render(<AdminGrowthDashboard />);
-    expect(within(visitorsStat()).getByText("2")).toBeInTheDocument();
+    expect(within(visitorsStat()).getByText("3")).toBeInTheDocument();
 
     act(() => {
       vi.advanceTimersByTime(30_000);

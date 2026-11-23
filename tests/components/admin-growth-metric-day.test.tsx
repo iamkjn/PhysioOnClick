@@ -7,7 +7,7 @@ const h = vi.hoisted(() => {
   const events = [
     { id: "1", event: "page_view", path: "/pricing", sessionId: "s1", channel: "facebook", referrerHost: "m.facebook.com", createdAtIso: "2026-11-22T10:01:00.000Z" },
     { id: "2", event: "page_view", path: "/", sessionId: "s1", channel: "facebook", referrerHost: "m.facebook.com", createdAtIso: "2026-11-22T10:00:00.000Z" },
-    { id: "3", event: "page_view", path: "/", sessionId: "s2", channel: "direct", referrerHost: "", createdAtIso: "2026-11-22T09:00:00.000Z" },
+    { id: "3", event: "page_view", path: "/", sessionId: "s2", channel: "direct", referrerHost: "", countryCode: "GB", countryName: "United Kingdom", city: "Hamilton", region: "Scotland", postalDistrict: "ML3", createdAtIso: "2026-11-22T09:00:00.000Z" },
     { id: "4", event: "page_view", path: "/", sessionId: "s9", channel: "google", referrerHost: "www.google.com", createdAtIso: "2026-11-23T09:00:00.000Z" },
   ];
   const ranges: Array<{ start: string; end: string }> = [];
@@ -63,6 +63,12 @@ describe("Growth detail pages by day", () => {
     expect(h.ranges.at(-1)).toEqual({ start: "2026-11-22T00:00:00.000Z", end: "2026-11-23T00:00:00.000Z" });
     expect(screen.getAllByText(/From: Facebook \(m\.facebook\.com\)/)).toHaveLength(2);
     expect(screen.getByText(/From: Direct or unknown/)).toBeInTheDocument();
+  });
+
+  it("lists UK towns for the day and counts each town once", async () => {
+    render(<AdminGrowthMetricGate metric="areas" day="2026-11-22" />);
+    expect(await screen.findByLabelText("1 yesterday")).toBeInTheDocument();
+    expect(screen.getByText(/Hamilton \(ML3\), Scotland/)).toBeInTheDocument();
   });
 
   it("shows today when the link has no day or a bad one", async () => {
