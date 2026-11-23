@@ -118,8 +118,8 @@ export default async function HomeVisitTownPage({
             charge.
           </p>
           <p>
-            Visits run {APPOINTMENT_HOURS.weekdays.phrase}, and {APPOINTMENT_HOURS.weekends.phrase}, so you don&rsquo;t
-            need to take time off work.
+            Visits run {APPOINTMENT_HOURS.phrase}, evenings and weekends included, so you don&rsquo;t need
+            to take time off work.
           </p>
           <ContactOptions
             topic="home-visit"
@@ -201,7 +201,7 @@ export default async function HomeVisitTownPage({
           <div className="panel stack image-panel">
             <h2>Who you&rsquo;ll see</h2>
             <p>
-              {founder.name}, {founder.credentials.join(", ")}. Visits are on weekday evenings and at weekends, around
+              {founder.name}, {founder.credentials.join(", ")}. Visits run 7 days a week, 9am to 9pm, around
               work and family.
             </p>
             <p>

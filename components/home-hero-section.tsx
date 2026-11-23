@@ -112,14 +112,14 @@ export function HomeHeroSection({
       <div className="home-hero-overlay" />
       <div className="site-shell home-hero-content">
         <div className="home-hero-text">
-          <span className="location-pill">Home visits in Glasgow · Evenings &amp; weekends</span>
+          <span className="location-pill">Home visits in Glasgow · 7 days, 9am–9pm</span>
           <h1>
             Physiotherapy at home
             <span> in Glasgow</span>
           </h1>
           <p className="home-hero-copy">
             {founderName}, an HCPC registered physiotherapist, comes to your home in Glasgow and the
-            surrounding area on weekday evenings and at weekends, so there&rsquo;s no need to take time off work.
+            surrounding area 7 days a week, from 9am to 9pm, so there&rsquo;s no need to take time off work.
             That includes neurological rehabilitation for stroke, Parkinson&rsquo;s, MS and FND. Home
             assessment {homeVisitPrice}, home follow-ups {homeFollowUpPrice}, or {videoPrice} by video anywhere
             in the UK.

@@ -320,7 +320,7 @@ export const services: Service[] = [
     // glasgow", GSC Aug-Nov 2026); "neuro physio" variants match it anyway.
     seoTitle: "Neurological Physiotherapy Glasgow | Home Visits | PhysioOnClick",
     seoDescription:
-      "Neuro physio at home across Glasgow, on weekday evenings and weekends: stroke, Parkinson's, MS, FND and balance. Family welcome. Video sessions UK-wide."
+      "Neuro physio at home across Glasgow, 7 days a week, 9am–9pm: stroke, Parkinson's, MS, FND and balance. Family welcome. Video sessions UK-wide."
   },
   {
     slug: "paediatric-physiotherapy",

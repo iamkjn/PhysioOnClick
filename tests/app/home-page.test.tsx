@@ -87,9 +87,9 @@ describe("homepage home-visit pricing", () => {
   });
 });
 
-describe("homepage evenings, weekends and family", () => {
-  it("leads the snippet with evenings and weekends", () => {
-    expect(String(metadata.description)).toContain("Glasgow, evenings and weekends");
+describe("homepage 7-day hours and family", () => {
+  it("leads the snippet with the 7-day, 9am-9pm hours", () => {
+    expect(String(metadata.description)).toContain("Glasgow, 7 days 9am–9pm");
   });
 
   it("shows the two selling points right after the trust bar", async () => {
@@ -97,8 +97,8 @@ describe("homepage evenings, weekends and family", () => {
     const section = container.querySelector(".home-week-section");
     expect(section).not.toBeNull();
     const text = section!.textContent ?? "";
-    expect(text).toContain("Evenings and weekends");
-    expect(text).toContain("on weekday evenings from 6pm to 9pm, and on Saturdays and Sundays from 9am to 7pm");
+    expect(text).toContain("7 days a week, 9am to 9pm");
+    expect(text).toContain("run 7 days a week, from 9am to 9pm, evenings and weekends included");
     expect(text).toContain("We teach the family too");
     // It sits above "Meet your physiotherapist", so it is the first thing after the trust bar.
     const all = container.textContent ?? "";
@@ -115,8 +115,8 @@ describe("homepage evenings, weekends and family", () => {
     expect(faq?.textContent).toContain("Home visits need booking at least 24 hours ahead.");
   });
 
-  it("lists evenings and weekends in the trust bar", async () => {
+  it("lists the 7-day hours in the trust bar", async () => {
     const { container } = render(await HomePage());
-    expect(container.querySelector(".trust-bar")?.textContent).toContain("Evenings & weekends");
+    expect(container.querySelector(".trust-bar")?.textContent).toContain("7 days, 9am–9pm");
   });
 });

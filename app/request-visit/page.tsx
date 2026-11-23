@@ -71,7 +71,7 @@ export default function RequestVisitPage() {
                 what&rsquo;s going on.
               </li>
               <li>
-                We agree a day and time: {APPOINTMENT_HOURS.weekdays.short}, {APPOINTMENT_HOURS.weekends.short}.
+                We agree a day and time that suits you, {APPOINTMENT_HOURS.phrase}.
               </li>
               <li>
                 You get a secure payment link: {homeVisitPrices.initial} for the first visit (about an hour),{" "}

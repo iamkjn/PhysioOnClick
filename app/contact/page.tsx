@@ -86,7 +86,7 @@ export default function ContactPage() {
                 </span>
                 <div>
                   <strong>Appointment hours</strong>
-                  <span>{APPOINTMENT_HOURS.weekdays.short}<br />{APPOINTMENT_HOURS.weekends.short}</span>
+                  <span>{APPOINTMENT_HOURS.short}</span>
                 </div>
               </li>
             </ul>

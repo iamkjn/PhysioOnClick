@@ -136,7 +136,7 @@ export default async function ExerciseAreaPage({
             <Link className="inline-link" href="/services/neurological-rehabilitation">
               Neurological physiotherapy at home in Glasgow
             </Link>{" "}
-            runs on weekday evenings and weekends, so family can join.
+            runs 7 days a week, 9am to 9pm, so family can join.
           </p>
         ) : null}
       </section>

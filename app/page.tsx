@@ -24,12 +24,13 @@ const videoPrice = formatPounds(sessionPricePence("initial-assessment"));
 const homeVisitPrice = homeVisitPrices.initial;
 const homeFollowUpPrice = homeVisitPrices.followUp;
 const title = "Physio at Home in Glasgow & Neuro Rehab | PhysioOnClick";
-// Evenings and weekends lead because they are the remarkable part: most
-// people in pain, and the family who help them, work during the day.
+// The 7-day, 9am-9pm hours lead because they are the remarkable part: most
+// people in pain, and the family who help them, work during the day, and
+// evenings and weekends are included.
 // The home follow-up price is named on purpose: with only "£80 home, £40 by
 // video" here, Google's AI answer (2026-11-15) listed "Follow-up: £40" and
 // left the £70 home follow-up out.
-const description = `Home physiotherapy in Glasgow, evenings and weekends, incl. neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, ${homeFollowUpPrice} follow-ups, ${videoPrice} by video.`;
+const description = `Home physiotherapy in Glasgow, 7 days 9am–9pm, incl. neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, ${homeFollowUpPrice} follow-ups, ${videoPrice} by video.`;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -88,7 +89,7 @@ export default async function HomePage() {
             <span>HCPC Registered</span>
             <span>CSP Member</span>
             <span>Home visits in Glasgow</span>
-            <span>Evenings &amp; weekends</span>
+            <span>{APPOINTMENT_HOURS.label}</span>
             <span>Video appointments across the UK</span>
           </div>
         </section>
@@ -107,11 +108,10 @@ export default async function HomePage() {
         <div className="site-shell simple-card-grid">
           <Reveal direction="up">
             <article className="simple-service-card home-week-card">
-              <h3>Evenings and weekends</h3>
+              <h3>7 days a week, 9am to 9pm</h3>
               <p>
-                Home visits and video appointments run {APPOINTMENT_HOURS.weekdays.phrase}, and{" "}
-                {APPOINTMENT_HOURS.weekends.phrase}. No time off work, and no travelling across town while
-                you&rsquo;re sore.
+                Home visits and video appointments run {APPOINTMENT_HOURS.phrase}, evenings and weekends
+                included. No time off work, and no travelling across town while you&rsquo;re sore.
               </p>
               <Link href="/book?visit=home" prefetch>See free times →</Link>
             </article>
@@ -322,7 +322,7 @@ export default async function HomePage() {
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Ready when you are</span>
           <h2>Book your first session</h2>
-          <p>A home visit in Glasgow on a weekday evening or at the weekend, or a video appointment anywhere in the UK.</p>
+          <p>A home visit in Glasgow any day from 9am to 9pm, or a video appointment anywhere in the UK.</p>
           <Link className="button secondary cta-white" href="/book">
             Book your session
           </Link>

@@ -145,8 +145,7 @@ export default function ManualTherapyGlasgowPage() {
             hands-on treatment.
           </p>
           <p>
-            Home visits cover {HOME_VISIT_AREA_LABEL}, and run {APPOINTMENT_HOURS.weekdays.phrase}, and{" "}
-            {APPOINTMENT_HOURS.weekends.phrase}. {HOME_VISIT_NOTICE_SENTENCE}
+            Home visits cover {HOME_VISIT_AREA_LABEL}, and run {APPOINTMENT_HOURS.phrase}. {HOME_VISIT_NOTICE_SENTENCE}
           </p>
           <ContactOptions
             topic="manual-therapy"

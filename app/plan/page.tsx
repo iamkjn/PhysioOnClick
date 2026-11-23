@@ -14,7 +14,7 @@ import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/structured-data";
 export const metadata: Metadata = {
   alternates: { canonical: "/plan" },
   title: "Your physio plan | PhysioOnClick",
-  description: "Open your exercises, book your next home visit, or find out about evening and weekend home physiotherapy in Glasgow.",
+  description: "Open your exercises, book your next home visit, or find out about home physiotherapy in Glasgow, 7 days a week from 9am to 9pm.",
   robots: { index: false, follow: true },
 };
 

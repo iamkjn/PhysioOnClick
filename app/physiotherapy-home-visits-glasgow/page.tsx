@@ -27,7 +27,7 @@ const NHSGGC_SELF_REFERRAL_URL =
 export const metadata: Metadata = {
   alternates: { canonical: "/physiotherapy-home-visits-glasgow" },
   title: "Home Physiotherapy Glasgow & Surrounding Areas | PhysioOnClick",
-  description: `Home physiotherapy in Glasgow and up to an hour's drive away, on evenings and weekends, from an HCPC registered physio. ${homeInitial} assessment, ${homeFollowUp} follow-ups, all in.`
+  description: `Home physiotherapy in Glasgow and up to an hour's drive away, 7 days 9am–9pm, from an HCPC registered physio. ${homeInitial} assessment, ${homeFollowUp} follow-ups, all in.`
 };
 
 const faqItems = [
@@ -105,8 +105,8 @@ export default function HomeVisitsGlasgowPage() {
             {homeInitial} all in, and follow-ups are {homeFollowUp}. Home visits cover {HOME_VISIT_AREA_LABEL}.
           </p>
           <p>
-            Visits run {APPOINTMENT_HOURS.weekdays.phrase}, and {APPOINTMENT_HOURS.weekends.phrase}, so you
-            don&rsquo;t need to take time off work.
+            Visits run {APPOINTMENT_HOURS.phrase}, evenings and weekends included, so you don&rsquo;t need
+            to take time off work.
           </p>
           <ContactOptions
             topic="home-visit"
@@ -135,7 +135,7 @@ export default function HomeVisitsGlasgowPage() {
         <div className="page-hero-aside checklist-panel">
           <h2>Who home visits suit</h2>
           <ul className="clean-list">
-            <li>People who work during the day: visits are on weekday evenings and at weekends</li>
+            <li>People who work during the day: visits run until 9pm, and at weekends too</li>
             <li>Anyone who would rather not travel or find parking while in pain</li>
             <li>
               People who need physio at home:{" "}

@@ -7,7 +7,6 @@
  * Shared by the form (components/visit-request-form.tsx) and the route
  * (app/api/visit-request/route.ts) so both check the same rules.
  */
-import { APPOINTMENT_HOURS } from "@/lib/appointment-hours";
 import { isCoveredPostcode } from "@/lib/home-visit-area";
 import { normalisePostcode } from "@/lib/home-visit";
 import { UK_PHONE_RE, validateName } from "@/lib/validation";
@@ -21,7 +20,10 @@ export function visitRequestHrefAbout(about?: string): string {
 
 /** When the visit could happen; matches the practice's appointment hours. */
 export const VISIT_TIME_OPTIONS = [
-  { id: "weekday-evening", label: `Weekday evening (${APPOINTMENT_HOURS.weekdays.short.replace(/^Mon–Fri:\s*/, "")})` },
+  // Ids are stored on enquiries, so keep existing ones; "weekday-day" was
+  // added when the hours became 9am-9pm every day (2026-11-23).
+  { id: "weekday-day", label: "Weekday daytime (9am–5pm)" },
+  { id: "weekday-evening", label: "Weekday evening (5pm–9pm)" },
   { id: "saturday", label: "Saturday" },
   { id: "sunday", label: "Sunday" },
 ] as const;

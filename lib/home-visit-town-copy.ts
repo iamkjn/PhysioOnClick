@@ -26,10 +26,10 @@ export function townSeoTitle(town: HomeVisitTown): string {
 /** Meta description, kept within 160 characters (shorter lead-in for long names). */
 export function townSeoDescription(town: HomeVisitTown): string {
   const tail = `${homeVisitPrices.initial} assessment, ${homeVisitPrices.followUp} follow-ups, no travel charge.`;
-  const long = `Home physiotherapy in ${titleName(town)} from a Glasgow-based HCPC registered physio, on evenings and weekends. ${tail}`;
+  const long = `Home physiotherapy in ${titleName(town)} from a Glasgow-based HCPC registered physio, 7 days 9am–9pm. ${tail}`;
   return long.length <= 160
     ? long
-    : `Home physio in ${titleName(town)}: a Glasgow-based HCPC registered physio, evenings and weekends. ${tail}`;
+    : `Home physio in ${titleName(town)}: a Glasgow-based HCPC registered physio, 7 days 9am–9pm. ${tail}`;
 }
 
 export function townFaqs(town: HomeVisitTown) {

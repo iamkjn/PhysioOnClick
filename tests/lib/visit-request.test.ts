@@ -40,7 +40,11 @@ describe("visit request rules", () => {
       times: ["saturday", "saturday", "midnight", 3],
     });
     expect("value" in parsed && parsed.value.times).toEqual(["saturday"]);
-    expect(timeLabels(["sunday", "weekday-evening"])).toEqual(["Weekday evening (6pm–9pm)", "Sunday"]);
+    expect(timeLabels(["sunday", "weekday-evening", "weekday-day"])).toEqual([
+      "Weekday daytime (9am–5pm)",
+      "Weekday evening (5pm–9pm)",
+      "Sunday",
+    ]);
   });
 
   it("explains what's missing, field by field", () => {

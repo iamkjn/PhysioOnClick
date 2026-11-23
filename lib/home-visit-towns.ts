@@ -106,7 +106,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
     intro:
       "We visit homes all over Hamilton, including Burnbank, Hillhouse, Fairhill, Low Waters, Eddlewood and Whitehill, and the villages and towns around it.",
     localNote:
-      "Hamilton sits between Glasgow and the rest of Lanarkshire, so it's well within reach for evening visits after work. Bothwell, Uddingston and Blantyre are covered too, all at one price.",
+      "Hamilton sits between Glasgow and the rest of Lanarkshire, so it's well within reach for a visit before or after work. Bothwell, Uddingston and Blantyre are covered too, all at one price.",
     hospital: {
       name: "University Hospital Hairmyres and University Hospital Wishaw",
       board: "NHS Lanarkshire",
@@ -178,7 +178,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
     intro:
       "Rutherglen and Cambuslang are a short drive from our base in Glasgow's East End, just across the Clyde. We visit Burnside, Fernhill, Spittal and Bankhead in Rutherglen, and Halfway, Westburn, Flemington and Newton in Cambuslang.",
     localNote:
-      "Because the two towns are so close to us, they're among the easiest places to fit a visit around your day, on weekday evenings or at the weekend.",
+      "Because the two towns are so close to us, they're among the easiest places to fit a visit around your day, any day from 9am to 9pm.",
     faqs: [
       {
         question: "Do you visit Blantyre and King's Park?",

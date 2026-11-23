@@ -149,7 +149,7 @@ export default async function ExerciseDetailPage({
         <Link className="inline-link" href="/services/neurological-rehabilitation" data-neuro-local>
           Neurological physiotherapy at home in Glasgow
         </Link>{" "}
-        runs on weekday evenings and weekends, so family can join.
+        runs 7 days a week, 9am to 9pm, so family can join.
       </>
     ) : null;
   const { ordinary: ordinaryMistakes, safety: safetyLine } = splitMistakes(

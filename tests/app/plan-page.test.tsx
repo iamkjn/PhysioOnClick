@@ -22,7 +22,7 @@ describe("/plan (fridge magnet QR page)", () => {
   it("pitches evenings, weekends, family and the all-in price to a newcomer", () => {
     const text = render(<PlanPage />).container.textContent ?? "";
     expect(text).toContain("Saw this on a friend’s fridge?");
-    expect(text).toContain("on weekday evenings from 6pm to 9pm, and on Saturdays and Sundays from 9am to 7pm");
+    expect(text).toContain("Appointments run 7 days a week, from 9am to 9pm, weekdays and weekends.");
     expect(text).toContain("Family members or carers are welcome to join");
     expect(text).toContain(`Home assessment ${formatPounds(homeVisitPricePence("initial-assessment"))}, all in`);
     expect(text).not.toMatch(/travel fee/i);
