@@ -4,6 +4,7 @@ import { initializeApp } from "firebase-admin/app";
 import { getFirestore, FieldValue, FieldPath } from "firebase-admin/firestore";
 import { getMessaging } from "firebase-admin/messaging";
 import { computeCheckinActions, type ExistingCheckin } from "./pain-checkin-logic";
+import { GROWTH_RETENTION_YEARS, pruneOldGrowthEvents, type PruneDb } from "./growth-retention";
 
 initializeApp();
 
@@ -585,4 +586,14 @@ export const notifyAdminUpcomingSessions = onSchedule(
       }
     }
   }
+);
+
+// Website visit statistics (growthEvents) are deleted after 2 years, as the
+// privacy policy says. Runs nightly; usually there is nothing to delete.
+export const pruneOldGrowthEventsDaily = onSchedule(
+  { schedule: "30 3 * * *", timeZone: "Europe/London" },
+  async () => {
+    const deleted = await pruneOldGrowthEvents(getFirestore() as unknown as PruneDb);
+    console.log(`pruneOldGrowthEventsDaily: deleted ${deleted} visit statistics older than ${GROWTH_RETENTION_YEARS} years`);
+  },
 );

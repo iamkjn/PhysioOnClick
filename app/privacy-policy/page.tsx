@@ -143,7 +143,7 @@ export default function PrivacyPolicyPage() {
             <li><strong>Appointment and contact enquiries:</strong> retained for 12 months after the last interaction</li>
             <li><strong>Home visit address:</strong> held in our database in your booking record and payment record, and kept for 12 months after the last interaction, as for appointment enquiries above. Where the address is recorded in your clinical notes, it is kept with your clinical record (8 years for adults). Stripe and our booking calendar provider keep their own copies under their own retention policies</li>
             <li><strong>Saved addresses:</strong> addresses you save to your address book are kept until you delete them or close your account. Past bookings keep their own copy of the visit address.</li>
-            <li><strong>Website visit statistics:</strong> kept while they are useful for comparing how the website is used over time. They contain no names or contact details</li>
+            <li><strong>Website visit statistics:</strong> deleted automatically 2 years after the visit. They contain no names or contact details</li>
           </ul>
         </article>
 

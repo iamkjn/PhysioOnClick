@@ -57,7 +57,7 @@ describe('Privacy Policy page', () => {
     expect(text).toMatch(/Reject analytics.*stop recording them/)
     expect(text).toMatch(/Legitimate interests.*visit statistics/)
     expect(text).toMatch(/Cloudflare:.*approximate location of each visit/)
-    expect(text).toMatch(/Website visit statistics:.*no names or contact details/)
+    expect(text).toMatch(/Website visit statistics:.*deleted automatically 2 years after the visit.*no names or contact details/)
     expect(text).toMatch(/local\s+storage rather than a cookie/)
   })
 
