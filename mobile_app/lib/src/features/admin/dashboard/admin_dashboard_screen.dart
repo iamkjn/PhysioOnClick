@@ -10,6 +10,7 @@ import '../enquiries/admin_enquiries_screen.dart';
 import '../growth/admin_growth_screen.dart';
 import '../invoices/admin_invoices_screen.dart';
 import '../library/admin_library_screen.dart';
+import '../notifications/admin_notification_bell.dart';
 import '../recovery/admin_patient_list_screen.dart';
 
 /// Admin's mobile home — mirrors web's `AdminLiveStats`
@@ -26,6 +27,15 @@ class AdminDashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Admin dashboard'),
         automaticallyImplyLeading: false,
+        actions: [
+          AdminNotificationBell(
+            onOpenSession: (context, _) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AdminBookingsScreen()),
+            ),
+          ),
+          const SizedBox(width: 4),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
