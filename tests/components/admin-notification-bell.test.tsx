@@ -47,4 +47,23 @@ describe('AdminNotificationBell', () => {
     expect(markReadMock).toHaveBeenCalledWith('notice-1')
     expect(pushMock).toHaveBeenCalledWith('/admin/session/booking-1#self-assessment')
   })
+
+  it('clears the badge when the panel is opened, including past sessions', async () => {
+    render(<AdminNotificationBell />)
+    act(() => {
+      emitNotifications?.([
+        { id: 'past-1', bookingId: 'b1', patientName: 'John Past', read: false, sessionDate: new Date(Date.now() - 86_400_000) },
+        { id: 'next-1', bookingId: 'b2', patientName: 'Jane Next', read: false, sessionDate: new Date(Date.now() + 60_000) },
+        { id: 'seen-1', bookingId: 'b3', patientName: 'Old Seen', read: true, sessionDate: new Date(Date.now() - 60_000) },
+      ])
+    })
+
+    expect(screen.getByRole('button', { name: 'Notifications, 2 unread' })).toBeTruthy()
+    await userEvent.click(screen.getByRole('button', { name: /notifications/i }))
+
+    expect(markReadMock).toHaveBeenCalledTimes(2)
+    expect(markReadMock).toHaveBeenCalledWith('past-1')
+    expect(markReadMock).toHaveBeenCalledWith('next-1')
+    expect(screen.getByRole('button', { name: 'Notifications' })).toBeTruthy()
+  })
 })

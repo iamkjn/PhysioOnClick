@@ -19,6 +19,12 @@ export function AdminNotificationBell() {
   const router = useRouter();
   const [items, setItems] = useState<AdminNotification[]>([]);
   const [open, setOpen] = useState(false);
+  // Ids that were unread when the panel was last opened: they keep their
+  // "new" highlight for that viewing even though they're marked read on open.
+  const [freshIds, setFreshIds] = useState<Set<string>>(() => new Set());
+  // Ids marked read locally, so the badge clears instantly instead of waiting
+  // for the Firestore round-trip.
+  const [seenIds, setSeenIds] = useState<Set<string>>(() => new Set());
   const [pushState, setPushState] = useState<"idle" | "requesting" | "enabled" | "unavailable">("idle");
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +39,28 @@ export function AdminNotificationBell() {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, [open]);
 
-  const unread = items.filter((n) => !n.read).length;
+  const unreadItems = items.filter((n) => !n.read && !seenIds.has(n.id));
+  const unread = unreadItems.length;
+
+  // Opening the panel counts as having seen every notification in it (past
+  // sessions included, which can't be clicked), so the badge resets to 0.
+  function handleToggle() {
+    if (open) {
+      setOpen(false);
+      return;
+    }
+    const ids = unreadItems.map((n) => n.id);
+    setFreshIds(new Set(ids));
+    if (ids.length > 0) {
+      setSeenIds((prev) => new Set([...prev, ...ids]));
+      for (const id of ids) {
+        markAdminNotificationRead(id).catch((err) =>
+          console.error("mark admin notification read failed", err)
+        );
+      }
+    }
+    setOpen(true);
+  }
 
   async function handleEnablePush() {
     setPushState("requesting");
@@ -44,7 +71,7 @@ export function AdminNotificationBell() {
   async function handleSelect(n: AdminNotification) {
     const isPast = n.sessionDate ? n.sessionDate.getTime() < Date.now() : false;
     if (isPast) return;
-    if (!n.read) await markAdminNotificationRead(n.id);
+    if (!n.read && !seenIds.has(n.id)) await markAdminNotificationRead(n.id);
     setOpen(false);
     router.push(`/admin/session/${n.bookingId}#self-assessment`);
   }
@@ -56,7 +83,7 @@ export function AdminNotificationBell() {
         className="notification-bell admin-notification-bell"
         aria-label={unread > 0 ? `Notifications, ${unread} unread` : "Notifications"}
         aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
+        onClick={handleToggle}
       >
         <span aria-hidden="true" className="notification-bell-icon"><BellIcon /></span>
         {unread > 0 && (
@@ -95,7 +122,7 @@ export function AdminNotificationBell() {
                   <li key={n.id}>
                     <button
                       type="button"
-                      className={`admin-notification-item${n.read ? "" : " is-unread"}${isPast ? " is-past" : ""}`}
+                      className={`admin-notification-item${freshIds.has(n.id) ? " is-unread" : ""}${isPast ? " is-past" : ""}`}
                       disabled={isPast}
                       onClick={() => void handleSelect(n)}
                     >
