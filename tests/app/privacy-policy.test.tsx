@@ -46,7 +46,19 @@ describe('Privacy Policy page', () => {
     // before payment), so the policy must not list it.
     expect(text).not.toMatch(/assessment link and reminder/)
     expect(text).toMatch(/booking record and payment record/)
-    expect(text).toMatch(/October 2026/)
+    expect(text).toMatch(/November 2026/)
+  })
+
+  it('covers our own visit statistics: what, location, opt-out, retention', () => {
+    const { container } = render(<PrivacyPolicyPage />)
+    const text = container.textContent ?? ''
+    expect(text).toMatch(/Website visit statistics \(our own\):.*site or app you came from.*approximate location.*first half of the postcode/)
+    expect(text).toMatch(/do not store your IP address or full postcode/)
+    expect(text).toMatch(/Reject analytics.*stop recording them/)
+    expect(text).toMatch(/Legitimate interests.*visit statistics/)
+    expect(text).toMatch(/Cloudflare:.*approximate location of each visit/)
+    expect(text).toMatch(/Website visit statistics:.*no names or contact details/)
+    expect(text).toMatch(/local\s+storage rather than a cookie/)
   })
 
   it('covers Ideal Postcodes processor and saved addresses retention', () => {

@@ -44,6 +44,28 @@ const SESSION_KEY = "poc-growth-session-id";
 // from, so it's worked out once and sent with every event of the visit.
 const SOURCE_KEY = "poc-growth-source";
 const MAX_PARAM_KEYS = 16;
+// The cookie banner's choice (components/cookie-consent.tsx). "Reject analytics"
+// switches off these first-party visit statistics as well as Google Analytics,
+// as the privacy policy says.
+const CONSENT_KEY = "poc-cookie-consent";
+
+function rejectedAnalytics() {
+  try {
+    return window.localStorage.getItem(CONSENT_KEY) === "denied";
+  } catch {
+    return false;
+  }
+}
+
+/** Called when a visitor chooses "Reject analytics": stop counting them and drop their visitor id. */
+export function forgetGrowthVisitor() {
+  try {
+    window.localStorage.removeItem(SESSION_KEY);
+    window.sessionStorage.removeItem(SOURCE_KEY);
+  } catch {
+    // Storage blocked: nothing was kept.
+  }
+}
 
 function sessionId() {
   try {
@@ -105,6 +127,7 @@ export function trackGrowthEvent(event: GrowthEventName, params?: GrowthEventPar
   if (typeof window === "undefined") return;
   const path = cleanPath(window.location.pathname);
   if (path === "/admin" || path.startsWith("/admin/")) return;
+  if (rejectedAnalytics()) return;
 
   const payload = {
     event,

@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
           <div className="page-hero-aside">
             <strong>Last updated</strong>
             <p className="muted">
-              <time dateTime="2026-10">October 2026</time>
+              <time dateTime="2026-11">November 2026</time>
             </p>
           </div>
         </section>
@@ -62,7 +62,8 @@ export default function PrivacyPolicyPage() {
             <li><strong>Enquiry &amp; chat content:</strong> messages you send through the contact form and the on-site chat assistant</li>
             <li><strong>Payment:</strong> payment is taken online when you book, through Stripe. We receive confirmation of payment, the amount and your billing name and email, but we never see or store your full card details</li>
             <li><strong>Movement check (optional):</strong> if you use the camera-based movement check in the patient portal, your video is processed on your own device only and is never recorded, uploaded or stored. We save only the resulting movement scores to your record</li>
-            <li><strong>Usage data:</strong> pages visited and session activity, collected anonymously via analytics only where you have consented</li>
+            <li><strong>Website visit statistics (our own):</strong> the pages you open and buttons you use (for example &ldquo;Book now&rdquo;), your type of device, the site or app you came from (for example Google or Facebook), and an approximate location: your country, town or region and, in the UK, the first half of the postcode (such as G72). The location is worked out from your internet connection, so it is often only roughly right. We keep a random visitor ID in your browser so each visitor is counted once. We do not store your IP address or full postcode, and we do not use these statistics to identify you. If you choose &ldquo;Reject analytics&rdquo; on the cookie banner, we stop recording them for your browser</li>
+            <li><strong>Google Analytics usage data:</strong> pages visited and session activity, collected anonymously only where you have accepted analytics cookies</li>
           </ul>
         </article>
 
@@ -82,7 +83,7 @@ export default function PrivacyPolicyPage() {
           <ul>
             <li><strong>Contract performance (Art 6(1)(b)):</strong> processing your name, email, and appointment details to deliver the service you have booked</li>
             <li><strong>Legal obligation (Art 6(1)(c)):</strong> retaining clinical records for the period required by HCPC standards</li>
-            <li><strong>Legitimate interests (Art 6(1)(f)):</strong> maintaining secure systems, communicating about your care, and improving the service</li>
+            <li><strong>Legitimate interests (Art 6(1)(f)):</strong> maintaining secure systems, communicating about your care, and improving the service, including our own website visit statistics, which show us how the site is used and which areas it reaches. You can switch these off with &ldquo;Reject analytics&rdquo;</li>
             <li><strong>Consent (Art 6(1)(a)):</strong> for optional analytics cookies and any non-essential communications; you may withdraw consent at any time</li>
             <li><strong>Health care (Art 9(2)(h)):</strong> the additional condition for processing your clinical data, as above</li>
           </ul>
@@ -93,7 +94,7 @@ export default function PrivacyPolicyPage() {
           <p>Your data is processed by the following third parties on our behalf, under written data-processing terms:</p>
           <ul>
             <li><strong>Cal.com:</strong> used for appointment scheduling; booking data is shared with Cal.com to manage your calendar appointment. For a home visit this includes the visit address you give us</li>
-            <li><strong>Cloudflare:</strong> hosts and protects this website; it processes technical data such as your IP address to deliver pages securely and block abuse</li>
+            <li><strong>Cloudflare:</strong> hosts and protects this website; it processes technical data such as your IP address to deliver pages securely and block abuse, and tells us the approximate location of each visit (country, town or region and UK postcode area) for our visit statistics. We do not receive or keep your IP address for this</li>
             <li><strong>Google Analytics:</strong> anonymous usage statistics, loaded only after you accept analytics cookies</li>
             <li><strong>Google Calendar / Google Meet:</strong> used to create appointment events and video consultation links; attendee details (name, email) are shared with Google to generate the meeting link</li>
             <li><strong>Google Firebase:</strong> Authentication, Firestore database and Storage, used to store account, appointment, and clinical data securely</li>
@@ -142,6 +143,7 @@ export default function PrivacyPolicyPage() {
             <li><strong>Appointment and contact enquiries:</strong> retained for 12 months after the last interaction</li>
             <li><strong>Home visit address:</strong> held in our database in your booking record and payment record, and kept for 12 months after the last interaction, as for appointment enquiries above. Where the address is recorded in your clinical notes, it is kept with your clinical record (8 years for adults). Stripe and our booking calendar provider keep their own copies under their own retention policies</li>
             <li><strong>Saved addresses:</strong> addresses you save to your address book are kept until you delete them or close your account. Past bookings keep their own copy of the visit address.</li>
+            <li><strong>Website visit statistics:</strong> kept while they are useful for comparing how the website is used over time. They contain no names or contact details</li>
           </ul>
         </article>
 
@@ -182,7 +184,9 @@ export default function PrivacyPolicyPage() {
             used; these are only set after you choose &ldquo;Accept all&rdquo; on the cookie banner, and are
             disabled by default. We do not use advertising or third-party marketing cookies. You can change
             your choice at any time by clearing this site&apos;s data in your browser, which will show the
-            banner again.
+            banner again. Our own visit statistics use a random visitor ID kept in your browser&apos;s local
+            storage rather than a cookie; choosing &ldquo;Reject analytics&rdquo; switches them off and deletes
+            that ID.
           </p>
         </article>
 

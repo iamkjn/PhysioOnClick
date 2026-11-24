@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { forgetGrowthVisitor } from "@/lib/growth-tracking";
+
 // ponytail: localStorage + Google Consent Mode, no cookie library. The banner
-// only exists to gate the analytics_storage consent set as "denied" by default
-// in components/analytics.tsx. Essential/auth cookies never need consent.
+// gates the analytics_storage consent set as "denied" by default in
+// components/analytics.tsx, and "Reject analytics" also switches off our own
+// visit statistics (lib/growth-tracking.ts). Essential/auth cookies never need consent.
 const STORAGE_KEY = "poc-cookie-consent";
 
 type Gtag = (command: string, action: string, params?: Record<string, unknown>) => void;
@@ -47,6 +50,7 @@ export function CookieConsent() {
       // ignore persistence failure
     }
     updateConsent(granted);
+    if (!granted) forgetGrowthVisitor();
     setVisible(false);
   }
 
@@ -57,8 +61,9 @@ export function CookieConsent() {
   return (
     <div className="cookie-consent" role="dialog" aria-live="polite" aria-label="Cookie consent">
       <p className="cookie-consent-text">
-        We use essential cookies to run this site and, with your consent, anonymous analytics cookies to
-        understand how it is used. See our{" "}
+        We use essential cookies to run this site. To improve it we also keep simple visit statistics (pages
+        viewed, where you came from, your approximate area) and, if you accept, Google Analytics cookies.
+        &ldquo;Reject analytics&rdquo; turns both off. See our{" "}
         <Link href="/privacy-policy">Privacy Policy</Link>.
       </p>
       <div className="cookie-consent-actions">
