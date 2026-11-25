@@ -45,6 +45,10 @@ export function SiteFooter() {
           <Link href="/glasgow-physiotherapist">Glasgow home visits and online physio</Link>
           <Link href="/physiotherapy-home-visits-glasgow">Physio home visits: Glasgow &amp; surrounding areas</Link>
           <Link href="/manual-therapy-glasgow">Manual therapy at home in Glasgow</Link>
+          <Link href="/falls-prevention-physiotherapy-glasgow">Falls prevention physio, Glasgow</Link>
+          <Link href="/elderly-physiotherapy-glasgow">Physio for older adults, Glasgow</Link>
+          <Link href="/sports-injury-physiotherapy-glasgow">Sports injury physio, Glasgow</Link>
+          <Link href="/chronic-pain-physiotherapy-glasgow">Long-term pain physio, Glasgow</Link>
           <Link href="/online-physiotherapy-scotland">Online physio in Scotland</Link>
           <Link href="/guides">Guides</Link>
           {PRACTICE_PHONE && PRACTICE_PHONE_HREF ? <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a> : null}

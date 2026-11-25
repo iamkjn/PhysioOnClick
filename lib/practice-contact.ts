@@ -99,6 +99,7 @@ export function topicForPath(pathname: string): ContactTopic {
   if (pathname === "/physiotherapy-home-visits-glasgow" || pathname === "/glasgow-physiotherapist") return "home-visit";
   if (pathname === "/services/neurological-rehabilitation") return "neuro";
   if (pathname === "/manual-therapy-glasgow") return "manual-therapy";
+  if (pathname.endsWith("-physiotherapy-glasgow")) return "condition";
   if (pathname === "/book") return "booking";
   if (pathname.startsWith("/book/") || pathname === "/cancellation-policy") return "appointment";
   if (pathname.startsWith("/pay/")) return "payment";
