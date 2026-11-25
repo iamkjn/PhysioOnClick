@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
 import { SpecialtyLanding } from "@/components/specialty-landing";
 import { showContactBar } from "@/components/contact-bar";
+import ServicesPage from "@/app/services/page";
 import sitemap from "@/app/sitemap";
 import { topicForPath } from "@/lib/practice-contact";
 import { specialtyPages } from "@/lib/specialty-pages";
@@ -21,6 +22,11 @@ describe("specialty landing pages", () => {
     expect(showContactBar(page.path)).toBe(true);
     expect(topicForPath(page.path)).toBe("condition");
     expect(readFileSync("components/site-footer.tsx", "utf8")).toContain(`href="${page.path}"`);
+  });
+
+  it("are linked from the services page", () => {
+    const hrefs = [...render(<ServicesPage />).container.querySelectorAll("a")].map((a) => a.getAttribute("href"));
+    for (const page of specialtyPages) expect(hrefs).toContain(page.path);
   });
 
   it("are all in the sitemap", async () => {

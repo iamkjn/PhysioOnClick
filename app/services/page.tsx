@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { ProtectedImageFrame } from "@/components/image-protection";
 import { LibraryCopyrightNotice } from "@/components/exercise-library/library-copyright-notice";
 import { ServiceReviews } from "@/components/service-reviews";
@@ -8,6 +9,7 @@ import { curatedReviewsForServicesOverview } from "@/lib/trustpilot-curated";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { getPublicServices } from "@/lib/public-content";
 import { pricing } from "@/lib/site-data";
+import { specialtyPages } from "@/lib/specialty-pages";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -138,6 +140,23 @@ export default function ServicesPage() {
           </Reveal>
           );
         })}
+      </section>
+
+      <section className="page-section stack">
+        <h2>Home visits in Glasgow: more areas we help with</h2>
+        <div className="two-col">
+          {specialtyPages.map((page) => (
+            <article className="panel stack" key={page.path}>
+              <h3>{page.name}</h3>
+              <p>{page.lead}</p>
+              <p>
+                <Link className="button secondary" href={page.path}>
+                  Read more<span className="sr-only"> about {page.name}</span>
+                </Link>
+              </p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <ServiceReviews reviews={curatedReviewsForServicesOverview()} />
