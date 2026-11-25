@@ -149,7 +149,7 @@ export default function ServicesPage() {
             <article className="panel stack" key={page.path}>
               <ProtectedImageFrame watermark>
                 <Image
-                  className="service-split-image"
+                  className="specialty-cover"
                   src={specialtyImagePath(page)}
                   alt={page.imageAlt}
                   width={900}
