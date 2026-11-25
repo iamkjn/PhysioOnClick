@@ -18463,3 +18463,9 @@ body:has(.contact-bar):has(.exlib-tray) .chat-drawer {
 .home-postcode-check form { display: flex; flex-direction: column; gap: 0.4rem; text-align: left; }
 .home-postcode-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .home-postcode-row input { flex: 1 1 180px; min-width: 0; }
+
+/* Policy links beside the tick boxes must be obvious. */
+.request-check a { color: var(--color-primary-dark); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 2px; }
+.request-check a:hover { background: var(--surface-alt); }
+/* The step title takes focus for screen readers; no box around it. */
+.request-head h3:focus { outline: none; }

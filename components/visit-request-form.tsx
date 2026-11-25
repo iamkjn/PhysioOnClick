@@ -61,6 +61,23 @@ const EMPTY = {
 };
 type Values = typeof EMPTY;
 
+/**
+ * The half-filled request, kept in this tab only so reading a policy and
+ * pressing back returns to the same step. Cleared once sent; the browser drops
+ * it when the tab closes. Never sent anywhere.
+ */
+const DRAFT_KEY = "poc-request-form";
+type Draft = { step: Step; visitType: RequestVisitType; values: Values; agreed: boolean[] };
+
+function readDraft(): Draft | null {
+  try {
+    const draft = JSON.parse(window.sessionStorage.getItem(DRAFT_KEY) ?? "null") as Draft | null;
+    return draft && draft.step in STEPS && draft.values ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Tomorrow in UK time: home visits need 24 hours' notice. */
 function tomorrow(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London" }).format(new Date(Date.now() + 86_400_000));
@@ -81,6 +98,7 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
   const [serverError, setServerError] = useState("");
   const [minDate, setMinDate] = useState("");
+  const [restored, setRestored] = useState(false);
   const honeypot = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -115,21 +133,44 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
     const earliest = tomorrow();
     setMinDate(earliest);
     const params = new URLSearchParams(window.location.search);
+    const draft = readDraft();
+    if (draft) {
+      setStep(draft.step);
+      setVisitType(draft.visitType);
+      setAgreed(draft.agreed);
+    }
     if (params.get("visit") === "video") setVisitType("video");
     const about = params.get("about")?.trim().slice(0, 120);
     let saved = "";
     try {
+      // A postcode just typed on the homepage wins, and is used once.
       saved = window.sessionStorage.getItem(REQUEST_POSTCODE_KEY) ?? "";
+      window.sessionStorage.removeItem(REQUEST_POSTCODE_KEY);
     } catch {
       // Storage blocked: they type it again.
     }
-    setValues((current) => ({
-      ...current,
-      note: current.note || (about ? `About: ${about}\n` : ""),
-      postcode: current.postcode || saved,
-      preferredDate: current.preferredDate || earliest,
-    }));
+    setValues((current) => {
+      const base = { ...current, ...draft?.values };
+      return {
+        ...base,
+        note: base.note || (about ? `About: ${about}\n` : ""),
+        postcode: saved || base.postcode,
+        preferredDate: base.preferredDate >= earliest ? base.preferredDate : earliest,
+      };
+    });
+    setRestored(true);
   }, []);
+
+  useEffect(() => {
+    // Nothing to keep until they have done something.
+    const touched = step !== "condition" || values.concern !== "";
+    if (!restored || state === "sent" || !touched) return;
+    try {
+      window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ step, visitType, values, agreed }));
+    } catch {
+      // Storage blocked: the form still works, it just isn't remembered.
+    }
+  }, [restored, state, step, visitType, values, agreed]);
 
   useEffect(() => {
     if (!movedRef.current) return;
@@ -215,6 +256,11 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
       status = res.status;
       const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (!res.ok || !json.ok) throw new Error(json.error || "Sorry, that didn't send. Please try again.");
+      try {
+        window.sessionStorage.removeItem(DRAFT_KEY);
+      } catch {
+        // Storage blocked: nothing was kept.
+      }
       trackGrowthEvent("visit_request_sent", { source, covered });
       track("visit_request_sent", { source, covered });
       setState("sent");

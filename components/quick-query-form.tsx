@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { currentVisitSource, trackGrowthEvent } from "@/lib/growth-tracking";
 import { visitRequestErrors, type RequestField } from "@/lib/visit-request";
+
+// Kept in this tab so reading the privacy policy and pressing back loses nothing.
+const DRAFT_KEY = "poc-quick-query";
 
 /** Name, phone and email only: the practice calls back. */
 export function QuickQueryForm() {
@@ -14,6 +17,25 @@ export function QuickQueryForm() {
   const [problem, setProblem] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
   const honeypot = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    try {
+      const draft = JSON.parse(window.sessionStorage.getItem(DRAFT_KEY) ?? "null");
+      if (draft) setValues((current) => ({ ...current, ...draft }));
+    } catch {
+      // Storage blocked or unreadable: start empty.
+    }
+  }, []);
+
+  function change(key: "name" | "phone" | "email" | "note", value: string) {
+    const next = { ...values, [key]: value };
+    setValues(next);
+    try {
+      window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(next));
+    } catch {
+      // Storage blocked: just not remembered.
+    }
+  }
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -36,6 +58,11 @@ export function QuickQueryForm() {
       });
       const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (!res.ok || !json.ok) throw new Error(json.error);
+      try {
+        window.sessionStorage.removeItem(DRAFT_KEY);
+      } catch {
+        // Storage blocked: nothing was kept.
+      }
       trackGrowthEvent("visit_request_sent", { source: "quick_query" });
       setState("sent");
     } catch (error) {
@@ -61,7 +88,7 @@ export function QuickQueryForm() {
         autoComplete={autoComplete}
         value={values[key]}
         maxLength={120}
-        onChange={(e) => setValues({ ...values, [key]: e.target.value })}
+        onChange={(e) => change(key, e.target.value)}
         aria-invalid={errors[key] ? true : undefined}
       />
       {errors[key] ? <span className="field-error">{errors[key]}</span> : null}
@@ -85,7 +112,7 @@ export function QuickQueryForm() {
           rows={3}
           maxLength={500}
           value={values.note}
-          onChange={(e) => setValues({ ...values, note: e.target.value })}
+          onChange={(e) => change("note", e.target.value)}
         />
       </label>
       <label className="request-check">

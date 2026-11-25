@@ -96,6 +96,23 @@ describe("VisitRequestForm", () => {
     expect(input.value).not.toBe("");
   });
 
+  it("comes back to the same step with answers kept, and forgets once sent", async () => {
+    const first = render(<VisitRequestForm />);
+    toDetails();
+    fillDetails();
+    fireEvent.click(screen.getAllByRole("checkbox")[0]);
+    first.unmount();
+
+    render(<VisitRequestForm />);
+    expect(screen.getByText("Step 6 of 6")).toBeInTheDocument();
+    expect(screen.getAllByRole("checkbox")[0]).toBeChecked();
+    screen.getAllByRole("checkbox").slice(1).forEach((box) => fireEvent.click(box));
+    send();
+    expect(await screen.findByRole("heading", { name: /thanks, john/i })).toBeInTheDocument();
+    expect(JSON.parse(fetchMock.mock.calls[0][1]!.body as string)).toMatchObject({ name: "John Smith", town: "Cambuslang" });
+    expect(window.sessionStorage.getItem("poc-request-form")).toBeNull();
+  });
+
   it("skips the address for video", () => {
     render(<VisitRequestForm />);
     pick(/video call/i);
