@@ -35,7 +35,9 @@ export type GrowthEventName =
   | "visit_request_started"
   | "visit_request_error"
   | "visit_request_failed"
-  | "call_click";
+  | "call_click"
+  | "quick_chat_shown"
+  | "quick_chat_closed";
 
 export type GrowthEventParams = Record<string, string | number | boolean | null | undefined>;
 

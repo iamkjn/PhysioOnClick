@@ -26,6 +26,7 @@ import { AddToPlanButton } from "@/components/exercise-library/add-to-plan-butto
 import { ByLine } from "@/components/exercise-library/by-line";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
+import { QuickChatCard } from "@/components/exercise-library/quick-chat-card";
 import { ReferenceOnlyNote } from "@/components/exercise-library/reference-only-label";
 import { EmbedExerciseButton } from "@/components/exercise-library/embed-exercise-button";
 import { ExerciseAnatomySection } from "@/components/exercise-library/exercise-anatomy-section";
@@ -172,6 +173,7 @@ export default async function ExerciseDetailPage({
   return (
     <div className="site-shell">
       <TrackView event="library_exercise_view" slug={exercise.slug} />
+      <QuickChatCard key={exercise.slug} exerciseTitle={exercise.title} />
       {/* Google retired HowTo and FAQPage rich results, so the step list rides
           along inside MedicalWebPage and is rendered as plain semantic HTML
           below. The practitioner node is shared sitewide by @id. */}

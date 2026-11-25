@@ -40,6 +40,8 @@ const ALLOWED_EVENTS = new Set([
   "visit_request_error",
   "visit_request_failed",
   "call_click",
+  "quick_chat_shown",
+  "quick_chat_closed",
 ]);
 
 const SAFE_PARAM_KEYS = new Set([

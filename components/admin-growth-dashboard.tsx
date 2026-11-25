@@ -107,6 +107,8 @@ const EXERCISE_CONVERSION: { event: string; label: string }[] = [
   { event: "exercise_plan_saved", label: "Saved to plan" },
   { event: "exercise_booking_intent", label: "Exercise-to-booking click" },
   { event: "saved_plan_booking_intent", label: "Saved-plan booking click" },
+  { event: "quick_chat_shown", label: "Free-chat card shown" },
+  { event: "quick_chat_closed", label: "Free-chat card closed" },
 ];
 
 type Ranked = { key: string; label: string; note: string; count: number };
