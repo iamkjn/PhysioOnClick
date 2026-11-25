@@ -46,7 +46,7 @@ export function PricingChooser({
           <p className="pricing-chooser-alt">
             or{" "}
             <Link
-              href="/book?visit=home"
+              href="/book?pay=online&visit=home"
               onClick={() => trackGrowthEvent("book_now_click", { source: "pricing_chooser_home_online" })}
             >
               choose a time and pay online

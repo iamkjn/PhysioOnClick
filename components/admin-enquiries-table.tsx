@@ -5,7 +5,15 @@ import { db } from "@/lib/firebase";
 import { SkeletonTable } from "@/components/skeleton";
 import { useToast } from "@/components/toast-provider";
 import { channelLabel } from "@/lib/traffic-source";
-import { timeLabels } from "@/lib/visit-request";
+import {
+  DAY_PARTS,
+  GENDERS,
+  URGENCY_OPTIONS,
+  VISIT_CONCERNS,
+  dateLabel,
+  optionLabel,
+  timeLabels,
+} from "@/lib/visit-request";
 
 type EnquiryRecord = {
   id: string;
@@ -21,6 +29,8 @@ type EnquiryRecord = {
   postcode: string;
   covered: boolean;
   visitTimes: string[];
+  visitType: string;
+  details: string;
   channel: string;
 };
 
@@ -30,6 +40,25 @@ function telHref(phone: string) {
 }
 
 /** Opens Admin → Patients with "Add patient" pre-filled from a call-back request. */
+/** The booking request's answers as one line; "" for older enquiries. */
+function requestDetails(data: Record<string, unknown>): string {
+  const when = [dateLabel(String(data.preferredDate || "")), optionLabel(DAY_PARTS, data.preferredTime)]
+    .filter(Boolean)
+    .join(" ");
+  const emergency = [data.emergencyName, data.emergencyPhone].filter(Boolean).join(" ");
+  return [
+    optionLabel(VISIT_CONCERNS, data.concern),
+    when && `Wants ${when}`,
+    optionLabel(URGENCY_OPTIONS, data.urgency),
+    [data.address, data.town].filter(Boolean).join(", "),
+    data.dateOfBirth ? `DOB ${data.dateOfBirth}` : "",
+    optionLabel(GENDERS, data.gender),
+    emergency && `Emergency: ${emergency}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 export function addPatientHref(item: { name: string; phone: string }) {
   const params = new URLSearchParams({ add: "1", name: item.name, phone: item.phone });
   return `/admin/patients?${params.toString()}`;
@@ -76,6 +105,8 @@ export function AdminEnquiriesTable() {
           postcode:       String(data.postcode || ""),
           covered:        data.covered === true,
           visitTimes:     Array.isArray(data.visitTimes) ? data.visitTimes.map(String) : [],
+          visitType:      String(data.visitType || "home"),
+          details:        requestDetails(data),
           channel:        String(data.channel || ""),
           createdAtLabel: ts
             ? ts.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
@@ -168,7 +199,10 @@ export function AdminEnquiriesTable() {
                     <td className="dashboard-message-cell">
                       {item.isVisitRequest ? (
                         <p style={{ margin: "0 0 4px", color: "var(--color-navy)", fontFamily: "var(--font-sans)", fontWeight: 600 }}>
-                          {item.postcode} {item.covered ? "(in area)" : "(outside the home-visit area)"}
+                          {item.visitType === "video"
+                            ? "Video"
+                            : `${item.postcode} ${item.covered ? "(in area)" : "(outside the home-visit area)"}`}
+                          {item.details ? ` · ${item.details}` : ""}
                           {item.visitTimes.length ? ` · Suits: ${timeLabels(item.visitTimes).join(", ")}` : ""}
                           {item.channel && item.channel !== "direct" ? ` · From ${channelLabel(item.channel)}` : ""}
                         </p>

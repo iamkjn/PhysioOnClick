@@ -54,7 +54,7 @@ describe("manual-therapy-glasgow content", () => {
 
   it("books a home visit and keeps the safety screening", () => {
     const { container } = render(<Page />);
-    expect(container.querySelector('a[href="/book?visit=home"]')).not.toBeNull();
+    expect([...container.querySelectorAll("a")].map((a) => a.getAttribute("href"))).toContain("/book?pay=online&visit=home");
     expect(container.textContent).toContain("suspected fracture");
     expect(container.textContent).toContain("GP or specialist team must confirm");
   });

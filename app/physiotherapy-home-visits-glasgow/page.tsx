@@ -124,7 +124,7 @@ export default function HomeVisitsGlasgowPage() {
             </TrackedBookLink>
             <TrackedBookLink
               className="button secondary"
-              href="/book?visit=home"
+              href="/book?pay=online&visit=home"
               source="home_visits_page_online"
               event="book_now_click"
             >
@@ -232,7 +232,7 @@ export default function HomeVisitsGlasgowPage() {
               <Link className="button secondary cta-white" href={VISIT_REQUEST_PATH}>
                 Request a home visit
               </Link>
-              <Link className="button inverted" href="/book?visit=home">
+              <Link className="button inverted" href="/book?pay=online&visit=home">
                 Book and pay online
               </Link>
             </div>

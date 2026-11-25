@@ -3,17 +3,17 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ContactOptions } from "@/components/contact-options";
-import { VisitRequestForm } from "@/components/visit-request-form";
+import { BookingRequest } from "@/components/booking-request";
 import { APPOINTMENT_HOURS } from "@/lib/appointment-hours";
 import { homeVisitPrices } from "@/lib/home-visit-pricing";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/practice-contact";
 import { founder } from "@/lib/site-data";
 
-const TITLE = "Request a physiotherapy home visit in Glasgow";
-const DESCRIPTION = `Leave your name, number and postcode and ${founder.name}, HCPC-registered physiotherapist, will call you back to arrange a home visit. ${homeVisitPrices.initial} first visit, ${homeVisitPrices.followUp} after, all in. Nothing to pay now.`;
+const TITLE = "Request a physiotherapy appointment";
+const DESCRIPTION = `Tell us when suits you; ${founder.name}, HCPC-registered physiotherapist, will call to confirm a home visit or video appointment. ${homeVisitPrices.initial} first visit, ${homeVisitPrices.followUp} after, all in. Pay after your session.`;
 
 export const metadata: Metadata = {
-  title: "Request a Home Visit | PhysioOnClick",
+  title: "Request an Appointment | PhysioOnClick",
   description: DESCRIPTION,
   alternates: { canonical: "/request-visit" },
   // A form, not content: kept out of search results. The home-visits page ranks instead.
@@ -32,23 +32,9 @@ export const metadata: Metadata = {
 export default function RequestVisitPage() {
   return (
     <div className="site-shell">
-      <section className="page-section visit-request">
-        <div className="visit-request-main">
-          <span className="eyebrow">Home visits in Glasgow and nearby</span>
-          <h1>Request a home visit</h1>
-          <p className="lead">
-            Leave your name, number and postcode. {founder.name.split(" ")[0]} will call you back to find a time that
-            suits. There&rsquo;s nothing to pay until you&rsquo;ve spoken.
-          </p>
-          <div className="visit-request-card">
-            <VisitRequestForm />
-          </div>
-          <p className="visit-request-small muted">
-            If someone has had a fall and is hurt, or is suddenly much worse, call 999 or NHS 24 on 111.
-          </p>
-        </div>
-
-        <aside className="visit-request-aside">
+      <section className="page-section">
+        <BookingRequest source="request_visit_page" />
+        <div className="request-below">
           <div className="visit-request-physio">
             <Image
               src="/images/shivaliba-zala-portrait.webp"
@@ -62,7 +48,6 @@ export default function RequestVisitPage() {
               <p className="muted">HCPC-registered physiotherapist, visiting homes across Glasgow and the surrounding area.</p>
             </div>
           </div>
-
           <div>
             <h2 className="visit-request-subhead">What happens next</h2>
             <ol className="visit-request-steps" data-contact-source="request_visit_steps">
@@ -70,24 +55,22 @@ export default function RequestVisitPage() {
                 We call you from <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>, usually within a day, to hear
                 what&rsquo;s going on.
               </li>
-              <li>
-                We agree a day and time that suits you, {APPOINTMENT_HOURS.phrase}.
-              </li>
-              <li>
-                You get a secure payment link: {homeVisitPrices.initial} for the first visit (about an hour),{" "}
-                {homeVisitPrices.followUp} for follow-ups, all in. No travel charge.
-              </li>
+              <li>We confirm a day and time that suits you, {APPOINTMENT_HOURS.phrase}.</li>
               <li>The visit, then your exercise plan with pictures, online and printed.</li>
+              <li>
+                You pay after your session by secure link. A home visit is {homeVisitPrices.initial} for the first
+                visit (about an hour), {homeVisitPrices.followUp} for follow-ups, all in. No travel charge.
+              </li>
             </ol>
           </div>
-
           <ContactOptions topic="home-visit" source="request_visit_page" lead="Rather message us?" />
-
           <p className="visit-request-small">
-            Prefer to choose a time and pay online now?{" "}
-            <Link href="/book?visit=home">Book online</Link>
+            Prefer to lock in your time and pay online now? <Link href="/book?pay=online">Book and pay online</Link>
           </p>
-        </aside>
+          <p className="visit-request-small muted">
+            If someone has had a fall and is hurt, or is suddenly much worse, call 999 or NHS 24 on 111.
+          </p>
+        </div>
       </section>
     </div>
   );

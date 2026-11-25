@@ -23,10 +23,17 @@ function req(body: object) {
 const valid = {
   name: "John Smith",
   phone: "07518 953611",
+  email: "john@example.com",
   postcode: "g72 8fe",
+  town: "Cambuslang",
+  gender: "male",
+  dateOfBirth: "1950-04-02",
+  preferredDate: "2026-11-27",
+  preferredTime: "morning",
   times: ["weekday-evening", "sunday"],
   note: "Struggling to walk far",
   channel: "fb-cambuslang",
+  consent: true,
 };
 
 describe("POST /api/visit-request", () => {
@@ -62,7 +69,7 @@ describe("POST /api/visit-request", () => {
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("https://api.resend.com/emails");
     const email = JSON.parse(init.body);
-    expect(email.subject).toBe("Call back request: John Smith, G72 8FE");
+    expect(email.subject).toBe("Home visit request: John Smith, G72 8FE, Fri 27 Nov morning");
     expect(email.html).toContain('href="tel:+447518953611"');
     expect(email.html).toContain("Inside the home-visit area");
     expect(email.html).toContain("Facebook · Cambuslang");
@@ -72,6 +79,31 @@ describe("POST /api/visit-request", () => {
     await POST(req({ ...valid, postcode: "EH1 1AA" }));
     expect(addMock.mock.calls[0][0].covered).toBe(false);
     expect(JSON.parse(fetchMock.mock.calls[0][1].body).html).toContain("OUTSIDE the home-visit area");
+  });
+
+  it("takes a video request with no postcode or address", async () => {
+    const res = await POST(req({ ...valid, visitType: "video", postcode: "", town: "", concern: "neuro" }));
+    expect(res.status).toBe(200);
+    expect(addMock.mock.calls[0][0]).toMatchObject({ visitType: "video", postcode: "", concern: "neuro", preferredTime: "morning" });
+  });
+
+  it("takes a quick query with just name, phone and email", async () => {
+    const res = await POST(req({ quick: true, name: "Ann Lee", phone: "07700900123", email: "a@example.com", consent: true }));
+    expect(res.status).toBe(200);
+    expect(addMock.mock.calls[0][0]).toMatchObject({ service: "Quick query", email: "a@example.com" });
+  });
+
+  it("requires an email, gender and date of birth", async () => {
+    for (const gap of [{ email: "" }, { gender: "" }, { dateOfBirth: "" }]) {
+      expect((await POST(req({ ...valid, ...gap }))).status).toBe(400);
+      resetRateLimitMemory();
+    }
+    expect(addMock).not.toHaveBeenCalled();
+  });
+
+  it("refuses a request without consent", async () => {
+    expect((await POST(req({ ...valid, consent: false }))).status).toBe(400);
+    expect(addMock).not.toHaveBeenCalled();
   });
 
   it("refuses a request without a phone number", async () => {

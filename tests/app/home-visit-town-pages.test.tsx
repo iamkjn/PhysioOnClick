@@ -79,7 +79,7 @@ describe("app/physiotherapy-home-visits/[town]", () => {
         expect(container.querySelector(`a[href="${homeVisitTownPath(other.slug)}"]`), other.slug).not.toBeNull();
       }
       expect(container.querySelector('a[href="/physiotherapy-home-visits-glasgow"]')).not.toBeNull();
-      expect(container.querySelector('a[href="/book?visit=home"]')).not.toBeNull();
+      expect([...container.querySelectorAll("a")].map((a) => a.getAttribute("href"))).toContain("/book?pay=online&visit=home");
       // Genuine patient reviews are shown (no review schema: self-serving).
       expect(text).toContain("What patients say");
       expect(container.innerHTML).not.toMatch(/aggregateRating/i);

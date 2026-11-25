@@ -9,6 +9,7 @@ import { founder } from "@/lib/site-data";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { getPublicServices } from "@/lib/public-content";
 import { HomeHeroSection } from "@/components/home-hero-section";
+import { HomePostcodeCheck } from "@/components/home-postcode-check";
 import { ContactOptions } from "@/components/contact-options";
 import { Reveal } from "@/components/reveal";
 import { TrustpilotReviews } from "@/components/trustpilot-reviews";
@@ -130,6 +131,8 @@ export default async function HomePage() {
           </Reveal>
         </div>
       </section>
+
+      <HomePostcodeCheck />
 
       <section className="page-section simple-section">
         <Reveal direction="up">

@@ -163,7 +163,7 @@ export default function ManualTherapyGlasgowPage() {
             </TrackedBookLink>
             <TrackedBookLink
               className="button secondary"
-              href="/book?visit=home"
+              href="/book?pay=online&visit=home"
               source="manual_therapy_page_online"
               event="book_now_click"
             >
@@ -266,7 +266,7 @@ export default function ManualTherapyGlasgowPage() {
               <Link className="button secondary cta-white" href={VISIT_REQUEST_PATH}>
                 Request a home visit
               </Link>
-              <Link className="button inverted" href="/book?visit=home">
+              <Link className="button inverted" href="/book?pay=online&visit=home">
                 Book and pay online
               </Link>
             </div>

@@ -11,6 +11,8 @@ import { pricing } from "@/lib/site-data";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { homeVisitPrices } from "@/lib/home-visit-pricing";
 import { APPOINTMENT_HOURS_SENTENCE } from "@/lib/appointment-hours";
+import { PRACTICE_PHONE, PRACTICE_PHONE_HREF, whatsappHref } from "@/lib/practice-contact";
+import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -29,7 +31,12 @@ type ChipAction =
   | "copyEmail"
   | "appointments"
   | "invoices"
-  | "serviceDetail";
+  | "serviceDetail"
+  | "callback"
+  | "area"
+  | "human"
+  | "whatsapp"
+  | "call";
 type Chip = { emoji: string; label: string; action: ChipAction; text?: string };
 type ChatApiResponse = {
   reply?: string;
@@ -77,33 +84,39 @@ const SERVICES = [
 
 // Built from lib/site-data.ts so the chat can never quote a stale price.
 const PRICING_TEXT = [
-  "Online sessions (UK-wide):",
-  ...pricing.filter((p) => p.mode === "Online").map((p) => `• ${p.title} (${p.duration}) — £${p.price}`),
+  "Home visits (Glasgow and nearby):",
+  `• First visit (60 min): ${homeVisitPrices.initial}`,
+  `• Follow-up (60 min): ${homeVisitPrices.followUp}`,
   "",
-  "Packages:",
-  ...pricing.filter((p) => p.mode === "Package").map((p) => `• ${p.title} — £${p.price}`),
+  "Video sessions (UK-wide):",
+  ...pricing.filter((p) => p.mode === "Online").map((p) => `• ${p.title} (${p.duration}): £${p.price}`),
   "",
-  "No GP referral required — you can self-refer.",
+  "Video packages:",
+  ...pricing.filter((p) => p.mode === "Package").map((p) => `• ${p.title}: £${p.price}`),
+  "",
+  "No GP referral required. Send a booking request and pay after your session.",
 ].join("\n");
 
 const INSURANCE_TEXT =
   "Yes, PhysioOnClick provides insurance-ready PDF invoices for paid sessions.\n\nHow to claim:\n• Download your invoice from your patient account under Invoices, or use the copy emailed after payment.\n• Submit the PDF to your UK health insurer through their claim portal or app.\n• Add your policy number, claim reference and any extra details your insurer asks for.\n\nReimbursement depends on your own policy, so it is worth checking your cover before booking if you are unsure.";
 
 const GREETING =
-  "Welcome to PhysioOnClick.\n\nI can help you choose the right online physio service, understand pricing and insurance invoices, prepare for your appointment, find exercise and self-test guidance, or get to the right booking/account page.";
+  "Hello, I'm the PhysioOnClick assistant. Tap an option below or type your question.\n\nI'm automated, not a clinician. In an emergency call 999.";
 
 const HOME_CHIPS: Chip[] = [
-  { emoji: "?", label: "Which service is right?", action: "ask", text: "Which PhysioOnClick service is right for me?" },
-  { emoji: "?", label: "How online physio works", action: "ask", text: "How does online physiotherapy work at PhysioOnClick?" },
+  { emoji: "📅", label: "Book an appointment", action: "book" },
+  { emoji: "📞", label: "Request a call back", action: "callback" },
+  { emoji: "📍", label: "Do you visit my area?", action: "area" },
+  { emoji: "💰", label: "Prices", action: "pricing" },
   { emoji: "🏃", label: "Our services", action: "services" },
-  { emoji: "💰", label: "Pricing", action: "pricing" },
+  { emoji: "🗓️", label: "My appointments", action: "appointments" },
   { emoji: "🧾", label: "Insurance claims", action: "insurance" },
-  { emoji: "📅", label: "Book appointment", action: "book" },
-  { emoji: "!", label: "Cancellation policy", action: "cancellation" },
+  { emoji: "💬", label: "Talk to a person", action: "human" },
 ];
 
 const BACK_CHIPS: Chip[] = [
-  { emoji: "📅", label: "Book appointment", action: "book" },
+  { emoji: "📅", label: "Book an appointment", action: "book" },
+  { emoji: "💬", label: "Talk to a person", action: "human" },
   { emoji: "🏠", label: "Main menu", action: "home" },
 ];
 
@@ -420,7 +433,7 @@ export function ChatWidget() {
       void sendMessage(chip.text);
       return;
     }
-    const silent = ["Copy email", "Main menu", "Back to services"];
+    const silent = ["Copy email", "Main menu", "Back to services", "Call now", "WhatsApp"];
     if (!silent.includes(chip.label)) addUser(chip.label);
     if (chip.action === "services") tapServices();
     if (chip.action === "pricing") tapPricing();
@@ -428,6 +441,23 @@ export function ChatWidget() {
     if (chip.action === "book") tapBook();
     if (chip.action === "location") tapLocation();
     if (chip.action === "contact") tapContact();
+    if (chip.action === "callback") router.push(VISIT_REQUEST_PATH);
+    if (chip.action === "area") {
+      addBot(
+        `We visit ${HOME_VISIT_AREA_LABEL}. Enter your postcode in the booking request to check, or use video anywhere in the UK.`,
+        BACK_CHIPS,
+      );
+    }
+    if (chip.action === "human") {
+      addBot(`Shivaliba can help. Call ${PRACTICE_PHONE}, or send a WhatsApp.`, [
+        { emoji: "📞", label: "Call now", action: "call" },
+        { emoji: "💬", label: "WhatsApp", action: "whatsapp" },
+        { emoji: "📋", label: "Copy email", action: "copyEmail" },
+        { emoji: "🏠", label: "Main menu", action: "home" },
+      ]);
+    }
+    if (chip.action === "call") window.location.assign(PRACTICE_PHONE_HREF);
+    if (chip.action === "whatsapp") window.open(whatsappHref("general"), "_blank", "noopener");
     if (chip.action === "cancellation") tapCancellation();
     if (chip.action === "home") tapHome();
     if (chip.action === "appointments") router.push("/patient/appointments");
@@ -533,6 +563,16 @@ export function ChatWidget() {
             <div ref={bottomRef} />
           </div>
 
+          {/* Chips */}
+          <div className="chat-chips">
+            {chips.map((c, i) => (
+              <button className="chat-chip" key={i} onClick={() => onChipClick(c)}>
+                <span>{c.emoji}</span>
+                <span>{c.label}</span>
+              </button>
+            ))}
+          </div>
+
           <form
             className="chat-input-row"
             onSubmit={(event) => {
@@ -553,16 +593,6 @@ export function ChatWidget() {
               Send
             </button>
           </form>
-
-          {/* Chips */}
-          <div className="chat-chips">
-            {chips.map((c, i) => (
-              <button className="chat-chip" key={i} onClick={() => onChipClick(c)}>
-                <span>{c.emoji}</span>
-                <span>{c.label}</span>
-              </button>
-            ))}
-          </div>
         </div>
       )}
     </>

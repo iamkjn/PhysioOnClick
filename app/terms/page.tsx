@@ -113,8 +113,10 @@ export default function TermsPage() {
           <h2>Payment &amp; cancellation</h2>
           <p>
             Appointments and packages are paid for online when you book, through our secure payment provider,
-            Stripe. We never see or store your full card details. Your appointment is confirmed once payment
-            has gone through, and you will receive a receipt by email that you can use for insurance claims.
+            Stripe. We never see or store your full card details. You can also send us a booking request without
+            paying: we contact you to confirm the time, and you pay by secure payment link after your
+            session. A requested time is not booked until we confirm it. An appointment booked online is
+            confirmed once payment has gone through, and you will receive a receipt by email that you can use for insurance claims.
           </p>
           <p>
             Please give at least 24 hours&apos; notice to cancel or rearrange. Cancellations with enough notice

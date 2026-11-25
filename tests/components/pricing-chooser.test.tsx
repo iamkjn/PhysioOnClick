@@ -32,7 +32,7 @@ describe("PricingChooser", () => {
     expect(within(home).getByRole("link", { name: /request a call back/i }).getAttribute("href")).toMatch(
       /^\/request-visit\?about=Home%20visit/,
     );
-    expect(within(home).getByRole("link", { name: /pay online/i })).toHaveAttribute("href", "/book?visit=home");
+    expect(within(home).getByRole("link", { name: /pay online/i })).toHaveAttribute("href", "/book?pay=online&visit=home");
   });
 
   it("books video online and lets the unsure ask by email, logging each tap", () => {

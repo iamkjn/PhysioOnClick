@@ -4,7 +4,16 @@ import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { clientIp, isRateLimited } from "@/lib/rate-limit";
 import { PRACTICE_PHONE } from "@/lib/practice-contact";
 import { channelLabel, cleanChannel } from "@/lib/traffic-source";
-import { parseVisitRequest, timeLabels, type VisitRequest } from "@/lib/visit-request";
+import {
+  DAY_PARTS,
+  GENDERS,
+  URGENCY_OPTIONS,
+  VISIT_CONCERNS,
+  dateLabel,
+  optionLabel,
+  parseVisitRequest,
+  type VisitRequest,
+} from "@/lib/visit-request";
 
 function escapeHtml(value: string) {
   return value
@@ -29,10 +38,24 @@ async function sendRequestEmail(request: VisitRequest, channel: string) {
 
   const to = process.env.ENQUIRY_EMAIL_TO || "hello@physioonclick.co.uk";
   const from = process.env.ENQUIRY_EMAIL_FROM || "PhysioOnClick <onboarding@resend.dev>";
-  const times = timeLabels(request.times);
-  const area = request.covered
-    ? "Inside the home-visit area"
-    : "OUTSIDE the home-visit area: offer a video appointment or check the drive";
+  const video = request.visitType === "video";
+  const when = [dateLabel(request.preferredDate), optionLabel(DAY_PARTS, request.preferredTime).toLowerCase()]
+    .filter(Boolean)
+    .join(" ");
+  const kind = request.quick ? "Quick query" : video ? "Video request" : "Home visit request";
+  const rows: Array<[string, string]> = request.quick
+    ? [["Email", request.email]]
+    : [
+        ["Help with", optionLabel(VISIT_CONCERNS, request.concern)],
+        ["How soon", optionLabel(URGENCY_OPTIONS, request.urgency)],
+        ["Preferred", `${when} (not booked yet)`],
+        ["Address", [request.address, request.town, request.postcode].filter(Boolean).join(", ")],
+        ["Area", video ? "" : request.covered ? "Inside the home-visit area" : "OUTSIDE the home-visit area"],
+        ["Email", request.email],
+        ["Gender", optionLabel(GENDERS, request.gender)],
+        ["Date of birth", request.dateOfBirth],
+        ["Emergency contact", [request.emergencyName, request.emergencyPhone].filter(Boolean).join(", ")],
+      ];
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -40,17 +63,20 @@ async function sendRequestEmail(request: VisitRequest, channel: string) {
     body: JSON.stringify({
       from,
       to: [to],
-      subject: `Call back request: ${request.name}, ${request.postcode}`,
+      reply_to: request.email,
+      subject: `${kind}: ${request.name}${request.postcode ? `, ${request.postcode}` : ""}${when ? `, ${when}` : ""}`,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; color: #10233a; line-height: 1.6;">
-          <h2 style="margin: 0 0 12px;">Please call back: home visit request</h2>
+          <h2 style="margin: 0 0 12px;">Please call back: ${kind.toLowerCase()}</h2>
           <p style="font-size: 18px; margin: 0 0 12px;"><strong>${escapeHtml(request.name)}</strong> ·
             <a href="tel:${escapeHtml(telHref(request.phone))}">${escapeHtml(request.phone)}</a></p>
-          <p><strong>Postcode:</strong> ${escapeHtml(request.postcode)} (${area})</p>
-          <p><strong>Visit times that suit:</strong> ${escapeHtml(times.length ? times.join(", ") : "Not given")}</p>
-          <p><strong>What it's for:</strong><br />${request.note ? escapeHtml(request.note).replaceAll("\n", "<br />") : "Not given"}</p>
+          ${rows
+            .filter(([, value]) => value)
+            .map(([label, value]) => `<p style="margin: 4px 0;"><strong>${label}:</strong> ${escapeHtml(value)}</p>`)
+            .join("")}
+          <p><strong>Notes:</strong><br />${request.note ? escapeHtml(request.note).replaceAll("\n", "<br />") : "None"}</p>
           <p style="color: #5b6b7a; font-size: 13px;">Came from: ${escapeHtml(channelLabel(channel))}. Also in the admin Enquiries tab.
-          After the call: Admin → Patients → Add patient, then add a package and send the payment link.</p>
+          After the call: Admin → Patients → Add patient, then add the session. Payment is due after the session.</p>
         </div>
       `,
     }),
@@ -86,15 +112,12 @@ export async function POST(request: Request) {
   let saved = false;
   if (db) {
     try {
+      const { times, note, quick, ...details } = visit;
       await db.collection("enquiries").add({
-        name: visit.name,
-        email: "",
-        phone: visit.phone,
-        postcode: visit.postcode,
-        covered: visit.covered,
-        visitTimes: visit.times,
-        service: "Home visit: call back request",
-        message: visit.note,
+        ...details,
+        visitTimes: times,
+        service: quick ? "Quick query" : `${visit.visitType === "video" ? "Video" : "Home visit"}: booking request`,
+        message: note,
         kind: "visit-request",
         source: "visit-request-form",
         channel,

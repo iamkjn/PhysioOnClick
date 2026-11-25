@@ -132,7 +132,7 @@ export default async function HomeVisitTownPage({
             </TrackedBookLink>
             <TrackedBookLink
               className="button secondary"
-              href="/book?visit=home"
+              href="/book?pay=online&visit=home"
               source={`${source}_online`}
               event="book_now_click"
             >
@@ -256,7 +256,7 @@ export default async function HomeVisitTownPage({
               <Link className="button secondary cta-white" href={VISIT_REQUEST_PATH}>
                 Request a home visit
               </Link>
-              <Link className="button inverted" href="/book?visit=home">
+              <Link className="button inverted" href="/book?pay=online&visit=home">
                 Book and pay online
               </Link>
             </div>
