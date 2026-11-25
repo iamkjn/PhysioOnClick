@@ -76,7 +76,7 @@ export function ContactForm() {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ ...enquiryPayload, website: String(formData.get("website") || "") })
+          body: JSON.stringify({ ...enquiryPayload, hp_ref: String(formData.get("hp_ref") || "") })
         });
 
         const result = (await response.json()) as {
@@ -136,10 +136,7 @@ export function ContactForm() {
       <form className="contact-form-grid" noValidate onSubmit={handleSubmit}>
         {/* Honeypot for bots — hidden from people and screen readers. */}
         <div className="contact-form-honeypot" aria-hidden="true">
-          <label>
-            Website
-            <input name="website" type="text" tabIndex={-1} autoComplete="off" />
-          </label>
+          <input name="hp_ref" type="text" tabIndex={-1} autoComplete="off" data-1p-ignore data-lpignore="true" />
         </div>
         <label>
           Full Name <span aria-hidden="true">*</span>

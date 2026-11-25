@@ -21,7 +21,7 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#039;");
 }
 
-async function sendNotificationEmail(payload: EnquiryPayload) {
+async function sendNotificationEmail(payload: EnquiryPayload, suspect: boolean) {
   const apiKey = process.env.RESEND_API_KEY;
 
   if (!apiKey) {
@@ -42,7 +42,7 @@ async function sendNotificationEmail(payload: EnquiryPayload) {
       from,
       to: [to],
       reply_to: payload.email,
-      subject: `New PhysioOnClick enquiry: ${payload.service}`,
+      subject: `${suspect ? "[Possible spam] " : ""}New PhysioOnClick enquiry: ${payload.service}`,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; color: #10233a; line-height: 1.6;">
           <h2 style="margin-bottom: 16px;">New enquiry received</h2>
@@ -72,13 +72,11 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = (await request.json()) as Partial<EnquiryPayload> & { website?: unknown };
+  const body = (await request.json()) as Partial<EnquiryPayload> & { website?: unknown; hp_ref?: unknown };
 
-  // Honeypot: the contact form renders a hidden "website" field that people
-  // never see or fill. Bots that auto-fill every input do — pretend success.
-  if (typeof body.website === "string" && body.website.trim() !== "") {
-    return NextResponse.json({ ok: true, saved: true, emailSent: true });
-  }
+  // Honeypot. Browser autofill can fill a hidden field for a real person, so a
+  // filled one never drops the message: it is kept and marked possible spam.
+  const suspect = [body.hp_ref, body.website].some((v) => typeof v === "string" && v.trim() !== "");
 
   const payload: EnquiryPayload = {
     name: String(body.name || "").trim(),
@@ -118,6 +116,7 @@ export async function POST(request: Request) {
         ...payload,
         emailLower: payload.email.toLowerCase(),
         status: "new",
+        possibleSpam: suspect,
         source: "website-contact-form",
         createdAt: FieldValue.serverTimestamp()
       });
@@ -131,7 +130,7 @@ export async function POST(request: Request) {
     let emailReason = "";
 
     try {
-      const result = await sendNotificationEmail(payload);
+      const result = await sendNotificationEmail(payload, suspect);
       emailSent = result.sent;
       emailReason = result.sent ? "" : result.reason ?? "unknown";
     } catch (error) {

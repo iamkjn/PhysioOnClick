@@ -158,10 +158,10 @@ describe("POST /api/enquiry abuse protection", () => {
     adminDbMock = { collection: () => ({ add: addMock }) };
   });
 
-  it("silently accepts but does not save when the honeypot field is filled", async () => {
-    const res = await POST(makeRequest({ ...validBody, website: "http://spam.example" }));
+  it("keeps a message whose hidden field was filled (autofill) and marks it", async () => {
+    const res = await POST(makeRequest({ ...validBody, hp_ref: "http://spam.example" }));
     expect(res.status).toBe(200);
-    expect(addMock).not.toHaveBeenCalled();
+    expect(addMock.mock.calls[0][0]).toMatchObject({ name: "Jane Smith", possibleSpam: true });
   });
 
   it("rate limits a client after 3 enquiries per minute", async () => {
