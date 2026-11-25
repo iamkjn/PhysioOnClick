@@ -52,7 +52,7 @@ export function QuickQueryForm() {
           ...values,
           quick: true,
           consent,
-          website: honeypot.current?.value ?? "",
+          hp_ref: honeypot.current?.value ?? "",
           channel: currentVisitSource().channel,
         }),
       });
@@ -98,7 +98,7 @@ export function QuickQueryForm() {
   return (
     <form className="visit-request-form" noValidate onSubmit={(e) => void submit(e)} aria-label="Quick query">
       <div className="contact-form-honeypot" aria-hidden="true">
-        <input ref={honeypot} name="website" type="text" tabIndex={-1} autoComplete="off" />
+        <input ref={honeypot} name="hp_ref" type="text" tabIndex={-1} autoComplete="off" data-1p-ignore data-lpignore="true" />
       </div>
       {field("name", "Full name", "text", "name")}
       {field("phone", "Contact number", "tel", "tel")}

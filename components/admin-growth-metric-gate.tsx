@@ -28,6 +28,7 @@ type GrowthEvent = {
   city?: string;
   region?: string;
   postalDistrict?: string;
+  connection?: string;
   createdAtIso?: string;
   params?: Record<string, unknown>;
   channel?: string;

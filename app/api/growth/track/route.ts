@@ -150,7 +150,7 @@ function areaFromCloudflare(countryCode: string) {
   } catch {
     cf = undefined;
   }
-  return cleanVisitorArea({ city: cf?.city, region: cf?.region, postalCode: cf?.postalCode, countryCode });
+  return cleanVisitorArea({ city: cf?.city, region: cf?.region, postalCode: cf?.postalCode, countryCode, network: cf?.asOrganization });
 }
 
 function shouldIgnorePath(path: string) {
@@ -209,6 +209,7 @@ export async function POST(request: Request) {
     city: area.city,
     region: area.region,
     postalDistrict: area.postalDistrict,
+    connection: area.connection ?? "",
     userAgent,
     createdAt: FieldValue.serverTimestamp(),
     createdAtIso: new Date().toISOString(),

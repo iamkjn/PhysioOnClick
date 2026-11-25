@@ -112,11 +112,10 @@ describe("POST /api/visit-request", () => {
     expect(addMock).not.toHaveBeenCalled();
   });
 
-  it("quietly drops bot submissions that fill the hidden field", async () => {
-    const res = await POST(req({ ...valid, website: "http://spam.example" }));
-    expect(res.status).toBe(200);
-    expect(addMock).not.toHaveBeenCalled();
-    expect(fetchMock).not.toHaveBeenCalled();
+  it("never drops a request whose hidden field was filled (autofill); marks it instead", async () => {
+    await POST(req({ ...valid, hp_ref: "http://spam.example" }));
+    expect(addMock.mock.calls[0][0].possibleSpam).toBe(true);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).subject).toMatch(/^\[Possible spam\] Home visit request/);
   });
 
   it("still succeeds if only the email goes out", async () => {

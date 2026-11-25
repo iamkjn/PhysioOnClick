@@ -249,7 +249,7 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
           ...values,
           visitType,
           consent: true,
-          website: honeypot.current?.value ?? "",
+          hp_ref: honeypot.current?.value ?? "",
           channel: currentVisitSource().channel,
         }),
       });
@@ -368,10 +368,7 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
   return (
     <form ref={formRef} className="visit-request-form" noValidate onSubmit={(e) => void submit(e)}>
       <div className="contact-form-honeypot" aria-hidden="true">
-        <label>
-          Website
-          <input ref={honeypot} name="website" type="text" tabIndex={-1} autoComplete="off" />
-        </label>
+        <input ref={honeypot} name="hp_ref" type="text" tabIndex={-1} autoComplete="off" data-1p-ignore data-lpignore="true" />
       </div>
 
       <div className="request-head">

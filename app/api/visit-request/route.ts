@@ -29,7 +29,7 @@ function telHref(phone: string) {
   return digits.startsWith("0") ? `+44${digits.slice(1)}` : digits;
 }
 
-async function sendRequestEmail(request: VisitRequest, channel: string) {
+async function sendRequestEmail(request: VisitRequest, channel: string, suspect: boolean) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.info("[visit-request] RESEND_API_KEY not set; request saved but not emailed", request.postcode);
@@ -64,7 +64,7 @@ async function sendRequestEmail(request: VisitRequest, channel: string) {
       from,
       to: [to],
       reply_to: request.email,
-      subject: `${kind}: ${request.name}${request.postcode ? `, ${request.postcode}` : ""}${when ? `, ${when}` : ""}`,
+      subject: `${suspect ? "[Possible spam] " : ""}${kind}: ${request.name}${request.postcode ? `, ${request.postcode}` : ""}${when ? `, ${when}` : ""}`,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; color: #10233a; line-height: 1.6;">
           <h2 style="margin: 0 0 12px;">Please call back: ${kind.toLowerCase()}</h2>
@@ -98,10 +98,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  // Honeypot: a hidden "website" field people never see. Bots fill it; pretend success.
-  if (typeof body.website === "string" && body.website.trim() !== "") {
-    return NextResponse.json({ ok: true });
-  }
+  // Honeypot. It used to drop the request silently, and browser autofill filled
+  // it for a real person (2026-11-25), who was told "Thanks" while nothing was
+  // saved or sent. Never lose a request: keep it and say it may be spam.
+  const suspect = [body.hp_ref, body.website].some((v) => typeof v === "string" && v.trim() !== "");
 
   const parsed = parseVisitRequest(body);
   if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
@@ -122,6 +122,7 @@ export async function POST(request: Request) {
         source: "visit-request-form",
         channel,
         status: "new",
+        possibleSpam: suspect,
         createdAt: FieldValue.serverTimestamp(),
       });
       saved = true;
@@ -132,7 +133,7 @@ export async function POST(request: Request) {
 
   let emailSent = false;
   try {
-    emailSent = (await sendRequestEmail(visit, channel)).sent;
+    emailSent = (await sendRequestEmail(visit, channel, suspect)).sent;
   } catch (error) {
     console.error("[visit-request] email failed", error);
   }

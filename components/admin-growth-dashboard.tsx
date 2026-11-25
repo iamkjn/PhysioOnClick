@@ -25,6 +25,7 @@ type GrowthEvent = {
   city?: string;
   region?: string;
   postalDistrict?: string;
+  connection?: string;
   createdAtIso?: string;
   params?: Record<string, unknown>;
   /** Where the visit came from (facebook, google, direct...); missing on events before 21 Nov 2026. */

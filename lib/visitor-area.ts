@@ -9,7 +9,20 @@
  * their network routes through rather than where they are.
  */
 
-export type VisitorArea = { city: string; region: string; postalDistrict: string };
+export type VisitorArea = { city: string; region: string; postalDistrict: string; connection?: Connection };
+
+/** "mobile" and "relay" locations are where the network exits, not where the person is. */
+export type Connection = "" | "mobile" | "relay";
+
+const MOBILE_NETWORK = /\b(ee limited|everything everywhere|telefonica|o2|vodafone|hutchison|h3g|three)\b/i;
+const RELAY_NETWORK = /(icloud|private relay|akamai|cloudflare|fastly|vpn|m247|datacamp|packethub)/i;
+
+/** From the network's name, which is used here and not stored. */
+export function connectionType(network: unknown): Connection {
+  if (typeof network !== "string") return "";
+  if (RELAY_NETWORK.test(network)) return "relay";
+  return MOBILE_NETWORK.test(network) ? "mobile" : "";
+}
 
 export type AreaFields = {
   city?: string;
@@ -17,6 +30,7 @@ export type AreaFields = {
   postalDistrict?: string;
   countryCode?: string;
   countryName?: string;
+  connection?: string;
 };
 
 // Letters (any language), spaces and the punctuation place names use.
@@ -46,7 +60,11 @@ export function cleanVisitorArea(input: {
   region?: unknown;
   postalCode?: unknown;
   countryCode?: string;
+  network?: unknown;
 }): VisitorArea {
+  // A wrong town is worse than none: it skews which areas look reached.
+  const connection = connectionType(input.network);
+  if (connection) return { city: "", region: "", postalDistrict: "", connection };
   return {
     city: cleanPlace(input.city),
     region: cleanPlace(input.region),
@@ -63,6 +81,8 @@ function isUk(event: AreaFields) {
  * town or region was captured (events before 23 Nov 2026 have none).
  */
 export function visitorPlace(event: AreaFields): string {
+  if (event.connection === "mobile") return "Area unknown (mobile network)";
+  if (event.connection === "relay") return "Area unknown (VPN or private relay)";
   const city = event.city ?? "";
   const region = event.region ?? "";
   const district = event.postalDistrict ?? "";
