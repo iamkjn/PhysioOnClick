@@ -135,7 +135,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <Analytics />
             <AnalyticsTracker />
             <TrustpilotInviteScript />
-            <ChatWidget />
+            {/* Hidden on the live site while the owner improves it (2026-11-25); still on
+                dev and localhost. To bring it back, render <ChatWidget /> unconditionally. */}
+            {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "physioonclick-prod" ? null : <ChatWidget />}
             <ConnectivityOverlay />
             <CookieConsent />
           </ToastProvider>
