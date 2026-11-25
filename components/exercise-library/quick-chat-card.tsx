@@ -33,12 +33,13 @@ function remember(storage: () => Storage, key: string, value: string) {
 }
 
 /**
- * Small corner card on exercise pages offering a free 10-minute chat. UK
+ * Small corner card on the exercise library and exercise pages offering a free 10-minute chat. UK
  * visitors only; appears after 10 seconds, or sooner once they scroll past the
  * steps. It never covers or dims the page, shows once per visit, and stays away
  * for a week once closed or used.
  */
-export function QuickChatCard({ exerciseTitle }: { exerciseTitle: string }) {
+/** Leave `exerciseTitle` out on the library page, where no one exercise is open. */
+export function QuickChatCard({ exerciseTitle }: { exerciseTitle?: string }) {
   const region = useVisitorRegion();
   const [open, setOpen] = useState(false);
 
@@ -94,7 +95,9 @@ export function QuickChatCard({ exerciseTitle }: { exerciseTitle: string }) {
       >
         ×
       </button>
-      <p className="quick-chat-title">Not sure this exercise is right for you?</p>
+      <p className="quick-chat-title">
+        {exerciseTitle ? "Not sure this exercise is right for you?" : "Not sure which exercise is right for you?"}
+      </p>
       <p className="quick-chat-text">Free 10-minute chat with a physiotherapist to see if physio can help.</p>
       <div className="quick-chat-actions">
         <a
@@ -112,7 +115,7 @@ export function QuickChatCard({ exerciseTitle }: { exerciseTitle: string }) {
         </a>
         <Link
           className="contact-bar-link contact-bar-link--email"
-          href={visitRequestHrefAbout(`Free 10-minute chat: ${exerciseTitle}`)}
+          href={visitRequestHrefAbout(`Free 10-minute chat: ${exerciseTitle ?? "exercise library"}`)}
           onClick={() => {
             trackGrowthEvent("book_now_click", { source: `${SOURCE}_callback` });
             close();

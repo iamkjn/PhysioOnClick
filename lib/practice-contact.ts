@@ -145,6 +145,6 @@ export function conditionEmailHref(about?: string): string {
 }
 
 /** WhatsApp link from the exercise pages' quick-chat card. */
-export function quickChatWhatsappHref(exerciseTitle: string): string {
-  return whatsappTextHref(`Hi, I'd like the free 10-minute chat (I was reading about ${exerciseTitle}).`);
+export function quickChatWhatsappHref(exerciseTitle?: string): string {
+  return whatsappTextHref(`Hi, I'd like the free 10-minute chat (I was reading about ${exerciseTitle ?? "your exercises"}).`);
 }

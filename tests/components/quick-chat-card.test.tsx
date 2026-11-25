@@ -80,6 +80,13 @@ describe("QuickChatCard", () => {
     expect(card()).toBeInTheDocument();
   });
 
+  it("asks which exercise on the library page", () => {
+    render(<QuickChatCard />);
+    wait(10_000);
+    expect(screen.getByText("Not sure which exercise is right for you?")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /call me back/i }).getAttribute("href")).toContain("exercise%20library");
+  });
+
   it("shows only once per visit", () => {
     const first = render(<QuickChatCard exerciseTitle="Clamshell" />);
     wait(10_000);

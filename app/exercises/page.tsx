@@ -23,6 +23,7 @@ import {
 } from "@/components/exercise-library/exercise-browser";
 import { ExerciseCard } from "@/components/exercise-library/exercise-card";
 import { ExerciseSafetyNote } from "@/components/exercise-library/exercise-safety-note";
+import { QuickChatCard } from "@/components/exercise-library/quick-chat-card";
 import { SavedPlanList } from "@/components/exercise-library/saved-plan-list";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { TrackView } from "@/components/track-view";
@@ -118,6 +119,7 @@ export default function ExerciseLibraryIndexPage() {
 
   return (
     <div className="site-shell">
+      <QuickChatCard />
       <TrackView event="library_hub_view" slug="exercises" />
       <script
         type="application/ld+json"
