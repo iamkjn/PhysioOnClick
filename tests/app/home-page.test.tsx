@@ -30,14 +30,14 @@ describe("homepage metadata", () => {
     expect(title).not.toMatch(/Online Physiotherapy UK/);
   });
 
-  it("puts home visits first and video across the UK second, with derived prices", () => {
+  it("puts home visits first and video across the UK second, without prices", () => {
     expect(description.length).toBeGreaterThanOrEqual(120);
     expect(description.length).toBeLessThanOrEqual(160);
-    expect(description).toContain(`${home} home assessment`);
-    expect(description).toContain(`${homeFollowUp} follow-ups`);
-    expect(description).toContain(`${video} by video`);
+    expect(description).not.toContain("£");
+    expect(description).not.toContain("£");
+    expect(description).not.toContain("£");
     expect(description.indexOf("Home physiotherapy in Glasgow")).toBe(0);
-    expect(description.indexOf(`${home} home assessment`)).toBeLessThan(description.indexOf(`${video} by video`));
+    expect(description.indexOf("Home physiotherapy")).toBeLessThan(description.indexOf("by video"));
     expect(description).toMatch(/stroke, Parkinson's, MS and FND/);
   });
 

@@ -1,3 +1,4 @@
+import { noSnippetPrices } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -11,7 +12,7 @@ import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 export const metadata: Metadata = {
   alternates: { canonical: "/how-online-physiotherapy-works" },
   title: "How Online Physiotherapy Works | PhysioOnClick",
-  description: `How a video physio appointment works: book a live slot (no GP referral), a £${initialAssessmentPrice} assessment, then a personalised exercise plan and insurance-ready invoice.`
+  description: `How a video physio appointment works: book a live slot (no GP referral), a video assessment, then a personalised exercise plan and insurance-ready invoice.`
 };
 
 // Steps mirror the real booking flow (components/booking-flow.tsx) and payment/
@@ -141,7 +142,7 @@ export default function HowOnlinePhysiotherapyWorksPage() {
               <details key={item.question}>
                 <summary>{item.question}</summary>
                 <p>
-                  {item.answer}
+                  {noSnippetPrices(item.answer)}
                   {"sourceUrl" in item ? (
                     <>
                       {" "}

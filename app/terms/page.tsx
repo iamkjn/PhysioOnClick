@@ -1,3 +1,4 @@
+import { NoSnippet } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
@@ -83,8 +84,8 @@ export default function TermsPage() {
           <p>
             Home visits are offered in {HOME_VISIT_AREA_LABEL}, booked through the same booking flow as
             video appointments. A home visit has its own all-in price, shown when you choose a home visit and
-            at checkout (currently {homeVisitPrices.initial} for an initial assessment and{" "}
-            {homeVisitPrices.followUp} for a follow-up); there is no separate fee. If you book a session bundle
+            at checkout (currently <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for an initial assessment and{" "}
+            <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up); there is no separate fee. If you book a session bundle
             as home visits, the price you pay when you book covers every visit in the bundle.
           </p>
           <p>

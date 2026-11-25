@@ -1,3 +1,4 @@
+import { NoSnippet } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -149,7 +150,7 @@ export default async function GuidePage({
           <h2>Book an online assessment</h2>
           <p>
             A 60-minute video assessment with an HCPC-registered physiotherapist
-            is £{initialAssessmentPrice}.
+            is <NoSnippet>£{initialAssessmentPrice}</NoSnippet>.
           </p>
           <TrackedBookLink
             className="button secondary cta-white"

@@ -1,3 +1,4 @@
+import { NoSnippet, noSnippetPrices } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
@@ -27,7 +28,7 @@ const NHSGGC_SELF_REFERRAL_URL =
 export const metadata: Metadata = {
   alternates: { canonical: "/physiotherapy-home-visits-glasgow" },
   title: "Home Physiotherapy Glasgow & Surrounding Areas | PhysioOnClick",
-  description: `Home physiotherapy in Glasgow and up to an hour's drive away, 7 days 9am–9pm, from an HCPC registered physio. ${homeInitial} assessment, ${homeFollowUp} follow-ups, all in.`
+  description: `Home physiotherapy in Glasgow and up to an hour's drive away, 7 days 9am–9pm, from an HCPC registered physio. No GP referral.`
 };
 
 const faqItems = [
@@ -89,7 +90,7 @@ export default function HomeVisitsGlasgowPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        mainEntity: faqItems.map((faq) => ({
+        mainEntity: faqItems.filter((faq) => !faq.answer.includes("£")).map((faq) => ({
           "@type": "Question",
           name: faq.question,
           acceptedAnswer: { "@type": "Answer", text: faq.answer }
@@ -102,7 +103,7 @@ export default function HomeVisitsGlasgowPage() {
           <h1>Physiotherapy home visits in Glasgow and the surrounding area</h1>
           <p className="lead">
             A Glasgow-based, HCPC registered physiotherapist comes to you. The initial home assessment is{" "}
-            {homeInitial} all in, and follow-ups are {homeFollowUp}. Home visits cover {HOME_VISIT_AREA_LABEL}.
+            <NoSnippet>{homeInitial}</NoSnippet> all in, and follow-ups are <NoSnippet>{homeFollowUp}</NoSnippet>. Home visits cover {HOME_VISIT_AREA_LABEL}.
           </p>
           <p>
             Visits run {APPOINTMENT_HOURS.phrase}, evenings and weekends included, so you don&rsquo;t need
@@ -216,7 +217,7 @@ export default function HomeVisitsGlasgowPage() {
           {faqItems.map((faq) => (
             <details key={faq.question}>
               <summary>{faq.question}</summary>
-              <p>{faq.answer}</p>
+              <p>{noSnippetPrices(faq.answer)}</p>
             </details>
           ))}
         </section>

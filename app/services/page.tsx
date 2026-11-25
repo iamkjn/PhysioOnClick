@@ -1,3 +1,4 @@
+import { NoSnippet, noSnippetPrices } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -104,7 +105,7 @@ export default function ServicesPage() {
                     {service.faqs.map((f) => (
                       <details key={f.question}>
                         <summary>{f.question}</summary>
-                        <p>{f.answer}</p>
+                        <p>{noSnippetPrices(f.answer)}</p>
                       </details>
                     ))}
                   </div>
@@ -133,7 +134,7 @@ export default function ServicesPage() {
                   Book Assessment
                   <span className="sr-only"> for {service.title}</span>
                 </TrackedBookLink>
-                <p className="muted">From {formatCurrency(minOnlinePrice)} online</p>
+                <p className="muted">From <NoSnippet>{formatCurrency(minOnlinePrice)}</NoSnippet> online</p>
               </div>
             </div>
           </article>

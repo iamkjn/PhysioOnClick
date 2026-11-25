@@ -1,3 +1,4 @@
+import { NoSnippet } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import { UkServiceLinks } from "@/components/uk-service-links";
 import Link from "next/link";
@@ -420,7 +421,7 @@ export default async function ExerciseDetailPage({
             <aside className="exlib-next-step" aria-label="Book an assessment">
               <p>
                 <strong>Not getting better, or not sure this is the right exercise for you?</strong>{" "}
-                A £{initialAssessmentPrice} online assessment with an HCPC-registered
+                A <NoSnippet>£{initialAssessmentPrice}</NoSnippet> online assessment with an HCPC-registered
                 physiotherapist gets you a plan matched to your condition and stage.
                 {neuroLocal}
               </p>
@@ -432,7 +433,7 @@ export default async function ExerciseDetailPage({
                 growthEvent="exercise_booking_intent"
                 growthParams={{ ...exerciseGrowthParams, booking_context: "exercise_detail_after_steps" }}
               >
-                Book a £{initialAssessmentPrice} assessment
+                Book a <NoSnippet>£{initialAssessmentPrice}</NoSnippet> assessment
               </TrackedBookLink>
               <ConditionHelp
                 inline
@@ -453,7 +454,7 @@ export default async function ExerciseDetailPage({
               <div className="exlib-uk-offer__options">
                 <div className="exlib-uk-offer__option">
                   <span className="exlib-uk-offer__label">Video appointment, anywhere in the UK</span>
-                  <strong className="exlib-uk-offer__price">£{initialAssessmentPrice}</strong>
+                  <strong className="exlib-uk-offer__price"><NoSnippet>£{initialAssessmentPrice}</NoSnippet></strong>
                   <TrackedBookLink
                     className="button primary"
                     href={bookingHref}
@@ -467,7 +468,7 @@ export default async function ExerciseDetailPage({
                 </div>
                 <div className="exlib-uk-offer__option">
                   <span className="exlib-uk-offer__label">Home visit, Glasgow and about an hour around</span>
-                  <strong className="exlib-uk-offer__price">{homeVisitPrices.initial}</strong>
+                  <strong className="exlib-uk-offer__price"><NoSnippet>{homeVisitPrices.initial}</NoSnippet></strong>
                   <TrackedBookLink
                     className="button secondary"
                     href={visitRequestHrefAbout(`${exercise.title} (exercise)`)}

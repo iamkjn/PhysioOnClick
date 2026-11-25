@@ -1,3 +1,4 @@
+import { NoSnippet } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,7 +11,7 @@ import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/practice-contact";
 import { founder } from "@/lib/site-data";
 
 const TITLE = "Request a physiotherapy appointment";
-const DESCRIPTION = `Tell us when suits you; ${founder.name}, HCPC-registered physiotherapist, will call to confirm a home visit or video appointment. ${homeVisitPrices.initial} first visit, ${homeVisitPrices.followUp} after, all in. Pay after your session.`;
+const DESCRIPTION = `Tell us when suits you; ${founder.name}, HCPC-registered physiotherapist, will call to confirm a home visit or video appointment. Pay after your session.`;
 
 export const metadata: Metadata = {
   title: "Request an Appointment | PhysioOnClick",
@@ -58,8 +59,8 @@ export default function RequestVisitPage() {
               <li>We confirm a day and time that suits you, {APPOINTMENT_HOURS.phrase}.</li>
               <li>The visit, then your exercise plan with pictures, online and printed.</li>
               <li>
-                You pay after your session by secure link. A home visit is {homeVisitPrices.initial} for the first
-                visit (about an hour), {homeVisitPrices.followUp} for follow-ups, all in. No travel charge.
+                You pay after your session by secure link. A home visit is <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the first
+                visit (about an hour), <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for follow-ups, all in. No travel charge.
               </li>
             </ol>
           </div>

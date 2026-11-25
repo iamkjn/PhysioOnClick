@@ -45,7 +45,7 @@ describe("app/online-physiotherapy-scotland", () => {
     expect(container.textContent).toMatch(new RegExp(`initial assessment is ${video} by\\s+video, or ${home} as a home visit`));
     expect(container.textContent).not.toMatch(/for both/);
     expect(container.textContent).not.toMatch(/travel fee/i);
-    expect(String(metadata.description)).toContain(`${video} video assessment`);
+    expect(String(metadata.description)).not.toContain("£");
   });
 
   it("has no FAQPage JSON-LD and a WebPage node", () => {
@@ -61,6 +61,6 @@ describe("app/online-physiotherapy-scotland", () => {
     const d = String(metadata.description);
     expect(d.length).toBeGreaterThanOrEqual(120);
     expect(d.length).toBeLessThanOrEqual(160);
-    expect(d).toContain(`£${initialAssessmentPrice}`);
+    expect(d).not.toContain("£");
   });
 });

@@ -1,5 +1,6 @@
 "use client";
 
+import { noSnippetPrices } from "@/components/no-snippet";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useId, useMemo, useRef, useState } from "react";
@@ -133,7 +134,7 @@ export function SearchExperience({
             <Link className="search-result-card" href={item.href} key={`${item.type}-${item.href}-${index}`}>
               <span className="search-type">{item.type}</span>
               <h3>{item.title}</h3>
-              <p>{item.description}</p>
+              <p>{noSnippetPrices(item.description)}</p>
             </Link>
           ))
         ) : (

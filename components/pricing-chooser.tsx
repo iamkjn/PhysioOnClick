@@ -1,5 +1,6 @@
 "use client";
 
+import { NoSnippet } from "@/components/no-snippet";
 import Link from "next/link";
 import { PhoneCall } from "lucide-react";
 
@@ -32,9 +33,9 @@ export function PricingChooser({
           <h3>Home visit</h3>
           <p className="pricing-chooser-where">Glasgow and up to about an hour away</p>
           <p className="pricing-chooser-price">
-            {homeInitial} <small>first visit, about an hour, all in</small>
+            <NoSnippet>{homeInitial}</NoSnippet> <small>first visit, about an hour, all in</small>
           </p>
-          <p className="pricing-chooser-where">Then {homeFollowUp} a visit. No travel charge, no GP referral.</p>
+          <p className="pricing-chooser-where">Then <NoSnippet>{homeFollowUp}</NoSnippet> a visit. No travel charge, no GP referral.</p>
           <TrackedBookLink
             className="button primary"
             href={visitRequestHrefAbout("Home visit (from the pricing page)")}
@@ -58,7 +59,7 @@ export function PricingChooser({
           <h3>Video appointment</h3>
           <p className="pricing-chooser-where">Anywhere in the UK</p>
           <p className="pricing-chooser-price">
-            {videoInitial} <small>first appointment</small>
+            <NoSnippet>{videoInitial}</NoSnippet> <small>first appointment</small>
           </p>
           <p className="pricing-chooser-where">With the same HCPC-registered physiotherapist, from home.</p>
           <TrackedBookLink

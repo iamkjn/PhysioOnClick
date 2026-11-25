@@ -1,3 +1,4 @@
+import { NoSnippet } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import { UkServiceLinks } from "@/components/uk-service-links";
 import Link from "next/link";
@@ -292,7 +293,7 @@ export default async function ConditionHubPage({
               Get a plan personalized to you
             </TrackedBookLink>
             <p className="exlib-cta-card__price">
-              Online physiotherapy {priceLabel} a session.
+              Online physiotherapy <NoSnippet>{priceLabel}</NoSnippet> a session.
             </p>
             {onlinePhysio ? (
               <p className="exlib-cta-card__body">

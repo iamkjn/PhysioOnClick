@@ -19,13 +19,13 @@ function titleName(town: HomeVisitTown): string {
 
 /** <title>, kept within 65 characters (falls back to a shorter pattern). */
 export function townSeoTitle(town: HomeVisitTown): string {
-  const long = `Home Physiotherapy ${titleName(town)}: ${homeVisitPrices.initial} Home Visits | PhysioOnClick`;
-  return long.length <= 65 ? long : `Home Physio ${titleName(town)}: ${homeVisitPrices.initial} Visits | PhysioOnClick`;
+  const long = `Home Physiotherapy ${titleName(town)}: Home Visits | PhysioOnClick`;
+  return long.length <= 65 ? long : `Home Physio ${titleName(town)}: Visits | PhysioOnClick`;
 }
 
 /** Meta description, kept within 160 characters (shorter lead-in for long names). */
 export function townSeoDescription(town: HomeVisitTown): string {
-  const tail = `${homeVisitPrices.initial} assessment, ${homeVisitPrices.followUp} follow-ups, no travel charge.`;
+  const tail = "No travel charge, no GP referral.";
   const long = `Home physiotherapy in ${titleName(town)} from a Glasgow-based HCPC registered physio, 7 days 9am–9pm. ${tail}`;
   return long.length <= 160
     ? long

@@ -1,3 +1,4 @@
+import { noSnippetPrices } from "@/components/no-snippet";
 import Link from "next/link";
 import { Fragment } from "react";
 
@@ -18,5 +19,5 @@ export function InlineText({ text }: { text: string }) {
     last = start + whole.length;
   }
   if (last < text.length) parts.push(text.slice(last));
-  return <>{parts.map((p, i) => <Fragment key={i}>{p}</Fragment>)}</>;
+  return <>{parts.map((p, i) => <Fragment key={i}>{typeof p === "string" ? noSnippetPrices(p) : p}</Fragment>)}</>;
 }

@@ -65,61 +65,6 @@ export function personRef() {
   return { "@id": PERSON_ID };
 }
 
-/** One priced Offer per bookable service for a visit type. Prices come from
- *  lib/home-visit-pricing (the same function checkout charges with), so the
- *  graph can never drift from what a patient actually pays. */
-function priceOffers(visitType: VisitType) {
-  const home = visitType === "home";
-  return pricing.map((item) => {
-    // Video bundle titles ("4 Session Bundle") don't say how they're delivered.
-    const name = home
-      ? serviceLabelFor(item.id, "home")
-      : item.mode === "Package"
-        ? `${item.title} (video)`
-        : item.title;
-    return {
-      "@type": "Offer",
-      name,
-      price: sessionPricePence(item.id, visitType) / 100,
-      priceCurrency: "GBP",
-      url: absoluteUrl(home ? "/book?visit=home" : "/book"),
-      itemOffered: {
-        "@type": "Service",
-        name,
-        serviceType: home ? "Home visit physiotherapy" : "Online video consultation",
-        // Hands-on treatment is a home-visit-only service (signed off: never by video).
-        ...(home
-          ? { description: "Physiotherapy at home, including hands-on treatment (manual therapy) where appropriate" }
-          : {}),
-        provider: practiceRef()
-      }
-    };
-  });
-}
-
-/** Machine-readable price list. Without it, Google's AI answer (2026-11-15)
- *  guessed prices from page copy, showed "Follow-up: £40" and dropped the
- *  £70 home follow-up. */
-export function priceCatalog() {
-  return {
-    "@type": "OfferCatalog",
-    name: "Physiotherapy prices",
-    url: absoluteUrl("/pricing"),
-    itemListElement: [
-      {
-        "@type": "OfferCatalog",
-        name: "Home visits in Glasgow (one all-in price per visit)",
-        itemListElement: priceOffers("home")
-      },
-      {
-        "@type": "OfferCatalog",
-        name: "Video appointments (UK-wide)",
-        itemListElement: priceOffers("video")
-      }
-    ]
-  };
-}
-
 /** The full practice entity. Emit this once sitewide (app/layout.tsx); every
  *  other page should use practiceRef() instead of redeclaring it. */
 export function practiceNode() {
@@ -167,7 +112,6 @@ export function practiceNode() {
         url: absoluteUrl("/glasgow-physiotherapist")
       }
     },
-    hasOfferCatalog: priceCatalog(),
     // Same source as /contact and the booking calendar (lib/appointment-hours):
     // contradicting hours are worse than none.
     openingHoursSpecification: openingHoursSpecification(),
@@ -437,7 +381,8 @@ export function guideWebPage(g: Guide, path: string): object {
     lastReviewed: g.reviewedOn,
     inLanguage: "en-GB",
     citation: g.sources.map((s) => s.url),
-    mainEntity: g.faqs.map((f) => ({
+    // Answers quoting a price are left out (see components/no-snippet).
+    mainEntity: g.faqs.filter((f) => !withPrices(f.a).includes("£")).map((f) => ({
       "@type": "Question",
       name: stripLinks(withPrices(f.q)),
       acceptedAnswer: { "@type": "Answer", text: stripLinks(withPrices(f.a)) }
@@ -461,7 +406,7 @@ export function onlinePhysioWebPage(p: OnlinePhysioPage, path: string): object {
     lastReviewed: p.reviewedOn,
     inLanguage: "en-GB",
     citation: p.sources.map((s) => s.url),
-    mainEntity: p.faqs.map((f) => ({
+    mainEntity: p.faqs.filter((f) => !withPrices(f.a).includes("£")).map((f) => ({
       "@type": "Question",
       name: stripLinks(withPrices(f.q)),
       acceptedAnswer: { "@type": "Answer", text: stripLinks(withPrices(f.a)) }

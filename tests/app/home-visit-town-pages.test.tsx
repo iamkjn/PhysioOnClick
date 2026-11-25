@@ -54,11 +54,11 @@ describe("app/physiotherapy-home-visits/[town]", () => {
       expect(title).toBe(townSeoTitle(t));
       expect(title.length).toBeLessThanOrEqual(65);
       expect(title).toContain(t.shortName ?? t.name);
-      expect(title).toContain(homeVisitPrices.initial);
+      expect(title).not.toContain("£");
       expect(desc).toBe(townSeoDescription(t));
       expect(desc.length).toBeGreaterThanOrEqual(120);
       expect(desc.length).toBeLessThanOrEqual(160);
-      expect(desc).toContain(`${homeVisitPrices.followUp} follow-ups`);
+      expect(desc).not.toContain("£");
       expect(meta.alternates?.canonical).toBe(homeVisitTownPath(t.slug));
     });
 
@@ -93,7 +93,9 @@ describe("app/physiotherapy-home-visits/[town]", () => {
       );
       const faq = blocks.find((b) => b["@type"] === "FAQPage");
       const visible = [...container.querySelectorAll(".service-faqs summary")].map((s) => s.textContent);
-      expect(faq.mainEntity.map((q: { name: string }) => q.name)).toEqual(visible);
+      // Answers that quote a price are left out of structured data (2026-11-25).
+      expect(JSON.stringify(faq)).not.toContain("£");
+      for (const q of faq.mainEntity) expect(visible).toContain(q.name);
       const page = blocks.find((b) => b["@type"] === "WebPage");
       expect(page.mainEntity.areaServed).toEqual({ "@type": "City", name: t.name });
       unmount();

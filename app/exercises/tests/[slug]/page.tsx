@@ -1,3 +1,4 @@
+import { NoSnippet } from "@/components/no-snippet";
 import { ExerciseUseDisclaimer } from "@/components/exercise-library/exercise-safety-note";
 import { UkServiceLinks } from "@/components/uk-service-links";
 import type { Metadata } from "next";
@@ -205,7 +206,7 @@ export default async function SelfTestPage({
           <h2 className="exlib-selftest-cta__title">Reproduced your pain?</h2>
           <p className="exlib-selftest-cta__body">
             A positive result is worth getting looked at. Book a
-            £{initialAssessmentPrice} online assessment with an HCPC-registered
+            <NoSnippet>£{initialAssessmentPrice}</NoSnippet> online assessment with an HCPC-registered
             physiotherapist, wherever you are in the UK.
           </p>
           <TrackedBookLink
@@ -226,7 +227,7 @@ export default async function SelfTestPage({
           <span className="eyebrow">Not sure what your result means?</span>
           <h2>Get it checked properly</h2>
           <p>
-            Book a £{initialAssessmentPrice} online assessment with an
+            Book a <NoSnippet>£{initialAssessmentPrice}</NoSnippet> online assessment with an
             HCPC-registered physiotherapist and get a clear answer and a plan
             matched to your problem.
           </p>

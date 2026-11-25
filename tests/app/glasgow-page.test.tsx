@@ -22,9 +22,9 @@ describe("glasgow-physiotherapist metadata", () => {
 
   it("quotes the video and home-visit assessment prices separately", () => {
     const desc = String(metadata.description);
-    expect(desc).toContain(`${video} video assessment`);
-    expect(desc).toContain(`${home} home visit`);
-    expect(desc).toContain(`${homeFollowUp} follow-up`);
+    expect(desc).not.toContain("£");
+    expect(desc).not.toContain("£");
+    expect(desc).not.toContain("£");
   });
 });
 

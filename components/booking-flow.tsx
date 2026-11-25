@@ -1,5 +1,6 @@
 "use client";
 
+import { NoSnippet } from "@/components/no-snippet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { onAuthStateChanged, type User } from "firebase/auth";
@@ -486,7 +487,7 @@ export function BookingFlow() {
             reach checkout. */}
         <div className="book-rail-total">
           <span className="book-rail-total-label">Total</span>
-          <span className="book-rail-total-price">{formatPounds(sessionPricePence(serviceId, visitType))}</span>
+          <span className="book-rail-total-price"><NoSnippet>{formatPounds(sessionPricePence(serviceId, visitType))}</NoSnippet></span>
         </div>
         <p className="book-rail-reassure">Free to reschedule up to 24 hours before your session.</p>
         <Link href="/how-online-physiotherapy-works" className="book-rail-reassure" style={{ textDecoration: "underline" }}>

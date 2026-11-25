@@ -1,3 +1,4 @@
+import { NoSnippet, noSnippetPrices } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
@@ -19,7 +20,7 @@ const homeFollowUp = homeVisitPrices.followUp;
 export const metadata: Metadata = {
   alternates: { canonical: "/glasgow-physiotherapist" },
   title: "Physiotherapist Glasgow: Home Visits & Online | PhysioOnClick",
-  description: `Physiotherapist in Glasgow: home visits 7 days a week, 9am–9pm, video UK-wide. No GP referral. ${homeInitial} home visit, ${homeFollowUp} follow-up, ${videoInitial} video assessment.`
+  description: `Physiotherapist in Glasgow: home visits 7 days a week, 9am–9pm, video UK-wide. No GP referral. HCPC registered physiotherapist. Book online.`
 };
 
 const faqItems = [
@@ -81,7 +82,7 @@ export default function GlasgowPage() {
           <p className="lead">
             PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. If you are in the
             Glasgow area you can book a home visit, and video appointments are available anywhere in the UK.
-            The initial assessment is {homeInitial} as a home visit, all in, or {videoInitial} by video.
+            The initial assessment is <NoSnippet>{homeInitial}</NoSnippet> as a home visit, all in, or <NoSnippet>{videoInitial}</NoSnippet> by video.
           </p>
           <p>{APPOINTMENT_HOURS_SENTENCE} No time off work needed.</p>
           <ContactOptions
@@ -173,9 +174,9 @@ export default function GlasgowPage() {
         <section className="page-section stack">
           <h2>Home visit and video prices</h2>
           <p>
-            A home visit is {homeInitial} for the initial assessment and {homeFollowUp} for a follow-up. That
+            A home visit is <NoSnippet>{homeInitial}</NoSnippet> for the initial assessment and <NoSnippet>{homeFollowUp}</NoSnippet> for a follow-up. That
             is the whole price, with nothing added at checkout. By video, the initial assessment is{" "}
-            {videoInitial}. Bundles booked as home visits cover every visit, paid when you book. See{" "}
+            <NoSnippet>{videoInitial}</NoSnippet>. Bundles booked as home visits cover every visit, paid when you book. See{" "}
             <Link href="/pricing">pricing</Link> for the full list. If you are not sure which suits you, the{" "}
             <Link href="/how-online-physiotherapy-works">how it works</Link> page explains the booking steps.
           </p>
@@ -212,7 +213,7 @@ export default function GlasgowPage() {
           {faqItems.map((faq) => (
             <details key={faq.question}>
               <summary>{faq.question}</summary>
-              <p>{faq.answer}</p>
+              <p>{noSnippetPrices(faq.answer)}</p>
             </details>
           ))}
         </section>

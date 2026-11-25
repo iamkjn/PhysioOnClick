@@ -1,3 +1,4 @@
+import { NoSnippet, noSnippetPrices } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ProtectedImageFrame } from "@/components/image-protection";
@@ -46,7 +47,7 @@ export async function generateMetadata({
     return {};
   }
 
-  const description = `${service.seoDescription} Video assessment £${initialAssessmentPrice}, no GP referral needed.`;
+  const description = `${service.seoDescription} No GP referral needed.`;
 
   return {
     title: service.seoTitle,
@@ -183,7 +184,7 @@ export default async function ServiceDetailPage({
                     {service.faqs.map((f) => (
                       <details key={f.question}>
                         <summary>{f.question}</summary>
-                        <p>{f.answer}</p>
+                        <p>{noSnippetPrices(f.answer)}</p>
                       </details>
                     ))}
                   </div>
@@ -199,7 +200,7 @@ export default async function ServiceDetailPage({
                   Book Assessment
                   <span className="sr-only"> for {service.title}</span>
                 </TrackedBookLink>
-                <p className="muted">From {formatCurrency(minOnlinePrice)} online</p>
+                <p className="muted">From <NoSnippet>{formatCurrency(minOnlinePrice)}</NoSnippet> online</p>
               </div>
               <ContactOptions
                 topic={topicForPath(`/services/${service.slug}`)}
@@ -228,8 +229,8 @@ export default async function ServiceDetailPage({
               <strong>When:</strong> {APPOINTMENT_HOURS_SENTENCE} {HOME_VISIT_NOTICE_SENTENCE}
             </li>
             <li>
-              <strong>Price:</strong> {homeVisitPrices.initial} for the home assessment and{" "}
-              {homeVisitPrices.followUp} for a follow-up, all in. A home visit can include hands-on treatment
+              <strong>Price:</strong> <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the home assessment and{" "}
+              <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up, all in. A home visit can include hands-on treatment
               (manual therapy) where appropriate.
             </li>
             <li>

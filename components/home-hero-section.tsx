@@ -1,5 +1,6 @@
 "use client";
 
+import { NoSnippet } from "@/components/no-snippet";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -121,7 +122,7 @@ export function HomeHeroSection({
             {founderName}, an HCPC registered physiotherapist, comes to your home in Glasgow and the
             surrounding area 7 days a week, from 9am to 9pm, so there&rsquo;s no need to take time off work.
             That includes neurological rehabilitation for stroke, Parkinson&rsquo;s, MS and FND. Home
-            assessment {homeVisitPrice}, home follow-ups {homeFollowUpPrice}, or {videoPrice} by video anywhere
+            assessment <NoSnippet>{homeVisitPrice}</NoSnippet>, home follow-ups <NoSnippet>{homeFollowUpPrice}</NoSnippet>, or <NoSnippet>{videoPrice}</NoSnippet> by video anywhere
             in the UK.
           </p>
           <div className="button-row">

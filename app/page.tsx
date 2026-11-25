@@ -31,7 +31,7 @@ const title = "Physio at Home in Glasgow & Neuro Rehab | PhysioOnClick";
 // The home follow-up price is named on purpose: with only "£80 home, £40 by
 // video" here, Google's AI answer (2026-11-15) listed "Follow-up: £40" and
 // left the £70 home follow-up out.
-const description = `Home physiotherapy in Glasgow, 7 days 9am–9pm, incl. neuro rehab for stroke, Parkinson's, MS and FND. ${homeVisitPrice} home assessment, ${homeFollowUpPrice} follow-ups, ${videoPrice} by video.`;
+const description = `Home physiotherapy in Glasgow, 7 days 9am–9pm, incl. neuro rehab for stroke, Parkinson's, MS and FND. Book online, or by video UK-wide.`;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },

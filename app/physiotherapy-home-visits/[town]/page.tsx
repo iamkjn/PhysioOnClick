@@ -1,3 +1,4 @@
+import { NoSnippet, noSnippetPrices } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -99,7 +100,7 @@ export default async function HomeVisitTownPage({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            mainEntity: faqs.map((faq) => ({
+            mainEntity: faqs.filter((faq) => !faq.answer.includes("£")).map((faq) => ({
               "@type": "Question",
               name: faq.question,
               acceptedAnswer: { "@type": "Answer", text: faq.answer },
@@ -114,7 +115,7 @@ export default async function HomeVisitTownPage({
           <h1>Physiotherapy home visits in {town.name}</h1>
           <p className="lead">
             A Glasgow-based, HCPC registered physiotherapist comes to your home in {town.name}. The initial home
-            assessment is {homeVisitPrices.initial} all in and follow-ups are {homeVisitPrices.followUp}, with no travel
+            assessment is <NoSnippet>{homeVisitPrices.initial}</NoSnippet> all in and follow-ups are <NoSnippet>{homeVisitPrices.followUp}</NoSnippet>, with no travel
             charge.
           </p>
           <p>
@@ -220,7 +221,7 @@ export default async function HomeVisitTownPage({
           {faqs.map((faq) => (
             <details key={faq.question}>
               <summary>{faq.question}</summary>
-              <p>{faq.answer}</p>
+              <p>{noSnippetPrices(faq.answer)}</p>
             </details>
           ))}
         </section>

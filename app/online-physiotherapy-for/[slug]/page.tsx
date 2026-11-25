@@ -1,3 +1,4 @@
+import { NoSnippet } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -143,14 +144,14 @@ export default async function OnlinePhysioLandingPage({
             params={{ slug }}
             extraEvent="book_now_click"
           >
-            Book a £{initialAssessmentPrice} video assessment
+            Book a <NoSnippet>£{initialAssessmentPrice}</NoSnippet> video assessment
           </TrackedBookLink>
         </p>
 
         <p data-home-visit>
           If you live in {HOME_VISIT_AREA_LABEL}, you can{" "}
           <Link href="/book?visit=home">book a home visit</Link> instead of a video call. A home visit
-          is {homeVisitPrices.initial} for the initial assessment and {homeVisitPrices.followUp} for a follow-up,
+          is <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the initial assessment and <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up,
           all in, and can include hands-on treatment (manual therapy) where appropriate. Video sessions cannot
           include hands-on treatment.
           {homeVisitClearance(page.serviceSlug) ? <> {homeVisitClearance(page.serviceSlug)}</> : null}
@@ -287,7 +288,7 @@ export default async function OnlinePhysioLandingPage({
           <h2>Book an online assessment</h2>
           <p>
             A 60-minute video assessment with an HCPC-registered physiotherapist
-            is £{initialAssessmentPrice}.
+            is <NoSnippet>£{initialAssessmentPrice}</NoSnippet>.
           </p>
           <TrackedBookLink
             className="button secondary cta-white"

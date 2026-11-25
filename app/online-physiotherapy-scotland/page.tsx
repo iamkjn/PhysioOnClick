@@ -1,3 +1,4 @@
+import { NoSnippet } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
@@ -19,7 +20,7 @@ const homeInitial = homeVisitPrices.initial;
 export const metadata: Metadata = {
   alternates: { canonical: "/online-physiotherapy-scotland" },
   title: "Online Physiotherapy in Scotland | PhysioOnClick",
-  description: `Video physiotherapy across Scotland, plus home visits in the Glasgow area, with a Glasgow-based HCPC physiotherapist. No GP referral. ${videoInitial} video assessment.`,
+  description: `Video physiotherapy across Scotland, plus home visits in the Glasgow area, with a Glasgow-based HCPC physiotherapist. No GP referral.`,
 };
 
 const PHS_URL =
@@ -86,8 +87,8 @@ export default function ScotlandPage() {
           <p className="lead">
             PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. Video appointments are
             available across Scotland with a stable internet connection, and home visits are available in the
-            Glasgow area. You do not need a GP referral, and the initial assessment is {videoInitial} by
-            video, or {homeInitial} as a home visit.
+            Glasgow area. You do not need a GP referral, and the initial assessment is <NoSnippet>{videoInitial}</NoSnippet> by
+            video, or <NoSnippet>{homeInitial}</NoSnippet> as a home visit.
           </p>
           <div className="button-row">
             <TrackedBookLink

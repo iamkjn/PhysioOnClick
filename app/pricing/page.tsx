@@ -1,3 +1,4 @@
+import { NoSnippet, noSnippetPrices } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -18,8 +19,8 @@ const followUp = pricing.find((item) => item.id === "follow-up")?.price ?? 0;
 // in the snippet, and ours undercuts most of them.
 export const metadata: Metadata = {
   alternates: { canonical: "/pricing" },
-  title: `Physio Prices Glasgow: ${homeVisitPrices.initial} Home Visit, £${initialAssessmentPrice} Video | PhysioOnClick`,
-  description: `Clear physio prices: ${homeVisitPrices.initial} home assessment and ${homeVisitPrices.followUp} follow-ups in Glasgow, all in, or £${initialAssessmentPrice} by video UK-wide. No GP referral; insurance-ready invoices.`
+  title: `Physio Prices Glasgow: Home Visits and Video | PhysioOnClick`,
+  description: "Clear physio prices for home visits in Glasgow and video appointments UK-wide. No GP referral; insurance-ready invoices."
 };
 
 export const dynamic = "force-static";
@@ -73,7 +74,7 @@ export default function PricingPage() {
             {[...online, ...packages].map((item) => (
               <article key={item.id} className="simple-price-card">
                 <h3>{serviceLabelFor(item.id, "home")}</h3>
-                <strong>{formatPounds(homeVisitPricePence(item.id))}</strong>
+                <strong><NoSnippet>{formatPounds(homeVisitPricePence(item.id))}</NoSnippet></strong>
                 <p className="muted">{durationFor(item.id, "home")}</p>
               </article>
             ))}
@@ -100,8 +101,8 @@ export default function PricingPage() {
                 <article className="simple-price-card" style={{ display: "flex", flexDirection: "column" }}>
                   <h3>{item.title}</h3>
                   <p className="muted">{item.duration}</p>
-                  <strong>{formatCurrency(item.price)}</strong>
-                  <p>{item.description}</p>
+                  <strong><NoSnippet>{formatCurrency(item.price)}</NoSnippet></strong>
+                  <p>{noSnippetPrices(item.description)}</p>
                   <Link
                     className="button primary"
                     href={`/book?service=${item.id}`}
@@ -126,10 +127,10 @@ export default function PricingPage() {
               return (
                 <Reveal key={item.id} direction="up" delay={i * 100}>
                   <article className="simple-package-card" style={{ display: "flex", flexDirection: "column" }}>
-                    {savings > 0 ? <div className="save-pill">Save {formatCurrency(savings)}</div> : null}
+                    {savings > 0 ? <div className="save-pill">Save <NoSnippet>{formatCurrency(savings)}</NoSnippet></div> : null}
                     <h3>{item.title}</h3>
-                    <strong>{formatCurrency(item.price)}</strong>
-                    <p>{item.description}</p>
+                    <strong><NoSnippet>{formatCurrency(item.price)}</NoSnippet></strong>
+                    <p>{noSnippetPrices(item.description)}</p>
                     <Link
                       className="button primary"
                       href={`/book?service=${item.id}`}
@@ -171,7 +172,7 @@ export default function PricingPage() {
           </details>
           <details>
             <summary>How much does private physiotherapy cost in the UK?</summary>
-            <p>At the four UK providers we checked, prices ranged from &pound;44 for a 30-minute online session to &pound;125 for a first appointment. Here, the initial online assessment is {formatCurrency(initialAssessmentPrice)} and follow-ups are {formatCurrency(followUp)}, with no travel time. <Link href="/guides/private-physiotherapy-cost-uk">Private physiotherapy cost in the UK, explained</Link>.</p>
+            <p>At the four UK providers we checked, prices ranged from <NoSnippet>&pound;44</NoSnippet> for a 30-minute online session to <NoSnippet>&pound;125</NoSnippet> for a first appointment. Here, the initial online assessment is <NoSnippet>{formatCurrency(initialAssessmentPrice)}</NoSnippet> and follow-ups are <NoSnippet>{formatCurrency(followUp)}</NoSnippet>, with no travel time. <Link href="/guides/private-physiotherapy-cost-uk">Private physiotherapy cost in the UK, explained</Link>.</p>
           </details>
           <details>
             <summary>Do I need a GP referral, and how quickly can I be seen?</summary>

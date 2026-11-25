@@ -5,7 +5,6 @@ import Page, { metadata } from "@/app/manual-therapy-glasgow/page";
 import sitemap from "@/app/sitemap";
 import { buildSystemPrompt } from "@/lib/chat-prompt";
 import { formatPounds, homeVisitPricePence } from "@/lib/home-visit-pricing";
-import { priceCatalog } from "@/lib/structured-data";
 
 // Techniques confirmed by Shivaliba on 2026-11-15. Adding any other technique
 // needs her sign-off first.
@@ -25,7 +24,7 @@ describe("manual-therapy-glasgow metadata", () => {
     expect(title.length).toBeLessThanOrEqual(60);
     expect(desc.length).toBeGreaterThanOrEqual(120);
     expect(desc.length).toBeLessThanOrEqual(160);
-    expect(desc).toContain(`${home} assessment, ${homeFollowUp} follow-ups`);
+    expect(desc).not.toContain("£");
     expect(desc).toMatch(/joint mobilisation, soft tissue work and stretching/);
   });
 });
@@ -63,9 +62,7 @@ describe("manual-therapy-glasgow content", () => {
     const blocks = jsonLd(render(<Page />).container);
     const service = blocks.find((b) => b["@type"] === "Service");
     expect(service.serviceType).toBe("Manual therapy");
-    const prices = service.offers.map((o: { price: number }) => o.price);
-    expect(prices).toContain(homeVisitPricePence("initial-assessment") / 100);
-    expect(prices).toContain(homeVisitPricePence("follow-up") / 100);
+    expect(service.offers).toBeUndefined();
     expect(blocks.some((b) => b["@type"] === "FAQPage")).toBe(true);
     expect(blocks.some((b) => b["@type"] === "BreadcrumbList")).toBe(true);
   });
@@ -87,12 +84,6 @@ describe("manual therapy across the site", () => {
     ]) {
       expect(readFileSync(file, "utf8")).toContain('href="/manual-therapy-glasgow"');
     }
-  });
-
-  it("describes manual therapy on home-visit offers only, never video", () => {
-    const [homeList, videoList] = priceCatalog().itemListElement;
-    for (const offer of homeList.itemListElement) expect(offer.itemOffered.description).toMatch(/manual therapy/);
-    for (const offer of videoList.itemListElement) expect("description" in offer.itemOffered).toBe(false);
   });
 
   it("lets the chat name the confirmed techniques and nothing else", () => {

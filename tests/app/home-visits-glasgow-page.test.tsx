@@ -16,8 +16,8 @@ describe("physiotherapy-home-visits-glasgow", () => {
     expect(title.toLowerCase()).toContain("home physiotherapy glasgow");
     expect(desc.length).toBeGreaterThanOrEqual(120);
     expect(desc.length).toBeLessThanOrEqual(160);
-    expect(desc).toContain(home);
-    expect(desc).toContain(`${homeFollowUp} follow-ups`);
+    expect(desc).not.toContain("£");
+    expect(desc).not.toContain("£");
   });
 
   it("states derived prices, coverage and the safety conditions", () => {

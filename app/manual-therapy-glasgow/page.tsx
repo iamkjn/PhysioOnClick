@@ -1,3 +1,4 @@
+import { NoSnippet, noSnippetPrices } from "@/components/no-snippet";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
@@ -41,7 +42,7 @@ const TECHNIQUES = [
 export const metadata: Metadata = {
   alternates: { canonical: PATH },
   title: "Manual Therapy at Home in Glasgow | PhysioOnClick",
-  description: `Hands-on manual therapy at home in Glasgow: joint mobilisation, soft tissue work and stretching, with exercise. HCPC physio. ${homeInitial} assessment, ${homeFollowUp} follow-ups.`,
+  description: `Hands-on manual therapy at home in Glasgow: joint mobilisation, soft tissue work and stretching, with exercise. HCPC physio. Book online.`,
   keywords: [
     "manual therapy Glasgow",
     "manual therapy at home",
@@ -82,14 +83,6 @@ const faqItems = [
   }
 ];
 
-const homeOffers = pricing.map((item) => ({
-  "@type": "Offer",
-  name: serviceLabelFor(item.id, "home"),
-  price: sessionPricePence(item.id, "home") / 100,
-  priceCurrency: "GBP",
-  url: absoluteUrl("/book?visit=home")
-}));
-
 export default function ManualTherapyGlasgowPage() {
   return (
     <div className="site-shell">
@@ -114,8 +107,7 @@ export default function ManualTherapyGlasgowPage() {
           "Hands-on treatment (manual therapy) at a physiotherapy home visit where appropriate: joint mobilisation, soft tissue work and assisted stretching, alongside an exercise plan.",
         provider: practiceRef(),
         areaServed: { "@type": "City", name: "Glasgow" },
-        url: absoluteUrl(PATH),
-        offers: homeOffers
+        url: absoluteUrl(PATH)
       }) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(
         breadcrumbs([
@@ -127,7 +119,7 @@ export default function ManualTherapyGlasgowPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        mainEntity: faqItems.map((faq) => ({
+        mainEntity: faqItems.filter((faq) => !faq.answer.includes("£")).map((faq) => ({
           "@type": "Question",
           name: faq.question,
           acceptedAnswer: { "@type": "Answer", text: faq.answer }
@@ -141,7 +133,7 @@ export default function ManualTherapyGlasgowPage() {
           <p className="lead">
             Hands-on treatment from an HCPC registered physiotherapist, in your own home. Manual therapy is part
             of a home visit where it&rsquo;s appropriate, alongside exercise and advice. The initial home
-            assessment is {homeInitial} all in, and follow-ups are {homeFollowUp}, with no extra charge for
+            assessment is <NoSnippet>{homeInitial}</NoSnippet> all in, and follow-ups are <NoSnippet>{homeFollowUp}</NoSnippet>, with no extra charge for
             hands-on treatment.
           </p>
           <p>
@@ -246,7 +238,7 @@ export default function ManualTherapyGlasgowPage() {
           {faqItems.map((faq) => (
             <details key={faq.question}>
               <summary>{faq.question}</summary>
-              <p>{faq.answer}</p>
+              <p>{noSnippetPrices(faq.answer)}</p>
             </details>
           ))}
         </section>
@@ -258,7 +250,7 @@ export default function ManualTherapyGlasgowPage() {
             <span className="eyebrow">Ready to book?</span>
             <h2>Book a home visit with hands-on treatment</h2>
             <p>
-              {formatPounds(sessionPricePence("initial-assessment", "home"))} for the assessment, all in. Choose
+              <NoSnippet>{formatPounds(sessionPricePence("initial-assessment", "home"))}</NoSnippet> for the assessment, all in. Choose
               &ldquo;Home visit in Glasgow&rdquo;, enter your postcode and pick a time, or leave your number and we&rsquo;ll
               call you.
             </p>
