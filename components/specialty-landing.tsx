@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { ProtectedImageFrame } from "@/components/image-protection";
 import { Reveal } from "@/components/reveal";
 import { ContactOptions } from "@/components/contact-options";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -9,7 +11,7 @@ import { serviceLabelFor } from "@/lib/cal-services";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
 import { homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { pricing } from "@/lib/site-data";
-import type { SpecialtyPage } from "@/lib/specialty-pages";
+import { specialtyImagePath, type SpecialtyPage } from "@/lib/specialty-pages";
 import { absoluteUrl } from "@/lib/utils";
 import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 
@@ -82,6 +84,20 @@ export function SpecialtyLanding({ page }: { page: SpecialtyPage }) {
             {page.signs.map((sign) => <li key={sign}>{sign}</li>)}
           </ul>
         </div>
+      </section>
+
+      <section className="page-section">
+        <ProtectedImageFrame watermark>
+          <Image
+            className="specialty-cover"
+            src={specialtyImagePath(page)}
+            alt={page.imageAlt}
+            width={1536}
+            height={1024}
+            unoptimized
+            draggable={false}
+          />
+        </ProtectedImageFrame>
       </section>
 
       <section className="page-section two-col">

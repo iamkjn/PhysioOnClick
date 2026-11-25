@@ -18534,3 +18534,12 @@ body:has(.chat-trigger) .quick-chat {
 @media (prefers-reduced-motion: reduce) {
   .quick-chat { animation: none; }
 }
+
+.specialty-cover {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  margin-inline: auto;
+  border-radius: var(--radius-card);
+}

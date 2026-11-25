@@ -9,7 +9,7 @@ import { curatedReviewsForServicesOverview } from "@/lib/trustpilot-curated";
 import { medicalImagePlaceholder } from "@/lib/image-placeholders";
 import { getPublicServices } from "@/lib/public-content";
 import { pricing } from "@/lib/site-data";
-import { specialtyPages } from "@/lib/specialty-pages";
+import { specialtyImagePath, specialtyPages } from "@/lib/specialty-pages";
 import { formatCurrency } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
@@ -147,6 +147,17 @@ export default function ServicesPage() {
         <div className="two-col">
           {specialtyPages.map((page) => (
             <article className="panel stack" key={page.path}>
+              <ProtectedImageFrame watermark>
+                <Image
+                  className="service-split-image"
+                  src={specialtyImagePath(page)}
+                  alt={page.imageAlt}
+                  width={900}
+                  height={600}
+                  unoptimized
+                  draggable={false}
+                />
+              </ProtectedImageFrame>
               <h3>{page.name}</h3>
               <p>{page.lead}</p>
               <p>

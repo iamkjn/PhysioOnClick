@@ -8,6 +8,7 @@ import { homeVisitPrices } from "@/lib/home-visit-pricing";
 export type SpecialtyPage = {
   path: string;
   name: string;
+  imageAlt: string;
   metaTitle: string;
   metaDescription: string;
   h1: string;
@@ -37,6 +38,7 @@ export const specialtyPages: SpecialtyPage[] = [
   {
     path: "/falls-prevention-physiotherapy-glasgow",
     name: "Falls prevention physiotherapy",
+    imageAlt: "Illustration of an older man practising one-leg balance beside a kitchen worktop with a physiotherapist ready to help",
     metaTitle: "Falls Prevention Physio at Home, Glasgow | PhysioOnClick",
     metaDescription: `Falls prevention physiotherapy at home in Glasgow: balance and strength work where you actually move. HCPC physio. ${prices}.`,
     h1: "Falls prevention physiotherapy at home in Glasgow",
@@ -74,6 +76,7 @@ export const specialtyPages: SpecialtyPage[] = [
   {
     path: "/elderly-physiotherapy-glasgow",
     name: "Physiotherapy for older adults",
+    imageAlt: "Illustration of an older woman standing up from an armchair with a physiotherapist beside her",
     metaTitle: "Elderly Physiotherapy at Home in Glasgow | PhysioOnClick",
     metaDescription: `Physiotherapy at home for older adults in Glasgow: strength, walking and everyday movement, family welcome. ${prices}.`,
     h1: "Physiotherapy for older adults, at home in Glasgow",
@@ -111,6 +114,7 @@ export const specialtyPages: SpecialtyPage[] = [
   {
     path: "/sports-injury-physiotherapy-glasgow",
     name: "Sports injury physiotherapy",
+    imageAlt: "Illustration of a man doing a resistance band ankle exercise on a mat with a physiotherapist",
     metaTitle: "Sports Injury Physio at Home, Glasgow | PhysioOnClick",
     metaDescription: `Sports injury physiotherapy at home in Glasgow: assessment, rehab exercise and a graded return to your sport. ${prices}.`,
     h1: "Sports injury physiotherapy at home in Glasgow",
@@ -148,6 +152,7 @@ export const specialtyPages: SpecialtyPage[] = [
   {
     path: "/chronic-pain-physiotherapy-glasgow",
     name: "Chronic pain physiotherapy",
+    imageAlt: "Illustration of a man doing a gentle seated back stretch with a physiotherapist guiding him",
     metaTitle: "Chronic Pain Physio at Home in Glasgow | PhysioOnClick",
     metaDescription: `Physiotherapy at home in Glasgow for long-term pain: understanding, pacing and gradual movement. HCPC physio. ${prices}.`,
     h1: "Physiotherapy for long-term pain, at home in Glasgow",
@@ -183,6 +188,10 @@ export const specialtyPages: SpecialtyPage[] = [
     ]
   }
 ];
+
+export function specialtyImagePath(page: SpecialtyPage) {
+  return `/images/service-covers/service-${page.path.slice(1)}.jpg`;
+}
 
 export function specialtyPage(path: string): SpecialtyPage {
   const page = specialtyPages.find((item) => item.path === path);
