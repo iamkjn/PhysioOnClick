@@ -39,8 +39,12 @@ vi.mock("@/lib/cal-booking", () => ({
 vi.mock("@/lib/invoice-pdf", () => ({
   generateInvoicePdf: vi.fn().mockResolvedValue(new Uint8Array([37, 80, 68, 70])),
 }));
+vi.mock("@/lib/emails/payment-notification-email", () => ({
+  sendPaymentNotification: vi.fn().mockResolvedValue({ sent: true }),
+}));
 // slot re-check helper lives in the route module's dependency; stub global fetch for /v2/slots
 import { createCalBooking } from "@/lib/cal-booking";
+import { sendPaymentNotification } from "@/lib/emails/payment-notification-email";
 import { POST } from "@/app/api/payments/webhook/route";
 
 const SECRET = "whsec_test";
@@ -130,6 +134,27 @@ describe("POST /api/payments/webhook", () => {
     });
   });
 
+  it("tells the owner about a successful payment, with the invoice", async () => {
+    vi.mocked(sendPaymentNotification).mockClear();
+    await POST(signedRequest(EVENT));
+    expect(sendPaymentNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amountPence: 5000,
+        patientEmail: "ada@example.com",
+        appointmentISO: "2999-01-01T10:00:00.000Z",
+        invoiceNumber: expect.stringMatching(/^INV-/),
+        pdf: expect.objectContaining({ base64: expect.any(String) }),
+      }),
+    );
+  });
+
+  it("alerts the owner when money is taken but the booking fails", async () => {
+    vi.mocked(sendPaymentNotification).mockClear();
+    vi.mocked(createCalBooking).mockResolvedValueOnce({ ok: false, status: 502, error: "x" } as never);
+    await POST(signedRequest(EVENT));
+    expect(sendPaymentNotification).toHaveBeenCalledWith(expect.objectContaining({ problem: "booking_failed" }));
+  });
+
   it("rejects an invalid signature", async () => {
     const bad = new Request("http://localhost/api/payments/webhook", {
       method: "POST",
@@ -166,6 +191,7 @@ describe("POST /api/payments/webhook", () => {
     expect(lastWrite).toBeDefined();
     const written = lastWrite![0];
     expect(written.status).toBe("slot_unavailable");
+    expect(sendPaymentNotification).toHaveBeenCalledWith(expect.objectContaining({ problem: "slot_unavailable" }));
   });
 
   it("still attempts the booking when the slot check can't be verified (transient Cal error)", async () => {

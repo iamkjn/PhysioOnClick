@@ -114,4 +114,29 @@ describe("package payment link", () => {
     await WEBHOOK(new Request("http://x", { method: "POST", headers: { "stripe-signature": `t=${ts},v1=${v1}` }, body }));
     expect(fetchMock.mock.calls.filter(([u]) => String(u).includes("resend"))).toHaveLength(1);
   });
+
+  it("also tells the owner about a paid package", async () => {
+    vi.stubEnv("PAYMENT_NOTIFY_EMAIL", "owner@example.com");
+    const event = {
+      id: "evt_pkg",
+      type: "checkout.session.completed",
+      data: { object: { id: "cs_pkg", amount_total: 50000, currency: "gbp", metadata: { kind: "package-payment", paymentRequestId: TOKEN, packageId: "pkg0000001", name: "Edwin Argo", email: "pat@example.com" } } },
+    };
+    const body = JSON.stringify(event);
+    const ts = Math.floor(Date.now() / 1000);
+    const v1 = crypto.createHmac("sha256", SECRET).update(`${ts}.${body}`).digest("hex");
+    const res = await WEBHOOK(new Request("http://x", { method: "POST", headers: { "stripe-signature": `t=${ts},v1=${v1}` }, body }));
+    expect(res.status).toBe(200);
+    expect(createCalBooking).not.toHaveBeenCalled();
+    expect(mem.get("sessionPackages/pkg0000001")).toMatchObject({ paymentStatus: "paid", paidMethod: "stripe", amountPaidPence: 50000 });
+    expect(mem.get(`paymentRequests/${TOKEN}`)).toMatchObject({ status: "paid" });
+    expect(mem.get("payments/evt_pkg")).toMatchObject({ status: "paid", kind: "package-payment", stripeSessionId: "cs_pkg", patientName: "Edwin Argo" });
+    const emails = fetchMock.mock.calls
+      .filter(([u]) => String(u).includes("resend"))
+      .map(([, init]) => JSON.parse((init as RequestInit).body as string));
+    expect(emails).toHaveLength(2);
+    expect(emails[1].to).toEqual(["owner@example.com"]);
+    expect(emails[1].subject).toContain("Payment received: £500.00 from Edwin Argo");
+    expect(emails[1].attachments).toHaveLength(1);
+  });
 });

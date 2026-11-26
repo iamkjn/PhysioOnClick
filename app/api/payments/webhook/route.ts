@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createCalBooking } from "@/lib/cal-booking";
+import { sendPaymentNotification } from "@/lib/emails/payment-notification-email";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { guestBookingOwnerFields } from "@/lib/guest-booking";
@@ -132,6 +133,15 @@ export async function POST(request: Request) {
     createdAt: FieldValue.serverTimestamp(),
   });
 
+  const ownerAlert = {
+    amountPence: session.amount_total ?? 0,
+    patientName: intent.name,
+    patientEmail: intent.email,
+    paidAtISO: new Date().toISOString(),
+    stripeSessionId: session.id,
+    appointmentISO: intent.startISO,
+  };
+
   // Check the same event type createCalBooking will book (home only with an address).
   const slotVisitType = intent.visitType === "home" && intent.homeVisitAddress ? "home" : undefined;
   if ((await checkSlot(intent.service, intent.startISO, slotVisitType)) === "taken") {
@@ -150,6 +160,12 @@ export async function POST(request: Request) {
       createdAt: FieldValue.serverTimestamp(),
     });
     console.error("Paid but slot unavailable — refund required", session.id);
+    await sendPaymentNotification({
+      ...ownerAlert,
+      serviceLabel: serviceLabelFor(intent.service, slotVisitType),
+      ...(slotVisitType ? { visitType: slotVisitType, homeVisitAddress: intent.homeVisitAddress } : {}),
+      problem: "slot_unavailable",
+    });
     return NextResponse.json({ received: true, warning: "slot_unavailable" }, { status: 200 });
   }
 
@@ -184,6 +200,12 @@ export async function POST(request: Request) {
       createdAt: FieldValue.serverTimestamp(),
     });
     console.error("Paid but Cal booking failed — refund required", session.id);
+    await sendPaymentNotification({
+      ...ownerAlert,
+      serviceLabel: serviceLabelFor(intent.service, slotVisitType),
+      ...(slotVisitType ? { visitType: slotVisitType, homeVisitAddress: intent.homeVisitAddress } : {}),
+      problem: "booking_failed",
+    });
     return NextResponse.json({ received: true, warning: "booking_failed" }, { status: 200 });
   }
 
@@ -368,6 +390,17 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Receipt email failed (non-blocking)", error);
   }
+
+  // Never throws; see lib/emails/payment-notification-email.ts.
+  await sendPaymentNotification({
+    ...ownerAlert,
+    serviceLabel,
+    invoiceNumber,
+    ...(homeVisit ?? {}),
+    ...(pdfBytes
+      ? { pdf: { filename: `invoice-${invoiceNumber}.pdf`, base64: Buffer.from(pdfBytes).toString("base64") } }
+      : {}),
+  });
 
   return NextResponse.json({ received: true }, { status: 200 });
 }

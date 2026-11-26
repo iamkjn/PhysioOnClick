@@ -4,6 +4,7 @@
 // No Cal.com booking is made: the physio arranges these visits.
 import { FieldValue, type Firestore, type DocumentReference } from "@/lib/firebase-admin";
 import { makeInvoiceNumber } from "@/lib/invoice";
+import { sendPaymentNotification } from "@/lib/emails/payment-notification-email";
 import { sendReceiptEmail } from "@/lib/emails/receipt-email";
 import { packageDatesLabel, packageServiceLabel } from "@/lib/treatment-packages";
 
@@ -52,8 +53,17 @@ export async function settlePackagePayment(db: Firestore, paymentRef: DocumentRe
     ...(visitType ? { visitType } : {}),
     createdAt: FieldValue.serverTimestamp(),
   });
+  const ownerAlert = {
+    amountPence,
+    patientName: name,
+    patientEmail: email,
+    serviceLabel,
+    paidAtISO: paidAt,
+    stripeSessionId: session.id,
+  };
   if (!pkg) {
     console.error("Package payment for a missing package — follow up", session.id);
+    await sendPaymentNotification({ ...ownerAlert, problem: "package_missing" });
     return;
   }
 
@@ -110,4 +120,15 @@ export async function settlePackagePayment(db: Firestore, paymentRef: DocumentRe
       console.error("Package receipt email failed (non-blocking)", error);
     }
   }
+
+  // Never throws; see lib/emails/payment-notification-email.ts.
+  await sendPaymentNotification({
+    ...ownerAlert,
+    invoiceNumber,
+    ...(sessionDateText ? { appointmentText: sessionDateText } : {}),
+    ...(visitType ? { visitType } : {}),
+    ...(pdfBytes
+      ? { pdf: { filename: `invoice-${invoiceNumber}.pdf`, base64: Buffer.from(pdfBytes).toString("base64") } }
+      : {}),
+  });
 }
