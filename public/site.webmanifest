@@ -1,7 +1,7 @@
 {
   "name": "PhysioOnClick",
   "short_name": "PhysioOnClick",
-  "description": "Online physiotherapy and rehabilitation across the UK.",
+  "description": "Physiotherapy home visits around Glasgow and video appointments UK-wide.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFDF8",

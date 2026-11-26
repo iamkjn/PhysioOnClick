@@ -54,13 +54,13 @@ export const metadata: Metadata = {
     title,
     description,
     // alt describes the image as it is (its text still reads "online").
-    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "PhysioOnClick — online physiotherapy across the UK" }],
+    images: [{ url: "/og-home-visits.png", width: 1200, height: 630, alt: "PhysioOnClick — home visits around Glasgow and video physiotherapy UK-wide" }],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    images: ["/og-default.png"],
+    images: ["/og-home-visits.png"],
   },
 };
 

@@ -206,8 +206,7 @@ export default async function SelfTestPage({
           <h2 className="exlib-selftest-cta__title">Reproduced your pain?</h2>
           <p className="exlib-selftest-cta__body">
             A positive result is worth getting looked at. Book a
-            <NoSnippet>£{initialAssessmentPrice}</NoSnippet> online assessment with an HCPC-registered
-            physiotherapist, wherever you are in the UK.
+            <NoSnippet>£{initialAssessmentPrice}</NoSnippet> video assessment with an HCPC-registered physiotherapist, wherever you are in the UK, or book a home visit around Glasgow.
           </p>
           <TrackedBookLink
             className="button primary"

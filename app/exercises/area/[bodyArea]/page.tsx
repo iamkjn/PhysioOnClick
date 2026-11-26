@@ -215,7 +215,7 @@ export default async function ExerciseAreaPage({
           <span className="eyebrow">Not sure which exercises are right?</span>
           <h2>Get a plan built for you</h2>
           <p>
-            Book an online assessment with an HCPC-registered physiotherapist and
+            Book a home visit around Glasgow, or a video assessment with an HCPC-registered physiotherapist and
             get a rehab plan matched to your condition and stage.
           </p>
           <TrackedBookLink

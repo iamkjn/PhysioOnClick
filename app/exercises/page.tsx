@@ -290,7 +290,7 @@ export default function ExerciseLibraryIndexPage() {
           <span className="eyebrow">This library is generic - you&apos;re not</span>
           <h2>Get a plan personalized to you</h2>
           <p>
-            Book an online assessment with an HCPC-registered physiotherapist and
+            Book a home visit around Glasgow, or a video assessment with an HCPC-registered physiotherapist and
             get a rehab plan matched to your condition and stage - not a generic
             starting point - wherever you are in the UK.
           </p>

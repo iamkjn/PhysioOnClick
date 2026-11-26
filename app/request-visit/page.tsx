@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "PhysioOnClick",
     locale: "en_GB",
-    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "PhysioOnClick home physiotherapy in Glasgow" }],
+    images: [{ url: "/og-home-visits.png", width: 1200, height: 630, alt: "PhysioOnClick home physiotherapy in Glasgow" }],
   },
 };
 

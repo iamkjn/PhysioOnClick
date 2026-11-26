@@ -10,14 +10,14 @@ import { breadcrumbs, personRef } from "@/lib/structured-data";
 export const metadata: Metadata = {
   alternates: { canonical: "/about" },
   title: "About Shivaliba Zala | PhysioOnClick",
-  description: "Learn about Shivaliba Zala, HCPC registered physiotherapist and founder of PhysioOnClick."
+  description: "Meet Shivaliba Zala, HCPC registered physiotherapist: home visits around Glasgow and video appointments UK-wide."
 };
 
 const specialisms = [
   {
     slug: "msk-physiotherapy",
     title: "MSK Physiotherapy",
-    text: "Online assessment and rehab for back, neck, shoulder, knee, tendon and muscle pain.",
+    text: "Assessment and rehab for back, neck, shoulder, knee, tendon and muscle pain.",
     detail: "Joint, tendon, spine and muscle rehabilitation"
   },
   {
@@ -56,7 +56,7 @@ const highlights = [
   "More than 6 years of clinical physiotherapy experience",
   "NHS Tayside placement and orthopaedic rehab exposure",
   "NHS Lothian observership experience",
-  "Online physiotherapy support across the UK",
+  "Home visits around Glasgow, video across the UK",
   "Evidence-based approach with calm, practical treatment planning"
 ];
 
@@ -99,7 +99,7 @@ export default function AboutPage() {
           </p>
           <p>
             Her approach combines clear communication, practical rehabilitation planning and evidence-based clinical
-            decision making, delivered through online appointments across the UK.
+            decision making, delivered as home visits around Glasgow or by video anywhere in the UK.
           </p>
           <div className="about-highlight-list">
             {highlights.map((item) => (
@@ -202,8 +202,8 @@ export default function AboutPage() {
             <span>Lothian observership experience</span>
           </div>
           <div className="about-stat-card">
-            <strong>UK-wide</strong>
-            <span>Online consultations, wherever you are</span>
+            <strong>Home visits</strong>
+            <span>Around Glasgow, or by video UK-wide</span>
           </div>
         </div>
       </section>
@@ -213,7 +213,7 @@ export default function AboutPage() {
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
           <h2>Book a consultation</h2>
-          <p>Ready to discuss your symptoms and treatment options? Book an online assessment today.</p>
+          <p>Ready to discuss your symptoms and treatment options? Book a home visit around Glasgow, or a video appointment from anywhere in the UK.</p>
           <Link className="button secondary cta-white" href="/book">
             Book Assessment
           </Link>

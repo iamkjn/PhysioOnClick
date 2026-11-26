@@ -116,7 +116,7 @@ export function practiceNode() {
     // contradicting hours are worse than none.
     openingHoursSpecification: openingHoursSpecification(),
     logo: absoluteUrl("/social/physioonclick-avatar.png"),
-    image: absoluteUrl("/og-default.png"),
+    image: absoluteUrl("/og-home-visits.png"),
     sameAs: [
       "https://www.instagram.com/physioonclick/",
       "https://www.tiktok.com/@physioonclick",

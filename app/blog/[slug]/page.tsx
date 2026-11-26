@@ -54,11 +54,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       // all refuse to render SVG previews, so a per-article SVG here means every
       // share comes out imageless. Fall back to the raster site OG image until a
       // per-article raster pipeline exists.
-      images: ["/og-default.png"]
+      images: ["/og-home-visits.png"]
     },
     twitter: {
       card: "summary_large_image",
-      images: ["/og-default.png"]
+      images: ["/og-home-visits.png"]
     }
   };
 }

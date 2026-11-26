@@ -278,7 +278,7 @@ export default async function ConditionHubPage({
               This programme is generic - you&apos;re not
             </h2>
             <p className="exlib-cta-card__body">
-              Book an online assessment with an HCPC-registered physiotherapist
+              Book a home visit around Glasgow, or a video assessment with an HCPC-registered physiotherapist
               and get a plan personalized to your shoulder, knee or back, your
               stage of recovery, and your goals - wherever you are in the UK.
             </p>
@@ -293,7 +293,7 @@ export default async function ConditionHubPage({
               Get a plan personalized to you
             </TrackedBookLink>
             <p className="exlib-cta-card__price">
-              Online physiotherapy <NoSnippet>{priceLabel}</NoSnippet> a session.
+              Video physiotherapy <NoSnippet>{priceLabel}</NoSnippet> a session. Home visits around Glasgow too.
             </p>
             {onlinePhysio ? (
               <p className="exlib-cta-card__body">
@@ -316,7 +316,7 @@ export default async function ConditionHubPage({
           <span className="eyebrow">This programme is generic - you&apos;re not</span>
           <h2>Get a plan personalized to you</h2>
           <p>
-            Book an online assessment with an HCPC-registered physiotherapist and
+            Book a home visit around Glasgow, or a video assessment with an HCPC-registered physiotherapist and
             get a rehab plan matched to your condition and stage - not a generic
             starting point.
           </p>

@@ -55,9 +55,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   // Query-first: the brand has no search equity yet, so lead with what people
   // actually type ("online physiotherapy UK") and keep the brand as the suffix.
-  title: "Online Physiotherapy Across the UK | PhysioOnClick",
+  title: "Physiotherapy at Home in Glasgow & Online | PhysioOnClick",
   description:
-    "Book online physiotherapy with an HCPC-registered physiotherapist — the same clinician every session, evidence-based rehab plans, video consultations anywhere in the UK.",
+    "Physiotherapy home visits around Glasgow and video appointments anywhere in the UK, with the same HCPC-registered physiotherapist every session.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -71,28 +71,28 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
   openGraph: {
     title: "PhysioOnClick",
-    description: "Evidence-based online physiotherapy and rehabilitation across the UK.",
+    description: "Physiotherapy home visits around Glasgow, and video appointments anywhere in the UK.",
     type: "website",
     siteName: "PhysioOnClick",
     locale: "en_GB",
-    // Must stay a raster file at 1200x630. Facebook, LinkedIn, X, WhatsApp and
+    // Source: scripts/og/og-image.html. Must stay a raster file at 1200x630. Facebook, LinkedIn, X, WhatsApp and
     // Slack all refuse to render SVG previews — this used to point at
     // /home-hero-premium.svg, so every share came out with no image.
-    // Regenerate with `node scripts/build-og-image.js`.
+    // The old /og-default.png stays in public/ for links already shared.
     images: [
       {
-        url: "/og-default.png",
+        url: "/og-home-visits.png",
         width: 1200,
         height: 630,
-        alt: "PhysioOnClick — online physiotherapy across the UK"
+        alt: "PhysioOnClick — home visits around Glasgow and video physiotherapy UK-wide"
       }
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "PhysioOnClick",
-    description: "Evidence-based online physiotherapy and rehabilitation across the UK.",
-    images: ["/og-default.png"]
+    description: "Physiotherapy home visits around Glasgow, and video appointments anywhere in the UK.",
+    images: ["/og-home-visits.png"]
   },
   // Signals to content classifiers / mobile-carrier filters that this is a
   // general-audience medical site, not adult content. Helps avoid being

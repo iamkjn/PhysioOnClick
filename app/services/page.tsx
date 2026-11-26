@@ -19,7 +19,7 @@ import { TrackedContentLink } from "@/components/tracked-content-link";
 export const metadata: Metadata = {
   alternates: { canonical: "/services" },
   title: "Physiotherapy Services | PhysioOnClick",
-  description: "Online physiotherapy for musculoskeletal pain, post-surgical rehab, neurological and paediatric care — assessment and a personalised recovery plan from an HCPC-registered physiotherapist."
+  description: "Physiotherapy at home around Glasgow or by video: musculoskeletal pain, post-surgical, neurological and paediatric care from an HCPC-registered physiotherapist."
 };
 
 export const dynamic = "force-static";
@@ -36,7 +36,7 @@ export default function ServicesPage() {
         <h1>
           Our <span>Services</span>
         </h1>
-        <p>Comprehensive, evidence-based physiotherapy services delivered online across the UK.</p>
+        <p>Evidence-based physiotherapy at home around Glasgow, or by video anywhere in the UK.</p>
       </section>
 
       <section className="page-section stack simple-services-list">
@@ -177,7 +177,7 @@ export default function ServicesPage() {
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Not sure which service fits?</span>
           <h2>Start with an assessment</h2>
-          <p>Book an initial assessment and we&apos;ll map out the right plan, delivered online across the UK.</p>
+          <p>Book an initial assessment and we&apos;ll map out the right plan, at home around Glasgow or by video anywhere in the UK.</p>
           <TrackedBookLink
             className="button secondary cta-white"
             href="/book?service=initial-assessment"

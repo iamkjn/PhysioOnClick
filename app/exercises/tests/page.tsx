@@ -137,7 +137,7 @@ export default function SelfTestsIndexPage() {
           <span className="eyebrow">Not sure what your result means?</span>
           <h2>Get it checked properly</h2>
           <p>
-            Book an online assessment with an HCPC-registered physiotherapist and
+            Book a home visit around Glasgow, or a video assessment with an HCPC-registered physiotherapist and
             get a clear answer and a plan matched to your problem, wherever you
             are in the UK.
           </p>

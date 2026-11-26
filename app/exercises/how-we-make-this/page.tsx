@@ -113,10 +113,10 @@ export default function HowWeMakeThisPage() {
       <section className="simple-cta-band">
         <div className="site-shell simple-cta-inner">
           <span className="eyebrow">Want advice for your situation?</span>
-          <h2>Book an online assessment</h2>
+          <h2>Book an assessment</h2>
           <p>
             Get a rehab plan matched to your condition and stage from an
-            HCPC-registered physiotherapist, wherever you are in the UK.
+            HCPC-registered physiotherapist, at home around Glasgow or by video anywhere in the UK.
           </p>
           <TrackedBookLink
             className="button secondary cta-white"
