@@ -51,7 +51,7 @@ Checked against both "does the code work" and "is the business actually live" �
 - [ ] **`lib/firebase.ts` hardcodes a live Firebase project config as a fallback** (`providedFirebaseConfig` — real API key, real `projectId: "physioonclick"`) used whenever `NEXT_PUBLIC_FIREBASE_*` env vars are absent. Not a security issue (Firebase client config is meant to be public, protected by security rules not secrecy), but it's an unusual pattern — for a clean deploy, set the explicit `NEXT_PUBLIC_FIREBASE_*` env vars in the hosting platform rather than relying on the source-code fallback silently kicking in.
 - [ ] **Confirm at least one real admin account exists** in the production Firebase project via `scripts/grant-admin.ts` — not verified this session, only that the script exists.
 - [ ] **Confirm content source setting** (`NEXT_PUBLIC_USE_LIVE_CONTENT`) matches intent — if `true`, confirm `npm run seed:firestore` has been run against the production project; if unset/false, the static fallback content in `lib/site-data.ts`/`lib/blog.ts` is what ships, which is fine but worth being a deliberate choice.
-- [ ] Test coverage is thin specifically on the booking/payment path (`cal-webhook`, `link-bookings`, `checkout` have no tests) — see [docs/strategic-review.md](strategic-review.md).
+- [ ] Test coverage is thin specifically on the booking/payment path (`cal-webhook`, `link-bookings`, `checkout` have no tests).
 
 ### Dev/live environment separation (added 2026-07-12)
 

@@ -182,7 +182,7 @@ This was wrong — stated without actually running the suite. A real test suite 
 
 ## 9. Roadmap & Priorities
 
-Full reasoning in [`docs/strategic-review.md`](strategic-review.md). Summary of what changes in this document as a result:
+Summary of what changes in this document as a result:
 
 **Immediate, in order:**
 1. **Test the money/data path** (§8.6) — booking creation (`cal/book` and `cal/slots` now tested) and the magic-link auth flow; `cal-webhook` and `link-bookings` remain. Payment runs through Cal.com Stripe Connect, so there is no custom checkout code to test.
