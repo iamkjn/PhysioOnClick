@@ -3,14 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProtectedImageFrame } from "@/components/image-protection";
 import { Reveal } from "@/components/reveal";
+import { NoSnippet, noSnippetPrices } from "@/components/no-snippet";
 import { ContactOptions } from "@/components/contact-options";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 import { APPOINTMENT_HOURS, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
-import { serviceLabelFor } from "@/lib/cal-services";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
-import { pricing } from "@/lib/site-data";
+import { homeVisitPrices } from "@/lib/home-visit-pricing";
 import { specialtyImagePath, type SpecialtyPage } from "@/lib/specialty-pages";
 import { absoluteUrl } from "@/lib/utils";
 import { breadcrumbs, practiceRef } from "@/lib/structured-data";
@@ -35,15 +34,7 @@ export function SpecialtyLanding({ page }: { page: SpecialtyPage }) {
         description: page.lead,
         provider: practiceRef(),
         areaServed: { "@type": "City", name: "Glasgow" },
-        url: absoluteUrl(page.path),
-        offers: pricing.map((item) => ({
-          "@type": "Offer",
-          name: serviceLabelFor(item.id, "home"),
-          price: sessionPricePence(item.id, "home") / 100,
-          priceCurrency: "GBP",
-          url: absoluteUrl("/book?visit=home")
-        }))
-      }} />
+        url: absoluteUrl(page.path)      }} />
       <JsonLd data={breadcrumbs([
         { name: "Home", path: "/" },
         { name: "Home visits", path: "/physiotherapy-home-visits-glasgow" },
@@ -52,7 +43,7 @@ export function SpecialtyLanding({ page }: { page: SpecialtyPage }) {
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        mainEntity: page.faqs.map((faq) => ({
+        mainEntity: page.faqs.filter((faq) => !faq.answer.includes("£")).map((faq) => ({
           "@type": "Question",
           name: faq.question,
           acceptedAnswer: { "@type": "Answer", text: faq.answer }
@@ -65,7 +56,7 @@ export function SpecialtyLanding({ page }: { page: SpecialtyPage }) {
           <h1>{page.h1}</h1>
           <p className="lead">{page.lead}</p>
           <p>
-            Home assessment {homeVisitPrices.initial}, follow-ups {homeVisitPrices.followUp}, all in. Home visits
+            Home assessment <NoSnippet>{homeVisitPrices.initial}</NoSnippet>, follow-ups <NoSnippet>{homeVisitPrices.followUp}</NoSnippet>, all in. Home visits
             cover {HOME_VISIT_AREA_LABEL}, and run {APPOINTMENT_HOURS.phrase}. {HOME_VISIT_NOTICE_SENTENCE}
           </p>
           <ContactOptions topic="condition" source={`${source}_page`} lead="Not sure it is right for you? Ask us first, with no obligation to book." />
@@ -141,7 +132,7 @@ export function SpecialtyLanding({ page }: { page: SpecialtyPage }) {
           {page.faqs.map((faq) => (
             <details key={faq.question}>
               <summary>{faq.question}</summary>
-              <p>{faq.answer}</p>
+              <p>{noSnippetPrices(faq.answer)}</p>
             </details>
           ))}
         </section>
