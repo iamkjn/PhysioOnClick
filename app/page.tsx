@@ -8,6 +8,7 @@ import { APPOINTMENT_HOURS, APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTEN
 import { founder } from "@/lib/site-data";
 import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
 import { getPublicServices } from "@/lib/public-content";
+import { NoSnippet } from "@/components/no-snippet";
 import { HomeHeroSection } from "@/components/home-hero-section";
 import { HomePostcodeCheck } from "@/components/home-postcode-check";
 import { ContactOptions } from "@/components/contact-options";
@@ -28,9 +29,6 @@ const title = "Physio at Home in Glasgow & Neuro Rehab | PhysioOnClick";
 // The 7-day, 9am-9pm hours lead because they are the remarkable part: most
 // people in pain, and the family who help them, work during the day, and
 // evenings and weekends are included.
-// The home follow-up price is named on purpose: with only "£80 home, £40 by
-// video" here, Google's AI answer (2026-11-15) listed "Follow-up: £40" and
-// left the £70 home follow-up out.
 const description = `Home physiotherapy in Glasgow, 7 days 9am–9pm, incl. neuro rehab for stroke, Parkinson's, MS and FND. Book online, or by video UK-wide.`;
 
 export const metadata: Metadata = {
@@ -296,7 +294,7 @@ export default async function HomePage() {
           </details>
           <details>
             <summary>Can I be seen in person?</summary>
-            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit is {homeVisitPrices.initial} for the initial assessment and {homeVisitPrices.followUp} for a follow-up, all in, and can include <Link href="/manual-therapy-glasgow" prefetch>hands-on treatment (manual therapy)</Link> where appropriate. We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
+            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit is <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the initial assessment and <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up, all in, and can include <Link href="/manual-therapy-glasgow" prefetch>hands-on treatment (manual therapy)</Link> where appropriate. We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
           </details>
           <details>
             <summary>When are appointments available?</summary>
