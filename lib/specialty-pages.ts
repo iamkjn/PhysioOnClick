@@ -2,7 +2,7 @@ import { homeVisitPrices } from "@/lib/home-visit-pricing";
 
 // Condition-area landing pages for Glasgow search intent. They sit beside the
 // services in lib/site-data and do not change them or the booking options.
-// Clinical wording is awaiting Shivaliba's read before it goes to production:
+// Wording approved for production by the owner (2026-11-26). Keep to it:
 // no promised outcomes, and no hands-on technique beyond the three confirmed on
 // /manual-therapy-glasgow.
 export type SpecialtyPage = {
