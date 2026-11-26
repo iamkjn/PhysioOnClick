@@ -1,6 +1,7 @@
 import type { ClinicalArea } from "@/lib/assessment-forms";
 import { draftsVisible } from "@/lib/exercise-anatomy/drafts";
 import { EXPANSION_2026_11_22 } from "@/lib/exercises-expansion-2026-11-22";
+import { NECK_SHOULDER_2026_11_26 } from "@/lib/exercises-neck-shoulder-2026-11-26";
 
 export type ExerciseDosage = {
   sets?: number;
@@ -6588,7 +6589,7 @@ const BASE_CATALOGUE: Exercise[] = [
 
 /** Every record, drafts included. Tests and tooling only - pages and patient
  * tools must read `exercises`, which honours the draft gate. */
-export const allExercises: Exercise[] = [...BASE_CATALOGUE, ...EXPANSION_2026_11_22];
+export const allExercises: Exercise[] = [...BASE_CATALOGUE, ...EXPANSION_2026_11_22, ...NECK_SHOULDER_2026_11_26];
 
 /** The catalogue this build serves: drafts only where `draftsVisible()` (dev). */
 export const exercises: Exercise[] = draftsVisible()

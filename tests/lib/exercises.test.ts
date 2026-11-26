@@ -98,7 +98,8 @@ describe('catalogue move', () => {
     // ex-168..ex-170 (2026-11-16): static quads, last degree knee extension,
     // high sitting hip flexion = 177; ex-171 high sitting knee extension = 178.
     // ex-172..ex-187 (2026-11-22 expansion, signed off same day) = 194.
-    expect(exercises.length).toBe(194)
+    // ex-188..ex-193 (2026-11-26 neck and shoulder handout) = 200.
+    expect(exercises.length).toBe(200)
     expect(exercises[0].id).toBe('ex-1')
   })
 })

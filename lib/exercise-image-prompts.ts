@@ -226,6 +226,13 @@ export const exerciseImagePrompts: Record<string, string> = {
   "ex-185": "a person sitting on a firm chair with the arms crossed over the chest, leaning the upper back gently backwards over the top of the backrest with the head kept in line with the upper back, the muscles along the upper spine working through a small comfortable range",
   "ex-186": "a person sitting upright on a chair with hands resting on the thighs, eyes fixed on a small dot on a card mounted on a stand at eye level in front, turning the head slightly from side to side, the inner-ear balance system steadying the eyes",
   "ex-187": "a person sitting relaxed on a chair with shoulders down and hands resting on the thighs, breathing out slowly through gently pursed lips with a soft airflow arrow from the mouth, the diaphragm and breathing muscles working in an easy rhythm",
+  // Neck and shoulder: drawings supplied in the 2026-11-25 handout.
+  "ex-188": "a seated person on a chair seen from the side, bending the neck gently forward and back, the neck muscles highlighted",
+  "ex-189": "a seated person holding a pillow at each end with both hands and lifting it forwards and up, the front shoulder muscles highlighted",
+  "ex-190": "a seated person holding a pillow in both hands and moving it out to one side and back across, the shoulder muscles highlighted",
+  "ex-191": "a seated person with hands lightly behind the head taking the elbows back to open the chest, the chest muscles highlighted",
+  "ex-192": "a seated person with hooked fingers in front of the chest and elbows out, pulling the hands apart, the shoulder muscles highlighted",
+  "ex-193": "a seated person with one fist stacked on the other in front of the chest, pressing them together, the chest and shoulder muscles highlighted",
 
   // Face (adapt the suffix mentally: close-up, both sides shown, no movement arrow)
   "face-smile": "close-up medical illustration of a face gently raising both corners of the mouth into a smile, both sides shown for symmetry, the muscles around the mouth and cheeks working",
@@ -456,6 +463,14 @@ export const uploadedImageIds: ReadonlySet<string> = new Set<string>([
   "ex-185",
   "ex-186",
   "ex-187",
+  // Neck and shoulder handout (2026-11-25), uploaded to dev and prod via
+  // scripts/upload-exercise-images-neck-shoulder.ts.
+  "ex-188",
+  "ex-189",
+  "ex-190",
+  "ex-191",
+  "ex-192",
+  "ex-193",
 ]);
 
 export function hasUploadedImage(id: string): boolean {

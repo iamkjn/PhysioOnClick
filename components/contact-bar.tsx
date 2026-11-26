@@ -7,6 +7,7 @@ import { PhoneCall } from "lucide-react";
 import { MailIcon, WhatsAppIcon, recordContactTap } from "@/components/contact-options";
 import { useVisitorRegion } from "@/components/region-switch";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
+import { useExistingPatient } from "@/lib/use-existing-patient";
 import { emailHref, topicForPath, whatsappHref } from "@/lib/practice-contact";
 import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 
@@ -154,11 +155,13 @@ export function contactBarMessage(pathname: string): ContactBarMessage {
  * that fits the page ("Finding it hard to book? Leave it to us.") and three
  * buttons: "Call me back" opens the short visit-request form (not shown to
  * overseas readers), then "WhatsApp" and "Email" with a prefilled message.
+ * Not shown to a signed-in patient the physio added themselves.
  */
 export function ContactBar() {
   const pathname = usePathname() ?? "";
   const region = useVisitorRegion();
-  if (!showContactBar(pathname)) return null;
+  const existingPatient = useExistingPatient();
+  if (existingPatient || !showContactBar(pathname)) return null;
   // "Call me back" leads to the Glasgow home-visit form, so overseas readers
   // don't get it. The region is "unknown" in the static HTML and until the
   // browser answers, so UK readers never see the button pop in late.

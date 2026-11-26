@@ -26,11 +26,11 @@ describe('2026-11-22 expansion release', () => {
   })
 
   it('serves every record in a prod build, with the original 178 unchanged in front', () => {
-    expect(exercises).toHaveLength(194)
+    expect(exercises).toHaveLength(200)
     expect(allExercises).toEqual(exercises)
     expect(exercises.slice(0, 178).at(-1)!.id).toBe('ex-171')
-    expect(new Set(exercises.map((e) => e.id)).size).toBe(194)
-    expect(new Set(exercises.map((e) => e.slug)).size).toBe(194)
+    expect(new Set(exercises.map((e) => e.id)).size).toBe(200)
+    expect(new Set(exercises.map((e) => e.slug)).size).toBe(200)
   })
 
   it('gives each a page, a search entry, an approved anatomy entry and its uploaded image', () => {

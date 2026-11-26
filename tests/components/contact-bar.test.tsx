@@ -10,11 +10,15 @@ vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
 const regionState = vi.hoisted(() => ({ region: "uk" as "uk" | "overseas" | "unknown" }));
 vi.mock("@/lib/visitor-region", () => ({ browserRegion: () => regionState.region }));
 
+const patientState = vi.hoisted(() => ({ existing: false }));
+vi.mock("@/lib/use-existing-patient", () => ({ useExistingPatient: () => patientState.existing }));
+
 import { ContactBar, contactBarMessage, showContactBar } from "@/components/contact-bar";
 import { emailHref, whatsappHref } from "@/lib/practice-contact";
 
 beforeEach(() => {
   regionState.region = "uk";
+  patientState.existing = false;
 });
 
 // Every page with the bar, one per tab or section, so each message is checked.
@@ -197,6 +201,15 @@ describe("ContactBar", () => {
 
   it("renders nothing on the printable receipt", () => {
     pathname = "/book/receipt/cs_test_123";
+    const { container } = render(<ContactBar />);
+    expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe("existing patients", () => {
+  it("shows no bar to a patient the physio added", () => {
+    pathname = "/";
+    patientState.existing = true;
     const { container } = render(<ContactBar />);
     expect(container).toBeEmptyDOMElement();
   });

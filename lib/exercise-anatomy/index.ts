@@ -14,9 +14,10 @@ import { PELVIC_FACE_PAEDIATRIC } from "@/lib/exercise-anatomy/entries/pelvic-fa
 import { POST_OP_GENERAL } from "@/lib/exercise-anatomy/entries/post-op-general";
 import { BALANCE_NEURO } from "@/lib/exercise-anatomy/entries/balance-neuro";
 import { EXPANSION_2026_11_22_ANATOMY } from "@/lib/exercise-anatomy/entries/expansion-2026-11-22";
+import { NECK_SHOULDER_2026_11_26_ANATOMY } from "@/lib/exercise-anatomy/entries/neck-shoulder-2026-11-26";
 
 /** One record per drafting batch (entries/*.ts). */
-export const ANATOMY_BATCHES: readonly Readonly<Record<string, ExerciseAnatomy>>[] = [LOWER_LIMB, UPPER_LIMB, SPINE, PELVIC_FACE_PAEDIATRIC, POST_OP_GENERAL, BALANCE_NEURO, EXPANSION_2026_11_22_ANATOMY];
+export const ANATOMY_BATCHES: readonly Readonly<Record<string, ExerciseAnatomy>>[] = [LOWER_LIMB, UPPER_LIMB, SPINE, PELVIC_FACE_PAEDIATRIC, POST_OP_GENERAL, BALANCE_NEURO, EXPANSION_2026_11_22_ANATOMY, NECK_SHOULDER_2026_11_26_ANATOMY];
 
 export const EXERCISE_ANATOMY: Readonly<Record<string, ExerciseAnatomy>> = Object.assign({}, ...ANATOMY_BATCHES);
 

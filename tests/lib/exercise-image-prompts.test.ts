@@ -32,7 +32,7 @@ describe('exercise image prompts', () => {
     }
   })
 
-  it('has an image prompt for every one of the 194 catalogue exercises', () => {
+  it('has an image prompt for every one of the 200 catalogue exercises', () => {
     const missing = exercises.filter((e) => !hasImagePrompt(e.id)).map((e) => e.id)
     expect(missing).toEqual([])
   })
