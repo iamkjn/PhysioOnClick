@@ -23,7 +23,10 @@ describe("POST /api/home-visit/coverage", () => {
   it("returns covered=true with outwardCode and normalised postcode for a covered postcode", async () => {
     const res = await coverage(post({ postcode: "g31 4hs" }));
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ covered: true, outwardCode: "G31", postcode: "G31 4HS" });
+    expect(await res.json()).toEqual({ covered: true, outwardCode: "G31", postcode: "G31 4HS",
+      initialPence: 8000,
+      followUpPence: 7000,
+    });
   });
 
   it("returns covered=false with outwardCode and postcode for an uncovered postcode", async () => {
