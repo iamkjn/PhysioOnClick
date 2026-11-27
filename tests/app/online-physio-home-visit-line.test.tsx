@@ -31,7 +31,7 @@ describe("home-visit line on condition pages", () => {
     expect(r.links).toBe(1);
     expect(r.text).toContain(HOME_VISIT_AREA_LABEL);
     expect(r.text).toMatch(
-      new RegExp(`is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up,\\s+depending on your postcode`),
+      new RegExp(`is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up,\\s+and can include`),
     );
     expect(r.text).not.toMatch(/travel fee/i);
     expect(r.text).not.toMatch(/video price plus/i);

@@ -147,7 +147,7 @@ export default async function HomeVisitTownPage({
             <strong>{town.name}:</strong> {town.districts.join(", ")}
           </p>
           <p>Nearby: {town.nearby.join(", ")}.</p>
-          <p className="muted">Enter your postcode when you book to confirm we cover your street and see your price.</p>
+          <p className="muted">Enter your postcode when you book to confirm we cover your street.</p>
         </div>
       </section>
 

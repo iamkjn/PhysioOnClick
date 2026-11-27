@@ -464,11 +464,11 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "We don't offer home visits in $outward yet. Video consultations work anywhere in the UK, or contact us and we'll see if we can help.",
+          "Let's talk about $outward: contact us and we'll go through the options. Video consultations work anywhere in the UK.",
           style: theme.textTheme.bodyMedium,
         ),
         const SizedBox(height: 4),
-        Text('Home visits cover Glasgow and the surrounding area within about an hour\'s drive.',
+        Text('Home visits cover Glasgow and the surrounding area.',
             style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
         const SizedBox(height: 10),
         OutlinedButton(

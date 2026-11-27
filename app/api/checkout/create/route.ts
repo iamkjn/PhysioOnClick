@@ -91,7 +91,7 @@ export async function POST(request: Request) {
   if (resolvedVisitType === "home") {
     const home = validateHomeVisit(homeAddressLine, homePostcode);
     if (!home.ok) return bad(home.error);
-    if (!isCoveredPostcode(home.postcode)) return bad("We don't offer home visits at that postcode yet.");
+    if (!isCoveredPostcode(home.postcode)) return bad("Please contact us so we can talk about a home visit at that postcode.");
     homeVisitAddress = home.homeVisitAddress;
     homeVisitPostcode = home.postcode;
   }

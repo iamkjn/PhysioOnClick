@@ -250,7 +250,7 @@ export default function ManualTherapyGlasgowPage() {
             <span className="eyebrow">Ready to book?</span>
             <h2>Book a home visit with hands-on treatment</h2>
             <p>
-              Assessments are <NoSnippet>{homeInitial}</NoSnippet>, depending on your postcode. Choose
+              Assessments are <NoSnippet>{homeInitial}</NoSnippet>. Choose
               &ldquo;Home visit in Glasgow&rdquo;, enter your postcode and pick a time, or leave your number and we&rsquo;ll
               call you.
             </p>

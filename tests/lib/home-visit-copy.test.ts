@@ -154,9 +154,8 @@ describe("home visit pricing and coverage copy", () => {
 
   it("the chat prompt states the whole home-visit prices and the covered area", () => {
     const prompt = buildSystemPrompt();
-    expect(prompt).toContain("A home visit's price depends on the patient's postcode");
-    expect(prompt).toContain("£80 assessment with £70 follow-up");
-    expect(prompt).toContain("£120 assessment with £110 follow-up");
+    expect(prompt).toContain("Home visits start from £80 for the initial assessment and £70 for a follow-up");
+    expect(prompt).not.toMatch(/£95|£110|£120/);
     expect(prompt).toContain(HOME_VISIT_AREA_LABEL);
     expect(prompt).not.toMatch(/confirm by email/i);
   });
@@ -167,7 +166,7 @@ describe("home visit pricing and coverage copy", () => {
     expect(prompt).not.toMatch(/travel fee per visit/i);
     expect(prompt).not.toMatch(/video price plus/i);
     expect(prompt).not.toMatch(/travel fee/i);
-    expect(prompt).toContain("never explain prices by travel, distance, driving, traffic or fuel");
+    expect(prompt).toContain("never mention travel, distance, driving, traffic or fuel in connection with price");
   });
 
   it("the neuro FAQs quote no price figure and no travel fee", () => {
@@ -175,7 +174,7 @@ describe("home visit pricing and coverage copy", () => {
     const homeFaqs = neuro.faqs.filter((f) => /in person|at home/i.test(f.question));
     expect(homeFaqs.length).toBeGreaterThanOrEqual(2);
     for (const faq of homeFaqs) {
-      expect(faq.answer).toMatch(/priced by postcode/i);
+      expect(faq.answer).toMatch(/price (is )?shown before you book/i);
       expect(faq.answer).not.toMatch(/£\d/);
       expect(faq.answer).not.toMatch(/travel fee/i);
     }

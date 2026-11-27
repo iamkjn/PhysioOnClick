@@ -177,7 +177,7 @@ describe("POST /api/checkout/create — visit type", () => {
     const res = await POST(req({ ...VALID, visitType: "home", homeAddressLine: "1 Princes Street", homePostcode: "EH2 2AN" }));
     expect(res.status).toBe(400);
     const { error } = await res.json();
-    expect(error).toBe("We don't offer home visits at that postcode yet.");
+    expect(error).toBe("Please contact us so we can talk about a home visit at that postcode.");
     expect(error).not.toContain("Princes");
     expect(createStripeCheckout).not.toHaveBeenCalled();
   });

@@ -203,7 +203,7 @@ export const services: Service[] = [
       {
         question: "Can I have post-surgical rehab at home?",
         answer:
-          "Yes, if you live in the Glasgow area. Home visits are available for post-surgical rehab, priced by postcode and shown before you book, and can include hands-on treatment (manual therapy) where appropriate. The same rule applies: rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
+          "Yes, if you live in the Glasgow area. Home visits are available for post-surgical rehab, with the price shown before you book, and can include hands-on treatment (manual therapy) where appropriate. The same rule applies: rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you."
       },
       {
         question: "Do you work with my surgeon or NHS physio team?",
@@ -267,9 +267,9 @@ export const services: Service[] = [
         question: "Can I have neurological rehab at home?",
         answer:
           // Wording approved in clinical sign-off round 3 (2026-10-06); only the price sentence changed since
-          // (2026-11-27: priced by postcode, no figure here, see the note below) and the area
+          // (2026-11-27: no figure here, see the note below) and the area
           // sentence (2026-11-15: coverage widened to about an hour's drive, see lib/home-visit-area.ts).
-          "If you live in Glasgow or within about an hour's drive (including Lanarkshire, Renfrewshire, Ayrshire, Falkirk, Stirling and West Lothian), your physiotherapist can come to your home. For many neurological conditions, home is where the practice matters most: your own stairs, your own chair, the route to your front door. A family member or carer is welcome to join and learn how to support practice between sessions. A home visit is priced by postcode and shown before you book, and can include hands-on treatment where appropriate. Outside the area, sessions are by video. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy."
+          "If you live in Glasgow or nearby (including Lanarkshire, Renfrewshire, Ayrshire, Falkirk, Stirling and West Lothian), your physiotherapist can come to your home. For many neurological conditions, home is where the practice matters most: your own stairs, your own chair, the route to your front door. A family member or carer is welcome to join and learn how to support practice between sessions. A home visit has its price shown before you book, and can include hands-on treatment where appropriate. Outside the area, sessions are by video. Before you start, your GP or specialist team must confirm it is safe for you to begin physiotherapy."
       },
       {
         question: "Do you offer stroke physiotherapy in Glasgow?",
@@ -307,7 +307,7 @@ export const services: Service[] = [
           // No price figure here: importing lib/home-visit-pricing would create an
           // import cycle (lib/home-visit-pricing -> lib/cal-services -> this file).
           // tests/lib/home-visit-copy.test.ts checks no old fee wording comes back.
-          "Yes, through home visits in the Glasgow area, priced by postcode and shown before you book. Elsewhere in Scotland and the UK, appointments are by video, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. When you book a home visit you enter your postcode and see straight away whether we cover it, and we'll tell you at triage if another kind of neuro physiotherapy would suit you better."
+          "Yes, through home visits in the Glasgow area, with the price shown before you book. Elsewhere in Scotland and the UK, appointments are by video, with no travel or parking to manage — which matters when mobility or fatigue is part of the problem. When you book a home visit you enter your postcode and see straight away whether we cover it, and we'll tell you at triage if another kind of neuro physiotherapy would suit you better."
       }
     ],
     headline: "Neurological Physiotherapy at Home in Glasgow, and Online",

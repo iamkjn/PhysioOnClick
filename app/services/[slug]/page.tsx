@@ -230,7 +230,7 @@ export default async function ServiceDetailPage({
             </li>
             <li>
               <strong>Price:</strong> <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the home assessment and{" "}
-              <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up, depending on your postcode. A home visit can include hands-on treatment
+              <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up. A home visit can include hands-on treatment
               (manual therapy) where appropriate.
             </li>
             <li>

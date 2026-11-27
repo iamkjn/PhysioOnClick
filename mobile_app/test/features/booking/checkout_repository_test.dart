@@ -173,11 +173,11 @@ void main() {
 
   test('createCheckoutSession surfaces the server error verbatim', () async {
     final client = MockClient((request) async => http.Response(
-        jsonEncode({'ok': false, 'error': "We don't offer home visits at that postcode yet."}), 400));
+        jsonEncode({'ok': false, 'error': "Please contact us so we can talk about a home visit at that postcode."}), 400));
     final repo = CheckoutRepository(httpClient: client, idTokenProvider: () async => null);
     expect(
       () => repo.createCheckoutSession(service: 'initial-assessment', start: DateTime.utc(2026, 9, 20, 9), name: 'P', email: 'p@e.com', visitType: 'home', homeAddressLine: 'a', homePostcode: 'ZZ1 1ZZ'),
-      throwsA(predicate((e) => e.toString().contains("We don't offer home visits at that postcode yet."))),
+      throwsA(predicate((e) => e.toString().contains("Please contact us so we can talk about a home visit at that postcode."))),
     );
   });
 

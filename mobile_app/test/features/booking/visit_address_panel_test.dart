@@ -112,7 +112,7 @@ void main() {
     await t.pumpAndSettle();
     await t.tap(find.text('Use this address'));
     await t.pumpAndSettle();
-    expect(find.text('Outside our home-visit area'), findsOneWidget);
+    expect(find.text('Talk to us about this address'), findsOneWidget);
     expect(find.text('current: 1 Main St, G31 4HS'), findsOneWidget);
   });
 

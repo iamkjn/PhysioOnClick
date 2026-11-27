@@ -256,7 +256,7 @@ export function BookingStepService({
                       />{" "}
                       <span>{addressDisplay(a)}</span>
                       {!isCoveredPostcode(a.postcode) ? (
-                        <span className="book-saved-address-badge"> Outside our home-visit area</span>
+                        <span className="book-saved-address-badge"> Talk to us about this address</span>
                       ) : null}
                     </label>
                   ))}

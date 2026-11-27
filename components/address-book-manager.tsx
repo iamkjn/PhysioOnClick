@@ -117,7 +117,7 @@ export function AddressBookManager({ uid }: { uid: string }) {
                         color: "var(--color-text-secondary)",
                       }}
                     >
-                      Outside our home-visit area
+                      Talk to us about this address
                     </span>
                   )}
                 </div>

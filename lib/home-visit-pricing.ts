@@ -63,7 +63,7 @@ export function homeVisitPriceRange(districts: readonly string[]): { initial: st
 }
 
 /** The one sentence that explains "from". */
-export const HOME_VISIT_PRICE_NOTE = "Your exact price depends on your postcode and is shown before you book.";
+export const HOME_VISIT_PRICE_NOTE = "Your price is confirmed before you book.";
 
 /** How to pay. Cash is for home visits only (owner decision 2026-11-27). */
 export const PAYMENT_METHODS_NOTE = "For a home visit you can pay after your session in cash or by secure link.";

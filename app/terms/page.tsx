@@ -83,7 +83,7 @@ export default function TermsPage() {
           <h2>Home visits (Glasgow area)</h2>
           <p>
             Home visits are offered in {HOME_VISIT_AREA_LABEL}, booked through the same booking flow as
-            video appointments. A home visit&rsquo;s price depends on your postcode and is shown before
+            video appointments. A home visit&rsquo;s price is shown before
             you book (currently <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for an initial assessment and{" "}
             <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up). We no longer sell session packages;
             one you have already bought stays valid on the terms it was sold on.

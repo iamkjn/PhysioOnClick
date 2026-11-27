@@ -83,7 +83,7 @@ describe('booking address book', () => {
     const group = await screen.findByRole('radiogroup', { name: 'Your saved addresses' })
     expect(group).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: /Home, G31 4HS/ })).toBeChecked()
-    expect(screen.getByRole('radio', { name: /1 High St, EH1 1AA/ })).toHaveAccessibleName(/Outside our home-visit area/)
+    expect(screen.getByRole('radio', { name: /1 High St, EH1 1AA/ })).toHaveAccessibleName(/Talk to us about this address/)
     expect(screen.getByRole('radio', { name: 'Use a different address' })).not.toBeChecked()
     expect(screen.queryByLabelText('Postcode')).not.toBeInTheDocument()
     expect(mocks.getUsualAddressId).toHaveBeenCalledWith('u1', null)

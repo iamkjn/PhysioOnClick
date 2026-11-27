@@ -52,7 +52,7 @@ export function HomePostcodeCheck() {
             ? "No payment to send a request."
             : isCoveredPostcode(normalised)
               ? `Yes, we visit ${outwardCode(normalised)}. First visit ${formatPounds(sessionPricePence("initial-assessment", "home", normalised))}.`
-              : `${outwardCode(normalised)} is outside our usual area. Ask us anyway, or choose video.`}
+              : `Ask us about ${outwardCode(normalised)} and we'll talk through the options.`}
         </p>
         <p className="visit-request-small">
           Rather talk? Call <a href={PRACTICE_PHONE_HREF}>{PRACTICE_PHONE}</a>.

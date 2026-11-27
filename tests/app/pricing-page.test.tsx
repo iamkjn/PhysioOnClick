@@ -12,8 +12,8 @@ describe("pricing page home visits", () => {
   it("explains the all-in price, the area and shows whole home prices", () => {
     render(<PricingPage />);
     expect(screen.getByRole("heading", { name: /Home visits in Glasgow/ })).toBeInTheDocument();
-    expect(screen.getByText(/Your exact price depends on your postcode and is shown before you book\. For a home visit/)).toBeInTheDocument();
-    expect(screen.getByText(/Glasgow and the surrounding area within about an hour/)).toBeInTheDocument();
+    expect(screen.getByText(/Your price is confirmed before you book\. For a home visit/)).toBeInTheDocument();
+    expect(screen.getByText(/Glasgow and the surrounding area \(Lanarkshire/)).toBeInTheDocument();
     // Scoped to the full price list: the "Which one do I need?" chooser above it repeats £80 / £70.
     const list = within(document.querySelector(".pricing-sections") as HTMLElement);
     for (const id of ["initial-assessment", "follow-up"] as const) {
@@ -27,7 +27,7 @@ describe("pricing page home visits", () => {
     expect(src).not.toMatch(/£15\b/);
     expect(src).not.toMatch(/travel fee|HOME_VISIT_TRAVEL_FEE_PENCE|travelFeePence/i);
     const { container } = render(<PricingPage />);
-    expect(screen.getByRole("heading", { name: /Home visits in Glasgow/ })).toHaveTextContent("(price depends on your postcode)");
+    expect(screen.getByRole("heading", { name: /Home visits in Glasgow/ })).toHaveTextContent("Home visits in Glasgow and nearby");
     expect(container.textContent).not.toMatch(/travel fee/i);
     expect(container.textContent).not.toMatch(/\+ £\d+ travel/i);
     expect(container.textContent).not.toMatch(/video price \+/i);

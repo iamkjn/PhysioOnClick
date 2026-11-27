@@ -52,10 +52,10 @@ describe("isCoveredPostcode", () => {
 describe("copy", () => {
   it("names the covered area and the district in the out-of-area message", () => {
     expect(HOME_VISIT_AREA_LABEL).toBe(
-      "Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian, west Edinburgh and west Fife)",
+      "Glasgow and the surrounding area (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian, west Edinburgh and west Fife)",
     );
     expect(outOfAreaMessage("eh1 1aa")).toBe(
-      "We don't offer home visits in EH1 yet. Video consultations work anywhere in the UK, or contact us and we'll see if we can help.",
+      "Let's talk about EH1: contact us and we'll go through the options. Video consultations work anywhere in the UK.",
     );
   });
 });

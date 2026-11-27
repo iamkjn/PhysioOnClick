@@ -130,7 +130,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
     intro:
       "Home visits cover Motherwell and Wishaw and the places in between, from Newarthill, Carfin and New Stevenston to Overtown, Newmains and Bellshill.",
     localNote:
-      "Newmains and the villages around Wishaw are covered too. Enter your postcode to see your price.",
+      "Newmains and the villages around Wishaw are covered too, with evening and weekend visits.",
     hospital: {
       name: "University Hospital Wishaw",
       board: "NHS Lanarkshire",

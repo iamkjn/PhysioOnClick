@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_colors.dart';
 
-const kOutsideAreaLabel = 'Outside our home-visit area';
+const kOutsideAreaLabel = 'Talk to us about this address';
 
 /// Shared "outside our home-visit area" pill (address book + booking).
 class OutsideAreaBadge extends StatelessWidget {

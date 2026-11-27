@@ -152,7 +152,7 @@ export default async function OnlinePhysioLandingPage({
           If you live in {HOME_VISIT_AREA_LABEL}, you can{" "}
           <Link href="/book?visit=home">book a home visit</Link> instead of a video call. A home visit
           is <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the initial assessment and <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up,
-          depending on your postcode, and can include hands-on treatment (manual therapy) where appropriate. Video sessions cannot
+          and can include hands-on treatment (manual therapy) where appropriate. Video sessions cannot
           include hands-on treatment.
           {homeVisitClearance(page.serviceSlug) ? <> {homeVisitClearance(page.serviceSlug)}</> : null}
           {page.serviceSlug === "neurological-rehabilitation" ? (

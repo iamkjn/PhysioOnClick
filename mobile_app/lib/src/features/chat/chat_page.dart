@@ -73,7 +73,7 @@ String chatPricingText() {
   return 'Online sessions (UK-wide):\n'
       '• Initial Online Assessment (${initial.minutes} min) — ${online(initial)}\n'
       '• Online Follow-Up (${followUp.minutes} min) — ${online(followUp)}\n\n'
-      'Home visits (price depends on your postcode, shown before you book):\n'
+      'Home visits (your price is shown before you book):\n'
       '• Initial Assessment at home (${sessionMinutes(initial, VisitType.home)} min) — from ${home(initial)}\n'
       '• Follow-Up at home (${sessionMinutes(followUp, VisitType.home)} min) — from ${home(followUp)}\n'
       'For a home visit you can pay after your session in cash or by secure link.\n\n'

@@ -187,7 +187,7 @@ export default function GlasgowPage() {
         <section className="page-section stack">
           <h2>Areas we cover for home visits</h2>
           <p>
-            Home visits cover all of Glasgow and everywhere within about an hour&rsquo;s drive. That
+            Home visits cover all of Glasgow and the surrounding towns. That
             includes the city centre and Merchant City, the West End (Partick, Hyndland, Hillhead), the
             Southside (Shawlands, Pollokshields, Govanhill), the East End (Dennistoun, Parkhead,
             Shettleston), the North (Springburn, Maryhill), and further out Bearsden, Milngavie,

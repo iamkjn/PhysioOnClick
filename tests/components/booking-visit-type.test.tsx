@@ -128,7 +128,7 @@ describe('booking visit type', () => {
 
     await user.type(postcode, 'G31 4HS')
     expect(screen.getByText(/We visit G31\./)).toHaveTextContent(
-      "We visit G31. Home visits cover Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian, west Edinburgh and west Fife).",
+      "We visit G31. Home visits cover Glasgow and the surrounding area (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian, west Edinburgh and west Fife).",
     )
     const address = await screen.findByLabelText('Address')
     expect(address).toBeRequired()
@@ -175,7 +175,7 @@ describe('booking visit type', () => {
     render(<BookingFlow />)
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
     await user.type(screen.getByLabelText('Postcode'), 'EH1 1AA')
-    expect(await screen.findByRole('alert')).toHaveTextContent("We don't offer home visits in EH1 yet.")
+    expect(await screen.findByRole('alert')).toHaveTextContent("Let's talk about EH1:")
     expect(screen.queryByLabelText('Address')).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Continue to times/ })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Book a video consultation instead' }))

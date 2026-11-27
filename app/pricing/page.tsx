@@ -41,9 +41,12 @@ export default function PricingPage() {
     <div className="site-shell">
       <section className="simple-page-hero">
         <h1>
-          Transparent <span>Pricing</span>
+          Physiotherapy <span>Prices</span>
         </h1>
-        <p>Clear, competitive pricing with no hidden fees. All sessions include a personalised treatment plan.</p>
+        <p>
+          Private physiotherapy prices for home visits in Glasgow, Lanarkshire, Stirling, Falkirk and Ayrshire, and
+          video appointments UK-wide. HCPC registered physiotherapist, no GP referral needed.
+        </p>
       </section>
 
       <div className="page-section">
@@ -59,8 +62,7 @@ export default function PricingPage() {
         <div>
           <Reveal direction="up">
             <h2>
-              Home visits in Glasgow{" "}
-              <span>(price depends on your postcode)</span>
+              Home visits in Glasgow and nearby
             </h2>
           </Reveal>
           <p className="muted" style={{ margin: "0.75rem 0 1.25rem" }}>

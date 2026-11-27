@@ -27,7 +27,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Work'), findsOneWidget);
-    expect(find.text('Outside our home-visit area'), findsOneWidget);
+    expect(find.text('Talk to us about this address'), findsOneWidget);
   });
 
   testWidgets('checks coverage once per outward code', (t) async {
@@ -37,14 +37,14 @@ void main() {
     await t.pumpWidget(_app(FakeAddressRepository([_home, home2, _away]), hv));
     await t.pumpAndSettle();
     expect(hv.checked.length, 2);
-    expect(find.text('Outside our home-visit area'), findsOneWidget);
+    expect(find.text('Talk to us about this address'), findsOneWidget);
   });
 
   testWidgets('coverage failure shows no badge', (t) async {
     await t.pumpWidget(
         _app(FakeAddressRepository([_away]), FakeHomeVisitRepository(failCoverage: true)));
     await t.pumpAndSettle();
-    expect(find.text('Outside our home-visit area'), findsNothing);
+    expect(find.text('Talk to us about this address'), findsNothing);
   });
 
   testWidgets('delete asks for confirmation', (t) async {
@@ -97,12 +97,12 @@ void main() {
     await t.enterText(find.byKey(const Key('address-postcode')), 'EH1 2AB');
     await t.tap(find.text('Find address'));
     await t.pumpAndSettle();
-    expect(find.text('Outside our home-visit area'), findsOneWidget);
+    expect(find.text('Talk to us about this address'), findsOneWidget);
     await t.enterText(find.byKey(const Key('address-line')), '1 Princes St, Edinburgh');
     await t.tap(find.text('Save address'));
     await t.pumpAndSettle();
     expect(repo.items.single.postcode, 'EH1 2AB');
-    expect(find.text('Outside our home-visit area'), findsOneWidget);
+    expect(find.text('Talk to us about this address'), findsOneWidget);
   });
 
   testWidgets('validation error shown, nothing saved', (t) async {
@@ -165,10 +165,10 @@ void main() {
     await t.enterText(find.byKey(const Key('address-postcode')), 'EH1 2AB');
     await t.tap(find.text('Find address'));
     await t.pumpAndSettle();
-    expect(find.text('Outside our home-visit area'), findsOneWidget);
+    expect(find.text('Talk to us about this address'), findsOneWidget);
     await t.enterText(find.byKey(const Key('address-postcode')), 'G31 4HS');
     await t.pump();
-    expect(find.text('Outside our home-visit area'), findsNothing);
+    expect(find.text('Talk to us about this address'), findsNothing);
     await t.tap(find.text('Find address'));
     await t.pumpAndSettle();
     expect(find.byKey(const Key('address-dropdown')), findsOneWidget);

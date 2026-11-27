@@ -386,7 +386,7 @@ export function ChatWidget() {
 
   function tapLocation() {
     addBot(
-      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, depending on your postcode, and every home visit is 60 minutes. ${PAYMENT_METHODS_NOTE} Video sessions can't include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of your care where appropriate.\n\n${APPOINTMENT_HOURS_SENTENCE} No GP referral is required — you can self-refer directly.`,
+      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, and every home visit is 60 minutes. ${PAYMENT_METHODS_NOTE} Video sessions can't include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of your care where appropriate.\n\n${APPOINTMENT_HOURS_SENTENCE} No GP referral is required — you can self-refer directly.`,
       BACK_CHIPS,
     );
   }

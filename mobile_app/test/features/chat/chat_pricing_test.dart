@@ -6,7 +6,7 @@ void main() {
     final text = chatPricingText();
     expect(text, contains('Initial Online Assessment (60 min) — £50'));
     expect(text, contains('Online Follow-Up (30 min) — £40'));
-    expect(text, contains('price depends on your postcode'));
+    expect(text, contains('your price is shown before you book'));
     expect(text, contains('Initial Assessment at home (60 min) — from £80'));
     expect(text, contains('Follow-Up at home (60 min) — from £70'));
     expect(text, isNot(contains('Bundle')));

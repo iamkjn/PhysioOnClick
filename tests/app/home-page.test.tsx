@@ -76,7 +76,7 @@ describe("homepage home-visit pricing", () => {
     );
     expect(faq).toBeDefined();
     expect(faq!.textContent).toContain(
-      `A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up, depending on your postcode`,
+      `A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up, and can include`,
     );
     expect(faq!.textContent).not.toMatch(/travel fee|video price plus/i);
   });

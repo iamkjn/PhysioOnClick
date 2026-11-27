@@ -292,11 +292,18 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
           Your time isn&rsquo;t booked until we&rsquo;ve confirmed it. You pay after your session
           {video ? " by secure link" : ", in cash or by secure link"}.
         </p>
-        {!covered ? (
-          <p className="muted">
-            {outwardCode(normalised)} is outside the area we usually visit. We&rsquo;ll talk about the options when
-            we call, including a video appointment.
+        {video ? (
+          <p>
+            Video appointment: first {formatPounds(sessionPricePence("initial-assessment"))}, follow-ups{" "}
+            {formatPounds(sessionPricePence("follow-up"))}.
           </p>
+        ) : postcodeComplete && covered ? (
+          <p>
+            {`Home visit price for ${outwardCode(normalised)}. First visit ${formatPounds(sessionPricePence("initial-assessment", "home", normalised))}, follow-ups ${formatPounds(sessionPricePence("follow-up", "home", normalised))}.`}
+          </p>
+        ) : null}
+        {!covered ? (
+          <p className="muted">We&rsquo;ll talk about the options for {outwardCode(normalised)} when we call.</p>
         ) : null}
       </div>
     );
@@ -426,7 +433,7 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
             <span className={covered ? "visit-coverage is-covered" : "visit-coverage"}>
               {covered
                 ? `We visit ${outwardCode(normalised)}. First visit ${formatPounds(sessionPricePence("initial-assessment", "home", normalised))}, follow-ups ${formatPounds(sessionPricePence("follow-up", "home", normalised))}.`
-                : `${outwardCode(normalised)} is outside our usual area, but send it anyway and we'll talk about the options.`}
+                : `Send your request and we'll talk about the options for ${outwardCode(normalised)}.`}
             </span>
           ) : null}
           {input("town", "Town / city", { autoComplete: "address-level2", maxLength: 60 })}

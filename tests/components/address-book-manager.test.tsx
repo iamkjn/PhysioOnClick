@@ -44,7 +44,7 @@ describe('AddressBookManager', () => {
     render(<AddressBookManager uid="u1" />)
     expect(await screen.findByText('Home, G31 4HS')).toBeInTheDocument()
     expect(screen.getByText('2 Far Rd, EH1 1AA')).toBeInTheDocument()
-    expect(screen.getAllByText('Outside our home-visit area')).toHaveLength(1)
+    expect(screen.getAllByText('Talk to us about this address')).toHaveLength(1)
   })
 
   it('adds an out-of-area address via the manual input', async () => {

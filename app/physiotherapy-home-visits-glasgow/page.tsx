@@ -28,7 +28,7 @@ const NHSGGC_SELF_REFERRAL_URL =
 export const metadata: Metadata = {
   alternates: { canonical: "/physiotherapy-home-visits-glasgow" },
   title: "Home Physiotherapy Glasgow & Surrounding Areas | PhysioOnClick",
-  description: `Home physiotherapy in Glasgow and up to an hour's drive away, 7 days 9am–9pm, from an HCPC registered physio. No GP referral.`
+  description: `Home physiotherapy in Glasgow, Lanarkshire and nearby towns, 7 days 9am–9pm, from an HCPC registered physio. No GP referral.`
 };
 
 const faqItems = [
@@ -192,7 +192,7 @@ export default function HomeVisitsGlasgowPage() {
         <section className="page-section stack">
           <h2>Postcodes and areas we visit</h2>
           <p>
-            All of Glasgow and everywhere within about an hour&rsquo;s drive. That includes the city centre,
+            All of Glasgow and the surrounding towns. That includes the city centre,
             the West End, the Southside, the East End and the North of Glasgow; Bearsden, Milngavie,
             Bishopbriggs, Kirkintilloch, Cumbernauld, Clydebank, Dumbarton and Helensburgh; Rutherglen,
             Cambuslang, East Kilbride, Newton Mearns, Giffnock and Barrhead; Paisley, Renfrew, Johnstone,

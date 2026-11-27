@@ -74,5 +74,5 @@ export function isCoveredPostcode(postcode: string): boolean {
 
 export function outOfAreaMessage(postcode: string): string {
   const district = outwardCode(postcode) || "your area";
-  return `We don't offer home visits in ${district} yet. Video consultations work anywhere in the UK, or contact us and we'll see if we can help.`;
+  return `Let's talk about ${district}: contact us and we'll go through the options. Video consultations work anywhere in the UK.`;
 }

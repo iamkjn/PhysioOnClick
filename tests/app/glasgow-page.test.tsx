@@ -34,7 +34,7 @@ describe("glasgow-physiotherapist home-visit pricing copy", () => {
     const text = container.textContent ?? "";
     expect(text).not.toMatch(/same prices|cost the same as video|confirm by email/i);
     expect(text).toContain(`The initial assessment is ${home} as a home visit or ${video} by video.`);
-    expect(text).toContain(`A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up. Your exact price depends on your postcode`);
+    expect(text).toContain(`A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up. Your price is confirmed before you book`);
     expect(text).not.toMatch(/all[- ]in(?![-\w])|nothing added|bundle/i);
     expect(text).toContain("The same booking flow for both, with your price shown before you book");
     expect(text).toContain("Home visit in Glasgow");

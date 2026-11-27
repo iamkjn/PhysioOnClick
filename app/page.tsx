@@ -294,7 +294,7 @@ export default async function HomePage() {
           </details>
           <details>
             <summary>Can I be seen in person?</summary>
-            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit is <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the initial assessment and <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up, depending on your postcode, and can include <Link href="/manual-therapy-glasgow" prefetch>hands-on treatment (manual therapy)</Link> where appropriate. {PAYMENT_METHODS_NOTE} We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
+            <p>Yes, through home visits in the Glasgow area &mdash; choose &ldquo;Home visit in Glasgow&rdquo; when you book and enter your postcode to check we cover it, or <Link href="/glasgow-physiotherapist" prefetch>read about home visits in Glasgow</Link>. A home visit is <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the initial assessment and <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up, and can include <Link href="/manual-therapy-glasgow" prefetch>hands-on treatment (manual therapy)</Link> where appropriate. {PAYMENT_METHODS_NOTE} We have no clinic or premises, and video appointments are available anywhere in the UK.</p>
           </details>
           <details>
             <summary>When are appointments available?</summary>
