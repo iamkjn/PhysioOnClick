@@ -24,7 +24,7 @@ export const VISIT_TYPE_LABELS: Record<VisitType, string> = {
  * this one; importing back would create a runtime cycle.
  */
 export const HOME_VISIT_AREA_LABEL =
-  "Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian and west Fife)";
+  "Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian, west Edinburgh and west Fife)";
 
 export const HOME_VISIT_HINT = `Home visits cover ${HOME_VISIT_AREA_LABEL}.`;
 

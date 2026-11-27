@@ -63,7 +63,7 @@ export default function PricingPage() {
               <span>(price depends on your postcode)</span>
             </h2>
           </Reveal>
-          <p className="muted">
+          <p className="muted" style={{ margin: "0.75rem 0 1.25rem" }}>
             We visit {HOME_VISIT_AREA_LABEL}. {HOME_VISIT_PRICE_NOTE} {PAYMENT_METHODS_NOTE} Every home visit can
             include <Link href="/manual-therapy-glasgow">hands-on treatment (manual therapy)</Link> where
             appropriate.
@@ -79,7 +79,7 @@ export default function PricingPage() {
               </article>
             ))}
           </div>
-          <p className="muted">*{HOME_VISIT_PRICE_NOTE}</p>
+          <p className="muted" style={{ marginTop: "1rem" }}>*{HOME_VISIT_PRICE_NOTE}</p>
           <div style={{ marginTop: "1rem" }}>
             <TrackedBookLink
               className="button primary"

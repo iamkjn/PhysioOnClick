@@ -128,7 +128,7 @@ describe('booking visit type', () => {
 
     await user.type(postcode, 'G31 4HS')
     expect(screen.getByText(/We visit G31\./)).toHaveTextContent(
-      "We visit G31. Home visits cover Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian and west Fife).",
+      "We visit G31. Home visits cover Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian, west Edinburgh and west Fife).",
     )
     const address = await screen.findByLabelText('Address')
     expect(address).toBeRequired()
