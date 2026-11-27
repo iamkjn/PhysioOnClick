@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { bookServiceFor } from "@/lib/cal-services";
 import * as pricingModule from "@/lib/home-visit-pricing";
 import {
-  HOME_VISIT_EXTRA_PENCE,
   formatPounds,
   homeVisitPricePence,
   homeVisitPrices,
@@ -25,38 +24,26 @@ describe("sessionPricePence", () => {
     expect(sessionPricePence("bundle-8", "video")).toBe(30500);
   });
 
-  it("is the whole home-visit price for a home visit: video price + £30 per visit", () => {
-    expect(HOME_VISIT_EXTRA_PENCE).toBe(3000);
-    for (const id of ["initial-assessment", "follow-up", "bundle-4", "bundle-8"] as const) {
-      expect(sessionPricePence(id, "home")).toBe(
-        videoPence(id) + HOME_VISIT_EXTRA_PENCE * bookServiceFor(id).sessions
-      );
-    }
-  });
-
-  it("prices home visits at £80, £70, £280 and £545", () => {
+  it("starts home visits at £80 and £70 when no postcode is known", () => {
     expect(sessionPricePence("initial-assessment", "home")).toBe(8000);
     expect(sessionPricePence("follow-up", "home")).toBe(7000);
-    expect(sessionPricePence("bundle-4", "home")).toBe(28000);
-    expect(sessionPricePence("bundle-8", "home")).toBe(54500);
   });
 });
 
 describe("homeVisitPricePence", () => {
   it("is sessionPricePence for a home visit", () => {
-    for (const id of ["initial-assessment", "follow-up", "bundle-4", "bundle-8"] as const) {
+    for (const id of ["initial-assessment", "follow-up"] as const) {
       expect(homeVisitPricePence(id)).toBe(sessionPricePence(id, "home"));
     }
   });
 });
 
 describe("homeVisitPrices", () => {
-  it("formats the whole home-visit initial and follow-up prices", () => {
+  it("advertises the starting prices", () => {
     expect(homeVisitPrices).toEqual({
-      initial: formatPounds(homeVisitPricePence("initial-assessment")),
-      followUp: formatPounds(homeVisitPricePence("follow-up")),
+      initial: `from ${formatPounds(homeVisitPricePence("initial-assessment"))}`,
+      followUp: `from ${formatPounds(homeVisitPricePence("follow-up"))}`,
     });
-    expect(homeVisitPrices).toEqual({ initial: "£80", followUp: "£70" });
   });
 });
 

@@ -83,10 +83,10 @@ export default function TermsPage() {
           <h2>Home visits (Glasgow area)</h2>
           <p>
             Home visits are offered in {HOME_VISIT_AREA_LABEL}, booked through the same booking flow as
-            video appointments. A home visit has its own all-in price, shown when you choose a home visit and
-            at checkout (currently <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for an initial assessment and{" "}
-            <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up); there is no separate fee. If you book a session bundle
-            as home visits, the price you pay when you book covers every visit in the bundle.
+            video appointments. A home visit&rsquo;s price depends on your postcode and is shown before
+            you book (currently <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for an initial assessment and{" "}
+            <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for a follow-up). We no longer sell session packages;
+            one you have already bought stays valid on the terms it was sold on.
           </p>
           <p>
             Home visits are available only for postcodes in the area we cover. When you book a home visit
@@ -113,10 +113,10 @@ export default function TermsPage() {
         <article className="panel stack soft-panel" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
           <h2>Payment &amp; cancellation</h2>
           <p>
-            Appointments and packages are paid for online when you book, through our secure payment provider,
+            Appointments booked online are paid for when you book, through our secure payment provider,
             Stripe. We never see or store your full card details. You can also send us a booking request without
-            paying: we contact you to confirm the time, and you pay by secure payment link after your
-            session. A requested time is not booked until we confirm it. An appointment booked online is
+            paying: we contact you to confirm the time, and you pay after your session, by secure
+            payment link or, for a home visit, in cash. A requested time is not booked until we confirm it. An appointment booked online is
             confirmed once payment has gone through, and you will receive a receipt by email that you can use for insurance claims.
           </p>
           <p>

@@ -193,8 +193,12 @@ export function BookingStepTime({
     assessmentUid: string;
     assessmentPersonId: string;
   } | null>(null);
-  // One whole price for the visit type (a home visit includes everything).
-  const checkoutAmountPence = sessionPricePence(service.id, visit.visitType);
+  // One whole price: a home visit is priced by its postcode (the server does the same).
+  const checkoutAmountPence = sessionPricePence(
+    service.id,
+    visit.visitType,
+    visit.visitType === "home" ? visit.homePostcode : undefined,
+  );
 
   const signedIn = Boolean(user);
   const signingIn = !signedIn && authMode === "signin";

@@ -25,13 +25,13 @@ async function homeVisit(slug: string) {
 afterEach(() => cleanup());
 
 describe("home-visit line on condition pages", () => {
-  it.each(onlinePhysioPages.map((p) => p.slug))("appears once on %s, with area, whole price and hands-on wording", async (slug) => {
+  it.each(onlinePhysioPages.map((p) => p.slug))("appears once on %s, with area, starting price and hands-on wording", async (slug) => {
     const r = await homeVisit(slug);
     expect(r.text).toContain(LINE);
     expect(r.links).toBe(1);
     expect(r.text).toContain(HOME_VISIT_AREA_LABEL);
     expect(r.text).toMatch(
-      new RegExp(`is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up,\\s+all in`),
+      new RegExp(`is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up,\\s+depending on your postcode`),
     );
     expect(r.text).not.toMatch(/travel fee/i);
     expect(r.text).not.toMatch(/video price plus/i);

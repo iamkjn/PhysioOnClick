@@ -5,8 +5,8 @@ import { formatPounds, homeVisitPricePence, sessionPricePence } from "@/lib/home
 
 // A home visit has one whole price (lib/home-visit-pricing), never a fee on top.
 const video = formatPounds(sessionPricePence("initial-assessment"));
-const home = formatPounds(homeVisitPricePence("initial-assessment"));
-const homeFollowUp = formatPounds(homeVisitPricePence("follow-up"));
+const home = `from ${formatPounds(homeVisitPricePence("initial-assessment"))}`;
+const homeFollowUp = `from ${formatPounds(homeVisitPricePence("follow-up"))}`;
 
 describe("glasgow-physiotherapist metadata", () => {
   it("targets Glasgow home visits within length limits", () => {
@@ -33,10 +33,10 @@ describe("glasgow-physiotherapist home-visit pricing copy", () => {
     const { container } = render(<GlasgowPage />);
     const text = container.textContent ?? "";
     expect(text).not.toMatch(/same prices|cost the same as video|confirm by email/i);
-    expect(text).toContain(`The initial assessment is ${home} as a home visit, all in, or ${video} by video.`);
-    expect(text).toContain(`A home visit is one all-in price: ${home} for the initial assessment and ${homeFollowUp} for a follow-up, with nothing added at checkout.`);
-    expect(text).toMatch(new RegExp(`A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up\\. That\\s+is the whole price, with nothing added at checkout\\.`));
-    expect(text).toContain("The same booking flow for both, with one all-in price for each");
+    expect(text).toContain(`The initial assessment is ${home} as a home visit or ${video} by video.`);
+    expect(text).toContain(`A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up. Your exact price depends on your postcode`);
+    expect(text).not.toMatch(/all[- ]in(?![-\w])|nothing added|bundle/i);
+    expect(text).toContain("The same booking flow for both, with your price shown before you book");
     expect(text).toContain("Home visit in Glasgow");
     expect(text).toContain("How much does a home visit cost?");
   });

@@ -7,6 +7,7 @@ import { Activity, CalendarDays, Clock, MapPin, ShieldCheck, UserRound } from "l
 import { track } from "@/lib/analytics";
 import { currentVisitSource, trackGrowthEvent } from "@/lib/growth-tracking";
 import { isCoveredPostcode, outwardCode } from "@/lib/home-visit-area";
+import { formatPounds, sessionPricePence } from "@/lib/home-visit-pricing";
 import { normalisePostcode } from "@/lib/home-visit";
 import { postTown } from "@/lib/post-town";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/practice-contact";
@@ -287,7 +288,10 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
           </strong>
           .
         </p>
-        <p>Your time isn&rsquo;t booked until we&rsquo;ve confirmed it. You pay after your session.</p>
+        <p>
+          Your time isn&rsquo;t booked until we&rsquo;ve confirmed it. You pay after your session
+          {video ? " by secure link" : ", in cash or by secure link"}.
+        </p>
         {!covered ? (
           <p className="muted">
             {outwardCode(normalised)} is outside the area we usually visit. We&rsquo;ll talk about the options when
@@ -421,7 +425,7 @@ export function VisitRequestForm({ source = "request_visit_page" }: { source?: s
           {postcodeComplete ? (
             <span className={covered ? "visit-coverage is-covered" : "visit-coverage"}>
               {covered
-                ? `We visit ${outwardCode(normalised)}.`
+                ? `We visit ${outwardCode(normalised)}. First visit ${formatPounds(sessionPricePence("initial-assessment", "home", normalised))}, follow-ups ${formatPounds(sessionPricePence("follow-up", "home", normalised))}.`
                 : `${outwardCode(normalised)} is outside our usual area, but send it anyway and we'll talk about the options.`}
             </span>
           ) : null}

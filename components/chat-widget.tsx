@@ -9,7 +9,7 @@ import { auth } from "@/lib/firebase";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { pricing } from "@/lib/site-data";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { homeVisitPrices } from "@/lib/home-visit-pricing";
+import { HOME_VISIT_PRICE_NOTE, homeVisitPrices, PAYMENT_METHODS_NOTE } from "@/lib/home-visit-pricing";
 import { APPOINTMENT_HOURS_SENTENCE } from "@/lib/appointment-hours";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF, whatsappHref } from "@/lib/practice-contact";
 import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
@@ -91,10 +91,9 @@ const PRICING_TEXT = [
   "Video sessions (UK-wide):",
   ...pricing.filter((p) => p.mode === "Online").map((p) => `• ${p.title} (${p.duration}): £${p.price}`),
   "",
-  "Video packages:",
-  ...pricing.filter((p) => p.mode === "Package").map((p) => `• ${p.title}: £${p.price}`),
-  "",
+  HOME_VISIT_PRICE_NOTE,
   "No GP referral required. Send a booking request and pay after your session.",
+  PAYMENT_METHODS_NOTE,
 ].join("\n");
 
 const INSURANCE_TEXT =
@@ -387,7 +386,7 @@ export function ChatWidget() {
 
   function tapLocation() {
     addBot(
-      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, all in, and every home visit is 60 minutes. Video sessions can't include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of your care where appropriate.\n\n${APPOINTMENT_HOURS_SENTENCE} No GP referral is required — you can self-refer directly.`,
+      `We're based in Glasgow, UK. We offer video physiotherapy across the whole UK, and home visits in ${HOME_VISIT_AREA_LABEL} (we have no clinic or premises). A home visit is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, depending on your postcode, and every home visit is 60 minutes. ${PAYMENT_METHODS_NOTE} Video sessions can't include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of your care where appropriate.\n\n${APPOINTMENT_HOURS_SENTENCE} No GP referral is required — you can self-refer directly.`,
       BACK_CHIPS,
     );
   }

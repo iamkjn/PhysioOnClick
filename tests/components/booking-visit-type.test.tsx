@@ -193,10 +193,8 @@ describe('booking visit type', () => {
     expect(prices).toEqual([
       formatPounds(sessionPricePence('initial-assessment', 'home')),
       formatPounds(sessionPricePence('follow-up', 'home')),
-      formatPounds(sessionPricePence('bundle-4', 'home')),
-      formatPounds(sessionPricePence('bundle-8', 'home')),
     ])
-    expect(prices).toEqual(['£80', '£70', '£280', '£545'])
+    expect(prices).toEqual(['£80', '£70'])
     expect(document.querySelectorAll('.book-service-travel')).toHaveLength(0)
     const grid = document.querySelector('.book-service-grid')
     expect(grid?.textContent).not.toMatch(/travel/i)
@@ -210,8 +208,6 @@ describe('booking visit type', () => {
     expect(prices).toEqual([
       formatPounds(sessionPricePence('initial-assessment', 'video')),
       formatPounds(sessionPricePence('follow-up', 'video')),
-      formatPounds(sessionPricePence('bundle-4', 'video')),
-      formatPounds(sessionPricePence('bundle-8', 'video')),
     ])
     expect(document.querySelector('.book-service-grid')?.textContent).not.toMatch(/travel/i)
   })
@@ -471,20 +467,23 @@ describe('booking visit type', () => {
     render(<BookingFlow />)
     expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(video)
     await user.click(screen.getByRole('radio', { name: /Home visit in Glasgow/ }))
-    // Nothing entered yet: already the whole home price, not the video price.
-    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(home)
+    // Nothing entered yet: the starting home price, marked "from".
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(`from ${home}`)
     expect(document.querySelector('.book-rail-travel')).toBeNull()
-    // Uncovered: still the home price (the rail price never depends on the postcode).
+    // Uncovered: still only the starting price.
     const postcode = screen.getByLabelText('Postcode')
     await user.type(postcode, 'EH1 1AA')
-    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(home)
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(`from ${home}`)
     expect(document.querySelector('.book-rail-travel')).toBeNull()
-    // Covered: the same whole price, with no travel row.
+    // Covered: that postcode's own price, with no travel row.
     await user.clear(postcode)
     await user.type(postcode, 'G31 4HS')
     expect(document.querySelector('.book-rail-total-price')?.textContent).toBe(home)
     expect(document.querySelector('.book-rail-travel')).toBeNull()
     expect(document.querySelector('.book-rail')?.textContent ?? '').not.toMatch(/travel/i)
+    await user.clear(postcode)
+    await user.type(postcode, 'KA1 1AA')
+    expect(document.querySelector('.book-rail-total-price')?.textContent).toBe('£110')
   })
 
   it('moves focus to the video card after "Book a video consultation instead"', async () => {

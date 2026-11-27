@@ -9,8 +9,8 @@ import { formatPounds, homeVisitPricePence } from "@/lib/home-visit-pricing";
 // Techniques confirmed by Shivaliba on 2026-11-15. Adding any other technique
 // needs her sign-off first.
 const TECHNIQUES = ["Joint mobilisation", "Soft tissue work", "Stretching and muscle energy techniques"];
-const home = formatPounds(homeVisitPricePence("initial-assessment"));
-const homeFollowUp = formatPounds(homeVisitPricePence("follow-up"));
+const home = `from ${formatPounds(homeVisitPricePence("initial-assessment"))}`;
+const homeFollowUp = `from ${formatPounds(homeVisitPricePence("follow-up"))}`;
 
 function jsonLd(container: HTMLElement) {
   return [...container.querySelectorAll('script[type="application/ld+json"]')].map((s) => JSON.parse(s.textContent ?? "{}"));
@@ -47,7 +47,7 @@ describe("manual-therapy-glasgow content", () => {
 
   it("states the derived all-in home prices with no extra charge", () => {
     const t = text();
-    expect(t).toMatch(new RegExp(`assessment is ${home} all in, and follow-ups are ${homeFollowUp}, with no extra charge`));
+    expect(t).toMatch(new RegExp(`assessment is ${home}, and follow-ups are ${homeFollowUp}, with no extra charge`));
     expect(t).not.toMatch(/travel fee/i);
   });
 

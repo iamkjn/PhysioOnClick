@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { isBookServiceId, serviceLabelFor } from "@/lib/cal-services";
+import { isBookServiceId, isOnSale, serviceLabelFor } from "@/lib/cal-services";
 import { createStripeCheckout } from "@/lib/payments/stripe";
 import type { BookingIntent } from "@/lib/payments";
 import { DEFAULT_VISIT_TYPE, isVisitType, validateHomeVisit, type VisitType } from "@/lib/home-visit";
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     homePostcode,
   } = body;
 
-  if (!isBookServiceId(service)) return bad("Invalid or missing service.");
+  if (!isBookServiceId(service) || !isOnSale(service)) return bad("Invalid or missing service.");
   if (typeof start !== "string" || start.trim() === "") return bad("Invalid or missing start time.");
   const startDate = new Date(start);
   if (Number.isNaN(startDate.getTime())) return bad("Invalid start time.");
@@ -87,11 +87,13 @@ export async function POST(request: Request) {
     resolvedVisitType = visitType;
   }
   let homeVisitAddress: string | undefined;
+  let homeVisitPostcode: string | undefined;
   if (resolvedVisitType === "home") {
     const home = validateHomeVisit(homeAddressLine, homePostcode);
     if (!home.ok) return bad(home.error);
     if (!isCoveredPostcode(home.postcode)) return bad("We don't offer home visits at that postcode yet.");
     homeVisitAddress = home.homeVisitAddress;
+    homeVisitPostcode = home.postcode;
   }
 
   const cleanedFocus = Array.isArray(focusAreas)
@@ -104,7 +106,7 @@ export async function POST(request: Request) {
   // One whole price per visit type (a home visit includes everything). There
   // are no discount codes: NEW10 ended on 22 Nov 2026, and a code sent by an
   // old cached booking page is ignored, so the Stripe page shows the full price.
-  const amountPence = sessionPricePence(service, resolvedVisitType);
+  const amountPence = sessionPricePence(service, resolvedVisitType, homeVisitPostcode);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 

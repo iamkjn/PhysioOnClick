@@ -27,7 +27,7 @@ export function SearchExperience({
   const keywordOptions = useMemo(() => {
     if (scope === "blog") return ["Knee injuries", "Back pain", "Sciatica", "Shoulder rehab", "Workplace ergonomics"];
     if (scope === "service") return ["Musculoskeletal Physiotherapy", "Post-Surgical Rehabilitation", "Online Rehab"];
-    if (scope === "pricing") return ["Initial", "Follow-Up", "Bundle"];
+    if (scope === "pricing") return ["Initial", "Follow-Up"];
     return ["Knee pain", "Back pain", "Online physio", "Shoulder rehab", "ACL recovery", "Sciatica"];
   }, [scope]);
 

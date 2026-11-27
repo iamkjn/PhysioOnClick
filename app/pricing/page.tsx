@@ -4,9 +4,9 @@ import Link from "next/link";
 
 import { durationFor, serviceLabelFor } from "@/lib/cal-services";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, homeVisitPricePence, homeVisitPrices } from "@/lib/home-visit-pricing";
+import { HOME_VISIT_PRICE_NOTE, homeVisitPrices, PAYMENT_METHODS_NOTE } from "@/lib/home-visit-pricing";
 import { getPublicPricing } from "@/lib/public-content";
-import { bundleSessionCount, initialAssessmentPrice, payAsYouGoPrice, pricing } from "@/lib/site-data";
+import { initialAssessmentPrice, pricing } from "@/lib/site-data";
 import { formatCurrency } from "@/lib/utils";
 import { PricingChooser } from "@/components/pricing-chooser";
 import { ContactOptions } from "@/components/contact-options";
@@ -28,7 +28,6 @@ export const dynamic = "force-static";
 export default function PricingPage() {
   const pricing = getPublicPricing();
   const online = pricing.filter((item) => item.mode === "Online");
-  const packages = pricing.filter((item) => item.mode === "Package");
   const included = [
     "Personalised treatment plan",
     "Email support between sessions",
@@ -61,24 +60,26 @@ export default function PricingPage() {
           <Reveal direction="up">
             <h2>
               Home visits in Glasgow{" "}
-              <span>(one all-in price per visit)</span>
+              <span>(price depends on your postcode)</span>
             </h2>
           </Reveal>
           <p className="muted">
-            We visit {HOME_VISIT_AREA_LABEL}. The price you see is the price you pay, with nothing added at
-            checkout or on your invoice; bundles cover every visit upfront. Every home visit can include{" "}
-            <Link href="/manual-therapy-glasgow">hands-on treatment (manual therapy)</Link> where appropriate, at
-            no extra cost.
+            We visit {HOME_VISIT_AREA_LABEL}. {HOME_VISIT_PRICE_NOTE} {PAYMENT_METHODS_NOTE} Every home visit can
+            include <Link href="/manual-therapy-glasgow">hands-on treatment (manual therapy)</Link> where
+            appropriate.
           </p>
           <div className="pricing-grid pricing-grid-two">
-            {[...online, ...packages].map((item) => (
+            {online.map((item) => (
               <article key={item.id} className="simple-price-card">
                 <h3>{serviceLabelFor(item.id, "home")}</h3>
-                <strong><NoSnippet>{formatPounds(homeVisitPricePence(item.id))}</NoSnippet></strong>
+                <strong>
+                  <NoSnippet>{item.id === "follow-up" ? homeVisitPrices.followUp : homeVisitPrices.initial}*</NoSnippet>
+                </strong>
                 <p className="muted">{durationFor(item.id, "home")}</p>
               </article>
             ))}
           </div>
+          <p className="muted">*{HOME_VISIT_PRICE_NOTE}</p>
           <div style={{ marginTop: "1rem" }}>
             <TrackedBookLink
               className="button primary"
@@ -114,35 +115,6 @@ export default function PricingPage() {
                 </article>
               </Reveal>
             ))}
-          </div>
-        </div>
-
-        <div>
-          <Reveal direction="up">
-            <h2>Rehab Packages</h2>
-          </Reveal>
-          <div className="pricing-grid pricing-grid-two">
-            {packages.map((item, i) => {
-              const savings = payAsYouGoPrice(bundleSessionCount(item)) - item.price;
-              return (
-                <Reveal key={item.id} direction="up" delay={i * 100}>
-                  <article className="simple-package-card" style={{ display: "flex", flexDirection: "column" }}>
-                    {savings > 0 ? <div className="save-pill">Save <NoSnippet>{formatCurrency(savings)}</NoSnippet></div> : null}
-                    <h3>{item.title}</h3>
-                    <strong><NoSnippet>{formatCurrency(item.price)}</NoSnippet></strong>
-                    <p>{noSnippetPrices(item.description)}</p>
-                    <Link
-                      className="button primary"
-                      href={`/book?service=${item.id}`}
-                      aria-label={`Get started with ${item.title}`}
-                      style={{ marginTop: "auto" }}
-                    >
-                      Get Started
-                    </Link>
-                  </article>
-                </Reveal>
-              );
-            })}
           </div>
         </div>
 
@@ -184,7 +156,7 @@ export default function PricingPage() {
           </details>
           <details>
             <summary>Do I pay before or after the session?</summary>
-            <p>Payment is taken securely at booking through Stripe, and your appointment is confirmed immediately once payment goes through &mdash; no separate invoicing step required.</p>
+            <p>You choose. Send a booking request and pay after your session: for a home visit in cash or by secure link, for video by secure link. Or <Link href="/book?pay=online">choose a time and pay online</Link> by card, and your appointment is confirmed immediately.</p>
           </details>
         </div>
       </section>

@@ -12,8 +12,9 @@ export function getPublicServices(): Service[] {
   return services;
 }
 
+/** What is on sale. Withdrawn packages stay in `pricing` only for old records. */
 export function getPublicPricing(): PricingItem[] {
-  return pricing;
+  return pricing.filter((item) => item.mode !== "Package");
 }
 
 export function getPublicTestimonials(): Testimonial[] {
@@ -36,7 +37,7 @@ export function getPublicSearchIndex(): SearchItem[] {
       description: service.summary,
       type: "Service" as const
     })),
-    ...pricing.map((item) => ({
+    ...getPublicPricing().map((item) => ({
       href: "/pricing",
       title: item.title,
       description: `${item.duration} • £${item.price} • ${item.description}`,

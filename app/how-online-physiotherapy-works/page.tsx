@@ -6,7 +6,7 @@ import { Reveal } from "@/components/reveal";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { initialAssessmentPrice } from "@/lib/site-data";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { homeVisitPrices } from "@/lib/home-visit-pricing";
+import { homeVisitPrices, HOME_VISIT_PRICE_NOTE, PAYMENT_METHODS_NOTE } from "@/lib/home-visit-pricing";
 import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 const steps = [
   {
     title: "Choose your service and a time",
-    body: "Pick from an initial assessment, a follow-up, or a multi-session bundle, then choose an available slot. Everything runs on UK time and updates in real time as slots are booked."
+    body: "Pick from an initial assessment or a follow-up, then choose an available slot. Everything runs on UK time and updates in real time as slots are booked."
   },
   {
     title: "Complete a short assessment as you book",
@@ -58,7 +58,7 @@ const practicalQuestions = [
   },
   {
     question: "Can I be seen in person?",
-    answer: `Yes, through home visits in ${HOME_VISIT_AREA_LABEL}. We have no clinic or premises. Video appointments are available anywhere in the UK. A home visit is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, all in, and can include hands-on treatment (manual therapy) where appropriate; video sessions cannot. Choose your visit type when you book; for a home visit you enter your postcode and see straight away whether we cover it.`
+    answer: `Yes, through home visits in ${HOME_VISIT_AREA_LABEL}. We have no clinic or premises. Video appointments are available anywhere in the UK. A home visit is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, and can include hands-on treatment (manual therapy) where appropriate; video sessions cannot. Choose your visit type when you book; for a home visit you enter your postcode and see straight away whether we cover it. ${HOME_VISIT_PRICE_NOTE} ${PAYMENT_METHODS_NOTE}`
   },
   {
     question: "Do I need a GP referral?",

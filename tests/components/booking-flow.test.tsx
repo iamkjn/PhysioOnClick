@@ -71,10 +71,10 @@ describe('BookingFlow', () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<BookingFlow />)
 
-    await user.click(screen.getByRole('button', { name: /8 Session Bundle/ }))
+    await user.click(screen.getByRole('button', { name: /Online Follow-Up/ }))
 
-    expect(document.querySelector('.book-rail-total-price')).toHaveTextContent('£305')
-    expect(document.querySelector('.book-rail-title')).toHaveTextContent('8 Session Bundle')
+    expect(document.querySelector('.book-rail-total-price')).toHaveTextContent('£40')
+    expect(document.querySelector('.book-rail-title')).toHaveTextContent('Online Follow-Up')
   })
 
   it('walks to step 2 and asks a guest for a password', async () => {

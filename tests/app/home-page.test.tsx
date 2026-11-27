@@ -16,8 +16,8 @@ import { formatPounds, homeVisitPricePence, sessionPricePence } from "@/lib/home
 
 // A home visit has one whole price (lib/home-visit-pricing), never a fee on top.
 const video = formatPounds(sessionPricePence("initial-assessment"));
-const home = formatPounds(homeVisitPricePence("initial-assessment"));
-const homeFollowUp = formatPounds(homeVisitPricePence("follow-up"));
+const home = `from ${formatPounds(homeVisitPricePence("initial-assessment"))}`;
+const homeFollowUp = `from ${formatPounds(homeVisitPricePence("follow-up"))}`;
 
 describe("homepage metadata", () => {
   const title = String(metadata.title);
@@ -69,14 +69,14 @@ describe("homepage hero", () => {
 });
 
 describe("homepage home-visit pricing", () => {
-  it("quotes the whole home-visit prices in the in-person FAQ, with no travel fee", async () => {
+  it("quotes the starting home-visit prices in the in-person FAQ, with no travel fee", async () => {
     const { container } = render(await HomePage());
     const faq = [...container.querySelectorAll("details")].find((d) =>
       /Can I be seen in person\?/.test(d.querySelector("summary")?.textContent ?? ""),
     );
     expect(faq).toBeDefined();
     expect(faq!.textContent).toContain(
-      `A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up, all in`,
+      `A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up, depending on your postcode`,
     );
     expect(faq!.textContent).not.toMatch(/travel fee|video price plus/i);
   });

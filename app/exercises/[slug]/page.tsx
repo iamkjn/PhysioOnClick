@@ -467,7 +467,7 @@ export default async function ExerciseDetailPage({
                   </TrackedBookLink>
                 </div>
                 <div className="exlib-uk-offer__option">
-                  <span className="exlib-uk-offer__label">Home visit, Glasgow and about an hour around</span>
+                  <span className="exlib-uk-offer__label">Home visit, Glasgow and about an hour around (price by postcode)</span>
                   <strong className="exlib-uk-offer__price"><NoSnippet>{homeVisitPrices.initial}</NoSnippet></strong>
                   <TrackedBookLink
                     className="button secondary"

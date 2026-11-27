@@ -391,8 +391,11 @@ export function BookingStepService({
                     ) : null}
                     <span className="book-service-name">{serviceLabelFor(s.id, visitType)}</span>
                     <span className="book-service-desc">{s.description}</span>
-                    {/* One whole price for the chosen visit type: a home visit has no separate fee. */}
-                    <span className="book-service-price">{formatPounds(sessionPricePence(s.id, visitType))}</span>{" "}
+                    {/* One whole price: a home visit is priced by postcode, "from" until we know it. */}
+                    <span className="book-service-price">
+                      {visitType === "home" && !isCoveredPostcode(homePostcode) ? "from " : ""}
+                      {formatPounds(sessionPricePence(s.id, visitType, homePostcode))}
+                    </span>{" "}
                     <span className="book-service-duration">{durationFor(s.id, visitType)}</span>
                   </button>
                 );

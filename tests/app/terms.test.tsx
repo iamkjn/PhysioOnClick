@@ -57,12 +57,12 @@ describe('Terms & Conditions page', () => {
     expect(screen.getByRole('heading', { name: 'Home visits (Glasgow area)' })).toBeInTheDocument()
     const text = screen.getByRole('heading', { name: 'Home visits (Glasgow area)' }).closest('article')?.textContent ?? ''
     expect(text).not.toMatch(/same prices/)
-    expect(text).toMatch(/A home visit has its own all-in price,\s+shown when you choose a home visit and\s+at checkout/)
+    expect(text).toMatch(/A home visit’s price depends on your postcode and is shown before\s+you book/)
     expect(text).toMatch(
-      new RegExp(`currently ${homeVisitPrices.initial} for an initial assessment and\\s+${homeVisitPrices.followUp} for a follow-up\\); there is no separate fee`),
+      new RegExp(`currently ${homeVisitPrices.initial} for an initial assessment and\\s+${homeVisitPrices.followUp} for a follow-up\\)`),
     )
     expect(text).toContain("Glasgow and the surrounding area within about an hour's drive (Lanarkshire, Renfrewshire, Inverclyde, Dunbartonshire, Ayrshire, Falkirk, Stirling, West Lothian and west Fife)")
-    expect(text).toMatch(/the price you pay when you book covers every visit in the bundle/)
+    expect(text).toMatch(/We no longer sell session packages/)
     expect(text).not.toMatch(/discount/i)
     expect(text).not.toMatch(/travel fee/i)
     expect(text).not.toMatch(/shown separately/i)

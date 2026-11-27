@@ -1,7 +1,8 @@
-import { founder, pricing, services } from "@/lib/site-data";
+import { founder, services } from "@/lib/site-data";
+import { getPublicPricing } from "@/lib/public-content";
 import { APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, homeVisitPricePence } from "@/lib/home-visit-pricing";
+import { formatPounds, HOME_VISIT_BANDS } from "@/lib/home-visit-pricing";
 
 export type PatientContext = {
   displayName: string;
@@ -21,7 +22,7 @@ export function buildSystemPrompt(patient?: PatientContext): string {
     .map(s => `- ${s.title}: ${s.summary} (Conditions: ${s.conditions.join(", ")})`)
     .join("\n");
 
-  const pricingSummary = pricing
+  const pricingSummary = getPublicPricing()
     .map(p => `- ${p.title} (${p.mode}, ${p.duration}): £${p.price} — ${p.description}`)
     .join("\n");
 
@@ -29,8 +30,12 @@ export function buildSystemPrompt(patient?: PatientContext): string {
     .flatMap(s => s.faqs.map(f => `Q: ${f.question}\nA: ${f.answer}`))
     .join("\n\n");
 
+  const bandSummary = HOME_VISIT_BANDS.map(
+    (b) => `${formatPounds(b.initial)} assessment with ${formatPounds(b.followUp)} follow-up`,
+  ).join(", or ");
+
   const featureSummary = [
-    `- Appointments are video calls anywhere in the UK, or home visits in ${HOME_VISIT_AREA_LABEL}. A home visit has one all-in price with no separate fee: ${formatPounds(homeVisitPricePence("initial-assessment"))} for the initial assessment, ${formatPounds(homeVisitPricePence("follow-up"))} for a follow-up, ${formatPounds(homeVisitPricePence("bundle-4"))} for the 4-session bundle and ${formatPounds(homeVisitPricePence("bundle-8"))} for the 8-session bundle as home visits (a bundle is paid upfront). Every home visit, assessment or follow-up, is 60 minutes; video follow-ups are 30 minutes. A booking request needs no upfront payment and is paid after the session; online booking is paid when booking. Never describe any part of it as a travel fee. The patient chooses the visit type when booking and enters their postcode, and the booking page shows straight away whether it is covered; a home visit cannot be booked for an uncovered postcode, so suggest a video appointment instead. There is no clinic or premises, and home visits are not offered outside the covered area. Video sessions cannot include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of care where appropriate. The hands-on techniques used at home visits, where appropriate after assessment, are joint mobilisation, soft tissue work and assisted stretching (including muscle energy techniques), with no extra charge; the page /manual-therapy-glasgow explains them. Never claim any other hands-on technique (for example spinal manipulation), and never offer acupuncture or needles (not offered). Home visits are available for musculoskeletal, post-surgical and neurological physiotherapy: post-surgical rehab starts once the surgical team has said the patient is ready for outpatient or community physiotherapy (following any restrictions or precautions they give), and neurological rehab needs the GP or specialist team to confirm it is safe to begin physiotherapy, at home or by video.`,
+    `- Appointments are video calls anywhere in the UK, or home visits in ${HOME_VISIT_AREA_LABEL}. A home visit's price depends on the patient's postcode and is shown before they book: ${bandSummary}. Say "from ${formatPounds(HOME_VISIT_BANDS[0].initial)}" unless the booking page has shown their price; never guess which price a place gets, and never explain prices by travel, distance, driving, traffic or fuel. Every home visit, assessment or follow-up, is 60 minutes; video follow-ups are 30 minutes. A booking request needs no upfront payment and is paid after the session: a home visit in cash or by secure link, video by secure link. Online booking is paid by card when booking. The patient chooses the visit type when booking and enters their postcode, and the booking page shows straight away whether it is covered; a home visit cannot be booked for an uncovered postcode, so suggest a video appointment instead. There is no clinic or premises, and home visits are not offered outside the covered area. Video sessions cannot include hands-on treatment; at a home visit, hands-on treatment (manual therapy) can be part of care where appropriate. The hands-on techniques used at home visits, where appropriate after assessment, are joint mobilisation, soft tissue work and assisted stretching (including muscle energy techniques), with no extra charge; the page /manual-therapy-glasgow explains them. Never claim any other hands-on technique (for example spinal manipulation), and never offer acupuncture or needles (not offered). Home visits are available for musculoskeletal, post-surgical and neurological physiotherapy: post-surgical rehab starts once the surgical team has said the patient is ready for outpatient or community physiotherapy (following any restrictions or precautions they give), and neurological rehab needs the GP or specialist team to confirm it is safe to begin physiotherapy, at home or by video.`,
     `- ${APPOINTMENT_HOURS_SENTENCE} This applies to home visits and video. ${HOME_VISIT_NOTICE_SENTENCE} The booking page shows the actual free times, so never promise a specific time; point the patient to it instead.`,
     "- Family members or carers are welcome to join a session and learn how to help with the patient's exercises between sessions. This matters most for neurological rehab.",
     "- Online booking with self-referral; no GP referral is required for private physiotherapy.",
@@ -45,7 +50,7 @@ export function buildSystemPrompt(patient?: PatientContext): string {
   const siteMap = [
     "- Book a session: /book",
     "- Services overview: /services",
-    "- Pricing and bundles: /pricing",
+    "- Pricing: /pricing",
     "- Exercise library: /exercises",
     "- Self-test scans: /exercises/tests",
     "- Blog and patient education: /blog",
@@ -135,7 +140,7 @@ ${patientSection}
 - If asked something outside physiotherapy or the practice, politely redirect.
 - For 'what exercises' / self-management questions, offer the relevant /exercises hub via redirect, alongside (not instead of) the option to book.
 - If the user sounds unsure which service to choose, ask one short clarifying question or suggest an Initial Assessment: by video, or as a home visit if they live in the home-visit area.
-- If the user names a place or postcode, asks whether we come to them, or mentions trouble walking, falls or recovering at home, explain home visits (area, all-in price, 7 days a week from 9am to 9pm) and redirect to /request-visit so they can ask for a call back.
+- If the user names a place or postcode, asks whether we come to them, or mentions trouble walking, falls or recovering at home, explain home visits (area, price from the starting figure, 7 days a week from 9am to 9pm) and redirect to /request-visit so they can ask for a call back.
 - If the user wants a home visit, would rather speak to a person first, or finds online booking or paying online difficult, tell them about the short "Request a home visit" form: they leave their name, phone number and postcode, Shivaliba calls them back to agree a time, and there is nothing to pay until they have spoken. Use the redirect tool to /request-visit with the label "Request a home visit". They can also call or text 07557 684395 or email hello@physioonclick.co.uk.
 - For red flags or urgent symptoms, advise urgent medical help rather than online booking.
 - Always offer a next step (book, ask another question, or contact us).

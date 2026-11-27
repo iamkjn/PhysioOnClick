@@ -29,7 +29,8 @@ const KEY = "poc-booking-draft";
 const CHANGE_EVENT = "poc-booking-draft-change";
 export const DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-const SERVICE_IDS: BookServiceId[] = ["initial-assessment", "follow-up", "bundle-4", "bundle-8"];
+/** Only services still on sale: a saved package draft is dropped. */
+const SERVICE_IDS: BookServiceId[] = ["initial-assessment", "follow-up"];
 
 /** Validates a parsed draft; drops expired drafts and slots already in the past. */
 export function parseDraft(raw: unknown, now = Date.now()): BookingDraft | null {

@@ -24,7 +24,7 @@ describe("/plan (fridge magnet QR page)", () => {
     expect(text).toContain("Saw this on a friend’s fridge?");
     expect(text).toContain("Appointments run 7 days a week, from 9am to 9pm, weekdays and weekends.");
     expect(text).toContain("Family members or carers are welcome to join");
-    expect(text).toContain(`Home assessment ${formatPounds(homeVisitPricePence("initial-assessment"))}, all in`);
+    expect(text).toContain(`Home assessment from ${formatPounds(homeVisitPricePence("initial-assessment"))}, cash accepted`);
     expect(text).not.toMatch(/travel fee/i);
   });
 });

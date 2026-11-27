@@ -9,7 +9,7 @@ import { auth } from "@/lib/firebase";
 import { track } from "@/lib/analytics";
 import { trackGrowthEvent } from "@/lib/growth-tracking";
 import { founder } from "@/lib/site-data";
-import { allBookServices, bookServiceFor, includedFor, serviceLabelFor, type FocusArea } from "@/lib/cal-services";
+import { allBookServices, bookServiceFor, includedFor, isBookServiceId, isOnSale, serviceLabelFor, type FocusArea } from "@/lib/cal-services";
 import type { BookServiceId } from "@/lib/site-data";
 import { getDependents, type Dependent } from "@/lib/dependents";
 import { accountUserOrNull } from "@/lib/guest-booking";
@@ -32,6 +32,8 @@ export type BookingConfirmation = {
   name: string;
   /** Video unless set; a home visit has no video link to join. */
   visitType?: VisitType;
+  /** Home visits only: sets the price shown on the confirmation. Never stored or logged. */
+  homePostcode?: string;
 };
 
 function initials(name: string) {
@@ -187,9 +189,8 @@ export function BookingFlow() {
     if (typeof window === "undefined") return;
     const raw = new URLSearchParams(window.location.search).get("service");
     const params = new URLSearchParams(window.location.search);
-    const valid: BookServiceId[] = ["initial-assessment", "follow-up", "bundle-4", "bundle-8"];
-    if (raw && (valid as string[]).includes(raw)) {
-      setServiceId(raw as BookServiceId);
+    if (isBookServiceId(raw) && isOnSale(raw)) {
+      setServiceId(raw);
       setSelectedSlot(null);
     }
     // ?visit=home preselects a home visit (linked from the home-visit copy).
@@ -487,7 +488,10 @@ export function BookingFlow() {
             reach checkout. */}
         <div className="book-rail-total">
           <span className="book-rail-total-label">Total</span>
-          <span className="book-rail-total-price"><NoSnippet>{formatPounds(sessionPricePence(serviceId, visitType))}</NoSnippet></span>
+          <span className="book-rail-total-price"><NoSnippet>
+            {visitType === "home" && !isCoveredPostcode(homePostcode) ? "from " : ""}
+            {formatPounds(sessionPricePence(serviceId, visitType, homePostcode))}
+          </NoSnippet></span>
         </div>
         <p className="book-rail-reassure">Free to reschedule up to 24 hours before your session.</p>
         <Link href="/how-online-physiotherapy-works" className="book-rail-reassure" style={{ textDecoration: "underline" }}>

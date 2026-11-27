@@ -114,7 +114,7 @@ const SITE_ACTION_RULES: Array<{
     action: { type: "open_booking", label: "Book online", url: "/book" },
   },
   {
-    pattern: /\b(price|prices|pricing|cost|fee|fees|charge|charges|bundle|package|discount|new10|offer)\b/i,
+    pattern: /\b(price|prices|pricing|cost|fee|fees|charge|charges|cash|discount|new10|offer)\b/i,
     action: { type: "redirect", label: "View pricing", url: "/pricing" },
   },
   {

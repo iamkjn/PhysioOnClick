@@ -41,7 +41,7 @@ describe("app/online-physiotherapy-scotland", () => {
     const { container } = render(<ScotlandPage />);
     const video = formatPounds(sessionPricePence("initial-assessment"));
     // A home visit has one whole price, never the video price plus a fee.
-    const home = formatPounds(homeVisitPricePence("initial-assessment"));
+    const home = `from ${formatPounds(homeVisitPricePence("initial-assessment"))}`;
     expect(container.textContent).toMatch(new RegExp(`initial assessment is ${video} by\\s+video, or ${home} as a home visit`));
     expect(container.textContent).not.toMatch(/for both/);
     expect(container.textContent).not.toMatch(/travel fee/i);

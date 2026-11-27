@@ -4,7 +4,7 @@
 // every town page, title and FAQ answer at once.
 
 import { APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
-import { homeVisitPrices } from "@/lib/home-visit-pricing";
+import { HOME_VISIT_PRICE_NOTE, homeVisitPriceRange, PAYMENT_METHODS_NOTE } from "@/lib/home-visit-pricing";
 import type { HomeVisitTown } from "@/lib/home-visit-towns";
 
 // Clinical sign-off wording (rounds 1-2, 2026-10-03/04), kept word for word.
@@ -25,7 +25,7 @@ export function townSeoTitle(town: HomeVisitTown): string {
 
 /** Meta description, kept within 160 characters (shorter lead-in for long names). */
 export function townSeoDescription(town: HomeVisitTown): string {
-  const tail = "No travel charge, no GP referral.";
+  const tail = "Cash accepted, no GP referral.";
   const long = `Home physiotherapy in ${titleName(town)} from a Glasgow-based HCPC registered physio, 7 days 9am–9pm. ${tail}`;
   return long.length <= 160
     ? long
@@ -33,10 +33,11 @@ export function townSeoDescription(town: HomeVisitTown): string {
 }
 
 export function townFaqs(town: HomeVisitTown) {
+  const price = homeVisitPriceRange(town.districts);
   return [
     {
-      question: `Is there a travel charge for ${town.name}?`,
-      answer: `No. A home visit in ${town.name} is one all-in price: ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, the same as anywhere else we cover, with nothing added at checkout.`,
+      question: `How much is a home visit in ${town.name}?`,
+      answer: `A home visit in ${town.name} is ${price.initial} for the initial assessment and ${price.followUp} for a follow-up. ${HOME_VISIT_PRICE_NOTE} ${PAYMENT_METHODS_NOTE}`,
     },
     {
       question: `When can you visit in ${town.name}?`,

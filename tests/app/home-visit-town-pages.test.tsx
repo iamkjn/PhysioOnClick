@@ -5,7 +5,7 @@ import TownPage, { generateMetadata, generateStaticParams } from "@/app/physioth
 import HubPage from "@/app/physiotherapy-home-visits-glasgow/page";
 import GlasgowPage from "@/app/glasgow-physiotherapist/page";
 import { HOME_VISIT_DISTRICTS } from "@/lib/home-visit-area";
-import { homeVisitPrices } from "@/lib/home-visit-pricing";
+import { homeVisitPriceRange } from "@/lib/home-visit-pricing";
 import { NEURO_CLEARANCE, POSTOP_READINESS, townSeoDescription, townSeoTitle } from "@/lib/home-visit-town-copy";
 import { homeVisitTownPath, homeVisitTowns } from "@/lib/home-visit-towns";
 
@@ -67,7 +67,7 @@ describe("app/physiotherapy-home-visits/[town]", () => {
       const text = plain(container.textContent);
       expect(container.querySelector("h1")?.textContent).toBe(`Physiotherapy home visits in ${t.name}`);
       expect(text).toContain(
-        `The initial home assessment is ${homeVisitPrices.initial} all in and follow-ups are ${homeVisitPrices.followUp}, with no travel charge.`,
+        `The initial home assessment is ${homeVisitPriceRange(t.districts).initial} and follow-ups are ${homeVisitPriceRange(t.districts).followUp}. Cash accepted.`,
       );
       expect(text).not.toMatch(/travel fee|assessment price plus/i);
       for (const d of t.districts) expect(text).toContain(d);

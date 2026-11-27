@@ -56,7 +56,7 @@ export default function PlanPage() {
             <li>{APPOINTMENT_HOURS_SENTENCE}</li>
             <li>Family members or carers are welcome to join and learn how to help</li>
             <li>
-              Home assessment <NoSnippet>{homeVisitPrices.initial}</NoSnippet>, all in. No GP referral needed.
+              Home assessment <NoSnippet>{homeVisitPrices.initial}</NoSnippet>, cash accepted. No GP referral needed.
             </li>
           </ul>
           <div className="button-row">

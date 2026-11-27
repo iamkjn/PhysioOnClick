@@ -1,4 +1,4 @@
-import { homeVisitPrices } from "@/lib/home-visit-pricing";
+import { homeVisitPrices, HOME_VISIT_PRICE_NOTE } from "@/lib/home-visit-pricing";
 
 // Condition-area landing pages for Glasgow search intent. They sit beside the
 // services in lib/site-data and do not change them or the booking options.
@@ -30,7 +30,7 @@ const referralFaq = {
 
 const costFaq = {
   question: "How much does a home visit cost?",
-  answer: `${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up, as one all-in price. Each home visit is 60 minutes.`
+  answer: `It is ${homeVisitPrices.initial} for the initial assessment and ${homeVisitPrices.followUp} for a follow-up. ${HOME_VISIT_PRICE_NOTE} Each home visit is 60 minutes.`
 };
 
 export const specialtyPages: SpecialtyPage[] = [

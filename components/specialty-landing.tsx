@@ -56,7 +56,7 @@ export function SpecialtyLanding({ page }: { page: SpecialtyPage }) {
           <h1>{page.h1}</h1>
           <p className="lead">{page.lead}</p>
           <p>
-            Home assessment <NoSnippet>{homeVisitPrices.initial}</NoSnippet>, follow-ups <NoSnippet>{homeVisitPrices.followUp}</NoSnippet>, all in. Home visits
+            Home assessment <NoSnippet>{homeVisitPrices.initial}</NoSnippet>, follow-ups <NoSnippet>{homeVisitPrices.followUp}</NoSnippet>, depending on your postcode. Home visits
             cover {HOME_VISIT_AREA_LABEL}, and run {APPOINTMENT_HOURS.phrase}. {HOME_VISIT_NOTICE_SENTENCE}
           </p>
           <ContactOptions topic="condition" source={`${source}_page`} lead="Not sure it is right for you? Ask us first, with no obligation to book." />

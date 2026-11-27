@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ContactOptions } from "@/components/contact-options";
 import { BookingRequest } from "@/components/booking-request";
 import { APPOINTMENT_HOURS } from "@/lib/appointment-hours";
-import { homeVisitPrices } from "@/lib/home-visit-pricing";
+import { HOME_VISIT_PRICE_NOTE, homeVisitPrices } from "@/lib/home-visit-pricing";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/practice-contact";
 import { founder } from "@/lib/site-data";
 
@@ -59,8 +59,9 @@ export default function RequestVisitPage() {
               <li>We confirm a day and time that suits you, {APPOINTMENT_HOURS.phrase}.</li>
               <li>The visit, then your exercise plan with pictures, online and printed.</li>
               <li>
-                You pay after your session by secure link. A home visit is <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the first
-                visit (about an hour), <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for follow-ups, all in. No travel charge.
+                You pay after your session: a home visit in cash or by secure link. A home visit is{" "}
+                <NoSnippet>{homeVisitPrices.initial}</NoSnippet> for the first visit (about an hour) and{" "}
+                <NoSnippet>{homeVisitPrices.followUp}</NoSnippet> for follow-ups. {HOME_VISIT_PRICE_NOTE}
               </li>
             </ol>
           </div>

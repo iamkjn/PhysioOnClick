@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { isCoveredPostcode, outwardCode } from "@/lib/home-visit-area";
+import { formatPounds, sessionPricePence } from "@/lib/home-visit-pricing";
 import { normalisePostcode } from "@/lib/home-visit";
 import { PRACTICE_PHONE, PRACTICE_PHONE_HREF } from "@/lib/practice-contact";
 import { REQUEST_POSTCODE_KEY, VISIT_REQUEST_PATH } from "@/lib/visit-request";
@@ -50,7 +51,7 @@ export function HomePostcodeCheck() {
           {!complete
             ? "No payment to send a request."
             : isCoveredPostcode(normalised)
-              ? `Yes, we visit ${outwardCode(normalised)}.`
+              ? `Yes, we visit ${outwardCode(normalised)}. First visit ${formatPounds(sessionPricePence("initial-assessment", "home", normalised))}.`
               : `${outwardCode(normalised)} is outside our usual area. Ask us anyway, or choose video.`}
         </p>
         <p className="visit-request-small">

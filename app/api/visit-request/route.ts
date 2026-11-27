@@ -1,3 +1,4 @@
+import { formatPounds, sessionPricePence } from "@/lib/home-visit-pricing";
 import { NextResponse } from "next/server";
 
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
@@ -51,6 +52,12 @@ async function sendRequestEmail(request: VisitRequest, channel: string, suspect:
         ["Preferred", `${when} (not booked yet)`],
         ["Address", [request.address, request.town, request.postcode].filter(Boolean).join(", ")],
         ["Area", video ? "" : request.covered ? "Inside the home-visit area" : "OUTSIDE the home-visit area"],
+        [
+          "Price to quote",
+          video || !request.covered
+            ? ""
+            : `${formatPounds(sessionPricePence("initial-assessment", "home", request.postcode))} first visit, ${formatPounds(sessionPricePence("follow-up", "home", request.postcode))} follow-up`,
+        ],
         ["Email", request.email],
         ["Gender", optionLabel(GENDERS, request.gender)],
         ["Date of birth", request.dateOfBirth],

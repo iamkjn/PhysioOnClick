@@ -6,7 +6,7 @@ vi.mock("@/lib/payments/stripe", () => ({
 import { createStripeCheckout } from "@/lib/payments/stripe";
 import { POST } from "@/app/api/checkout/create/route";
 import { bookServiceFor, serviceLabelFor } from "@/lib/cal-services";
-import { HOME_VISIT_EXTRA_PENCE, sessionPricePence } from "@/lib/home-visit-pricing";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
 
 function req(body: unknown) {
   return new Request("http://localhost/api/checkout/create", {
@@ -152,22 +152,25 @@ describe("POST /api/checkout/create — visit type", () => {
     expect(lastIntent()).not.toHaveProperty("travelFeePence");
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(arg.amountPence).toBe(sessionPricePence("initial-assessment", "home"));
-    expect(arg.amountPence).toBe(SESSION_PENCE + HOME_VISIT_EXTRA_PENCE);
+    expect(arg.amountPence).toBe(8000);
     expect(arg.serviceLabel).toBe(serviceLabelFor("initial-assessment", "home"));
     expect(arg).not.toHaveProperty("extraLineItems");
     expect(JSON.stringify(arg)).not.toMatch(/travel/i);
   });
 
-  it("charges every visit's whole price upfront on a home bundle, as one line", async () => {
+  it("charges the price of the postcode's band, not the starting price", async () => {
     okStripe();
-    await POST(req({ ...VALID, service: "bundle-4", visitType: "home", homeAddressLine: "7 Example Street", homePostcode: "G31 4HS" }));
+    await POST(req({ ...VALID, visitType: "home", homeAddressLine: "7 Example Street", homePostcode: "KA1 1AA" }));
     const arg = (createStripeCheckout as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(arg.amountPence).toBe(sessionPricePence("bundle-4", "home"));
-    expect(arg.amountPence).toBe(
-      sessionPricePence("bundle-4") + HOME_VISIT_EXTRA_PENCE * bookServiceFor("bundle-4").sessions
-    );
-    expect(arg.intent).not.toHaveProperty("travelFeePence");
-    expect(arg).not.toHaveProperty("extraLineItems");
+    expect(arg.amountPence).toBe(11000);
+  });
+
+  it("no longer sells session packages", async () => {
+    for (const service of ["bundle-4", "bundle-8"]) {
+      const res = await POST(req({ ...VALID, service }));
+      expect(res.status).toBe(400);
+    }
+    expect(createStripeCheckout).not.toHaveBeenCalled();
   });
 
   it("rejects a home visit outside the covered area without echoing the address", async () => {

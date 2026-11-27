@@ -34,7 +34,7 @@ describe("isCoveredPostcode", () => {
     }
   });
   it("rejects districts outside an hour's drive or only reachable by ferry", () => {
-    for (const pc of ["G54 1AA", "G70 1AA", "G79 1AA", "KA26 9AA", "KA27 8AA", "KA28 0AA", "PA20 0AA", "PA23 7AA", "EH1 1AA", "FK17 8AA", "KY1 1AA", "PH1 1AA", "DG1 1AA"]) {
+    for (const pc of ["G54 1AA", "G70 1AA", "G79 1AA", "KA26 9AA", "KA27 8AA", "KA28 0AA", "PA20 0AA", "PA23 7AA", "EH1 1AA", "KY13 8AA", "FK18 8AA", "KY1 1AA", "PH1 1AA", "DG1 1AA"]) {
       expect(isCoveredPostcode(pc)).toBe(false);
     }
   });

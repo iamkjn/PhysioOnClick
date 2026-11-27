@@ -20,7 +20,7 @@ export function PricingChooser({
   homeFollowUp,
   videoInitial,
 }: {
-  /** e.g. "£80" */
+  /** e.g. "from £80" */
   homeInitial: string;
   homeFollowUp: string;
   videoInitial: string;
@@ -33,9 +33,10 @@ export function PricingChooser({
           <h3>Home visit</h3>
           <p className="pricing-chooser-where">Glasgow and up to about an hour away</p>
           <p className="pricing-chooser-price">
-            <NoSnippet>{homeInitial}</NoSnippet> <small>first visit, about an hour, all in</small>
+            <NoSnippet>{homeInitial}*</NoSnippet> <small>first visit, about an hour</small>
           </p>
-          <p className="pricing-chooser-where">Then <NoSnippet>{homeFollowUp}</NoSnippet> a visit. No travel charge, no GP referral.</p>
+          <p className="pricing-chooser-where">Follow-ups <NoSnippet>{homeFollowUp}</NoSnippet>. Cash accepted. No GP referral.</p>
+          <p className="pricing-chooser-where">*Depends on your postcode, shown before you book.</p>
           <TrackedBookLink
             className="button primary"
             href={visitRequestHrefAbout("Home visit (from the pricing page)")}

@@ -70,7 +70,6 @@ export const guides: Guide[] = [
       {
         heading: "Ways to pay less for physiotherapy",
         paragraphs: [
-          "Bundles. If you expect to need several sessions, we offer 4 and 8 session bundles, which are a block of sessions booked and paid for together. Work out which option suits you by comparing them with single sessions on the [pricing page](/pricing).",
           "NHS self-referral. Access to NHS musculoskeletal physiotherapy depends on your local health board, which decides whether you can refer yourself or need a referral from a GP. NHS Greater Glasgow and Clyde, for example, lets eligible adults refer themselves. The wait can be long, though. Public Health Scotland reports that between August 2025 and March 2026, on average 52.4% of musculoskeletal patients were seen within four weeks, against a target of 90%. Many people use the NHS for some needs and a private service when they want to be seen sooner.",
           "Health insurance. Some policies pay towards physiotherapy, often with conditions such as pre-authorisation or policy limits. Cover and rules vary, so check with your insurer before you book (see [claiming physiotherapy on health insurance](/guides/claim-physiotherapy-on-health-insurance)). We cannot promise that any insurer will pay.",
           "In our plans, we ask you to do your exercises between appointments, and we review progress as we go."
@@ -114,7 +113,7 @@ export const guides: Guide[] = [
       }
     ],
     related: [
-      { label: "Pricing and session bundles", href: "/pricing" },
+      { label: "Pricing", href: "/pricing" },
       { label: "How online physiotherapy works", href: "/how-online-physiotherapy-works" },
       { label: "Claim physio on health insurance or a cash plan", href: "/guides/claim-physiotherapy-on-health-insurance" }
     ],
@@ -381,7 +380,7 @@ export const guides: Guide[] = [
     title: "How many physiotherapy sessions will I need?",
     seoTitle: "How Many Physio Sessions Will I Need? | PhysioOnClick",
     seoDescription:
-      "How many physiotherapy sessions you may need, why it depends on your condition, what NHS and NICE guidance says, and how our session bundles work.",
+      "How many physiotherapy sessions you may need, why it depends on your condition, what NHS and NICE guidance says, and how booking sessions works.",
     answer:
       "It depends on your condition; your physiotherapist will give you an estimate after your assessment. We review your progress at follow-ups and adjust the plan, and you have exercises to do on your own in between. The NHS and NICE give some general reference points for common problems, which we set out below, but they are not a promise for you.",
     sections: [
@@ -421,10 +420,10 @@ export const guides: Guide[] = [
         ]
       },
       {
-        heading: "Single sessions and bundles",
+        heading: "Booking one session at a time",
         paragraphs: [
-          "You can pay for each session as you go, or book one of our 4 or 8 session bundles. A bundle is a block of sessions booked and paid for together.",
-          "A bundle is a convenience, not a discount, so compare it with single-session prices on the [pricing page](/pricing) before you choose. If you are unsure how many sessions you will need, starting with a first assessment lets you decide after you have a plan."
+          "You pay for each session as you go. We do not sell blocks of sessions, so you are never committed to a number in advance. Home visit and video prices are on the [pricing page](/pricing).",
+          "If you are unsure how many sessions you will need, starting with a first assessment lets you decide after you have a plan."
         ]
       }
     ],
@@ -442,8 +441,8 @@ export const guides: Guide[] = [
         a: "It depends on the operation and on you. The NHS says recovery from a knee or hip replacement may take several months. Rehab with us starts once your surgical team has said you are ready for outpatient or community physiotherapy, and we follow any restrictions or precautions they give you. Follow your surgeon's guidance."
       },
       {
-        q: "Do session bundles save money?",
-        a: "No. Bundles are a convenient block of 4 or 8 sessions, not a discount, so compare them with single-session prices on our pricing page."
+        q: "Do I have to book several sessions in advance?",
+        a: "No. You book and pay for one session at a time, and decide about the next one after your assessment."
       }
     ],
     sources: [
@@ -470,7 +469,7 @@ export const guides: Guide[] = [
       }
     ],
     related: [
-      { label: "Pricing and session bundles", href: "/pricing" },
+      { label: "Pricing", href: "/pricing" },
       { label: "Exercise library", href: "/exercises" },
       { label: "Musculoskeletal physiotherapy", href: "/services/musculoskeletal-physiotherapy" }
     ],
@@ -922,7 +921,7 @@ export const guides: Guide[] = [
       {
         heading: "Where we fit",
         paragraphs: [
-          "PhysioOnClick is a physiotherapy service run by Shivaliba Zala, who is HCPC registered. Appointments are by video anywhere in the UK, or as home visits in the Glasgow area. Our first appointment is a 60-minute assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. You can see all prices, including session bundles, on the [pricing page](/pricing).",
+          "PhysioOnClick is a physiotherapy service run by Shivaliba Zala, who is HCPC registered. Appointments are by video anywhere in the UK, or as home visits in the Glasgow area. Our first appointment is a 60-minute assessment at {INITIAL_PRICE}, and follow-ups are 30 minutes at {FOLLOW_UP_PRICE}. You can see all prices on the [pricing page](/pricing).",
           "After a paid session we send you an invoice as a PDF. It lists our HCPC registration number and the session you paid for. You can check that registration yourself on the HCPC Register using the steps above.",
           "There are things we do not offer. We have no clinic or premises, and we cannot give hands-on treatment over video. Home visits, which can include hands-on treatment (manual therapy) where appropriate, are available in the Glasgow area only. If your problem needs a physical examination or urgent care, we will say so and point you to the right place. If you want to know how well video can work, read [does online physiotherapy work?](/guides/does-online-physiotherapy-work)"
         ]
@@ -956,7 +955,7 @@ export const guides: Guide[] = [
       { label: "CSP: find a physiotherapist", url: "https://www.csp.org.uk/public-patient/find-physiotherapist" }
     ],
     related: [
-      { label: "Pricing and session bundles", href: "/pricing" },
+      { label: "Pricing", href: "/pricing" },
       { label: "Does online physiotherapy work?", href: "/guides/does-online-physiotherapy-work" },
       { label: "Claiming physiotherapy on health insurance", href: "/guides/claim-physiotherapy-on-health-insurance" }
     ],

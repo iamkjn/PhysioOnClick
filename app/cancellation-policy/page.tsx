@@ -5,7 +5,7 @@ import { Reveal } from "@/components/reveal";
 export const metadata: Metadata = {
   alternates: { canonical: "/cancellation-policy" },
   title: "Cancellation & Refund Policy | PhysioOnClick",
-  description: "How to cancel or rearrange a PhysioOnClick appointment, when you get a full refund, package refunds, and your 14-day right to cancel."
+  description: "How to cancel or rearrange a PhysioOnClick appointment, when you get a full refund, and your 14-day right to cancel."
 };
 
 export default function CancellationPolicyPage() {
@@ -68,9 +68,9 @@ export default function CancellationPolicyPage() {
           </p>
         </article>
         <article className="panel stack" style={{ maxWidth: "70ch", lineHeight: 1.6 }}>
-          <h2>Session packages</h2>
+          <h2>Session packages bought earlier</h2>
           <p>
-            Each session in a package follows the same 24-hour notice rule. If you decide to stop a package,
+            We no longer sell session packages. Each session in one you already have follows the same 24-hour notice rule. If you decide to stop a package,
             we will refund the sessions you have not used, worked out as the package price divided by the
             number of sessions, multiplied by the sessions remaining. For a home-visit package, that is the whole
             home-visit package price you paid.

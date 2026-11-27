@@ -70,7 +70,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
       {
         question: "Do you cover Renfrew, Johnstone and Erskine as well as Paisley?",
         answer:
-          "Yes. Renfrewshire and Inverclyde are inside our home-visit area, including Renfrew, Johnstone, Linwood, Bridge of Weir, Erskine, Bishopton, Greenock and Gourock, at the same price as Paisley.",
+          "Yes. Renfrewshire and Inverclyde are inside our home-visit area, including Renfrew, Johnstone, Linwood, Bridge of Weir, Erskine, Bishopton, Greenock and Gourock.",
       },
     ],
   },
@@ -93,7 +93,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
       {
         question: "Do you visit Eaglesham, Busby and Strathaven?",
         answer:
-          "Yes. Eaglesham and Busby (G76) and Strathaven (ML10) are inside our home-visit area, at the same all-in price as East Kilbride.",
+          "Yes. Eaglesham and Busby (G76) and Strathaven (ML10) are inside our home-visit area.",
       },
     ],
   },
@@ -116,7 +116,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
       {
         question: "Do you visit Bothwell, Uddingston and Blantyre?",
         answer:
-          "Yes. Bothwell and Uddingston (G71), Blantyre (G72) and Larkhall (ML9) are all inside our home-visit area, at the same price as Hamilton.",
+          "Yes. Bothwell and Uddingston (G71), Blantyre (G72) and Larkhall (ML9) are all inside our home-visit area.",
       },
     ],
   },
@@ -130,7 +130,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
     intro:
       "Home visits cover Motherwell and Wishaw and the places in between, from Newarthill, Carfin and New Stevenston to Overtown, Newmains and Bellshill.",
     localNote:
-      "There's no extra charge for being further from the city: a visit in Wishaw or Newmains costs exactly the same as one in Glasgow.",
+      "Newmains and the villages around Wishaw are covered too. Enter your postcode to see your price.",
     hospital: {
       name: "University Hospital Wishaw",
       board: "NHS Lanarkshire",
@@ -140,7 +140,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
       {
         question: "Do you visit Bellshill, Coatbridge and Airdrie too?",
         answer:
-          "Yes. Bellshill (ML4), Coatbridge (ML5) and Airdrie (ML6) are inside our home-visit area, along with Shotts, Carluke and Lanark, at the same price.",
+          "Yes. Bellshill (ML4), Coatbridge (ML5) and Airdrie (ML6) are inside our home-visit area, along with Shotts, Carluke and Lanark.",
       },
     ],
   },
@@ -183,7 +183,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
       {
         question: "Do you visit Blantyre and King's Park?",
         answer:
-          "Yes. Blantyre (G72) and the Southside of Glasgow, including King's Park and Croftfoot (G44), are inside our home-visit area, at the same price.",
+          "Yes. Blantyre (G72) and the Southside of Glasgow, including King's Park and Croftfoot (G44), are inside our home-visit area.",
       },
     ],
   },
@@ -196,7 +196,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
     intro:
       "Kilmarnock and the villages around it are inside our home-visit area, down the M77 from Glasgow: Kilmaurs, Stewarton, Fenwick, Hurlford, Crosshouse and Galston included.",
     localNote:
-      "We cover Kilmarnock at the same price as the city, with no travel charge, so being in Ayrshire doesn't cost you more.",
+      "We cover Kilmarnock and the villages around it, with evening and weekend visits.",
     hospital: {
       name: "University Hospital Crosshouse",
       board: "NHS Ayrshire & Arran",
@@ -206,7 +206,7 @@ export const homeVisitTowns: HomeVisitTown[] = [
       {
         question: "Do you also visit Ayr, Troon and Irvine?",
         answer:
-          "Yes. Ayr, Prestwick, Troon, Irvine, Kilwinning and Largs are inside our home-visit area too, at the same all-in price.",
+          "Yes. Ayr, Prestwick, Troon, Irvine, Kilwinning and Largs are inside our home-visit area too.",
       },
     ],
   },

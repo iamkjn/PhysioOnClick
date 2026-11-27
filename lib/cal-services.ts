@@ -159,8 +159,17 @@ export function includedFor(id: BookServiceId, visitType?: unknown): string[] {
   );
 }
 
+/**
+ * 4 and 8 session packages were withdrawn on 2026-11-27. Their definitions stay
+ * so packages already bought can still be named, booked and receipted.
+ */
+export function isOnSale(id: BookServiceId): boolean {
+  return id === "initial-assessment" || id === "follow-up";
+}
+
+/** The services a patient can buy today. */
 export function allBookServices(): Array<CalService & PricingItem> {
-  return pricing.map((p) => ({ ...p, ...CAL_SERVICES[p.id] }));
+  return pricing.filter((p) => isOnSale(p.id)).map((p) => ({ ...p, ...CAL_SERVICES[p.id] }));
 }
 
 /** Focus areas — spec Screen 1, multi-select, purely descriptive metadata. */

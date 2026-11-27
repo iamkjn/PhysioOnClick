@@ -154,11 +154,9 @@ describe("home visit pricing and coverage copy", () => {
 
   it("the chat prompt states the whole home-visit prices and the covered area", () => {
     const prompt = buildSystemPrompt();
-    expect(prompt).toContain("A home visit has one all-in price with no separate fee");
-    expect(prompt).toContain(`${formatPounds(homeVisitPricePence("initial-assessment"))} for the initial assessment`);
-    expect(prompt).toContain(`${formatPounds(homeVisitPricePence("follow-up"))} for a follow-up`);
-    expect(prompt).toContain(`${formatPounds(homeVisitPricePence("bundle-4"))} for the 4-session bundle`);
-    expect(prompt).toContain(`${formatPounds(homeVisitPricePence("bundle-8"))} for the 8-session bundle`);
+    expect(prompt).toContain("A home visit's price depends on the patient's postcode");
+    expect(prompt).toContain("£80 assessment with £70 follow-up");
+    expect(prompt).toContain("£120 assessment with £110 follow-up");
     expect(prompt).toContain(HOME_VISIT_AREA_LABEL);
     expect(prompt).not.toMatch(/confirm by email/i);
   });
@@ -168,10 +166,8 @@ describe("home visit pricing and coverage copy", () => {
     expect(prompt).not.toMatch(/plus a £\d+ travel fee/i);
     expect(prompt).not.toMatch(/travel fee per visit/i);
     expect(prompt).not.toMatch(/video price plus/i);
-    // The only "travel fee" left is the instruction not to call it one.
-    const mentions = prompt.match(/travel fee/gi) ?? [];
-    expect(mentions).toHaveLength(1);
-    expect(prompt).toContain("Never describe any part of it as a travel fee.");
+    expect(prompt).not.toMatch(/travel fee/i);
+    expect(prompt).toContain("never explain prices by travel, distance, driving, traffic or fuel");
   });
 
   it("the neuro FAQs quote no price figure and no travel fee", () => {
@@ -179,7 +175,7 @@ describe("home visit pricing and coverage copy", () => {
     const homeFaqs = neuro.faqs.filter((f) => /in person|at home/i.test(f.question));
     expect(homeFaqs.length).toBeGreaterThanOrEqual(2);
     for (const faq of homeFaqs) {
-      expect(faq.answer).toMatch(/one all-in (home-visit )?price/i);
+      expect(faq.answer).toMatch(/priced by postcode/i);
       expect(faq.answer).not.toMatch(/£\d/);
       expect(faq.answer).not.toMatch(/travel fee/i);
     }

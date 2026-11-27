@@ -18,6 +18,8 @@ for (const [n, town] of Object.entries({
   77: "Newton Mearns", 78: "Barrhead", 81: "Clydebank", 82: "Dumbarton", 83: "Alexandria", 84: "Helensburgh",
 })) TOWNS[`G${n}`] = town;
 
+add("Edinburgh", "EH", 12);
+add("Callander", "FK", 17);
 add("Paisley", "PA", 1, 2, 3);
 add("Renfrew", "PA", 4);
 add("Johnstone", "PA", 5, 6, 9, 10);

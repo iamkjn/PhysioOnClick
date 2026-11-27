@@ -9,7 +9,7 @@ import { TrackedBookLink } from "@/components/tracked-book-link";
 import { curatedReviewsForServicesOverview } from "@/lib/trustpilot-curated";
 import { APPOINTMENT_HOURS, APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
+import { formatPounds, homeVisitPrices, sessionPricePence, HOME_VISIT_PRICE_NOTE, PAYMENT_METHODS_NOTE } from "@/lib/home-visit-pricing";
 import { breadcrumbs, practiceRef } from "@/lib/structured-data";
 import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 
@@ -47,7 +47,7 @@ const faqItems = [
   },
   {
     question: "How much does a physiotherapy home visit cost?",
-    answer: `A home visit is one all-in price: ${homeInitial} for the initial assessment and ${homeFollowUp} for a follow-up, with nothing added at checkout (${videoInitial} for an assessment by video). Bundles booked as home visits cover every visit, paid when you book.`
+    answer: `A home visit is ${homeInitial} for the initial assessment and ${homeFollowUp} for a follow-up (${videoInitial} for an assessment by video). ${HOME_VISIT_PRICE_NOTE} ${PAYMENT_METHODS_NOTE}`
   },
   {
     question: "Do I need a GP referral for a home visit?",
@@ -103,7 +103,7 @@ export default function HomeVisitsGlasgowPage() {
           <h1>Physiotherapy home visits in Glasgow and the surrounding area</h1>
           <p className="lead">
             A Glasgow-based, HCPC registered physiotherapist comes to you. The initial home assessment is{" "}
-            <NoSnippet>{homeInitial}</NoSnippet> all in, and follow-ups are <NoSnippet>{homeFollowUp}</NoSnippet>. Home visits cover {HOME_VISIT_AREA_LABEL}.
+            <NoSnippet>{homeInitial}</NoSnippet>, and follow-ups are <NoSnippet>{homeFollowUp}</NoSnippet>. Home visits cover {HOME_VISIT_AREA_LABEL}. {HOME_VISIT_PRICE_NOTE}
           </p>
           <p>
             Visits run {APPOINTMENT_HOURS.phrase}, evenings and weekends included, so you don&rsquo;t need

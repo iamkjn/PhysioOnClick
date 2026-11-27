@@ -90,7 +90,7 @@ export function BookingStepDone({ confirmation, titleRef }: Props) {
           <div className="book-summary-row">
             {/* No checkout route exists, so this is what's owed — not what's been charged. */}
             <span className="book-summary-label">Total</span>
-            <span className="book-summary-value">{formatPounds(sessionPricePence(confirmation.serviceId, confirmation.visitType))}</span>
+            <span className="book-summary-value">{formatPounds(sessionPricePence(confirmation.serviceId, confirmation.visitType, confirmation.homePostcode))}</span>
           </div>
         </div>
 

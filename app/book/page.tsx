@@ -16,7 +16,7 @@ type Search = Record<string, string | string[] | undefined>;
 
 /**
  * New patients get the no-payment request. The pay-online flow stays for
- * people who ask for it, follow-ups and packages, and unfinished or
+ * people who ask for it, follow-ups, and unfinished or
  * cancelled online bookings.
  */
 function wantsOnlinePayment(search: Search): boolean {
@@ -47,7 +47,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
             <BookingRequest source="book_page" />
             <p className="request-below">
               <span>
-                Follow-up, package, or happy to pay now? <Link href="/book?pay=online">Book and pay online</Link>.
+                Follow-up, or happy to pay now? <Link href="/book?pay=online">Book and pay online</Link>.
               </span>
             </p>
           </>

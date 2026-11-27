@@ -8,7 +8,7 @@ import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 import { APPOINTMENT_HOURS, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { serviceLabelFor } from "@/lib/cal-services";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
+import { homeVisitPrices, HOME_VISIT_PRICE_NOTE } from "@/lib/home-visit-pricing";
 import { pricing } from "@/lib/site-data";
 import { absoluteUrl } from "@/lib/utils";
 import { breadcrumbs, practiceRef } from "@/lib/structured-data";
@@ -65,7 +65,7 @@ const faqItems = [
   },
   {
     question: "Is manual therapy included in the price of a home visit?",
-    answer: `Yes. A home visit is one all-in price: ${homeInitial} for the initial assessment and ${homeFollowUp} for a follow-up. Hands-on treatment, when it is appropriate, is part of the visit, with nothing added at checkout.`
+    answer: `Yes. A home visit is ${homeInitial} for the initial assessment and ${homeFollowUp} for a follow-up. Hands-on treatment, when it is appropriate, is part of the visit. ${HOME_VISIT_PRICE_NOTE}`
   },
   {
     question: "Can I have manual therapy by video?",
@@ -133,7 +133,7 @@ export default function ManualTherapyGlasgowPage() {
           <p className="lead">
             Hands-on treatment from an HCPC registered physiotherapist, in your own home. Manual therapy is part
             of a home visit where it&rsquo;s appropriate, alongside exercise and advice. The initial home
-            assessment is <NoSnippet>{homeInitial}</NoSnippet> all in, and follow-ups are <NoSnippet>{homeFollowUp}</NoSnippet>, with no extra charge for
+            assessment is <NoSnippet>{homeInitial}</NoSnippet>, and follow-ups are <NoSnippet>{homeFollowUp}</NoSnippet>, with no extra charge for
             hands-on treatment.
           </p>
           <p>
@@ -250,7 +250,7 @@ export default function ManualTherapyGlasgowPage() {
             <span className="eyebrow">Ready to book?</span>
             <h2>Book a home visit with hands-on treatment</h2>
             <p>
-              <NoSnippet>{formatPounds(sessionPricePence("initial-assessment", "home"))}</NoSnippet> for the assessment, all in. Choose
+              Assessments are <NoSnippet>{homeInitial}</NoSnippet>, depending on your postcode. Choose
               &ldquo;Home visit in Glasgow&rdquo;, enter your postcode and pick a time, or leave your number and we&rsquo;ll
               call you.
             </p>

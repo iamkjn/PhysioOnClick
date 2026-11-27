@@ -8,7 +8,7 @@ import { Reveal } from "@/components/reveal";
 import { ServiceReviews } from "@/components/service-reviews";
 import { TrackedBookLink } from "@/components/tracked-book-link";
 import { APPOINTMENT_HOURS } from "@/lib/appointment-hours";
-import { homeVisitPrices } from "@/lib/home-visit-pricing";
+import { homeVisitPriceRange } from "@/lib/home-visit-pricing";
 import { POSTOP_READINESS, townFaqs, townSeoDescription, townSeoTitle } from "@/lib/home-visit-town-copy";
 import { getHomeVisitTown, homeVisitTownPath, homeVisitTowns } from "@/lib/home-visit-towns";
 import { founder } from "@/lib/site-data";
@@ -115,8 +115,8 @@ export default async function HomeVisitTownPage({
           <h1>Physiotherapy home visits in {town.name}</h1>
           <p className="lead">
             A Glasgow-based, HCPC registered physiotherapist comes to your home in {town.name}. The initial home
-            assessment is <NoSnippet>{homeVisitPrices.initial}</NoSnippet> all in and follow-ups are <NoSnippet>{homeVisitPrices.followUp}</NoSnippet>, with no travel
-            charge.
+            assessment is <NoSnippet>{homeVisitPriceRange(town.districts).initial}</NoSnippet> and follow-ups are{" "}
+            <NoSnippet>{homeVisitPriceRange(town.districts).followUp}</NoSnippet>. Cash accepted.
           </p>
           <p>
             Visits run {APPOINTMENT_HOURS.phrase}, evenings and weekends included, so you don&rsquo;t need
@@ -146,8 +146,8 @@ export default async function HomeVisitTownPage({
           <p>
             <strong>{town.name}:</strong> {town.districts.join(", ")}
           </p>
-          <p>Nearby, at the same price: {town.nearby.join(", ")}.</p>
-          <p className="muted">Enter your postcode when you book to confirm we cover your street.</p>
+          <p>Nearby: {town.nearby.join(", ")}.</p>
+          <p className="muted">Enter your postcode when you book to confirm we cover your street and see your price.</p>
         </div>
       </section>
 

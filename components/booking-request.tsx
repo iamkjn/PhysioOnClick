@@ -6,7 +6,7 @@ export function BookingRequest({ source }: { source: string }) {
   return (
     <div className="request-layout">
       <div className="request-col">
-        <span className="eyebrow">Pay after your session</span>
+        <span className="eyebrow">Pay after your session, cash accepted for home visits</span>
         <h1>Request an appointment</h1>
         <p>Tell us what you need and when suits you. We call you to confirm the time.</p>
         <div className="request-card">

@@ -8,10 +8,10 @@ import { VISIT_REQUEST_PATH } from "@/lib/visit-request";
 import { APPOINTMENT_HOURS_SENTENCE, HOME_VISIT_NOTICE_SENTENCE } from "@/lib/appointment-hours";
 import { HomeVisitTownLinks } from "@/components/home-visit-town-links";
 import { HOME_VISIT_AREA_LABEL } from "@/lib/home-visit-area";
-import { formatPounds, homeVisitPrices, sessionPricePence } from "@/lib/home-visit-pricing";
+import { formatPounds, homeVisitPrices, sessionPricePence, HOME_VISIT_PRICE_NOTE, PAYMENT_METHODS_NOTE } from "@/lib/home-visit-pricing";
 import { practiceRef } from "@/lib/structured-data";
 
-// A home visit has its own whole price (no separate fee), so every figure here
+// A home visit is priced by postcode ("from"), so every figure here
 // is derived from lib/home-visit-pricing rather than hardcoded.
 const videoInitial = formatPounds(sessionPricePence("initial-assessment"));
 const homeInitial = homeVisitPrices.initial;
@@ -40,7 +40,7 @@ const faqItems = [
   },
   {
     question: "How much does a home visit cost?",
-    answer: `A home visit is one all-in price: ${homeInitial} for the initial assessment and ${homeFollowUp} for a follow-up, with nothing added at checkout. By video, the initial assessment is ${videoInitial}. Bundles booked as home visits cover every visit, paid when you book. See the pricing page for the full list.`
+    answer: `A home visit is ${homeInitial} for the initial assessment and ${homeFollowUp} for a follow-up. ${HOME_VISIT_PRICE_NOTE} By video, the initial assessment is ${videoInitial}. ${PAYMENT_METHODS_NOTE}`
   },
   {
     question: "Can I book a video appointment if I live outside Glasgow?",
@@ -82,7 +82,7 @@ export default function GlasgowPage() {
           <p className="lead">
             PhysioOnClick is run by a Glasgow-based, HCPC registered physiotherapist. If you are in the
             Glasgow area you can book a home visit, and video appointments are available anywhere in the UK.
-            The initial assessment is <NoSnippet>{homeInitial}</NoSnippet> as a home visit, all in, or <NoSnippet>{videoInitial}</NoSnippet> by video.
+            The initial assessment is <NoSnippet>{homeInitial}</NoSnippet> as a home visit or <NoSnippet>{videoInitial}</NoSnippet> by video.
           </p>
           <p>{APPOINTMENT_HOURS_SENTENCE} No time off work needed.</p>
           <ContactOptions
@@ -116,7 +116,7 @@ export default function GlasgowPage() {
             <li>Home visits in the Glasgow area, with no clinic or premises</li>
             <li>Video appointments anywhere in the UK</li>
             <li>7 days a week, 9am to 9pm, for home visits and video</li>
-            <li>The same booking flow for both, with one all-in price for each</li>
+            <li>The same booking flow for both, with your price shown before you book</li>
             <li>
               Living elsewhere in Scotland?{" "}
               <Link href="/online-physiotherapy-scotland" prefetch>
@@ -174,9 +174,9 @@ export default function GlasgowPage() {
         <section className="page-section stack">
           <h2>Home visit and video prices</h2>
           <p>
-            A home visit is <NoSnippet>{homeInitial}</NoSnippet> for the initial assessment and <NoSnippet>{homeFollowUp}</NoSnippet> for a follow-up. That
-            is the whole price, with nothing added at checkout. By video, the initial assessment is{" "}
-            <NoSnippet>{videoInitial}</NoSnippet>. Bundles booked as home visits cover every visit, paid when you book. See{" "}
+            A home visit is <NoSnippet>{homeInitial}</NoSnippet> for the initial assessment and <NoSnippet>{homeFollowUp}</NoSnippet> for a follow-up.{" "}
+            {HOME_VISIT_PRICE_NOTE} By video, the initial assessment is{" "}
+            <NoSnippet>{videoInitial}</NoSnippet>. {PAYMENT_METHODS_NOTE} See{" "}
             <Link href="/pricing">pricing</Link> for the full list. If you are not sure which suits you, the{" "}
             <Link href="/how-online-physiotherapy-works">how it works</Link> page explains the booking steps.
           </p>

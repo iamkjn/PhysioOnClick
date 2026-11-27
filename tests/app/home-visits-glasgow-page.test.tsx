@@ -4,8 +4,8 @@ import Page, { metadata } from "@/app/physiotherapy-home-visits-glasgow/page";
 import { formatPounds, homeVisitPricePence, sessionPricePence } from "@/lib/home-visit-pricing";
 
 // A home visit has one whole price (lib/home-visit-pricing), never a fee on top.
-const home = formatPounds(homeVisitPricePence("initial-assessment"));
-const homeFollowUp = formatPounds(homeVisitPricePence("follow-up"));
+const home = `from ${formatPounds(homeVisitPricePence("initial-assessment"))}`;
+const homeFollowUp = `from ${formatPounds(homeVisitPricePence("follow-up"))}`;
 const video = formatPounds(sessionPricePence("initial-assessment"));
 
 describe("physiotherapy-home-visits-glasgow", () => {
@@ -22,9 +22,9 @@ describe("physiotherapy-home-visits-glasgow", () => {
 
   it("states derived prices, coverage and the safety conditions", () => {
     const text = render(<Page />).container.textContent ?? "";
-    expect(text).toMatch(new RegExp(`The initial home assessment is\\s+${home} all in, and follow-ups are ${homeFollowUp}\\.`));
+    expect(text).toMatch(new RegExp(`The initial home assessment is\\s+${home}, and follow-ups are ${homeFollowUp}\\.`));
     expect(text).toContain(
-      `A home visit is one all-in price: ${home} for the initial assessment and ${homeFollowUp} for a follow-up, with nothing added at checkout (${video} for an assessment by video).`,
+      `A home visit is ${home} for the initial assessment and ${homeFollowUp} for a follow-up (${video} for an assessment by video).`,
     );
     expect(text).not.toMatch(/travel fee/i);
     expect(text).not.toMatch(/assessment price plus/i);
