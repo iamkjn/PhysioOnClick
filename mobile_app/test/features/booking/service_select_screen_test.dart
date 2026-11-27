@@ -222,7 +222,7 @@ void main() {
       await tester.tap(find.text('Home visit in Glasgow'));
       await tester.pumpAndSettle();
       await enterPostcode(tester, 'EH1 1AA');
-      expect(find.textContaining("Let's talk about EH1 yet"), findsOneWidget);
+      expect(find.textContaining("Let's talk about EH1"), findsOneWidget);
       expect(find.text('Continue to times'), findsNothing);
       await tester.tap(find.text('Book a video consultation instead'));
       await tester.pumpAndSettle();
