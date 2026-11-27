@@ -44,10 +44,14 @@ class TimeDetailsScreen extends StatefulWidget {
   final VisitType visitType;
   final HomeVisitAddress? homeAddress;
 
+  /// From the coverage check; null shows the starting price.
+  final HomeVisitPrice? homePrice;
+
   const TimeDetailsScreen({
     required this.service,
     this.visitType = VisitType.video,
     this.homeAddress,
+    this.homePrice,
     this.initialPersonId,
     this.initialPersonName,
     this.addressRepository,
@@ -157,7 +161,8 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
   /// The whole price for this visit type (a home visit's price already
   /// includes the home extra). There are no discount codes (NEW10 ended
   /// on 22 Nov 2026).
-  int get _checkoutPence => sessionPricePence(widget.service, widget.visitType);
+  int get _checkoutPence =>
+      sessionPricePence(widget.service, widget.visitType, home: widget.homePrice);
 
   Future<void> _onContinue() async {
     if (_selectedSlotIso == null || !_consent) return;
@@ -218,7 +223,7 @@ class _TimeDetailsScreenState extends State<TimeDetailsScreen> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(
-                        homeVisitPriceLabel(widget.service),
+                        homeVisitPriceLabel(widget.service, home: widget.homePrice),
                         style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                       ),
                     ),

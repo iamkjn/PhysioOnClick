@@ -3,12 +3,22 @@ import 'book_service.dart';
 /// Mirrors lib/home-visit.ts + lib/home-visit-pricing.ts on the web app.
 enum VisitType { video, home }
 
-/// What a home visit adds to the video price, per visit (owner decisions
-/// 2026-11-07 and 2026-11-15: video £50/£40, home stays £80/£70). Patients only ever see the whole price, never this figure on
-/// its own, and there is no separate "travel fee". This is the only place the
-/// amount is defined: every home price is derived from it plus the video
-/// price in book_service.dart. Mirrors the web app's home-visit pricing.
-const int kHomeVisitExtraPence = 3000;
+/// A home visit's price for one postcode (owner, 2026-11-27). The server owns
+/// the bands (web lib/home-visit-pricing.ts) and sends the price with the
+/// coverage check; the app never works it out itself. Patients only see the
+/// whole price, never a separate fee.
+class HomeVisitPrice {
+  final int initialPence;
+  final int followUpPence;
+  const HomeVisitPrice({required this.initialPence, required this.followUpPence});
+}
+
+/// The nearest band, shown as "from" until the postcode has been checked.
+const HomeVisitPrice kHomeVisitStartingPrice =
+    HomeVisitPrice(initialPence: 8000, followUpPence: 7000);
+
+/// Only for describing packages bought before they were withdrawn.
+const int kRetiredPackageHomeExtraPence = 3000;
 
 /// Length of one session of [s] for visit type [v], in minutes. A home
 /// follow-up is 60 minutes (owner, 2026-11-15; the Cal.com home follow-up
@@ -20,12 +30,17 @@ int sessionMinutes(ResolvedService s, VisitType v) =>
 /// The video (online) price of [s] in pence.
 int videoPricePence(ResolvedService s) => (s.price * 100).round();
 
-/// The whole price of [s] in pence for visit type [v]: the video price, or
-/// for a home visit the video price plus [kHomeVisitExtraPence] for every
-/// visit in the service (bundles pay for all their visits upfront).
-int sessionPricePence(ResolvedService s, VisitType v) =>
-    videoPricePence(s) +
-    (v == VisitType.home ? kHomeVisitExtraPence * s.sessions : 0);
+/// The whole price of [s] in pence: the video price, or for a home visit the
+/// price for the checked postcode ([home]), falling back to the starting price.
+int sessionPricePence(ResolvedService s, VisitType v, {HomeVisitPrice? home}) {
+  if (v != VisitType.home) return videoPricePence(s);
+  final price = home ?? kHomeVisitStartingPrice;
+  return switch (s.id) {
+    BookServiceId.initialAssessment => price.initialPence,
+    BookServiceId.followUp => price.followUpPence,
+    _ => videoPricePence(s) + kRetiredPackageHomeExtraPence * s.sessions,
+  };
+}
 
 /// "£80" for whole pounds, "£51.50" otherwise.
 String formatPounds(int pence) =>
@@ -40,13 +55,10 @@ String serviceLabelFor(ResolvedService s, VisitType v) {
   };
 }
 
-/// The whole home-visit price as one figure: "£80 home visit", or for
-/// bundles "£280 for 4 home visits".
-String homeVisitPriceLabel(ResolvedService s) {
-  final price = formatPounds(sessionPricePence(s, VisitType.home));
-  return s.sessions == 1
-      ? '$price home visit'
-      : '$price for ${s.sessions} home visits';
+/// "from £80 home visit" before the postcode is checked, "£95 home visit" after.
+String homeVisitPriceLabel(ResolvedService s, {HomeVisitPrice? home}) {
+  final price = formatPounds(sessionPricePence(s, VisitType.home, home: home));
+  return '${home == null ? 'from ' : ''}$price home visit';
 }
 
 /// "g31  4hs" -> "G31 4HS". Too-short input is only trimmed/upper-cased.

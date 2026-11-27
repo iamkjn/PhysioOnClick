@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isCoveredPostcode, outwardCode } from "@/lib/home-visit-area";
 import { validateHomeVisit } from "@/lib/home-visit";
+import { sessionPricePence } from "@/lib/home-visit-pricing";
 import { clientIp, isRateLimited } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
@@ -24,6 +25,13 @@ export async function POST(request: Request) {
   const pc = shape.postcode;
   return NextResponse.json({
     covered: isCoveredPostcode(pc),
+    // Whole prices for this postcode (pence); only when we visit it. Used by the app.
+    ...(isCoveredPostcode(pc)
+      ? {
+          initialPence: sessionPricePence("initial-assessment", "home", pc),
+          followUpPence: sessionPricePence("follow-up", "home", pc),
+        }
+      : {}),
     outwardCode: outwardCode(pc),
     postcode: pc,
   });

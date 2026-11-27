@@ -92,36 +92,22 @@ void main() {
     expect(find.textContaining('I consent'), findsOneWidget);
   });
 
-  testWidgets('home initial assessment: pay button shows the whole £80 price', (tester) async {
+  testWidgets('home initial assessment: pay button shows the checked postcode price', (tester) async {
     final service = bookServiceFor(BookServiceId.initialAssessment);
     await tester.pumpWidget(MaterialApp(
       home: TimeDetailsScreen(
         service: service,
         visitType: VisitType.home,
-        homeAddress: const HomeVisitAddress(line: '1 Main St', postcode: 'G31 4HS'),
+        homePrice: const HomeVisitPrice(initialPence: 11000, followUpPence: 10000),
+        homeAddress: const HomeVisitAddress(line: '1 Main St', postcode: 'KA1 1AA'),
       ),
     ));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
-    expect(find.text('Continue to payment · £80'), findsOneWidget);
-    expect(find.text('£80 home visit'), findsOneWidget);
+    expect(find.text('Continue to payment · £110'), findsOneWidget);
+    expect(find.text('£110 home visit'), findsOneWidget);
     expect(find.text('Initial Assessment (home visit)'), findsOneWidget);
     expect(find.textContaining('travel'), findsNothing);
-  });
-
-  testWidgets('home 4-session bundle: one whole price for all four visits', (tester) async {
-    final service = bookServiceFor(BookServiceId.bundle4);
-    await tester.pumpWidget(MaterialApp(
-      home: TimeDetailsScreen(
-        service: service,
-        visitType: VisitType.home,
-        homeAddress: const HomeVisitAddress(line: '1 Main St', postcode: 'G31 4HS'),
-      ),
-    ));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 50));
-    expect(find.text('Continue to payment · £280'), findsOneWidget);
-    expect(find.text('£280 for 4 home visits'), findsOneWidget);
   });
 
   testWidgets('has no discount code box (NEW10 ended on 22 Nov 2026)', (tester) async {

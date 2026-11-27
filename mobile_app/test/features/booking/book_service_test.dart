@@ -2,15 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_app/src/features/booking/models/book_service.dart';
 
 void main() {
-  test('allBookServices returns four services with correct api ids', () {
-    final services = allBookServices();
-    expect(services.length, 4);
-    expect(services.map((s) => s.apiId).toSet(), {
-      'initial-assessment',
-      'follow-up',
-      'bundle-4',
-      'bundle-8',
-    });
+  test('only the two single sessions are on sale (packages withdrawn)', () {
+    expect(allBookServices().map((s) => s.apiId).toList(), ['initial-assessment', 'follow-up']);
   });
 
   test('bookServiceFor resolves initial-assessment with correct fields', () {

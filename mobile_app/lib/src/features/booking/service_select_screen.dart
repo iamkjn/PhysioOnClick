@@ -347,12 +347,17 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
           service: service,
           visitType: _visit,
           homeAddress: home,
+          homePrice: _homePrice,
           initialPersonId: widget.initialPersonId,
           initialPersonName: widget.initialPersonName,
         ),
       ),
     );
   }
+
+  /// The checked postcode's price; null until coverage has passed.
+  HomeVisitPrice? get _homePrice =>
+      _coverage == _CoverageState.covered ? _coverageResult?.price : null;
 
   Widget _visitCard(VisitType v, IconData icon, String title, String subtitle) {
     final selected = _visit == v;
@@ -429,7 +434,8 @@ class _ServiceSelectScreenState extends State<ServiceSelectScreen> {
                       Text(s.description, style: theme.textTheme.bodyMedium),
                       const SizedBox(height: 8),
                       Text(
-                        '${formatPounds(sessionPricePence(s, _visit))} · ${s.duration}',
+                        '${_visit == VisitType.home && _homePrice == null ? 'from ' : ''}'
+                        '${formatPounds(sessionPricePence(s, _visit, home: _homePrice))} · ${s.duration}',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                           fontWeight: FontWeight.w600,

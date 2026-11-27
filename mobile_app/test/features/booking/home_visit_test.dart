@@ -5,12 +5,10 @@ import 'package:mobile_app/src/features/booking/models/home_visit.dart';
 ResolvedService svc(BookServiceId id) => bookServiceFor(id);
 
 void main() {
-  // [video pence, home pence, home label]. Home = video + £30 per visit.
+  // [video pence, home starting pence, home label].
   const cases = {
     BookServiceId.initialAssessment: [5000, 8000, 'Initial Assessment (home visit)'],
     BookServiceId.followUp: [4000, 7000, 'Follow-Up (home visit)'],
-    BookServiceId.bundle4: [16000, 28000, '4 Session Bundle (home visit)'],
-    BookServiceId.bundle8: [30500, 54500, '8 Session Bundle (home visit)'],
   };
 
   test('a home follow-up is 60 minutes, video stays 30', () {
@@ -19,8 +17,14 @@ void main() {
     expect(sessionMinutes(svc(BookServiceId.initialAssessment), VisitType.home), 60);
   });
 
-  test('home extra is £30 per visit', () {
-    expect(kHomeVisitExtraPence, 3000);
+  test('a checked postcode price replaces the starting price', () {
+    const price = HomeVisitPrice(initialPence: 11000, followUpPence: 10000);
+    final initial = svc(BookServiceId.initialAssessment);
+    expect(sessionPricePence(initial, VisitType.home, home: price), 11000);
+    expect(sessionPricePence(svc(BookServiceId.followUp), VisitType.home, home: price), 10000);
+    expect(sessionPricePence(initial, VisitType.video, home: price), 5000);
+    expect(homeVisitPriceLabel(initial), 'from £80 home visit');
+    expect(homeVisitPriceLabel(initial, home: price), '£110 home visit');
   });
 
   test('pricing for all services and visit types', () {
@@ -29,9 +33,6 @@ void main() {
       expect(videoPricePence(s), v[0]);
       expect(sessionPricePence(s, VisitType.video), v[0]);
       expect(sessionPricePence(s, VisitType.home), v[1]);
-      // Derived from the constant, not hardcoded.
-      expect(sessionPricePence(s, VisitType.home),
-          videoPricePence(s) + kHomeVisitExtraPence * s.sessions);
     });
   });
 
@@ -58,17 +59,6 @@ void main() {
     expect(const HomeVisitAddress(line: '1 Main St', postcode: 'G31 4HS').formatted, '1 Main St, G31 4HS');
   });
 
-  test('home visit price label is one whole price, no separate fee', () {
-    expect(homeVisitPriceLabel(svc(BookServiceId.initialAssessment)), '£80 home visit');
-    expect(homeVisitPriceLabel(svc(BookServiceId.followUp)), '£70 home visit');
-    expect(homeVisitPriceLabel(svc(BookServiceId.bundle4)), '£280 for 4 home visits');
-    expect(homeVisitPriceLabel(svc(BookServiceId.bundle8)), '£545 for 8 home visits');
-    for (final s in allBookServices()) {
-      final label = homeVisitPriceLabel(s);
-      expect(label.toLowerCase(), isNot(contains('travel')));
-      expect(label, isNot(contains('+')));
-    }
-  });
 
   test('isValidUkPostcode', () {
     expect(isValidUkPostcode('g31 4hs'), isTrue);

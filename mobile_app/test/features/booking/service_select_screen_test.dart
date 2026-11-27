@@ -28,7 +28,11 @@ class FakeHomeVisitRepo implements HomeVisitRepository {
     if (g != null) await g.future;
     if (coverageFails) throw const CoverageUnavailable();
     final pc = normalisePostcode(postcode);
-    return CoverageResult(covered: covered, outwardCode: pc.split(' ').first, postcode: pc);
+    return CoverageResult(
+        covered: covered,
+        outwardCode: pc.split(' ').first,
+        postcode: pc,
+        price: covered ? const HomeVisitPrice(initialPence: 11000, followUpPence: 10000) : null);
   }
 
   @override
@@ -192,7 +196,7 @@ void main() {
       expect(continued!.homeAddress, isNull);
     });
 
-    testWidgets('home + covered postcode shows dropdown and the whole £80 price', (tester) async {
+    testWidgets('home + covered postcode shows dropdown and that postcode price', (tester) async {
       await big(tester);
       await tester.pumpWidget(app());
       await tester.pumpAndSettle();
@@ -203,10 +207,9 @@ void main() {
       expect(find.text('We visit G31.'), findsOneWidget);
       expect(addressDropdown(), findsOneWidget);
       expect(find.text('Initial Assessment (home visit)'), findsOneWidget);
-      expect(find.text('£80 · 60 min'), findsOneWidget);
-      expect(find.text('£70 · 30 min'), findsOneWidget);
-      expect(find.text('£280 · Flexible'), findsOneWidget);
-      expect(find.text('£545 · Flexible'), findsOneWidget);
+      expect(find.text('£110 · 60 min'), findsOneWidget);
+      expect(find.text('£100 · 30 min'), findsOneWidget);
+      expect(find.textContaining('Flexible'), findsNothing);
       expect(find.textContaining('travel'), findsNothing);
       expect(find.textContaining('incl.'), findsNothing);
     });

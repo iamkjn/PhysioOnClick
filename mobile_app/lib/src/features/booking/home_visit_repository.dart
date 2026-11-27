@@ -8,8 +8,10 @@ class CoverageResult {
   final bool covered;
   final String outwardCode;
   final String postcode;
+  /// Null when not covered (or an older server that sends no price).
+  final HomeVisitPrice? price;
   const CoverageResult(
-      {required this.covered, required this.outwardCode, required this.postcode});
+      {required this.covered, required this.outwardCode, required this.postcode, this.price});
 }
 
 class AddressSuggestion {
@@ -70,6 +72,11 @@ class HomeVisitRepository {
         covered: j['covered'] == true,
         outwardCode: (j['outwardCode'] ?? '') as String,
         postcode: (j['postcode'] ?? '') as String,
+        price: j['initialPence'] is int && j['followUpPence'] is int
+            ? HomeVisitPrice(
+                initialPence: j['initialPence'] as int,
+                followUpPence: j['followUpPence'] as int)
+            : null,
       );
     } on CoverageUnavailable {
       rethrow;

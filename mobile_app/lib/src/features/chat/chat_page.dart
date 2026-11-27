@@ -62,26 +62,21 @@ const _services = [
 ];
 
 /// Prices come from the booking catalogue (book_service.dart) and, for home
-/// visits, the per-visit home extra (kHomeVisitExtraPence in home_visit.dart),
-/// so this reply always matches what the booking flow charges. Home visits are
+/// visits, the starting price (home_visit.dart). Home visits are
 /// shown as one whole price, never as a session price plus a separate fee.
 @visibleForTesting
 String chatPricingText() {
   final initial = bookServiceFor(BookServiceId.initialAssessment);
   final followUp = bookServiceFor(BookServiceId.followUp);
-  final bundle4 = bookServiceFor(BookServiceId.bundle4);
-  final bundle8 = bookServiceFor(BookServiceId.bundle8);
   String online(ResolvedService s) => formatPounds(sessionPricePence(s, VisitType.video));
   String home(ResolvedService s) => formatPounds(sessionPricePence(s, VisitType.home));
   return 'Online sessions (UK-wide):\n'
       '• Initial Online Assessment (${initial.minutes} min) — ${online(initial)}\n'
       '• Online Follow-Up (${followUp.minutes} min) — ${online(followUp)}\n\n'
-      'Home visits (Glasgow area):\n'
-      '• Initial Assessment at home (${sessionMinutes(initial, VisitType.home)} min) — ${home(initial)}\n'
-      '• Follow-Up at home (${sessionMinutes(followUp, VisitType.home)} min) — ${home(followUp)}\n\n'
-      'Packages:\n'
-      '• 4-Session Bundle — ${online(bundle4)} online, ${home(bundle4)} at home\n'
-      '• 8-Session Bundle — ${online(bundle8)} online, ${home(bundle8)} at home\n\n'
+      'Home visits (price depends on your postcode, shown before you book):\n'
+      '• Initial Assessment at home (${sessionMinutes(initial, VisitType.home)} min) — from ${home(initial)}\n'
+      '• Follow-Up at home (${sessionMinutes(followUp, VisitType.home)} min) — from ${home(followUp)}\n'
+      'For a home visit you can pay after your session in cash or by secure link.\n\n'
       'No GP referral required — you can self-refer.';
 }
 

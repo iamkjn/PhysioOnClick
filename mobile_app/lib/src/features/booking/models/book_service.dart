@@ -110,7 +110,11 @@ const List<ResolvedService> _kServices = [
   ),
 ];
 
-List<ResolvedService> allBookServices() => _kServices;
+/// What can be bought today. Session packages were withdrawn on 2026-11-27;
+/// their entries stay so already-bought ones can still be named.
+List<ResolvedService> allBookServices() => _kServices
+    .where((s) => s.id == BookServiceId.initialAssessment || s.id == BookServiceId.followUp)
+    .toList();
 
 ResolvedService bookServiceFor(BookServiceId id) =>
     _kServices.firstWhere((s) => s.id == id);
