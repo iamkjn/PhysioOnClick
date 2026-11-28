@@ -597,3 +597,47 @@ export const pruneOldGrowthEventsDaily = onSchedule(
     console.log(`pruneOldGrowthEventsDaily: deleted ${deleted} visit statistics older than ${GROWTH_RETENTION_YEARS} years`);
   },
 );
+
+// Appointment reminder email, 24 hours ahead. This only finds bookings starting
+// in the next 24 hours; app/api/appointments/reminder-email decides whether one
+// is due (added more than 24h ahead, not cancelled, not already sent), sends it
+// and stamps the booking.
+export const sendAppointmentReminders = onSchedule(
+  { schedule: "every 15 minutes" },
+  async () => {
+    const SITE_URL = process.env.SITE_URL;
+    const CRON_SECRET = process.env.CRON_SECRET;
+    if (!SITE_URL || !CRON_SECRET) {
+      console.error(
+        "sendAppointmentReminders: missing SITE_URL and/or CRON_SECRET env config; skipping this run"
+      );
+      return;
+    }
+
+    const now = Date.now();
+    const snap = await getFirestore()
+      .collection("bookings")
+      .where("sessionDate", ">", new Date(now))
+      .where("sessionDate", "<=", new Date(now + 24 * 60 * 60_000))
+      .get();
+
+    for (const doc of snap.docs) {
+      const booking = doc.data();
+      if (booking.status !== "upcoming") continue;
+      // Already reminded for this start time (the route re-checks this).
+      if (booking.reminders?.appointmentReminderFor === booking.sessionDate.toDate().toISOString()) continue;
+      try {
+        const response = await fetch(`${SITE_URL}/api/appointments/reminder-email`, {
+          method: "POST",
+          headers: { "x-cron-secret": CRON_SECRET, "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId: doc.id }),
+        });
+        if (!response.ok) {
+          console.error("sendAppointmentReminders: route returned", response.status, doc.ref.path);
+        }
+      } catch (err) {
+        console.error("sendAppointmentReminders: request failed", doc.ref.path, err);
+      }
+    }
+  }
+);

@@ -65,6 +65,12 @@ ones don't show up in the dashboard. A scheduled Cloud Function, `sendAssessment
 `POST /api/assessment/reminder-email` (guarded by `CRON_SECRET`, see `.env.example`) and by
 pushing an FCM notification.
 
+Appointment reminder: `sendAppointmentReminders` (`functions/src/index.ts`, every 15 min) posts
+bookings starting within 24h to `POST /api/appointments/reminder-email` (`CRON_SECRET`), which
+emails the account holder once per start time, only if the booking was added more than 24h ahead
+(`lib/appointment-reminder.ts`, stamps `reminders.appointmentReminderFor`). No prices or pay links
+in that email.
+
 ### AI chat assistant
 
 `app/api/chat/route.ts` runs a Gemini-powered assistant (`GEMINI_API_KEY`). `lib/chat-prompt.ts` holds the system prompt; `lib/chat-tools.ts` declares function-calling tools in two tiers — guest tools (get_services, redirect, open_booking) and authenticated tools that add get_appointments and cancel_appointment. Chat transcripts are viewable at `app/admin/chat-logs/`.
