@@ -8,6 +8,8 @@ import {
   ArrowRight,
   BarChart3,
   BookOpenCheck,
+  Calculator,
+  CalendarPlus,
   CalendarCheck2,
   CalendarDays,
   FileText,
@@ -18,6 +20,7 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { AdminShell } from "@/components/admin-shell";
+import { useIsOwner } from "@/lib/use-is-owner";
 import { AdminBookingsTable } from "@/components/admin-bookings-table";
 import { AdminEnquiriesTable } from "@/components/admin-enquiries-table";
 import { AdminGrowthDashboard } from "@/components/admin-growth-dashboard";
@@ -40,7 +43,14 @@ const QUICK_ACTIONS: QuickAction[] = [
   { href: "/admin/invoices", label: "Invoices", detail: "Billing documents", icon: FileText },
 ];
 
+// Shown to the practice owner only (lib/owner.ts).
+const OWNER_ACTIONS: QuickAction[] = [
+  { href: "/admin/appointments", label: "Add appointment", detail: "Patient, date, time, address", icon: CalendarPlus },
+  { href: "/admin/price-checker", label: "Price checker", detail: "By postcode", icon: Calculator },
+];
+
 export function AdminDashboard() {
+  const isOwner = useIsOwner();
   const [activeTab, setActiveTab] = useState<Tab>("bookings");
   const [newEnquiries, setNewEnquiries] = useState(0);
 
@@ -111,7 +121,7 @@ export function AdminDashboard() {
         </section>
 
         <nav className="admin-quick-actions" aria-label="Admin shortcuts">
-          {QUICK_ACTIONS.map((action) => {
+          {[...(isOwner ? OWNER_ACTIONS : []), ...QUICK_ACTIONS].map((action) => {
             const Icon = action.icon;
             return (
               <Link key={action.href} href={action.href} className="admin-quick-action">

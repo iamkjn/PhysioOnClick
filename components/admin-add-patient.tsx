@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { UserPlus } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/components/toast-provider";
+import { useIsOwner } from "@/lib/use-is-owner";
 
 // "Add patient": creates an account for a patient the physio manages directly
 // (POST /api/admin/patients). Nothing is emailed; the sign-in invite is a
@@ -14,6 +15,7 @@ import { useToast } from "@/components/toast-provider";
 export function AdminAddPatient() {
   const router = useRouter();
   const toast = useToast();
+  const isOwner = useIsOwner();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +83,8 @@ export function AdminAddPatient() {
       setSaving(false);
     }
   }
+
+  if (!isOwner) return null;
 
   if (!open) {
     return (

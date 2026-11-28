@@ -31,6 +31,7 @@ type BookingRecord = {
   homeVisitAddress?: string;
   /** Physio-added session (source "admin-manual"): recorded by hand, never started here. */
   dateOnly?: boolean;
+  byHand?: boolean;
 };
 
 type StatusFilter = "all" | "pending" | "upcoming" | "completed" | "cancelled";
@@ -127,6 +128,7 @@ export function AdminBookingsTable() {
               ? d.homeVisitAddress
               : undefined,
           ...(isDateOnlyBooking(d) ? { dateOnly: true } : {}),
+          ...(d.source === "admin-appointment" ? { byHand: true } : {}),
         };
       }));
       setLoading(false);

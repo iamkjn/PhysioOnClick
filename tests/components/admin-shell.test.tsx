@@ -5,7 +5,14 @@ import { describe, it, expect, vi } from 'vitest'
 const { pathname } = vi.hoisted(() => ({ pathname: { value: '/admin' } }))
 
 vi.mock('next/navigation', () => ({ usePathname: () => pathname.value }))
-vi.mock('firebase/auth', () => ({ signOut: vi.fn() }))
+const { signedIn } = vi.hoisted(() => ({ signedIn: { email: 'admin@physioonclick.co.uk' } }))
+vi.mock('firebase/auth', () => ({
+  signOut: vi.fn(),
+  onAuthStateChanged: (_auth: unknown, next: (user: { email: string }) => void) => {
+    next(signedIn)
+    return () => {}
+  },
+}))
 vi.mock('@/lib/firebase', () => ({
   auth: { currentUser: { email: 'admin@physioonclick.co.uk' } },
 }))
@@ -37,5 +44,19 @@ describe('AdminShell', () => {
     expect(container.querySelector('.admin-app-shell')).toHaveClass('is-nav-open')
     await userEvent.click(screen.getByRole('button', { name: 'Close navigation' }))
     expect(container.querySelector('.admin-app-shell')).not.toHaveClass('is-nav-open')
+  })
+
+  it('shows the practice tools to the owner only', () => {
+    pathname.value = '/admin'
+    signedIn.email = 'otherdoctor@example.com'
+    const other = render(<AdminShell><main>x</main></AdminShell>)
+    expect(screen.queryByRole('link', { name: 'Add appointment' })).toBeNull()
+    expect(screen.queryByRole('link', { name: 'Price checker' })).toBeNull()
+    other.unmount()
+
+    signedIn.email = 'hello@physioonclick.co.uk'
+    render(<AdminShell><main>x</main></AdminShell>)
+    expect(screen.getByRole('link', { name: 'Add appointment' })).toHaveAttribute('href', '/admin/appointments')
+    expect(screen.getByRole('link', { name: 'Price checker' })).toHaveAttribute('href', '/admin/price-checker')
   })
 })

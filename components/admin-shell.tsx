@@ -8,6 +8,8 @@ import {
   Activity,
   ArrowLeft,
   Bot,
+  CalendarPlus,
+  Calculator,
   BookOpenCheck,
   CalendarDays,
   ExternalLink,
@@ -22,6 +24,7 @@ import {
 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { AdminNotificationBell } from "@/components/admin-notification-bell";
+import { useIsOwner } from "@/lib/use-is-owner";
 
 interface AdminShellProps {
   backHref?: string;
@@ -47,6 +50,12 @@ const PRIMARY_NAV: AdminNavItem[] = [
   { href: "/admin/invoices", label: "Invoices", icon: FileText },
 ];
 
+// Shown to the practice owner only (lib/owner.ts).
+const OWNER_NAV: AdminNavItem[] = [
+  { href: "/admin/appointments", label: "Add appointment", icon: CalendarPlus },
+  { href: "/admin/price-checker", label: "Price checker", icon: Calculator },
+];
+
 const SECONDARY_NAV: AdminNavItem[] = [
   { href: "/admin/chat-logs", label: "Chat logs", icon: MessageSquare },
 ];
@@ -67,6 +76,8 @@ export function AdminShell({ backHref, backLabel, children }: AdminShellProps) {
   const user = auth?.currentUser;
   const [navOpen, setNavOpen] = useState(false);
 
+  const isOwner = useIsOwner();
+
   useEffect(() => setNavOpen(false), [pathname]);
 
   async function handleSignOut() {
@@ -75,7 +86,7 @@ export function AdminShell({ backHref, backLabel, children }: AdminShellProps) {
     window.location.reload();
   }
 
-  const currentItem = [...PRIMARY_NAV, ...SECONDARY_NAV].find((item) => isActivePath(pathname, item));
+  const currentItem = [...PRIMARY_NAV, ...OWNER_NAV, ...SECONDARY_NAV].find((item) => isActivePath(pathname, item));
 
   function renderNav(items: AdminNavItem[]) {
     return items.map((item) => {
@@ -109,6 +120,12 @@ export function AdminShell({ backHref, backLabel, children }: AdminShellProps) {
         <nav className="admin-side-nav">
           <span className="admin-side-nav-label">Workspace</span>
           {renderNav(PRIMARY_NAV)}
+          {isOwner && (
+            <>
+              <span className="admin-side-nav-label admin-side-nav-label--secondary">My practice</span>
+              {renderNav(OWNER_NAV)}
+            </>
+          )}
           <span className="admin-side-nav-label admin-side-nav-label--secondary">Support</span>
           {renderNav(SECONDARY_NAV)}
         </nav>

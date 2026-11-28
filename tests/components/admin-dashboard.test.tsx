@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 
-vi.mock('@/lib/firebase', () => ({ db: {} }))
+vi.mock('@/lib/firebase', () => ({ db: {}, auth: undefined }))
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(),
   query: vi.fn(),

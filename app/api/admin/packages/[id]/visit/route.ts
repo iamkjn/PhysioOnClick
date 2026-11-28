@@ -64,7 +64,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   // A visit planned in advance for this date (POST .../plan) becomes the
   // recorded one, so it never shows twice.
   const plannedSnap = await db.collection("bookings").where("packageId", "==", id).get();
-  const planned = plannedSnap.docs.find((d) => d.data().plannedVisit === true && d.data().appointmentDate === date);
+  const planned = plannedSnap.docs.find((d) => d.data().plannedVisit === true && d.data().status !== "cancelled" && d.data().appointmentDate === date);
   const fields = {
     fullName: patientName,
     email: String(data.email ?? "").toLowerCase(),
@@ -95,7 +95,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   };
   let bookingRef: { id: string };
   if (planned) {
-    await planned.ref.set({ ...fields, plannedVisit: false, recordedAt: FieldValue.serverTimestamp() }, { merge: true });
+    // An appointment booked with a real time (POST /api/admin/appointments)
+    // keeps that time, and its source, when it is recorded.
+    const timed = planned.data().source === "admin-appointment";
+    const { appointmentTime, appointmentLabel: label, sessionDate: when, dateOnly, source, ...rest } = fields;
+    const dated = timed ? rest : { ...rest, appointmentTime, appointmentLabel: label, sessionDate: when, dateOnly, source };
+    await planned.ref.set({ ...dated, plannedVisit: false, recordedAt: FieldValue.serverTimestamp() }, { merge: true });
     bookingRef = planned.ref;
   } else {
     bookingRef = await db.collection("bookings").add({ ...fields, createdAt: FieldValue.serverTimestamp() });

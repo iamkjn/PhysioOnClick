@@ -172,7 +172,9 @@ All `library_*` events go through the typed `trackLibraryEvent()` wrapper
 | `app/admin/chat-logs/page.tsx` | `page_view` only. |
 | `app/admin/chat-logs/[threadId]/page.tsx` | `page_view` only (single chat transcript). |
 | `app/admin/growth/[metric]/page.tsx` | `page_view` only (growth metric records). |
+| `app/admin/appointments/page.tsx` | `page_view` only. |
 | `app/admin/invoices/page.tsx` | `page_view` only. |
+| `app/admin/price-checker/page.tsx` | `page_view` only. |
 | `app/admin/library/page.tsx` | `page_view` only (exercise-library content manager). |
 | `app/admin/patients/page.tsx` | `page_view` only. |
 | `app/admin/patients/[id]/page.tsx` | `page_view`. `exercise_video_play` / `exercises_marked_all_done` (`components/assigned-exercises.tsx`, via `AdminPatientDetail` → `AdminAssessmentReview`). |

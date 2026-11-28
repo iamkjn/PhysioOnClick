@@ -26,6 +26,6 @@ export function isDateOnlyBooking(data: Record<string, unknown>): boolean {
  * Physio-added sessions are recorded by hand on the patient's package, so the
  * admin screens never offer it for them.
  */
-export function canStartSession(booking: { dateOnly?: boolean }): boolean {
-  return booking.dateOnly !== true;
+export function canStartSession(booking: { dateOnly?: boolean; byHand?: boolean }): boolean {
+  return booking.dateOnly !== true && booking.byHand !== true;
 }

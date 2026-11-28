@@ -51,7 +51,9 @@
   // does nothing. See .env.example.
   "vars": {
     "FIREBASE_ADMIN_PROJECT_ID": "physioonclick-prod",
-    "FIREBASE_ADMIN_STORAGE_BUCKET": "physioonclick-prod.firebasestorage.app"
+    "FIREBASE_ADMIN_STORAGE_BUCKET": "physioonclick-prod.firebasestorage.app",
+    // Every appointment is emailed here as a calendar invite (lib/calendar-invite.ts).
+    "CALENDAR_INVITE_EMAIL": "physioonclick@gmail.com"
   },
 
   // --- DEV environment -------------------------------------------------

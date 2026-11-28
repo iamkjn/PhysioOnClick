@@ -37,6 +37,8 @@ export interface BookingRecord {
   visitType?: "video" | "home";
   /** Session added by the physio by hand: only the date matters, so no time is ever shown. */
   dateOnly?: boolean;
+  /** Arranged by the physio with a time (recorded on the package, never started). */
+  byHand?: boolean;
   homeVisitAddress?: string;
 }
 
@@ -99,6 +101,7 @@ function toBookingRecord(id: string, data: Record<string, unknown>): BookingReco
     patientId: typeof data.patientId === "string" ? data.patientId : undefined,
     visitType: data.visitType === "home" || data.visitType === "video" ? data.visitType : undefined,
     ...(isDateOnlyBooking(data) ? { dateOnly: true } : {}),
+    ...(data.source === "admin-appointment" ? { byHand: true } : {}),
     homeVisitAddress:
       data.visitType === "home" && typeof data.homeVisitAddress === "string" ? data.homeVisitAddress : undefined,
   };

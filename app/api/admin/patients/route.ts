@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { FieldValue, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
-import { requireAdminRequest } from "@/lib/admin-request";
+import { requireOwnerRequest } from "@/lib/owner-request";
 import { normalizeCarerEmail, normalizeCarerEmails } from "@/lib/carer-access";
 import { formatPersonName } from "@/lib/name-format";
 import { validateEmail } from "@/lib/validation";
 import { isDateKey } from "@/lib/treatment-packages";
 
-// Admin-only. Creates an account for a patient the physio looks after
+// Owner-only. Creates an account for a patient the physio looks after
 // directly (for example an elderly home-visit patient who won't sign up
 // themselves): a passwordless Firebase Auth user plus their `patients/{uid}`
 // record, flagged `createdByAdmin` / `managedByPhysio`. Nothing is emailed —
@@ -17,7 +17,7 @@ function clean(value: unknown, max = 120): string {
 }
 
 export async function POST(request: Request) {
-  const gate = await requireAdminRequest(request);
+  const gate = await requireOwnerRequest(request);
   if ("error" in gate) return gate.error;
 
   let body: Record<string, unknown>;

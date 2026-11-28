@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { FieldValue, getAdminDb } from "@/lib/firebase-admin";
 import { guestBookingOwnerFields } from "@/lib/guest-booking";
+import { sendCalendarInvite } from "@/lib/calendar-invite";
 
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
   if (!secret || !signature) return false;
@@ -55,7 +56,28 @@ type CalBookingPayload = {
   rescheduledFromUid?: string;
   location?: string;
   videoCallData?: { url?: string };
+  endTime?: string;
+  metadata?: { homeVisitAddress?: string };
 };
+/** The practice calendar's copy of a Cal.com booking. Never throws. */
+async function toPracticeCalendar(booking: CalBookingPayload, id: string, cancelled = false) {
+  const start = new Date(booking.startTime);
+  const end = booking.endTime ? new Date(booking.endTime) : null;
+  const attendee = booking.attendees?.[0];
+  await sendCalendarInvite({
+    id,
+    start,
+    minutes: end ? Math.round((end.getTime() - start.getTime()) / 60_000) : 60,
+    title: attendee?.name ? `${attendee.name}: ${booking.title}` : booking.title,
+    location: booking.metadata?.homeVisitAddress || booking.videoCallData?.url,
+    details: [
+      attendee?.phoneNumber ? `Phone: ${attendee.phoneNumber}` : "",
+      attendee?.email ? `Email: ${attendee.email}` : "",
+    ].filter(Boolean),
+    cancelled,
+  });
+}
+
 type CalWebhookBody = {
   triggerEvent: string;
   payload?: CalBookingPayload;
@@ -247,6 +269,7 @@ export async function POST(request: NextRequest) {
           );
         }
       }
+      await toPracticeCalendar(booking, booking.uid);
     } else if (triggerEvent === "BOOKING_CANCELLED" && booking) {
       const snapshot = await db
         .collection("bookings")
@@ -256,6 +279,7 @@ export async function POST(request: NextRequest) {
       if (!snapshot.empty) {
         await snapshot.docs[0].ref.update({ status: "cancelled" });
       }
+      await toPracticeCalendar(booking, booking.uid, true);
     } else if (triggerEvent === "BOOKING_RESCHEDULED" && booking) {
       const { appointmentDate, appointmentTime, appointmentLabel } = toLondonParts(booking.startTime);
       const originalUid = booking.rescheduledFromUid ?? booking.uid;
@@ -273,6 +297,8 @@ export async function POST(request: NextRequest) {
           calBookingUid: booking.uid,
         });
       }
+      if (originalUid !== booking.uid) await toPracticeCalendar(booking, originalUid, true);
+      await toPracticeCalendar(booking, booking.uid);
     }
 
     return NextResponse.json({ received: true });

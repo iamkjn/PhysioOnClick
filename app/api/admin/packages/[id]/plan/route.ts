@@ -3,6 +3,7 @@ import { FieldValue } from "@/lib/firebase-admin";
 import { requireAdminRequest } from "@/lib/admin-request";
 import { loadManualPackage, noStore } from "@/lib/admin-packages-server";
 import { serviceLabelFor } from "@/lib/cal-services";
+import { sendCalendarInvite } from "@/lib/calendar-invite";
 import { isDateKey, londonWallTimeToDate } from "@/lib/treatment-packages";
 
 // Admin-only. Puts planned (future) visit dates for a physio-arranged package
@@ -92,6 +93,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       createdAt: FieldValue.serverTimestamp(),
     });
     created.push(ref.id);
+    await sendCalendarInvite({
+      id: ref.id,
+      date,
+      title: `${patientName}: ${serviceLabelFor("follow-up", visitType)}`,
+    });
   }
   return NextResponse.json({ created: created.length, skipped: dates.length - fresh.length }, { status: 201, headers: noStore });
 }

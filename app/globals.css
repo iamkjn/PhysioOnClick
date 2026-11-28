@@ -18543,3 +18543,16 @@ body:has(.chat-trigger) .quick-chat {
   margin-inline: auto;
   border-radius: var(--radius-card);
 }
+
+/* Admin, practice owner only: add appointment and price checker */
+.owner-form { max-width: 46rem; }
+.owner-form label { display: flex; flex-direction: column; gap: 0.35rem; font-size: var(--text-sm); font-weight: 600; }
+.owner-form__grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.owner-form__actions { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
+.owner-price { display: flex; flex-wrap: wrap; gap: var(--space-4); margin: 0; padding: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-card); }
+.owner-price dt { font-size: var(--text-sm); color: var(--color-text-secondary); }
+.owner-price dd { margin: 0; font-size: var(--text-lg); font-weight: 700; }
+.owner-price__hint, .owner-price__outside { margin: 0; font-size: var(--text-sm); }
+.owner-appointments { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.owner-appointments li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3); }
+.owner-appointments li > div:first-child { display: flex; flex-direction: column; gap: 0.25rem; }

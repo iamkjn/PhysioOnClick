@@ -22,6 +22,9 @@ export function memoryFirestore(seed: Record<string, Data> = {}) {
         if (!store.has(path)) throw new Error(`update on missing doc ${path}`);
         store.set(path, { ...store.get(path)!, ...data });
       },
+      async delete() {
+        store.delete(path);
+      },
       collection(name: string) {
         return collectionRef(`${path}/${name}`);
       },
